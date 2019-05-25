@@ -2,16 +2,7 @@
 <odoo>
     <data>
 
-
-
         <!-- Top Menu -->
-        <!-- Billing -->
-        <menuitem id="top_billing"
-                  parent="tt_accounting.main_transaction"
-                  name="Billing"
-                  sequence="2"
-                  groups="base.group_user"/>
-
         <!--<menuitem id="menu_reservations_train"-->
                   <!--name="Booking"-->
 
@@ -19,7 +10,7 @@
                           <!--&lt;!&ndash;parent="tt_transport.top_reservations_train"&ndash;&gt;-->
 
         <menuitem id="menu_agent_invoice"
-                  parent="tt_agent_sales.top_billing"
+                  parent="tt_payment.top_billing"
                   name="Invoice"
                   sequence="1"/>
     </data>
