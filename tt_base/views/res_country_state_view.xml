@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="country_state_form_view" model="ir.ui.view">
+        <field name="name">country.state.form.view</field>
+        <field name="model">res.country.state</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="name"/>
+                    <field name="country_id"/>
+                    <field name="code"/>
+                    <field name="city_ids"/>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <record id="country_state_tree_view" model="ir.ui.view">
+        <field name="name">country.state.tree.view</field>
+        <field name="model">res.country.state</field>
+        <field name="arch" type="xml">
+            <tree>
+                    <field name="name"/>
+                    <field name="country_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="country_state_action_view" model="ir.actions.act_window" >
+        <field name="name">State</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.country.state</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_base.country_state_form_view',
+            'tree_view_ref': 'tt_base.country_state_tree_view',
+            }
+        </field>
+    </record>
+
+    <menuitem id="menu_item_tt_base"
+              name="tt_base"
+              web_icon="hr,static/description/icon.png"
+              sequence="10"
+              groups="base.group_user"/>
+
+    <menuitem id="submenu_country"
+              parent="tt_base.menu_item_tt_base"
+              name="Country"
+              sequence="1"
+              groups="base.group_user"/>
+
+    <menuitem id="submenu_item_country"
+              parent="tt_base.submenu_country"
+              action="base.action_country"
+              name="Country"
+              sequence="1"
+              groups="base.group_user"/>
+
+    <menuitem id="submenu_item_state"
+              parent="tt_base.submenu_country"
+              action="tt_base.country_state_action_view"
+              name="State"
+              sequence="1"
+              groups="base.group_user"/>
+
+</odoo>

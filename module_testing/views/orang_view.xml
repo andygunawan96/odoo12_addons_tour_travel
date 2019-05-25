@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="orang_form_view" model="ir.ui.view">
+        <field name="name">orang.form.view</field>
+        <field name="model">orang.orang</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="name"/>
+                    <field name="age"/>
+                    <field name="gender" widget="selection"/>
+                    <field name="note"/>
+                    <field name="country_id"/>
+                    <field name="country_state_id"/>
+
+                    <field name="address_ids">
+                        <tree>
+                            <field name="address"/>
+                            <field name="city_id"/>
+                        </tree>
+                    </field>
+                    <field name="invoice_line_ids">
+                        <tree editable="bottom" limit="5">
+                            <field name="res_model" readonly="1"/>
+                            <field name="name"/>
+                            <button name="open_record" type="object" class="oe_highlight" icon="fa-asterisk text-success"/>
+                        </tree>
+                    </field>
+                    <!--<field name="pet_ids">-->
+                        <!--<tree limit="5">-->
+                            <!--<field name="name"/>-->
+                            <!--<field name="habitat"/>-->
+                        <!--</tree>-->
+                    <!--</field>-->
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <record id="orang_tree_view" model="ir.ui.view">
+        <field name="name">orang.tree.view</field>
+        <field name="model">orang.orang</field>
+        <field name="arch" type="xml">
+            <tree>
+                    <field name="name"/>
+                    <field name="age"/>
+                    <field name="gender"/>
+                    <field name="note"/>
+                    <field name="country_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="orang_action_view" model="ir.actions.act_window" >
+        <field name="name">Orang</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">orang.orang</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">
+            {
+            'form_view_ref': 'module_testing.orang_form_view',
+            'tree_view_ref': 'module_testing.orang_tree_view',
+            }
+        </field>
+    </record>
+
+    <menuitem id="menu_item_module_testing"
+              name="Module Testing"
+              web_icon="hr,static/description/icon.png"
+              sequence="10"
+              groups="base.group_user"/>
+
+    <menuitem id="sub_menu_orang"
+              parent="module_testing.menu_item_module_testing"
+              action="module_testing.orang_action_view"
+              name="Orang"
+              sequence="90"
+              groups="base.group_user"/>
+
+</odoo>

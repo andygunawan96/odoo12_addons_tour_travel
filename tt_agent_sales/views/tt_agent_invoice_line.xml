@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_agent_invoice_line_form_view" model="ir.ui.view">
+        <field name="name">tt.agent.invoice.line.form.view</field>
+        <field name="model">tt.agent.invoice.line</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="total"/>
+                        <field name="desc"/>
+                        <field name="invoice_id"/>
+                    </group>
+                    <group>
+                        <field name="res_model_resv" invisible="1"/>
+                        <field name="res_id_resv" invisible="1"/>
+                        <button name="open_split_wizard" string="Split" type="object"
+                                context = "{'default_reservation_model': res_model_resv,
+                                            'default_reservation_id': res_id_resv }"/>
+
+                    </group>
+                    <group>
+                        <field name="invoice_line_detail_ids">
+                            <tree>
+                                <field name="desc"/>
+                                <field name="price_unit"/>
+                                <field name="discount"/>
+                                <field name="quantity"/>
+                                <field name="discount_amount"/>
+                                <field name="price_subtotal"/>
+                            </tree>
+                        </field>
+                    </group>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!--    <record id="tt_agent_invoice_tree_view" model="ir.ui.view">-->
+    <!--        <field name="name">tt.agent.invoice.tree.view</field>-->
+    <!--        <field name="model">tt.reservation.train</field>-->
+    <!--        <field name="arch" type="xml">-->
+
+    <!--            <tree>-->
+    <!--                <button type="object" string="Create Booking" name="create_booking_test"/>-->
+    <!--                <button type="object" string="ISSUED1" name="action_issued_api"/>-->
+    <!--                <field name="name"/>-->
+    <!--                <field name="sub_agent_id"/>-->
+    <!--                <field name="pnr"/>-->
+    <!--                <field name="date"/>-->
+    <!--                <field name="expired_date"/>-->
+    <!--                <field name="hold_date"/>-->
+    <!--                <field name="state"/>-->
+    <!--            </tree>-->
+    <!--        </field>-->
+    <!--    </record>-->
+
+    <record id="tt_agent_invoice_action_view" model="ir.actions.act_window" >
+        <field name="name">Agent Invoice</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.agent.invoice</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <!--        <field name="domain">[]</field>-->
+        <field name="context">
+            {
+            'form_view_ref': 'tt_agent_sales.tt_agent_invoice_form_view',
+            'tree_view_ref': 'tt_agent_sales.tt_agent_invoice_tree_view',
+            }
+        </field>
+    </record>
+
+    <menuitem id="sub_menu_agent_invoice_all"
+              parent="tt_agent_sales.menu_agent_invoice"
+              action="tt_agent_sales.tt_agent_invoice_action_view"
+              name="Agent Invoice ALL"
+              sequence="1"
+              groups="base.group_user"/>
+</odoo>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<odoo>
+    <record id="tt_payment_form_view" model="ir.ui.view">
+        <field name="name">tt.payment.form.view</field>
+        <field name="model">tt.payment</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button string="Validate" name="action_validate_from_button" type="object"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,validated"/>
+                </header>
+                <sheet>
+                    <h1>
+                        <field name="name"/>
+                    </h1>
+                    <group>
+                        <field name="payment_uid"/>
+                        <field name="total_amount"/>
+                        <field name="used_amount"/>
+                        <field name="residual_amount"/>
+                        <field name="fee"/>
+                        <field name="currency_id" invisible="1"/>
+                        <field name="payment_date"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="tt_payment_tree_view" model="ir.ui.view">
+        <field name="name">tt.payment.tree.view</field>
+        <field name="model">tt.payment</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="used_amount"/>
+                <field name="total_amount"/>
+                <field name="payment_uid"/>
+                <field name="state"/>
+                <field name="currency_id" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_payment_action" model="ir.actions.act_window">
+        <field name="name">Payment Transaction</field>
+        <field name="res_model">tt.payment</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <!--        <field name="context">-->
+        <!--            {-->
+        <!--                'form_view_ref': 'tt_rodex_billing.tt_billing_statement_form_view',-->
+        <!--                'tree_view_ref': 'tt_rodex_billing.tt_billing_statement_tree_view'-->
+        <!--            }-->
+        <!--        </field>-->
+    </record>
+
+    <menuitem id="menu_payment"
+              parent="tt_agent_sales.top_billing"
+              name="Payment"
+              sequence="2"/>
+
+    <menuitem id="sub_menu_payment_transaction"
+              parent="tt_payment.menu_payment"
+              action="tt_payment_action"
+              name="Payment Transaction"
+              sequence="1"/>
+
+</odoo>

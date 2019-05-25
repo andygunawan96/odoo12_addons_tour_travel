@@ -1,0 +1,13 @@
+<odoo>
+    <record id="tt_ledger_agent_sales" model="ir.ui.view">
+        <field name="name">tt.ledger.agent.sales</field>
+        <field name="model">tt.ledger</field>
+        <field name="mode">extension</field>
+        <field name="inherit_id" ref="tt_accounting.tt_ledger_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='transaction_references']" position="inside">
+                <field name="agent_invoice_id"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,72 @@
+<odoo>
+        <record id="social_media_detail_form_view" model="ir.ui.view">
+            <field name="name">social.media.detail.form.view</field>
+            <field name="model">social.media.detail</field>
+            <field name="arch" type="xml">
+                <form string="Social Media Detail Form">
+                    <sheet>
+                        <!--<div class="oe_button_box" name="button_box">-->
+                            <!--<button name="toggle_active" type="object" groups="base.group_user"-->
+                                    <!--class="oe_stat_button" icon="fa-archive">-->
+                                <!--<field name="active" widget="boolean_button"-->
+                                       <!--options='{"terminology": "archive"}'/>-->
+                            <!--</button>-->
+                        <!--</div>-->
+                        <div class="oe_button_box" name="button_box">
+                            <button name="toggle_active" type="object" groups="base.group_user"
+                                    class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button"
+                                       options='{"terminology": "archive"}'/>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h3>
+                                <field name="name"/>
+                            </h3>
+                        </div>
+                        <group>
+                            <field name="type_id"/>
+                            <field name="agent_id"/>
+                            <field name="customer_id"/>
+                            <field name="company_id"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="social_media_detail_tree_view" model="ir.ui.view">
+            <field name="name">social.media.detail.tree.view</field>
+            <field name="model">social.media.detail</field>
+            <field name="arch" type="xml">
+                <tree string="Social Media Detail Tree">
+                    <field name="name"/>
+                    <field name="type_id"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="social_media_detail_action_view" model="ir.actions.act_window">
+            <field name="name">Social Media Detail</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">social.media.detail</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[]</field>
+            <field name="context">
+                {
+                'form_view_ref': 'tt_base.social_media_detail_form_view',
+                'tree_view_ref': 'tt_base.social_media_detail_tree_view'
+                }
+            </field>
+        </record>
+
+        <menuitem id="sub_menu_item_tour_travel_social_media_detail"
+                  parent="tt_base.menu_tour_travel_configuration_social_media"
+                  groups="base.group_user"
+                  name="Social Media Detail"
+                  sequence="2"
+                  action="social_media_detail_action_view"/>
+</odoo>

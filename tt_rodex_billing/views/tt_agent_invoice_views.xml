@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="agent_invoice_form_tt_billing_inh" model="ir.ui.view">
+        <field name="name">agent.invoice.form.tt.billing.inh</field>
+        <field name="model">tt.agent.invoice</field>
+        <field name="inherit_id" ref="tt_agent_sales.tt_agent_invoice_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='invoice_info']" position="after">
+                <group>
+                    <field name="billing_statement_id" readonly="1"/>
+                </group>
+            </xpath>
+<!--            <field name="contact_id" position="after">-->
+<!--                <field name="booker_type"-->
+<!--                       groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator" readonly="1"/>-->
+<!--            </field>-->
+            <xpath expr="//button[@name='create_ledger']" position="after">
+                <button name= "create_billing_statement" string='Create Billing Statement' type="object" states="confirm"
+                        class="oe_stat_button" icon="fa-bookmark-o"/>
+                <button name= "create_billing_statement_new" string='Create Billing Statement CRON' type="object"
+                        class="oe_stat_button" icon="fa-bookmark-o"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

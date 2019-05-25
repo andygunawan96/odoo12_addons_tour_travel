@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_payment_invoice_rel_form_view" model="ir.ui.view">
+        <field name="name">tt.payment.invoice.rel.form.view</field>
+        <field name="model">tt.payment.invoice.rel</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="invoice_id" readonly="1"/>
+                        <field name="payment_id"/>
+                        <field name="residual_amount"/>
+                        <field name="pay_amount"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_payment_invoice_rel_tree_view" model="ir.ui.view">
+        <field name="name">tt.payment.invoice.rel.tree.view</field>
+        <field name="model">tt.payment.invoice.rel</field>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="invoice_id"/>
+                <field name="pay_amount"/>
+                <field name="currency_id" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_payment_invoice_rel_invoice_tree_view" model="ir.ui.view">
+        <field name="name">tt.payment.invoice.rel.invoice.tree.view</field>
+        <field name="model">tt.payment.invoice.rel</field>
+        <field name="priority">21</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="payment_id"/>
+                <field name="residual_amount"/>
+                <field name="pay_amount"/>
+                <field name="currency_id" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+
+
+    <record id="tt_payment_invoice_rel_action" model="ir.actions.act_window" >
+        <field name="name">Payment Invoice rel</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.payment.invoice.rel</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_agent_sales.tt_payment_invoice_rel_form_view',
+            'tree_view_ref': 'tt_agent_sales.tt_payment_invoice_rel_tree_view',
+            }
+        </field>
+    </record>
+</odoo>

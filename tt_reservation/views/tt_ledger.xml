@@ -1,0 +1,27 @@
+<odoo>
+    <record id="tt_ledger_tree_view_inh" model="ir.ui.view">
+        <field name="name">tt.ledger.tree.view.inh</field>
+        <field name="model">tt.ledger</field>
+        <field name="inherit_id" ref="tt_accounting.tt_ledger_tree_view"/>
+        <field name="arch" type="xml">
+            <field name="ref" position="after">
+                <field name="provider_type"/>
+            </field>
+        </field>
+    </record>
+
+
+    <record id="tt_ledger_form_view_inh" model="ir.ui.view">
+        <field name="name">tt.ledger.form.view.inh</field>
+        <field name="model">tt.ledger</field>
+        <field name="inherit_id" ref="tt_accounting.tt_ledger_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='transaction_references']" position="inside">
+                <field name="res_model" invisible="1"/>
+                <field name="res_id" invisible="1"/>
+                <button name="open_reservation" string="Open Reservation" type="object"
+                        attrs="{'invisible':['|',('res_model','=',False),('res_id','=',0)]}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

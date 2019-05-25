@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_ledger_form_view" model="ir.ui.view">
+        <field name="name">tt.ledger.form.view</field>
+        <field name="model">tt.ledger</field>
+        <field name="arch" type="xml">
+            <form create="false" edit="false">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,approved,issued"/>
+
+                    <button name="action_done" states="draft"
+                        groups="account.group_account_invoice,account.group_account_user"
+                        string="Post" type="object" class="oe_highlight"/>
+                    <button name="action_set_to_draft" states="done"
+                            groups="base.group_system"
+                        string="Set To Draft" type="object"
+                        icon="fa-exchange" class="oe_highlight"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="Name" class="oe_edit_only" string="Name"/>
+                        <h1>
+                            <field name="name" attrs="{'readonly':[('state','!=','draft')]}"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="agent_id"/>
+                            <field name="agent_type_id"/>
+                            <!--<field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>-->
+                            <field name="currency_id"/>
+                        </group>
+                        <group>
+                            <field name="date"/>
+                            <field name="transaction_type" attrs="{'readonly':[('state','!=','draft')]}"/>
+                            <!--<field name="top_up_id" attrs="{'invisible':[('top_up_id','=',False)]}"/>-->
+                            <field name="ref"/>
+                        </group>
+                    </group>
+                    <separator string="Information"/>
+                    <group>
+                        <group>
+                            <field name="commission"/>
+                            <field name="debit" attrs="{'readonly':[('state','!=','draft')]}"/>
+                            <field name="credit" attrs="{'readonly':[('state','!=','draft')]}"/>
+                            <field name="balance" invisible="1"/>
+                        </group>
+                        <group name="transaction_references">
+                            <field name="pnr"/>
+                            <field name="display_provider_name"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_ledger_tree_view_page" model="ir.ui.view">
+        <field name="name">tt.ledger.tree.view.page</field>
+        <field name="model">tt.ledger</field>
+        <field name="arch" type="xml">
+            <tree create="false">
+                <field name="date"/>
+                <field name="ref"/>
+                <field name="name"/>
+                <field name="agent_id"/>
+                <field name="description"/>
+                <field name="transaction_type"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="debit" sum="Total Debit"/>
+                <field name="credit" sum="Total Credit"/>
+                <field name="balance" invisible="1" sum="Total Balance"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="tt_ledger_tree_view" model="ir.ui.view">
+        <field name="name">tt.ledger.tree.view</field>
+        <field name="model">tt.ledger</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="date"/>
+                <field name="ref"/>
+                <field name="display_provider_name"/>
+                <field name="pnr"/>
+                <field name="agent_id"/>
+                <field name="agent_type_id"/>
+                <field name="description"/>
+                <field name="issued_uid"/>
+                <field name="transaction_type"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="debit" sum="Total Debit"/>
+                <field name="credit" sum="Total Credit"/>
+                <field name="balance" invisible="1" sum="Total Balance"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_ledger_action" model="ir.actions.act_window">
+        <field name="name">Ledger</field>
+        <field name="res_model">tt.ledger</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">
+            {
+                'form_view_ref': 'tt_accounting.tt_ledger_form_view',
+                'tree_view_ref': 'tt_accounting.tt_ledger_tree_view'
+            }
+        </field>
+    </record>
+
+    <menuitem id="main_transaction"
+              name="Transactions"
+              web_icon="hr,static/description/icon.png"
+              sequence="3"
+              groups="base.group_user"/>
+
+    <menuitem id="top_transaction_ledger" parent="tt_accounting.main_transaction"
+              name="Ledger" sequence="20"/>
+
+    <menuitem id="menu_transaction_ledger" parent="tt_accounting.top_transaction_ledger"
+              name="Ledger" action="tt_ledger_action" sequence="10"/>
+
+</odoo>

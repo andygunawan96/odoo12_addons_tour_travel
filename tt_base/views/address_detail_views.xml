@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="address_detail_form_view" model="ir.ui.view">
+        <field name="name">address.detail.form.view</field>
+        <field name="model">address.detail</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" groups="base.group_user"
+                                class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button"
+                                   options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="company_id" readonly="True"/>
+                        </group>
+                        <group>
+                            <field name="type"/>
+                            <field name="name" attrs="{'invisible': [('type','!=','custom')]}"/>
+                            <field name="country_id"/>
+                            <field name="state_id"/>
+                            <field name="city_id"/>
+                            <field name="district_id"/>
+                            <field name="sub_district_id"/>
+                            <field name="address"/>
+                            <field name="rt"/>
+                            <field name="rw"/>
+                            <field name="sequence"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="address_detail_tree_view" model="ir.ui.view">
+        <field name="name">address.detail.tree.view</field>
+        <field name="model">address.detail</field>
+        <field name="arch" type="xml">
+            <tree>
+                <!--<field name="company_id"/>-->
+                <field name="name"/>
+                <field name="address"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="address_detail_action_view" model="ir.actions.act_window" >
+        <field name="name">Address Detail</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">address.detail</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_base.address_detail_form_view',
+            'tree_view_ref': 'tt_base.address_detail_tree_view',
+            }
+        </field>
+    </record>
+
+    <!--<menuitem id="sub_menu_item_tour_travel_address_detail"-->
+    <!--parent="tt_base.sub_menu_tour_travel_settings"-->
+    <!--action="tt_base.address_detail_action_view"-->
+    <!--name="Address Detail"-->
+    <!--sequence="6"-->
+    <!--groups="base.group_user"/>-->
+
+
+</odoo>

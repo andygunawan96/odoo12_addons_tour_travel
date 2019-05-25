@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- record data for tt.skipped.keys -->
+        <record id="skip_tt_agent_balance" model="tt.skipped.keys">
+            <field name="model_name">tt.agent</field>
+            <field name="field_name">balance</field>
+        </record>
+        <record id="skip_tt_agent_actual_balance" model="tt.skipped.keys">
+            <field name="model_name">tt.agent</field>
+            <field name="field_name">actual_balance</field>
+        </record>
+    </data>
+</odoo>

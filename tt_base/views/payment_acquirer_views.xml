@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="payment_acquirer_form_view" model="ir.ui.view">
+            <field name="name">payment.acquirer.form.view</field>
+            <field name="model">payment.acquirer</field>
+            <field name="arch" type="xml">
+                <form string="Provider">
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button attrs="{'invisible': [('environment', '=', 'test')]}" class="oe_stat_button" name="toggle_enviroment_value" type="object" icon="fa-play">
+                                <div class="o_stat_info o_form_field">
+                                    <span class="text-success">Production</span>
+                                    <span class="o_stat_text">Environment</span>
+                                </div>
+                            </button>
+                            <button attrs="{'invisible': [('environment', '=', 'prod')]}" class="oe_stat_button" name="toggle_enviroment_value" type="object" icon="fa-stop">
+                                <div class="o_stat_info o_form_field">
+                                    <span class="o_warning_text">Test</span>
+                                    <span class="o_stat_text">Environment</span>
+                                </div>
+                            </button>
+                            <button class="oe_stat_button" name="237" type="action" icon="fa-money" string="Payments">
+                            </button>
+                        </div>
+                        <field name="image" widget="image" class="oe_avatar" options="{&quot;preview_image&quot;: &quot;image_medium&quot;}"/>
+                        <div class="oe_title">
+                            <h1><field name="name" placeholder="Name"/></h1>
+                        </div>
+                        <div attrs="{'invisible': ['|', ('module_state', '=', 'installed'), ('module_id', '=', False)]}">
+                            <button type="object" class="btn btn-primary" name="button_immediate_install" string="Install"/>
+                            <div class="o_payment_acquirer_desc">
+                                <field name="description"/>
+                            </div>
+                        </div>
+                        <group name="acquirer_base" col="2" attrs="{'invisible': ['&amp;', ('module_id', '!=', False), ('module_state', '!=', 'installed')]}">
+                            <group name="acquirer_left">
+                                <field name="provider" groups="base.group_no_one"/>
+                                <field name="environment" invisible="1"/>
+                                <field name="module_id" invisible="1"/>
+                                <field name="module_state" invisible="1"/>
+                                <field name="provider_id"/>
+                                <field name="agent_id"/>
+                                <field name="bank_id"/>
+                                <field name="company_id" groups="base.group_multi_company" options="{&quot;no_open&quot;:True}"/>
+                            </group>
+                        </group>
+                        <notebook attrs="{'invisible': ['&amp;', ('module_id', '!=', False), ('module_state', '!=', 'installed')]}">
+                            <page string="Credentials">
+                                <group name="acquirer">
+                                </group>
+                            </page>
+                            <page string="Messages">
+                                <group>
+                                    <field name="pre_msg"/>
+                                    <field name="post_msg"/>
+                                    <field name="pending_msg"/>
+                                    <field name="done_msg"/>
+                                    <field name="cancel_msg"/>
+                                    <field name="error_msg"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="payment_acquirer_tree_view" model="ir.ui.view">
+            <field name="name">payment.acquirer.tree.view</field>
+            <field name="model">payment.acquirer</field>
+            <field name="arch" type="xml">
+                <tree string="Payment Acquirer">
+                    <field name="name"/>
+                    <field name="provider"/>
+                    <field name="provider_id"/>
+                    <field name="agent_id"/>
+                    <field name="bank_id"/>
+                    <field name="environment"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="payment_acquirer_action_view" model="ir.actions.act_window">
+            <field name="name">Payment Acquirer</field>
+            <field name="view_type">form</field>
+            <field name="res_model">payment.acquirer</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    <!-- Add Text Here -->
+                </p><p>
+                <!-- More details about what a user can do with this object will be OK -->
+            </p>
+            </field>
+            <field name="context">
+                {
+                'form_view_ref': 'tt_base.payment_acquirer_form_view',
+                'tree_view_ref': 'tt_base.payment_acquirer_tree_view'
+                }
+            </field>
+        </record>
+
+        <menuitem id="menu_tour_travel_accounting"
+                  parent="tt_base.top_tour_travel_configuration"
+                  groups="base.group_user"
+                  name="Accounting"
+                  sequence="3"/>
+
+        <menuitem id="sub_menu_tour_travel_payment_acquirer"
+                  parent="tt_base.menu_tour_travel_accounting"
+                  groups="base.group_user"
+                  name="Payment Acquirer"
+                  sequence="1"
+                  action="payment_acquirer_action_view"/>
+
+    </data>
+</odoo>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Main Menu -->
+        <!--Tours and Travel-->
+        <menuitem id="main_tour_travel"
+                  name="Tours and Travel"
+                  web_icon="hr,static/description/icon.png"
+                  sequence="1"
+                  groups="base.group_user"/>
+
+
+        <!--Customers-->
+        <menuitem id="main_customers"
+                  name="Customers"
+                  web_icon="hr,static/description/icon.png"
+                  sequence="2"
+                  groups="base.group_user"/>
+
+        <!--Top Menu-->
+        <!--Customers-->
+        <menuitem id="top_tour_travel_customers"
+                  parent="tt_base.main_tour_travel"
+
+                  name="Customers"
+                  sequence="1"
+                  groups="base.group_user"/>
+                  <!--action="tt_base.tt_customer_action_view"-->
+        <!--Configurations-->
+        <menuitem id="top_tour_travel_configuration"
+                  parent="tt_base.main_tour_travel"
+
+                  name="Configuration"
+                  sequence="2"
+                  groups="base.group_user"/>
+                  <!--action="tt_base.res_country_action_view"-->
+        <!--Menu (tag) Inside Top Menu-->
+        <!--Country-->
+        <menuitem id="menu_tour_travel_configuration_res_country"
+                  name="Country"
+                  parent="tt_base.top_tour_travel_configuration"
+                  sequence="1"/>
+
+        <!--Agent-->
+        <menuitem id="menu_tour_travel_configuration_tt_agent"
+                  name="Agent"
+                  parent="tt_base.top_tour_travel_configuration"
+                  sequence="2"/>
+
+        <!--Social Media-->
+        <menuitem id="menu_tour_travel_configuration_social_media"
+                  name="Social Media"
+                  parent="tt_base.top_tour_travel_configuration"
+                  sequence="3"/>
+
+        <!--Currency-->
+        <menuitem id="menu_tour_travel_configuration_currency"
+                  name="Currency"
+                  parent="tt_base.top_tour_travel_configuration"
+                  sequence="4"/>
+
+        <!--Bank-->
+        <menuitem id="menu_tour_travel_configuration_bank"
+                  name="Bank"
+                  parent="tt_base.top_tour_travel_configuration"
+                  sequence="5"/>
+
+        <!--Provider-->
+        <menuitem id="menu_tour_travel_provider"
+                  name="Provider"
+                  parent="tt_base.top_tour_travel_configuration"
+                  sequence="6"/>
+
+
+        <menuitem id="menu_tour_travel_destination"
+                  name="Destination"
+                  parent="tt_base.top_tour_travel_configuration"
+                  sequence="7"/>
+
+        <menuitem id="menu_tour_travel_history_skip"
+                  name="History Skip"
+                  parent="tt_base.top_tour_travel_configuration"
+                  sequence="8"/>
+    </data>
+</odoo>

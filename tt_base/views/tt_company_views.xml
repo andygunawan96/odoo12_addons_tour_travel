@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_company_form_view" model="ir.ui.view">
+        <field name="name">tt.company.form.view</field>
+        <field name="model">tt.company</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" groups="base.group_user"
+                                class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button"
+                                   options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <div id="o_employee_container"><div id="o_employee_main">
+                        <field name="logo" widget='image' class="oe_avatar" options='{"preview_image":"logo_thumb"}'/>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1>
+                                <field name="name" placeholder="Company's Name" required="True"/>
+                            </h1>
+                            <field name="email" placeholder="Company's Email"/>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="est_date"/>
+                                <field name="currency_id"/>
+                                <field name="credit_limit"/>
+                            </group>
+                            <group>
+                                <field name="create_uid"/>
+                                <field name="create_date"/>
+                                <field name="write_uid"/>
+                                <field name="write_date"/>
+                            </group>
+                        </group>
+                        <group string="Employees">
+                            <field name="employee_ids"/>
+                        </group>
+
+                        <notebook colspan="2">
+                            <page string="Addresses">
+                                <field name="address_ids"/>
+                            </page>
+                            <page string="Phones">
+                                <field name="phone_ids"/>
+                            </page>
+                        </notebook>
+                    </div></div>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_company_tree_view" model="ir.ui.view">
+        <field name="name">tt.company.tree.view</field>
+        <field name="model">tt.company</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="est_date"/>
+                <field name="email"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_company_kanban_view" model="ir.ui.view">
+        <field name="name">tt.company.kanban.view</field>
+        <field name="model">tt.company</field>
+        <field name="priority">10</field>
+        <field name="arch" type="xml">
+            <kanban class="o_hr_employee_kanban">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="email"/>
+                <field name="est_date"/>
+                <field name="credit_limit"/>
+                <field name="phone_ids"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click o_kanban_record_has_image_fill o_hr_kanban_record">
+                            <!-- Medium employee's picture -->
+                            <div class="o_kanban_image_fill_left d-none d-md-block" t-attf-style="background-image: url(#{kanban_image('tt.company', 'logo_thumb', record.id.raw_value)})" role="img"/>
+                            <!-- Employee's picture optimized for mobile -->
+                            <div class="o_kanban_image d-md-none rounded-circle" t-attf-style="background-image: url(#{kanban_image('tt.company', 'logo_thumb', record.id.raw_value)})" role="img"/>
+
+                            <!-- Medium employee's picture -->
+                            <!--<div class="o_kanban_image_fill_left d-none d-md-block" t-attf-style="background-image: url(#{kanban_image('hr.employee', 'image_medium', record.id.raw_value)})" role="img"/>-->
+                            <!-- Employee's picture optimized for mobile -->
+                            <!--<div class="o_kanban_image d-md-none rounded-circle" t-attf-style="background-image: url(#{kanban_image('hr.employee', 'image_small', record.id.raw_value)})" role="img"/>-->
+
+                            <div class="oe_kanban_details">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <h4>
+                                                <field name="name"/>
+                                            </h4>
+                                        </strong>
+                                        <span class="o_kanban_record_subtitle">Email: <field name="email"/></span>
+                                        <span class="o_kanban_record_subtitle">Credit Limit: <field name="credit_limit"/></span>
+                                    </div>
+                                </div>
+                                <!--options="{'color_field': 'color'}"-->
+                                <!--<field name="phone_ids" widget="many2many_tags"/>-->
+                                <ul>
+                                    <li id="est_date"/>
+                                    <li t-if="record.est_date.raw_value">Established: <field name="est_date"/></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+
+        </field>
+    </record>
+
+    <record id="tt_company_action_view" model="ir.actions.act_window" >
+        <field name="name">Company</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.company</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">kanban,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_base.tt_company_form_view',
+            'kanban_view_ref': 'tt_base.tt_company_kanban_view',
+            }
+        </field>
+    </record>
+
+    <menuitem id="menu_tour_travel_company"
+              parent="tt_base.top_tour_travel_customers"
+              action="tt_base.tt_company_action_view"
+              name="Company"
+              sequence="3"
+              groups="base.group_user"/>
+
+</odoo>

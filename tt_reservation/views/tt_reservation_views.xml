@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_reservation_form_views" model="ir.ui.view">
+        <field name="name">tt.reservation.form.view</field>
+        <field name="model">tt.reservation</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button string="Set to Draft" name="action_draft" type="object"/>
+                    <button string="Set to Booked" name="action_set_as_booked" type="object"/>
+                    <button string="Set to Issued" name="action_set_as_issued" type="object"/>
+                    <button string="Set Booking State" name="action_check_provider_state" type="object"/>
+                    <button string="Cancel" name="action_cancel" states="booked,issued" type="object"/>
+
+                    <button string="Issued" name="action_issued_from_button" type="object"
+                            states="booked,fail_booking,fail_issue"
+                            help="Issued process to API and Vendor"/>
+                    <button string="Force Issued" name="action_force_issued" type="object" states="booked,fail_booking,fail_issue"
+                            help='Change booking state to issued, assumption : booking has been issued on vendor API reservation system, but not on skytors'/>
+
+                    <button string="Reissue" name="action_reroute" states="issued" type="object"/>
+                    <button string="Refund" name="create_refund" states="issued" type="object"/>
+
+                    <button string="Sync Date" name="action_sync_date" states="booked" type="object"/>
+
+
+                    <field name="state" widget="statusbar" statusbar_visible="draft,booked,issued"/>
+                </header>
+                <sheet>
+
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="pnr"/>
+                            <field name="agent_id"/>
+                            <field name="sub_agent_id"/>
+                            <field name="provider_type"/>
+                        </group>
+                        <group>
+                            <field name="date"/>
+                            <field name="hold_date"/>
+                            <!--CANDY: delete expired date & is_manual-->
+                            <!--<field name="expired_date"/>-->
+                            <!--<field name="is_manual"/>-->
+                            <label for="user_id" string="Created by"/>
+                            <div>
+                                <field name="user_id" readonly="1" class="oe_inline"/> -
+                                <field name="create_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <label for="confirm_uid" string="Booked By"/>
+                            <div>
+                                <field name="booked_uid" readonly="1" class="oe_inline"/> -
+                                <field name="booked_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <label for="issued_uid" string="Issued By"/>
+                            <div>
+                                <field name="issued_uid" readonly="1" class="oe_inline"/> -
+                                <field name="issued_date" readonly="1" class="oe_inline"/>
+                            </div>
+                        </group>
+                    </group>
+
+
+                    <group name="paxgroup">
+                        <group string="Paxs">
+                            <field name="adult"/>
+                            <field name="infant"/>
+                        </group>
+                        <group string="Contact Information">
+                            <field name="contact_id"/>
+                            <field name="display_mobile"/>
+                        </group>
+                    </group>
+
+                    <!--<group>-->
+                    <!--</group>-->
+                    <!--<field name="total_fare"/>-->
+                    <!--<field name="total_tax"/>-->
+                    <!--<field name="total"/>-->
+                    <!--<field name="total_discount"/>-->
+                    <!--<field namFe="total_commission"/>-->
+                    <!--<field name="total_nta"/>-->
+                    <notebook colspan="4" name="notebooks">
+
+                        <page string="anchor" name="anchor" invisible="1"/>
+                        <page string="Ledgers" name="ledger_page">
+                            <field name="ledger_ids"
+                                   context="{'tree_view_ref': 'tt_accounting.tt_ledger_tree_view_page'}"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Main Menu -->
+    <!-- Reservations -->
+    <menuitem id="main_reservations"
+              name="Reservations"
+              web_icon="hr,static/description/icon.png"
+              sequence="2"/>
+</odoo>

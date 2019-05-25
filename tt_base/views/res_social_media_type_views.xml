@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_social_media_type_form_view" model="ir.ui.view">
+        <field name="name">res.social.media.type.form.view</field>
+        <field name="model">res.social.media.type</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <!--<div class="oe_button_box" name="button_box">-->
+                        <!--<button name="toggle_active" type="object" groups="base.group_user"-->
+                                <!--class="oe_stat_button" icon="fa-archive">-->
+                            <!--<field name="active" widget="boolean_button"-->
+                                   <!--options='{"terminology": "archive"}'/>-->
+                        <!--</button>-->
+                    <!--</div>-->
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" groups="base.group_user"
+                                class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button"
+                                   options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h3>
+                            <field name="name"/>
+                        </h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="logo" widget="image"/>
+                            <field name="black_logo" widget="image"/>
+                            <field name="white_logo" widget="image"/>
+                            <field name="social_media_ids"/>
+                        </group>
+                        <group>
+                            <field name="create_uid"/>
+                            <field name="create_date"/>
+                            <field name="write_uid"/>
+                            <field name="write_date"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="res_social_media_type_tree_view" model="ir.ui.view">
+        <field name="name">res.social.media.type.tree.view</field>
+        <field name="model">res.social.media.type</field>
+        <field name="arch" type="xml">
+            <tree string="Res Social Media Type Tree">
+                <field name="name"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="res_social_media_type_action_view" model="ir.actions.act_window">
+        <field name="name">Social Media Type</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.social.media.type</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_base.res_social_media_type_form_view',
+            'tree_view_ref': 'tt_base.res_social_media_type_tree_view'
+            }
+        </field>
+    </record>
+
+    <menuitem id="sub_menu_item_tour_travel_social_media_type"
+              parent="tt_base.menu_tour_travel_configuration_social_media"
+              groups="base.group_user"
+              name="Social Media Type"
+              sequence="1"
+              action="res_social_media_type_action_view"/>
+
+</odoo>

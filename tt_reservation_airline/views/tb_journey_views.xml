@@ -1,0 +1,97 @@
+<odoo>
+    <record id="tt_reservation_airline_journey_form_view" model="ir.ui.view">
+        <field name="name">tt.transport.airline.journey.form.view</field>
+        <field name="model">tt.tb.journey.airline</field>
+        <field name="arch" type="xml">
+            <form>
+                <!--<header>-->
+                    <!--<button string="Set to Draft" name="action_set_as_draft" type="object" groups="base.group_no_one" attrs="{'invisible':[('state','=','draft')]}"/>-->
+                    <!--<button string="Set to Booked" name="action_set_as_booked" type="object" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible':[('state','=','booked')]}"/>-->
+                    <!--<button string="Set to Issued (No Create Ledger)" name="action_set_as_issued" type="object" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible':[('state','=','issued')]}"/>-->
+                    <!--<button string="Force Issued (Create Ledger)" name="action_force_issued" type="object" states="booked,fail_booking,fail_issue"-->
+                            <!--help='Change booking state to issued, assumption : booking has been issued on vendor API reservation system, but not on skytors'-->
+                            <!--groups="tt_base.group_tt_tour_travel_operator"/>-->
+                    <!--<button string="Repricing Sabre" name="action_sync_repricing" states="booked" type="object" groups="tt_base.group_tt_tour_travel_operator"/>-->
+                    <!--<button string="After Sales Pricing" name="action_after_sales_pricing" states="booked" type="object" groups="tt_base.group_tt_tour_travel_operator"/>-->
+                    <!--<button string="Reverse Ledger" name="action_reverse_ledger" type="object" groups="tt_base.group_tt_tour_travel_supervisor" attrs="{'invisible':[('state','in',['draft','booked','fail_refunded'])]}"/>-->
+                    <!--&lt;!&ndash;<field name="state" widget="statusbar" statusbar_visible="draft,booked,issued" clickable="1"/>&ndash;&gt;-->
+                    <!--<field name="state" widget="statusbar" statusbar_visible="draft,booked,issued"/>-->
+                <!--</header>-->
+                <sheet>
+                    <group>
+                        <group>
+                            <!--<field name="is_ledger_created"/>-->
+                            <field name="sequence"/>
+                            <field name="booking_id"/>
+                            <field name="pnr"/>
+                            <field name="provider" groups="tt_base.group_tt_tour_travel_operator"/>
+                            <field name="notes"/>
+                            <field name="error_msg"/>
+                        </group>
+                        <group>
+                            <!--<field name="hold_date"/>-->
+                            <!--<field name="expired_date"/>-->
+                            <!--<field name="booked_uid"/>-->
+                            <!--<field name="booked_date"/>-->
+                            <!--<field name="issued_uid"/>-->
+                            <!--<field name="issued_date"/>-->
+                            <!--<field name="refund_uid"/>-->
+                            <!--<field name="refund_date"/>-->
+                        </group>
+                    </group>
+                    <!--<separator string="Passengers"/>-->
+                    <!--<field name="ticket_ids"/>-->
+                    <!--<group string="Itinerary Info">-->
+                        <!--<group>-->
+                            <!--<field name="origin"/>-->
+                            <!--<field name="destination"/>-->
+                            <!--<field name="departure_date"/>-->
+                            <!--<field name="return_date"/>-->
+                            <!--<field name="direction"/>-->
+                        <!--</group>-->
+                        <!--<group>-->
+                            <!--<field name="currency_id"/>-->
+                            <!--<field name="sid"/>-->
+                            <!--<field name="sid_connector"/>-->
+                            <!--<field name="promotion_code"/>-->
+                        <!--</group>-->
+                    <!--</group>-->
+                    <!--<separator string="Journeys"/>-->
+                    <!--<field name="journey_ids"/>-->
+                    <!--<separator string="Service Charges" groups="tt_base.group_tt_tour_travel_operator"/>-->
+                    <!--<field name="cost_service_charge_ids" groups="tt_base.group_tt_tour_travel_operator"/>-->
+                    <!--<group string="Total Information" class="oe_subtotal_footer oe_right" groups="tt_base.group_tt_tour_travel_operator">-->
+                        <!--<field name="total" class="oe_subtotal_footer_separator"/>-->
+                        <!--<field name="total_fare" class="oe_subtotal_footer_seperator"/>-->
+                    <!--</group>-->
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="transport_journey_tree_view" model="ir.ui.view">
+        <field name="name">transport.journey.tree.view</field>
+        <field name="model">tt.tb.journey.airline</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="pnr"/>
+                <field name="direction"/>
+                <field name="provider" groups="tt_base.group_tt_tour_travel_operator"/>
+                <field name="origin"/>
+                <field name="destination"/>
+                <field name="departure_date"/>
+                <field name="return_date"/>
+                <!--<field name="total"/>-->
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="transport_journey_action" model="ir.actions.act_window">
+        <field name="name">Transport Ticket</field>
+        <field name="res_model">tt.tb.journey.airline</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>

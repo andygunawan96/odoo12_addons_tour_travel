@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_reservation_train_form_views" model="ir.ui.view">
+        <field name="name">tt.reservation.train.form.view</field>
+        <field name="model">tt.reservation.train</field>
+        <field name="mode">primary</field>
+        <field name="inherit_id" ref="tt_reservation.tt_reservation_form_views"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//group[@name='paxgroup']" position="before">
+                <separator string="Trip Information"/>
+                <button name="to_dict" string="test to dict" type="object"/>
+                <group>
+                    <group>
+                        <field name="origin_id" string="Origin" options="{'no_create': True}"/>
+                        <field name="destination_id" string="Destination" options="{'no_create': True}"/>
+                    </group>
+                    <group>
+                        <field name="sector_type"/>
+                        <field name="direction"/>
+                        <field name="departure_date" string="Departure Date"/>
+                        <field name="return_date" attrs="{'invisible': [('direction', '=', 'OW')],
+                            'required': [('direction', '=', 'ret')]}"/>
+                    </group>
+                </group>
+            </xpath>
+            <xpath expr="//page[@name='anchor']" position="before">
+                <page string="Passengers">
+                    <field name="passenger_ids">
+                        <!--<tree editable="bottom">-->
+                        <!--<tree>-->
+                        <!--<field name="id" groups="base.group_no_one"/>-->
+                        <!--<field name="title"/>-->
+                        <!--<field name="first_name"/>-->
+                        <!--<field name="last_name"/>-->
+                        <!--<field name="pax_type"/>-->
+                        <!--<field name="age"/>-->
+                        <!--<field name="nationality_id"/>-->
+                        <!--<field name="passport_number"/>-->
+                        <!--<field name="passport_expdate"/>-->
+                        <!--&lt;!&ndash;<field name="gender"/>&ndash;&gt;-->
+                        <!--<field name="state" invisible="1"/>-->
+                        <!--</tree>-->
+                    </field>
+                </page>
+            </xpath>
+            <xpath expr="//page[@name='anchor']" position="before">
+                <page string="Prices" name="prices">
+                    <field name="sale_service_charge_ids">
+                        <tree>
+                            <field name="charge_code"/>
+                            <field name="pax_type"/>
+                            <field name="pax_count"/>
+                            <field name="amount"/>
+                            <field name="total"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="description"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+
+            <xpath expr="//page[@name='anchor']" position="before">
+                <page string="Vendor" name="vendor">
+                    <field name="provider_booking_ids">
+                        <!--<tree>-->
+                        <!--<field name="pnr"/>-->
+                        <!--<field name="direction"/>-->
+                        <!--<field name="provider" groups="tt_base.group_tt_tour_travel_operator"/>-->
+                        <!--<field name="origin"/>-->
+                        <!--<field name="destination"/>-->
+                        <!--<field name="departure_date"/>-->
+                        <!--<field name="return_date"/>-->
+                        <!--&lt;!&ndash;<field name="total"/>&ndash;&gt;-->
+                        <!--<field name="state"/>-->
+                        <!--</tree>-->
+                    </field>
+                </page>
+            </xpath>
+            <xpath expr="//group[@name='paxgroup']" position="after">
+                <separator string="Segment"/>
+                <field name="segment_ids">
+                    <tree>
+                        <field name="pnr"/>
+                        <field name="journey_type"/>
+                        <field name="carrier_id"/>
+                        <field name="carrier_name"/>
+                        <field name="origin_id"/>
+                        <field name="destination_id"/>
+                        <field name="departure_date_fmt"/>
+                        <field name="arrival_date_fmt"/>
+                    </tree>
+                </field>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="tt_reservation_train_tree_views" model="ir.ui.view">
+        <field name="name">tt.reservation.train.tree.view</field>
+        <field name="model">tt.reservation.train</field>
+        <field name="arch" type="xml">
+
+            <tree>
+                <button type="object" string="Create Booking" name="create_booking"/>
+                <button type="object" string="ISSUED1" name="action_issued_api"/>
+                <field name="name"/>
+                <field name="sub_agent_id"/>
+                <field name="pnr"/>
+                <field name="date"/>
+                <field name="expired_date"/>
+                <field name="hold_date"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_reservation_train_action_views" model="ir.actions.act_window" >
+        <field name="name">Reservation Train</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.reservation.train</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_train.tt_reservation_train_form_views',
+            'tree_view_ref': 'tt_reservation_train.tt_reservation_train_tree_views',
+            }
+        </field>
+    </record>
+
+    <menuitem id="sub_menu_reservations_train_all"
+              parent="tt_reservation_train.menu_reservations_train"
+              action="tt_reservation_train.tt_reservation_train_action_views"
+              name="All"
+              sequence="1"
+              groups="base.group_user"/>
+</odoo>

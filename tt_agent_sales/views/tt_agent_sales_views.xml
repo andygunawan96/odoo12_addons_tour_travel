@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_agent_invoice_form_view" model="ir.ui.view">
+        <field name="name">tt.agent.invoice.form.view</field>
+        <field name="model">tt.agent.invoice</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="create_ledger" string="Create Ledger" type="object"/>
+                    <button name="set_to_confirm" string="Set to Confirm" type="object"/>
+                    <button name="set_to_bill" string="Set to Bill" type="object"/>
+                    <button name="%(tt_agent_invoice_wizard_action_view)d" string="Move" type="action" context = "{'default_invoice_id1': id}"/>
+
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,issued"/>
+
+                </header>
+                <sheet>
+
+                    <group name="invoice_info">
+                        <group>
+                            <field name="name"/>
+                            <field name="date_invoice"/>
+                            <field name="date_due"/>
+                            <field name="total"/>
+                            <field name="paid_amount"/>
+                            <field name="contact_id"/>
+                        </group>
+                        <group>
+                            <field name="agent_id"/>
+                            <field name="sub_agent_id"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <notebook>
+                            <page string="Invoice Line">
+                                <field name="invoice_line_ids">
+                                    <tree create="false">
+                                        <field name="name"/>
+                                        <field name="model_type"/>
+                                        <field name="total"/>
+                                        <button string="Go to Reservation" name="open_reservation" type="object"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Payments">
+                                <field name="payment_ids" context="{'tree_view_ref':'tt_agent_sales.tt_payment_invoice_rel_invoice_tree_view'}"/>
+                            </page>
+                            <page string="Ledgers">
+                                <field name="ledger_ids" context="{'tree_view_ref': 'tt_accounting.tt_ledger_tree_view_page'}"/>
+                            </page>
+                        </notebook>
+                    </group>
+
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_agent_invoice_tree_view" model="ir.ui.view">
+        <field name="name">tt.agent.invoice.tree.view</field>
+        <field name="model">tt.agent.invoice</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_agent_invoice_action_view" model="ir.actions.act_window" >
+        <field name="name">Agent Invoice</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.agent.invoice</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+<!--        <field name="domain">[]</field>-->
+        <field name="context">
+            {
+            'form_view_ref': 'tt_agent_sales.tt_agent_invoice_form_view',
+            'tree_view_ref': 'tt_agent_sales.tt_agent_invoice_tree_view',
+            }
+        </field>
+    </record>
+
+    <menuitem id="sub_menu_agent_invoice_all"
+              parent="tt_agent_sales.menu_agent_invoice"
+              action="tt_agent_sales.tt_agent_invoice_action_view"
+              name="Agent Invoice ALL"
+              sequence="1"
+              groups="base.group_user"/>
+</odoo>

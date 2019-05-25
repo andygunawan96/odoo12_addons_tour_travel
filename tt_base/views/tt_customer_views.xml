@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_customer_form_view" model="ir.ui.view">
+        <field name="name">tt.customer.form.view</field>
+        <field name="model">tt.customer</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                        <button string="Test Message" name="set_history_message" type="object"
+                                groups="base.group_user"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" groups="base.group_user"
+                                class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button"
+                                   options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <div id="o_employee_container"><div id="o_employee_main">
+                        <field name="logo" widget='image' class="oe_avatar" options='{"preview_image":"logo_thumb"}'/>
+                        <div class="oe_title">
+                            <h3>
+                                <field name="first_name" placeholder="First Name"/>
+                                <field name="last_name" placeholder="Last Name"/>
+                            </h3>
+                        </div>
+                        <group>
+                            <field name="name" readonly="True"/>
+                            <field name="nickname"/>
+                            <field name="title"/>
+                            <field name="gender"/>
+                            <field name="marital_status"/>
+                            <field name="religion"/>
+                            <field name="birth_date"/>
+                            <field name="age"/>
+                            <field name="passport_number"/>
+                            <field name="passport_exp_date"/>
+                            <field name="user_id"/>
+                            <field name="customer_bank_detail_ids"/>
+                        </group>
+
+                        <notebook colspan="2">
+                            <page string="Addresses">
+                                <field name="address_ids"/>
+                            </page>
+                            <page string="Phones">
+                                <field name="phone_ids"/>
+                            </page>
+                            <page string="Social Media">
+                                <field name="social_media_ids"/>
+                            </page>
+                        </notebook>
+                    </div></div>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_customer_tree_view" model="ir.ui.view">
+        <field name="name">tt.customer.tree.view</field>
+        <field name="model">tt.customer</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="title"/>
+                <field name="first_name"/>
+                <field name="last_name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_customer_action_view" model="ir.actions.act_window">
+        <field name="name">Customer</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.customer</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_base.tt_customer_form_view',
+            'tree_view_ref': 'tt_base.tt_customer_tree_view'
+            }
+        </field>
+    </record>
+
+    <menuitem id="menu_tour_travel_customer"
+              parent="tt_base.top_tour_travel_customers"
+              groups="base.group_user"
+              name="Customer"
+              sequence="1"
+              action="tt_customer_action_view"/>
+
+</odoo>
