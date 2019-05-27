@@ -11,7 +11,7 @@ TT_TRANSPORT
     'category': 'billing',
     'website': '',
     'images' : [],
-    'depends' : ['base_setup','tt_base','tt_accounting', 'tt_agent_sales'],
+    'depends' : ['base_setup','tt_base','tt_accounting', 'tt_agent_sales', 'tt_payment'],
     'data': [
         'data/ir_sequence_data.xml',
         # 'security/ir.model.access.csv',

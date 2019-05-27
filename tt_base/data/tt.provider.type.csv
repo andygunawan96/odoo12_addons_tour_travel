@@ -1,0 +1,7 @@
+id,name,code,active,is_data
+tt_provider_type_1,Airlines,airlines,1,1
+tt_provider_type_2,Train,train,1,1
+tt_provider_type_3,Hotel,hotel,1,1
+tt_provider_type_4,Activity,activity,1,1
+tt_provider_type_5,Bank,bank,1,1
+tt_provider_type_6,Tour,tour,1,1

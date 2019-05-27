@@ -9,6 +9,7 @@ from . import payment_acquirer
 from . import agent_bank_detail
 from . import company_bank_detail
 from . import customer_bank_detail
+from . import tt_access_activity
 from . import res_bank
 from . import res_users
 from . import res_currency

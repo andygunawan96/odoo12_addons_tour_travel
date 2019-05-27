@@ -1,4 +1,5 @@
 from odoo import api, fields, models, _
+from odoo.http import request
 
 
 class ResUsers(models.Model):
@@ -33,6 +34,7 @@ class ResUsers(models.Model):
     device_type = fields.Selection([('web', 'Web'),
                    ('android', 'Mobile Android'),
                    ('ios', 'Mobile iOS')], 'Device Type')
+    access_activity_ids = fields.One2many('tt.access.activity', 'user_id', 'Access Activities')
 
     #Fungsi ini perlu di lengkapi/disempurnakan
     #Tujuan : kalau res_pertner.parent_agent_id berubah maka user.agent_id ikut berubah
@@ -53,3 +55,14 @@ class ResUsers(models.Model):
         new_user.partner_id.parent_id = new_user.agent_id.id
         new_user.partner_id.parent_agent_id = False
         return new_user
+
+    @api.model
+    def _update_last_login(self):
+        super(ResUsers, self)._update_last_login()
+        self.env['tt.access.activity'].sudo().create({
+            'type': 'login',
+            'user_id': self.id,
+            # 'user_ip_add': request.httprequest.headers.environ.get('HTTP_X_REAL_IP'),
+            'user_ip_add': request.httprequest.environ['REMOTE_ADDR'],
+        })
+

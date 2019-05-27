@@ -1,3 +1,2 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_tt_rodex_billing_tt_billing_statement,access_tt_billing_statement.tt_billing_statement,model_tt_billing_statement,,1,1,1,1
-access_tt_rodex_billing_tt_payment,access_tt_billing_statement.tt_payment,model_tt_payment,,1,1,1,1

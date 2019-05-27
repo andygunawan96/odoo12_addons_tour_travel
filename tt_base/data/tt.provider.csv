@@ -1,0 +1,4 @@
+id,name,alias,code,active,is_data,type_id/id
+tt_provider_1,Sabre,,sabre,1,1,tt_base.tt_provider_type_1
+tt_provider_2,Amadeus,,amadeus,1,1,tt_base.tt_provider_type_1
+tt_provider_3,Kereta Api Indonesia,,kai,1,1,tt_base.tt_provider_type_2

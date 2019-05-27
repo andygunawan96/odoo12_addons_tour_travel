@@ -1,72 +1,143 @@
 <odoo>
-        <record id="social_media_detail_form_view" model="ir.ui.view">
-            <field name="name">social.media.detail.form.view</field>
-            <field name="model">social.media.detail</field>
-            <field name="arch" type="xml">
-                <form string="Social Media Detail Form">
-                    <sheet>
-                        <!--<div class="oe_button_box" name="button_box">-->
-                            <!--<button name="toggle_active" type="object" groups="base.group_user"-->
-                                    <!--class="oe_stat_button" icon="fa-archive">-->
-                                <!--<field name="active" widget="boolean_button"-->
-                                       <!--options='{"terminology": "archive"}'/>-->
-                            <!--</button>-->
-                        <!--</div>-->
-                        <div class="oe_button_box" name="button_box">
-                            <button name="toggle_active" type="object" groups="base.group_user"
-                                    class="oe_stat_button" icon="fa-archive">
-                                <field name="active" widget="boolean_button"
-                                       options='{"terminology": "archive"}'/>
-                            </button>
-                        </div>
-                        <div class="oe_title">
-                            <label for="name" class="oe_edit_only"/>
-                            <h3>
-                                <field name="name"/>
-                            </h3>
-                        </div>
+    <record id="res_user_form_view_inh" model="ir.ui.view">
+        <field name="name">res.user.form.view.inh</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_title')]/group/field[@name='partner_id']" position="after">
+                <field name='agent_id' groups="base.group_user" readonly="False"/>
+            </xpath>
+            <xpath expr="//notebook/page[last()]" position="after">
+                <page string="Skytors Info" name="skytors">
+                    <group>
                         <group>
-                            <field name="type_id"/>
-                            <field name="agent_id"/>
-                            <field name="customer_id"/>
-                            <field name="company_id"/>
+                            <!--<field name='agent_id' groups="base.group_user" readonly="False"/>-->
+                            <field name='currency_id' groups="base.group_user" readonly="False"/>
+                            <field name='language' groups="base.group_user" readonly="False"/>
+                            <field name='transaction_limit' groups="base.group_user" readonly="False"/>
                         </group>
-                    </sheet>
-                </form>
-            </field>
-        </record>
+                        <group>
+                            <field name='date_format' groups="base.group_user" readonly="False"/>
+                            <field name='time_format' groups="base.group_user" readonly="False"/>
+                            <field name='user_type' groups="base.group_user" readonly="False"/>
+                            <field name='device_type' groups="base.group_user" readonly="False"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
 
-        <record id="social_media_detail_tree_view" model="ir.ui.view">
-            <field name="name">social.media.detail.tree.view</field>
-            <field name="model">social.media.detail</field>
-            <field name="arch" type="xml">
-                <tree string="Social Media Detail Tree">
-                    <field name="name"/>
-                    <field name="type_id"/>
-                    <field name="active"/>
-                </tree>
+                        </group>
+                    </group>
+                </page>
+                <page string="Access Activity" name="access_activity">
+                    <field name="access_activity_ids">
+                        <tree editable="bottom" create="false">
+                            <field name="type"/>
+                            <field name="user_ip_add"/>
+                            <field name="create_date"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+            <field name="partner_id" position="attributes">
+                <attribute name="groups">base.group_user</attribute>
             </field>
-        </record>
+        </field>
+    </record>
 
-        <record id="social_media_detail_action_view" model="ir.actions.act_window">
-            <field name="name">Social Media Detail</field>
-            <field name="type">ir.actions.act_window</field>
-            <field name="res_model">social.media.detail</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
-            <field name="domain">[]</field>
-            <field name="context">
-                {
-                'form_view_ref': 'tt_base.social_media_detail_form_view',
-                'tree_view_ref': 'tt_base.social_media_detail_tree_view'
-                }
+    <record id="res_user_tree_view_inh" model="ir.ui.view">
+        <field name="name">res.user.tree.view.inh</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_tree"/>
+        <field name="arch" type="xml">
+            <field name="login" position="after">
+                <field name='agent_id' groups="base.group_user"/>
             </field>
-        </record>
+        </field>
+    </record>
 
-        <menuitem id="sub_menu_item_tour_travel_social_media_detail"
-                  parent="tt_base.menu_tour_travel_configuration_social_media"
-                  groups="base.group_user"
-                  name="Social Media Detail"
-                  sequence="2"
-                  action="social_media_detail_action_view"/>
+    <record id="res_user_tree_view_inh2" model="ir.ui.view">
+        <field name="name">res.user.tree.view.inh2</field>
+        <field name="model">res.users</field>
+        <field name="arch" type="xml">
+            <tree string="Users" create="false" edit="false">
+                <field name="name"/>
+                <field name="login"/>
+                <field name='agent_id' groups="base.group_user"/>
+                <field name="lang"/>
+                <field name="login_date" groups="base.group_user"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="social_media_detail_form_view" model="ir.ui.view">
+        <field name="name">social.media.detail.form.view</field>
+        <field name="model">social.media.detail</field>
+        <field name="arch" type="xml">
+            <form string="Social Media Detail Form">
+                <sheet>
+                    <!--<div class="oe_button_box" name="button_box">-->
+                        <!--<button name="toggle_active" type="object" groups="base.group_user"-->
+                                <!--class="oe_stat_button" icon="fa-archive">-->
+                            <!--<field name="active" widget="boolean_button"-->
+                                   <!--options='{"terminology": "archive"}'/>-->
+                        <!--</button>-->
+                    <!--</div>-->
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" groups="base.group_user"
+                                class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button"
+                                   options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h3>
+                            <field name="name"/>
+                        </h3>
+                    </div>
+                    <group>
+                        <field name="type_id"/>
+                        <field name="agent_id"/>
+                        <field name="customer_id"/>
+                        <field name="company_id"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="social_media_detail_tree_view" model="ir.ui.view">
+        <field name="name">social.media.detail.tree.view</field>
+        <field name="model">social.media.detail</field>
+        <field name="arch" type="xml">
+            <tree string="Social Media Detail Tree">
+                <field name="name"/>
+                <field name="type_id"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="social_media_detail_action_view" model="ir.actions.act_window">
+        <field name="name">Social Media Detail</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">social.media.detail</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_base.social_media_detail_form_view',
+            'tree_view_ref': 'tt_base.social_media_detail_tree_view'
+            }
+        </field>
+    </record>
+
+    <menuitem id="sub_menu_item_tour_travel_social_media_detail"
+              parent="tt_base.menu_tour_travel_configuration_social_media"
+              groups="base.group_user"
+              name="Social Media Detail"
+              sequence="2"
+              action="social_media_detail_action_view"/>
 </odoo>

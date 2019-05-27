@@ -115,7 +115,7 @@
     </record>
 
     <menuitem id="menu_rodex_billing_billing_statement"
-              parent="tt_agent_sales.top_billing"
+              parent="tt_payment.top_billing"
               name="Billing"
               sequence="2"/>
     <menuitem id="sub_menu_rodex_billing_billing_statement"

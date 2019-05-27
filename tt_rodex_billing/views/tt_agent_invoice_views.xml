@@ -16,9 +16,9 @@
 <!--            </field>-->
             <xpath expr="//button[@name='create_ledger']" position="after">
                 <button name= "create_billing_statement" string='Create Billing Statement' type="object" states="confirm"
-                        class="oe_stat_button" icon="fa-bookmark-o"/>
+                        class="oe_stat_button" icon="fa-bookmark-o" groups="base.group_user"/>
                 <button name= "create_billing_statement_new" string='Create Billing Statement CRON' type="object"
-                        class="oe_stat_button" icon="fa-bookmark-o"/>
+                        class="oe_stat_button" icon="fa-bookmark-o" groups="base.group_user"/>
             </xpath>
         </field>
     </record>
