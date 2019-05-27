@@ -1,0 +1,216 @@
+<odoo>
+    <record model="ir.ui.view" id="tt_tour_package_quotation_view_form">
+        <field name="name">tt.tour.package.quotation.view.form</field>
+        <field name="model">tt.tour.package.quotation</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,validate"/>
+                    <button string="Set to Draft" class="oe_highlight" name="action_draft" type="object" states="cancel"/>
+                    <button string="Confirm" class="oe_highlight" name="action_confirm" type="object" states="draft"/>
+                    <button string="Validate" class="oe_highlight" name="action_validate" type="object" states="confirm"/>
+                    <button string="Cancel" class="oe_highlight" name="action_cancel" type="object"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="tour_pricelist_id" default_focus="1" placeholder="Name" readonly="True"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="pax_type"/>
+                            <field name="pax_amount"/>
+                            <field name="code"/>
+                            <field name="date"/>
+                            <field name="start_period"/>
+                            <field name="end_period"/>
+                        </group>
+                        <group>
+                            <label for="create_uid" string="Created By"/>
+                            <div>
+                                <field name="create_uid" class="oe_inline" readonly="1"/> -
+                                <field name="create_date" class="oe_inline" readonly="1"/>
+                            </div>
+                            <label for="confirm_uid" string="Confirmed By"/>
+                            <div>
+                                <field name="confirm_uid" class="oe_inline"/> -
+                                <field name="confirm_date" class="oe_inline"/>
+                            </div>
+                            <label for="validate_uid" string="Validated By"/>
+                            <div>
+                                <field name="validate_uid" class="oe_inline"/> -
+                                <field name="validate_date" class="oe_inline"/>
+                            </div>
+                            <label for="canceled_uid" string="Canceled By"/>
+                            <div>
+                                <field name="canceled_uid" class="oe_inline"/> -
+                                <field name="canceled_date" class="oe_inline"/>
+                            </div>
+                        </group>
+                    </group>
+
+                    <group string="Fixed Cost">
+                        <field name="currency_id" invisible="1"/>
+                        <group>
+                            <field name="international_flight" placeholder="Original Price"/>
+                            <field name="international_flight_currency" placeholder="Currency (i.e: USD, JPY)"/>
+                            <field name="international_flight_rate" placeholder="Exchange Rate"/>
+                            <field name="rupiah_international_flight" placeholder="Final Price" invisible="1"/>
+                            <field name="rupiah_international_flight_rel" placeholder="Final Price"/>
+                        </group>
+
+                        <group>
+                            <field name="domestic_flight" placeholder="Original Price"/>
+                            <field name="domestic_flight_currency" placeholder="Currency (i.e: USD, JPY)"/>
+                            <field name="domestic_flight_rate" placeholder="Exchange Rate"/>
+                            <field name="rupiah_domestic_flight" placeholder="Final Price" invisible="1"/>
+                            <field name="rupiah_domestic_flight_rel" placeholder="Final Price"/>
+                        </group>
+
+                        <group>
+                            <field name="train_cost" placeholder="Original Price"/>
+                            <field name="train_currency" placeholder="Currency (i.e: USD, JPY)"/>
+                            <field name="train_rate" placeholder="Exchange Rate"/>
+                            <field name="rupiah_train_cost" placeholder="Final Price" invisible="1"/>
+                            <field name="rupiah_train_cost_rel" placeholder="Final Price"/>
+                        </group>
+
+                        <group>
+                            <field name="land_package" placeholder="Original Price"/>
+                            <field name="land_package_currency" placeholder="Currency (i.e: USD, JPY)"/>
+                            <field name="land_package_rate" placeholder="Exchange Rate"/>
+                            <field name="rupiah_land_package" placeholder="Final Price" invisible="1"/>
+                            <field name="rupiah_land_package_rel" placeholder="Final Price"/>
+                        </group>
+
+                        <group>
+                            <field name="tipping_driver" placeholder="Original Price"/>
+                            <field name="tipping_driver_currency" placeholder="Currency (i.e: USD, JPY)"/>
+                            <field name="tipping_driver_rate" placeholder="Exchange Rate"/>
+                            <!--<field name="tipping_driver_days" placeholder="Days"/>-->
+                            <field name="rupiah_tipping_driver" placeholder="Final Price" invisible="1"/>
+                            <field name="rupiah_tipping_driver_rel" placeholder="Final Price"/>
+                        </group>
+
+                        <group>
+                            <field name="insurance_cost" placeholder="Original Price"/>
+                            <field name="insurance_currency" placeholder="Currency (i.e: USD, JPY)"/>
+                            <field name="insurance_rate" placeholder="Exchange Rate"/>
+                            <field name="rupiah_insurance_cost" placeholder="Final Price" invisible="1"/>
+                            <field name="rupiah_insurance_cost_rel" placeholder="Final Price"/>
+                        </group>
+
+                        <group>
+                            <field name="visa" placeholder="Visa Price"/>
+                        </group>
+                    </group>
+
+                    <group string="Merchandise">
+                        <group>
+                            <field name="passport_wallet"/>
+                            <field name="passport_cover"/>
+                            <field name="luggage_tag"/>
+                            <field name="pen"/>
+                        </group>
+                        <group>
+                            <field name="souvenir"/>
+                            <field name="travel_bag"/>
+                            <field name="snack"/>
+                        </group>
+                    </group>
+
+                    <group string="Variable Cost">
+                        <group>
+                            <field name="tour_leader_fee" placeholder="Original Price"/>
+                            <field name="tour_leader_fee_currency" placeholder="Currency (i.e: USD, JPY)"/>
+                            <field name="tour_leader_fee_rate" placeholder="Exchange Rate"/>
+                            <field name="tour_leader_fee_days" placeholder="Days"/>
+                            <field name="rupiah_tour_leader_fee" placeholder="Final Price" invisible="1"/>
+                            <field name="rupiah_tour_leader_fee_rel" placeholder="Final Price"/>
+                        </group>
+
+                        <group>
+                            <field name="ticket_for_tour_leader" placeholder="Original Price"/>
+                            <field name="ticket_for_tour_leader_currency" placeholder="Currency (i.e: USD, JPY)"/>
+                            <field name="ticket_for_tour_leader_rate" placeholder="Exchange Rate"/>
+                            <field name="ticket_for_tour_leader_days" placeholder="Days"/>
+                            <field name="rupiah_ticket_for_tour_leader" placeholder="Final Price" invisible="1"/>
+                            <field name="rupiah_ticket_for_tour_leader_rel" placeholder="Final Price"/>
+                        </group>
+
+                        <group>
+                            <field name="land_tour_for_tour_leader" placeholder="Land Tour for TL"/>
+                        </group>
+
+                        <group>
+                            <field name="single_supp_for_tour_leader" placeholder="Original Price"/>
+                            <field name="single_supp_for_tour_leader_currency" placeholder="Currency (i.e: USD, JPY)"/>
+                            <field name="single_supp_for_tour_leader_rate" placeholder="Exchange Rate"/>
+                            <field name="rupiah_single_supp_for_tour_leader" placeholder="Final Price" invisible="1"/>
+                            <field name="rupiah_single_supp_for_tour_leader_rel" placeholder="Final Price"/>
+                        </group>
+
+                        <group>
+                            <field name="visa_for_tour_leader" placeholder="Visa for TL Price"/>
+                        </group>
+
+                        <group>
+                            <field name="airport_tax_for_tour_leader" placeholder="Airport Tax for TL"/>
+<!--                            <field name="airport_tax_for_tour_leader_upsell" placeholder="Airport Tax for TL (Upsell)"/>-->
+                        </group>
+
+                        <group>
+                            <field name="expense_for_tour_leader" placeholder="Original Price"/>
+                            <field name="expense_for_tour_leader_currency" placeholder="Currency (i.e: USD, JPY)"/>
+                            <field name="expense_for_tour_leader_rate" placeholder="Exchange Rate"/>
+                            <field name="expense_for_tour_leader_days" placeholder="Days"/>
+                            <field name="rupiah_expense_for_tour_leader" placeholder="Final Price" invisible="1"/>
+                            <field name="rupiah_expense_for_tour_leader_rel" placeholder="Final Price"/>
+                        </group>
+
+                        <group>
+                            <field name="insurance_for_tour_leader_cost" placeholder="Original Price"/>
+                            <field name="insurance_for_tour_leader_currency" placeholder="Currency (i.e: USD, JPY)"/>
+                            <field name="insurance_for_tour_leader_rate" placeholder="Exchange Rate"/>
+                            <field name="rupiah_insurance_for_tour_leader_cost" placeholder="Final Price" invisible="1"/>
+                            <field name="rupiah_insurance_for_tour_leader_cost_rel" placeholder="Final Price"/>
+                        </group>
+
+                        <group>
+                            <field name="travel_allowance" placeholder="Travel Allowance"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tt_tour_package_quotation_view_tree" >
+        <field name="name">tt.tour.package.quotation.view.tree</field>
+        <field name="model">tt.tour.package.quotation</field>
+        <field name="arch" type="xml">
+            <tree>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tt_tour_quotation_porter_view_tree" >
+        <field name="name">tt.tour.quotation.porter.view.tree</field>
+        <field name="model">tt.tour.quotation.porter</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tt_tour_quotation_extra_view_tree" >
+        <field name="name">tt.tour.quotation.extra.view.tree</field>
+        <field name="model">tt.tour.quotation.extra</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+            </tree>
+        </field>
+    </record>
+
+</odoo>

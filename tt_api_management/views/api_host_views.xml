@@ -1,0 +1,71 @@
+<odoo>
+    <record id="api_credential_host_view_form_inherit" model="ir.ui.view">
+        <field name="name">api.credential.host.view.form.inherit</field>
+        <field name="model">tt.api.credential</field>
+        <field name="inherit_id" ref="tt_api_management.api_credential_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group" position="after">
+                <separator string="Hosts"/>
+                <field name="host_ids"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="api_host_view_form" model="ir.ui.view">
+        <field name="name">api.host.view.form</field>
+        <field name="model">tt.api.host</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <group>
+                        <group string="General">
+                            <field name="ip"/>
+                        </group>
+                        <group string="Additional Information">
+                            <field name="credential_id" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="api_host_view_tree" model="ir.ui.view">
+        <field name="name">api.host.view.tree</field>
+        <field name="model">tt.api.host</field>
+        <field name="arch" type="xml">
+            <tree decoration-muted="active == False">
+                <field name="ip"/>
+                <field name="active"/>
+                <field name="credential_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="api_host_view_search" model="ir.ui.view">
+        <field name="name">api.host.view.search</field>
+        <field name="model">tt.api.host</field>
+        <field name="arch" type="xml">
+        <search>
+            <field name="ip"/>
+            <filter name="inactive" string="Archived" domain="[('active','=',False)]"/>
+        </search>
+        </field>
+    </record>
+
+    <record id="api_host_action" model="ir.actions.act_window">
+        <field name="name">API Host</field>
+        <field name="res_model">tt.api.host</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">['|',('active', '=', 1),('active', '=', 0)]</field>
+    </record>
+
+    <menuitem id="api_host_menu" parent="tt_api_management.menu_tt_gateway"
+              name="API Host" action="api_host_action" sequence="12"/>
+</odoo>

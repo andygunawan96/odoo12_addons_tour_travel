@@ -1,0 +1,20 @@
+<odoo>
+    <menuitem id="menu_tour_main" name="Tour" parent="tt_reservation.main_reservations" sequence="2"/>
+    <menuitem id="menu_tour_booking" parent="tt_tour.menu_tour_main" name="Order" sequence="30"/>
+<!--    groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator,tt_base.group_tt_sub_agent_user_operator"-->
+
+    <!--Top Menu Tour & Travel Tour-->
+    <menuitem id="top_tour_travel_tour"
+              parent="tt_base.main_tour_travel"
+              action="tt_tour.tt_tour_pricelist_view_action"
+              name="Tour"
+              sequence="2"
+              groups="base.group_user"/>
+
+        <!--Menu Tour-->
+        <menuitem id="menu_tour_travel_tour_master"
+                  name="Master"
+                  parent="top_tour_travel_tour"
+                  sequence="1"/>
+
+</odoo>

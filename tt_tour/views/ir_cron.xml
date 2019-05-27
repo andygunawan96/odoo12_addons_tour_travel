@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="0">
+    <record model="ir.cron" id="cron_tour_payment_job">
+        <field name='name'>Active Tour Payment</field>
+        <field name='interval_number'>1</field>
+        <field name='interval_type'>days</field>
+        <field name="numbercall">-1</field>
+        <field name="active">True</field>
+        <field name="model_id" ref="model_tt_installment_invoice"/>
+        <field name="function">cron_tour_payment</field>
+        <field name="args">()</field>
+    </record>
+
+    <record model="ir.cron" id="cron_set_status_tour_job">
+        <field name='name'>Active Tour Update State</field>
+        <field name='interval_number'>1</field>
+        <field name='interval_type'>days</field>
+        <field name="numbercall">-1</field>
+        <field name="active">True</field>
+        <field name="model_id" ref="model_tt_tour_pricelist"/>
+        <field name="function">cron_set_status_tour</field>
+        <field name="args">()</field>
+    </record>
+
+    <record model="ir.cron" id="cron_tour_set_expired_job">
+        <field name='name'>Active Tour Booking Expired</field>
+        <field name='interval_number'>1</field>
+        <field name='interval_type'>days</field>
+        <field name="numbercall">-1</field>
+        <field name="active">True</field>
+        <field name="model_id" ref="model_tt_tour_booking"/>
+        <field name="function">cron_tour_set_expired</field>
+        <field name="args">()</field>
+    </record>
+
+    <record model="ir.cron" id="cron_send_survey_job">
+        <field name='name'>Active Tour Send Survey</field>
+        <field name='interval_number'>1</field>
+        <field name='interval_type'>days</field>
+        <field name="numbercall">-1</field>
+        <field name="active">True</field>
+        <field name="model_id" ref="model_tt_tour_pricelist"/>
+        <field name="function">cron_send_survey</field>
+        <field name="args">()</field>
+    </record>
+</odoo>

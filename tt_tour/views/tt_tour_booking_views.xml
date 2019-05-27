@@ -1,0 +1,792 @@
+<odoo>
+    <template id="printout_tour_confirmation_views">
+        <t t-call="report.html_container">
+            <div class="page" style="font-family: 'Arial', sans-serif; font-size: 12px;">
+                <div class="oe_structure"/>
+                <div class="row mb16">
+                    <div class="header">
+                        <div class="row">
+                            <div class="col-xs-2">
+                                <img t-if="p.tour_booking_id.agent_id.image" t-att-src="'data:image/png;base64,%s' % p.tour_booking_id.agent_id.image" style="max-height: 85px;"/>
+                            </div>
+                            <div class="col-xs-10">
+                                <ul class="list-inline" style="margin-bottom:2px; font-size:12px;">
+                                    <li style="vertical-align: bottom;">
+                                        <br/>
+                                        <strong><span t-field="p.tour_booking_id.agent_id.name"/></strong>
+                                        <br/>
+                                        <div>
+                                            <span t-field="p.tour_booking_id.agent_id.street"/>
+                                            <span t-if="p.tour_booking_id.agent_id.street2" t-field="p.tour_booking_id.agent_id.street2"/>
+                                            <t t-if="'city_id' not in p.tour_booking_id.agent_id.fields_get()">
+                                                '
+                                                <span t-field="p.tour_booking_id.agent_id.city"/>
+                                            </t>
+                                            <t t-if="p.tour_booking_id.agent_id.state_id">
+                                                ,
+                                                <span t-field="p.tour_booking_id.agent_id.state_id.name"/>
+                                            </t>
+                                            <t t-if="p.tour_booking_id.agent_id.country_id">
+                                                ,
+                                                <span t-field="p.tour_booking_id.agent_id.country_id.name"/>
+                                            </t>
+                                        </div>
+                                    </li>
+                                </ul>
+                                <div style="font-size:12px;">
+                                    <ul class="list-inline">
+                                        <li t-if="p.tour_booking_id.agent_id.phone">Phone: <span t-field="p.tour_booking_id.agent_id.phone"/></li>
+                                        <li t-if="p.tour_booking_id.agent_id.email and p.tour_booking_id.agent_id.fax or p.tour_booking_id.agent_id.email and p.tour_booking_id.agent_id.phone">&amp;bull;</li>
+                                        <li t-if="p.tour_booking_id.agent_id.email">Email: <span t-field="p.tour_booking_id.agent_id.email"/></li>
+                                        <li t-if="p.tour_booking_id.agent_id.website and p.tour_booking_id.agent_id.email or p.tour_booking_id.agent_id.website and p.tour_booking_id.agent_id.fax or p.tour_booking_id.agent_id.website and p.tour_booking_id.agent_id.phone">&amp;bull;</li>
+                                        <li t-if="p.tour_booking_id.agent_id.website">Website: <span t-field="p.tour_booking_id.agent_id.website"/></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row zero_min_height">
+                            <div class="col-xs-12">
+                                <div style="border-bottom: 1px solid black;"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 text-center" style="padding:0; margin-top: 22px;">
+                        <h4>TOUR CONFIRMATION</h4>
+                    </div>
+                </div>
+                <div class="row mt4">
+                    <div class="col-xs-12">
+                        <div>
+                            <div class="col-xs-3" style="padding: 0px;">
+                                <span>Tour Name</span>
+                            </div>
+                            <div class="col-xs-1" style="padding: 0px;">
+                                :
+                            </div>
+                            <t t-if="p.tour_booking_id.tour_id.name">
+                                <div class="col-xs-8" style="padding: 0px;">
+                                    <span t-field="p.tour_booking_id.tour_id.name"/>
+                                </div>
+                            </t>
+                            <t t-if="not p.tour_booking_id.tour_id.name">
+                                <div class="col-xs-8" style="padding: 0px;">
+                                    <span style="color: white;">-</span>
+                                </div>
+                            </t>
+                        </div>
+                        <div>
+                            <div class="col-xs-3" style="padding: 0px;">
+                                <span>Tour Code</span>
+                            </div>
+                            <div class="col-xs-1" style="padding: 0px;">
+                                :
+                            </div>
+                            <t t-if="p.tour_booking_id.tour_id.tour_code">
+                                <div class="col-xs-8" style="padding: 0px;">
+                                    <span t-field="p.tour_booking_id.tour_id.tour_code"/>
+                                </div>
+                            </t>
+                            <t t-if="not p.tour_booking_id.tour_id.tour_code">
+                                <div class="col-xs-8" style="padding: 0px;">
+                                    <span style="color: white;">-</span>
+                                </div>
+                            </t>
+                        </div>
+                        <div>
+                            <div class="col-xs-3" style="padding: 0px;">
+                                <span>Passenger Name</span>
+                            </div>
+                            <div class="col-xs-1" style="padding: 0px;">
+                                :
+                            </div>
+                            <t t-if="p.passenger_id">
+                                <div class="col-xs-8" style="padding: 0px;">
+                                    <span t-if="p.passenger_id.title" t-field="p.passenger_id.title"/>
+                                    <span/>
+                                    <span t-if="p.passenger_id.first_name" t-field="p.passenger_id.first_name"/>
+                                    <span/>
+                                    <span t-if="p.passenger_id.last_name" t-field="p.passenger_id.last_name"/>
+                                </div>
+                            </t>
+                            <t t-if="not p.passenger_id">
+                                <div class="col-xs-8" style="padding: 0px;">
+                                    <span style="color: white;">-</span>
+                                </div>
+                            </t>
+                        </div>
+                        <div>
+                            <div class="col-xs-3" style="padding: 0px;">
+                                <span>Passenger Contact</span>
+                            </div>
+                            <div class="col-xs-1" style="padding: 0px;">
+                                :
+                            </div>
+                            <t t-if="p.passenger_id.mobile">
+                                <div class="col-xs-8" style="padding: 0px;">
+                                    <span t-field="p.passenger_id.mobile"/>
+                                </div>
+                            </t>
+                            <t t-if="not p.passenger_id.mobile">
+                                <div class="col-xs-8" style="padding: 0px;">
+                                    <span style="color: white;">-</span>
+                                </div>
+                            </t>
+                        </div>
+                        <div>
+                            <div class="col-xs-3" style="padding: 0px;">
+                                <span>Period</span>
+                            </div>
+                            <div class="col-xs-1" style="padding: 0px;">
+                                :
+                            </div>
+                            <t t-if="p.tour_booking_id.tour_id.departure_date">
+                                <div class="col-xs-8" style="padding: 0px;">
+                                    <span t-field="p.tour_booking_id.tour_id.departure_date"/>
+                                    <span> - </span>
+                                    <span t-field="p.tour_booking_id.tour_id.arrival_date"/>
+                                </div>
+                            </t>
+                            <t t-if="p.tour_booking_id.tour_id.start_period">
+                                <div class="col-xs-8" style="padding: 0px;">
+                                    <span t-field="p.tour_booking_id.tour_id.start_period"/>
+                                    <span> - </span>
+                                    <span t-field="p.tour_booking_id.tour_id.end_period"/>
+                                </div>
+                            </t>
+                        </div>
+                        <div>
+                            <div class="col-xs-3" style="padding: 0px;">
+                                <span>Guide/Driver Contact</span>
+                            </div>
+                            <div class="col-xs-1" style="padding: 0px;">
+                                :
+                            </div>
+                            <t t-if="p.tour_booking_id.tour_id.tour_leader_ids">
+                                <div class="col-xs-8" style="padding: 0px;">
+                                    <span t-field="p.tour_booking_id.tour_id.tour_leader_ids.name"/>
+                                    <t t-if="p.tour_booking_id.tour_id.tour_leader_ids.mobile">
+                                        <span> (CP : </span>
+                                        <span t-field="p.tour_booking_id.tour_id.tour_leader_ids.mobile"/>
+                                        <span>)</span>
+                                    </t>
+                                </div>
+                            </t>
+                            <t t-if="not p.tour_booking_id.tour_id.tour_leader_ids">
+                                <div class="col-xs-8" style="padding: 0px;">
+                                    <span style="color: white;">-</span>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="font-family: 'Arial', sans-serif; font-size: 12px; margin: 10px 0px 0px 5px;">
+                    <t t-if="p.tour_booking_id.tour_id.itinerary">
+                        <strong>Itinerary:</strong>
+                        <div class="col-xs-12" style="padding: 10px;">
+                            <span t-field="p.tour_booking_id.tour_id.itinerary"/>
+                        </div>
+                    </t>
+                </div>
+                <div class="row" style="font-family: 'Arial', sans-serif; font-size: 13px; margin: 10px 0px 0px 5px;">
+                    <t t-if="p.tour_booking_id.tour_id.requirements">
+                        <strong>Terms &amp; Conditions:</strong>
+                        <div class="col-xs-12" style="padding: 10px;">
+                            <span t-field="p.tour_booking_id.tour_id.requirements"/>
+                        </div>
+                    </t>
+                </div>
+                <div class="row mt16" style="font-family: 'Arial', sans-serif; font-size: 13px; margin-left: 5px;">
+                    <p>With this statement, I have given my documents correspond to my true ID's for tour requirements and agree with terms and conditions stated above.</p>
+                </div>
+                <div class="row mt16" style="font-family: 'Arial', sans-serif; font-size: 13px; margin-left: 5px;">
+                    <div class="col-xs-6 text-center">
+                        <span><strong>Applicant</strong></span>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
+                        (<span t-field="p.passenger_id.first_name"/>
+                        <span/>
+                        <span t-field="p.passenger_id.last_name"/>)
+                    </div>
+                    <div class="col-xs-6 text-center">
+                        <span><strong>Recipient</strong></span>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <t t-if="docs.confirm_uid.name">
+                            (<span t-field="docs.confirm_uid.name"/>)
+                        </t>
+                        <t t-if="not docs.confirm_uid.name">
+                            (<span style="color: white;">_____________</span>)
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="printout_tour_confirmation_template">
+        <t t-set="data_report_margin_top" t-value="5"/>
+        <t t-set="data_report_header_spacing" t-value="9"/>
+        <t t-set="data_report_dpi" t-value="110"/>
+        <t t-foreach="docs.line_ids" t-as="p">
+            <t t-call="tt_tour.printout_tour_confirmation_views"/>
+        </t>
+    </template>
+
+    <record id="tt_tour_booking_view_filter" model="ir.ui.view">
+        <field name="name">tt.tour.booking.view.filter</field>
+        <field name="model">tt.tour.booking</field>
+        <field name="arch" type="xml">
+            <search string="Search Tour Booking">
+                <field name="name"/>
+                <field name="tour_id"/>
+                <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                <field name="sub_agent_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                <field name="contact_id"/>
+                <newline/>
+                <group>
+                    <filter string="All" name="all"/>
+                    <filter string="Booked" name="booked" domain="[('state','=','booked')]"/>
+                    <filter string="Issued" name="issued" domain="[('state','=','issued')]"/>
+                    <filter string="Confirmed" name="confirmed" domain="['|', ('state','=','confirm'), ('state','=','confirmed')]"/>
+                    <filter string="In Process" name="process" domain="[('state','=','process')]"/>
+                    <filter string="Done" name="done" domain="[('state','=','done')]"/>
+                    <filter string="Canceled/Expired/Rejected" name="cancel_expired_rejected" domain="['|', '|', ('state','=','cancel'), ('state','=','cancel2'), ('state','=','rejected')]"/>
+                </group>
+                <separator/>
+                <filter name="today" string="Today" domain="[('booked_date','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>
+                <filter name="yesterday" string="Yesterday"
+                        domain="[
+                                ('booked_date', '&lt;', (context_today()).strftime('%Y-%m-%d')),
+                                ('booked_date', '&gt;=', (context_today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d'))
+                        ]"/>
+                <filter name="week" string="This Week"
+                        domain="[
+                                '&amp;',
+                                ('booked_date', '>=', (context_today() + relativedelta(weeks=-1,days=1,weekday=0)).strftime('%Y-%m-%d')),
+                                ('booked_date', '&lt;=', (context_today() + relativedelta(weekday=6)).strftime('%Y-%m-%d')),
+                            ]"/>
+                <filter string="This Month" name="thismonth" domain="[('booked_date','&gt;=',time.strftime('%%Y-%%m-01'))]"/>
+                <filter string="This Year" name="thisyear" domain="[('booked_date','&gt;=',time.strftime('%%Y-01-01'))]"/>
+                <separator/>
+
+                <group expand="0" string="Group By">
+                    <filter string="Agent" name="agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <filter string="Agent Type" name="agent_type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <filter string="Sub Agent" name="sub_agent" domain="[]" context="{'group_by':'sub_agent_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                    <filter string="Sub Agent Type" name="sub_agent_type" domain="[]" context="{'group_by':'sub_agent_type_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                    <filter string="State" name="state" domain="[]" context="{'group_by':'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tt_tour_booking_view_tree" >
+        <field name="name">tt.tour.booking.view.tree</field>
+        <field name="model">tt.tour.booking</field>
+        <field name="arch" type="xml">
+            <tree create="false">
+                <field name="name"/>
+                <field name="tour_id"/>
+                <field name="departure_date"/>
+                <field name="arrival_date"/>
+                <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                <field name="agent_type_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                <field name="sub_agent_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                <field name="sub_agent_type_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                <field name="contact_id"/>
+                <field name="booked_uid"/>
+                <field name="booked_date"/>
+                <field name="issued_uid"/>
+                <field name="issued_date"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tt_tour_booking_view_form">
+        <field name="name">tt.tour.booking.view.form</field>
+        <field name="model">tt.tour.booking</field>
+        <field name="arch" type="xml">
+            <form create="false">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="booked,issued,confirm,process,done"/>
+                    <!--<button string="Compute" name="calc_next_installment_date" type="object" groups="base.group_no_one"/>-->
+                    <!--<button string="Force Issued" name="issued_booking" type="object" attrs="{'invisible': [('state', '!=', 'booked')]}" groups="tt_base.group_tt_tour_travel_supervisor"/>-->
+                    <!--<button string="Cancel" name="action_cancelled" type="object" attrs="{'invisible': [('state', '!=', 'issued')]}" groups="tt_base.group_tt_agent_user_operator"/>-->
+                    <!--<button string="Done" name="action_done" type="object" attrs="{'invisible': [('state', '!=', 'process')]}" groups="tt_base.group_tt_agent_user_operator"/>-->
+                    <button string="Set To Issued" name="action_issued" type="object" attrs="{'invisible': [('state', 'not in', ['confirm', 'process'])]}" groups="tt_base.group_tt_tour_travel_supervisor"/>
+                    <button string="Re-Issued" name="action_reissued" type="object" attrs="{'invisible': [('state', 'not in', ['rejected', 'cancelled', 'expired'])]}" groups="tt_base.group_tt_tour_travel_supervisor"/>
+                    <button string="Confirm To HO" name="action_confirm_to_ho" type="object" attrs="{'invisible': [('state', '!=', 'issued')]}" groups="tt_base.group_tt_agent_user_operator"/>
+                    <button string="Confirm" name="action_confirmed" type="object" attrs="{'invisible': [('state', '!=', 'confirm')]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <button string="Process" name="action_process" type="object" attrs="{'invisible': [('state', '!=', 'confirmed')]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <button string="Cancel Booking" name="action_cancelled" type="object" attrs="{'invisible': [('state', '!=', 'booked')]}" groups="tt_base.group_tt_agent_user_operator"/>
+                    <button string="Reject" name="action_rejected" type="object" attrs="{'invisible': [('state', '!=', 'confirm')]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box">
+                        <button name="do_print_out_tour_confirmation"
+                                string="Tour Confirmation"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-print"
+                                attrs="{'invisible': [('state', '!=', 'done')]}"/>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="tour_id" string="Tour Package Name" readonly="1"/>
+                            <field name="agent_id" readonly="1" domain="[('is_agent', '=', True)]" groups="tt_base.group_tt_tour_travel_operator"/>
+                            <field name="sub_agent_id" readonly="1" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                            <field name="contact_id" readonly="1"/>
+                            <field name="display_mobile"/>
+                            <field name="user_id" readonly="1"/>
+                            <field name="departure_date" readonly="1"/>
+                            <field name="arrival_date" readonly="1"/>
+                            <field name="next_installment_date"/>
+                        </group>
+                        <group>
+                            <label for="booked_date" string="Booked By"/>
+                            <div>
+                                <field name="booked_date" class="oe_inline"/> /
+                                <field name="booked_uid" class="oe_inline"/>
+                            </div>
+                            <field name="hold_date" readonly="1"/>
+                            <label for="issued_date" string="Issued By"/>
+                            <div>
+                                <field name="issued_date" class="oe_inline"/> /
+                                <field name="issued_uid" class="oe_inline"/>
+                            </div>
+                            <label for="confirm_date" string="Confirm By"/>
+                            <div>
+                                <field name="confirm_date" class="oe_inline"/> /
+                                <field name="confirm_uid" class="oe_inline"/>
+                            </div>
+                            <label for="confirmed_date" string="Confirmed By"/>
+                            <div>
+                                <field name="confirmed_date" class="oe_inline"/> /
+                                <field name="confirmed_uid" class="oe_inline"/>
+                            </div>
+                            <label for="process_date" string="Process By"/>
+                            <div>
+                                <field name="process_date" class="oe_inline"/> /
+                                <field name="process_uid" class="oe_inline"/>
+                            </div>
+                            <label for="cancelled_date" string="Cancelled By" attrs="{'invisible': [('cancelled_date', '=', False)]}"/>
+                            <div attrs="{'invisible': [('cancelled_date', '=', False)]}">
+                                <field name="cancelled_date" class="oe_inline"/> /
+                                <field name="cancelled_uid" class="oe_inline"/>
+                            </div>
+                            <label for="rejected_date" string="Rejected By" attrs="{'invisible': [('rejected_date', '=', False)]}"/>
+                            <div attrs="{'invisible': [('rejected_date', '=', False)]}">
+                                <field name="rejected_date" class="oe_inline"/> /
+                                <field name="rejected_uid" class="oe_inline"/>
+                            </div>
+                            <field name="expired_date"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Participants">
+                            <field name="line_ids" readonly="1">
+                                <tree>
+                                    <field name="passenger_id"/>
+                                    <field name="pax_type"/>
+                                    <field name="pax_mobile"/>
+                                    <field name="room_number"/>
+                                    <field name="room_id"/>
+                                    <field name="extra_bed_description"/>
+                                    <field name="bed_type"/>
+                                    <field name="description"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Prices" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator">
+                            <!--<field name="sale_service_charge_ids" readonly="1">-->
+                                <!--<tree>-->
+                                    <!--<field name="charge_code"/>-->
+                                    <!--<field name="pax_type"/>-->
+                                    <!--<field name="pax_count"/>-->
+                                    <!--<field name="amount"/>-->
+                                    <!--<field name="total"/>-->
+                                    <!--<field name="currency_id" invisible="1"/>-->
+                                    <!--<field name="description"/>-->
+                                <!--</tree>-->
+                            <!--</field>-->
+                        </page>
+                        <page string="Invoices" name="invoices">
+                            <field name="installment_ids" readonly="1">
+                                <tree>
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="amount"/>
+                                    <field name="due_date"/>
+                                    <field name="state_invoice"/>
+                                    <field name="ledger_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                                    <field name="agent_invoice_id"/>
+                                </tree>
+                                <form>
+                                    <button name="action_tour_pay_now"
+                                            string="Pay Now"
+                                            type="object"
+                                            class="oe_stat_button"
+                                            attrs="{'invisible': ['|',('state_invoice', '=', 'done'),('tour_transaction_state', '!=', 'process')]}"
+                                            groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator"/>
+                                    <button name="action_sync_commission"
+                                            string="Sync Commission"
+                                            type="object"
+                                            class="oe_stat_button"
+                                            attrs="{'invisible': [('state_invoice', '!=', 'done')]}"
+                                            groups="base.group_no_one"/>
+                                    <button name="action_tour_print_invoice"
+                                            string="Print Invoice"
+                                            type="object"
+                                            class="oe_stat_button"
+                                            attrs="{'invisible': [('state_invoice', '!=', 'done')]}"
+                                            groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator"/>
+                                    <group>
+                                        <group>
+                                            <field name="agent_invoice_id"/>
+                                            <field name="description"/>
+                                            <field name="currency_id" invisible="1"/>
+                                            <field name="amount"/>
+                                            <field name="due_date"/>
+                                            <field name="state_invoice"/>
+                                        </group>
+                                        <group>
+                                            <field name="tour_transaction_id"/>
+                                            <field name="ledger_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                                            <field name="tour_transaction_state"/>
+                                            <field name="cancel_ledger_id" attrs="{'invisible': [('tour_transaction_state', '!=', 'rejected')]}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                                        </group>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                        <!--<page string="Ledgers" name="ledgers">-->
+                            <!--<field name="ledger_ids" readonly="1"/>-->
+                        <!--</page>-->
+                    </notebook>
+
+                    <group>
+                        <group string="Total Information" class="oe_subtotal_footer oe_right" attrs="{'invisible': [('grand_total', '=', 0)]}">
+                            <field name="total_fare" class="oe_subtotal_footer_separator" attrs="{'invisible': [('total_fare', '=', 0)]}"/>
+                            <field name="total_disc" class="oe_subtotal_footer_separator" attrs="{'invisible': [('total_disc', '=', 0)]}"/>
+                            <field name="total_tax" class="oe_subtotal_footer_separator" attrs="{'invisible': [('total_tax', '=', 0)]}"/>
+                            <field name="grand_total" class="oe_subtotal_footer_separator" attrs="{'invisible': [('grand_total', '=', 0)]}"/>
+                            <field name="total_commission" class="oe_subtotal_footer_separator" attrs="{'invisible': [('total_commission', '=', 0)]}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator"/>
+                            <field name="nta_amount" class="oe_subtotal_footer_separator" attrs="{'invisible': [('nta_amount', '=', 0)]}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_tour_booking_view_action_all">
+        <field name="name">Tour Booking</field>
+        <field name="res_model">tt.tour.booking</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_tour.tt_tour_booking_view_form',
+            'tree_view_ref': 'tt_tour.tt_tour_booking_view_tree',
+            }
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_tour_booking_view_action_booked">
+        <field name="name">Tour Booking</field>
+        <field name="res_model">tt.tour.booking</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_tour.tt_tour_booking_view_form',
+            'tree_view_ref': 'tt_tour.tt_tour_booking_view_tree',
+            'search_default_booked': 1
+            }
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_tour_booking_view_action_issued">
+        <field name="name">Tour Booking</field>
+        <field name="res_model">tt.tour.booking</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_tour.tt_tour_booking_view_form',
+            'tree_view_ref': 'tt_tour.tt_tour_booking_view_tree',
+            'search_default_issued': 1
+            }
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_tour_booking_view_action_confirmed">
+        <field name="name">Tour Booking</field>
+        <field name="res_model">tt.tour.booking</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_tour.tt_tour_booking_view_form',
+            'tree_view_ref': 'tt_tour.tt_tour_booking_view_tree',
+            'search_default_confirmed': 1
+            }
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_tour_booking_view_action_process">
+        <field name="name">Tour Booking</field>
+        <field name="res_model">tt.tour.booking</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_tour.tt_tour_booking_view_form',
+            'tree_view_ref': 'tt_tour.tt_tour_booking_view_tree',
+            'search_default_process': 1
+            }
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_tour_booking_view_action_done">
+        <field name="name">Tour Booking</field>
+        <field name="res_model">tt.tour.booking</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_tour.tt_tour_booking_view_form',
+            'tree_view_ref': 'tt_tour.tt_tour_booking_view_tree',
+            'search_default_done': 1
+            }
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_tour_booking_view_action_cancel_expired_rejected">
+        <field name="name">Tour Booking</field>
+        <field name="res_model">tt.tour.booking</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_tour.tt_tour_booking_view_form',
+            'tree_view_ref': 'tt_tour.tt_tour_booking_view_tree',
+            'search_default_cancel_expired_rejected': 1
+            }
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_tour_payment_reminder_action">
+        <field name="name">Tour Payment Reminder</field>
+        <field name="res_model">tt.tour.booking</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('next_installment_date','&lt;',(context_today() + datetime.timedelta(days=4)).strftime('%Y-%m-%d')), ('next_installment_date','&gt;',context_today().strftime('%Y-%m-%d')), ('next_installment_date', '!=', False)]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_tour.tt_tour_booking_view_form',
+            'tree_view_ref': 'tt_tour.tt_tour_booking_view_tree',
+            }
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_tour_payment_trouble_action">
+        <field name="name">Tour Payment Trouble</field>
+        <field name="res_model">tt.tour.booking</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('is_trouble','=',True)]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_tour.tt_tour_booking_view_form',
+            'tree_view_ref': 'tt_tour.tt_tour_booking_view_tree',
+            }
+        </field>
+    </record>
+
+    <menuitem id="submenu_tour_booking_all" parent="tt_tour.menu_tour_booking" sequence="1"
+              name="ALL" action="tt_tour.tt_tour_booking_view_action_all"/>
+    <menuitem id="submenu_tour_booking_booked" parent="tt_tour.menu_tour_booking" sequence="2"
+              name="Booked" action="tt_tour.tt_tour_booking_view_action_booked"/>
+    <menuitem id="submenu_tour_booking_issued" parent="tt_tour.menu_tour_booking" sequence="3"
+              name="Issued" action="tt_tour.tt_tour_booking_view_action_issued"/>
+    <menuitem id="submenu_tour_booking_confirmed" parent="tt_tour.menu_tour_booking" sequence="4"
+              name="Confirmed" action="tt_tour.tt_tour_booking_view_action_confirmed"/>
+    <menuitem id="submenu_tour_booking_process" parent="tt_tour.menu_tour_booking" sequence="5"
+              name="In Process" action="tt_tour.tt_tour_booking_view_action_process"/>
+    <menuitem id="submenu_tour_booking_done" parent="tt_tour.menu_tour_booking" sequence="6"
+              name="Done" action="tt_tour.tt_tour_booking_view_action_done"/>
+    <menuitem id="submenu_tour_booking_cancel_expired_rejected" parent="tt_tour.menu_tour_booking" sequence="7"
+              name="Canceled/Expired/Rejected" action="tt_tour.tt_tour_booking_view_action_cancel_expired_rejected"/>
+
+    <menuitem id="submenu_tour_payment_reminder" parent="tt_tour.menu_tour_payment"
+              name="Payment Reminder" action="tt_tour.tt_tour_payment_reminder_action"/>
+
+    <menuitem id="submenu_tour_payment_trouble" parent="tt_tour.menu_tour_payment"
+              name="Payment Trouble" action="tt_tour.tt_tour_payment_trouble_action"/>
+
+    <!--<record model="ir.ui.view" id="tt_agent_invoice_form_inh">-->
+        <!--<field name="name">tt_agent_invoice_form_inh</field>-->
+        <!--<field name="model">tt.agent.invoice</field>-->
+        <!--&lt;!&ndash;<field name="inherit_id" ref="tt_agent_sales.tt_agent_invoice_form"/>&ndash;&gt;-->
+        <!--<field name="arch" type="xml">-->
+            <!--&lt;!&ndash;<field name="sub_agent_id" position="after">&ndash;&gt;-->
+                <!--&lt;!&ndash;<field name="tour_transaction_id" attrs="{'invisible': [('tour_transaction_id', '=', False)]}"&ndash;&gt;-->
+                <!--&lt;!&ndash;readonly="1"/>&ndash;&gt;-->
+            <!--&lt;!&ndash;</field>&ndash;&gt;-->
+        <!--</field>-->
+    <!--</record>-->
+
+    <template id="printout_invoice_template">
+        <t t-call="report.html_container">
+            <t t-call="tt_report_common.external_layout">
+                <!--<t t-set="o" t-value="doc.with_context({'lang':doc.tour_transaction_id.agent_id.lang})"/>-->
+                <div class="page">
+                    <div class="row">
+                        <div class="col-xs-7">
+                            <h4>
+                                <strong>
+                                    <span t-if="doc.tour_transaction_state == 'booked'">Draft Invoice :</span>
+                                    <span t-if="doc.tour_transaction_state not in ('booked', 'cancelled')">Invoice :</span>
+                                    <span t-field="doc.tour_transaction_id.name"/>
+                                </strong>
+                          </h4>
+                        </div>
+                        <div name="invoice_address" class="col-xs-5">
+                            <address t-field="doc.tour_transaction_id.sub_agent_id" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;], &quot;no_marker&quot;: True}"/>
+                            <span t-if="doc.tour_transaction_id.sub_agent_id.vat">TIN: <span t-field="doc.tour_transaction_id.sub_agent_id.vat"/></span>
+                        </div>
+                    </div>
+                    <div class="row mb2">
+                        <div class="col-xs-2">
+                           <strong>Invoice Date:</strong>
+                           <t t-if="doc.due_date">
+                               <p t-field="doc.due_date" t-field-options="{&quot;format&quot;: &quot;dd-MM-yyyy&quot;}"/>
+                           </t>
+                           <t t-if="not doc.due_date">
+                               <p style="color: white;">...</p>
+                           </t>
+                        </div>
+                        <div class="col-xs-2">
+                           <strong>Issued Date:</strong>
+                           <t t-if="doc.tour_transaction_id.issued_date">
+                               <p t-field="doc.tour_transaction_id.issued_date" t-field-options="{&quot;format&quot;: &quot;dd-MM-yyyy&quot;}"/>
+                           </t>
+                           <t t-if="not doc.tour_transaction_id.issued_date">
+                               <p style="color: white;">...</p>
+                           </t>
+                        </div>
+                        <div class="col-xs-2">
+                           <strong>Issued by:</strong>
+                           <t t-if="doc.tour_transaction_id.issued_uid.name">
+                               <p t-field="doc.tour_transaction_id.issued_uid.name"/>
+                           </t>
+                           <t t-if="not doc.tour_transaction_id.issued_uid.name">
+                               <p style="color: white;">...</p>
+                           </t>
+                        </div>
+                        <div class="col-xs-2">
+                           <strong>Customer:</strong>
+                           <t t-if="doc.tour_transaction_id.sub_agent_id.name">
+                               <p t-field="doc.tour_transaction_id.sub_agent_id.name"/>
+                           </t>
+                           <t t-if="not doc.tour_transaction_id.sub_agent_id.name">
+                               <p style="color: white;">...</p>
+                           </t>
+                        </div>
+                        <div class="col-xs-2">
+                           <strong>Booker:</strong>
+                           <t t-if="doc.tour_transaction_id.contact_id">
+                               <p>
+                                   <span t-field="doc.tour_transaction_id.contact_id.first_name"/>
+                                   <span/>
+                                   <span t-field="doc.tour_transaction_id.contact_id.last_name"/>
+                               </p>
+                           </t>
+                           <t t-if="not doc.tour_transaction_id.contact_id">
+                               <p style="color: white;">...</p>
+                           </t>
+                        </div>
+                    </div>
+
+                    <table class="edaptec-table table table-condensed">
+                        <thead>
+                            <tr>
+                                <th>Service Type</th>
+                                <th>Service Description</th>
+                                <th class="text-right">Unit Price</th>
+                                <th class="text-right">Qty</th>
+                                <th class="text-right">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody class="invoice_tbody">
+                            <tr>
+                                <td>
+                                    Tours
+                                </td>
+                                <td>
+                                    <span t-field="doc.description"/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-field="doc.amount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                                </td>
+                                <td class="text-right"><span>1</span></td>
+                                <td class="text-right">
+                                    <span t-field="doc.amount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="row">
+                        <div class="col-xs-4 pull-right">
+                            <table class="edaptec-table table table-condensed">
+                                <tr class="border-black">
+                                    <td><strong>Total Fare</strong></td>
+                                    <td class="text-right">
+                                        <span t-field="doc.amount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                                    </td>
+                                </tr>
+                                <tr class="border-black">
+                                    <td><strong>Total Tax</strong></td>
+                                    <td class="text-right">
+                                        0
+                                    </td>
+                                </tr>
+                                <tr class="border-black">
+                                    <td><strong>Total</strong></td>
+                                    <td class="text-right">
+                                         <span t-field="doc.amount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <t t-call="tt_transport_printout.rodex_invoice_signature_part2_document"/>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <template id="printout_tour_invoice_template">
+        <t t-call="tt_tour.printout_invoice_template"/>
+    </template>
+</odoo>

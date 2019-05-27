@@ -1,154 +1,36 @@
-import gzip, json
-import urllib.request as urllib2
-import urllib
-import logging
-import logging.handlers
-import sys
-import http.cookiejar as cookielib
+import base64
 
-# from _compat import StringIO
 
-import os
-from datetime import datetime
-
-URLOPEN_TIMEOUT = 30
-
-def send_request(url, post=None, headers=None, binary=False,
-                 cookie=False, referer=False, nobody=0, timeout=URLOPEN_TIMEOUT):
-    """
-    :param url:
-    :param post: if dict, post wil be convert to urlencode, so the url will be url + '?' + urlencode(post)
-    :param headers:
-    :param binary:
-    :param cookie:
-    :param referer:
-    :param nobody:
-    :return:
-    """
-    ############### Tambahan christo
-    cookie_jar = cookielib.CookieJar()
-    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie_jar))
-    urllib2.install_opener(opener)
-    if cookie:
-        opener = urllib2.build_opener()
-        #key = cookies.keys()[0]
-        #opener.addheaders.append(('Cookie', '{}={}'.format(key, cookies[key])))
-        cookie = ('Cookie', '; '.join('{}={}'.format(key, val) for key, val in cookie.items()))
-        opener.addheaders.append(cookie)
-    urllib2.install_opener(opener)
-
-    ###############
-    if not headers:
-        headers = {
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-            "Cache-Control": "no-cache",
-            "Connection": "keep-alive",
-            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-            "Accept-Charset": "ISO-8859-1,utf-8;q=0.7,*;q=0.7",
-            "Accept-Language": "en-us,en;q=0.5",
-            "Pragma": "no-cache",
-            "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:26.0) Gecko/20100101 Firefox/26.0"
-        }
-
-    # if not headers.get('User-Agent', False):
-    #     headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:26.0) Gecko/20100101 Firefox/26.0'
-
-    req_post = post
-    res = {
-        'http_code': '0',
-        'error_msg': '',
-        'url': url,
-        'response': False,
-        'cookie': False
-    }
-    if type(post) == dict:
-        url = url + '?' + urllib.urlencode(post, True)
-        req_post = None
-
-    try:
-        req = urllib2.Request(url, data=req_post, headers=headers)
-
-        if referer:
-            req.add_header('Referer', referer)
-
-        response = urllib2.urlopen(req, timeout=timeout)
-        status = response.getcode()
-        res['http_code'] = int(status)
-
-        if int(status) in (204, 404):  # Page not found, no response
-            res['error_msg'] = 'Page not found, no response'
-        else:
-            res['http_code'] = 0
-            # Nanang Suryadi
-            res['response'] = response.read()
-            if response.info().get('Content-Encoding') == 'gzip':
-                compressed = res['response']
-                # buf = StringIO(compressed)
-                # f = gzip.GzipFile(fileobj=buf)
-                # res['response'] = f.read()
-            ######################## Tambahan christo
-            res['cookie'] = {}
-            for cookie in cookie_jar:
-                res['cookie'][cookie.name] = cookie.value
-                ########################
-    except Exception as e:
-        res['http_code'] = 500
-        res['error_msg'] = str(e)
-        res['request'] = post
-    res['error_code'] = res['http_code']
+def encode_authorization(_id, _username, _password):
+    credential = '%s:%s:%s' % (_id, _username, _password)
+    res = base64.b64encode(credential.encode())
     return res
 
-def send_request_json(url, post=None, headers=None, binary=False,
-                      cookie=False, referer=False, nobody=0, timeout=URLOPEN_TIMEOUT):
 
-    if not headers:
-        # headers = {
-        #     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        #     "Cache-Control": "no-cache",
-        #     "Connection": "keep-alive",
-        #     "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-        #     "Accept-Charset": "ISO-8859-1,utf-8;q=0.7,*;q=0.7",
-        #     "Accept-Language": "en-us,en;q=0.5",
-        #     "Pragma": "no-cache",
-        # }
-        headers = {
-            "Accept": "application/json,text/html,application/xml",
-            "Content-Type": "application/json",
-        }
-
-    req_post = post
+def decode_authorization(_code):
+    credential = base64.b64decode(_code).decode()
+    cred = credential.split(':')
+    if len(cred) != 3:
+        return ()
     res = {
-        'http_code': '0',
-        'error_msg': '',
-        'url': url,
-        'response': False,
-        'cookie': False
+        'uid': int(cred[0]),
+        'username': cred[1],
+        'password': cred[2],
     }
-
-    try:
-        req = urllib2.Request(url, data=json.dumps(req_post), headers=headers)
-
-        if referer:
-            req.add_header('Referer', referer)
-
-        response = urllib2.urlopen(req, timeout=timeout)
-        # res['info'] = response.info()
-        status = response.getcode()
-        res['http_code'] = int(status)
-        res['cookie'] = response.headers.dict['set-cookie']
+    return res
 
 
-        if res['http_code'] in (204, 404):  # Page not found, no response
-            res['error_msg'] = 'Page not found, no response'
-        elif res['http_code'] in {200}:
-            res['http_code'] = 0
-            res['response'] = response.read()
-        else:
-            res['error_msg'] = 'Internal server error'
-    except Exception:
-        res['http_code'] = 500
-        res['error_msg'] = 'Internal server error'
-        res['request'] = post
+def get_request_data(request):
+    host_ip = request.httprequest.environ.get('HTTP_X_FORWARDED_FOR', '')
+    if not host_ip:
+        host_ip = request.httprequest.environ.get('REMOTE_ADDR', '')
+
+    res = {
+        'host_ip': host_ip,
+        'data': request.jsonrequest,
+        'sid': request.session.sid,
+        'action': request.httprequest.environ.get('HTTP_ACTION', False),
+    }
     return res
 
 

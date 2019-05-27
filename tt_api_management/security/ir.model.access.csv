@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+tt_api_credential_all,tt.api.credential.all,model_tt_api_credential,,1,1,1,1
+tt_api_host_all,tt.api.host.all,model_tt_api_host,,1,1,1,1
+tt_api_config_all,tt.api.config.all,model_tt_api_config,,1,1,1,1
+tt_api_provider_all,tt.api.provider.all,model_tt_api_provider,,1,1,1,1
+tt_api_carrier_all,tt.api.carrier.all,model_tt_api_carrier,,1,1,1,1

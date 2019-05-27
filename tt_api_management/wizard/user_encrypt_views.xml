@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="user_encrypt_form_view" model="ir.ui.view">
+        <field name="name">User Encrypt</field>
+        <field name="model">tt.user.encrypt</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="username" class="oe_edit_only"/>
+                        <h1><field name="username"/></h1>
+                    </div>
+                    <group>
+                        <group string="General">
+                            <field name="uid" invisible="1"/>
+                            <field name="password"/>
+                            <field name="result"/>
+                        </group>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="compute_authorization" type="object" string="Encrypt" class="btn btn-default"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="user_encrypt_action" model="ir.actions.act_window">
+        <field name="name">User Encrypt</field>
+        <field name="res_model">tt.user.encrypt</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="user_encrypt_form_view"/>
+        <field name="domain">[]</field>
+        <field name="target">new</field>
+    </record>
+
+    <record id="user_encrypt_view_form_inherit" model="ir.ui.view">
+        <field name="name">user_encrypt_view_form_inherit</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_show_encrypt" type="object" string="Encrypt" class="btn btn-default"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

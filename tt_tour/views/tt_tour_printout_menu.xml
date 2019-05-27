@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <report
+            string="Tour Confirmation"
+            id="action_report_printout_tour_confirmation"
+            model="tt.tour.booking"
+            report_type="qweb-pdf"
+            name="tt_tour.printout_tour_confirmation"
+            file="tt_tour.printout_tour_confirmation"
+            paperformat="tt_report_common.paperformat_A4"
+            menu = "False"
+        />
+
+    <report
+            string="Tour Invoice"
+            id="action_report_printout_tour_invoice"
+            model="tt.tour.booking"
+            report_type="qweb-pdf"
+            name="tt_tour.printout_tour_invoice"
+            file="tt_tour.printout_tour_invoice"
+            paperformat="tt_report_common.paperformat_A4"
+            menu = "False"
+        />
+</odoo>
