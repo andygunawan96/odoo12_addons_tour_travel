@@ -186,6 +186,7 @@ class IssuedOffline(models.Model):
             #     # cancel setiap invoice
             #     for invoice in self.invoice_ids:
             #         invoice.action_cancel()
+            self.sudo().create_reverse_ledger()
             self.state = 'cancel'
             self.cancel_date = fields.Datetime.now()
             self.cancel_uid = self.env.user.id
@@ -232,7 +233,7 @@ class IssuedOffline(models.Model):
     @api.one
     def action_paid(self, kwargs={}):
         # cek saldo sub agent
-        is_enough = self.env['tt.agent'].check_balance_limit(self.sub_agent_id.id, self.total_sale_price)
+        is_enough = self.env['tt.ledger'].check_balance_limit(self.sub_agent_id.id, self.total_sale_price)
         # jika saldo mencukupi
         if is_enough['error_code'] == 0:
             self.issued_date = fields.Datetime.now()
@@ -323,18 +324,9 @@ class IssuedOffline(models.Model):
 
     def create_reverse_ledger(self):
         for rec in self:
-            vals = self.env['tt.ledger']
-
-    def create_ledger(self):
-        # loop karena ledger bisa lebih dari 1
-        for rec in self:
             ledger_type = self.get_ledger_type()
             vals = self.env['tt.ledger'].prepare_vals('Resv : ' + rec.name, rec.name, rec.issued_date, ledger_type,
-                                                      rec.currency_id.id, 0, rec.total_sale_price)
-            # vals['pnr'] = rec.pnr
-            # vals['transport_type'] = rec.transport_type
-            # vals['display_provider_id'] = rec.display_provider_id
-
+                                                      rec.currency_id.id, rec.total_sale_price, 0)
             vals.update({
                 'pnr': rec.pnr,
                 'transport_type': rec.type in ['airline', 'train', 'cruise'] and rec.type or False,
@@ -342,7 +334,6 @@ class IssuedOffline(models.Model):
                 'res_id': rec.id,
                 'issued_uid': rec.sudo().confirm_uid.id,
             })
-
             new_aml = rec.create_agent_ledger(vals)
             # new_aml.action_done()
             # rec.ledger_id = new_aml
@@ -351,7 +342,7 @@ class IssuedOffline(models.Model):
             if rec.agent_commission > 0:
                 vals1 = self.env['tt.ledger'].prepare_vals('Commission : ' + rec.name, rec.name, rec.issued_date,
                                                            'commission',
-                                                           rec.currency_id.id, rec.agent_commission, 0)
+                                                           rec.currency_id.id, 0, rec.agent_commission)
                 # vals1.update(vals_comm_temp)
                 vals1.update({
                     'agent_id': rec.sub_agent_id.parent_agent_id.id,
@@ -369,7 +360,7 @@ class IssuedOffline(models.Model):
                 vals1 = self.env['tt.ledger'].prepare_vals('Commission : ' + rec.name, 'PA: ' + rec.name,
                                                            rec.issued_date,
                                                            'commission',
-                                                           rec.currency_id.id, rec.parent_agent_commission, 0)
+                                                           rec.currency_id.id, 0, rec.parent_agent_commission)
                 # vals1.update(vals_comm_temp)
                 vals1.update({
                     'agent_id': rec.sub_agent_id.parent_agent_id.id,
@@ -387,6 +378,84 @@ class IssuedOffline(models.Model):
                 vals1 = self.env['tt.ledger'].prepare_vals('Commission : ' + rec.name, 'HO: ' + rec.name,
                                                            rec.issued_date,
                                                            'commission',
+                                                           rec.currency_id.id, 0, rec.ho_commission)
+                # vals1.update(vals_temp)
+                vals1.update({
+                    'agent_id': self.env['res.partner'].sudo().search([('is_HO', '=', True), ('parent_id', '=', False)],
+                                                                      limit=1).id,
+                    'rel_agent_name': rec.sub_agent_id.name,
+                    'display_provider_name': rec.provider,
+                    'pnr': rec.pnr,
+                    'transport_type': rec.type,
+                    'res_id': self.id,
+                    'issued_uid': rec.confirm_uid.id,
+                })
+                commission_aml = self.env['tt.ledger'].create(vals1)
+                commission_aml.action_done()
+
+    def create_ledger(self):
+        # loop karena ledger bisa lebih dari 1
+        for rec in self:
+            ledger_type = self.get_ledger_type()
+            vals = self.env['tt.ledger'].prepare_vals('Resv : ' + rec.name + ' - REVERSE', rec.name, rec.issued_date,
+                                                      ledger_type, rec.currency_id.id, 0, rec.total_sale_price)
+            # vals['pnr'] = rec.pnr
+            # vals['transport_type'] = rec.transport_type
+            # vals['display_provider_id'] = rec.display_provider_id
+
+            vals.update({
+                'pnr': rec.pnr,
+                'transport_type': rec.type in ['airline', 'train', 'cruise'] and rec.type or False,
+                'display_provider_name': rec.provider,
+                'description': 'Reverse Ledger',
+                'res_id': rec.id,
+                'issued_uid': rec.sudo().confirm_uid.id,
+            })
+
+            new_aml = rec.create_agent_ledger(vals)
+            # new_aml.action_done()
+            # rec.ledger_id = new_aml
+
+            # Create Commission
+            if rec.agent_commission > 0:
+                vals1 = self.env['tt.ledger'].prepare_vals('Commission : ' + rec.name + ' - REVERSE', rec.name,
+                                                           rec.issued_date, 'commission',
+                                                           rec.currency_id.id, rec.agent_commission, 0)
+                # vals1.update(vals_comm_temp)
+                vals1.update({
+                    'agent_id': rec.sub_agent_id.parent_agent_id.id,
+                    'display_provider_name': rec.provider,
+                    'pnr': rec.pnr,
+                    'transport_type': rec.type,
+                    'description': 'Reverse Ledger',
+                    'res_id': self.id,
+                    'issued_uid': rec.confirm_uid.id,
+                })
+                commission_aml = rec.create_sub_agent_ledger(vals1)
+                commission_aml.action_done()
+                rec.commission_ledger_id = commission_aml
+            # Create Commission Parent Agent
+            if rec.parent_agent_commission > 0:
+                vals1 = self.env['tt.ledger'].prepare_vals('Commission : ' + rec.name + ' - REVERSE', 'PA: ' + rec.name,
+                                                           rec.issued_date, 'commission',
+                                                           rec.currency_id.id, rec.parent_agent_commission, 0)
+                # vals1.update(vals_comm_temp)
+                vals1.update({
+                    'agent_id': rec.sub_agent_id.parent_agent_id.id,
+                    'rel_agent_name': rec.sub_agent_id.name,
+                    'display_provider_name': rec.provider,
+                    'pnr': rec.pnr,
+                    'transport_type': rec.type,
+                    'description': 'Reverse Ledger',
+                    'res_id': self.id,
+                    'issued_uid': rec.confirm_uid.id,
+                })
+                commission_aml = self.env['tt.ledger'].create(vals1)
+                commission_aml.action_done()
+            # Create Commission HO
+            if rec.ho_commission > 0:
+                vals1 = self.env['tt.ledger'].prepare_vals('Commission : ' + rec.name + ' - REVERSE', 'HO: ' + rec.name,
+                                                           rec.issued_date, 'commission',
                                                            rec.currency_id.id, rec.ho_commission, 0)
                 # vals1.update(vals_temp)
                 vals1.update({
@@ -396,6 +465,7 @@ class IssuedOffline(models.Model):
                     'display_provider_name': rec.provider,
                     'pnr': rec.pnr,
                     'transport_type': rec.type,
+                    'description': 'Reverse Ledger',
                     'res_id': self.id,
                     'issued_uid': rec.confirm_uid.id,
                 })

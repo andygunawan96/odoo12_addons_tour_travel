@@ -1,0 +1,69 @@
+<odoo>
+
+    <!--Visa Document-->
+    <record model="ir.ui.view" id="tt_visa_view_form">
+        <field name="name">tt.visa.view.form</field>
+        <field name="model">tt.visa</field>
+        <field name="arch" type="xml">
+            <form>
+                <field name="state" invisible="1"/>
+                <header>
+                    <field name="state_visa" widget="statusbar"/> <!--statusbar_visible=""-->
+                    <button string="Set to Draft" name="action_draft_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'cancel')]}" groups="tt_base.group_tt_tour_travel_manager"/>
+                    <button string="Confirm to HO" name="action_confirm_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'draft')]}" groups="tt_base.group_tt_agent_user_operator"/>
+                    <button string="Validate" name="action_validate_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'confirm')]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <button string="To Vendor" name="action_to_vendor_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'validate')]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <button string="Vendor Process" name="action_vendor_process_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'to_vendor')]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <button string="In Process" name="action_in_process_visa" type="object" attrs="{'invisible': [('state_visa', 'not in', ['validate','vendor_process'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <button string="Process to Consulate" name="action_in_process2_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'payment')]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <button string="Cancel All" name="action_cancel_visa" type="object" attrs="{'invisible': [('state_visa', 'in', ['cancel'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
+<!--                    <button string="Confirm" name="action_confirm" type="object" attrs="{'invisible': [('state_visa', '!=', 'draft')]}" groups="tt_base.group_tt_agent_user_manager"/>-->
+<!--                    <button string="Validate" name="action_validate" type="object" attrs="{'invisible': [('state_visa', '!=', 'confirm')]}" groups="tt_base.group_tt_agent_user_manager"/>-->
+<!--                    <button string="Processing" name="action_processing" type="object" attrs="{'invisible': [('state_visa', '!=', 'validate')]}" groups="tt_base.group_tt_agent_user_manager"/>-->
+<!--                    <button string="Set Interview" name="action_interview" type="object" attrs="{'invisible': [('state_visa', '!=', 'processing')]}" groups="tt_base.group_tt_agent_user_manager"/>-->
+<!--                    <button string="Ready" name="action_ready" type="object" attrs="{'invisible': [('state_visa', '!=', 'posted')]}" groups="tt_base.group_tt_agent_user_manager"/>-->
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                    </div>
+                    <div class="oe_title">
+<!--                        <label for="Name" class="oe_edit_only"/>-->
+                        <h1>
+                            <field name="name" attrs="{'readonly': [('state_visa', '!=', 'draft')]}"/>
+                        </h1>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tt_visa_view_tree">
+        <field name="name">tt.visa.view.tree</field>
+        <field name="model">tt.visa</field>
+        <field name="arch" type="xml">
+            <tree create="true">
+                <field name="name"/>
+                <field name="state" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_visa_order_all_view_action">
+        <field name="name">Visa Document</field>
+        <field name="res_model">tt.visa</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+<!--        <field name="search_view_id" ref="tt_traveldoc_visa_order_view_filter"/>-->
+        <field name="context">
+            {
+                'form_view_ref': 'tt_visa.tt_visa_view_form',
+                'tree_view_ref': 'tt_visa.tt_visa_view_tree',
+                'search_default_all': 1,
+            }
+        </field>
+    </record>
+
+    <menuitem id="menu_visa_orders_all" parent="menu_visa_order" name="ALL"
+              action="tt_visa_order_all_view_action" sequence="1"/>
+
+</odoo>

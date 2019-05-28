@@ -373,7 +373,7 @@ class TourPackageQuotation(models.Model):
 
     @api.depends('expense_for_tour_leader', 'expense_for_tour_leader_rate', 'expense_for_tour_leader_days')
     @api.onchange('expense_for_tour_leader', 'expense_for_tour_leader_rate', 'expense_for_tour_leader_days')
-    def _compute_rupiah_expense_for_tl(self):
+    def _compute_rupiah_expense_for_tour_leader(self):
         self.rupiah_expense_for_tour_leader = self.expense_for_tour_leader * self.expense_for_tour_leader_rate * self.expense_for_tour_leader_days
 
     @api.depends('insurance_for_tour_leader_cost', 'insurance_for_tour_leader_rate')

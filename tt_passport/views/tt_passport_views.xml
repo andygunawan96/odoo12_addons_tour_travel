@@ -1,0 +1,64 @@
+<odoo>
+
+    <!--Passport Document-->
+    <record model="ir.ui.view" id="tt_passport_view_form">
+        <field name="name">tt.passport.view.form</field>
+        <field name="model">tt.passport</field>
+        <field name="arch" type="xml">
+            <form>
+                <field name="state" invisible="1"/>
+                <header>
+                    <field name="state_passport" widget="statusbar"/> <!--statusbar_visible=""-->
+                    <button string="Set to Draft" name="action_draft_passport" type="object" attrs="{'invisible': [('state_passport', '!=', 'cancel')]}" groups="tt_base.group_tt_tour_travel_manager"/>
+                    <button string="Confirm to HO" name="action_confirm_passport" type="object" attrs="{'invisible': [('state_passport', '!=', 'draft')]}" groups="tt_base.group_tt_agent_user_operator"/>
+                    <button string="Validate" name="action_validate_passport" type="object" attrs="{'invisible': [('state_passport', '!=', 'confirm')]}" groups="tt_base.group_tt_tour_travel_operator"/>
+<!--                    <button string="To Vendor" name="action_to_vendor_passport" type="object" attrs="{'invisible': [('state_passport', '!=', 'validate')]}" groups="tt_base.group_tt_tour_travel_operator"/>-->
+<!--                    <button string="Vendor Process" name="action_vendor_process_passport" type="object" attrs="{'invisible': [('state_passport', '!=', 'to_vendor')]}" groups="tt_base.group_tt_tour_travel_operator"/>-->
+                    <button string="In Process" name="action_in_process_passport" type="object" attrs="{'invisible': [('state_passport', 'not in', ['validate'])]}" groups="tt_base.group_tt_tour_travel_operator"/>  <!--,'vendor_process'-->
+                    <button string="Process to Immigration" name="action_in_process2_passport" type="object" attrs="{'invisible': [('state_passport', '!=', 'payment')]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <button string="Cancel All" name="action_cancel_passport" type="object" attrs="{'invisible': [('state_passport', 'in', ['cancel'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                    </div>
+                    <div class="oe_title">
+<!--                        <label for="Name" class="oe_edit_only"/>-->
+                        <h1>
+                            <field name="name" attrs="{'readonly': [('state_passport', '!=', 'draft')]}"/>
+                        </h1>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tt_passport_view_tree">
+        <field name="name">tt.passport.view.tree</field>
+        <field name="model">tt.passport</field>
+        <field name="arch" type="xml">
+            <tree create="true">
+                <field name="name"/>
+                <field name="state" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_passport_order_all_view_action">
+        <field name="name">passport Document</field>
+        <field name="res_model">tt.passport</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+<!--        <field name="search_view_id" ref="tt_traveldoc_passport_order_view_filter"/>-->
+        <field name="context">
+            {
+                'form_view_ref': 'tt_passport.tt_passport_view_form',
+                'tree_view_ref': 'tt_passport.tt_passport_view_tree',
+                'search_default_all': 1,
+            }
+        </field>
+    </record>
+
+    <menuitem id="menu_passport_orders_all" parent="menu_passport_order"
+              name="ALL" action="tt_passport_order_all_view_action" sequence="1"/>
+
+</odoo>

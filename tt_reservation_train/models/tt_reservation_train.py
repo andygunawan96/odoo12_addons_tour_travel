@@ -46,7 +46,6 @@ class ReservationTrain(models.Model):
     destination_id = fields.Many2one('tt.destinations', 'Destination', readonly=True, states={'draft': [('readonly', False)]})
     sector_type = fields.Char('Sector', readonly=True, compute='_compute_sector_type', store=True)
 
-
     sale_service_charge_ids = fields.One2many('tt.service.charge', 'booking_train_id', 'Service Charge',
                                               readonly=True, states={'draft': [('readonly', False)]})
 

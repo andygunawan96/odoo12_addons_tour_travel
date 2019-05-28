@@ -301,7 +301,7 @@
             <field name="context">{'search_default_all':1}</field>
         </record>
 
-        <menuitem id="menu_issued_offline_side_menu" parent="tt_base.menu_reservation_main"
+        <menuitem id="menu_issued_offline_side_menu" parent="tt_reservation.main_reservations"
                   name="Issued Offline" sequence='80'/>
 <!--        groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"-->
 

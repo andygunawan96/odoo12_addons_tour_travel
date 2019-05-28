@@ -1,8 +1,6 @@
 from odoo import api, fields, models, _
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
-from ...tools.api import Response
-import json
 
 DP_TYPE = [
     ('percentage', 'Percentage'),
@@ -124,9 +122,10 @@ class TourPricelist(models.Model):
 
     itinerary = fields.Html('Itinerary')
     requirements = fields.Html('Remarks')
-    images = fields.Many2many('ir.attachment', 'tour_images_rel',
-                              'pricelist_id', 'image_id', domain=[('res_model', '=', 'tt.tour.pricelist')],
-                              string='Add Image', required=True)
+    images = fields.One2many('tt.tour.images', 'pricelist_id', 'Images')
+    # images = fields.Many2many('ir.attachment', 'tour_images_rel',
+    #                           'pricelist_id', 'image_id', domain=[('res_model', '=', 'tt.tour.pricelist')],
+    #                           string='Add Image', required=True)
 
     flight_segment_ids = fields.One2many('flight.segment', 'tour_pricelist_id', string="Flight Segment")
     # visa_pricelist_ids = fields.Many2many('tt.traveldoc.pricelist', 'tour_visa_rel', 'tour_id', 'visa_id',
@@ -191,7 +190,31 @@ class TourPricelist(models.Model):
 
     def action_adjustment(self):
         # Calculate Adjustment
+        adt = chd = inf = 0
+        adt_price = self.adult_citra_price - self.adult_nta_price
+        chd_price = self.child_citra_price - self.child_nta_price
+        inf_price = self.infant_citra_price - self.infant_nta_price
 
+        for pax in self.passengers_ids:
+            if pax.pax_type == 'ADT' and pax.state == 'done':
+                adt += 1
+            if pax.pax_type == 'CHD' and pax.state == 'done':
+                chd += 1
+            if pax.pax_type == 'INF' and pax.state == 'done':
+                inf += 1
+        ho_profit = (adt * adt_price) + (chd * chd_price) + (inf * inf_price)
+        debit = credit = 0
+        for rec in self.adjustment_ids:
+            if rec.type == 'debit':
+                debit += rec.total
+            if rec.type == 'credit':
+                credit += rec.total
+        ho_profit = ho_profit + debit - credit
+        acc_debit = acc_credit = 0
+        if ho_profit >= 0:
+            acc_debit = ho_profit
+        else:
+            acc_credit = ho_profit * -1
         self.state_tour = 'closed'
 
     def action_done(self):
@@ -234,7 +257,6 @@ class TourPricelist(models.Model):
     @api.depends('quotation_ids')
     @api.onchange('quotation_ids')
     def _compute_all_prices(self):
-        print('Compute All Price')
         adult_nta = 0
         adult_citra = 0
         adult_sale = 0
@@ -294,140 +316,3 @@ class TourPricelist(models.Model):
         self.infant_sale_price = infant_sale
         self.infant_citra_price_real = infant_citra_real
         self.infant_sale_price_real = infant_sale_real
-
-    def int_with_commas(self, x):
-        result = ''
-        while x >= 1000:
-            x, r = divmod(x, 1000)
-            result = ".%03d%s" % (r, result)
-        return "%d%s" % (x, result)
-
-    def get_tour_countries_api(self, data, context, **kwargs):
-        try:
-            temp = []
-            self.env.cr.execute("""SELECT country_id FROM tour_country_rel""")
-            countries = self.env.cr.dictfetchall()
-            for country in countries:
-                if not country['country_id'] in temp:
-                    temp.append(country['country_id'])
-
-            countries = []
-            if temp:
-                self.env.cr.execute("""SELECT id, name, code, phone_code FROM res_country WHERE id in %s""",
-                                       (tuple(temp),))
-                countries = self.env.cr.dictfetchall()
-
-            response = {
-                'countries': countries,
-            }
-            res = Response().get_no_error(response)
-        except Exception as e:
-            res = Response().get_error(str(e), 500)
-        return res
-
-    def search_tour_api(self, data, context, **kwargs):
-        try:
-            search_request = {
-                'country_id': data['country_id'] and data['country_id'] or '0',
-                'departure_month': data['month'] and data['month'] or '00',
-                'departure_year': data['year'] and data['year'] or '0000',
-                'budget_min': data['budget_min'] and data['budget_min'] or 0,
-                'budget_max': data['budget_max'] and data['budget_max'] or 0,
-            }
-
-            search_request.update({
-                'departure_date': str(search_request['departure_year']) + '-' + str(search_request['departure_month'])
-            })
-
-            if search_request['country_id'] != '0':
-                self.env.cr.execute("""SELECT id, name FROM res_country WHERE id=%s""",
-                                       (search_request['country_id'],))
-                temp = self.env.cr.dictfetchall()
-                search_request.update({
-                    'country_name': temp[0]['name']
-                })
-
-            if search_request['country_id'] != '0':
-                self.env.cr.execute("""SELECT * FROM tt_tour_pricelist tp LEFT JOIN tour_country_rel tcr ON tp.id = tcr.pricelist_id WHERE tp.state_tour IN ('open', 'definite', 'sold') AND tcr.country_id =%s AND tp.adult_sale_price BETWEEN %s AND %s ORDER BY sequence DESC;""", (search_request['country_id'], search_request['budget_min'], search_request['budget_max']))
-            else:
-                self.env.cr.execute("""SELECT * FROM tt_tour_pricelist WHERE state_tour IN ('open', 'definite', 'sold') AND adult_sale_price BETWEEN %s AND %s ORDER BY sequence DESC;""", (search_request['budget_min'], search_request['budget_max']))
-
-            result_temp = self.env.cr.dictfetchall()
-
-            result = []
-
-            for idx, rec in enumerate(result_temp):
-                if rec['departure_date']:
-                    if search_request['departure_month'] != '00':
-                        if search_request['departure_year'] != '0000':
-                            if rec['departure_date'][:7] == search_request['departure_date']:
-                                result.append(rec)
-                        else:
-                            if rec['departure_date'][5:7] == search_request['departure_month']:
-                                result.append(rec)
-                    elif search_request['departure_year'] != '0000':
-                        if rec['departure_date'][:4] == search_request['departure_year']:
-                            result.append(rec)
-                    else:
-                        result.append(rec)
-                if rec['start_period']:
-                    if search_request['departure_month'] != '00':
-                        if search_request['departure_year'] != '0000':
-                            if rec['start_period'][:7] <= search_request['departure_date'] <= rec['end_period'][:7]:
-                                result.append(rec)
-                        else:
-                            if rec['start_period'][5:7] <= search_request['departure_month'] <= rec['end_period'][5:7]:
-                                result.append(rec)
-                    elif search_request['departure_year'] != '0000':
-                        if rec['start_period'][:4] <= search_request['departure_year'] <= rec['end_period'][:4]:
-                            result.append(rec)
-                    else:
-                        result.append(rec)
-
-            for idx, rec in enumerate(result):
-                try:
-                    self.env.cr.execute("""SELECT * FROM ir_attachment ia LEFT JOIN tour_images_rel tir ON tir.image_id = ia.id WHERE res_model = 'tt.tour.pricelist' AND pricelist_id = %s ORDER BY id DESC;""", (rec['id'],))
-                    images = self.env.cr.dictfetchall()
-                except Exception:
-                    images = []
-
-                for rec_img in images:
-                    rec_img.update({
-                        'create_date': '',
-                        'write_date': '',
-                    })
-
-                rec.update({
-                    'name': rec['name'],
-                    'adult_sale_price_with_comma': self.int_with_commas(rec['adult_sale_price']),
-                    'child_sale_price_with_comma': self.int_with_commas(rec['child_sale_price']),
-                    'infant_sale_price_with_comma': self.int_with_commas(rec['infant_sale_price']),
-                    'airport_tax_with_comma': self.int_with_commas(rec['airport_tax']),
-                    'tipping_guide_with_comma': self.int_with_commas(rec['tipping_guide']),
-                    'tipping_tour_leader_comma': self.int_with_commas(rec['tipping_tour_leader']),
-                    'images_obj': images,
-                    'departure_date_f': rec['departure_date'] and datetime.strptime(str(rec['departure_date']), '%Y-%m-%d').strftime('%d %b') or '',
-                    'arrival_date_f': rec['arrival_date'] and datetime.strptime(str(rec['arrival_date']), '%Y-%m-%d').strftime('%d %b') or '',
-                    'start_period_f': rec['start_period'] and datetime.strptime(str(rec['start_period']), '%Y-%m-%d').strftime('%B') or '',
-                    'end_period_f': rec['end_period'] and datetime.strptime(str(rec['end_period']), '%Y-%m-%d').strftime('%B') or '',
-                    'sequence': idx,
-                    'departure_date': rec['departure_date'] and datetime.strptime(str(rec['departure_date']), '%Y-%m-%d').strftime('%d %b') or '',
-                    'arrival_date': rec['arrival_date'] and datetime.strptime(str(rec['arrival_date']), '%Y-%m-%d').strftime('%d %b') or '',
-                    'start_period': rec['start_period'] and datetime.strptime(str(rec['start_period']), '%Y-%m-%d').strftime('%B') or '',
-                    'end_period': rec['end_period'] and datetime.strptime(str(rec['end_period']), '%Y-%m-%d').strftime('%B') or '',
-                })
-
-            response = {
-                'country_id': search_request['country_id'],
-                'country': search_request.get('country_name', ''),
-                'search_request': search_request,
-                # 'search_request_json': json.dumps(search_request),
-                'result': result,
-                # 'result_json': json.dumps(result),
-                'search_value': 2,
-                'currency_id': self.env.user.company_id.currency_id
-            }
-            res = Response().get_no_error(response)
-        except Exception as e:
-            res = Response().get_error(str(e), 500)
-        return res
