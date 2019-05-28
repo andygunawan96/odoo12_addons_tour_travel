@@ -1,5 +1,5 @@
 import base64
-
+from datetime import datetime
 
 def encode_authorization(_id, _username, _password):
     credential = '%s:%s:%s' % (_id, _username, _password)

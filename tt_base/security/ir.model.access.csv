@@ -16,3 +16,4 @@ access_customer_bank_detail,tt_base.customer_bank_detail,model_customer_bank_det
 access_tt_skipped_keys,tt_base.tt_skipped_keys,model_tt_skipped_keys,,1,1,1,1
 access_res_employee,tt_base.res_employee,model_res_employee,,1,1,1,1
 access_tt_provider_type,tt_base.tt_provider_type,model_tt_provider_type,,1,1,1,1
+access_tt_access_activity,tt_base.tt_access_activity,model_tt_access_activity,,1,1,1,1
