@@ -1,0 +1,29 @@
+<odoo>
+    <!--Top Menu Visa-->
+<!--    <menuitem id="top_visa" name="Visa" parent="tt_base.menu_visa_main" sequence="70"/>-->
+<!--              &lt;!&ndash;web_icon="tt_base,static/description/tour.png"&ndash;&gt;-->
+
+    <!--Menu Order Visa-->
+    <menuitem id="menu_visa_order" parent="tt_base.menu_visa_main" name="Order" sequence="1"/>
+
+    <!--Top Menu Tour & Travel Visa-->
+    <menuitem id="top_tour_travel_visa"
+              parent="tt_base.main_tour_travel"
+              name="Visa"
+              sequence="4"
+              groups="base.group_user"/>
+<!--    action="tt_visa_pricelist_view_action"-->
+
+        <!--Menu Visa-->
+        <menuitem id="menu_tour_travel_visa_master"
+                  name="Master"
+                  parent="top_tour_travel_visa"
+                  sequence="1"/>
+
+        <!-- This Menu Item must have a parent and an action -->
+        <menuitem id="menu_tour_travel_visa_configuration" name="Configuration" parent="top_tour_travel_visa"
+                  sequence="2"/>
+
+            <menuitem id="submenu_visa_requirements" parent="menu_tour_travel_visa_configuration"
+                      name="Requirements" action="tt_traveldoc.tt_traveldoc_type_view_action"/>
+</odoo>

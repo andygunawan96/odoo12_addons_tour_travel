@@ -165,6 +165,29 @@ class Ledger(models.Model,test_to_dict.ToDict):
     #     " FROM " + tables +
     #     " WHERE account_id IN %s " + filters + " GROUP BY account_id")
 
+    def check_balance_limit(self, sub_agent_id, amount):
+        # This function uses for API Frontend
+        partner_obj = self.env['tt.agent'].browse([sub_agent_id])
+        print(partner_obj)
+        if not partner_obj:
+            print('Agent/Sub-Agent Not Found')
+            return {
+                'error_code': 3,
+                'error_msg': 'Agent/Sub-Agent Not found'
+            }
+
+        print(partner_obj.actual_balance)
+        print(amount)
+        if amount > partner_obj.actual_balance:
+            return {
+                'error_code': 1,
+                'error_msg': "%s's Balance / Credit limit not enough" % partner_obj.name
+            }
+
+        return {
+            'error_code': 0,
+            'error_msg': "Balance / Credit limit enough"
+        }
 
     def prepare_vals(self, name, ref, date, ledger_type, currency_id, debit=0, credit=0):
         return {
@@ -298,7 +321,6 @@ class Ledger(models.Model,test_to_dict.ToDict):
 
         booking_obj.agent_id.balance -= amount
         booking_obj.agent_id.actual_balance -= amount
-
 
     def create_commission_ledger(self,provider_obj):
         # ## UPDATED by Samvi 2018/07/24

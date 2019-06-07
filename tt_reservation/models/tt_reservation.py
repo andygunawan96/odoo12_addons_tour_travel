@@ -116,7 +116,7 @@ class TtReservation(models.Model):
 
     ledger_ids = fields.One2many('tt.ledger', 'res_id', 'Ledger')
 
-    departure_date = fields.Date('Journey Date', required=True, readonly=True, states={'draft': [('readonly', False)]})
+    departure_date = fields.Date('Journey Date', readonly=True, states={'draft': [('readonly', False)]})  # , required=True
     return_date = fields.Date('Return Date', readonly=True, states={'draft': [('readonly', False)]})
 
     # agent_invoice_ids = fields.One2many('tt.agent.invoice', '', 'Agent Invoice')  # One2Many -> tt.agent.invoice

@@ -2,7 +2,7 @@
     <record id="tour_booking_for_agent" model="ir.rule">
         <field name="name">Tour Booking For Agent</field>
         <field name="model_id" ref="model_tt_tour_booking"/>
-        <field name="domain_force">['|',('agent_id.id','in',user.allowed_customer_ids.ids),('sub_agent_id.id','=',user.agent_id.id)]</field>
+        <field name="domain_force">['|',('agent_id','=',user.agent_id.id),('sub_agent_id.id','=',user.agent_id.id)]</field>
         <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user_operator')),(4,ref('tt_base.group_tt_sub_agent_user_operator'))]"/>
     </record>
 </odoo>
