@@ -62,3 +62,9 @@ class TtAgent(models.Model):
     #                                 value[key],  # New Value
     #                                 self.env.user.name))  # User that Changed the Value
     #     return super(TtAgent, self).write(value)
+
+    def get_balance(self, agent_id):
+        agent_obj = self.env['tt.agent'].browse([agent_id])
+        if not agent_obj:
+            return 'Agent/Sub Agent not Found'
+        return agent_obj.balance

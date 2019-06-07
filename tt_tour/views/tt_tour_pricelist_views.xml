@@ -288,7 +288,27 @@
                             <field name="requirements"/>
                         </page>
                         <page string="Images">
-                            <field name="images" widget="many2many_binary" />
+                            <field name="images">
+                                <tree>
+                                    <field name="url"/>  <!--widget="many2many_binary"-->
+                                    <field name="description"/>  <!--widget="many2many_binary"-->
+                                </tree>
+                                <form>
+                                    <sheet>
+                                        <group>
+                                            <group>
+                                                <field name="url"/>
+                                                <field name="description"/>
+                                                <field name="pricelist_id"/>
+                                            </group>
+                                            <group>
+
+                                            </group>
+                                        </group>
+
+                                    </sheet>
+                                </form>
+                            </field>
                         </page>
                     </notebook>
 
@@ -365,8 +385,11 @@
                             </group>
                         </form>
                     </field>
-
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
             </form>
         </field>
     </record>
@@ -405,6 +428,6 @@
         </field>
     </record>
 
-    <!--<menuitem id="submenu_tour_pricelist" parent="tt_tour.menu_tour_travel_tour_master"-->
-              <!--name="Tour" action="tt_tour.tt_tour_pricelist_view_action"/>-->
+    <menuitem id="submenu_tour_pricelist" parent="tt_tour.menu_tour_travel_tour_master"
+              name="Tour" action="tt_tour.tt_tour_pricelist_view_action"/>
 </odoo>

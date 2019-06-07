@@ -1,5 +1,6 @@
 from odoo import api,models,fields
 
+
 class ServiceChargeTrain(models.Model):
     _inherit = "tt.service.charge"
 
