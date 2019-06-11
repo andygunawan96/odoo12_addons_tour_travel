@@ -108,7 +108,6 @@ class TransportBookingProvider(models.Model,test_to_dict.ToDict):
                 'error_msg': str(e)
             }
 
-
     def create_ticket_number(self, passenger_ids):
         # Variable name adalah first_name + last_name yang disambung semua tanpa spasi
         # Case nya bisa first_name = Budi Satria last_name Gunawan
@@ -154,7 +153,6 @@ class TransportBookingProvider(models.Model,test_to_dict.ToDict):
                     val['provider_train_booking_id'] = self.id
                     service_chg_obj.create(val)
             self._compute_total()
-
 
     @api.depends('cost_service_charge_ids')
     def _compute_total(self):

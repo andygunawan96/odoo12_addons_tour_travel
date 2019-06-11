@@ -81,7 +81,6 @@ RESERVATION_TYPE = [
 #     resv_id = fields.Many2one('tt.reservation', 'Reservation', readonly=True)
 
 
-
 class TtReservation(models.Model):
     _name = 'tt.reservation'
 

@@ -67,8 +67,6 @@ class ReservationTrain(models.Model):
     def get_form_id(self):
             return self.env.ref("tt_reservation_train.tt_reservation_train_form_views")
 
-
-
     @api.depends('origin_id','destination_id')
     def _compute_sector_type(self):
         for rec in self:
@@ -80,11 +78,9 @@ class ReservationTrain(models.Model):
             else:
                 rec.sector_type = "Not Defined"
 
-
     @api.one
     def action_draft(self):
         self.state = 'draft'
-
 
     @api.multi
     def action_set_as_booked(self):
@@ -96,11 +92,9 @@ class ReservationTrain(models.Model):
         for rec in self:
             rec.state = 'issued'
 
-
     @api.multi
     def action_check_provider_state(self):
         pass
-
 
     def action_cancel(self):
         self.cancel_date = fields.Datetime.now()
@@ -147,7 +141,6 @@ class ReservationTrain(models.Model):
         self.issued_uid = self.env.user.id
         self.state = 'issued'
 
-
     @api.one
     def action_reroute(self): ##nama nanti diganti reissue
         self.state = 'reroute'
@@ -165,7 +158,6 @@ class ReservationTrain(models.Model):
         #     raise Exception('User HO cannot Issuing...')
 
         return True
-
 
     @api.one
     def create_refund(self):
@@ -217,7 +209,6 @@ class ReservationTrain(models.Model):
         #     self.sudo().env['tt.refund.segment'].create(value)
         # self.refund_id = refund_obj
         self.state = 'refund'
-
 
     def action_sync_date(self):
         # api_context = {
@@ -1204,10 +1195,16 @@ class ReservationTrainApi(models.Model):
 
     @api.multi
     def action_check_provider_state(self, api_context=None):
+        print(api_context)
         if not api_context:
             api_context = {
                 'co_uid': self.env.user.id
             }
+        if 'co_uid' not in api_context:
+            api_context.update({
+                'co_uid': self.env.user.id
+            })
+        print(api_context)
         for rec in self:
             book_info = rec.action_get_provider_booking_info()
             vals = {
@@ -1480,7 +1477,6 @@ class ReservationTrainApi(models.Model):
         response['sale_service_charge_summary'] = copy.deepcopy(response['service_charge_summary'])
 
         return res
-
 
     def do_compute_network_commision(self, default_dict, comm_amount, pax_count_factor, api_context):
         uplines_obj = copy.deepcopy(self.param_uplines_obj)

@@ -72,3 +72,47 @@ class TtPassport(models.Model):
     in_process_date = fields.Datetime('In Process Date', readonly=1)
 
     immigration_consulate = fields.Char('Immigration Consulate', readonly=1, compute="_compute_immigration_consulate")
+
+    def action_draft_passport(self):
+        self.write({
+            'state_passport': 'draft',
+            'state': 'issued'
+        })
+
+    def action_confirm_passport(self):
+        is_confirmed = True
+        self.write({
+            'state_passport': 'confirm',
+            'confirmed_date': datetime.now(),
+            'confirmed_uid': self.env.user.id
+        })
+
+    def action_validate_passport(self):
+        is_validated = True
+        self.write({
+            'state_passport': 'validate',
+            'validate_date': datetime.now(),
+            'validate_uid': self.env.user.id
+        })
+
+    def action_proceed_passport(self):
+        self.write({
+            'state_passport': 'proceed'
+        })
+
+    def action_cancel_passport(self):
+        self.write({
+            'state_passport': 'cancel',
+        })
+
+    def action_ready_passport(self):
+        self.write({
+            'state_passport': 'ready',
+            'ready_date': datetime.now()
+        })
+
+    def action_done_passport(self):
+        self.write({
+            'state_passport': 'done',
+            'done_date': datetime.now()
+        })

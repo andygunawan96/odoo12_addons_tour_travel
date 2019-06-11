@@ -153,8 +153,8 @@ class IssuedOffline(models.Model):
     # sub_agent_type = fields.Many2one('tt.agent.type', 'Agent Type', related='sub_agent_id.agent_type_id', readonly=True,
     #                                  store=True)
 
-    # contact_id = fields.Many2one('tt.customer', 'Contact Person', ondelete='restrict', readonly=True,
-    #                              states={'draft': [('readonly', False)]})
+    contact_id = fields.Many2one('tt.customer', 'Contact Person', ondelete='restrict', readonly=True,
+                                 states={'draft': [('readonly', False)]})
     # display_mobile = fields.Char('Contact Person for Urgent Situation',
     #                              readonly=True, states={'draft': [('readonly', False)]})
     # refund_id = fields.Many2one('tt.refund', 'Refund')
@@ -637,6 +637,71 @@ class IssuedOffline(models.Model):
 
     def create_issued_offline_by_api(self, vals, api_context=None):
         # Notes: SubmitTopUp
+        # list_obj = []
+        # list_line = []
+        # for rec in vals['passenger_ids']:
+        #     a = self.env['issued.offline.passenger'].create({
+        #         'passenger_id': rec.get('id')
+        #     })
+        #     list_obj.append(a.id)
+        # for rec in vals['line_ids']:
+        #     origin = self.get_destination_id(vals['type'], rec['origin'])
+        #     destination = self.get_destination_id(vals['type'], rec['destination'])
+        #     a = self.env['issued.offline.lines'].create({
+        #         'origin_id': origin,
+        #         'destination_id': destination,
+        #         'carrier_code': rec['carrier_code'],
+        #         'carrier_number': rec['carrier_number'],
+        #         'departure_date': rec['departure'],
+        #         'return_date': rec['arrival'],
+        #         'class_of_service': rec['class_of_service'],
+        #         'sub_class': rec['sub_class']
+        #     })
+        #     list_line.append(a.id)
+        # values = {
+        #     'agent_id': int(vals['agent_id']),
+        #     'sub_agent_id': int(vals['sub_agent_id']),
+        #     'sub_agent_type': int(vals['sub_agent_type']),
+        #     'contact_id': int(vals['contact_id']),
+        #     'type': vals['type'],
+        #     'sector_type': vals['sector_type'] or '',
+        #     'total_sale_price': int(vals['total_sale_price']) or 0,
+        #     'agent_commission': 0,
+        #     'parent_agent_commission': 0,
+        #     'agent_nta_price': 0,
+        #     'description': vals['desc'],
+        #     'carrier_id': int(vals['carrier_id']),
+        #     'provider': vals['provider'],
+        #     'pnr': vals['pnr'],
+        #     'social_media_id': int(vals['social_media_id']),
+        #     'expired_date': vals['expired_date'],
+        #     'create_uid': int(vals['co_uid']),
+        #     'confirm_uid': int(vals['co_uid']),
+        #     'passanger_ids': [(6, 0, list_obj)],
+        #     'line_ids': [(6, 0, list_line)],
+        # }
+        # try:
+        #     res = self.env['issued.offline'].sudo().create(values)
+        # except Exception as e:
+        #     errors = []
+        #     errors.append(('Issued Offline Failure', str(e)))
+        #     return {
+        #         'error_code': 1,
+        #         'error_msg': errors,
+        #         'response': {
+        #             'message': '',
+        #         }
+        #     }
+        #
+        # self.confirm_api(res.id)
+        # return {
+        #     'error_code': 0,
+        #     'error_msg': '',
+        #     'response': {
+        #         'message': '',
+        #         'name': res.name
+        #     }
+        # }
         pass
 
     def get_issued_offline_api(self, req, api_context=None):
