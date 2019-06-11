@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <report
+            string="Invoice"
+            id="action_report_printout_invoice"
+            model="tt.agent.registration"
+            report_type="qweb-pdf"
+            name="tt_agent_registration.printout_invoice_model"
+            file="tt_agent_registration.printout_invoice"
+            paperformat="tt_report_common.paperformat_A4"
+            menu="False"
+        />
+
+    </data>
+</odoo>

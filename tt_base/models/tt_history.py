@@ -66,11 +66,12 @@ class TtHistory(models.Model):
             # start : kode ini masih beresiko (hard coded). dapat diubah kapan saja
             else:
                 if self.fields_get().get(key)['type'] == 'many2one':
-                    old_value = self_dict[0].get(key)
+                    dict = self_dict[0]
+                    old_value = dict.get(key)
                     if old_value is False:
                         old_value = 'None'
                     else:
-                        old_value = self_dict[0].get(key)[1]
+                        old_value = dict.get(key)[1]
                     new_value = self.env[self.fields_get().get(key)['relation']].search([('id', 'in', [value[key]])]).name_get()[0][1]
                     # end
 

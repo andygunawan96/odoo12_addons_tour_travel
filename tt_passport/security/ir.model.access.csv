@@ -1,8 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-tt_passport_pricelist_for_operator,tt.passport.pricelist.for.operator,model_tt_passport_pricelist,tt_base.group_tt_tour_travel_operator,1,1,0,0
-tt_passport_pricelist_for_supervisor,tt.passport.pricelist.for.supervisor,model_tt_passport_pricelist,tt_base.group_tt_tour_travel_supervisor,1,1,1,0
-tt_passport_pricelist_for_manager,tt.passport.pricelist.for.manager,model_tt_passport_pricelist,tt_base.group_tt_tour_travel_manager,1,1,1,1
-,,,,,,,
-tt_passport_pricelist_for_agent_user_operator,tt.passport.pricelist.for.agent.user.operator,model_tt_passport_pricelist,tt_base.group_tt_agent_user_operator,1,0,0,0
-tt_passport_pricelist_for_agent_user_supervisor,tt.passport.pricelist.for.agent.user.supervisor,model_tt_passport_pricelist,tt_base.group_tt_agent_user_supervisor,1,0,0,0
-tt_passport_pricelist_for_agent_user_manager,tt.passport.pricelist.for.agent.user.manager,model_tt_passport_pricelist,tt_base.group_tt_agent_user_manager,1,0,0,0
+tt_passport,tt.passport,model_tt_passport,,1,1,1,1
+tt_passport_pricelist,tt.passport.pricelist,model_tt_passport_pricelist,,1,1,1,1

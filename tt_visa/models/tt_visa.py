@@ -78,3 +78,47 @@ class TtVisa(models.Model):
     in_process_date = fields.Datetime('In Process Date', readonly=1)
 
     immigration_consulate = fields.Char('Immigration Consulate', readonly=1, compute="_compute_immigration_consulate")
+
+    def action_draft_visa(self):
+        self.write({
+            'state_visa': 'draft',
+            'state': 'issued'
+        })
+
+    def action_confirm_visa(self):
+        is_confirmed = True
+        self.write({
+            'state_visa': 'confirm',
+            'confirmed_date': datetime.now(),
+            'confirmed_uid': self.env.user.id
+        })
+
+    def action_validate_visa(self):
+        is_validated = True
+        self.write({
+            'state_visa': 'validate',
+            'validate_date': datetime.now(),
+            'validate_uid': self.env.user.id
+        })
+
+    def action_proceed_visa(self):
+        self.write({
+            'state_visa': 'proceed'
+        })
+
+    def action_cancel_visa(self):
+        self.write({
+            'state_visa': 'cancel',
+        })
+
+    def action_ready_visa(self):
+        self.write({
+            'state_visa': 'ready',
+            'ready_date': datetime.now()
+        })
+
+    def action_done_visa(self):
+        self.write({
+            'state_visa': 'done',
+            'done_date': datetime.now()
+        })

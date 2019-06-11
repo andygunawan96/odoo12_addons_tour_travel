@@ -44,7 +44,7 @@
     </record>
 
     <record model="ir.actions.act_window" id="tt_passport_order_all_view_action">
-        <field name="name">passport Document</field>
+        <field name="name">Passport Document</field>
         <field name="res_model">tt.passport</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>

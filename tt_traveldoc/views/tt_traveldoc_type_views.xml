@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="tt_traveldoc_type_view_form">
+        <field name="name">tt.traveldoc.type.view.form</field>
+        <field name="model">tt.traveldoc.type</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box"/>
+                    <div class="oe_title">
+<!--                        <label for="name" class="oe_edit_only"/>-->
+                        <h1>
+                            <field name="name" placeholder="Requirement Name"/>
+                        </h1>
+                    </div>
+                    <separator for="description"/>
+                    <field name="description" placeholder="Description"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tt_traveldoc_type_view_tree">
+        <field name="name">tt.traveldoc.type.view.tree</field>
+        <field name="model">tt.traveldoc.type</field>
+        <field name="arch" type="xml">
+            <tree create="true">
+                <field name="name"/>
+                <field name="description"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_traveldoc_type_view_action">
+        <field name="name">Travel Type Document</field>
+        <field name="res_model">tt.traveldoc.type</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain"/>  <!--[('transport_type','=', 'passport')]-->
+        <field name="context">
+            {
+                'form_view_ref': 'tt_traveldoc.tt_traveldoc_type_view_form',
+                'tree_view_ref': 'tt_traveldoc.tt_traveldoc_type_view_tree',
+            }
+        </field>
+    </record>
+</odoo>

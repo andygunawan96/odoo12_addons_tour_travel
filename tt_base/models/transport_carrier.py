@@ -13,7 +13,6 @@ class TransportCarrier(models.Model):
     _name = 'tt.transport.carrier'
     _description = "List of Carrier Code"
 
-
     name = fields.Char('Name', required=True)
     code = fields.Char('Code', help="for airline : 2-letter IATA")
     icao = fields.Char('ICAO Code', help="ICAO code for airline")

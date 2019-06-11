@@ -30,6 +30,7 @@
                             <field name="rt"/>
                             <field name="rw"/>
                             <field name="sequence"/>
+<!--                            <field name="agent_id"/>-->
                         </group>
                     </group>
                 </sheet>

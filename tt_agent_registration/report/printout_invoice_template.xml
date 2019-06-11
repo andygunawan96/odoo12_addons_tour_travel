@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <template id="printout_invoice_template">
+            <t t-call="report.html_container">
+<!--            <t t-call="tt_report_common.external_layout">-->
+<!--                <t t-set="o" t-value="doc.with_context({'lang':doc.agent_id.lang})"/>-->
+<!--                <div class="page">-->
+<!--                    <div class="row">-->
+<!--                        <div class="col-xs-7">-->
+<!--                            <h4>-->
+<!--                                <strong>-->
+<!--                                    <span t-if="doc.state == 'draft'">Draft Invoice :</span>-->
+<!--                                    <span t-if="doc.state not in ('draft', 'cancel')">Invoice :</span>-->
+<!--                                    <span t-field="doc.name"/>-->
+<!--                                </strong>-->
+<!--                            </h4>-->
+<!--                        </div>-->
+<!--                        <div name="invoice_address" class="col-xs-5">-->
+<!--                            <address t-field="doc.agent_id" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;], &quot;no_marker&quot;: True}"/>-->
+<!--                            <span t-if="doc.agent_id.vat">TIN: <span t-field="doc.agent_id.vat"/></span>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="row mb2">-->
+<!--                        <div class="col-xs-2">-->
+<!--                            <strong>Invoice Date:</strong>-->
+<!--                            <t t-if="doc.date">-->
+<!--                                <p t-field="doc.date" t-field-options="{&quot;format&quot;: &quot;dd-MM-yyyy&quot;}"/>-->
+<!--                            </t>-->
+<!--                            <t t-if="not doc.date">-->
+<!--                                <p style="color: white;">...</p>-->
+<!--                            </t>-->
+<!--                        </div>-->
+<!--                        <div class="col-xs-2">-->
+<!--                            <strong>Issued Date:</strong>-->
+<!--                            <t t-if="doc.issued_date">-->
+<!--                                <p t-field="doc.issued_date" t-field-options="{&quot;format&quot;: &quot;dd-MM-yyyy&quot;}"/>-->
+<!--                            </t>-->
+<!--                            <t t-if="not doc.issued_date">-->
+<!--                                <p style="color: white;">...</p>-->
+<!--                            </t>-->
+<!--                        </div>-->
+<!--                        <div class="col-xs-2">-->
+<!--                            <strong>Issued by:</strong>-->
+<!--                            <t t-if="doc.issued_uid.name">-->
+<!--                                <p t-field="doc.issued_uid.name"/>-->
+<!--                            </t>-->
+<!--                            <t t-if="not doc.issued_uid.name">-->
+<!--                                <p style="color: white;">...</p>-->
+<!--                            </t>-->
+<!--                        </div>-->
+<!--                        <div class="col-xs-2">-->
+<!--                            <strong>Customer:</strong>-->
+<!--                            <t t-if="doc.sub_agent_id.name">-->
+<!--                                <p t-field="doc.sub_agent_id.name"/>-->
+<!--                            </t>-->
+<!--                            <t t-if="not doc.sub_agent_id.name">-->
+<!--                                <p style="color: white;">...</p>-->
+<!--                            </t>-->
+<!--                        </div>-->
+<!--                        <div class="col-xs-2">-->
+<!--                            <strong>Booker:</strong>-->
+<!--                            <t t-if="doc.contact_id">-->
+<!--                                <p>-->
+<!--                                    <span t-field="doc.contact_id.first_name"/>-->
+<!--                                    <span/>-->
+<!--                                    <span t-field="doc.contact_id.last_name"/>-->
+<!--                                </p>-->
+<!--                            </t>-->
+<!--                            <t t-if="not doc.contact_id">-->
+<!--                                <p style="color: white;">...</p>-->
+<!--                            </t>-->
+<!--                        </div>-->
+<!--                    </div>-->
+
+<!--                    <table class="edaptec-table table table-condensed">-->
+<!--                        <thead>-->
+<!--                            <tr>-->
+<!--                                <th>Service Type</th>-->
+<!--                                <th>Service Description</th>-->
+<!--                                <th class="text-right">Unit Price</th>-->
+<!--                                <th class="text-right">Qty</th>-->
+<!--                                <th class="text-right">Amount</th>-->
+<!--                            </tr>-->
+<!--                        </thead>-->
+<!--                        <tbody class="invoice_tbody">-->
+<!--                            <tr t-foreach="fare_detail" t-as="rec">-->
+<!--                                <td>-->
+<!--                                    <t t-esc="rec['serv_type']"/>-->
+<!--                                </td>-->
+<!--                                <td>-->
+<!--                                    <t t-raw="rec['desc']"/>-->
+<!--                                </td>-->
+<!--                                <td class="text-right">-->
+<!--                                    <span t-esc="rec['unit_price']" t-esc-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>-->
+<!--                                </td>-->
+<!--                                <td class="text-right"><span t-esc="rec['qty']"/></td>-->
+<!--                                <td class="text-right">-->
+<!--                                    <span t-esc="rec['total']" t-esc-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>-->
+<!--                                </td>-->
+<!--                            </tr>-->
+<!--                        </tbody>-->
+<!--                    </table>-->
+
+<!--                    <div class="row">-->
+<!--                        <div class="col-xs-4 pull-right">-->
+<!--                            <table class="edaptec-table table table-condensed">-->
+<!--                                <tr class="border-black">-->
+<!--                                    <td><strong>Total Fare</strong></td>-->
+<!--                                    <td class="text-right">-->
+<!--                                        <span t-field="doc.total_fare" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>-->
+<!--                                    </td>-->
+<!--                                </tr>-->
+<!--                                <tr class="border-black">-->
+<!--                                    <td><strong>Total Disc</strong></td>-->
+<!--                                    <td class="text-right">-->
+<!--                                        <span t-esc="doc.total_discount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>-->
+<!--                                    </td>-->
+<!--                                </tr>-->
+<!--                                <tr class="border-black">-->
+<!--                                    <td><strong>Total Tax</strong></td>-->
+<!--                                    <td class="text-right">-->
+<!--                                        <span t-field="doc.total_tax" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>-->
+<!--                                    </td>-->
+<!--                                </tr>-->
+<!--                                <tr class="border-black">-->
+<!--                                    <td><strong>Total</strong></td>-->
+<!--                                    <td class="text-right">-->
+<!--                                        <span t-field="doc.total" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>-->
+<!--                                    </td>-->
+<!--                                </tr>-->
+<!--                            </table>-->
+<!--                        </div>-->
+<!--                        <div class="col-xs-4 pull-right">-->
+<!--                            <table class="edaptec-table table table-condensed">-->
+<!--                                <tr class="border-black">-->
+<!--                                    <td><strong>Komisi</strong></td>-->
+<!--                                    <td class="text-right">-->
+<!--                                        <span t-esc="sum_comisi" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>-->
+<!--                                    </td>-->
+<!--                                </tr>-->
+<!--                                <tr class="border-black">-->
+<!--                                    <td><strong>NTA</strong></td>-->
+<!--                                    <td class="text-right">-->
+<!--                                        <span t-esc="doc.total - sum_comisi" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>-->
+<!--                                    </td>-->
+<!--                                </tr>-->
+<!--                            </table>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <t t-call="tt_transport_printout.rodex_invoice_signature_part2_document"/>-->
+<!--                </div>-->
+<!--            </t>-->
+            </t>
+        </template>
+
+        <template id="printout_invoice">
+            <!--<t t-set="data_report_header_spacing" t-value="20"/>-->
+            <!--<t t-set="data_report_margin_top" t-value="22"/>-->
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="tt_transport_printout.printout_invoice_template"/>
+            </t>
+        </template>
+
+    </data>
+</odoo>
