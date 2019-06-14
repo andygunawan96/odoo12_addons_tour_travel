@@ -2,4 +2,7 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_tt_agent_invoice,access_tt_agent_sales.tt_agent_invoice,model_tt_agent_invoice,,1,1,1,1
 access_tt_agent_invoice_line,access_tt_agent_sales.tt_agent_invoice_line,model_tt_agent_invoice_line,,1,1,1,1
 access_tt_agent_invoice_line_detail,access_tt_agent_sales.tt_agent_invoice_line_detail,model_tt_agent_invoice_line_detail,,1,1,1,1
+access_tt_split_invoice_wizard,access_tt_split_invoice_wizard,model_tt_split_invoice_wizard,,1,1,1,1
+access_tt_split_invoice_line,access_tt_split_invoice_line,model_tt_split_invoice_line,,1,1,1,1
 access_tt_payment_invoice_rel,access_tt_agent_sales.tt_payment_invoice_rel,model_tt_payment_invoice_rel,,1,1,1,1
+access_tt_dynamic_selection,access_tt_dynamic_selection,model_tt_dynamic_selection,,1,1,1,1

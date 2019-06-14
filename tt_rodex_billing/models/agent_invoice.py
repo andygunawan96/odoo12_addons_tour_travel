@@ -146,7 +146,6 @@ class AgentInvoice(models.Model):
         if any(rec.state != 'confirm' for rec in self):
             raise UserError(_('You cannot create Billing Statement that an Invoice has been set to \'Confirm\'.'))
 
-
         values = {
             # 'payment_term_id': self.payment_term_id.id,
             'due_date': fields.Date.context_today(self),
@@ -155,8 +154,6 @@ class AgentInvoice(models.Model):
             'contact_id': self.contact_id and self.contact_id.id or False,
             'invoice_ids': [(4, 0, self.ids)],
         }
-
-
 
         bill_obj = self.env['tt.billing.statement'].create(values)
         # bill_obj.onchange_sub_agent_id() #UPdate payment_term, due_date

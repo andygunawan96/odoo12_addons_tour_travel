@@ -24,6 +24,39 @@ class TtAgentType(models.Model):
     agent_ids = fields.One2many('tt.agent', 'agent_type_id', 'Agent')
     history_ids = fields.Integer(string="History ID", required=False, )  # tt_history
     is_allow_regis = fields.Boolean('Allow Registration', default=False)
+    commission_rule_ids = fields.One2many('tt.commission.rule', 'agent_type_id', 'Commission Rule(s)')
+    recruitment_commission_ids = fields.One2many('tt.commission.rule', 'agent_type2_id',
+                                                 'Recruitment Commission Rule(s)')
+
+    @api.multi
+    def calc_recruitment_commission(self, agent_type_id, total_payment):
+        comm_objs = self.recruitment_commission_ids.filtered(lambda x: x.rec_agent_type_id.id == agent_type_id.id)
+        if comm_objs:
+            return comm_objs[0].amount, comm_objs[0].parent_agent_amount, total_payment - comm_objs[0].amount - \
+                   comm_objs[0].parent_agent_amount
+        else:
+            return 0, 0, total_payment
+
+
+class CommissionRule(models.Model):
+    _name = 'tt.commission.rule'
+
+    agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type')
+    agent_type2_id = fields.Many2one('tt.agent.type', 'Agent Type')
+    rec_agent_type_id = fields.Many2one('tt.agent.type', 'Recruit By')
+    carrier_id = fields.Many2one('tt.transport.carrier', 'Carrier', help='Set Empty for All Product Rule')
+    carrier_code = fields.Char('Code', related='carrier_id.code')
+    percentage = fields.Float('Commission (%)', default=100)
+    amount = fields.Float('Amount')
+    amount_multiplier = fields.Selection([('code', 'Booking Code'), ('pppr', 'Per Person Per Pax')],
+                                         'Multiplier', help='Parent Agent Commision Type', default='code')
+    parent_agent_type = fields.Selection([('per', 'Percentage'), ('amo', 'Amount')], 'Parent Type',
+                                         help='Parent Agent Commision Type')
+    parent_agent_amount = fields.Float('Parent Amount')
+    ho_commission_type = fields.Selection([('per', 'Percentage'), ('amo', 'Amount')],
+                                          'HO Commission Type', help='Head Office Commision Type')
+    ho_amount = fields.Float('HO Amount')
+    active = fields.Boolean('Active', default=True)
 
     # @api.multi
     # def write(self, value):

@@ -1,0 +1,100 @@
+<odoo>
+    <!--VISA PRICELIST-->
+    <record model="ir.ui.view" id="tt_visa_pricelist_view_form">
+        <field name="name">tt.visa.pricelist.view.form</field>
+        <field name="model">tt.visa.pricelist</field>
+        <field name="arch" type="xml">
+            <form string="">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" default_focus="1" placeholder="Document Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Document Type">
+                            <field name="entry_type"/>
+                            <field name="visa_type"/>
+                            <field name="process_type"/>
+                            <field name="pax_type"/>
+                        </group>
+                        <group string="Document Information">
+<!--                            <field name="transport_type"/>-->
+                            <field name="country_id"/>
+                            <field name="duration"/>
+                            <field name="description" string="Consulate"/>
+                            <field name="immigration_consulate" string="City (Consulate)"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Pricing">
+                            <field name="currency_id" invisible="1"/>
+                            <field name="nta_price"/>  <!--groups="tt_base.group_tt_tour_travel_operator"-->
+                            <field name="cost_price"/>  <!--groups="tt_base.group_tt_tour_travel_operator"-->
+                            <field name="sale_price"/>
+                            <field name="commission_price"/>  <!--groups="tt_base.group_tt_tour_travel_operator"-->
+                        </group>
+                    </group>
+<!--                    <separator string="Requirements"/>-->
+<!--                    <field name="requirement_ids" string="Requirements">-->
+<!--                        <tree>-->
+<!--                            <field name="type_id"/>-->
+<!--                        </tree>-->
+<!--                        <form>-->
+<!--                            <sheet>-->
+<!--                                <div class="oe_title">-->
+<!--                                    <h1>-->
+<!--                                        <field name="type_id" default_focus="1" placeholder="Choose Requirement"/>-->
+<!--                                    </h1>-->
+<!--                                </div>-->
+<!--                            </sheet>-->
+<!--                        </form>-->
+<!--                    </field>-->
+                    <notebook colspan="4">
+                        <page string="Notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tt_visa_pricelist_view_tree" >
+        <field name="name">tt.visa.pricelist.view.tree</field>
+        <field name="model">tt.visa.pricelist</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="visa_type"/>
+                <field name="entry_type"/>
+                <field name="pax_type"/>
+                <field name="country_id"/>
+                <field name="immigration_consulate"/>
+                <field name="commercial_duration"/>
+                <field name="sale_price"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_visa_pricelist_view_action">
+        <field name="name">Visa Pricelist</field>
+        <field name="res_model">tt.visa.pricelist</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain"/>  <!--[('transport_type','=', 'visa')]-->
+        <field name="context">
+            {
+                'form_view_ref': 'tt_visa.tt_visa_pricelist_view_form',
+                'tree_view_ref': 'tt_visa.tt_visa_pricelist_view_tree',
+            }
+        </field>
+    </record>
+
+    <menuitem id="submenu_visa_pricelist" parent="tt_visa.menu_tour_travel_visa_master"
+              name="Visa" action="tt_visa.tt_visa_pricelist_view_action"/>
+</odoo>

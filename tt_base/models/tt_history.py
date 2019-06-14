@@ -11,17 +11,29 @@ class TtHistory(models.Model):
         self_dict = self.read()
         key_list = [key for key in value.keys()]
         for key in key_list:
-            # print(self.fields_get())
-            # print(self.fields_get().get(key))
-            # print(key)
-            # print(self.fields_get().get(key))
-            if self.fields_get().get(key) is not None:
-                # One2Many Relation Field
-                if self.fields_get().get(key)['type'] == 'one2many' or self.fields_get().get(key)['type'] == 'many2many':
-                    self.message_post(body=_("%s Changed.") %
-                                            (self.fields_get().get(key)['string']))  # Model String / Label
+            #skipped key
+            if self._name in skipped_keys:
+                if key in skipped_keys[self._name]:
+                    continue
 
-                # Many2One Relation Field
+            # One2Many Relation Field
+            if self.fields_get().get(key)['type'] == 'one2many':
+                self.message_post(body=_("%s Changed.") %
+                                       (self.fields_get().get(key)['string']))  # Model String / Label
+            # Many2One Relation Field
+            # start : kode ini masih beresiko (hard coded). dapat diubah kapan saja
+            else:
+                if self.fields_get().get(key)['type'] == 'many2one':
+                    dict = self_dict[0]
+                    old_value = dict.get(key)
+                    if old_value is False:
+                        old_value = 'None'
+                    else:
+                        old_value = dict.get(key)[1]
+                    new_value = self.env[self.fields_get().get(key)['relation']].search([('id', 'in', [value[key]])]).name_get()[0][1]
+                    # end
+
+                # Non-Relation Field
                 else:
                     # start : kode ini masih beresiko (hard coded). dapat diubah kapan saja
                     if self.fields_get().get(key)['type'] == 'many2one':

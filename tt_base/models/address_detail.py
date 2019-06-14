@@ -7,6 +7,7 @@ class AddressDetail(models.Model):
     _description = 'Tour & Travel - Address Detail'
 
     agent_id = fields.Many2one('tt.agent', string='Agent')
+    agent_registration_id = fields.Many2one('tt.agent.registration', string='Agent Registration ID')
     customer_id = fields.Many2one('tt.customer', string='Customer')
     company_id = fields.Many2one('tt.company', string='Company')
     type = fields.Selection([('work', 'Work'), ('home', 'Home'), ('custom', 'Custom')], 'Address Type', required=True)
@@ -15,6 +16,7 @@ class AddressDetail(models.Model):
     address = fields.Char('Address', required=True)
     rt = fields.Char('RT')
     rw = fields.Char('RW')
+    zip = fields.Char('Zip')
     country_id = fields.Many2one('res.country', string='Country')
     state_id = fields.Many2one('res.country.state', string='Country State')
     city_id = fields.Many2one('res.city', string='City')
@@ -30,3 +32,7 @@ class AddressDetail(models.Model):
             self.name = "Home"
         elif self.type == 'custom':
             self.name = ""
+
+    # @api.onchange('agent_id')
+    # def _onchange_agent_id(self):
+    #     self.agent_id = self.env.user.agent_id.id

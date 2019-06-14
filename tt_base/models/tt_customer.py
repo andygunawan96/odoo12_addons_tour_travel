@@ -4,6 +4,7 @@ from dateutil.relativedelta import relativedelta
 from odoo.tools import image
 from ...tools import test_to_dict
 
+
 class TtCustomer(models.Model,test_to_dict.ToDict):
     _inherit = 'tt.history'
     _name = 'tt.customer'
@@ -29,8 +30,8 @@ class TtCustomer(models.Model,test_to_dict.ToDict):
     birth_date = fields.Date('Birth Date')
     age = fields.Char('Age', help='For Adult, age in year\nFor Child, age in month',
                       compute="calculate_age")
-    address_ids = fields.One2many('address.detail', 'customer_id', 'Social Media Detail')
-    phone_ids = fields.One2many('phone.detail', 'customer_id', 'Social Media Detail')
+    address_ids = fields.One2many('address.detail', 'customer_id', 'Address Detail')
+    phone_ids = fields.One2many('phone.detail', 'customer_id', 'Phone Detail')
     social_media_ids = fields.One2many('social.media.detail', 'customer_id', 'Social Media Detail')
     employment_ids = fields.One2many('res.employee', 'customer_id', 'Employee')
     email = fields.Char('Email')
@@ -38,6 +39,8 @@ class TtCustomer(models.Model,test_to_dict.ToDict):
     passport_exp_date = fields.Datetime(string='Passport Exp Date')
     user_id = fields.One2many('res.users', 'customer_id', 'User')
     customer_bank_detail_ids = fields.One2many('customer.bank.detail', 'customer_id', 'Customer Bank Detail')
+
+    agent_id = fields.Many2one('tt.agent', 'Agent')
 
     @api.depends('first_name', 'last_name')
     def _compute_name(self):

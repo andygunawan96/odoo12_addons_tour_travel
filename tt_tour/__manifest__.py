@@ -24,13 +24,15 @@
 
     # always loaded
     'data': [
-        # 'security/ir.model.access.csv',
+        'security/ir.model.access.csv',
+        'security/ir_rule_data.xml',
         # 'views/views.xml',
         # 'views/templates.xml',
-        # 'views/tour_booking_views.xml',
+        'views/tt_tour_menuheader.xml',
+        'views/tour_booking_views.xml',
+        # 'views/tour_booking_views_concept.xml',
         'views/tt_tour_package_quotation_views.xml',
         'views/tt_tour_pricelist_views.xml',
-        'views/tt_tour_menuheader.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

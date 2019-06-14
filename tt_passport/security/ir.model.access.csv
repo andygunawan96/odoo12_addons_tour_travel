@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+tt_passport,tt.passport,model_tt_passport,,1,1,1,1
+tt_passport_order_passengers,tt.passport.order.passengers,model_tt_passport_order_passengers,,1,1,1,1
+tt_passport_pricelist,tt.passport.pricelist,model_tt_passport_pricelist,,1,1,1,1

@@ -81,7 +81,6 @@ RESERVATION_TYPE = [
 #     resv_id = fields.Many2one('tt.reservation', 'Reservation', readonly=True)
 
 
-
 class TtReservation(models.Model):
     _name = 'tt.reservation'
 
@@ -108,7 +107,6 @@ class TtReservation(models.Model):
     display_mobile = fields.Char('Contact Person for Urgent Situation',
                                  readonly=True, states={'draft': [('readonly', False)]})
 
-
     elder = fields.Integer('Elder', readonly=True, states={'draft': [('readonly', False)]})
     adult = fields.Integer('Adult', default=1, readonly=True, states={'draft': [('readonly', False)]})
     child = fields.Integer('Child', readonly=True, states={'draft': [('readonly', False)]})
@@ -116,7 +114,7 @@ class TtReservation(models.Model):
 
     ledger_ids = fields.One2many('tt.ledger', 'res_id', 'Ledger')
 
-    departure_date = fields.Date('Journey Date', required=True, readonly=True, states={'draft': [('readonly', False)]})
+    departure_date = fields.Date('Journey Date', readonly=True, states={'draft': [('readonly', False)]})  # , required=True
     return_date = fields.Date('Return Date', readonly=True, states={'draft': [('readonly', False)]})
 
     # agent_invoice_ids = fields.One2many('tt.agent.invoice', '', 'Agent Invoice')  # One2Many -> tt.agent.invoice

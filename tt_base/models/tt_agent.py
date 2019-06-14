@@ -16,8 +16,8 @@ class TtAgent(models.Model):
     reference = fields.Many2one('tt.agent', 'Reference')
     balance = fields.Monetary(string="Balance",  required=False, )
     actual_balance = fields.Monetary(string="Actual Balance",  required=False, )
-    annual_revenue_target = fields.Monetary(string="Annual Revenue Target",  required=False, )
-    annual_profit_target = fields.Monetary(string="Annual Profit Target",  required=False, )
+    annual_revenue_target = fields.Monetary(string="Annual Revenue Target", required=False, )
+    annual_profit_target = fields.Monetary(string="Annual Profit Target", required=False, )
     credit_limit = fields.Monetary(string="Credit Limit",  required=False, )
     npwp = fields.Char(string="NPWP", required=False, )
     est_date = fields.Datetime(string="Est. Date", required=False, )
@@ -34,12 +34,14 @@ class TtAgent(models.Model):
     # reservation_id = fields.Char(string="Reservation Detail", required=False, )
     ledger_id = fields.Char(string="Ledger ID", required=False, )  # tt_ledger
     parent_agent_id = fields.Many2one('tt.agent', string="Parent Agent")
-    agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type ID')
+    agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type')
     history_ids = fields.Char(string="History", required=False, )  # tt_history
     company_ids = fields.One2many('tt.company', 'agent_id', string='Company')
     user_ids = fields.One2many('res.users', 'agent_id', 'User')
     payment_acquirer_ids = fields.Char(string="Payment Acquirer", required=False, )  # payment_acquirer
     agent_bank_detail_ids = fields.One2many('agent.bank.detail', 'agent_id', 'Agent Bank')  # agent_bank_detail
+    tac = fields.Text('Terms and Conditions', readonly=True, states={'draft': [('readonly', False)],
+                                                                     'confirm': [('readonly', False)]})
     active = fields.Boolean('Active', default='True')
 
     @api.depends('logo')
@@ -62,3 +64,9 @@ class TtAgent(models.Model):
     #                                 value[key],  # New Value
     #                                 self.env.user.name))  # User that Changed the Value
     #     return super(TtAgent, self).write(value)
+
+    def get_balance(self, agent_id):
+        agent_obj = self.env['tt.agent'].browse([agent_id])
+        if not agent_obj:
+            return 'Agent/Sub Agent not Found'
+        return agent_obj.balance

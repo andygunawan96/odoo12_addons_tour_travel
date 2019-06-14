@@ -1,8 +1,6 @@
 from odoo import api, fields, models, _
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
-from ...tools.api import Response
-import json
 
 DP_TYPE = [
     ('percentage', 'Percentage'),

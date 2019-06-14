@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--BILLING STATEMENT USER GROUP-->
+    <record id="group_tt_billing_statement_operator" model="res.groups">
+        <field name="name">Operator</field>
+        <field name="category_id" ref="tt_base.module_category_billing_statement"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="group_tt_billing_statement_supervisor" model="res.groups">
+        <field name="name">Supervisor</field>
+        <field name="category_id" ref="tt_base.module_category_billing_statement"/>
+        <field name="implied_ids" eval="[(4, ref('group_tt_billing_statement_operator'))]"/>
+    </record>
+
+    <record id="group_tt_billing_statement_manager" model="res.groups">
+        <field name="name">Manager</field>
+        <field name="category_id" ref="tt_base.module_category_billing_statement"/>
+        <field name="implied_ids" eval="[(4, ref('group_tt_billing_statement_supervisor'))]"/>
+    </record>
+
+    <!--AGENT INVOICE USER GROUP-->
+    <record id="group_tt_agent_invoice_operator" model="res.groups">
+        <field name="name">Operator</field>
+        <field name="category_id" ref="tt_base.module_category_agent_invoice"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="group_tt_agent_invoice_supervisor" model="res.groups">
+        <field name="name">Supervisor</field>
+        <field name="category_id" ref="tt_base.module_category_agent_invoice"/>
+        <field name="implied_ids" eval="[(4, ref('group_tt_agent_invoice_operator'))]"/>
+    </record>
+
+    <record id="group_tt_agent_invoice_manager" model="res.groups">
+        <field name="name">Manager</field>
+        <field name="category_id" ref="tt_base.module_category_agent_invoice"/>
+        <field name="implied_ids" eval="[(4, ref('group_tt_agent_invoice_supervisor'))]"/>
+    </record>
+
+    <!--SUB-AGENT USER GROUP-->
+    <record id="group_tt_sub_agent_user_operator" model="res.groups">
+        <field name="name">Operator</field>
+        <field name="category_id" ref="tt_base.module_category_sub_agent_user"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="group_tt_sub_agent_user_supervisor" model="res.groups">
+        <field name="name">Supervisor</field>
+        <field name="category_id" ref="tt_base.module_category_sub_agent_user"/>
+        <field name="implied_ids" eval="[(4, ref('group_tt_sub_agent_user_operator'))]"/>
+    </record>
+
+    <record id="group_tt_sub_agent_user_manager" model="res.groups">
+        <field name="name">Manager</field>
+        <field name="category_id" ref="tt_base.module_category_sub_agent_user"/>
+        <field name="implied_ids" eval="[(4, ref('group_tt_sub_agent_user_supervisor'))]"/>
+    </record>
+
+    <!--AGENT USER GROUP-->
+    <record id="group_tt_agent_user_operator" model="res.groups">
+        <field name="name">Operator</field>
+        <field name="category_id" ref="tt_base.module_category_agent_user"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="group_tt_agent_user_supervisor" model="res.groups">
+        <field name="name">Supervisor</field>
+        <field name="category_id" ref="tt_base.module_category_agent_user"/>
+        <field name="implied_ids" eval="[(4, ref('group_tt_agent_user_operator'))]"/>
+    </record>
+
+    <record id="group_tt_agent_user_manager" model="res.groups">
+        <field name="name">Manager</field>
+        <field name="category_id" ref="tt_base.module_category_agent_user"/>
+        <field name="implied_ids" eval="[(4, ref('group_tt_agent_user_supervisor'))]"/>
+    </record>
+    
+    <!--AGENT MANAGEMENT GROUP-->
+    <record id="group_tt_agent_management_operator" model="res.groups">
+        <field name="name">Operator</field>
+        <field name="category_id" ref="tt_base.module_category_agent_management"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="group_tt_agent_management_supervisor" model="res.groups">
+        <field name="name">Supervisor</field>
+        <field name="category_id" ref="tt_base.module_category_agent_management"/>
+        <field name="implied_ids" eval="[(4, ref('group_tt_agent_management_operator'))]"/>
+    </record>
+    
+    <record id="group_tt_agent_management_manager" model="res.groups">
+        <field name="name">Manager</field>
+        <field name="category_id" ref="tt_base.module_category_agent_management"/>
+        <field name="implied_ids" eval="[(4, ref('group_tt_agent_management_supervisor'))]"/>
+    </record>
+
+     <!--TICKETING SYSTEMN GROUP-->
+    <record id="group_tt_ticketing_operator" model="res.groups">
+        <field name="name">Operator</field>
+        <field name="category_id" ref="tt_base.module_category_ticketing_system"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="group_tt_ticketing_manager" model="res.groups">
+        <field name="name">Supervisor</field>
+        <field name="category_id" ref="tt_base.module_category_ticketing_system"/>
+        <field name="implied_ids" eval="[(4, ref('group_tt_ticketing_operator'))]"/>
+    </record>
+    
+    <record id="group_tt_ticketing_manager" model="res.groups">
+        <field name="name">Manager</field>
+        <field name="category_id" ref="tt_base.module_category_ticketing_system"/>
+        <field name="implied_ids" eval="[(4, ref('group_tt_ticketing_manager'))]"/>
+    </record>
+
+    <!--TOUR AND TRAVEL SYSTEM GROUP-->
+    <record id="group_tt_tour_travel_operator" model="res.groups">
+        <field name="name">Operator</field>
+        <field name="category_id" ref="tt_base.module_category_tour_travel_system"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="group_tt_tour_travel_supervisor" model="res.groups">
+        <field name="name">Supervisor</field>
+        <field name="category_id" ref="tt_base.module_category_tour_travel_system"/>
+        <field name="implied_ids" eval="[(4, ref('group_tt_tour_travel_operator'))]"/>
+    </record>
+
+    <record id="group_tt_tour_travel_manager" model="res.groups">
+        <field name="name">Manager</field>
+        <field name="category_id" ref="tt_base.module_category_tour_travel_system"/>
+        <field name="implied_ids" eval="[(4, ref('group_tt_tour_travel_supervisor'))]"/>
+    </record>
+
+    <!--HOTEL SYSTEM GROUP-->
+    <record model="ir.module.category" id="module_category_hotel_management">
+        <field name="name">Hotel CMS Management</field>
+        <field name="description">Helps you handle your Hotel from each user level</field>
+        <field name="sequence">50</field>
+    </record>
+
+    <record id="group_hotel_user" model="res.groups">
+        <field name="name">User</field>
+        <field name="category_id" ref="module_category_hotel_management"/>
+        <field name="comment">the user will have access to Read Room and Rate, Create Resv and read thier own resv only.</field>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+    <record id="group_hotel_supervisor" model="res.groups">
+        <field name="name">Supervisor</field>
+        <field name="category_id" ref="module_category_hotel_management"/>
+        <field name="implied_ids" eval="[(4, ref('group_hotel_user'))]"/>
+        <field name="comment">the user will have access to C,R,U,D Room and Rate, Create Resv and read all resv for their hotel.</field>
+    </record>
+    <record id="group_hotel_manager" model="res.groups">
+        <field name="name">Manager</field>
+        <field name="category_id" ref="module_category_hotel_management"/>
+        <field name="implied_ids" eval="[(4, ref('group_hotel_supervisor'))]"/>
+        <field name="comment">the user will have access to all Room, Rate and Resv for their hotel. Change Hotel Name</field>
+    </record>
+    <record id="group_hotel_group_manager" model="res.groups">
+        <field name="name">Group Manager</field>
+        <field name="category_id" ref="module_category_hotel_management"/>
+        <field name="implied_ids" eval="[(4, ref('group_hotel_manager'))]"/>
+        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+        <field name="comment">the user will have access to all Room, Rate, Hotel and Resv for their hotels.</field>
+    </record>
+
+</odoo>

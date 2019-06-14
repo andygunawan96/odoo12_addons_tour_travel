@@ -369,7 +369,7 @@ class ReservationAirline(models.Model):
         "api_key": "c2bafdb6-1eca-449a-ac2f-3e38118e908e",
         "error_code": 0,
         "error_msg": False,
-        "co_uid": 15
+        "co_uid": 8
     }
 
     param_pax = {
@@ -1478,6 +1478,10 @@ class ReservationAirlineApi(models.Model):
             api_context = {
                 'co_uid': self.env.user.id
             }
+        if 'co_uid' not in api_context:
+            api_context.update({
+                'co_uid': self.env.user.id
+            })
         for rec in self:
             book_info = rec.action_get_provider_booking_info()
             vals = {
@@ -1538,8 +1542,10 @@ class ReservationAirlineApi(models.Model):
         user_obj = self.env['res.users'].browse(api_context['co_uid'])
         temp_order_number = self.sudo().search([], order='id desc', limit=1)
         order_number = temp_order_number.name
+        print(user_obj)
         order_obj = self.sudo().search([('name', '=', order_number), '|', ('agent_id', '=', user_obj.agent_id.id), ('sub_agent_id', '=', user_obj.agent_id.id)])
         if not order_obj:
+            print('Order not found')
             _logger.error('Just Test : OrderNo %s, agent_id : %s' % (order_number, user_obj.agent_id.id))
             return {
                 'error_code': 1,
@@ -1547,6 +1553,7 @@ class ReservationAirlineApi(models.Model):
                 # 'error_msg': _('Order not found or you not allowed access the order.')
             }
 
+        print('Test State')
         if order_obj.state == 'issued':
             return {
                 'error_code': 0,
@@ -1572,6 +1579,7 @@ class ReservationAirlineApi(models.Model):
         #Check Saldo
         #fixme uncomment later
         # is_enough = order_obj.env['tt.agent'].check_balance_limit(order_obj.sub_agent_id.id, order_obj.total_nta)
+        print('Test')
         is_enough = {}
         is_enough['error_code'] = 0
         if is_enough['error_code'] != 0:
