@@ -89,8 +89,8 @@
         <field name="domain"/>  <!--[('transport_type','=', 'visa')]-->
         <field name="context">
             {
-                'form_view_ref': 'tt_passport.tt_visa_pricelist_view_form',
-                'tree_view_ref': 'tt_passport.tt_visa_pricelist_view_tree',
+                'form_view_ref': 'tt_visa.tt_visa_pricelist_view_form',
+                'tree_view_ref': 'tt_visa.tt_visa_pricelist_view_tree',
             }
         </field>
     </record>

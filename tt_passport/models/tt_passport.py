@@ -46,16 +46,19 @@ class TtPassport(models.Model):
     estimate_date = fields.Date('Estimate Date', help='Estimate Process Done since the required documents submitted',
                                 readonly=True)  # estimasi tanggal selesainya paspor
     payment_date = fields.Date('Payment Date', help='Date when accounting must pay the vendor')
-    use_vendor = fields.Boolean('Use Vendor', readonly=True, default=False)
-    vendor = fields.Char('Vendor Name')
+    # use_vendor = fields.Boolean('Use Vendor', readonly=True, default=False)
+    # vendor = fields.Char('Vendor Name')
     receipt_number = fields.Char('Reference Number')
     # vendor_ids = fields.One2many('tt.traveldoc.vendor.lines', 'booking_id', 'Expenses')
 
-    # to_passenger_ids = fields.One2many('tt.traveldoc.order.passengers', 'booking_id',
-    #                                    'Travel Document Order Passengers')
+    to_passenger_ids = fields.One2many('tt.passport.order.passengers', 'passport_id',
+                                       'Travel Document Order Passengers')
     commercial_state = fields.Char('Payment Status', readonly=1, compute='_compute_commercial_state')
     confirmed_date = fields.Datetime('Confirmed Date', readonly=1)
     confirmed_uid = fields.Many2one('res.users', 'Confirmed By', readonly=1)
+
+    sale_service_charge_ids = fields.One2many('tt.service.charge', 'passport_id', 'Service Charge',
+                                              readonly=True, states={'draft': [('readonly', False)]})
 
     validate_date = fields.Datetime('Validate Date', readonly=1)
     validate_uid = fields.Many2one('res.users', 'Validate By', readonly=1)

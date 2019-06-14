@@ -25,14 +25,11 @@
     # always loaded
     'data': [
         'security/ir.model.access.csv',
-        # 'views/views.xml',
-        # 'views/templates.xml',
+        'data/ir_sequence_data.xml',
         'views/tt_passport_menuheader.xml',
         'views/tt_passport_views.xml',
         'views/tt_passport_pricelist_views.xml',
     ],
     # only loaded in demonstration mode
-    'demo': [
-        'demo/demo.xml',
-    ],
+    'demo': [],
 }

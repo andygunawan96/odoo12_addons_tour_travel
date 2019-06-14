@@ -57,8 +57,7 @@ class TtVisa(models.Model):
     receipt_number = fields.Char('Reference Number')
     # vendor_ids = fields.One2many('tt.traveldoc.vendor.lines', 'booking_id', 'Expenses')
 
-    # to_passenger_ids = fields.One2many('tt.traveldoc.order.passengers', 'booking_id',
-    #                                    'Travel Document Order Passengers')
+    to_passenger_ids = fields.One2many('tt.visa.order.passengers', 'visa_id', 'Visa Order Passengers')
     commercial_state = fields.Char('Payment Status', readonly=1, compute='_compute_commercial_state')
     confirmed_date = fields.Datetime('Confirmed Date', readonly=1)
     confirmed_uid = fields.Many2one('res.users', 'Confirmed By', readonly=1)
@@ -66,6 +65,9 @@ class TtVisa(models.Model):
     validate_date = fields.Datetime('Validate Date', readonly=1)
     validate_uid = fields.Many2one('res.users', 'Validate By', readonly=1)
     payment_uid = fields.Many2one('res.users', 'Payment By', readonly=1)
+
+    sale_service_charge_ids = fields.One2many('tt.service.charge', 'visa_id', 'Service Charge',
+                                              readonly=True, states={'draft': [('readonly', False)]})
 
     done_date = fields.Datetime('Done Date', readonly=1)
     ready_date = fields.Datetime('Ready Date', readonly=1)

@@ -191,7 +191,7 @@ class TourBooking(models.Model):
     }
 
     # def test_booking(self):
-    #     self.create_booking(self.contact_data, self.passenger_data, self.option, self.search_request, '', self.context, self.kwargs)
+    # self.create_booking(self.contact_data, self.passenger_data, self.option, self.search_request, '', self.context, self.kwargs)
 
     def create_booking(self):
         contact_data = copy.deepcopy(self.param_contact_data)
