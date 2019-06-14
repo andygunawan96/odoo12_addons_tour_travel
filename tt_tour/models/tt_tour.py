@@ -1,7 +1,13 @@
 from odoo import api, fields, models, _
 from datetime import datetime, date, timedelta
+import logging
+import traceback
+import copy
 from dateutil.relativedelta import relativedelta
 from odoo.exceptions import UserError
+
+# from Ap
+_logger = logging.getLogger(__name__)
 
 PAYMENT_METHOD = [
     ('cash', 'Cash'),
