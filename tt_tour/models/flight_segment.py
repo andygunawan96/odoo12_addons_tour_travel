@@ -25,7 +25,7 @@ class FlightSegment(models.Model):
     origin_id = fields.Many2one('tt.destinations', 'Origin', domain=[('provider_type.name', '=', 'Airline')])
     origin_terminal = fields.Char('Origin Terminal')
 
-    destination_id = fields.Many2one('tt.destinations', 'Origin', domain=[('provider_type.name', '=', 'Airline')])
+    destination_id = fields.Many2one('tt.destinations', 'Destination', domain=[('provider_type.name', '=', 'Airline')])
     destination_terminal = fields.Char('Destination Terminal')
 
     departure_date_fmt = fields.Datetime('Departure Date (FMT)')

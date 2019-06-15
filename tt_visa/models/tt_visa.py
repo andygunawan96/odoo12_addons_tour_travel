@@ -1,5 +1,7 @@
 from odoo import api, fields, models, _
 from datetime import datetime, timedelta
+from odoo.exceptions import UserError
+
 
 STATE_VISA = [
     ('draft', 'Open'),
@@ -25,7 +27,7 @@ JOURNEY_DIRECTION = [
 
 class TtVisa(models.Model):
     _name = 'tt.visa'
-    _inherit = 'tt.reservation'
+    _inherit = ['tt.reservation', 'tt.history']
 
     description = fields.Char('Description', readonly=True, states={'draft': [('readonly', False)]})
     country_id = fields.Many2one('res.country', 'Country', ondelete="cascade", readonly=True,
@@ -124,3 +126,92 @@ class TtVisa(models.Model):
             'state_visa': 'done',
             'done_date': datetime.now()
         })
+
+    ######################################################################################################
+    # CREATE
+    ######################################################################################################
+
+    def create_booking_traveldoc(self, contact_data, passengers, service_charge_summary, search_req, context, kwargs={}):
+        try:
+            self._validate_traveldoc(context, 'context')
+            self._validate_traveldoc(search_req, 'header')
+            context = self.update_api_context(int(contact_data.get('agent_id')), context)
+
+            # ========= Validasi agent_id ===========
+            # TODO : Security Issue VERY HIGH LEVEL
+            # 1. Jika BUKAN is_company_website, maka contact.contact_id DIABAIKAN
+            # 2. Jika ADA contact.contact_id MAKA agent_id = contact.contact_id.agent_id
+            # 3. Jika TIDAK ADA contact.contact_id MAKA agent_id = co_uid.agent_id
+
+            # PRODUCTION - SV
+            # self._validate_booking(context)
+            user_obj = self.env['res.users'].sudo().browse(int(context['co_uid']))
+            contact_data.update({
+                'agent_id': user_obj.agent_id.id,
+                'commercial_agent_id': user_obj.agent_id.id,
+                'booker_type': 'FPO',
+            })
+            if user_obj.agent_id.agent_type_id.id == self.env.ref('tt_base_rodex.agent_type_cor').id:
+                if user_obj.agent_id.parent_agent_id:
+                    contact_data.update({
+                        'commercial_agent_id': user_obj.agent_id.parent_agent_id.id,
+                        'booker_type': 'COR',
+                    })
+
+            if user_obj.agent_id.agent_type_id.id == self.env.ref('tt_base_rodex.agent_type_por').id:
+                if user_obj.agent_id.parent_agent_id:
+                    contact_data.update({
+                        'commercial_agent_id': user_obj.agent_id.parent_agent_id.id,
+                        'booker_type': 'POR',
+                    })
+
+            # if not context['agent_id']:
+            #     raise Exception('ERROR Create booking, Customer or User, not have Agent (Agent ID)\n'
+            #                     'Please contact Administrator, to complete the data !')
+
+            header_val = self._traveldoc_header_normalization(search_req)
+            contact_obj = self._create_contact(contact_data, context)
+
+            psg_ids = self._evaluate_passenger_info(passengers, contact_obj.id, context['agent_id'])
+            ssc_ids = self._create_service_charge_sale_traveldoc(service_charge_summary)
+
+            to_psg_ids = self._create_traveldoc_order(passengers)
+
+            header_val.update({
+                'contact_id': contact_obj.id,
+                'passenger_ids': [(6, 0, psg_ids)],
+                'sale_service_charge_ids': [(6, 0, ssc_ids)],
+                'to_passenger_ids': [(6, 0, to_psg_ids)],
+                'state': 'booked',
+                'agent_id': context['agent_id'],
+                'user_id': context['co_uid'],
+            })
+
+            doc_type = header_val.get('transport_type')
+
+            # create header & Update SUB_AGENT_ID
+            book_obj = self.sudo().create(header_val)
+            book_obj.sub_agent_id = contact_data['agent_id']
+
+            book_obj.action_booked_traveldoc(context, doc_type)
+            if kwargs.get('force_issued'):
+                book_obj.action_issued_traveldoc(context, doc_type)
+
+            self.env.cr.commit()
+            return {
+                'error_code': 0,
+                'error_msg': 'Success',
+                'response': {
+                    'order_id': book_obj.id,
+                    'order_number': book_obj.name,
+                    'status': book_obj.state,
+                    'state_traveldoc': book_obj.state_traveldoc,
+                }
+            }
+        except Exception as e:
+            self.env.cr.rollback()
+            _logger.error(msg=str(e) + '\n' + traceback.format_exc())
+            return {
+                'error_code': 1,
+                'error_msg': str(e)
+            }

@@ -1,4 +1,4 @@
-from odoo import models, fields, api, _
+from odoo import models, fields, api
 
 STATE = [
     ('draft', 'Draft'),
@@ -34,3 +34,10 @@ class AgentRegistrationPayment(models.Model):
     def compute_amount(self):
         for rec in self.agent_registration_id.payment_ids:
             rec.amount = rec.agent_registration_id.total_fee * rec.percentage / 100
+
+    @api.model
+    def _cron_check_payment(self):
+        print('test')
+        recs = self.search([('due_date', '<', fields.Datetime.now()), ('state', '!=', 'paid')])
+        for rec in recs:
+            rec.state = 'late'

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <record model="ir.cron" id="agent_registration_check_payment_job">
+            <field name='name'>Agent Registration Check Payment</field>
+            <field name='interval_number'>1</field>
+            <field name='interval_type'>days</field>
+            <field name="numbercall">-1</field>
+            <field name="active">True</field>
+            <field name="model_id" ref="model_tt_agent_registration_payment"/>
+            <field name="code">model._cron_check_payment()</field>
+            <field name="state">code</field>
+        </record>
+    </data>
+</odoo>
