@@ -52,7 +52,6 @@ class ReservationAirline(models.Model):
     sale_service_charge_ids = fields.One2many('tt.service.charge', 'booking_airline_id', 'Service Charge',
                                               readonly=True, states={'draft': [('readonly', False)]})
 
-
     passenger_ids = fields.Many2many('tt.customer', 'tt_reservation_airline_passengers_rel', 'booking_id', 'passenger_id',
                                      string='List of Passenger', readonly=True, states={'draft': [('readonly', False)]})
 

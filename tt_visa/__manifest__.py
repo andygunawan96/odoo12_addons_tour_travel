@@ -25,6 +25,7 @@
     # always loaded
     'data': [
         'security/ir.model.access.csv',
+        'data/ir_sequence_data.xml',
         'views/tt_visa_menuheader.xml',
         'views/tt_visa_views.xml',
         'views/tt_visa_pricelist_views.xml',

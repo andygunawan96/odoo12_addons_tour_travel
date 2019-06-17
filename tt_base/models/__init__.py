@@ -17,7 +17,6 @@ from . import res_rate
 from . import res_social_media_type
 from . import res_employee
 from . import tt_provider
-from . import tt_product_type
 from . import tt_company
 from . import tt_customer
 from . import tt_agent_type
