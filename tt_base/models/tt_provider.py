@@ -6,7 +6,7 @@ class TtProvider(models.Model):
 
     name = fields.Char('Name')
     code = fields.Char('Code')
-    vendor_product_id = fields.Many2one('tt.product.type', 'Vendor Type')
+    vendor_product_id = fields.Many2one('tt.provider.type', 'Vendor Type')
     vendor_ledger_ids = fields.One2many('tt.vendor.ledger', 'provider_id', 'Vendor Ledgers')
     currency_id = fields.Many2one('res.currency', 'Currency')
     provider_code_ids = fields.One2many('tt.provider.code', 'provider_id', 'Provider Codes')

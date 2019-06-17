@@ -47,6 +47,8 @@ class VisaPricelist(models.Model):
     sale_price = fields.Monetary('Sale Price', default=0)
     commission_price = fields.Monetary('Commission Price', store=True, readonly=1)  # compute="_compute_commission_price"
 
+    requirement_ids = fields.One2many('tt.visa.requirements', 'pricelist_id', 'Requirements')
+
     duration = fields.Integer('Duration (day(s))', help="in day(s)", required=True, default=1)
     commercial_duration = fields.Char('Duration', compute='_compute_duration', readonly=1)
 

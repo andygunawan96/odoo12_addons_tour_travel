@@ -1,4 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 tt_visa,tt.visa,model_tt_visa,,1,1,1,1
 tt_visa_order_passengers,tt.visa.order.passengers,model_tt_visa_order_passengers,,1,1,1,1
+tt_visa_order_requirements,tt.visa.order.requirements,model_tt_visa_order_requirements,,1,1,1,1
+tt_visa_requirements,tt.visa.requirements,model_tt_visa_requirements,,1,1,1,1
 tt_visa_pricelist,tt.visa.pricelist,model_tt_visa_pricelist,,1,1,1,1
