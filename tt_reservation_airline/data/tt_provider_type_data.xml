@@ -2,9 +2,15 @@
 <odoo>
     <data noupdate="1">
         <record id="tt_provider_type_airline" model="tt.provider.type">
-            <field name="name">Airlines</field>
-            <field name="code">airlines</field>
+            <field name="name">Airline</field>
+            <field name="code">airline</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_provider_type_airline" model="tt.provider.type">
+            <field name="name">Tour</field>
+            <field name="code">tour</field>
             <field name="active" eval="True"/>
         </record>
     </data>
+
 </odoo>

@@ -26,6 +26,7 @@
     'data': [
         'data/ir_module_category_data.xml',
         'data/res_groups_data.xml',
+        'data/agent_type_rodex_data.xml',
         'security/ir.model.access.csv',
 
         'views/menu_item_base.xml',

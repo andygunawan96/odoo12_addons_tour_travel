@@ -91,19 +91,19 @@ class TourPricelist(models.Model):
 
     adult_nta_price_rel = fields.Monetary('Adult NTA Price', default=0, readonly=1, related='adult_nta_price')
     adult_citra_price_rel = fields.Monetary('Adult Citra Price', default=0, readonly=1,
-                                            related='adult_citra_price_real')
-    adult_sale_price_rel = fields.Monetary('Adult Sale Price', default=0, readonly=1, related='adult_sale_price_real')
+                                            related='adult_citra_price')
+    adult_sale_price_rel = fields.Monetary('Adult Sale Price', default=0, readonly=1, related='adult_sale_price')
 
     child_nta_price_rel = fields.Monetary('Child NTA Price', default=0, readonly=1, related='child_nta_price')
     child_citra_price_rel = fields.Monetary('Child Citra Price', default=0, readonly=1,
-                                            related='child_citra_price_real')
-    child_sale_price_rel = fields.Monetary('Child Sale Price', default=0, readonly=1, related='child_sale_price_real')
+                                            related='child_citra_price')
+    child_sale_price_rel = fields.Monetary('Child Sale Price', default=0, readonly=1, related='child_sale_price')
 
     infant_nta_price_rel = fields.Monetary('Infant NTA Price', default=0, readonly=1, related='infant_nta_price')
     infant_citra_price_rel = fields.Monetary('Infant Citra Price', default=0, readonly=1,
-                                             related='infant_citra_price_real')
+                                             related='infant_citra_price')
     infant_sale_price_rel = fields.Monetary('Infant Sale Price', default=0, readonly=1,
-                                            related='infant_sale_price_real')
+                                            related='infant_sale_price')
 
     discount_ids = fields.One2many('tt.tour.discount.fit', 'tour_pricelist_id')
     room_ids = fields.One2many('tt.tour.rooms', 'tour_pricelist_id', required=True)
@@ -487,20 +487,20 @@ class TourPricelist(models.Model):
             vals = {
                 'journey_type': segment.journey_type,
                 'carrier_id': segment.carrier_id.name,
-                'carrier_code': segment.carrier_code,
-                'carrier_name': segment.carrier_name,
+                'carrier_code': segment.carrier_id.code,
+                'carrier_number': segment.carrier_number,
                 'origin_id': segment.origin_id.display_name,
                 'origin_terminal': segment.origin_terminal,
                 'departure_date': segment.departure_date,
-                'departure_date_fmt': context_timestamp(datetime.strptime(segment.departure_date, '%Y-%m-%d %H:%M:%S')).strftime('%d-%b-%Y %H:%M'),
+                'departure_date_fmt': context_timestamp(segment.departure_date).strftime('%d-%b-%Y %H:%M'),
                 'destination_id': segment.destination_id.display_name,
                 'destination_terminal': segment.destination_terminal,
                 'arrival_date': segment.arrival_date,
-                'arrival_date_fmt': context_timestamp(datetime.strptime(segment.arrival_date, '%Y-%m-%d %H:%M:%S')).strftime('%d-%b-%Y %H:%M'),
+                'arrival_date_fmt': context_timestamp(segment.arrival_date).strftime('%d-%b-%Y %H:%M'),
                 'delay': 'None',
             }
             if old_vals and old_vals['journey_type'] == segment.journey_type:
-                time_delta = datetime.strptime(segment.departure_date, '%Y-%m-%d %H:%M:%S') - datetime.strptime(old_vals['arrival_date'], '%Y-%m-%d %H:%M:%S')
+                time_delta = segment.departure_date - old_vals['arrival_date']
                 day = time_delta.days
                 hours = time_delta.seconds/3600
                 minute = time_delta.seconds % 60
@@ -561,6 +561,21 @@ class TourPricelist(models.Model):
                         if acc['hotel'] not in hotel_names:
                             hotel_names.append(acc['hotel'])
 
+                    acc_key_list = [key for key in acc.keys()]
+                    for key in acc_key_list:
+                        if acc[key] is None:
+                            acc.update({
+                                key: ''
+                            })
+
+                for acc in accommodation:
+                    acc.update({
+                        'additional_charge_with_comma': self.int_with_commas(acc['additional_charge']),
+                        # 'extra_bed_charge_with_comma': self.int_with_commas(rec['extra_bed_charge']),
+                        'adult_surcharge_with_comma': self.int_with_commas(acc['adult_surcharge']),
+                        'child_surcharge_with_comma': self.int_with_commas(acc['child_surcharge']),
+                    })
+
                 try:
                     self.env.cr.execute("""SELECT * FROM tt_tour_images WHERE pricelist_id = %s;""", (rec['id'],))
                     images = self.env.cr.dictfetchall()
@@ -569,6 +584,7 @@ class TourPricelist(models.Model):
 
                 rec.update({
                     'name': rec['name'],
+                    'accommodations': accommodation,
                     'adult_sale_price_with_comma': self.int_with_commas(rec['adult_sale_price']),
                     'child_sale_price_with_comma': self.int_with_commas(rec['child_sale_price']),
                     'infant_sale_price_with_comma': self.int_with_commas(rec['infant_sale_price']),
