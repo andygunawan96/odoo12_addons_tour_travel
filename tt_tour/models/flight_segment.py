@@ -19,7 +19,7 @@ class FlightSegment(models.Model):
     journey_type = fields.Selection(JOURNEY_TYPE, 'Journey Type', default='DP')
 
     carrier_id = fields.Many2one('tt.transport.carrier', 'Airline', domain=[('transport_type', '=', 'airline')])
-    carrier_code = fields.Char('Flight Code')
+    carrier_code = fields.Char('Flight Code', related='carrier_id.code', store=True)
     carrier_number = fields.Char('Flight Number')
 
     origin_id = fields.Many2one('tt.destinations', 'Origin', domain=[('provider_type.name', '=', 'Airline')])
