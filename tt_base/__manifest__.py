@@ -10,7 +10,7 @@
         Long description of module's purpose
     """,
 
-    'author': "Andre",
+    'author': "PT. Roda Express Sukses Mandiri",
     'website': "http://www.skytors.id",
 
     # Categories can be used to filter modules in modules listing

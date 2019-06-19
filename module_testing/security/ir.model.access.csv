@@ -1,3 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-module_testing_all,module.testing.all,model_orang_orang,,1,1,1,1
-orang_address_all,orang.address.all,model_orang_address,,1,1,1,1
