@@ -7,8 +7,8 @@ class CustomerBankDetail(models.Model):
     _rec_name = 'account_number'
     _description = 'Tour & Travel - Customer Bank Detail'
 
-    active = fields.Boolean('Active', default=True)
     account_number = fields.Char('Account Number')
     account_holder_name = fields.Char('Account Holder Name')
     bank_id = fields.Many2one('tt.bank', 'Bank')
     customer_id = fields.Many2one('tt.customer', 'Customer')
+    active = fields.Boolean('Active', default=True)

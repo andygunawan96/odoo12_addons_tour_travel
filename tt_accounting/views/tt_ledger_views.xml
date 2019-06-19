@@ -115,13 +115,7 @@
         </field>
     </record>
 
-    <menuitem id="main_transaction"
-              name="Transactions"
-              web_icon="hr,static/description/icon.png"
-              sequence="3"
-              groups="base.group_user"/>
-
-    <menuitem id="top_transaction_ledger" parent="tt_accounting.main_transaction"
+    <menuitem id="top_transaction_ledger" parent="tt_base.main_transaction"
               name="Ledger" sequence="20"/>
 
     <menuitem id="menu_transaction_ledger" parent="tt_accounting.top_transaction_ledger"

@@ -1,98 +1,175 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+
+access_tt_agent_type_for_public,tt.agent.type.for.public,model_tt_agent_type,,1,0,0,0
 access_tt_agent_type_for_agent_management_operator,tt.agent.type.for.agent.man.operator,model_tt_agent_type,group_tt_agent_management_operator,1,0,0,0
 access_tt_agent_type_for_agent_management_supervisor,tt.agent.type.for.agent.man.supervisor,model_tt_agent_type,group_tt_agent_management_supervisor,1,1,1,0
 access_tt_agent_type_for_agent_management_manager,tt.agent.type.for.agent.man.manager,model_tt_agent_type,group_tt_agent_management_manager,1,1,1,1
-
 access_tt_agent_type_for_tour_travel_operator,tt.agent.type.for.tour.travel.operator,model_tt_agent_type,group_tt_tour_travel_operator,1,0,0,0
 access_tt_agent_type_for_tour_travel_supervisor,tt.agent.type.for.tour.travel.supervisor,model_tt_agent_type,group_tt_tour_travel_supervisor,1,0,0,0
 access_tt_agent_type_for_tour_travel_manager,tt.agent.type.for.tour.travel.manager,model_tt_agent_type,group_tt_tour_travel_manager,1,0,0,0
 
+access_tt_agent_for_public,tt.agent.for.public,model_tt_agent,,1,0,0,0
 access_tt_agent_for_agent_management_operator,tt_agent.for.agent.management.operator,model_tt_agent,group_tt_agent_management_operator,1,1,1,0
 access_tt_agent_for_agent_management_supervisor,tt_agent.for.agent.management.supervisor,model_tt_agent,group_tt_agent_management_supervisor,1,1,1,0
 access_tt_agent_for_agent_management_manager,tt_agent.for.agent.management.manager,model_tt_agent,group_tt_agent_management_manager,1,1,1,0
+access_tt_agent_for_tour_travel_operator,tt.agent.for.tour.travel.operator,model_tt_agent,group_tt_tour_travel_operator,1,1,0,0
+access_tt_agent_for_tour_travel_supervisor,tt.agent.for.tour.travel.supervisor,model_tt_agent,group_tt_tour_travel_supervisor,1,1,0,0
+access_tt_agent_for_tour_travel_manager,tt.agent.for.tour.travel.manager,model_tt_agent,group_tt_tour_travel_manager,1,1,0,0
 
-access_tt_agent_for_tour_travel_operator,tt.agent.for.tour.travel.operator,model_tt_agent,group_tt_tour_travel_operator,1,0,1,0
-access_tt_agent_for_tour_travel_supervisor,tt.agent.for.tour.travel.supervisor,model_tt_agent,group_tt_tour_travel_supervisor,1,0,1,0
-access_tt_agent_for_tour_travel_manager,tt.agent.for.tour.travel.manager,model_tt_agent,group_tt_tour_travel_manager,1,0,1,0
-
+access_tt_customer_for_public,tt.customer.for.public,model_tt_customer,,1,0,0,0
+access_tt_customer_for_agent_user_operator,tt_customer.for.agent.user.operator,model_tt_customer,tt_base.group_tt_agent_user_operator,1,1,1,0
+access_tt_customer_for_agent_user_supervisor,tt_customer.for.agent.user.supervisor,model_tt_customer,tt_base.group_tt_agent_user_supervisor,1,1,1,0
+access_tt_customer_for_agent_user_manager,tt_customer.for.agent.user.manager,model_tt_customer,tt_base.group_tt_agent_user_manager,1,1,1,0
+access_tt_customer_for_agent_management_operator,tt_customer.for.agent.management.operator,model_tt_customer,tt_base.group_tt_agent_management_operator,1,1,0,0
+access_tt_customer_for_agent_management_supervisor,tt_customer.for.agent.management.supervisor,model_tt_customer,tt_base.group_tt_agent_management_supervisor,1,1,1,0
+access_tt_customer_for_agent_management_manager,tt_customer.for.agent.management.manager,model_tt_customer,tt_base.group_tt_agent_management_manager,1,1,1,0
 access_tt_customer_for_tour_travel_operator,tt_customer.for.tour.travel.operator,model_tt_customer,tt_base.group_tt_tour_travel_operator,1,1,0,0
 access_tt_customer_for_tour_travel_supervisor,tt_customer.for.tour.travel.supervisor,model_tt_customer,tt_base.group_tt_tour_travel_supervisor,1,1,1,0
 access_tt_customer_for_tour_travel_manager,tt_customer.for.tour.travel.manager,model_tt_customer,tt_base.group_tt_tour_travel_manager,1,1,1,0
 
+access_tt_company_for_public,tt.company.for.public,model_tt_company,,1,0,0,0
 access_tt_company_for_agent_management_operator,tt_company_for_agent_management_operator,model_tt_company,group_tt_agent_management_operator,1,1,1,0
-
 access_tt_company_for_tour_travel_operator,tt_company_for_tour_travel_operator,model_tt_company,tt_base.group_tt_tour_travel_operator,1,0,0,0
 
+access_res_employee_for_public,res_employee_for_public,model_res_employee,,1,0,0,0
 access_res_employee_for_agent_management_operator,res_employee_for_agent_management_operator,model_res_employee,group_tt_agent_management_operator,1,1,1,0
-
 access_res_employee_for_tour_travel_operator,res_employee_for_tour_travel_operator,model_res_employee,tt_base.group_tt_tour_travel_operator,1,0,0,0
 
-access_res_district,access_res_district,model_res_district,,1,1,1,1
-access_res_sub_district,access_res_sub_district,model_res_sub_district,,1,1,1,1
+access_res_district_for_public,res.district.for.public,model_res_district,,1,0,0,0
+access_res_district_for_tour_travel_operator,res.district.for.tour.travel.operator,model_res_district,tt_base.group_tt_tour_travel_operator,1,0,0,0
+access_res_district_for_tour_travel_supervisor,res.district.for.tour.travel.supervisor,model_res_district,tt_base.group_tt_tour_travel_supervisor,1,0,1,0
+access_res_district_for_tour_travel_manager,res.district.for.tour.travel.manager,model_res_district,tt_base.group_tt_tour_travel_manager,1,1,1,0
 
+access_res_sub_district_for_public,res.sub.district.for.public,model_res_sub_district,,1,0,0,0
+access_res_sub_district_for_tour_travel_operator,res.sub.district.for.tour.travel.operator,model_res_sub_district,tt_base.group_tt_tour_travel_operator,1,0,0,0
+access_res_sub_district_for_tour_travel_supervisor,res.sub.district.for.tour.travel.supervisor,model_res_sub_district,tt_base.group_tt_tour_travel_supervisor,1,0,1,0
+access_res_sub_district_for_tour_travel_manager,res.sub.district.for.tour.travel.manager,model_res_sub_district,tt_base.group_tt_tour_travel_manager,1,1,1,0
+
+access_social_media_detail_for_public,social.media.detail.for.public,model_social_media_detail,,1,0,0,0
 access_social_media_detail_for_tour_travel_operator,social.media.detail.for.tour.travel.operator,model_social_media_detail,tt_base.group_tt_tour_travel_operator,1,0,0,0
 access_social_media_detail_for_tour_travel_supervisor,social.media.detail.for.tour.travel.supervisor,model_social_media_detail,tt_base.group_tt_tour_travel_supervisor,1,1,1,0
 access_social_media_detail_for_tour_travel_manager,social.media.detail.for.tour.travel.manager,model_social_media_detail,tt_base.group_tt_tour_travel_manager,1,1,1,0
+access_social_media_detail_for_agent_user_operator,social.media.detail.for.agent.user.operator,model_social_media_detail,tt_base.group_tt_agent_user_operator,1,0,0,0
+access_social_media_detail_for_agent_user_supervisor,social.media.detail.for.agent.user.supervisor,model_social_media_detail,tt_base.group_tt_agent_user_supervisor,1,1,1,0
+access_social_media_detail_for_agent_user_manager,social.media.detail.for.agent.user.manager,model_social_media_detail,tt_base.group_tt_agent_user_manager,1,1,1,0
 
+access_tt_social_media_type_for_public,social.media.type.for.public,model_res_social_media_type,,1,0,0,0
 access_tt_social_media_type_for_tour_travel_operator,social.media.type.for.tour.travel.operator,model_res_social_media_type,tt_base.group_tt_tour_travel_operator,1,0,0,0
 access_tt_social_media_type_for_tour_travel_supervisor,social.media.type.for.tour.travel.supervisor,model_res_social_media_type,tt_base.group_tt_tour_travel_supervisor,1,1,1,0
 access_tt_social_media_type_for_tour_travel_manager,social.media.type.for.tour.travel.manager,model_res_social_media_type,tt_base.group_tt_tour_travel_manager,1,1,1,0
 
-access_res_users,tt_base.res_users,model_res_users,,1,1,1,1
+access_res_users_for_public,res.users.for.public,model_res_users,,1,0,0,0
+access_res_users_for_tour_travel_operator,res.users.for.tour.travel.operator,model_res_users,tt_base.group_tt_tour_travel_operator,1,0,1,0
+access_res_users_for_tour_travel_supervisor,res.users.for.tour.travel.supervisor,model_res_users,tt_base.group_tt_tour_travel_operator,1,0,1,0
+access_res_users_for_tour_travel_manager,res.users.for.tour.travel.manager,model_res_users,tt_base.group_tt_tour_travel_operator,1,0,1,0
+access_res_users_for_agent_management_operator,res.users.for.agent.management_operator,model_res_users,group_tt_agent_management_operator,1,1,1,0
+access_res_users_for_agent_management_supervisor,res.users.for.agent.management_supervisor,model_res_users,group_tt_agent_management_operator,1,1,1,0
+access_res_users_for_agent_management_manager,res.users.for.agent.management_manager,model_res_users,group_tt_agent_management_operator,1,1,1,0
 
+tt_destinations_for_public,tt.destinations.for.public,model_tt_destinations,,1,0,0,0
 tt_destinations_for_tour_travel_operator,tt.destinations.for.tour.travel.operator,model_tt_destinations,group_tt_tour_travel_operator,1,0,0,0
 tt_destinations_for_tour_travel_supervisor,tt.destinations.for.tour.travel.supervisor,model_tt_destinations,group_tt_tour_travel_supervisor,1,0,1,0
 tt_destinations_for_tour_travel_manager,tt.destinations.for.tour.travel.manager,model_tt_destinations,group_tt_tour_travel_manager,1,1,1,1
 
+tt_transport_carrier_for_public,tt.transport.carrier.for.public,model_tt_transport_carrier,,1,0,0,0
 tt_transport_carrier_for_tour_travel_operator,tt.transport.carrier.for.tour.travel.operator,model_tt_transport_carrier,tt_base.group_tt_tour_travel_operator,1,0,0,0
 tt_transport_carrier_for_tour_travel_supervisor,tt.transport.carrier.for.tour.travel.supervisor,model_tt_transport_carrier,tt_base.group_tt_tour_travel_supervisor,1,0,1,0
 tt_transport_carrier_for_tour_travel_manager,tt.transport.carrier.for.tour.travel.manager,model_tt_transport_carrier,tt_base.group_tt_tour_travel_manager,1,1,1,0
 
-access_tt_routes,tt_base.tt_routes,model_tt_routes,,1,1,1,1
-access_payment_acquirer,tt_base.payment_acquirer,model_payment_acquirer,,1,1,1,1
+access_tt_routes_for_public,tt.routes.for.public,model_tt_routes,,1,0,0,0
+access_tt_routes_for_tour_travel_operator,tt.routes.for.tour.travel.operator,model_tt_routes,tt_base.group_tt_tour_travel_operator,1,0,0,0
+access_tt_routes_for_tour_travel_supervisor,tt.routes.for.tour.travel.supervisor,model_tt_routes,tt_base.group_tt_tour_travel_supervisor,1,0,1,0
+access_tt_routes_for_tour_travel_manager,tt.routes.for.tour.travel.manager,model_tt_routes,tt_base.group_tt_tour_travel_manager,1,1,1,0
 
+access_payment_acquirer_for_public,payment.acquirer.for.public,model_payment_acquirer,,1,0,0,0
+access_payment_acquirer_for_tour_travel_operator,payment.acquirer.for.tour.travel.operator,model_payment_acquirer,tt_base.group_tt_tour_travel_operator,1,0,0,0
+access_payment_acquirer_for_tour_travel_supervisor,payment.acquirer.for.tour.travel.supervisor,model_payment_acquirer,tt_base.group_tt_tour_travel_supervisor,1,0,0,0
+access_payment_acquirer_for_tour_travel_manager,payment.acquirer.for.tour.travel.manager,model_payment_acquirer,tt_base.group_tt_tour_travel_manager,1,0,0,0
+access_payment_acquirer_for_agent_user_operator,payment.acquirer.for.agent.user.operator,model_payment_acquirer,tt_base.group_tt_agent_user_operator,1,0,0,0
+access_payment_acquirer_for_agent_user_supervisor,payment.acquirer.for.agent.user.supervisor,model_payment_acquirer,tt_base.group_tt_agent_user_supervisor,1,0,0,0
+access_payment_acquirer_for_agent_user_manager,payment.acquirer.for.agent.user.manager,model_payment_acquirer,tt_base.group_tt_agent_user_manager,1,0,0,0
+access_payment_acquirer_for_account_user,payment.acquirer.for.account.user,model_payment_acquirer,account.group_account_user,1,1,1,0
+access_payment_acquirer_for_account_invoice,payment.acquirer.for.account.invoice,model_payment_acquirer,account.group_account_invoice,1,1,1,0
+access_payment_acquirer_for_account_manager,payment.acquirer.for.account.manager,model_payment_acquirer,account.group_account_manager,1,1,1,0
+
+access_tt_bank_for_public,tt.bank.for.public,model_tt_bank,,1,0,0,0
 access_tt_bank_for_tour_travel_operator,tt.bank.for.tour.travel.operator,model_tt_bank,tt_base.group_tt_tour_travel_operator,1,0,0,0
 access_tt_bank_for_tour_travel_supervisor,tt.bank.for.tour.travel.supervisor,model_tt_bank,tt_base.group_tt_tour_travel_supervisor,1,0,1,0
 access_tt_bank_for_tour_travel_manager,tt.bank.for.tour.travel.manager,model_tt_bank,tt_base.group_tt_tour_travel_manager,1,1,1,1
 
+access_agent_bank_detail_for_public,agent.bank.detail.for.public,model_agent_bank_detail,,1,0,0,0
 access_agent_bank_detail_for_tour_travel_operator,agent.bank.detail.for.tour.travel.operator,model_agent_bank_detail,tt_base.group_tt_tour_travel_operator,1,0,0,0
 access_agent_bank_detail_for_tour_travel_supervisor,agent.bank.detail.for.tour.travel.supervisor,model_agent_bank_detail,tt_base.group_tt_tour_travel_supervisor,1,0,1,0
 access_agent_bank_detail_for_tour_travel_manager,agent.bank.detail.for.tour.travel.manager,model_agent_bank_detail,tt_base.group_tt_tour_travel_manager,1,1,1,0
 
-access_company_bank_detail_for_tour_travel_operator,company.bank.detail.for.tour.travel.operator,model_company_bank_detail,tt_base.group_tt_tour_travel_operator,1,0,0,0
+access_company_bank_detail_for_public,company.bank.detail.for.public,model_company_bank_detail,,1,0,0,0
+access_company_bank_detail_for_tour_travel_operator,company.bank.detail.for.tour.travel.operator,model_company_bank_detail,tt_base.group_tt_tour_travel_operator,1,0,1,0
 access_company_bank_detail_for_tour_travel_supervisor,company.bank.detail.for.tour.travel.supervisor,model_company_bank_detail,tt_base.group_tt_tour_travel_supervisor,1,0,1,0
 access_company_bank_detail_for_tour_travel_manager,company.bank.detail.for.tour.travel.manager,model_company_bank_detail,tt_base.group_tt_tour_travel_manager,1,1,1,0
 
+access_customer_bank_detail_for_public,customer.bank.detail.for.public,model_customer_bank_detail,,1,0,0,0
 access_customer_bank_detail_for_tour_travel_operator,customer.bank.detail.for.tour.travel.operator,model_customer_bank_detail,tt_base.group_tt_tour_travel_operator,1,0,0,0
 access_customer_bank_detail_for_tour_travel_supervisor,customer.bank.detail.for.tour.travel.supervisor,model_customer_bank_detail,tt_base.group_tt_tour_travel_supervisor,1,0,1,0
 access_customer_bank_detail_for_tour_travel_manager,customer.bank.detail.for.tour.travel.manager,model_customer_bank_detail,tt_base.group_tt_tour_travel_manager,1,1,1,0
+access_customer_bank_detail_for_agent_user_operator,customer.bank.detail.for.agent.user.operator,model_customer_bank_detail,tt_base.group_tt_agent_user_operator,1,0,0,0
+access_customer_bank_detail_for_agent_user_supervisor,customer.bank.detail.for.agent.user.supervisor,model_customer_bank_detail,tt_base.group_tt_agent_user_supervisor,1,0,1,0
+access_customer_bank_detail_for_agent_user_manager,customer.bank.detail.for.agent.user.manager,model_customer_bank_detail,tt_base.group_tt_agent_user_manager,1,1,1,0
 
+access_res_rate_for_public,res.rate.for.public,model_res_rate,,1,0,0,0
 access_res_rate_for_account_user,res.rate.for.account.user,model_res_rate,account.group_account_user,1,0,1,0
-access_res_rate_for_account_invoice,res.rate.for.account.invoice,model_res_rate,account.group_account_invoice,1,1,1,0
+access_res_rate_for_account_invoice,res.rate.for.account.invoice,model_res_rate,account.group_account_invoice,1,0,1,0
 access_res_rate_for_account_manager,res.rate.for.account.manager,model_res_rate,account.group_account_manager,1,1,1,0
 
-access_tt_vendor_ledger,access_tt_vendor_ledger,model_tt_vendor_ledger,,1,1,1,1
+access_res_currency_for_public,res.currency.for.public,model_res_currency,,1,0,0,0
+access_res_currency_for_tour_travel_operator,res.currency.for.tour.travel.operator,model_res_currency,tt_base.group_tt_tour_travel_operator,1,0,1,0
+access_res_currency_for_tour_travel_supervisor,res.currency.for.tour.travel.supervisor,model_res_currency,tt_base.group_tt_tour_travel_supervisor,1,0,1,0
+access_res_currency_for_tour_travel_manager,res.currency.for.tour.travel.manager,model_res_currency,tt_base.group_tt_tour_travel_manager,1,1,1,0
 
+access_tt_vendor_ledger_for_public,tt.vendor.ledger.for.public,model_tt_vendor_ledger,,1,0,0,0
+
+access_address_detail_for_public,address.detail.for.public,model_address_detail,,1,0,0,0
 access_address_detail_for_tour_travel_operator,address.detail.for.tour.travel.operator,model_address_detail,tt_base.group_tt_tour_travel_operator,1,0,0,0
 access_address_detail_for_tour_travel_supervisor,address.detail.for.tour.travel.supervisor,model_address_detail,tt_base.group_tt_tour_travel_supervisor,1,0,1,0
 access_address_detail_for_tour_travel_manager,address.detail.for.tour.travel.manager,model_address_detail,tt_base.group_tt_tour_travel_manager,1,1,1,0
+access_address_detail_for_agent_user_operator,address.detail.for.agent.user.operator,model_address_detail,tt_base.group_tt_agent_user_operator,1,0,0,0
+access_address_detail_for_agent_user_supervisor,address.detail.for.agent.user.supervisor,model_address_detail,tt_base.group_tt_agent_user_supervisor,1,0,1,0
+access_address_detail_for_agent_user_manager,address.detail.for.agent.user.manager,model_address_detail,tt_base.group_tt_agent_user_manager,1,1,1,0
 
-access_phone_detail_for_tour_travel_operator,phone.detail.for.tour.travel.operator,model_address_detail,tt_base.group_tt_tour_travel_operator,1,0,0,0
-access_phone_detail_for_tour_travel_supervisor,phone.detail.for.tour.travel.supervisor,model_address_detail,tt_base.group_tt_tour_travel_supervisor,1,0,1,0
-access_phone_detail_for_tour_travel_manager,phone.detail.for.tour.travel.manager,model_address_detail,tt_base.group_tt_tour_travel_manager,1,1,1,0
+access_phone_detail_for_public,phone.detail.for.public,model_phone_detail,,1,0,0,0
+access_phone_detail_for_tour_travel_operator,phone.detail.for.tour.travel.operator,model_phone_detail,tt_base.group_tt_tour_travel_operator,1,0,0,0
+access_phone_detail_for_tour_travel_supervisor,phone.detail.for.tour.travel.supervisor,model_phone_detail,tt_base.group_tt_tour_travel_supervisor,1,0,1,0
+access_phone_detail_for_tour_travel_manager,phone.detail.for.tour.travel.manager,model_phone_detail,tt_base.group_tt_tour_travel_manager,1,1,1,0
+access_phone_detail_for_agent_user_operator,phone.detail.for.agent.user.operator,model_phone_detail,tt_base.group_tt_agent_user_operator,1,0,0,0
+access_phone_detail_for_agent_user_supervisor,phone.detail.for.agent.user.supervisor,model_phone_detail,tt_base.group_tt_agent_user_supervisor,1,0,1,0
+access_phone_detail_for_agent_user_manager,phone.detail.for.agent.user.manager,model_phone_detail,tt_base.group_tt_agent_user_manager,1,1,1,0
 
-access_tt_skipped_keys,tt_base.tt_skipped_keys,model_tt_skipped_keys,,1,1,1,0
-access_tt_history,tt_base.tt_history,model_tt_history,,1,1,1,0
+access_tt_skipped_keys_for_public,tt.skipped.keys.for.public,model_tt_skipped_keys,,1,0,0,0
+access_tt_skipped_keys_for_tour_travel_operator,tt.skipped.keys.for.tour.travel.operator,model_tt_skipped_keys,tt_base.group_tt_tour_travel_operator,1,0,0,0
+access_tt_skipped_keys_for_tour_travel_supervisor,tt.skipped.keys.for.tour.travel.supervisor,model_tt_skipped_keys,tt_base.group_tt_tour_travel_supervisor,1,0,0,0
+access_tt_skipped_keys_for_tour_travel_manager,tt.skipped.keys.for.tour.travel.manager,model_tt_skipped_keys,tt_base.group_tt_tour_travel_manager,1,1,1,0
 
-access_tt_provider_type,tt_base.tt_provider_type,model_tt_provider_type,,1,1,1,1
-access_tt_access_activity,tt_base.tt_access_activity,model_tt_access_activity,,1,1,1,1
+access_tt_history_for_public,tt.history.for.public,model_tt_history,,1,1,1,0
+
+access_tt_provider_type_for_public,tt.provider.type.for.public,model_tt_provider_type,,1,0,0,0
+access_tt_provider_type_for_tour_travel_operator,tt.provider.type.for.tour.travel.operator,model_tt_provider_type,tt_base.group_tt_tour_travel_operator,1,1,1,0
+access_tt_provider_type_for_tour_travel_supervisor,tt.provider.type.for.tour.travel.supervisor,model_tt_provider_type,tt_base.group_tt_tour_travel_operator,1,1,1,0
+access_tt_provider_type_for_tour_travel_manager,tt.provider.type.for.tour.travel.manager,model_tt_provider_type,tt_base.group_tt_tour_travel_operator,1,1,1,0
+
+access_tt_access_activity_for_public,tt.access.activity.for.public,model_tt_access_activity,,1,0,0,0
+access_tt_access_activity_for_tour_travel_operator,tt.access.activity.for.tour.travel.operator,model_tt_access_activity,tt_base.group_tt_tour_travel_operator,1,0,0,0
+access_tt_access_activity_for_tour_travel_supervisor,tt.access.activity.for.tour.travel.supervisor,model_tt_access_activity,tt_base.group_tt_tour_travel_supervisor,1,0,1,0
+access_tt_access_activity_for_tour_travel_manager,tt.access.activity.for.tour.travel.manager,model_tt_access_activity,tt_base.group_tt_tour_travel_manager,1,1,1,0
 
 access_tt_provider_for_tour_travel_operator,tt.provider.for.tour.travel.operator,model_tt_provider,tt_base.group_tt_tour_travel_operator,1,0,0,0
-access_tt_provider_for_tour_travel_supervisor,tt.provider.for.tour.travel.supervisor,model_tt_provider,tt_base.group_tt_tour_travel_operator,1,0,1,0
-access_tt_provider_for_tour_travel_operator,tt.provider.for.tour.travel.manager,model_tt_provider,tt_base.group_tt_tour_travel_operator,1,1,1,0
+access_tt_provider_for_tour_travel_supervisor,tt.provider.for.tour.travel.supervisor,model_tt_provider,tt_base.group_tt_tour_travel_supervisor,1,0,1,0
+access_tt_provider_for_tour_travel_manager,tt.provider.for.tour.travel.manager,model_tt_provider,tt_base.group_tt_tour_travel_manager,1,1,1,0
 
+access_tt_provider_code_for_public,tt.provider.code.for.public,model_tt_provider_code,,1,0,0,0
 access_tt_provider_code_for_tour_travel_operator,tt.provider.code.for.tour.travel.operator,model_tt_provider_code,tt_base.group_tt_tour_travel_operator,1,0,0,0
 access_tt_provider_code_for_tour_travel_supervisor,tt.provider.code.for.tour.travel.supervisor,model_tt_provider_code,tt_base.group_tt_tour_travel_supervisor,1,0,1,0
 access_tt_provider_code_for_tour_travel_manager,tt.provider.code.for.tour.travel.manager,model_tt_provider_code,tt_base.group_tt_tour_travel_manager,1,1,1,0
 
-access_tt_commission_rule,access_tt_commission_rule,model_tt_commission_rule,,1,1,1,1
+access_tt_commission_rule_for_public,tt.commission.rule.for.public,model_tt_commission_rule,,1,0,0,0
+access_tt_commission_rule_for_agent_management_operator,tt.commission.rule.for.agent.man.operator,model_tt_commission_rule,group_tt_agent_management_operator,1,1,1,1
+access_tt_commission_rule_for_agent_management_supervisor,tt.commission.rule.for.agent.man.supervisor,model_tt_commission_rule,group_tt_agent_management_supervisor,1,1,1,1
+access_tt_commission_rule_for_agent_management_manager,tt.commission.rule.for.agent.man.manager,model_tt_commission_rule,group_tt_agent_management_manager,1,1,1,1

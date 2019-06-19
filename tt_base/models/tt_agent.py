@@ -32,7 +32,9 @@ class TtAgent(models.Model):
     phone_ids = fields.One2many('phone.detail', 'agent_id', string='Phones')
     social_media_ids = fields.One2many('social.media.detail', 'agent_id', 'Social Media')
     # reservation_id = fields.Char(string="Reservation Detail", required=False, )
-    ledger_id = fields.Char(string="Ledger ID", required=False, )  # tt_ledger
+    customer_ids = fields.One2many('tt.customer', 'agent_id', 'Customer')
+    # ledger_id = fields.One2many('tt.ledger', 'agent_id', 'Ledger', required=False, )  # tt_ledger
+    ledger_id = fields.Char('Ledger', required=False, )  # tt_ledger
     parent_agent_id = fields.Many2one('tt.agent', string="Parent Agent")
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type')
     history_ids = fields.Char(string="History", required=False, )  # tt_history

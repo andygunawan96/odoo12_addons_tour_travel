@@ -101,14 +101,14 @@
             </field>
         </record>
 
-        <menuitem id="menu_tour_travel_accounting"
-                  parent="tt_base.top_tour_travel_configuration"
-                  groups="base.group_user"
+        <menuitem id="top_menu_accounting"
+                  parent="tt_base.main_transaction"
+                  groups="tt_base.group_tt_tour_travel_operator,account.group_account_user,tt_base.group_tt_agent_user_operator"
                   name="Accounting"
                   sequence="3"/>
 
         <menuitem id="sub_menu_tour_travel_payment_acquirer"
-                  parent="tt_base.menu_tour_travel_accounting"
+                  parent="tt_base.top_menu_accounting"
                   groups="base.group_user"
                   name="Payment Acquirer"
                   sequence="1"

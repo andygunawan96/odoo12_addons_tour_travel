@@ -4,8 +4,38 @@ from dateutil.relativedelta import relativedelta
 from odoo.tools import image
 from ...tools import test_to_dict
 
+TITLE = [
+    ('MR', 'Mr.'),
+    ('MSTR', 'Mstr.'),
+    ('MRS', 'Mrs.'),
+    ('MS', 'Ms.'),
+    ('MISS', 'Miss')
+]
 
-class TtCustomer(models.Model,test_to_dict.ToDict):
+GENDER = [
+    ('male', 'Male'),
+    ('female', 'Female')
+]
+
+MARITAL_STATUS = [
+    ('single', 'Single'),
+    ('married', 'Married'),
+    ('divorced', 'Divorced'),
+    ('widowed', 'Widowed')
+]
+
+RELIGION = [
+    ('islam', 'Islam'),
+    ('protestantism', 'Protestantism'),
+    ('catholicism', 'Catholicism'),
+    ('hinduism', 'Hinduism'),
+    ('buddhism', 'Buddhism'),
+    ('confucianism', 'Confucianism'),
+    ('others', 'Others')
+]
+
+
+class TtCustomer(models.Model, test_to_dict.ToDict):
     _inherit = 'tt.history'
     _name = 'tt.customer'
     _rec_name = 'name'
@@ -15,18 +45,13 @@ class TtCustomer(models.Model,test_to_dict.ToDict):
     logo = fields.Binary('Agent Logo', attachment=True)
     logo_thumb = fields.Binary('Agent Logo Thumb', compute="_get_logo_image", store=True, attachment=True)
 
-    active = fields.Boolean('Active', default=True)
     first_name = fields.Char('First Name')
     last_name = fields.Char('Last Name')
     nickname = fields.Char('Nickname')
-    title = fields.Selection([('MR', 'Mr.'), ('MSTR', 'Mstr.'), ('MRS', 'Mrs.'), ('MS', 'Ms.'), ('MISS', 'Miss')],
-                             string='Title')
-    gender = fields.Selection([('male', 'Male'), ('female', 'Female')], string='Gender')
-    marital_status = fields.Selection([('single', 'Single'), ('married', 'Married'), ('divorced', 'Divorced'),
-                                       ('widowed', 'Widowed')], 'Marital Status')
-    religion = fields.Selection([('islam', 'Islam'), ('protestantism', 'Protestantism'), ('catholicism', 'Catholicism'),
-                                 ('hinduism', 'Hinduism'), ('buddhism', 'Buddhism'), ('confucianism', 'Confucianism'),
-                                 ('others', 'Others')], 'Religion')
+    title = fields.Selection(TITLE, string='Title')
+    gender = fields.Selection(GENDER, string='Gender')
+    marital_status = fields.Selection(MARITAL_STATUS, 'Marital Status')
+    religion = fields.Selection(RELIGION, 'Religion')
     birth_date = fields.Date('Birth Date')
     age = fields.Char('Age', help='For Adult, age in year\nFor Child, age in month',
                       compute="calculate_age")
@@ -39,8 +64,9 @@ class TtCustomer(models.Model,test_to_dict.ToDict):
     passport_exp_date = fields.Datetime(string='Passport Exp Date')
     user_id = fields.One2many('res.users', 'customer_id', 'User')
     customer_bank_detail_ids = fields.One2many('customer.bank.detail', 'customer_id', 'Customer Bank Detail')
-
     agent_id = fields.Many2one('tt.agent', 'Agent')
+
+    active = fields.Boolean('Active', default=True)
 
     @api.depends('first_name', 'last_name')
     def _compute_name(self):

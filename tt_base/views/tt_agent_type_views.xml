@@ -123,7 +123,7 @@
 
         <menuitem id="sub_menu_item_tour_travel_agent_type"
                   parent="tt_base.menu_tour_travel_configuration_tt_agent"
-                  groups="base.group_user"
+                  groups="group_tt_tour_travel_operator"
                   name="Agent Type"
                   sequence="1"
                   action="tt_agent_type_action_view"/>

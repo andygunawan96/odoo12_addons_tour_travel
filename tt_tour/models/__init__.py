@@ -3,8 +3,8 @@
 # from . import models
 from . import flight_segment
 from . import tt_payment_rules
-from . import tt_service_charge_tour
 from . import tt_tour
+from . import tt_service_charge_tour
 from . import tt_tour_booking_line
 from . import tt_tour_rooms
 from . import tt_tour_package_quotation

@@ -34,5 +34,6 @@
                   sequence="2"/>
 
             <menuitem id="submenu_visa_requirements" parent="menu_tour_travel_visa_configuration"
-                      name="Requirements" action="tt_traveldoc.tt_traveldoc_type_view_action"/>
+                      name="Requirements" action="tt_traveldoc.tt_traveldoc_type_view_action"
+                      groups="tt_base.group_tt_tour_travel_operator"/>
 </odoo>

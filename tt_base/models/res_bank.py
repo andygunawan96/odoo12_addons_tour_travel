@@ -1,4 +1,4 @@
-from odoo import models, fields, api
+from odoo import models, fields
 
 
 class ResBank(models.Model):
@@ -8,7 +8,6 @@ class ResBank(models.Model):
     _description = 'Tour & Travel - Bank'
 
     name = fields.Char('Name')
-    active = fields.Boolean('Active', default=True)
     logo = fields.Binary('Bank Logo', attachment=True)
     code = fields.Char('Bank Code')
     bic = fields.Char('Bic')
@@ -16,3 +15,4 @@ class ResBank(models.Model):
     company_bank_ids = fields.One2many('company.bank.detail', 'bank_id', 'Company Bank')
     customer_bank_ids = fields.One2many('customer.bank.detail', 'bank_id', 'Customer Bank')
     payment_acquirer_ids = fields.Char('Payment Acquirer')
+    active = fields.Boolean('Active', default=True)

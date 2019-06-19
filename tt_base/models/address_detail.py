@@ -1,16 +1,18 @@
 from odoo import api, fields, models
 
+ADDRESS_TYPE = [
+    ('work', 'Work'),
+    ('home', 'Home'),
+    ('custom', 'Custom')
+]
+
 
 class AddressDetail(models.Model):
     _name = 'address.detail'
     _order = 'sequence'
     _description = 'Tour & Travel - Address Detail'
 
-    agent_id = fields.Many2one('tt.agent', string='Agent')
-    agent_registration_id = fields.Many2one('tt.agent.registration', string='Agent Registration ID')
-    customer_id = fields.Many2one('tt.customer', string='Customer')
-    company_id = fields.Many2one('tt.company', string='Company')
-    type = fields.Selection([('work', 'Work'), ('home', 'Home'), ('custom', 'Custom')], 'Address Type', required=True)
+    type = fields.Selection(ADDRESS_TYPE, 'Address Type', required=True)
     name = fields.Char('Type Name')
     sequence = fields.Integer('Sequence')
     address = fields.Char('Address', required=True)
@@ -22,6 +24,10 @@ class AddressDetail(models.Model):
     city_id = fields.Many2one('res.city', string='City')
     district_id = fields.Many2one('res.district', string='District')
     sub_district_id = fields.Many2one('res.sub.district', string='Sub District')
+    customer_id = fields.Many2one('tt.customer', string='Customer')
+    company_id = fields.Many2one('tt.company', string='Company')
+    agent_id = fields.Many2one('tt.agent', string='Agent')
+    agent_registration_id = fields.Many2one('tt.agent.registration', string='Agent Registration ID')
     active = fields.Boolean('Active', default=True)
 
     @api.onchange('type')

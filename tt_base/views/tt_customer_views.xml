@@ -26,6 +26,7 @@
                             </h3>
                         </div>
                         <group>
+                            <field name="agent_id" readonly="False"/>
                             <field name="name" readonly="True"/>
                             <field name="nickname"/>
                             <field name="title"/>
@@ -69,6 +70,7 @@
                 <field name="title"/>
                 <field name="first_name"/>
                 <field name="last_name"/>
+                <field name="agent_id"/>
             </tree>
         </field>
     </record>
@@ -90,7 +92,14 @@
 
     <menuitem id="menu_tour_travel_customer"
               parent="tt_base.top_tour_travel_customers"
-              groups="base.group_user"
+              groups="tt_base.group_tt_tour_travel_operator"
+              name="Customer"
+              sequence="1"
+              action="tt_customer_action_view"/>
+
+    <menuitem id="menu_customer_customer"
+              parent="tt_base.top_customers_customers"
+              groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"
               name="Customer"
               sequence="1"
               action="tt_customer_action_view"/>

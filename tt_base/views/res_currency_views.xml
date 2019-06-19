@@ -27,7 +27,7 @@
                             <field name="symbol"/>
                             <field name="position"/>
                             <field name="decimal_places"/>
-                            <field name="res_rate_ids"/>
+                            <field name="rate_ids"/>
                             <field name="country_ids"/>
                             <field name="user_ids"/>
                             <field name="provider_ids"/>
@@ -75,7 +75,7 @@
 
         <menuitem id="sub_menu_item_tour_travel_currency"
                   parent="tt_base.menu_tour_travel_configuration_currency"
-                  groups="base.group_user"
+                  groups="group_tt_tour_travel_operator,account.group_account_user"
                   name="Currency"
                   sequence="1"
                   action="res_currency_action_view"/>

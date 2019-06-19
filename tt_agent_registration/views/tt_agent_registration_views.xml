@@ -256,7 +256,7 @@
             </field>
         </record>
 
-        <menuitem id="top_transaction_registration" parent="tt_accounting.main_transaction"
+        <menuitem id="top_transaction_registration" parent="tt_base.main_transaction"
               name="Registration" sequence="20"/>
 
             <menuitem id="menu_transaction_agent" parent="top_transaction_registration"

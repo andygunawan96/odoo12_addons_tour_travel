@@ -27,6 +27,7 @@
         'data/ir_module_category_data.xml',
         'data/res_groups_data.xml',
         'security/ir.model.access.csv',
+        'security/ir_rule_data.xml',
 
         'views/menu_item_base.xml',
         'views/res_country_views.xml',

@@ -92,5 +92,6 @@
     </record>
 
     <menuitem id="submenu_passport_pricelist" parent="menu_tour_travel_passport_master"
-              name="Passport" action="tt_passport.tt_passport_pricelist_view_action"/>
+              name="Passport" action="tt_passport.tt_passport_pricelist_view_action"
+              groups="tt_base.group_tt_tour_travel_operator"/>
 </odoo>
