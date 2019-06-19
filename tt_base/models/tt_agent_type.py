@@ -17,12 +17,11 @@ class TtAgentType(models.Model):
     registration_fee = fields.Monetary('Registration Fee')
     min_monthly_fee = fields.Monetary('Min Monthly Fee')
     max_monthly_fee = fields.Monetary('Max Monthly Fee')
-    percentage_monthly_fee = fields.Float('Percentage Monthly Fee')
+    percentage_monthly_fee = fields.Monetary('Percentage Monthly Fee')
     recruitment_fee = fields.Monetary('Recruitment Fee')
     registration_form = fields.Html(string="Registration Form")
     document = fields.Char(string="Document", required=False, )
     agent_ids = fields.One2many('tt.agent', 'agent_type_id', 'Agent')
-    history_ids = fields.Integer(string="History ID", required=False, )  # tt_history
     is_allow_regis = fields.Boolean('Allow Registration', default=False)
     commission_rule_ids = fields.One2many('tt.commission.rule', 'agent_type_id', 'Commission Rule(s)')
     recruitment_commission_ids = fields.One2many('tt.commission.rule', 'agent_type2_id',

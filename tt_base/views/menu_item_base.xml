@@ -6,10 +6,9 @@
         <!--Tours and Travel-->
         <menuitem id="main_tour_travel"
                   name="Tours and Travel"
+                  groups="group_tt_tour_travel_operator,group_tt_agent_management_operator,account.group_account_user"
                   web_icon="hr,static/description/icon.png"
-                  sequence="1"
-                  groups="base.group_user"/>
-
+                  sequence="1"/>
 
         <!--Customers-->
         <menuitem id="main_customers"
@@ -18,14 +17,29 @@
                   sequence="2"
                   groups="base.group_user"/>
 
+        <!--Transactions-->
+        <menuitem id="main_transaction"
+              name="Transactions"
+              web_icon="hr,static/description/icon.png"
+              sequence="3"
+              groups="base.group_user"/>
+
         <!--Top Menu-->
-        <!--Customers-->
-        <menuitem id="top_tour_travel_customers"
-                  parent="tt_base.main_tour_travel"
+        <!--Customers (Menu Customers)-->
+        <menuitem id="top_customers_customers"
+                  parent="tt_base.main_customers"
 
                   name="Customers"
                   sequence="1"
                   groups="base.group_user"/>
+
+
+        <!--Customers-->
+        <menuitem id="top_tour_travel_customers"
+                  parent="tt_base.main_tour_travel"
+                  groups="group_tt_tour_travel_operator"
+                  name="Customers"
+                  sequence="1"/>
                   <!--action="tt_base.tt_customer_action_view"-->
         <!--Configurations-->
         <menuitem id="top_tour_travel_configuration"
@@ -39,47 +53,55 @@
         <!--Country-->
         <menuitem id="menu_tour_travel_configuration_res_country"
                   name="Country"
+                  groups="tt_base.group_tt_tour_travel_operator"
                   parent="tt_base.top_tour_travel_configuration"
                   sequence="1"/>
 
         <!--Agent-->
         <menuitem id="menu_tour_travel_configuration_tt_agent"
                   name="Agent"
+                  groups="tt_base.group_tt_tour_travel_operator"
                   parent="tt_base.top_tour_travel_configuration"
                   sequence="2"/>
 
         <!--Social Media-->
         <menuitem id="menu_tour_travel_configuration_social_media"
                   name="Social Media"
+                  groups="tt_base.group_tt_tour_travel_operator"
                   parent="tt_base.top_tour_travel_configuration"
                   sequence="3"/>
 
         <!--Currency-->
         <menuitem id="menu_tour_travel_configuration_currency"
                   name="Currency"
+                  groups="tt_base.group_tt_tour_travel_operator,account.group_account_user"
                   parent="tt_base.top_tour_travel_configuration"
                   sequence="4"/>
 
         <!--Bank-->
         <menuitem id="menu_tour_travel_configuration_bank"
                   name="Bank"
+                  groups="tt_base.group_tt_tour_travel_operator"
                   parent="tt_base.top_tour_travel_configuration"
                   sequence="5"/>
 
         <!--Provider-->
         <menuitem id="menu_tour_travel_provider"
                   name="Provider"
+                  groups="tt_base.group_tt_tour_travel_operator"
                   parent="tt_base.top_tour_travel_configuration"
                   sequence="6"/>
 
 
         <menuitem id="menu_tour_travel_destination"
                   name="Destination"
+                  groups="tt_base.group_tt_tour_travel_operator"
                   parent="tt_base.top_tour_travel_configuration"
                   sequence="7"/>
 
         <menuitem id="menu_tour_travel_history_skip"
                   name="History Skip"
+                  groups="tt_base.group_tt_tour_travel_operator"
                   parent="tt_base.top_tour_travel_configuration"
                   sequence="8"/>
     </data>

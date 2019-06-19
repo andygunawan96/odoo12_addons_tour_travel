@@ -59,7 +59,7 @@
 
     <!-- Billing -->
     <menuitem id="top_billing"
-              parent="tt_accounting.main_transaction"
+              parent="tt_base.main_transaction"
               name="Billing"
               sequence="2"
               groups="base.group_user"/>

@@ -20,8 +20,8 @@ class TtProviderCode(models.Model):
 
     name = fields.Char('Name')
     code = fields.Char('Code')
-    # hotel_id = fields.Many2one('tt.hotel', 'Hotel')
-    # facility_id = fields.Many2one('tt.facility', 'Facility')
+    # hotel_id = fields.Many2one('tt.hotel', 'Hotel')  # belum ada modulnya
+    # facility_id = fields.Many2one('tt.facility', 'Facility')  # belum ada modulnya
     country_id = fields.Many2one('res.country', 'Country')
     state_id = fields.Many2one('res.country.state', 'State')
     city_id = fields.Many2one('res.city', 'City')

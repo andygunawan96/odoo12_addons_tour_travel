@@ -96,5 +96,6 @@
     </record>
 
     <menuitem id="submenu_visa_pricelist" parent="tt_visa.menu_tour_travel_visa_master"
-              name="Visa" action="tt_visa.tt_visa_pricelist_view_action"/>
+              name="Visa" action="tt_visa.tt_visa_pricelist_view_action"
+              groups="tt_base.group_tt_tour_travel_operator"/>
 </odoo>

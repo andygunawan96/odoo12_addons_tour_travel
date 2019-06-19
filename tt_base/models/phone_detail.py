@@ -1,17 +1,23 @@
 from odoo import api, fields, models, _
 
+TYPE = [
+    ('work', 'Work'),
+    ('home', 'Home'),
+    ('custom', 'Custom')
+]
+
 
 class PhoneDetail(models.Model):
     _name = 'phone.detail'
     _description = 'Tour & Travel - Phone Detail'
 
+    type = fields.Selection(TYPE, 'Address Type', required=True)
+    name = fields.Char('Type Name')
+    country_id = fields.Many2one('res.country', string='Country')
+    phone_number = fields.Char('Phone Number', required=True)
     agent_id = fields.Many2one('tt.agent', string='Agent')
     customer_id = fields.Many2one('tt.customer', string='Customer')
     company_id = fields.Many2one('tt.company', string='Company')
-    type = fields.Selection([('work', 'Work'), ('home', 'Home'), ('custom', 'Custom')], 'Address Type', required=True)
-    name = fields.Char('Type Name')
-    phone_number = fields.Char('Phone Number', required=True)
-    country_id = fields.Many2one('res.country', string='Country')
     active = fields.Boolean('Active', default=True)
 
     @api.onchange('type')
