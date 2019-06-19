@@ -43,7 +43,6 @@ class ReservationAirline(models.Model):
     _inherit = "tt.reservation"
     _order = "id desc"
 
-
     direction = fields.Selection(JOURNEY_DIRECTION, string='Direction', default='OW', required=True, readonly=True, states={'draft': [('readonly', False)]})
     origin_id = fields.Many2one('tt.destinations', 'Origin', readonly=True, states={'draft': [('readonly', False)]})
     destination_id = fields.Many2one('tt.destinations', 'Destination', readonly=True, states={'draft': [('readonly', False)]})

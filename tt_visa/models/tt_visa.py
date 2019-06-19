@@ -40,19 +40,20 @@ class TtVisa(models.Model):
     duration = fields.Char('Duration', readonly=True, states={'draft': [('readonly', False)]})
     total_cost_price = fields.Monetary('Total Cost Price', default=0, readonly=True)
 
-    state_visa = fields.Selection(STATE_VISA, 'State', help='''draft = requested
-                                                confirm = HO accepted
-                                                validate = if all required documents submitted and documents in progress
-                                                cancel = request cancelled
-                                                to_vendor = Documents sent to Vendor
-                                                vendor_process = Documents proceed by Vendor
-                                                in_process = before payment
-                                                payment = payment
-                                                partial proceed = partial proceed by consulate/immigration
-                                                proceed = proceed by consulate/immigration
-                                                delivered = Documents sent to agent
-                                                ready = Documents ready at agent
-                                                done = Documents given to customer''')
+    state_visa = fields.Selection(STATE_VISA, 'State', default='draft',
+                                  help='''draft = requested
+                                        confirm = HO accepted
+                                        validate = if all required documents submitted and documents in progress
+                                        cancel = request cancelled
+                                        to_vendor = Documents sent to Vendor
+                                        vendor_process = Documents proceed by Vendor
+                                        in_process = before payment
+                                        payment = payment
+                                        partial proceed = partial proceed by consulate/immigration
+                                        proceed = proceed by consulate/immigration
+                                        delivered = Documents sent to agent
+                                        ready = Documents ready at agent
+                                        done = Documents given to customer''')
 
     ho_profit = fields.Monetary('HO Profit')
 
@@ -73,6 +74,8 @@ class TtVisa(models.Model):
     validate_uid = fields.Many2one('res.users', 'Validate By', readonly=1)
     payment_uid = fields.Many2one('res.users', 'Payment By', readonly=1)
 
+    ledger_ids = fields.One2many('tt.ledger', 'res_id', 'Ledger', readonly=True)
+
     sale_service_charge_ids = fields.One2many('tt.service.charge', 'visa_id', 'Service Charge',
                                               readonly=True, states={'draft': [('readonly', False)]})
 
@@ -88,6 +91,10 @@ class TtVisa(models.Model):
 
     immigration_consulate = fields.Char('Immigration Consulate', readonly=1, compute="_compute_immigration_consulate")
 
+    ######################################################################################################
+    # STATE
+    ######################################################################################################
+
     @api.multi
     @api.onchange('state')
     def _compute_commercial_state(self):
@@ -102,22 +109,81 @@ class TtVisa(models.Model):
             'state_visa': 'draft',
             'state': 'issued'
         })
+        # saat mengubah state ke draft, akan mengubah semua state passenger ke draft
+        for rec in self.to_passenger_ids:
+            rec.action_draft()
+        self.message_post(body='Order DRAFT')
 
     def action_confirm_visa(self):
         is_confirmed = True
+        # cek semua state passanger.
+        # jika ada state passenger yang masih diluar confirm, cancel atau validate, batalkan action confirm
+        for rec in self.to_passenger_ids:
+            if rec.state not in ['confirm', 'cancel', 'validate']:
+                is_confirmed = False
+
+        if not is_confirmed:
+            raise UserError(
+                _('You have to Confirmed all The passengers document first.'))
+
         self.write({
             'state_visa': 'confirm',
             'confirmed_date': datetime.now(),
             'confirmed_uid': self.env.user.id
         })
+        self.message_post(body='Order CONFIRMED')
 
     def action_validate_visa(self):
         is_validated = True
+        # cek semua state passanger.
+        # jika ada state passenger yang masih diluar cancel atau validate, batalkan action validate
+        for rec in self.to_passenger_ids:
+            if rec.state not in ['validate', 'cancel']:
+                is_validated = False
+
+        if not is_validated:
+            raise UserError(
+                _('You have to Validated all The passengers document first.'))
+
         self.write({
             'state_visa': 'validate',
             'validate_date': datetime.now(),
             'validate_uid': self.env.user.id
         })
+        self.message_post(body='Order VALIDATED')
+
+    def action_in_process_visa(self):
+        self.write({
+            'state_visa': 'in_process'
+        })
+        for rec in self.to_passenger_ids:
+            if rec.state in ['validate', 'cancel']:
+                rec.action_in_process()
+        self.message_post(body='Order IN PROCESS')
+
+    def action_payment_visa(self):
+        self.write({
+            'state_visa': 'payment'
+        })
+        self.message_post(body='Order PAYMENT')
+
+    def action_in_process_consulate_visa(self):
+        is_payment = True
+        for rec in self.to_passenger_ids:
+            if rec.state not in ['confirm_payment']:
+                is_payment = False
+
+        if not is_payment:
+            raise UserError(
+                _('You have to pay all the passengers first.'))
+
+        self.write({
+            'state_visa': 'in_process',
+            'in_process_date': datetime.now()
+        })
+        self.message_post(body='Order IN PROCESS TO CONSULATE/IMMIGRATION')
+        for rec in self.to_passenger_ids:
+            rec.action_in_process2()
 
     def action_proceed_visa(self):
         self.write({
@@ -125,6 +191,21 @@ class TtVisa(models.Model):
         })
 
     def action_cancel_visa(self):
+        # cek state visa.
+        # jika state : in_process, partial_proceed, proceed, delivered, ready, done, create reverse ledger
+        if self.state_visa not in ['in_process', 'partial_proceed', 'proceed', 'delivered', 'ready', 'done']:
+            self._create_anti_ho_ledger_traveldoc()
+            self._create_anti_ledger_traveldoc()
+            self._create_anti_commission_ledger_traveldoc()
+        # set semua state passenger ke cancel
+        for rec in self.to_passenger_ids:
+            rec.action_cancel()
+        # set state agent invoice ke cancel
+        # for rec2 in self.agent_invoice_ids:
+        #     rec2.action_cancel()
+        # unlink semua vendor
+        # for rec3 in self.vendor_ids:
+        #     rec3.sudo().unlink()
         self.write({
             'state_visa': 'cancel',
         })
@@ -134,6 +215,7 @@ class TtVisa(models.Model):
             'state_visa': 'ready',
             'ready_date': datetime.now()
         })
+        self.message_post(body='Order READY')
 
     def action_done_visa(self):
         self.write({
@@ -145,7 +227,6 @@ class TtVisa(models.Model):
     # CREATE
     ######################################################################################################
 
-    # DEVELOPMENT - SV
     param_contact_data = {
         "city": "Surabaya",
         "first_name": "Edy",
@@ -169,7 +250,7 @@ class TtVisa(models.Model):
         {
             "first_name": "Edy",
             "last_name": "Kend",
-            "pax_type": "ADT",
+            "passenger_type": "ADT",
             "nationality_code": "ID",
             "title": "MR",
             "domicile": "ffsdfsdf",
@@ -181,7 +262,7 @@ class TtVisa(models.Model):
         {
             "first_name": "Edy",
             "last_name": "Kend",
-            "pax_type": "ADT",
+            "passenger_type": "ADT",
             "nationality_code": "ID",
             "title": "MR",
             "domicile": "asdasd",
@@ -195,25 +276,25 @@ class TtVisa(models.Model):
     param_service_charge_summary = [
         {
             "charge_type": "fare",
-            "description": "Visa Australia",
+            "description": "Visa Japan",
             "charge_code": "fare",
             "amount": 1900000.0,
             "currency": "IDR",
             "foreign_currency": "IDR",
             "pax_count": 1,
-            "pax_type": "ADT",
+            "passenger_type": "ADT",
             "pricelist_id": 1,
             "foreign_amount": 0
         },
         {
             "charge_type": "fare",
-            "description": "Visa Australia",
+            "description": "Visa Japan",
             "charge_code": "fare",
             "amount": 1910000.0,
             "currency": "IDR",
             "foreign_currency": "IDR",
             "pax_count": 1,
-            "pax_type": "ADT",
+            "passenger_type": "ADT",
             "pricelist_id": 1,
             "foreign_amount": 0,
             "visa_type": "Tourist",
@@ -228,7 +309,7 @@ class TtVisa(models.Model):
         "visa_ids": "869,870,",
         "departure_date": "2017-12-09",
         "destination": "",
-        "country_id": "14",
+        "country_id": "113",
         "direction": "OW",
         "search_type": "",
         "state": "draft",
@@ -460,7 +541,7 @@ class TtVisa(models.Model):
             'commercial_agent_id': context['agent_id'],
             'agent_id': context['agent_id'],
             'country_id': country and country[0].id or False,
-            'pax_type': 'ADT',
+            'passenger_type': 'ADT',
             'bill_to': '<span><b>{title} {first_name} {last_name}</b> <br>Phone: {mobile}</span>'.format(**vals),
             'mobile_orig': vals.get('mobile', ''),
             'email': vals.get('email', vals['email']),
@@ -593,7 +674,6 @@ class TtVisa(models.Model):
     # LEDGER
     ######################################################################################################
 
-    # LEDGER
     @api.one
     def action_issued_visa(self, api_context=None, doc_type=''):
         if not api_context:  # Jika dari call from backend
@@ -624,117 +704,122 @@ class TtVisa(models.Model):
 
         self.write(vals)
 
-        # self._create_ledger_traveldoc()
-        # self._create_ho_ledger_traveldoc()
-        # self._create_commission_ledger_traveldoc()
+        self._create_ledger_visa()
+        self._create_ho_ledger_visa()
+        # self._create_commission_ledger_visa()
         # self.create_agent_invoice_traveldoc()
 
-    def _create_ho_ledger_traveldoc(self):
-        pass
-        # ledger = self.env['tt.ledger']
-        # for rec in self:
-        #     doc_type = []
-        #     for sc in rec.sale_service_charge_ids:
-        #         if rec.transport_type == 'passport':
-        #             if not sc.pricelist_id.apply_type in doc_type:
-        #                 doc_type.append(sc.pricelist_id.apply_type)
-        #             desc = sc.pricelist_id.passport_type.upper() + ' ' + sc.pricelist_id.apply_type.upper()
-        #         else:
-        #             if not sc.pricelist_id.visa_type in doc_type:
-        #                 doc_type.append(sc.pricelist_id.visa_type)
-        #             desc = sc.pricelist_id.display_name.upper() + ' ' + sc.pricelist_id.entry_type.upper()
-        #
-        #     doc_type = ','.join(str(e) for e in doc_type)
-        #
-        #     ho_profit = 0
-        #     for pax in self.to_passenger_ids:
-        #         ho_profit += pax.pricelist_id.cost_price - pax.pricelist_id.nta_price
-        #
-        #     vals = ledger.prepare_vals('Profit ' + doc_type + ' : ' + rec.name, rec.name, rec.issued_date,
-        #                                'commission',
-        #                                rec.currency_id.id, ho_profit, 0)
-        #     vals['transport_booking_id'] = rec.id
-        #     vals['agent_id'] = self.env['res.partner'].sudo().search(
-        #         [('is_HO', '=', True), ('parent_id', '=', False)], limit=1).id
-        #     vals['pnr'] = rec.pnr
-        #     vals['transport_type'] = rec.transport_type
-        #     vals['display_provider_name'] = rec.display_provider_name
-        #     vals['description'] = desc
-        #
-        #     new_aml = ledger.sudo().create(vals)
-        #     new_aml.action_done()
-        #     rec.ledger_id = new_aml
+    def _create_ho_ledger_visa(self):
+        ledger = self.env['tt.ledger']
+        for rec in self:
+            doc_type = []
+            for sc in rec.sale_service_charge_ids:
+                # if rec.transport_type == 'passport':
+                #     if not sc.pricelist_id.apply_type in doc_type:
+                #         doc_type.append(sc.pricelist_id.apply_type)
+                #     desc = sc.pricelist_id.passport_type.upper() + ' ' + sc.pricelist_id.apply_type.upper()
+                # else:
+                if sc.pricelist_id.visa_type not in doc_type:
+                    doc_type.append(sc.pricelist_id.visa_type)
+                desc = sc.pricelist_id.display_name.upper() + ' ' + sc.pricelist_id.entry_type.upper()
 
-    def _create_ledger_traveldoc(self):
-        pass
-        # ledger = self.env['tt.ledger']
-        # for rec in self:
-        #     doc_type = []
-        #     for sc in rec.sale_service_charge_ids:
-        #         if rec.transport_type == 'passport':
-        #             if not sc.pricelist_id.apply_type in doc_type:
-        #                 doc_type.append(sc.pricelist_id.apply_type)
-        #             desc = sc.pricelist_id.passport_type.upper() + ' ' + sc.pricelist_id.apply_type.upper()
-        #         else:
-        #             if not sc.pricelist_id.visa_type in doc_type:
-        #                 doc_type.append(sc.pricelist_id.visa_type)
-        #             desc = sc.pricelist_id.display_name.upper() + ' ' + sc.pricelist_id.entry_type.upper()
-        #
-        #     doc_type = ','.join(str(e) for e in doc_type)
-        #
-        #     vals = ledger.prepare_vals('Order ' + doc_type + ' : ' + rec.name, rec.name, rec.issued_date,
-        #                                'transport',
-        #                                rec.currency_id.id,
-        #                                0, rec.total)
-        #     vals['transport_booking_id'] = rec.id
-        #     vals['agent_id'] = rec.agent_id.id
-        #     vals['pnr'] = rec.pnr
-        #     vals['transport_type'] = rec.transport_type
-        #     vals['display_provider_name'] = rec.display_provider_name
-        #     vals['description'] = desc
-        #
-        #     new_aml = ledger.sudo().create(vals)
-        #     new_aml.action_done()
-        #     rec.ledger_id = new_aml
+            doc_type = ','.join(str(e) for e in doc_type)
 
-    def _create_commission_ledger_traveldoc(self):
-        pass
-        # for rec in self:
-        #     ledger_obj = rec.env['tt.ledger']
-        #     agent_commission, parent_commission, ho_commission = rec.sub_agent_id.agent_type_id.calc_commission(
-        #         rec.total_commission, 1)
-        #     if agent_commission > 0:
-        #         vals = ledger_obj.prepare_vals('Commission : ' + rec.name, rec.name, rec.issued_date, 'commission',
-        #                                        rec.currency_id.id, agent_commission, 0)
-        #         vals.update({
-        #             'agent_id': rec.sub_agent_id.id,
-        #             'transport_booking_id': rec.id,
-        #         })
-        #         commission_aml = ledger_obj.create(vals)
-        #         commission_aml.action_done()
-        #         rec.commission_ledger_id = commission_aml.id
-        #     if parent_commission > 0:
-        #         vals = ledger_obj.prepare_vals('Commission : ' + rec.name, 'PA: ' + rec.name, rec.issued_date,
-        #                                        'commission',
-        #                                        rec.currency_id.id, parent_commission, 0)
-        #         vals.update({
-        #             'agent_id': rec.sub_agent_id.parent_agent_id.id,
-        #             'transport_booking_id': rec.id,
-        #         })
-        #         commission_aml = ledger_obj.create(vals)
-        #         commission_aml.action_done()
-        #
-        #     if ho_commission > 0:
-        #         vals = ledger_obj.prepare_vals('Commission : ' + rec.name, 'HO: ' + rec.name, rec.issued_date,
-        #                                        'commission',
-        #                                        rec.currency_id.id, ho_commission, 0)
-        #         vals.update({
-        #             'agent_id': rec.env['res.partner'].sudo().search(
-        #                 [('is_HO', '=', True), ('parent_id', '=', False)], limit=1).id,
-        #             'transport_booking_id': rec.id,
-        #         })
-        #         commission_aml = ledger_obj.create(vals)
-        #         commission_aml.action_done()
+            ho_profit = 0
+            for pax in self.to_passenger_ids:
+                ho_profit += pax.pricelist_id.cost_price - pax.pricelist_id.nta_price
+
+            vals = ledger.prepare_vals('Profit ' + doc_type + ' : ' + rec.name, rec.name, rec.issued_date,
+                                       'commission', rec.currency_id.id, ho_profit, 0)
+
+            # vals['transport_type'] = rec.transport_type
+            # vals['display_provider_name'] = rec.display_provider_name
+            print('id : ' + str(rec.id))
+            vals.update({
+                'res_id': rec.id,
+                'agent_id': self.env['tt.agent'].sudo().search([('parent_agent_id', '=', False)], limit=1).id,
+                'pnr': rec.pnr,
+                'description': desc
+            })
+
+            new_aml = ledger.sudo().create(vals)
+            # new_aml.action_done()
+            # rec.ledger_id = new_aml
+
+    def _create_ledger_visa(self):
+        # pass
+        ledger = self.env['tt.ledger']
+        for rec in self:
+            doc_type = []
+            for sc in rec.sale_service_charge_ids:
+                # if rec.transport_type == 'passport':
+                #     if not sc.pricelist_id.apply_type in doc_type:
+                #         doc_type.append(sc.pricelist_id.apply_type)
+                #     desc = sc.pricelist_id.passport_type.upper() + ' ' + sc.pricelist_id.apply_type.upper()
+                # else:
+                if sc.pricelist_id.visa_type not in doc_type:
+                    doc_type.append(sc.pricelist_id.visa_type)
+                desc = sc.pricelist_id.display_name.upper() + ' ' + sc.pricelist_id.entry_type.upper()
+
+            doc_type = ','.join(str(e) for e in doc_type)
+
+            vals = ledger.prepare_vals('Order ' + doc_type + ' : ' + rec.name, rec.name, rec.issued_date,
+                                       'travel.doc',
+                                       rec.currency_id.id,
+                                       0, rec.total)
+            vals['res_id'] = rec.id
+            vals['agent_id'] = rec.agent_id.id
+            vals['pnr'] = rec.pnr
+            # vals['transport_type'] = rec.transport_type
+            # vals['display_provider_name'] = rec.display_provider_name
+            vals['description'] = desc
+
+            new_aml = ledger.sudo().create(vals)
+            # new_aml.action_done()
+            # rec.ledger_id = new_aml
+
+    def _create_commission_ledger_visa(self):
+        # pass
+        for rec in self:
+            ledger_obj = rec.env['tt.ledger']
+            agent_commission, parent_commission, ho_commission = rec.sub_agent_id.agent_type_id.calc_commission(
+                rec.total_commission, 1)
+            print('Agent Comm : ' + str(agent_commission))
+            print('Parent Comm : ' + str(parent_commission))
+            print('HO Comm : ' + str(ho_commission))
+
+            if agent_commission > 0:
+                vals = ledger_obj.prepare_vals('Commission : ' + rec.name, rec.name, rec.issued_date, 'commission',
+                                               rec.currency_id.id, agent_commission, 0)
+                vals.update({
+                    'agent_id': rec.sub_agent_id.id,
+                    'transport_booking_id': rec.id,
+                })
+                commission_aml = ledger_obj.create(vals)
+                commission_aml.action_done()
+                rec.commission_ledger_id = commission_aml.id
+            if parent_commission > 0:
+                vals = ledger_obj.prepare_vals('Commission : ' + rec.name, 'PA: ' + rec.name, rec.issued_date,
+                                               'commission',
+                                               rec.currency_id.id, parent_commission, 0)
+                vals.update({
+                    'agent_id': rec.sub_agent_id.parent_agent_id.id,
+                    'transport_booking_id': rec.id,
+                })
+                commission_aml = ledger_obj.create(vals)
+                commission_aml.action_done()
+
+            if int(ho_commission) > 0:
+                vals = ledger_obj.prepare_vals('Commission : ' + rec.name, 'HO: ' + rec.name, rec.issued_date,
+                                               'commission',
+                                               rec.currency_id.id, ho_commission, 0)
+                vals.update({
+                    'agent_id': rec.env['res.partner'].sudo().search(
+                        [('parent_agent_id', '=', False)], limit=1).id,
+                    'transport_booking_id': rec.id,
+                })
+                commission_aml = ledger_obj.create(vals)
+                commission_aml.action_done()
 
     # ANTI / REVERSE LEDGER
 
@@ -845,9 +930,9 @@ class TtVisa(models.Model):
         #         commission_aml = ledger_obj.create(vals)
         #         commission_aml.action_done()
 
-    #######################################################################################################
+    ######################################################################################################
     # OTHERS
-    #######################################################################################################
+    ######################################################################################################
 
     @api.multi
     @api.depends('to_passenger_ids')

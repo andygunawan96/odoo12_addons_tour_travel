@@ -1,0 +1,100 @@
+<odoo>
+    <record model="ir.ui.view" id="tt_visa_order_passengers_view_form">
+        <field name="name">tt.visa.order.passengers.view.form</field>
+        <field name="model">tt.visa.order.passengers</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,validate,in_process,add_payment,in_process2,ready,done"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+<!--                            <field name="use_vendor"/>-->
+                            <field name="visa_id"/>
+                            <field name="booking_state"/>
+                            <field name="passenger_id"/>
+                            <field name="passenger_type"/>
+                            <field name="passenger_domicile"/>
+                            <field name="pricelist_id"/>
+                        </group>
+                        <group>
+                            <field name="process_status"/>
+                            <field name="payment_uid" groups="tt_base.group_tt_tour_travel_operator"/>
+                            <field name="payment_date" groups="tt_base.group_tt_tour_travel_operator"/>
+                            <field name="in_process_date" groups="tt_base.group_tt_tour_travel_operator"/>
+                            <field name="call_date" groups="tt_base.group_tt_tour_travel_operator" attrs="{'readonly': [('state', 'not in', ['in_process', 'waiting'])], 'required': [('state', 'in', ['waiting'])]}"/>
+                            <field name="out_process_date" groups="tt_base.group_tt_tour_travel_operator"/>
+                            <field name="to_HO_date" groups="tt_base.group_tt_tour_travel_operator"/>  <!-- attrs="{'invisible': [('use_vendor', '=', False)]}"-->
+                            <field name="to_agent_date" groups="tt_base.group_tt_tour_travel_operator"/>
+                            <field name="ready_date" groups="tt_base.group_tt_tour_travel_operator"/>
+                        </group>
+                    </group>
+                    <field name="to_requirement_ids" attrs="{'readonly': [('state', 'not in', ['draft','re_validate','confirm'])]}">
+                        <tree editable="bottom" create="0">
+                            <field name="requirement_id"/>
+                            <field name="is_ori" readonly="1" groups="tt_base.group_tt_tour_travel_operator"/>
+                            <field name="is_ori" groups="tt_base.group_tt_agent_user_operator"/>
+                            <field name="is_copy" readonly="1" groups="tt_base.group_tt_tour_travel_operator"/>
+                            <field name="is_copy" groups="tt_base.group_tt_agent_user_operator"/>
+                            <field name="check_uid" attrs="{'readonly': [('check_uid', '!=', 'False')]}"/>
+                            <field name="check_uid" invisible="1"/>
+                            <field name="check_date" attrs="{'readonly': [('check_date', '!=', 'False')]}"/>
+                            <field name="check_date" invisible="1"/>
+
+                            <field name="is_ori_HO" readonly="1" groups="tt_base.group_tt_agent_user_operator"/>
+                            <field name="is_ori_HO" groups="tt_base.group_tt_tour_travel_operator"/>
+                            <field name="is_copy_HO" readonly="1" groups="tt_base.group_tt_agent_user_operator"/>
+                            <field name="is_copy_HO" groups="tt_base.group_tt_tour_travel_operator"/>
+                            <field name="check_uid_HO" groups="tt_base.group_tt_tour_travel_operator, tt_base.group_tt_agent_user_operator" attrs="{'readonly': [('check_uid_HO', '!=', 'False')]}"/>
+                            <field name="check_uid_HO" groups="tt_base.group_tt_tour_travel_operator, tt_base.group_tt_agent_user_operator" invisible="1"/>
+                            <field name="check_date_HO" groups="tt_base.group_tt_tour_travel_operator, tt_base.group_tt_agent_user_operator" attrs="{'readonly': [('check_date_HO', '!=', 'False')]}"/>
+                            <field name="check_date_HO" groups="tt_base.group_tt_tour_travel_operator, tt_base.group_tt_agent_user_operator" invisible="1"/>
+                            <!--<field name="check_uid" attrs="{'readonly': ['|', ('is_ori', '=', True), ('is_copy', '=', True)]}"/>-->
+                            <!--<field name="check_date"/>-->
+                            <!--<field name="is_checkedby_agent"/>-->
+                            <!--<field name="is_checkedby_HO"/>-->
+                        </tree>
+                    </field>
+                    <group>
+                        <field name="notes"/>
+                        <field name="notes" groups="tt_base.group_tt_tour_travel_operator, tt_base.group_tt_agent_user_operator"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tt_visa_order_passengers_view_tree" >
+        <field name="name">tt.visa.order.passengers.view.tree</field>
+        <field name="model">tt.visa.order.passengers</field>
+        <field name="arch" type="xml">
+            <tree create="0">
+                <field name="passenger_id"/>
+                <field name="passenger_type"/>
+                <field name="pricelist_id"/>
+                <field name="in_process_date"/>
+                <field name="call_date"/>
+                <field name="out_process_date"/>
+                <field name="to_HO_date"/>
+                <field name="to_agent_date"/>
+                <field name="ready_date"/>
+                <field name="process_status"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_visa_order_passengers_view_action">
+        <field name="name">Visa Order Passengers</field>
+        <field name="res_model">tt.visa.order.passengers</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">
+            {
+                'form_view_ref': 'tt_passport.tt_visa_order_passengers_view_form',
+                'tree_view_ref': 'tt_passport.tt_visa_order_passengers_view_tree',
+            }
+        </field>
+    </record>
+</odoo>
