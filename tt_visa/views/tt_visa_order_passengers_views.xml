@@ -6,6 +6,25 @@
             <form>
                 <header>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,validate,in_process,add_payment,in_process2,ready,done"/>
+                    <button string="Draft" name="action_draft" type="object" attrs="{'invisible': [('state', '!=', 'cancel')]}" groups="tt_base.group_tt_tour_travel_manager"/>
+                    <button string="Confirm" name="action_confirm" type="object" attrs="{'invisible': [('state', '!=', 'draft')]}" groups="tt_base.group_tt_agent_user_operator"/>
+                    <button string="Reject" name="action_draft" type="object" attrs="{'invisible': [('state', '!=', 'confirm')]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <button string="Validate" name="action_validate" type="object" attrs="{'invisible': [('state', '!=', 'confirm')]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <button string="Re Validate Document" name="action_ " type="object" attrs="{'invisible': [('state', 'not in', ['in_process','re_confirm','confirm_payment'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <button string="Re Confirm Document" name="action_re_confirm" type="object" attrs="{'invisible': [('state', '!=', 're_validate')]}" groups="tt_base.group_tt_agent_user_operator"/>
+                    <button string="Payment" name="action_add_payment" type="object" attrs="{'invisible': [('state', 'not in', ['in_process','re_confirm','confirm_payment'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <button string="Confirm Payment" name="action_confirm_payment" type="object" attrs="{'invisible': [('state', 'not in', ['add_payment',])]}" groups="account.group_account_invoice"/>
+                    <button string="Waiting Call" name="action_waiting" type="object" attrs="{'invisible': [('state', 'not in', ['in_process2'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <button string="Proceed" name="action_proceed" type="object" attrs="{'invisible': [('state', '!=', 'waiting')]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <button string="Reject" name="action_reject" type="object" attrs="{'invisible': [('state', '!=', 'proceed')]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <button string="Accept" name="action_accept" type="object" attrs="{'invisible': [('state', '!=', 'proceed')]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <button string="Send to HO" name="action_to_HO" type="object" attrs="{'invisible': ['|', ('state', 'not in', ['rejected','accepted']), '&amp;', ('state', 'in', ['rejected','accepted'])]}" groups="tt_base.group_tt_tour_travel_operator"/>  <!--, ('use_vendor', '=', False)-->
+                    <button string="Send to Agent" name="action_to_agent" type="object" attrs="{'invisible': ['|',('state', 'not in', ['rejected','accepted'])]}" groups="tt_base.group_tt_tour_travel_operator"/>  <!--,('use_vendor', '!=', False)-->
+                    <button string="Send to Agent" name="action_to_agent" type="object" attrs="{'invisible': ['|',('state', '!=', 'to_HO')]}" groups="tt_base.group_tt_tour_travel_operator"/>  <!--,('use_vendor', '!=', True)-->
+                    <button string="Ready" name="action_ready" type="object" attrs="{'invisible': [('state', 'not in', ['to_agent'])]}" groups="tt_base.group_tt_agent_user_operator"/>
+                    <button string="Done" name="action_done" type="object" attrs="{'invisible': [('state', 'not in', ['ready'])]}" groups="tt_base.group_tt_agent_user_operator"/>
+                    <button string="Sync Requirements" name="action_sync" type="object" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <button string="Cancel" name="action_cancel" type="object" attrs="{'invisible': [('state', 'not in', ['draft','confirm','validate','re_validate','re_confirm'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
                 </header>
                 <sheet>
                     <group>

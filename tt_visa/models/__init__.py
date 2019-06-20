@@ -5,5 +5,6 @@ from . import tt_visa_customer
 from . import tt_visa_order_passengers
 from . import tt_visa_order_requirements
 from . import tt_visa_requirements
+from . import tt_visa_vendor
 from . import tt_visa
 from . import tt_visa_pricelist

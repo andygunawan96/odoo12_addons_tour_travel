@@ -49,6 +49,7 @@ PROCESS_STATUS = [
 
 
 class VisaOrderPassengers(models.Model):
+    _inherit = ['mail.thread']
     _name = 'tt.visa.order.passengers'
     _description = 'Tour & Travel - Visa Order Passengers'
 
@@ -244,10 +245,10 @@ class VisaOrderPassengers(models.Model):
             rec.message_post(body='Passenger documents TO Agent')
             is_sent = True
             for psg in rec.visa_id.to_passenger_ids:
-                if not psg.state in ['to_agent']:
+                if psg.state not in ['to_agent']:
                     is_sent = False
             if is_sent:
-                rec.visa.action_delivered_visa()
+                rec.visa_id.action_delivered_visa()
 
     def action_ready(self):
         for rec in self:
@@ -269,7 +270,7 @@ class VisaOrderPassengers(models.Model):
                 if psg.state not in ['done', 'cancel']:
                     is_done = False
             if is_done:
-                rec.visa_id.action_done_traveldoc()
+                rec.visa_id.action_done_visa()
 
     def action_sync(self):
         to_req_env = self.env['tt.visa.order.requirements']

@@ -45,7 +45,7 @@ class VisaPricelist(models.Model):
     nta_price = fields.Monetary('NTA Price', default=0)
     cost_price = fields.Monetary('Cost Price', default=0)
     sale_price = fields.Monetary('Sale Price', default=0)
-    commission_price = fields.Monetary('Commission Price', store=True, readonly=1)  # compute="_compute_commission_price"
+    commission_price = fields.Monetary('Commission Price', store=True, readonly=1, compute="_compute_commission_price")
 
     requirement_ids = fields.One2many('tt.visa.requirements', 'pricelist_id', 'Requirements')
 
