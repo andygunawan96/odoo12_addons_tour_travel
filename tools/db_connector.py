@@ -50,8 +50,8 @@ class BackendConnector(DbConnector):
             credential = util.decode_authorization(authorization)
             self.url = tools.config.get('backend_url', '')
             self.db_name = tools.config.get('backend_db', '')
-            self.uid = credential['uid']
-            self.password = credential['password']
+            self.uid = credential.get('uid', -1)
+            self.password = credential.get('password', '')
         except Exception as e:
             _logger.error('Backend Connector Config Error, %s' % str(e))
 
@@ -67,8 +67,8 @@ class GatewayConnector(DbConnector):
             credential = util.decode_authorization(authorization)
             self.url = tools.config.get('gateway_url', '')
             self.db_name = tools.config.get('gateway_db', '')
-            self.uid = credential['uid']
-            self.password = credential['password']
+            self.uid = credential.get('uid', -1)
+            self.password = credential.get('password', '')
         except Exception as e:
             _logger.error('Gateway Connector Error, %s' % str(e))
 

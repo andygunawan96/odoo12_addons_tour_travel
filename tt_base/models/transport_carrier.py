@@ -1,14 +1,6 @@
 from odoo import api, fields, models, _
 import re
 
-TRANSPORT_TYPE = [('airline', 'Airline'),
-                  ('train', 'Train'),
-                  ('ship', 'Ship'),
-                  ('cruise', 'Cruise'),
-                  ('car', 'Car/Rent'),
-                  ('bus', 'Bus')]
-
-
 class TransportCarrier(models.Model):
     _name = 'tt.transport.carrier'
     _description = "List of Carrier Code"
@@ -16,7 +8,7 @@ class TransportCarrier(models.Model):
     name = fields.Char('Name', required=True)
     code = fields.Char('Code', help="for airline : 2-letter IATA")
     icao = fields.Char('ICAO Code', help="ICAO code for airline")
-    transport_type = fields.Selection(TRANSPORT_TYPE, 'Transport Type')
+    provider_type_id = fields.Many2One('tt.provider.type', 'Provider Type')
     call_sign = fields.Char('Call Sign')
     # cancellation_policy = fields.Html('Cancellation Policy')
     # general_policy = fields.Html('General Policy')
@@ -67,7 +59,7 @@ class TransportCarrier(models.Model):
             'name': self.name,
             'code': self.code,
             'icao': self.icao,
-            'transport_type': self.transport_type,
+            'provider_type_id': self.provider_type_id.to_dict(),
             'call_sign': self.transport_type,
             'active': self.active
         }
