@@ -1,23 +1,6 @@
 from odoo import api,models,fields
 import pytz
 
-DESTINATION_TYPE = [
-    ('airport', 'Airport'),
-    ('train-st', 'Train Station'),
-    ('bus-st', 'Bus Station'),
-    ('activity', 'Activity Destination'),
-    ('harbour', 'Harbour'),
-    ('tour', 'Tour Destination')
-]
-
-TRANSPORT_TYPE_TO_DESTINATION_TYPE = {
-    'airline': 'airport',
-    'train': 'train-st',
-    'ship': 'harbour',
-    'cruise': 'harbour',
-    'car': 'bus-st',
-}
-
 @api.model
 def _tz_get(self):
     # put POSIX 'Etc/*' entries at the end to avoid confusing users - see bug 1086728
@@ -30,7 +13,7 @@ class Destinations(models.Model):
     _order = 'display_name'
 
     name = fields.Char('Name', required=True)
-    provider_type = fields.Many2one('tt.provider.type', 'Provider')
+    provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
     code = fields.Char('Code', help="Can be filled with IATA code")
     display_name = fields.Char('Display Name',store=True)
     country_id = fields.Many2one('res.country', 'Country', required=False)
@@ -45,7 +28,6 @@ class Destinations(models.Model):
     # source = fields.Char('Source')
     # is_international_flight = fields.Boolean('International Flight', default=True)
     active = fields.Boolean('Active', default=True)
-
 
     @api.model
     def create(self, vals_list):
@@ -65,9 +47,9 @@ class Destinations(models.Model):
         return res and res[0].id or False
 
     def to_dict(self):
-        a = {
+        return {
             'name': self.name,
-            'provider_type': self.provider_type.name,
+            'provider_type_id': self.provider_type_id.to_dict(),
             'code': self.code,
             'country': {
                 'name': self.country_id.name,
@@ -84,5 +66,3 @@ class Destinations(models.Model):
             'tz': self.tz,
             'active': self.active
         }
-        print(a)
-        return a

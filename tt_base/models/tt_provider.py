@@ -4,8 +4,9 @@ from odoo import api, fields, models, _
 class TtProvider(models.Model):
     _name = 'tt.provider'
 
-    name = fields.Char('Name')
-    code = fields.Char('Code')
+    name = fields.Char('Name', required=True)
+    alias = fields.Char(string='Alias')
+    code = fields.Char('Code', required=True)
     vendor_product_id = fields.Many2one('tt.provider.type', 'Vendor Type')
     vendor_ledger_ids = fields.One2many('tt.vendor.ledger', 'provider_id', 'Vendor Ledgers')
     currency_id = fields.Many2one('res.currency', 'Currency')
@@ -13,6 +14,13 @@ class TtProvider(models.Model):
     rate_ids = fields.One2many('res.rate', 'provider_id', 'Provider Codes')
     payment_acquirer_ids = fields.One2many('payment.acquirer', 'provider_id', 'Payment Acquirers')
     active = fields.Boolean('Active', default=True)
+
+    def to_dict(self):
+        return {
+            'name': self.name,
+            'alias': self.alias,
+            'code': self.code,
+        }
 
 
 class TtProviderCode(models.Model):

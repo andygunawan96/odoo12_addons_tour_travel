@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="tt_provider_type_form_view" model="ir.ui.view">
+            <field name="name">tt.provider.type.form.view</field>
+            <field name="model">tt.provider.type</field>
+            <field name="arch" type="xml">
+                <form string="Provider Type">
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="toggle_active" type="object"
+                                    class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button"
+                                       options='{"terminology": "archive"}'/>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only" string="Name"/>
+                            <h1>
+                                <field name="name" required="True"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="code"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="tt_provider_type_tree_view" model="ir.ui.view">
+            <field name="name">tt.provider.type.tree.view</field>
+            <field name="model">tt.provider.type</field>
+            <field name="arch" type="xml">
+                <tree string="Provider Type">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="tt_provider_type_action_view" model="ir.actions.act_window">
+            <field name="name">Provider Type</field>
+            <field name="view_type">form</field>
+            <field name="res_model">tt.provider.type</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    <!-- Add Text Here -->
+                </p><p>
+                <!-- More details about what a user can do with this object will be OK -->
+            </p>
+            </field>
+            <field name="context">
+                {
+                'form_view_ref': 'tt_base.tt_provider_type_form_view',
+                'tree_view_ref': 'tt_base.tt_provider_type_tree_view'
+                }
+            </field>
+        </record>
+
+        <menuitem id="sub_menu_tour_travel_provider_type"
+                  parent="tt_base.menu_tour_travel_provider"
+                  groups="base.group_user"
+                  name="Provider Type"
+                  sequence="3"
+                  action="tt_provider_type_action_view"/>
+
+    </data>
+</odoo>
