@@ -31,12 +31,8 @@ class ApiManagement(models.Model):
         return res
 
     def get_credential(self):
-        res = {
-            'uid': self.user_id.id,
-            'user_name': self.user_id.name,
-            'user_login': self.user_id.login,
-            'api_role': self.api_role,
-        }
+        res = {} if not self.user_id else self.user_id.get_credential()
+        res['api_role'] = self.api_role
         return res
 
     @api.model
@@ -80,13 +76,11 @@ class ApiManagement(models.Model):
             if not _obj:
                 raise Exception('API Key is not match')
 
-            values = {
-                'co_uid': _user.id,
-                'co_user_name': _user.name,
-                'co_user_login': _user.login,
+            values = _user.get_credential(prefix='co_')
+            values.update({
                 'sid': context['sid'],
                 'signature': self._generate_signature(),
-            }
+            })
             response = _obj.get_credential()
             # April 11, 2019 - SAM
             # Sementara host IP dikosongkan hingga menemukan cara untuk mendapatkan host IP user
@@ -99,11 +93,7 @@ class ApiManagement(models.Model):
                 if not co_uid:
                     raise Exception('Co User and Co Password is not match')
                 _co_user = self.env['res.users'].sudo().browse(co_uid)
-                values.update({
-                    'co_uid': _co_user.id,
-                    'co_user_name': _co_user.name,
-                    'co_user_login': _co_user.login,
-                })
+                values.update(_co_user.get_credential(prefix='co_'))
             response.update(values)
             res = Response().get_no_error(response)
         except Exception as e:
@@ -116,3 +106,44 @@ class ResUsersApiInherit(models.Model):
 
     is_api_user = fields.Boolean(string='API User', default=False)
     credential_ids = fields.One2many(comodel_name='tt.api.credential', inverse_name='user_id', string='Credentials')
+
+    def get_credential(self, prefix=''):
+
+        res = {
+            '%suid' % prefix: self.id,
+            '%suser_name' % prefix: self.name,
+            '%suser_login' % prefix: self.login,
+            '%sagent_id' % prefix: '',
+            '%sagent_name' % prefix: '',
+            '%sagent_type_id' % prefix: '',
+            '%sagent_type_name' % prefix: '',
+            '%sagent_type_code' % prefix: '',
+        }
+        if self.agent_id:
+            res.update(self.agent_id.get_credential(prefix))
+        return res
+
+
+class TtAgentApiInherit(models.Model):
+    _inherit = 'tt.agent'
+
+    def get_credential(self, prefix=''):
+        res = {
+            '%sagent_id' % prefix: self.id,
+            '%sagent_name' % prefix: self.name,
+        }
+        if self.agent_type_id:
+            res.update(self.agent_type_id.get_credential(prefix))
+        return res
+
+
+class TtAgentTypeApiInherit(models.Model):
+    _inherit = 'tt.agent.type'
+
+    def get_credential(self, prefix=''):
+        res = {
+            '%sagent_type_id' % prefix: self.id,
+            '%sagent_type_name' % prefix: self.name,
+            '%sagent_type_code' % prefix: self.code,
+        }
+        return res

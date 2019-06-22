@@ -36,6 +36,7 @@
                             <group>
                                 <group>
                                     <!--<field name="downline_ids"/>-->
+                                    <field name="code"/>
                                     <field name="upline_ids"/>
                                     <field name="currency_id"/>
                                     <field name="registration_fee"/>
@@ -100,6 +101,7 @@
             <field name="arch" type="xml">
                 <tree>
                     <field name="name"/>
+                    <field name="code"/>
                     <field name="description"/>
                 </tree>
             </field>

@@ -23,7 +23,7 @@
                         <group>
                             <group>
                                 <field name="code"/>
-                                <field name="vendor_product_id"/>
+                                <field name="provider_type_id"/>
                                 <field name="currency_id"/>
                             </group>
                             <group>
@@ -91,7 +91,7 @@
                     <field name="name"/>
                     <field name="code"/>
                     <field name="currency_id"/>
-                    <field name="vendor_product_id"/>
+                    <field name="provider_type_id"/>
                     <field name="active"/>
                 </tree>
             </field>
