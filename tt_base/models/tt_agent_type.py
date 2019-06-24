@@ -7,6 +7,7 @@ class TtAgentType(models.Model):
     _description = 'Tour & Travel - Agent Type'
 
     name = fields.Char('Name', required=True)
+    code = fields.Char('Code', required=True, help='Fixed code, ex: citra, japro, for sale pricing', default='undefine')
     state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'), ('cancel', 'Cancelled')], string='State',
                              default='draft')
     active = fields.Boolean('Active', default='True')

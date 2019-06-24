@@ -8,7 +8,7 @@ class TransportCarrier(models.Model):
     name = fields.Char('Name', required=True)
     code = fields.Char('Code', help="for airline : 2-letter IATA")
     icao = fields.Char('ICAO Code', help="ICAO code for airline")
-    provider_type_id = fields.Many2One('tt.provider.type', 'Provider Type')
+    provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
     call_sign = fields.Char('Call Sign')
     # cancellation_policy = fields.Html('Cancellation Policy')
     # general_policy = fields.Html('General Policy')

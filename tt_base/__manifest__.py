@@ -17,6 +17,9 @@ Key Features
         'data/ir_module_category_data.xml',
         'data/res_groups_data.xml',
         'data/agent_type_rodex_data.xml',
+        'data/tt.provider.type.csv',
+        'data/tt.provider.csv',
+        'data/tt.transport.carrier.csv',
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
 
