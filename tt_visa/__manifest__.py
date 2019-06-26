@@ -25,9 +25,11 @@
     # always loaded
     'data': [
         'security/ir.model.access.csv',
+        'security/ir_rule_data.xml',
         'data/ir_sequence_data.xml',
         'views/tt_visa_menuheader.xml',
         'views/tt_visa_views.xml',
+        'views/tt_visa_order_passengers_views.xml',
         'views/tt_visa_pricelist_views.xml',
     ],
     # only loaded in demonstration mode

@@ -27,7 +27,7 @@ class TtPassport(models.Model):
                                  states={'draft': [('readonly', False)]})
     duration = fields.Char('Duration', readonly=True, states={'draft': [('readonly', False)]})
     total_cost_price = fields.Monetary('Total Cost Price', default=0, readonly=True)
-    state_passport = fields.Selection(STATE_PASSPORT, 'State', help='''draft = requested
+    state_passport = fields.Selection(STATE_PASSPORT, 'State', default='draft', help='''draft = requested
                                             confirm = HO accepted
                                             validate = if all required documents submitted and documents in progress
                                             cancel = request cancelled

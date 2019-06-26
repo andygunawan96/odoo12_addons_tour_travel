@@ -64,7 +64,7 @@
                     <button string="To Vendor" name="action_to_vendor_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'validate')]}" groups="tt_base.group_tt_tour_travel_operator"/>
                     <button string="Vendor Process" name="action_vendor_process_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'to_vendor')]}" groups="tt_base.group_tt_tour_travel_operator"/>
                     <button string="In Process" name="action_in_process_visa" type="object" attrs="{'invisible': [('state_visa', 'not in', ['validate','vendor_process'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <button string="Process to Consulate" name="action_in_process2_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'payment')]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <button string="Process to Consulate" name="action_in_process_consulate_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'payment')]}" groups="tt_base.group_tt_tour_travel_operator"/>
                     <button string="Cancel All" name="action_cancel_visa" type="object" attrs="{'invisible': [('state_visa', 'in', ['cancel'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
 <!--                    <button string="Confirm" name="action_confirm" type="object" attrs="{'invisible': [('state_visa', '!=', 'draft')]}" groups="tt_base.group_tt_agent_user_manager"/>-->
 <!--                    <button string="Validate" name="action_validate" type="object" attrs="{'invisible': [('state_visa', '!=', 'confirm')]}" groups="tt_base.group_tt_agent_user_manager"/>-->
@@ -78,13 +78,27 @@
                     <div class="oe_title">
 <!--                        <label for="Name" class="oe_edit_only"/>-->
                         <h1>
-                            <field name="name" attrs="{'readonly': [('state_visa', '!=', 'draft')]}"/>
+                            <field name="name" readonly="1"/>  <!--attrs="{'readonly': [('state_visa', '!=', 'draft')]}"-->
                         </h1>
                     </div>
                     <group>
                         <group>
                             <field name="agent_id"/>
                             <field name="sub_agent_id"/>
+                            <field name="currency_id" invisible="1"/>
+<!--                            <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>-->
+<!--                            <field name="refund_id"/>-->
+                            <field name="payment_date" attrs="{'readonly': [('state_visa', '!=', 'in_process')]}"/>
+                            <field name="use_vendor"/>
+                            <field name="vendor_ids" attrs="{'required': [('use_vendor', '=', True)], 'readonly': [('state_visa', 'in', ['delivered','ready','done'])]}" groups="tt_base.group_tt_tour_travel_operator,account.group_account_user">
+                                <tree editable="bottom">
+                                    <field name="vendor_id"/>
+                                    <field name="reference_number"/>
+                                    <field name="amount"/>
+                                    <field name="payment_date"/>
+                                    <field name="currency_id" invisible="1"/>
+                                </tree>
+                            </field>
                         </group>
                         <group>
                             <field name="commercial_state"/>
@@ -165,6 +179,16 @@
                                 </tree>
                             </field>
                         </page>
+<!--                        <page string="Vendor" name="vendor">-->
+<!--                            <field name="vendor_ids">-->
+<!--                                <tree>-->
+<!--                                    <field name="reference_number"/>-->
+<!--                                    <field name="vendor_id"/>-->
+<!--                                    <field name="amount"/>-->
+<!--                                    <field name="payment_date"/>-->
+<!--                                </tree>-->
+<!--                            </field>-->
+<!--                        </page>-->
                         <page string="Ledgers" name="ledger_page">
 <!--                            groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"-->
                             <field name="ledger_ids">

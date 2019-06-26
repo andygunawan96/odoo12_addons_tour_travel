@@ -88,7 +88,6 @@ access_payment_acquirer_for_tour_travel_manager,payment.acquirer.for.tour.travel
 access_payment_acquirer_for_agent_user_operator,payment.acquirer.for.agent.user.operator,model_payment_acquirer,tt_base.group_tt_agent_user_operator,1,0,0,0
 access_payment_acquirer_for_agent_user_supervisor,payment.acquirer.for.agent.user.supervisor,model_payment_acquirer,tt_base.group_tt_agent_user_supervisor,1,0,0,0
 access_payment_acquirer_for_agent_user_manager,payment.acquirer.for.agent.user.manager,model_payment_acquirer,tt_base.group_tt_agent_user_manager,1,0,0,0
-access_payment_acquirer_for_account_user,payment.acquirer.for.account.user,model_payment_acquirer,account.group_account_user,1,1,1,0
 access_payment_acquirer_for_account_invoice,payment.acquirer.for.account.invoice,model_payment_acquirer,account.group_account_invoice,1,1,1,0
 access_payment_acquirer_for_account_manager,payment.acquirer.for.account.manager,model_payment_acquirer,account.group_account_manager,1,1,1,0
 
@@ -116,7 +115,6 @@ access_customer_bank_detail_for_agent_user_supervisor,customer.bank.detail.for.a
 access_customer_bank_detail_for_agent_user_manager,customer.bank.detail.for.agent.user.manager,model_customer_bank_detail,tt_base.group_tt_agent_user_manager,1,1,1,0
 
 access_res_rate_for_public,res.rate.for.public,model_res_rate,,1,0,0,0
-access_res_rate_for_account_user,res.rate.for.account.user,model_res_rate,account.group_account_user,1,0,1,0
 access_res_rate_for_account_invoice,res.rate.for.account.invoice,model_res_rate,account.group_account_invoice,1,0,1,0
 access_res_rate_for_account_manager,res.rate.for.account.manager,model_res_rate,account.group_account_manager,1,1,1,0
 

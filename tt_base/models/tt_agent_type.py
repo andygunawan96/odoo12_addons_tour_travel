@@ -28,6 +28,24 @@ class TtAgentType(models.Model):
     recruitment_commission_ids = fields.One2many('tt.commission.rule', 'agent_type2_id',
                                                  'Recruitment Commission Rule(s)')
 
+    # fixme : nanti akan diubah
+    def calc_commission(self, amount, multiplier, carrier_id=False):
+        rule_id = self.commission_rule_ids.filtered(lambda x: x.carrier_id.id == carrier_id or x.carrier_id.id == False)
+        if rule_id:
+            rule_id = rule_id[0]
+        else:
+            return 0, 0, amount
+        if rule_id.amount > 0:
+            multiplier = rule_id.amount_multiplier == 'pppr' and multiplier or 1
+            parent_commission = rule_id.amount * multiplier
+            agent_commission = amount - parent_commission
+        else:
+            parent_commission = rule_id.parent_agent_amount * amount / 100
+            agent_commission = rule_id.percentage * amount / 100
+
+        ho_commission = amount - parent_commission - agent_commission
+        return agent_commission, parent_commission, ho_commission
+
     @api.multi
     def calc_recruitment_commission(self, agent_type_id, total_payment):
         comm_objs = self.recruitment_commission_ids.filtered(lambda x: x.rec_agent_type_id.id == agent_type_id.id)
