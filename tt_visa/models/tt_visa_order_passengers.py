@@ -54,7 +54,9 @@ class VisaOrderPassengers(models.Model):
     _description = 'Tour & Travel - Visa Order Passengers'
 
     name = fields.Char('Name', related='passenger_id.first_name', readonly=1)
-    to_requirement_ids = fields.One2many('tt.visa.order.requirements', 'to_passenger_id', 'Requirements')
+    to_requirement_ids = fields.One2many('tt.visa.order.requirements', 'to_passenger_id', 'Requirements', readonly=0,
+                                         states={'ready': [('readonly', True)],
+                                                 'done': [('readonly', True)]})
     visa_id = fields.Many2one('tt.visa', 'Visa', readonly=1)
     passenger_id = fields.Many2one('tt.customer', 'Passenger', readonly=1)
     pricelist_id = fields.Many2one('tt.visa.pricelist', 'Visa Pricelist', readonly=1)
@@ -88,7 +90,7 @@ class VisaOrderPassengers(models.Model):
                                                 waiting = Documents ready at HO
                                                 done = Documents given to customer''')
 
-    state = fields.Selection(STATE, default='draft', help='''draft = requested
+    state = fields.Selection(STATE, default='validate', help='''draft = requested
                                                 confirm = HO accepted
                                                 validate = if all required documents submitted and documents in progress
                                                 cancel = request cancelled

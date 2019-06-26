@@ -20,7 +20,7 @@ STATE_VISA = [
     ('partial_proceed', 'Partial Proceed'),
     ('proceed', 'Proceed'),
     ('delivered', 'Delivered'),
-    ('ready', 'Ready'),
+    ('ready', 'Sent'),
     ('done', 'Done')
 ]
 
@@ -33,6 +33,7 @@ JOURNEY_DIRECTION = [
 class TtVisa(models.Model):
     _name = 'tt.visa'
     _inherit = ['tt.reservation', 'tt.history']
+    _order = 'issued_date desc'
 
     description = fields.Char('Description', readonly=True, states={'draft': [('readonly', False)]})
     country_id = fields.Many2one('res.country', 'Country', ondelete="cascade", readonly=True,
@@ -40,7 +41,7 @@ class TtVisa(models.Model):
     duration = fields.Char('Duration', readonly=True, states={'draft': [('readonly', False)]})
     total_cost_price = fields.Monetary('Total Cost Price', default=0, readonly=True)
 
-    state_visa = fields.Selection(STATE_VISA, 'State', default='draft',
+    state_visa = fields.Selection(STATE_VISA, 'State', default='confirm',
                                   help='''draft = requested
                                         confirm = HO accepted
                                         validate = if all required documents submitted and documents in progress
@@ -671,9 +672,16 @@ class TtVisa(models.Model):
                 to_req_obj = to_req_env.create(req_vals)
                 to_req_res.append(to_req_obj.id)
 
+            print(to_req_res)
             to_psg_obj.write({
                 'to_requirement_ids': [(6, 0, to_req_res)]
             })
+
+            # buat nambah centangannya
+            for rec in to_psg_obj.to_requirement_ids:
+                pass
+                # print('Requirement name : ' + rec.requirement_id.name)
+
             to_psg_res.append(to_psg_obj.id)
         # to_obj.write({
         #     'to_passenger_ids': [(6, 0, to_psg_res)]
@@ -834,33 +842,33 @@ class TtVisa(models.Model):
                                                rec.currency_id.id, agent_commission, 0)
                 vals.update({
                     'agent_id': rec.sub_agent_id.id,
-                    'transport_booking_id': rec.id,
+                    'res_id': rec.id,
                 })
                 commission_aml = ledger_obj.create(vals)
-                commission_aml.action_done()
-                rec.commission_ledger_id = commission_aml.id
+                # commission_aml.action_done()
+                # rec.commission_ledger_id = commission_aml.id
             if parent_commission > 0:
                 vals = ledger_obj.prepare_vals('Commission : ' + rec.name, 'PA: ' + rec.name, rec.issued_date,
                                                'commission',
                                                rec.currency_id.id, parent_commission, 0)
                 vals.update({
                     'agent_id': rec.sub_agent_id.parent_agent_id.id,
-                    'transport_booking_id': rec.id,
+                    'res_id': rec.id,
                 })
                 commission_aml = ledger_obj.create(vals)
-                commission_aml.action_done()
+                # commission_aml.action_done()
 
             if int(ho_commission) > 0:
                 vals = ledger_obj.prepare_vals('Commission : ' + rec.name, 'HO: ' + rec.name, rec.issued_date,
                                                'commission',
                                                rec.currency_id.id, ho_commission, 0)
                 vals.update({
-                    'agent_id': rec.env['res.partner'].sudo().search(
+                    'agent_id': rec.env['tt.agent'].sudo().search(
                         [('parent_agent_id', '=', False)], limit=1).id,
-                    'transport_booking_id': rec.id,
+                    'res_id': rec.id,
                 })
                 commission_aml = ledger_obj.create(vals)
-                commission_aml.action_done()
+                # commission_aml.action_done()
 
     # ANTI / REVERSE LEDGER
 

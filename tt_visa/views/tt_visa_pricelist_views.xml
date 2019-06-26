@@ -39,6 +39,7 @@
                     <field name="requirement_ids" string="Requirements">
                         <tree>
                             <field name="type_id"/>
+                            <field name="required"/>
                         </tree>
                         <form>
                             <sheet>
@@ -47,6 +48,9 @@
                                         <field name="type_id" default_focus="1" placeholder="Choose Requirement"/>
                                     </h1>
                                 </div>
+                                <group>
+                                    <field name="required" string="Required"/>
+                                </group>
                             </sheet>
                         </form>
                     </field>

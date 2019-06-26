@@ -5,7 +5,7 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,validate,in_process,add_payment,in_process2,ready,done"/>
+                    <field name="state" widget="statusbar" statusbar_visible="validate,in_process,add_payment,in_process2,ready,done"/>
                     <button string="Draft" name="action_draft" type="object" attrs="{'invisible': [('state', '!=', 'cancel')]}" groups="tt_base.group_tt_tour_travel_manager"/>
                     <button string="Confirm" name="action_confirm" type="object" attrs="{'invisible': [('state', '!=', 'draft')]}" groups="tt_base.group_tt_agent_user_operator"/>
                     <button string="Reject" name="action_draft" type="object" attrs="{'invisible': [('state', '!=', 'confirm')]}" groups="tt_base.group_tt_tour_travel_operator"/>
@@ -49,7 +49,7 @@
                             <field name="ready_date" groups="tt_base.group_tt_tour_travel_operator"/>
                         </group>
                     </group>
-                    <field name="to_requirement_ids" attrs="{'readonly': [('state', 'not in', ['draft','re_validate','confirm'])]}">
+                    <field name="to_requirement_ids">  <!-- attrs="{'readonly': [('state', 'not in', ['draft','re_validate','confirm'])]}"-->
                         <tree editable="bottom" create="0">
                             <field name="requirement_id"/>
                             <field name="is_ori" readonly="1" groups="tt_base.group_tt_tour_travel_operator"/>
@@ -61,10 +61,12 @@
                             <field name="check_date" attrs="{'readonly': [('check_date', '!=', 'False')]}"/>
                             <field name="check_date" invisible="1"/>
 
-                            <field name="is_ori_HO" readonly="1" groups="tt_base.group_tt_agent_user_operator"/>
-                            <field name="is_ori_HO" groups="tt_base.group_tt_tour_travel_operator"/>
-                            <field name="is_copy_HO" readonly="1" groups="tt_base.group_tt_agent_user_operator"/>
-                            <field name="is_copy_HO" groups="tt_base.group_tt_tour_travel_operator"/>
+<!--                            <field name="is_ori_HO" readonly="1" groups="tt_base.group_tt_agent_user_operator"/>-->
+<!--                            <field name="is_ori_HO" groups="tt_base.group_tt_tour_travel_operator"/>-->
+<!--                            <field name="is_copy_HO" readonly="1" groups="tt_base.group_tt_agent_user_operator"/>-->
+<!--                            <field name="is_copy_HO" groups="tt_base.group_tt_tour_travel_operator"/>-->
+                            <field name="validate_HO" readonly="1" groups="tt_base.group_tt_agent_user_operator"/>
+                            <field name="validate_HO" groups="tt_base.group_tt_tour_travel_operator"/>
                             <field name="check_uid_HO" groups="tt_base.group_tt_tour_travel_operator, tt_base.group_tt_agent_user_operator" attrs="{'readonly': [('check_uid_HO', '!=', 'False')]}"/>
                             <field name="check_uid_HO" groups="tt_base.group_tt_tour_travel_operator, tt_base.group_tt_agent_user_operator" invisible="1"/>
                             <field name="check_date_HO" groups="tt_base.group_tt_tour_travel_operator, tt_base.group_tt_agent_user_operator" attrs="{'readonly': [('check_date_HO', '!=', 'False')]}"/>

@@ -179,6 +179,16 @@
                                 </tree>
                             </field>
                         </page>
+<!--                        <page string="Vendor" name="vendor">-->
+<!--                            <field name="vendor_ids">-->
+<!--                                <tree>-->
+<!--                                    <field name="reference_number"/>-->
+<!--                                    <field name="vendor_id"/>-->
+<!--                                    <field name="amount"/>-->
+<!--                                    <field name="payment_date"/>-->
+<!--                                </tree>-->
+<!--                            </field>-->
+<!--                        </page>-->
                         <page string="Ledgers" name="ledger_page">
 <!--                            groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"-->
                             <field name="ledger_ids">
