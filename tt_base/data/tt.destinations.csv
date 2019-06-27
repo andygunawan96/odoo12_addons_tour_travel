@@ -1,0 +1,228 @@
+id,name,code,icao,city,country_id/id,provider_type_id/id,latitude,longitude,altitude,timezone_hour,tz,active
+tt_destinations_1,Juanda International Airport,SUB,WARR,Surabaya,base.id,tt_base.tt_provider_type_1,-7.379831,112.786858,9,7,Asia/Jakarta,1
+tt_destinations_2,Naha,NAH,WAMH,Naha,base.id,tt_base.tt_provider_type_1,3.683214,125.528019,16,8,Asia/Makassar,1
+tt_destinations_3,Hasanuddin,UPG,WAAA,Ujung Pandang,base.id,tt_base.tt_provider_type_1,-5.061631,119.554042,47,8,Asia/Makassar,1
+tt_destinations_4,Frans Kaisiepo,BIK,WABB,Biak,base.id,tt_base.tt_provider_type_1,-1.190017,136.107997,46,9,Asia/Jayapura,1
+tt_destinations_5,Nabire,NBX,WABI,Nabire,base.id,tt_base.tt_provider_type_1,-3.368183,135.496406,20,9,Asia/Jayapura,1
+tt_destinations_6,Moses Kilangin,TIM,WABP,Timika,base.id,tt_base.tt_provider_type_1,-4.528275,136.887375,103,9,Asia/Jayapura,1
+tt_destinations_7,Sentani,DJJ,WAJJ,Jayapura,base.id,tt_base.tt_provider_type_1,-2.576953,140.516372,289,9,Asia/Jayapura,1
+tt_destinations_8,Wamena,WMX,WAJW,Wamena,base.id,tt_base.tt_provider_type_1,-4.102511,138.957372,5085,9,Asia/Jayapura,1
+tt_destinations_9,Mopah,MKQ,WAKK,Merauke,base.id,tt_base.tt_provider_type_1,-8.520294,140.418453,10,9,Asia/Jayapura,1
+tt_destinations_10,Jalaluddin,GTO,WAMG,Gorontalo,base.id,tt_base.tt_provider_type_1,0.637119,122.849858,105,8,Asia/Makassar,1
+tt_destinations_11,Mutiara,PLW,WAML,Palu,base.id,tt_base.tt_provider_type_1,-0.918542,119.909642,284,8,Asia/Makassar,1
+tt_destinations_12,Sam Ratulangi,MDC,WAMM,Manado,base.id,tt_base.tt_provider_type_1,1.549447,124.925878,264,8,Asia/Makassar,1
+tt_destinations_13,Kasiguncu,PSJ,WAMP,Poso,base.id,tt_base.tt_provider_type_1,-1.416753,120.657669,174,8,Asia/Makassar,1
+tt_destinations_14,Pitu,OTI,WAMR,Morotai Island,base.id,tt_base.tt_provider_type_1,2.045992,128.324708,49,9,Asia/Jayapura,1
+tt_destinations_15,Sultan Babullah,TTE,WAMT,Ternate,base.id,tt_base.tt_provider_type_1,0.831414,127.381486,49,9,Asia/Jayapura,1
+tt_destinations_16,Bubung,LUW,WAMW,Luwuk,base.id,tt_base.tt_provider_type_1,-1.038919,122.771906,56,8,Asia/Makassar,1
+tt_destinations_17,Pattimura,AMQ,WAPP,Ambon,base.id,tt_base.tt_provider_type_1,-3.710264,128.089136,33,9,Asia/Jayapura,1
+tt_destinations_18,Fak Fak,FKQ,WASF,Fak Fak,base.id,tt_base.tt_provider_type_1,-2.920192,132.267031,462,9,Asia/Jayapura,1
+tt_destinations_19,Kaimana,KNG,WASK,Kaimana,base.id,tt_base.tt_provider_type_1,-3.644517,133.695553,19,9,Asia/Jayapura,1
+tt_destinations_20,Babo,BXB,WASO,Babo,base.id,tt_base.tt_provider_type_1,-2.532242,133.438894,10,9,Asia/Jayapura,1
+tt_destinations_21,Rendani,MKW,WASR,Manokwari,base.id,tt_base.tt_provider_type_1,-0.891833,134.049183,23,9,Asia/Jayapura,1
+tt_destinations_22,Jefman,SOQ,WASS,Sorong,base.id,tt_base.tt_provider_type_1,-0.926358,131.121194,10,9,Asia/Jayapura,1
+tt_destinations_23,Sultan Syarif Kasim Ii,PKU,WIBB,Pekanbaru,base.id,tt_base.tt_provider_type_1,0.460786,101.444539,102,7,Asia/Jakarta,1
+tt_destinations_24,Pinang Kampai,DUM,WIBD,Dumai,base.id,tt_base.tt_provider_type_1,1.609194,101.433558,55,7,Asia/Jakarta,1
+tt_destinations_25,Soekarno Hatta Intl,CGK,WIII,Jakarta,base.id,tt_base.tt_provider_type_1,-6.125567,106.655897,34,7,Asia/Jakarta,1
+tt_destinations_26,Binaka,GNS,WIMB,Gunung Sitoli,base.id,tt_base.tt_provider_type_1,1.166381,97.704681,20,7,Asia/Jakarta,1
+tt_destinations_27,Aek Godang,AEG,WIME,Padang Sidempuan,base.id,tt_base.tt_provider_type_1,1.400103,99.430453,922,7,Asia/Jakarta,1
+tt_destinations_28,Minangkabau International Airport,PDG,WIEE,Padang,base.id,tt_base.tt_provider_type_1,-0.874989,100.351881,9,7,Asia/Jakarta,1
+tt_destinations_29,Polonia,MES,WIMM,Medan,base.id,tt_base.tt_provider_type_1,3.558056,98.671722,114,7,Asia/Jakarta,1
+tt_destinations_30,Dr Ferdinand Lumban Tobing,FLZ,WIMS,Sibolga,base.id,tt_base.tt_provider_type_1,1.555944,98.888908,43,7,Asia/Jakarta,1
+tt_destinations_31,Nanga Pinoh I,NPO,WIOG,Nangapinoh,base.id,tt_base.tt_provider_type_1,-0.348869,111.747606,123,7,Asia/Jakarta,1
+tt_destinations_32,Rahadi Usman,KTG,WIOK,Ketapang,base.id,tt_base.tt_provider_type_1,-1.816639,109.963483,46,7,Asia/Jakarta,1
+tt_destinations_33,Supadio,PNK,WIOO,Pontianak,base.id,tt_base.tt_provider_type_1,-0.150711,109.403892,10,7,Asia/Jakarta,1
+tt_destinations_34,Sultan Thaha,DJB,WIPA,Jambi,base.id,tt_base.tt_provider_type_1,-1.638017,103.644378,82,7,Asia/Jakarta,1
+tt_destinations_35,Fatmawati Soekarno,BKS,WIPL,Bengkulu,base.id,tt_base.tt_provider_type_1,-3.8637,102.339036,50,7,Asia/Jakarta,1
+tt_destinations_36,Sultan Mahmud Badaruddin Ii,PLM,WIPP,Palembang,base.id,tt_base.tt_provider_type_1,-2.89825,104.699903,49,7,Asia/Jakarta,1
+tt_destinations_37,Japura,RGT,WIPR,Rengat,base.id,tt_base.tt_provider_type_1,-0.352808,102.334917,62,7,Asia/Jakarta,1
+tt_destinations_38,Lhok Sukon,LSX,WITL,Lhok Sukon,base.id,tt_base.tt_provider_type_1,5.069506,97.259192,28,7,Asia/Jakarta,1
+tt_destinations_39,Sultan Iskandarmuda,BTJ,WITT,Banda Aceh,base.id,tt_base.tt_provider_type_1,5.523522,95.420372,65,7,Asia/Jakarta,1
+tt_destinations_40,Andi Jemma,MXB,WAWM,Masamba,base.id,tt_base.tt_provider_type_1,-2.558044,120.324383,164,8,Asia/Makassar,1
+tt_destinations_41,Soroako,SQR,WAWS,Soroako,base.id,tt_base.tt_provider_type_1,-2.531203,121.357639,1388,8,Asia/Makassar,1
+tt_destinations_42,Pongtiku,TTR,WAWT,Makale,base.id,tt_base.tt_provider_type_1,-3.044736,119.821536,2884,8,Asia/Makassar,1
+tt_destinations_43,Wolter Monginsidi,KDI,WAWW,Kendari,base.id,tt_base.tt_provider_type_1,-4.081608,122.418231,538,8,Asia/Makassar,1
+tt_destinations_44,Maimun Saleh,SBG,WITB,Sabang,base.id,tt_base.tt_provider_type_1,5.874131,95.339672,393,7,Asia/Jakarta,1
+tt_destinations_45,Cibeureum,TSY,WICM,Tasikmalaya,base.id,tt_base.tt_provider_type_1,-7.346603,108.246092,1148,7,Asia/Jakarta,1
+tt_destinations_46,Abdul Rachman Saleh,MLG,WARA,Malang,base.id,tt_base.tt_provider_type_1,-7.926556,112.714514,1726,7,Asia/Jakarta,1
+tt_destinations_47,Husein Sastranegara,BDO,WICC,Bandung,base.id,tt_base.tt_provider_type_1,-6.900625,107.576294,2436,7,Asia/Jakarta,1
+tt_destinations_48,Penggung,CBN,WICD,Cirebon,base.id,tt_base.tt_provider_type_1,-6.756144,108.539672,89,7,Asia/Jakarta,1
+tt_destinations_49,Adi Sutjipto,JOG,WARJ,Yogyakarta,base.id,tt_base.tt_provider_type_1,-7.788181,110.431758,350,7,Asia/Jakarta,1
+tt_destinations_50,Tunggul Wulung,CXP,WIHL,Cilacap,base.id,tt_base.tt_provider_type_1,-7.645056,109.033911,69,7,Asia/Jakarta,1
+tt_destinations_51,Pondok Cabe,PCB,WIHP,Jakarta,base.id,tt_base.tt_provider_type_1,-6.336964,106.764561,200,7,Asia/Jakarta,1
+tt_destinations_52,Achmad Yani,SRG,WARS,Semarang,base.id,tt_base.tt_provider_type_1,-6.971447,110.374122,13,7,Asia/Jakarta,1
+tt_destinations_53,Hang Nadim,BTH,WIDD,Batam,base.id,tt_base.tt_provider_type_1,1.121028,104.118753,126,7,Asia/Jakarta,1
+tt_destinations_54,H As Hanandjoeddin,TJQ,WIOD,Tanjung Pandan,base.id,tt_base.tt_provider_type_1,-2.745722,107.754917,164,7,Asia/Jakarta,1
+tt_destinations_55,Depati Amir,PGK,WIPK,Pangkal Pinang,base.id,tt_base.tt_provider_type_1,-2.1622,106.139064,109,7,Asia/Jakarta,1
+tt_destinations_56,Kijang,TNJ,WIDN,Tanjung Pinang,base.id,tt_base.tt_provider_type_1,0.922683,104.532311,52,7,Asia/Jakarta,1
+tt_destinations_57,Dabo,SIQ,WIDS,Singkep,base.id,tt_base.tt_provider_type_1,-0.479189,104.579283,95,7,Asia/Jakarta,1
+tt_destinations_58,Syamsudin Noor,BDJ,WAOO,Banjarmasin,base.id,tt_base.tt_provider_type_1,-3.442356,114.762553,66,8,Asia/Makassar,1
+tt_destinations_59,Batu Licin,BTW,WAOC,Batu Licin,base.id,tt_base.tt_provider_type_1,-3.412408,115.995136,3,8,Asia/Makassar,1
+tt_destinations_60,Iskandar,PKN,WAOI,Pangkalan Bun,base.id,tt_base.tt_provider_type_1,-2.705197,111.673208,75,7,Asia/Jakarta,1
+tt_destinations_61,Tjilik Riwut,PKY,WAOP,Palangkaraya,base.id,tt_base.tt_provider_type_1,-2.225128,113.942661,82,7,Asia/Jakarta,1
+tt_destinations_62,Wai Oti,MOF,WATC,Maumere,base.id,tt_base.tt_provider_type_1,-8.640647,122.236889,115,8,Asia/Makassar,1
+tt_destinations_63,H Hasan Aroeboesman,ENE,WATE,Ende,base.id,tt_base.tt_provider_type_1,-8.849294,121.660644,49,8,Asia/Makassar,1
+tt_destinations_64,Satar Tacik,RTG,WATG,Ruteng,base.id,tt_base.tt_provider_type_1,-8.597011,120.477061,3510,8,Asia/Makassar,1
+tt_destinations_65,El Tari,KOE,WATT,Kupang,base.id,tt_base.tt_provider_type_1,-10.171583,123.671136,335,8,Asia/Makassar,1
+tt_destinations_66,Mutiara Ii,LBJ,WATO,Labuan Bajo,base.id,tt_base.tt_provider_type_1,-8.486656,119.88905,66,8,Asia/Makassar,1
+tt_destinations_67,Sepinggan,BPN,WALL,Balikpapan,base.id,tt_base.tt_provider_type_1,-1.268272,116.894478,12,8,Asia/Makassar,1
+tt_destinations_68,Juwata,TRK,WALR,Tarakan,base.id,tt_base.tt_provider_type_1,3.326694,117.565569,20,8,Asia/Makassar,1
+tt_destinations_69,Temindung,SRI,WALS,Samarinda,base.id,tt_base.tt_provider_type_1,-0.484531,117.157111,33,8,Asia/Makassar,1
+tt_destinations_70,Tanjung Santan,TSX,WALT,Tanjung Santan,base.id,tt_base.tt_provider_type_1,-0.093215,117.439292,121,8,Asia/Makassar,1
+tt_destinations_71,Selaparang,AMI,WADA,Mataram,base.id,tt_base.tt_provider_type_1,-8.560708,116.094656,52,8,Asia/Makassar,1
+tt_destinations_72,Muhammad Salahuddin,BMU,WADB,Bima,base.id,tt_base.tt_provider_type_1,-8.539647,118.687322,3,8,Asia/Makassar,1
+tt_destinations_73,Mau Hau,WGP,WADW,Waingapu,base.id,tt_base.tt_provider_type_1,-9.669217,120.302006,33,8,Asia/Makassar,1
+tt_destinations_74,Adi Sumarmo Wiryokusumo,SOC,WARQ,Solo City,base.id,tt_base.tt_provider_type_1,-7.516089,110.756892,421,7,Asia/Jakarta,1
+tt_destinations_75,Bali Ngurah Rai,DPS,WADD,Denpasar,base.id,tt_base.tt_provider_type_1,-8.748169,115.167172,14,8,Asia/Makassar,1
+tt_destinations_76,Sumbawa Besar Airport,SWQ,WADS,Sumbawa Island,base.id,tt_base.tt_provider_type_1,-8.489039,117.412119,16,8,Asia/Makassar,1
+tt_destinations_77,Tambolaka Airport,TMC,WADT,Waikabubak-Sumba Island,base.id,tt_base.tt_provider_type_1,-9.409717,119.244494,161,8,Asia/Makassar,1
+tt_destinations_78,Bokondini Airport,BUI,WAJB,Bokondini-Papua Island,base.id,tt_base.tt_provider_type_1,-3.58365,138.533,9104,9,Asia/Jayapura,1
+tt_destinations_79,Senggeh Airport,SEH,WAJS,Senggeh-Papua Island,base.id,tt_base.tt_provider_type_1,-3.43333,140.817,914,9,Asia/Jayapura,1
+tt_destinations_80,Tanjung Harapan Airport,TJS,WALG,Tanjung Selor-Borneo Island,base.id,tt_base.tt_provider_type_1,2.83641,117.374,10,8,Asia/Makassar,1
+tt_destinations_81,Datadawai Airport,DTD,WALJ,Datadawai-Borneo Island,base.id,tt_base.tt_provider_type_1,0.717,116.483,229,8,Asia/Makassar,1
+tt_destinations_82,Barau(Kalimaru) Airport,BEJ,WALK,Tanjung Redep-Borneo Island,base.id,tt_base.tt_provider_type_1,2.155497,117.432256,59,8,Asia/Makassar,1
+tt_destinations_83,Warukin Airport,TJG,WAON,Tanjung-Borneo Island,base.id,tt_base.tt_provider_type_1,-2.21656,115.436,197,8,Asia/Makassar,1
+tt_destinations_84,Sampit(Hasan) Airport,SMQ,WAOS,Sampit-Borneo Island,base.id,tt_base.tt_provider_type_1,-2.499194,112.974992,50,7,Asia/Jakarta,1
+tt_destinations_85,Dumatubun Airport,LUV,WAPL,Langgur-Kei Islands,base.id,tt_base.tt_provider_type_1,-5.661619,132.731431,10,9,Asia/Jayapura,1
+tt_destinations_86,Mali Airport,ARD,WATM,Alor Island,base.id,tt_base.tt_provider_type_1,-8.13234,124.597,10,8,Asia/Makassar,1
+tt_destinations_87,Radin Inten II (Branti) Airport,TKG,WICT,Bandar Lampung-Sumatra Island,base.id,tt_base.tt_provider_type_1,-5.242339,105.178939,282,7,Asia/Jakarta,1
+tt_destinations_88,Halim Perdanakusuma International Airport,HLP,WIHH,Jakarta,base.id,tt_base.tt_provider_type_1,-6.26661,106.891,84,7,Asia/Jakarta,1
+tt_destinations_89,Ranai Airport,NTX,WION,Ranai-Natuna Besar Island,base.id,tt_base.tt_provider_type_1,3.908714,108.387897,7,7,Asia/Jakarta,1
+tt_destinations_90,Pangsuma Airport,PSU,WIOP,Putussibau-Borneo Island,base.id,tt_base.tt_provider_type_1,0.835578,112.937144,297,7,Asia/Jakarta,1
+tt_destinations_91,Susilo Airport,SQG,WIOS,Sintang-Borneo Island,base.id,tt_base.tt_provider_type_1,0.063619,111.473428,98,7,Asia/Jakarta,1
+tt_destinations_92,Pendopo Airport,PDO,WIPQ,Talang Gudang-Sumatra Island,base.id,tt_base.tt_provider_type_1,-3.286069,103.8796,184,7,Asia/Jakarta,1
+tt_destinations_93,Malikus Saleh Airport,LSW,WITM,Lhok Seumawe-Sumatra Island,base.id,tt_base.tt_provider_type_1,5.226681,96.950342,90,7,Asia/Jakarta,1
+tt_destinations_94,Stagen Airport,KBU,WRBK,Laut Island,base.id,tt_base.tt_provider_type_1,-3.29472,116.165,4,8,Asia/Makassar,1
+tt_destinations_95,Long Bawan Airport,LBW,WRLB,Long Bawan-Borneo Island,base.id,tt_base.tt_provider_type_1,3.867,115.683,3590,8,Asia/Makassar,1
+tt_destinations_96,Nunukan Airport,NNX,WRLF,Nunukan-Nunukan Island,base.id,tt_base.tt_provider_type_1,4.13653,117.667,52,8,Asia/Makassar,1
+tt_destinations_97,Long Apung Airport,LPU,WRLP,Long Apung-Borneo Island,base.id,tt_base.tt_provider_type_1,0.583,115.6,627,8,Asia/Makassar,1
+tt_destinations_98,Depati Parbo Airport,KRC,WIPH,Sungai Penuh,base.id,tt_base.tt_provider_type_1,1.881071,101.442261,2000,7,Asia/Jakarta,1
+tt_destinations_99,Tampa Padang,MJU,WAWJ,Mamuju,base.id,tt_base.tt_provider_type_1,-2.583333,119.033333,2,8,Asia/Makassar,1
+tt_destinations_100,Waris Airport,WAR,WAJR,Waris-Papua Island,base.id,tt_base.tt_provider_type_1,-3.22243,140.9790039,1224,9,Asia/Jayapura,1
+tt_destinations_101,Cut Nyak Dhien Nagan Raya Airport,MEQ,WITC,Nagan Raya,base.id,tt_base.tt_provider_type_1,4.045172,96.249608,3,7,Asia/Jakarta,1
+tt_destinations_102,A. A. Bere Tallo Atambua / Haliwen Airport,ABU,WATA,Atambua,base.id,tt_base.tt_provider_type_1,-9.075278,124.902778,1145,7,Asia/Jakarta,1
+tt_destinations_103,Kualanamu,KNO,WIMM,Medan,base.id,tt_base.tt_provider_type_1,3.642353,98.885358,13,7,Asia/Jakarta,1
+tt_destinations_104,Blimbingsari Airport,BWX,WADY,Banyuwangi,base.id,tt_base.tt_provider_type_1,-8.312371,114.339392,84,7,Asia/Jakarta,1
+tt_destinations_105,Notohadinegoro Airport,JBB,WARE,Jember,base.id,tt_base.tt_provider_type_1,-8.240096,113.693653,288,7,Asia/Jakarta,1
+tt_destinations_106,Sultan Bantilan Airport,TLI,WAMI,Toli-Toli,base.id,tt_base.tt_provider_type_1,1.123428,120.793658,40,8,Asia/Makassar,1
+tt_destinations_107,Turelelo Soa Airport,BJW,WATB,Bawaja,base.id,tt_base.tt_provider_type_1,-8.7125,121.0625,4.326,8,Asia/Makassar,1
+tt_destinations_108,Gewayantana Airport,LKA,WATL,Larantuka,base.id,tt_base.tt_provider_type_1,-8.274544,123.002328,29.5276,8,Asia/Makassar,1
+tt_destinations_109,Namlea Airport,NAM,WAPR,Namlea,base.id,tt_base.tt_provider_type_1,-37.663712,144.844788,41,9,Asia/Jayapura,1
+tt_destinations_110,Silangit International Airport,DTB,WIMN,Siborong-Borong,base.id,tt_base.tt_provider_type_1,2.259731,98.99185,4.66,7,Asia/Jayapura,1
+tt_destinations_111,Pogogul Airport,UOL,WAMY,Buol,base.id,tt_base.tt_provider_type_1,1.1584,121.4361,49,8,Asia/Makassar,1
+tt_destinations_112,Changi Intl,SIN,WSSS,Singapore,base.sg,tt_base.tt_provider_type_1,1.350189,103.994433,22,8,Asia/Singapore,1
+tt_destinations_113,Gatwick,LGW,EGKK,London,base.uk,tt_base.tt_provider_type_1,51.148056,-0.190278,202,0,Europe/London,1
+tt_destinations_114,Capital Intl,PEK,ZBAA,Beijing,base.cn,tt_base.tt_provider_type_1,40.080111,116.584556,116,8,Asia/Chongqing,1
+tt_destinations_115,Hong Kong Intl,HKG,VHHH,Hong Kong,base.hk,tt_base.tt_provider_type_1,22.308919,113.914603,28,8,Asia/Hong_Kong,1
+tt_destinations_116,Haneda International Airport,HND,RJTT,Tokyo,base.jp,tt_base.tt_provider_type_1,35.552258,139.779694,35,9,Asia/Tokyo,1
+tt_destinations_117,Suvarnabhumi Intl,BKK,VTBS,Bangkok,base.th,tt_base.tt_provider_type_1,13.681108,100.747283,5,7,Asia/Bangkok,1
+tt_destinations_118,Danang Intl,DAD,VVDN,Danang,base.vn,tt_base.tt_provider_type_1,16.043917,108.19937,33,7,Asia/Saigon,1
+tt_destinations_119,Noibai Intl,HAN,VVNB,Hanoi,base.vn,tt_base.tt_provider_type_1,21.221192,105.807178,39,7,Asia/Saigon,1
+tt_destinations_120,Tansonnhat Intl,SGN,VVTS,Ho Chi Minh City,base.vn,tt_base.tt_provider_type_1,10.818797,106.651856,33,7,Asia/Saigon,1
+tt_destinations_121,Phuket Intl,HKT,VTSP,Phuket,base.th,tt_base.tt_provider_type_1,8.1132,98.316872,82,7,Asia/Bangkok,1
+tt_destinations_122,Chiang Mai Intl,CNX,VTCC,Chiang Mai,base.th,tt_base.tt_provider_type_1,18.766847,98.962644,1036,7,Asia/Bangkok,1
+tt_destinations_123,Samui,USM,VTSM,Ko Samui,base.th,tt_base.tt_provider_type_1,9.547794,100.062272,64,7,Asia/Bangkok,1
+tt_destinations_124,Kalibo,KLO,RPVK,Kalibo,base.ph,tt_base.tt_provider_type_1,11.679431,122.376294,14,8,Asia/Manila,1
+tt_destinations_125,Mactan Cebu Intl,CEB,RPVM,Cebu,base.ph,tt_base.tt_provider_type_1,10.307542,123.979439,31,8,Asia/Manila,1
+tt_destinations_126,Francisco Bangoy International,DVO,RPMD,Davao,base.ph,tt_base.tt_provider_type_1,7.125522,125.645778,59,8,Asia/Manila,1
+tt_destinations_127,Penang Intl,PEN,WMKP,Penang,base.my,tt_base.tt_provider_type_1,5.297139,100.276864,11,8,Asia/Kuala_Lumpur,1
+tt_destinations_128,Kota Kinabalu Intl,BKI,WBKK,Kota Kinabalu,base.my,tt_base.tt_provider_type_1,5.937208,116.051181,10,8,Asia/Kuala_Lumpur,1
+tt_destinations_129,Langkawi Intl,LGK,WMKL,Pulau,base.my,tt_base.tt_provider_type_1,6.329728,99.728667,29,8,Asia/Kuala_Lumpur,1
+tt_destinations_130,Kuching Intl,KCH,WBGG,Kuching,base.my,tt_base.tt_provider_type_1,1.484697,110.346933,89,8,Asia/Kuala_Lumpur,1
+tt_destinations_131,Yangon Intl,RGN,VYYY,Yangon,base.mm,tt_base.tt_provider_type_1,16.907305,96.133222,109,6.5,Asia/Rangoon,1
+tt_destinations_132,Mandalay Intl,MDL,VYMD,Mandalay,base.mm,tt_base.tt_provider_type_1,21.702156,95.977928,300,6.5,Asia/Rangoon,1
+tt_destinations_133,Ninoy Aquino Intl,MNL,RPLL,Manila,base.ph,tt_base.tt_provider_type_1,14.508647,121.019581,75,8,Asia/Manila,1
+tt_destinations_134,Phnom Penh Intl,PNH,VDPP,Phnom-penh,base.kh,tt_base.tt_provider_type_1,11.546556,104.844139,40,7,Asia/Phnom_Penh,1
+tt_destinations_135,Siem Reap,REP,VDSR,Siem-reap,base.kh,tt_base.tt_provider_type_1,13.410666,103.81284,60,7,Asia/Phnom_Penh,1
+tt_destinations_136,Wattay Intl,VTE,VLVT,Vientiane,base.la,tt_base.tt_provider_type_1,17.988322,102.563256,564,7,Asia/Vientiane,1
+tt_destinations_137,Luang Phabang Intl,LPQ,VLLB,Luang Prabang,base.la,tt_base.tt_provider_type_1,19.897914,102.160764,955,7,Asia/Vientiane,1
+tt_destinations_138,Brunei Intl,BWN,WBSB,Bandar Seri Begawan,base.mm,tt_base.tt_provider_type_1,4.9442,114.928353,73,8,Asia/Brunei,1
+tt_destinations_139,Baiyun Intl,CAN,ZGGG,Guangzhou,base.cn,tt_base.tt_provider_type_1,23.392436,113.298786,50,8,Asia/Chongqing,1
+tt_destinations_140,Huanghua,CSX,ZGHA,Changcha,base.cn,tt_base.tt_provider_type_1,28.189158,113.219633,217,8,Asia/Chongqing,1
+tt_destinations_141,Shuangliu,CTU,ZUUU,Chengdu,base.cn,tt_base.tt_provider_type_1,30.578528,103.947086,1625,8,Asia/Chongqing,1
+tt_destinations_142,Jiangbei,CKG,ZUCK,Chongqing,base.cn,tt_base.tt_provider_type_1,29.719217,106.641678,1365,8,Asia/Chongqing,1
+tt_destinations_143,Wujiaba,KMG,ZPPP,Kunming,base.cn,tt_base.tt_provider_type_1,24.992364,102.743536,6217,8,Asia/Chongqing,1
+tt_destinations_144,Baoan Intl,SZX,ZGSZ,Shenzhen,base.cn,tt_base.tt_provider_type_1,22.639258,113.810664,13,8,Asia/Chongqing,1
+tt_destinations_145,Xiamen Gaoqi International Airport,XMN,ZSAM,Xiamen Shi,base.cn,tt_base.tt_provider_type_1,24.544036,118.127739,59,8,Asia/Chongqing,1
+tt_destinations_146,Tianhe,WUH,ZHHH,Wuhan,base.cn,tt_base.tt_provider_type_1,30.783758,114.2081,113,8,Asia/Chongqing,1
+tt_destinations_147,Changle,FOC,ZSFZ,Fuzhou,base.cn,tt_base.tt_provider_type_1,25.935064,119.663272,46,8,Asia/Chongqing,1
+tt_destinations_148,Hongqiao Intl,SHA,ZSSS,Shanghai,base.cn,tt_base.tt_provider_type_1,31.197875,121.336319,10,8,Asia/Chongqing,1
+tt_destinations_149,Taoyuan Intl,TPE,RCTP,Taipei,base.tw,tt_base.tt_provider_type_1,25.077731,121.232822,106,8,Asia/Taipei,1
+tt_destinations_150,Narita International Airport,NRT,RJAA,Tokyo,base.jp,tt_base.tt_provider_type_1,35.764722,140.386389,141,9,Asia/Tokyo,1
+tt_destinations_151,Kansai,KIX,RJBB,Osaka,base.jp,tt_base.tt_provider_type_1,34.4347222,135.244167,49,9,Asia/Tokyo,1
+tt_destinations_152,Fukuoka,FUK,RJFF,Fukuoka,base.jp,tt_base.tt_provider_type_1,33.585942,130.450686,32,9,Asia/Tokyo,1
+tt_destinations_153,Chubu Centrair Intl,NGO,RJGG,Nagoya,base.jp,tt_base.tt_provider_type_1,34.858414,136.805408,15,9,Asia/Tokyo,1
+tt_destinations_154,Hiroshima,HIJ,RJOA,Hiroshima,base.jp,tt_base.tt_provider_type_1,34.436111,132.919444,1088,9,Asia/Tokyo,1
+tt_destinations_155,Incheon Intl,ICN,RKSI,Seoul,base.kr,tt_base.tt_provider_type_1,37.469075,126.450517,23,9,Asia/Seoul,1
+tt_destinations_156,Christchurch Intl,CHC,NZCH,Christchurch,base.nz,tt_base.tt_provider_type_1,-43.489358,172.532225,123,12,Pacific/Auckland,1
+tt_destinations_157,Auckland Intl,AKL,NZAA,Auckland,base.nz,tt_base.tt_provider_type_1,-37.008056,174.791667,23,12,Pacific/Auckland,1
+tt_destinations_158,Wellington Intl,WLG,NZWN,Wellington,base.nz,tt_base.tt_provider_type_1,-41.327221,174.805278,41,12,Pacific/Auckland,1
+tt_destinations_159,Canberra,CBR,YSCB,Canberra,base.au,tt_base.tt_provider_type_1,-35.306944,149.195,1886,10,Australia/Sydney,1
+tt_destinations_160,Brisbane Intl,BNE,YBBN,Brisbane,base.au,tt_base.tt_provider_type_1,-27.384167,153.1175,13,10,Australia/Brisbane,1
+tt_destinations_161,Cairns Intl,CNS,YBCS,Cairns,base.au,tt_base.tt_provider_type_1,-16.885833,145.755278,10,10,Australia/Brisbane,1
+tt_destinations_162,Darwin Intl,DRW,YPDN,Darwin,base.au,tt_base.tt_provider_type_1,-12.4083333,130.87266,103,9.5,Australia/Darwin,1
+tt_destinations_163,Melbourne Intl,MEL,YMML,Melbourne,base.au,tt_base.tt_provider_type_1,-37.673333,144.843333,434,10,Australia/Hobart,1
+tt_destinations_164,Perth Intl,PER,YPPH,Perth,base.au,tt_base.tt_provider_type_1,-31.940278,115.966944,67,8,Australia/Perth,1
+tt_destinations_165,Sydney Intl,SYD,YSSY,Sydney,base.au,tt_base.tt_provider_type_1,-33.946111,151.177222,21,10,Australia/Sydney,1
+tt_destinations_166,Schiphol,AMS,EHAM,Amsterdam,base.nl,tt_base.tt_provider_type_1,52.308613,4.763889,-11,1,Europe/Amsterdam,1
+tt_destinations_167,Arlanda,ARN,ESSA,Stockholm,base.se,tt_base.tt_provider_type_1,59.651944,17.918611,137,1,Europe/Stockholm,1
+tt_destinations_168,Barcelona,BCN,LEBL,Barcelona,base.es,tt_base.tt_provider_type_1,41.297078,2.078464,12,1,Europe/Madrid,1
+tt_destinations_169,Charles De Gaulle,CDG,LFPG,Paris,base.fr,tt_base.tt_provider_type_1,49.012779,2.55,392,1,Europe/Paris,1
+tt_destinations_170,Kastrup,CPH,EKCH,Copenhagen,base.dk,tt_base.tt_provider_type_1,55.617917,12.655972,17,1,Europe/Copenhagen,1
+tt_destinations_171,Domododevo,DME,UUDD,Moscow,base.ru,tt_base.tt_provider_type_1,55.408611,37.906111,588,4,Europe/Moscow,1
+tt_destinations_172,Frankfurt Main,FRA,EDDF,Frankfurt,base.de,tt_base.tt_provider_type_1,50.026421,8.543125,364,1,Europe/Berlin,1
+tt_destinations_173,Franz Josef Strauss,MUC,EDDM,Munich,base.de,tt_base.tt_provider_type_1,48.353783,11.786086,1487,1,Europe/Berlin,1
+tt_destinations_174,Dusseldorf,DUS,EDDL,Duesseldorf,base.de,tt_base.tt_provider_type_1,51.289453,6.766775,147,1,Europe/Berlin,1
+tt_destinations_175,Heathrow,LHR,EGLL,London,base.uk,tt_base.tt_provider_type_1,51.4775,-0.461389,83,0,Europe/London,1
+tt_destinations_176,Manchester,MAN,EGCC,Manchester,base.uk,tt_base.tt_provider_type_1,53.353744,-2.27495,257,0,Europe/London,1
+tt_destinations_177,Malpensa,MXP,LIMC,Milano,base.it,tt_base.tt_provider_type_1,45.630606,8.728111,767,1,Europe/Rome,1
+tt_destinations_178,Leonardo da Vinci–Fiumicino,FCO,LIRF,Rome,base.it,tt_base.tt_provider_type_1,41.90048111,12.50200069,189,1,Europe/Rome,1
+tt_destinations_179,Zurich,ZRH,LSZH,Zurich,base.ch,tt_base.tt_provider_type_1,47.464722,8.549167,1416,1,Europe/Zurich,1
+tt_destinations_180,Ataturk,IST,LTBA,Istanbul,base.tr,tt_base.tt_provider_type_1,40.976922,28.814606,163,2,Europe/Istanbul,1
+tt_destinations_181,George Bush Intercontinental,IAH,KIAH,Houston,base.us,tt_base.tt_provider_type_1,29.984433,-95.341442,97,-6,America/Chicago,1
+tt_destinations_182,John F Kennedy Intl,JFK,KJFK,New York,base.us,tt_base.tt_provider_type_1,40.639751,-73.778925,13,-5,America/New_York,1
+tt_destinations_183,Los Angeles Intl,LAX,KLAX,Los Angeles,base.us,tt_base.tt_provider_type_1,33.942536,-118.408075,126,-8,America/Los_Angeles,1
+tt_destinations_184,San Francisco Intl,SFO,KSFO,San Francisco,base.us,tt_base.tt_provider_type_1,37.618972,-122.374889,13,-8,America/Los_Angeles,1
+tt_destinations_185,Chhatrapati Shivaji Intl,BOM,VABB,Mumbai,base.in,tt_base.tt_provider_type_1,19.088686,72.867919,37,5.5,Asia/Calcutta,1
+tt_destinations_186,Indira Gandhi Intl,DEL,VIDP,Delhi,base.in,tt_base.tt_provider_type_1,28.5665,77.103088,777,5.5,Asia/Calcutta,1
+tt_destinations_187,Netaji Subhash Chandra Bose Intl,CCU,VECC,Kolkata,base.in,tt_base.tt_provider_type_1,22.654739,88.446722,16,5.5,Asia/Calcutta,1
+tt_destinations_188,Chennai Intl,MAA,VOMM,Madras,base.in,tt_base.tt_provider_type_1,12.994414,80.180517,52,5.5,Asia/Calcutta,1
+tt_destinations_189,Zia Intl,DAC,VGZR,Dhaka,base.bd,tt_base.tt_provider_type_1,23.843333,90.397781,30,6,Asia/Dhaka,1
+tt_destinations_190,Bangalore,BLR,VOBL,Bangalore,base.in,tt_base.tt_provider_type_1,12.949986,77.668206,2912,5.5,Asia/Calcutta,1
+tt_destinations_191,Ahmedabad,AMD,VAAH,Ahmedabad,base.in,tt_base.tt_provider_type_1,23.077242,72.63465,189,5.5,Asia/Calcutta,1
+tt_destinations_192,Thiruvananthapuram Intl,TRV,VOTV,Trivandrum,base.in,tt_base.tt_provider_type_1,8.482122,76.920114,15,5.5,Asia/Calcutta,1
+tt_destinations_193,Hyderabad,HYD,VOHY,Hyderabad,base.in,tt_base.tt_provider_type_1,17.453117,78.467586,1742,5.5,Asia/Calcutta,1
+tt_destinations_194,Cochin,COK,VOCI,Kochi,base.in,tt_base.tt_provider_type_1,10.155556,76.391389,8,5.5,Asia/Calcutta,1
+tt_destinations_195,Coimbatore,CJB,VOCB,Coimbatore,base.in,tt_base.tt_provider_type_1,11.030031,77.043383,1324,5.5,Asia/Calcutta,1
+tt_destinations_196,Tribhuvan Intl,KTM,VNKT,Kathmandu,base.np,tt_base.tt_provider_type_1,27.696583,85.3591,4390,5.75,Asia/Katmandu,1
+tt_destinations_197,Vishakhapatnam,VTZ,VEVZ,Vishakhapatnam,base.in,tt_base.tt_provider_type_1,17.721167,83.224483,15,5.5,Asia/Calcutta,1
+tt_destinations_198,Bandaranaike Intl Colombo,CMB,VCBI,Colombo,base.lk,tt_base.tt_provider_type_1,7.180756,79.884117,30,5.5,Asia/Colombo,1
+tt_destinations_199,Dubai Intl,DXB,OMDB,Dubai,base.ae,tt_base.tt_provider_type_1,25.252778,55.364444,62,4,Asia/Dubai,1
+tt_destinations_200,Johannesburg Intl,JNB,FAJS,Johannesburg,base.za,tt_base.tt_provider_type_1,-26.139166,28.246,5558,2,Africa/Johannesburg,1
+tt_destinations_201,Cape Town Intl,CPT,FACT,Cape Town,base.za,tt_base.tt_provider_type_1,-33.964806,18.601667,151,2,Africa/Johannesburg,1
+tt_destinations_202,Male Intl,MLE,VRMM,Male,base.mv,tt_base.tt_provider_type_1,4.191833,73.529128,6,5,Indian/Maldives,1
+tt_destinations_203,Don Mueang International Airport,DMK,VTBD,Bangkok,base.th,tt_base.tt_provider_type_1,13.736717,100.523186,3,7,Asia/Bangkok,1
+tt_destinations_204,Shanghai Pudong International Airport,PVG,ZSPD,Shanghai,base.cn,tt_base.tt_provider_type_1,31.230416,121.473701,13,8,Asia/Shanghai,1
+tt_destinations_205,New Chitose Airport,CTS,RJCC,Chitose,base.jp,tt_base.tt_provider_type_1,42.792594,141.670479,63.812336,9,Asia/Tokyo,1
+tt_destinations_206,Wenzhou Longwan International Airport,WNZ,ZSWZ,Wenzhou Shi,base.cn,tt_base.tt_provider_type_1,27.91566,120.84738,0,8,Asia/Chongqing,1
+tt_destinations_207,Hangzhou Xiaoshan International Airport,HGH,ZSHC,Hangzhou,base.cn,tt_base.tt_provider_type_1,30.2295,120.433998,63.43,8,Asia/Chongqing,1
+tt_destinations_208,Berlin Brandenburg Airport,BER,EDDB,Tatarstan,base.de,tt_base.tt_provider_type_1,52.516266,13.377775,121,1,Europe/Berlin,1
+tt_destinations_209,Hannover Airport,HAJ,EDDV,Hannover,base.de,tt_base.tt_provider_type_1,52.461849,9.688992,183,1,Europe/Berlin,1
+tt_destinations_210,Gatineau-Ottawa Executive Airport,YND,CYND,Gatineau,base.cn,tt_base.tt_provider_type_1,45.521667,-75.563611,209.974,-5,Canada/Eastern,1
+tt_destinations_211,Ottawa Macdonald–Cartier International Airport,YOW,CYOW,Ottawa,base.cn,tt_base.tt_provider_type_1,35.7158,139.7292,377.297,-5,Canada/Eastern,1
+tt_destinations_212,Vancouver International Airport,YVR,CYVR,Richmond,base.cn,tt_base.tt_provider_type_1,49.199564,-123.186233,13.1234,-8,Canada/Pacific,1
+tt_destinations_213,King Abdulaziz International Airport,JED,OEJN,Jeddah,base.cn,tt_base.tt_provider_type_1,21.679444,39.156667,49.2126,3,Asia/Bahrain,1
+tt_destinations_214,Montreal Saint-Hubert Longueuil Airport,YHU,CYHU,Longueuil,base.cn,tt_base.tt_provider_type_1,45.518056,-73.416944,88.5827,-5,Canada/Eastern,1
+tt_destinations_215,Gimhae International Airport,PUS,RKPK,Busan,base.cn,tt_base.tt_provider_type_1,35.179444,128.938333,6.56168,9,Asia/Seoul,1
+tt_destinations_216,Kaohsiung International Airport,KHH,RCKH,Kaohsiung,base.cn,tt_base.tt_provider_type_1,22.576944,120.35,31,8,Asia/Taipei,1
+tt_destinations_217,Seattle–Tacoma International Airport,SEA,KSEA,Seatac,base.us,tt_base.tt_provider_type_1,47.443546,-122.301659,377.297,-8,America/Vancouver,1
+tt_destinations_218,New Chitose Airport,CTS,RJCC,Chitose,base.jp,tt_base.tt_provider_type_1,42.792594,141.670478,63.812336,9,Asia/Tokyo,1
+tt_destinations_219,Xi'an Xianyang International Airport,XIY,ZLXY,Xianyang,base.cn,tt_base.tt_provider_type_1,34.341568,108.940175,1.572,8,Asia/Hong_Kong,1
+tt_destinations_220,Hangzhou Xiaoshan International Airport,HGH,ZSHC,Hangzhou,base.cn,tt_base.tt_provider_type_1,30.2295,120.433998,22.99869,8,Asia/Hong_Kong,1
+tt_destinations_221,Nanjing Lukou International Airport,NKG,ZSNJ,Wuhan,base.cn,tt_base.tt_provider_type_1,31.7,118.9,14.94,8,Asia/Hong_Kong,1
+tt_destinations_222,Stuttgart Airport,STR,EDDS,Stuttgart,base.de,tt_base.tt_provider_type_1,48.6880556,9.21,1276.25,1,Europe/Berlin,1
+tt_destinations_223,Hamburg Airport,HAM,EDDH,Hamburg,base.de,tt_base.tt_provider_type_1,53.633622,9.997413,53,1,Europe/Berlin,1
+tt_destinations_224,Abu Dhabi International Airport,AUH,OMAA,Abu Dhabi,base.ae,tt_base.tt_provider_type_1,24.432928,54.644539,88,4,Asia/Dubai,1
+tt_destinations_225,Malacca International Airport,MKZ,WMKM,Malacca,base.my,tt_base.tt_provider_type_1,2.26336,102.251999,35.006562,8,Asia/Kuala_Lumpur,1
+tt_destinations_226,Gold Coast Airport,OOL,YBCG,Bilinga,base.au,tt_base.tt_provider_type_1,-28.165645,153.509074,12.92,10,Australia/Queensland,1
+tt_destinations_227,Vienna International Airport,VIE,LOWW,Schwechat,base.at,tt_base.tt_provider_type_1,48.122814,16.533358,600,1,Europe/Amsterdam,1

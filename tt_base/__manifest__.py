@@ -20,6 +20,7 @@ Key Features
         'data/tt.provider.type.csv',
         'data/tt.provider.csv',
         'data/tt.transport.carrier.csv',
+        'data/tt.destinations.csv',
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
 
