@@ -14,7 +14,8 @@ class Routes(models.Model):
 
     name = fields.Char('Name', help="Usage for flight number, train name", required=True)
     # route_number = fields.Char('Route Number', required=True)
-    type = fields.Selection(TRANSPORT_TYPE, string='Route Type')
+    # type = fields.Selection(TRANSPORT_TYPE, string='Route Type')
+    provider_type_id = fields.Many2one(comodel_name='tt.provider.type', string='Provider Type')
     carrier_id = fields.Many2one('tt.transport.carrier', 'Transport Carrier Code', help='or Flight Code', index=True)
     carrier_code = fields.Char('Carrier Code', help='or Flight Code', index=True)
     carrier_number = fields.Char('Carrier Number', help='or Flight Number', index=True)
@@ -30,6 +31,8 @@ class Routes(models.Model):
     destination = fields.Char('Destination IATA Code', related='destination_id.code')
     destination_timezone_hour = fields.Float('Origin Timezone Hour', related='destination_id.timezone_hour')
     destination_terminal = fields.Char('Terminal Number')
+
+    leg_ids = fields.One2many('tt.routes.leg', 'route_id', 'Legs')
 
     #analyze later
     # stops = fields.Integer('Stops', help='Number of stops on this flight (0 for direct')
@@ -73,3 +76,20 @@ class Routes(models.Model):
         }
 
     # def get_route(self,):
+
+
+class RoutesLeg(models.Model):
+    _name = 'tt.routes.leg'
+
+    route_id = fields.Many2one(comodel_name='tt.routes', string='Route')
+    origin_id = fields.Many2one('tt.destinations', string='Origin', required=True, ondelete='restrict')
+    origin = fields.Char('Origin IATA Code', related='origin_id.code', store=True)
+    origin_timezone_hour = fields.Float('Origin Timezone Hour', related='origin_id.timezone_hour')
+    origin_terminal = fields.Char('Terminal Number')
+    destination_id = fields.Many2one('tt.destinations', string='Destination', store=True)
+    destination = fields.Char('Destination IATA Code', related='destination_id.code')
+    destination_timezone_hour = fields.Float('Origin Timezone Hour', related='destination_id.timezone_hour')
+    destination_terminal = fields.Char('Terminal Number')
+    departure_time = fields.Char('Departure Time')
+    arrival_time = fields.Char('Arrival Time')
+    elapsed_time = fields.Char('Elapsed Time')

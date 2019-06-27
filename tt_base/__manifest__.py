@@ -52,6 +52,8 @@ Key Features
         'views/templates.xml',
         'views/tt_destination_views.xml',
         'views/tt_skipped_keys_views.xml',
+        'views/tt_routes_views.xml',
+        'views/tt_routes_leg_views.xml',
 
         'data/skipped_history_data.xml'
     ],
