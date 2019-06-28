@@ -59,8 +59,6 @@
                                 <field name="arrival_time"/>
                             </group>
                         </group>
-                        <separator string="Legs"/>
-                        <field name="leg_ids"/>
                     </sheet>
                 </form>
             </field>

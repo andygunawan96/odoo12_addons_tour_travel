@@ -1,5 +1,7 @@
 from odoo import api, fields, models, _
 import datetime
+from ...tools.api import Response
+import traceback
 
 TRANSPORT_TYPE = [('airline', 'Airline'),
                   ('train', 'Train'),
@@ -31,8 +33,6 @@ class Routes(models.Model):
     destination = fields.Char('Destination IATA Code', related='destination_id.code')
     destination_timezone_hour = fields.Float('Origin Timezone Hour', related='destination_id.timezone_hour')
     destination_terminal = fields.Char('Terminal Number')
-
-    leg_ids = fields.One2many('tt.routes.leg', 'route_id', 'Legs')
 
     #analyze later
     # stops = fields.Integer('Stops', help='Number of stops on this flight (0 for direct')
@@ -75,21 +75,67 @@ class Routes(models.Model):
             'arrival_time': self.arrival_time,
         }
 
-    # def get_route(self,):
+    def get_route_data(self):
+        res = {
+            'origin': self.origin,
+            'destination': self.destination,
+            'origin_utc': self.origin_timezone_hour and self.origin_timezone_hour or 0,
+            'destination_utc': self.destination_timezone_hour and self.destination_timezone_hour or 0,
+            'origin_terminal': self.origin_terminal and self.origin_terminal or '',
+            'destination_terminal': self.destination_terminal and self.destination_terminal or '',
+            'departure_time': self.departure_time,
+            'arrival_time': self.arrival_time,
+            'operating_airline_code': self.operating_airline_code and self.operating_airline_code or '',
+        }
+        return res
 
+    def get_all_routes_api(self, _provider_type, context):
+        try:
+            provider_obj = self.env['tt.provider.type'].sudo().search([('code', '=', _provider_type)], limit=1)
+            routes_obj = self.sudo().search([('provider_type_id', '=', provider_obj.id)])
+            response = [rec.get_route_data() for rec in routes_obj]
+            return Response().get_no_error(response)
+        except Exception as e:
+            error_msg = '%s, %s' % (str(e), traceback.format_exc())
+            return Response().get_error(error_msg, 500)
 
-class RoutesLeg(models.Model):
-    _name = 'tt.routes.leg'
+    def get_all_routes_api_by_code(self, _provider_type, context):
+        try:
+            provider_obj = self.env['tt.provider.type'].sudo().search([('code', '=', _provider_type)], limit=1)
+            routes_obj = self.sudo().search([('provider_type_id', '=', provider_obj.id)])
+            response = {}
+            for rec in routes_obj:
+                code = '%s%s%s' % (rec.carrier_code, rec.carrier_number, rec.origin)
+                response[code] = rec.get_route_data()
+            return Response().get_no_error(response)
+        except Exception as e:
+            error_msg = '%s, %s' % (str(e), traceback.format_exc())
+            return Response().get_error(error_msg, 500)
 
-    route_id = fields.Many2one(comodel_name='tt.routes', string='Route')
-    origin_id = fields.Many2one('tt.destinations', string='Origin', required=True, ondelete='restrict')
-    origin = fields.Char('Origin IATA Code', related='origin_id.code', store=True)
-    origin_timezone_hour = fields.Float('Origin Timezone Hour', related='origin_id.timezone_hour')
-    origin_terminal = fields.Char('Terminal Number')
-    destination_id = fields.Many2one('tt.destinations', string='Destination', store=True)
-    destination = fields.Char('Destination IATA Code', related='destination_id.code')
-    destination_timezone_hour = fields.Float('Origin Timezone Hour', related='destination_id.timezone_hour')
-    destination_terminal = fields.Char('Terminal Number')
-    departure_time = fields.Char('Departure Time')
-    arrival_time = fields.Char('Arrival Time')
-    elapsed_time = fields.Char('Elapsed Time')
+    def get_routes_api_by_code(self, _carrier_codes, _provider_type, context):
+        try:
+            provider_obj = self.env['tt.provider.type'].sudo().search([('code', '=', _provider_type)], limit=1)
+            routes_obj = self.sudo().search([('provider_type_id', '=', provider_obj.id),
+                                             ('carrier_code', 'in', _carrier_codes)])
+            response = {}
+            for rec in routes_obj:
+                code = '%s%s%s' % (rec.carrier_code, rec.carrier_number, rec.origin)
+                response[code] = rec.get_route_data()
+            return Response().get_no_error(response)
+        except Exception as e:
+            error_msg = '%s, %s' % (str(e), traceback.format_exc())
+            return Response().get_error(error_msg, 500)
+
+    def update_route_api(self, req_data, context):
+        try:
+            _obj = self.sudo().search([('carrier_code', '=', req_data['carrier_code']),
+                                       ('carrier_number', '=', req_data['carrier_number']),
+                                       ('origin', '=', req_data['origin'])])
+            if not _obj:
+                _obj = self.sudo().create(req_data)
+
+            _obj.write(req_data)
+            return Response().get_no_error()
+        except Exception as e:
+            error_msg = '%s, %s' % (str(e), traceback.format_exc())
+            return Response().get_error(error_msg, 500)
