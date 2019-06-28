@@ -1,0 +1,2 @@
+id,name,provider_type_id/id,carrier_id/id,carrier_code,carrier_number,operating_airline_code,code_share,origin_id/id,origin_terminal,destination_id/id,destination_terminal,departure_time,arrival_time
+,,,,,,,,,,,,,
