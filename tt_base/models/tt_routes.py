@@ -89,7 +89,7 @@ class Routes(models.Model):
         }
         return res
 
-    def get_all_routes_api(self, _provider_type):
+    def get_all_routes_api(self, _provider_type, context):
         try:
             provider_obj = self.env['tt.provider.type'].sudo().search([('code', '=', _provider_type)], limit=1)
             routes_obj = self.sudo().search([('provider_type_id', '=', provider_obj.id)])
@@ -99,7 +99,7 @@ class Routes(models.Model):
             error_msg = '%s, %s' % (str(e), traceback.format_exc())
             return Response().get_error(error_msg, 500)
 
-    def get_all_routes_api_by_code(self, _provider_type):
+    def get_all_routes_api_by_code(self, _provider_type, context):
         try:
             provider_obj = self.env['tt.provider.type'].sudo().search([('code', '=', _provider_type)], limit=1)
             routes_obj = self.sudo().search([('provider_type_id', '=', provider_obj.id)])
@@ -112,7 +112,7 @@ class Routes(models.Model):
             error_msg = '%s, %s' % (str(e), traceback.format_exc())
             return Response().get_error(error_msg, 500)
 
-    def get_routes_api_by_code(self, _carrier_codes, _provider_type):
+    def get_routes_api_by_code(self, _carrier_codes, _provider_type, context):
         try:
             provider_obj = self.env['tt.provider.type'].sudo().search([('code', '=', _provider_type)], limit=1)
             routes_obj = self.sudo().search([('provider_type_id', '=', provider_obj.id),
