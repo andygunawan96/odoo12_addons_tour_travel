@@ -20,6 +20,7 @@ Key Features
         'data/tt.provider.type.csv',
         'data/tt.provider.csv',
         'data/tt.transport.carrier.csv',
+        'data/tt.destinations.csv',
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
 
@@ -51,6 +52,8 @@ Key Features
         'views/templates.xml',
         'views/tt_destination_views.xml',
         'views/tt_skipped_keys_views.xml',
+        'views/tt_routes_views.xml',
+        'views/tt_routes_leg_views.xml',
 
         'data/skipped_history_data.xml'
     ],

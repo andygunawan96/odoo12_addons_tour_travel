@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="tt_routes_leg_form_view" model="ir.ui.view">
+            <field name="name">tt.routes.leg.form.view</field>
+            <field name="model">tt.routes.leg</field>
+            <field name="arch" type="xml">
+                <form string="Routes Leg">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="route_id"/>
+                            </group>
+                            <group>
+                                <label for="create_uid" string="Created By"/>
+                                <div>
+                                    <field name="create_uid" class="oe_inline" readonly="True"/> -
+                                    <field name="create_date" class="oe_inline" readonly="True"/>
+                                </div>
+                                <label for="write_uid" string="Last Edited By"/>
+                                <div>
+                                    <field name="write_uid" class="oe_inline" readonly="True"/> -
+                                    <field name="write_date" class="oe_inline" readonly="True"/>
+                                </div>
+                            </group>
+                        </group>
+                        <group string="Carriers">
+                            <group>
+                                <field name="elapsed_time"/>
+                            </group>
+                            <group></group>
+                        </group>
+                        <separator string="Destinations"/>
+                        <group>
+                            <group string="Origin">
+                                <field name="origin_id"/>
+                                <field name="origin"/>
+                                <field name="origin_terminal"/>
+                                <field name="origin_timezone_hour"/>
+                                <field name="departure_time"/>
+                            </group>
+                            <group string="Destination">
+                                <field name="destination_id"/>
+                                <field name="destination"/>
+                                <field name="destination_terminal"/>
+                                <field name="destination_timezone_hour"/>
+                                <field name="arrival_time"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="tt_routes_leg_tree_view" model="ir.ui.view">
+            <field name="name">tt.routes.leg.tree.view</field>
+            <field name="model">tt.routes.leg</field>
+            <field name="arch" type="xml">
+                <tree string="Routes Leg">
+                    <field name="route_id"/>
+                    <field name="origin"/>
+                    <field name="destination"/>
+                    <field name="departure_time"/>
+                    <field name="arrival_time"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="tt_routes_leg_action_view" model="ir.actions.act_window">
+            <field name="name">Routes Leg</field>
+            <field name="view_type">form</field>
+            <field name="res_model">tt.routes.leg</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    <!-- Add Text Here -->
+                </p><p>
+                <!-- More details about what a user can do with this object will be OK -->
+            </p>
+            </field>
+            <field name="context">
+                {
+                'form_view_ref': 'tt_base.tt_routes_leg_form_view',
+                'tree_view_ref': 'tt_base.tt_routes_leg_tree_view'
+                }
+            </field>
+        </record>
+
+        <!--<menuitem id="sub_menu_tour_travel_routes_leg"-->
+                  <!--parent="tt_base.menu_tour_travel_destination"-->
+                  <!--groups="base.group_user"-->
+                  <!--name="Routes Leg"-->
+                  <!--sequence="4"-->
+                  <!--action="tt_routes_action_view"/>-->
+
+    </data>
+</odoo>
