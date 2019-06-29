@@ -19,7 +19,7 @@ STATE = [
 class IssuedOfflinePassenger(models.Model):
     _name = 'issued.offline.passenger'
 
-    iss_off_id = fields.Many2one('issued.offline', 'Issued Offline')
+    booking_id = fields.Many2one('issued.offline', 'Issued Offline')
     passenger_id = fields.Many2one('tt.customer', 'Passengers', readonly=True,
                                    states={'draft': [('readonly', False)]})
     agent_id = fields.Many2one('tt.agent', 'Agent')
@@ -27,4 +27,4 @@ class IssuedOfflinePassenger(models.Model):
     ticket_number = fields.Char('Ticket Number.', readonly=True, states={'draft': [('readonly', False)],
                                                                          'confirm': [('readonly', False)],
                                                                          'paid': [('readonly', False)]})
-    state = fields.Selection(STATE, string='State', default='draft', related='iss_off_id.state')
+    state = fields.Selection(STATE, string='State', default='draft', related='booking_id.state')

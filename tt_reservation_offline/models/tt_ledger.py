@@ -21,10 +21,9 @@ SERVICE_TYPE = [
 class TtLedger(models.Model):
     _inherit = 'tt.ledger'
 
-    issued_offline_id = fields.Many2one('issued.offline', 'Issued Offline', readonly=True)
-    pnr = fields.Char('PNR', related=False)
-    service_type = fields.Selection(SERVICE_TYPE, 'Service Type', related=False)
-    display_provider_name = fields.Char(string='Name', related=False)
+    issued_offline_id = fields.Many2one('issued.offline', 'Issued Offline')
+    provider_type_id = fields.Many2one('tt.provider.type', 'Service Type')
+    display_provider_name = fields.Char(string='Name')
 
     rel_agent_name = fields.Char('Partner', help='Used to know Network commission from')
     issued_uid = fields.Many2one('res.users', 'Issued By', related=False)
