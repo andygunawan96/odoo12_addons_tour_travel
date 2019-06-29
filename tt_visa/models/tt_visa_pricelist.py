@@ -95,6 +95,7 @@ class VisaPricelist(models.Model):
                     requirement.append({
                         'name': rec1.type_id.name,
                         'description': rec1.type_id.description,
+                        'required': rec1.required,
                         'id': rec1.id
                     })
                 list_of_visa.append({
