@@ -81,11 +81,3 @@ class ProviderOffline(models.Model):
                     'total': total,
                     'total_orig': total_orig
                 })
-
-    # def action_create_ledger(self):
-    #     if not self.is_ledger_created:
-    #         print('Ready to Create Ledger')
-    #         print('Self : ' + str(self))
-    #         self.write({'is_ledger_created': True})
-    #         self.env['tt.ledger'].action_create_ledger(self)
-    #         self.env.cr.commit()

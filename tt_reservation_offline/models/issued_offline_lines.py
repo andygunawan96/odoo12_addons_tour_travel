@@ -36,43 +36,96 @@ CLASS_OF_SERVICE = [
 class IssuedOfflineLines(models.Model):
     _name = 'issued.offline.lines'
 
-    iss_off_id = fields.Many2one('issued.offline', 'Issued Offline')
-    obj_qty = fields.Integer('Qty', readonly=True, states={'draft': [('readonly', False)]}, default=1)
-    state = fields.Selection(STATE, string='State', default='draft', related='iss_off_id.state')
-    transaction_type = fields.Selection(TRANSACTION_TYPE, 'Service Type', related='iss_off_id.type')
+    pnr = fields.Char('PNR', readonly=True, states={'confirm': [('readonly', False)]})
+
+    booking_id = fields.Many2one('issued.offline', 'Issued Offline')
+    obj_qty = fields.Integer('Qty', readonly=True, states={'draft': [('readonly', False)],
+                                                           'confirm': [('readonly', False)]}, default=1)
+    state = fields.Selection(STATE, string='State', default='draft', related='booking_id.state')
+    transaction_type = fields.Many2one('tt.provider.type', 'Service Type', related='booking_id.provider_type_id')
 
     # Airplane / Train
-    departure_date = fields.Datetime('Departure Date', readonly=True, states={'draft': [('readonly', False)]})
-    return_date = fields.Datetime('Return Date', readonly=True, states={'draft': [('readonly', False)]})
-    origin_id = fields.Many2one('tt.destinations', 'Origin', readonly=True, states={'draft': [('readonly', False)]})
+    departure_date = fields.Datetime('Departure Date', readonly=True, states={'draft': [('readonly', False)],
+                                                                              'confirm': [('readonly', False)]})
+    return_date = fields.Datetime('Return Date', readonly=True, states={'draft': [('readonly', False)],
+                                                                        'confirm': [('readonly', False)]})
+    origin_id = fields.Many2one('tt.destinations', 'Origin', readonly=True, states={'draft': [('readonly', False)],
+                                                                                    'confirm': [('readonly', False)]})
     destination_id = fields.Many2one('tt.destinations', 'Destination', readonly=True,
-                                     states={'draft': [('readonly', False)]})
+                                     states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
+
+    carrier_id = fields.Many2one('tt.transport.carrier', 'Carrier', readonly=True,
+                                 states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
+    provider = fields.Char('Provider', readonly=True, required=True, states={'draft': [('readonly', False)],
+                                                                             'confirm': [('readonly', False)]})
+
     carrier_code = fields.Char('Carrier Code', help='or Flight Code', index=True)
     carrier_number = fields.Char('Carrier Number', help='or Flight Number', index=True)
     class_of_service = fields.Selection(CLASS_OF_SERVICE, 'Class')
     subclass = fields.Char('SubClass')
 
     # Hotel / Activity
-    check_in = fields.Date('Check In', readonly=True, states={'draft': [('readonly', False)]})
-    check_out = fields.Date('Check Out', readonly=True, states={'draft': [('readonly', False)]})
-    obj_name = fields.Char('Name', related='iss_off_id.provider', store=True)
-    obj_subname = fields.Char('Room/Package', readonly=True, states={'draft': [('readonly', False)]})
+    check_in = fields.Date('Check In', readonly=True, states={'draft': [('readonly', False)],
+                                                              'confirm': [('readonly', False)]})
+    check_out = fields.Date('Check Out', readonly=True, states={'draft': [('readonly', False)],
+                                                                'confirm': [('readonly', False)]})
+    obj_name = fields.Char('Name', related='provider', store=True)
+    obj_subname = fields.Char('Room/Package', readonly=True, states={'draft': [('readonly', False)],
+                                                                     'confirm': [('readonly', False)]})
 
     description = fields.Text('Description')
 
-    # doc_type = fields.Selection([('visa', 'Visa'), ('pass', 'Passport')], default='visa')
+    is_ledger_created = fields.Boolean('Ledger Created', default=False, readonly=True,
+                                       states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
 
-    # # Visa
-    # country_id = fields.Many2one('res.country', 'Destination')
-    # city = fields.Char('Consulate')
-    # pax_type = fields.Selection([('ADT', 'Adult'), ('CHD', 'Child'), ('INF', 'Infant')], default='ADT')
-    # entry_type = fields.Selection([('single', 'Single'), ('double', 'Double'), ('multiple', 'Multiple')], 'Entry Type')
-    # visa_type = fields.Selection([('tourist', 'Tourist'), ('business', 'Business'), ('student', 'Student')],
-    #                              'Visa Type')
-    # process_type = fields.Selection([('regular', 'Regular'), ('kilat', 'Kilat'), ('super', 'Super Kilat')],
-    #                                 'Process Type')
-    # # Passport
-    # passport_type = fields.Selection([('passport', 'Passport'), ('e-passport', 'E-Passport')], 'Passport Type')
-    # apply_type = fields.Selection([('new', 'New'), ('renew', 'Renew'), ('umroh', 'Umroh'), ('add_name', 'Add Name')],
-    #                               'Apply Type')
-    # description = fields.Text('Description')
+    cost_service_charge_ids = fields.One2many('tt.service.charge', 'provider_offline_booking_id',
+                                              'Cost Service Charges')
+
+    @api.onchange('transaction_type')
+    def onchange_domain(self):
+        booking_type = self.booking_id.provider_type_id.code
+
+        return {'domain': {
+            'carrier_id': [('transport_type', '=', booking_type)]
+        }}
+
+    @api.onchange('carrier_id')
+    def set_provider(self):
+        for rec in self:
+            rec.provider = rec.carrier_id.name
+
+    def action_create_ledger(self):
+        if not self.is_ledger_created:
+            self.write({
+                'is_ledger_created': True
+            })
+            self.env['tt.ledger'].action_create_ledger(self)
+            self.env.cr.commit()
+
+    def get_pnr_list(self):
+        pnr_seen = set()
+        pnr_uniq = []
+
+        for prov in self:
+            if prov.pnr not in pnr_seen:
+                pnr_uniq.append(prov.pnr)
+                pnr_seen.add(prov.pnr)
+
+        pnr_to_str = ''
+        for rec in pnr_uniq:
+            pnr_to_str += rec + ' '
+        return pnr_to_str
+
+    def get_provider_list(self):
+        provider_seen = set()
+        provider_uniq = []
+
+        for prov in self:
+            if prov.provider not in provider_seen:
+                provider_uniq.append(prov.provider)
+                provider_seen.add(prov.provider)
+
+        provider_to_str = ''
+        for rec in provider_uniq:
+            provider_to_str += rec + ' '
+        return provider_to_str

@@ -55,6 +55,7 @@ class TtCustomer(models.Model, test_to_dict.ToDict):
     birth_date = fields.Date('Birth Date')
     age = fields.Char('Age', help='For Adult, age in year\nFor Child, age in month',
                       compute="calculate_age")
+    # nationality_id = fields.Many2one('res_country', 'Nationality')
     address_ids = fields.One2many('address.detail', 'customer_id', 'Address Detail')
     phone_ids = fields.One2many('phone.detail', 'customer_id', 'Phone Detail')
     social_media_ids = fields.One2many('social.media.detail', 'customer_id', 'Social Media Detail')

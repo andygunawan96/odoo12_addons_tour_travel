@@ -2,15 +2,52 @@
 <odoo>
     <data>
 
-<!--       <record id="" model="ir.ui.view">-->
-<!--          <field name="name"></field>-->
-<!--          <field name="model"></field>-->
-<!--           <field name="arch" type="xml">-->
-<!--               <search string="">-->
-<!--             <field name="name" string="string" domain="[()]"/>-->
-<!--           </search>-->
-<!--          </field>-->
-<!--       </record> -->
+        <record id="issued_offline_view_search" model="ir.ui.view">
+            <field name="name">issued.offline.view.search</field>
+            <field name="model">issued.offline</field>
+            <field name="arch" type="xml">
+                <search string="Search Issued Offline Booking">
+<!--                   <field name="name" string="string" domain="[()]"/>-->
+                    <field name="name"/>
+                    <field name="sub_agent_id"/>
+<!--                    <field name="provider"/>-->
+                    <field name="contact_id"/>
+                    <field name="pnr"/>
+                    <group>
+                        <filter string="All" name="all"/>
+                        <filter string="Draft" name="draft" domain="[('state','=','draft')]"/>
+                        <filter string="Confirm" name="confirm" domain="[('state','=','confirm')]"/>
+                        <filter string="Paid" name="paid" domain="[('state','=','paid')]"/>
+                        <filter string="Done" name="done" domain="[('state','=','done')]"/>
+                        <filter string="Canceled/Expired/Refund" name="canceled_expired_refund" domain="['|', '|', ('state','=','cancel'),('state','=','expired'),('state','=','refund')]"/>
+                    </group>
+                    <separator/>
+                    <filter string="Today" name="today" domain="[('date','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>
+                    <filter string="Yesterday" name="yesterday"
+                            domain="[
+                                ('date', '&lt;', (context_today()).strftime('%Y-%m-%d')),
+                                ('date', '&gt;=', (context_today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d'))
+                            ]"/>
+                    <filter name="week" string="This Week"
+                        domain="[
+                                '&amp;',
+                                ('date', '>=', (context_today() + relativedelta(weeks=-1,days=1,weekday=0)).strftime('%Y-%m-%d')),
+                                ('date', '&lt;=', (context_today() + relativedelta(weekday=6)).strftime('%Y-%m-%d')),
+                            ]"/>
+                    <filter string="This Month" name="thismonth" domain="[('date','&gt;=',time.strftime('%%Y-%%m-01'))]"/>
+                    <filter string="This Year" name="thisyear" domain="[('date','&gt;=',time.strftime('%%Y-01-01'))]"/>
+
+                    <group expand="0" string="Group By">
+                        <filter string="Agent" name="agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
+                        <filter string="Agent Type" name="agent_type_id" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
+                        <filter string="Sub Agent" name="sub_agent" domain="[]" context="{'group_by':'sub_agent_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                        <filter string="Sub Agent Type" name="sub_agent_type_id" domain="[]" context="{'group_by':'sub_agent_type_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                        <filter string="Sector" name="sector" domain="[]" context="{'group_by':'sector_type'}"/>
+                        <filter string="State" name="state" domain="[]" context="{'group_by':'state'}"/>
+                    </group>
+               </search>
+           </field>
+       </record>
 
         <record id="issued_offline_view_tree" model="ir.ui.view">
             <field name="name">issued.offline.view.tree</field>
@@ -53,12 +90,12 @@
                         <group>
                             <group>
                                 <field name="agent_id" readonly="1" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
-                                <field name="sub_agent_id" readonly="0" required="1" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                                <field name="sub_agent_id" readonly="1" required="1" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                                 <field name="sub_agent_type_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
-                                <field name="contact_id" required="1" context="{'default_commercial_agent_id': sub_agent_id}"/>
+                                <field name="contact_id" required="1" context="{'default_commercial_agent_id': sub_agent_id}" options="{'no_quick_create': True}"/>
                                 <!--<field name="display_mobile" required="1"/>-->
-                                <field name="type"/>
-                                <field name="sector_type"/>
+                                <field name="provider_type_id" domain="[('code', 'not in', ['tour','visa','passport'])]"/>
+                                <field name="sector_type" attrs="{'invisible': [('provider_type_id', 'not in', 2)]}"/>
                                 <!--<field name="customer_id"/>-->
                                 <field name="cancel_message" states="cancel"
                                        attrs="{'readonly':[('cancel_can_edit','=',False)]}"/>
@@ -66,20 +103,20 @@
                                 <field name="total_sale_price" required="1"/>
                                 <field name="total_commission_amount" attrs="{'invisible': [('state', '=', 'draft')]}"
                                        groups="tt_base.group_tt_tour_travel_operator"/>
-                                <field name="agent_commission"/>
-                                <field name="parent_agent_commission" groups="tt_base.group_tt_agent_user_operator"/>
-                                <field name="ho_commission" groups="tt_base.group_tt_tour_travel_operator"/>
+                                <field name="agent_commission" invisible="1"/>
+                                <field name="parent_agent_commission" groups="tt_base.group_tt_agent_user_operator" invisible="1"/>
+                                <field name="ho_commission" groups="tt_base.group_tt_tour_travel_operator" invisible="1"/>
                                 <field name="incentive_amount" groups="tt_base.group_tt_tour_travel_operator"/>
                                 <field name="nta_price" groups="tt_base.group_tt_tour_travel_operator"/>
                                 <field name="agent_nta_price"/>
                             </group>
                             <group>
-                                <field name="carrier_id"/>
-                                <field name="provider" required="1"/>
+<!--                                <field name="carrier_id"/>-->
+<!--                                <field name="provider" required="1"/>-->
                                 <field name="person" invisible="1"/>
                                 <field name="segment" invisible="1"/>
                                 <!--171121 CANDY: add field pnr-->
-                                <field name="pnr" states="paid, done" attrs="{'required': [('state', '=', 'validate')]}"/>  <!--, 'invisible': ['|', ('state', '=', 'draft'), ('state', '=' , 'confirm'), ('state', '=' , 'sent')]-->
+<!--                                <field name="pnr" states="paid, done" attrs="{'required': [('state', '=', 'validate')]}"/>  &lt;!&ndash;, 'invisible': ['|', ('state', '=', 'draft'), ('state', '=' , 'confirm'), ('state', '=' , 'sent')]&ndash;&gt;-->
                                 <field name="vendor" groups="tt_base.group_tt_tour_travel_operator"/>
                                 <field name="social_media_id" attrs="{'required': [('state', '=', 'confirm')]}"/>
                                 <field name="expired_date" required="1"/>
@@ -99,10 +136,15 @@
                                     <field name="sent_date" readonly="1" class="oe_inline"/> -
                                     <field name="sent_uid" readonly="1" class="oe_inline"/>
                                 </div>
-                                <label for="issued_uid" string="Issued"/>
+                                <label for="validate_uid" string="Validate by"/>
                                 <div>
-                                    <field name="issued_date" class="oe_inline"/> -
-                                    <field name="issued_uid" class="oe_inline"/>
+                                    <field name="validate_date" class="oe_inline"/> -
+                                    <field name="validate_uid" class="oe_inline"/>
+                                </div>
+                                <label for="done_uid" string="Done"/>
+                                <div>
+                                    <field name="done_date" class="oe_inline"/> -
+                                    <field name="done_uid" class="oe_inline"/>
                                 </div>
 
 <!--                                <label for="cancel_uid" string="Cancel"/>-->
@@ -116,7 +158,7 @@
                             <group>
 <!--                                <field name="refund_id"  attrs="{'invisible': [('refund_id', '=', False)]}"/>-->
                                 <!--<field name="description"/>-->
-                                <field name="description" attrs="{'invisible': [('type', 'in', ['airline','train']), ('state','=','draft')]}"/>
+                                <field name="description" attrs="{'invisible': [('provider_type_id', 'in', [1,2]), ('state','=','draft')]}"/>
                             </group>
                             <group string="Booking Value" groups="tt_base.group_tt_tour_travel_operator" states="paid,posted">
                                 <field name="resv_code"/>
@@ -131,10 +173,11 @@
                             </group>
                         </group>
                         <notebook>
-                            <page string="Line(s)" attrs="{'invisible': [('type', 'not in', ['airline','train'])]}">
+                            <page string="Line(s)" attrs="{'invisible': [('provider_type_id', 'not in', [1,2,3,4])]}">  <!--Airlines, Train, Hotel, Activity-->
                                 <field name="line_ids">
                                     <tree>
-                                        <field name="iss_off_id" invisible="1"/>
+                                        <field name="booking_id" invisible="1"/>
+                                        <field name="pnr"/>
                                         <field name="obj_name"/>
                                         <!--<field name="obj_subname"/>-->
                                         <field name="obj_qty"/>
@@ -146,11 +189,11 @@
                                     </tree>
                                     <form>
                                         <header>
-                                            <field name="state" widget="statusbar" statusbar_visible="draft,confirm,paid,posted" />
+                                            <field name="state" widget="statusbar" statusbar_visible="draft,confirm,paid,posted"/>
                                         </header>
-                                        <field name="iss_off_id" invisible="1"/>
+                                        <field name="booking_id" invisible="1"/>
                                         <field name="transaction_type" invisible="1"/>
-                                        <group attrs="{'invisible': [('transaction_type', 'not in', ['airline','train'])]}">
+                                        <group attrs="{'invisible': [('transaction_type', 'not in', [1,2])]}">  <!--'airline','train'-->
                                             <!--Airline / Train-->
                                             <group>
                                                 <field name="origin_id"/>
@@ -161,6 +204,13 @@
                                                 <field name="return_date"/>
                                             </group>
                                             <group>
+                                                <field name="carrier_id"/>
+                                                <field name="provider"/>
+                                            </group>
+                                            <group>
+                                                <field name="pnr"/>
+                                            </group>
+                                            <group>
                                                 <field name="carrier_code"/>
                                                 <field name="carrier_number"/>
                                             </group>
@@ -169,17 +219,19 @@
                                                 <field name="subclass"/>
                                             </group>
                                         </group>
-                                        <group attrs="{'invisible': [('transaction_type', 'not in', ['hotel','activity'])]}">
+                                        <group attrs="{'invisible': [('transaction_type', 'not in', [3,4])]}">  <!--'hotel','activity'-->
                                             <!--Hotel / Themes Park-->
                                             <group>
+                                                <field name="pnr"/>
+                                                <field name="provider"/>
                                                 <field name="obj_name"/>
                                                 <field name="obj_subname"/>
-                                                <field name="description"/>
                                             </group>
                                             <group>
                                                 <field name="check_in"/>
                                                 <field name="check_out" attrs="{'invisible': [('transaction_type', 'not in', ['hotel'])]}"/>
                                                 <field name="obj_qty"/>
+                                                <field name="description"/>
                                             </group>
                                         </group>
 <!--                                        <group attrs="{'invisible': [('transaction_type', 'not in', ['travel_doc',])]}">-->
@@ -208,7 +260,7 @@
                             <page string="Passenger(s)">
                                 <field name="passenger_ids" context="{'default_agent_id': sub_agent_id}">
                                     <tree editable="bottom">
-                                        <field name="iss_off_id" invisible="1"/>
+                                        <field name="booking_id" invisible="1"/>
                                         <field name="ticket_number"/>
                                         <field name="agent_id" readonly="1"/>
                                         <field name="passenger_id" string="Name" context="{'default_commercial_agent_id': agent_id}"/>
@@ -217,8 +269,8 @@
                                     </tree>
                                 </field>
                             </page>
-                            <page string="Prices" name="prices">  <!--attrs="{'invisible': [('state', '=', 'draft')]}"-->
-                                <field name="sale_service_charge_ids">
+                            <page string="Prices" name="prices" groups="tt_base.group_tt_tour_travel_operator">  <!--attrs="{'invisible': [('state', '=', 'draft')]}"-->
+                                <field name="cost_service_charge_ids">
                                     <tree>
                                         <field name="charge_code"/>
                                         <field name="pax_type"/>
@@ -231,18 +283,18 @@
                                 </field>
                             </page>
                             <page string="Ledger" attrs="{'invisible': [('state', '=', 'draft')]}">  <!--groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"-->
-                                <group>
-                                    <group string="Ledger">
-                                        <field name="ledger_id" readonly="True"/>  <!--groups="tt_base.group_tt_agent_user_operator, tt_base.group_tt_tour_travel_operator"-->
-                                        <field name="sub_ledger_id" readonly="True"/>
-                                        <field name="commission_ledger_id" readonly="True"/>
-                                    </group>
-                                    <group states="cancel" string="Refund">
-                                        <field name="cancel_ledger_id" readonly="True"/>
-                                        <field name="cancel_sub_ledger_id" readonly="True"/>
-                                        <field name="cancel_commission_ledger_id" readonly="True"/>
-                                    </group>
-                                </group>
+<!--                                <group>-->
+<!--                                    <group string="Ledger">-->
+<!--                                        <field name="ledger_id" readonly="True"/>  &lt;!&ndash;groups="tt_base.group_tt_agent_user_operator, tt_base.group_tt_tour_travel_operator"&ndash;&gt;-->
+<!--                                        <field name="sub_ledger_id" readonly="True"/>-->
+<!--                                        <field name="commission_ledger_id" readonly="True"/>-->
+<!--                                    </group>-->
+<!--                                    <group states="cancel" string="Refund">-->
+<!--                                        <field name="cancel_ledger_id" readonly="True"/>-->
+<!--                                        <field name="cancel_sub_ledger_id" readonly="True"/>-->
+<!--                                        <field name="cancel_commission_ledger_id" readonly="True"/>-->
+<!--                                    </group>-->
+<!--                                </group>-->
                                 <group>
                                     <field name="ledger_ids" readonly="1"/>  <!--groups="tt_base.group_tt_tour_travel_operator"-->
                                 </group>
@@ -285,8 +337,8 @@
             <field name="arch" type="xml">
                 <tree>
                     <field name="name"/>
-                    <field name="type"/>
-                    <field name="provider"/>
+                    <field name="provider_type_id"/>
+<!--                    <field name="provider"/>-->
                     <field name="state"/>
                 </tree>
             </field>
@@ -297,15 +349,90 @@
             <field name="res_model">issued.offline</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
-<!--            <field name="search_view_id" ref="tt_rodex_accounting.issued_offline_view_search"/>-->
+            <field name="search_view_id" ref="issued_offline_view_search"/>
+            <field name="context">
+                {
+                    'form_view_ref': 'issued_offline_view_form',
+                    'tree_view_ref': 'issued_offline_view_tree',
+                    'search_default_all':1
+                }
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="issued_offline_draft_action">
+            <field name="name">Issued Offline Draft</field>
+            <field name="res_model">issued.offline</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="issued_offline_view_search"/>
+            <field name="context">
+                {
+                    'form_view_ref': 'issued_offline_view_form',
+                    'tree_view_ref': 'issued_offline_view_tree',
+                    'search_default_confirm':1
+                }
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="issued_offline_confirm_action">
+            <field name="name">Issued Offline Confirm</field>
+            <field name="res_model">issued.offline</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="issued_offline_view_search"/>
+            <field name="context">
+                {
+                    'form_view_ref': 'issued_offline_view_form',
+                    'tree_view_ref': 'issued_offline_view_tree',
+                    'search_default_paid':1
+                }
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="issued_offline_paid_action">
+            <field name="name">Issued Offline Paid</field>
+            <field name="res_model">issued.offline</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="issued_offline_view_search"/>
+            <field name="context">
+                {
+                    'form_view_ref': 'issued_offline_view_form',
+                    'tree_view_ref': 'issued_offline_view_tree',
+                    'search_default_done':1
+                }
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="issued_offline_done_action">
+            <field name="name">Issued Offline Done</field>
+            <field name="res_model">issued.offline</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="issued_offline_view_search"/>
+            <field name="context">
+                {
+                    'form_view_ref': 'issued_offline_view_form',
+                    'tree_view_ref': 'issued_offline_view_tree',
+                    'search_default_canceled_expired_refund':1
+                }
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="issued_offline_cancel_expired_refund_action">
+            <field name="name">Issued Offline Cancel Expired Refund</field>
+            <field name="res_model">issued.offline</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="issued_offline_view_search"/>
             <field name="context">{'search_default_all':1}</field>
         </record>
 
-        <menuitem id="menu_issued_offline_side_menu" parent="tt_reservation.main_reservations"
-                  name="Issued Offline" sequence='80'/>
-<!--        groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"-->
+        <menuitem id="menu_issued_offline_top_menu" parent="tt_reservation.main_reservations"
+                  name="Issued Offline" sequence='80'
+                  groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
 
-        <menuitem id="menu_issued_offline_side_menu_all" parent="menu_issued_offline_side_menu"
+        <menuitem id="menu_issued_offline_side_menu_all" parent="menu_issued_offline_top_menu"
                   name="ALL" sequence='1' action="issued_offline_all_action"/>
 
     </data>
