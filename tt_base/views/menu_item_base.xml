@@ -28,7 +28,6 @@
         <!--Customers (Menu Customers)-->
         <menuitem id="top_customers_customers"
                   parent="tt_base.main_customers"
-
                   name="Customers"
                   sequence="1"
                   groups="base.group_user"/>
