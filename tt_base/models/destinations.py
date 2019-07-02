@@ -43,7 +43,7 @@ class Destinations(models.Model):
         super(Destinations, self).write(vals)
 
     def get_id(self, code, provider_type):
-        res = self.sudo().search([('code','=',code),('provider_type','=', provider_type.id)])
+        res = self.sudo().search([('code','=',code),('provider_type_id', '=', provider_type.id)])
         return res and res[0].id or False
 
     def to_dict(self):

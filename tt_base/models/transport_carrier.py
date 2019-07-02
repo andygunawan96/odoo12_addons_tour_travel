@@ -28,8 +28,8 @@ class TransportCarrier(models.Model):
         pos = self.search(domain + args, limit=limit)
         return pos.name_get()
 
-    def get_id(self, code, type='airline'):
-        res = self.sudo().search([('code','=',code), ('transport_type', '=', type)])
+    def get_id(self, code, provider_type):
+        res = self.sudo().search([('code', '=', code), ('provider_type_id', '=', provider_type.id)])
         return res and res[0].id or False
 
     def get_carrier_info(self, code):
