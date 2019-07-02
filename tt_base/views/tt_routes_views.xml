@@ -69,11 +69,12 @@
             <field name="model">tt.routes</field>
             <field name="arch" type="xml">
                 <tree string="Route">
-                    <field name="carrier_id"/>
                     <field name="carrier_code"/>
                     <field name="carrier_number"/>
                     <field name="origin"/>
+                    <field name="origin_terminal"/>
                     <field name="destination"/>
+                    <field name="destination_terminal"/>
                     <field name="departure_time"/>
                     <field name="arrival_time"/>
                 </tree>
