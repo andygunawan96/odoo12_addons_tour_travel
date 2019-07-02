@@ -338,7 +338,7 @@ class TourPricelist(models.Model):
             countries = []
             if temp:
                 self.env.cr.execute("""SELECT id, name, code, phone_code FROM res_country WHERE id in %s""",
-                                       (tuple(temp),))
+                                    (tuple(temp),))
                 countries = self.env.cr.dictfetchall()
 
             response = {
@@ -365,7 +365,7 @@ class TourPricelist(models.Model):
 
             if search_request['country_id'] != '0':
                 self.env.cr.execute("""SELECT id, name FROM res_country WHERE id=%s""",
-                                       (search_request['country_id'],))
+                                    (search_request['country_id'],))
                 temp = self.env.cr.dictfetchall()
                 search_request.update({
                     'country_name': temp[0]['name']
@@ -518,15 +518,15 @@ class TourPricelist(models.Model):
             self.env.cr.execute("""SELECT * FROM tt_tour_pricelist tp WHERE id=%s;""", (search_request['id'],))
             tour_list = self.env.cr.dictfetchall()
 
-            # user_agent_id = self.env.user.agent_id.agent_type_id.id
-            # if user_agent_id == self.env.ref('tt_base_rodex.agent_type_citra').id:
-            #     commission_agent_type = 'citra'
-            # elif user_agent_id == self.env.ref('tt_base_rodex.agent_type_japro').id:
-            #     commission_agent_type = 'japro'
-            # elif user_agent_id == self.env.ref('tt_base_rodex.agent_type_btbr').id or user_agent_id == self.env.ref('tt_base_rodex.agent_type_btbo').id:
-            #     commission_agent_type = 'btb'
-            # else:
-            #     commission_agent_type = 'other'
+            user_agent_id = self.env.user.agent_id.agent_type_id.id
+            if user_agent_id == self.env.ref('tt_base.agent_type_citra').id:
+                commission_agent_type = 'citra'
+            elif user_agent_id == self.env.ref('tt_base.agent_type_japro').id:
+                commission_agent_type = 'japro'
+            elif user_agent_id == self.env.ref('tt_base.agent_type_btbr').id or user_agent_id == self.env.ref('tt_base.agent_type_btbo').id:
+                commission_agent_type = 'btb'
+            else:
+                commission_agent_type = 'other'
 
             for idx, rec in enumerate(tour_list):
                 adult_commission = (rec['adult_sale_price'] - rec['adult_citra_price']) > 0 and rec['adult_sale_price'] - rec['adult_citra_price'] or '0'
@@ -623,13 +623,174 @@ class TourPricelist(models.Model):
             response = {
                 'search_request': search_request,
                 'result': tour_list,
+                'commission_agent_type': commission_agent_type,
                 'currency_id': self.env.user.company_id.currency_id.id,
                 # 'is_HO': self.env.user.agent_id.is_HO,
                 'agent_id': self.env.user.agent_id.id,
-                # 'commission_agent_type': commission_agent_type,
                 # 'is_agent': is_agent,
             }
 
+            res = Response().get_no_error(response)
+        except Exception as e:
+            res = Response().get_error(str(e), 500)
+        return res
+
+    def update_passenger_api(self, data, context, **kwargs):
+        try:
+            sameBooker = False
+            if data['booking_data']['sameBooker'] == "yes":
+                sameBooker = True
+            else:
+                sameBooker = False
+
+            booker_obj = data['booking_data']['contact']
+            booker_id = booker_obj.get('booker_id')
+            if not sameBooker and not booker_id:
+                if not self.check_pax_similarity(booker_obj):
+                    cust_obj = self.env['tt.customer'].create({
+                        'title': booker_obj.get('title'),
+                        'first_name': booker_obj.get('first_name'),
+                        'last_name': booker_obj.get('last_name'),
+                        'email': booker_obj.get('email'),
+                        'agent_id': booker_obj.get('agent_id'),
+                    })
+                    if booker_obj.get('mobile'):
+                        self.env['phone.detail'].create({
+                            'customer_id': cust_obj.id,
+                            'type': 'work',
+                            'name': 'Work',
+                            'phone_number': booker_obj['mobile'],
+                        })
+
+            elif booker_id and not sameBooker:
+                temp_booker = self.env['tt.customer'].browse(int(booker_id))
+                temp_booker.update({
+                    'title': booker_obj.get('title') and booker_obj['title'] or temp_booker.title,
+                    'first_name': booker_obj.get('first_name') and booker_obj['first_name'] or temp_booker.first_name,
+                    'last_name': booker_obj.get('last_name') and booker_obj['last_name'] or temp_booker.last_name,
+                    'email': booker_obj.get('email') and booker_obj['email'] or temp_booker.email,
+                    'agent_id': booker_obj.get('agent_id') and booker_obj['agent_id'] or temp_booker.agent_id,
+                })
+                if booker_obj.get('mobile'):
+                    found = False
+                    for ph in temp_booker.phone_ids:
+                        if ph.phone_number == booker_obj['mobile']:
+                            found = True
+                    if not found:
+                        self.env['phone.detail'].create({
+                            'customer_id': int(booker_id),
+                            'type': 'work',
+                            'name': 'Work',
+                            'phone_number': booker_obj['mobile'],
+                        })
+
+            for rec in data['booking_data']['all_pax']:
+                if not rec.get('passenger_id'):
+                    if not self.check_pax_similarity(rec):
+                        cust_obj = self.env['tt.customer'].create({
+                            'title': rec.get('title'),
+                            'first_name': rec.get('first_name'),
+                            'last_name': rec.get('last_name'),
+                            'email': rec.get('email'),
+                            'agent_id': rec.get('agent_id'),
+                            'birth_date': rec.get('birth_date_f'),
+                            'passport_number': rec.get('passport_number'),
+                            'passport_exp_date': rec.get('passport_expdate_f'),
+                        })
+                        if rec.get('mobile'):
+                            self.env['phone.detail'].create({
+                                'customer_id': cust_obj.id,
+                                'type': 'work',
+                                'name': 'Work',
+                                'phone_number': rec['mobile'],
+                            })
+                else:
+                    temp = self.env['tt.customer'].browse(int(rec['passenger_id']))
+                    temp.update({
+                        'title': rec.get('title') and rec['title'] or temp.title,
+                        'first_name': rec.get('first_name') and rec['first_name'] or temp.first_name,
+                        'last_name': rec.get('last_name') and rec['last_name'] or temp.last_name,
+                        'email': rec.get('email') and rec['email'] or temp.email,
+                        'agent_id': rec.get('agent_id') and rec['agent_id'] or temp.agent_id,
+                        'birth_date': rec.get('birth_date_f') and rec['birth_date_f'] or temp.birth_date,
+                        'passport_number': rec.get('passport_number') and rec['passport_number'] or temp.passport_number,
+                        'passport_exp_date': rec.get('passport_expdate_f') and rec['passport_expdate_f'] or temp.passport_exp_date,
+                    })
+                    if rec.get('mobile'):
+                        found = False
+                        for ph in temp.phone_ids:
+                            if ph.phone_number == rec['mobile']:
+                                found = True
+                        if not found:
+                            self.env['phone.detail'].create({
+                                'customer_id': int(rec['passenger_id']),
+                                'type': 'work',
+                                'name': 'Work',
+                                'phone_number': rec['mobile'],
+                            })
+
+            response = {
+
+            }
+            res = Response().get_no_error(response)
+        except Exception as e:
+            res = Response().get_error(str(e), 500)
+        return res
+
+    def check_pax_similarity(self, vals):
+        result = []
+        parameters = []
+        if vals.get('first_name'):
+            parameters.append(('first_name', '=ilike', vals['first_name']))
+        if vals.get('last_name'):
+            parameters.append(('last_name', '=ilike', vals['last_name']))
+        if vals.get('title'):
+            parameters.append(('title', '=', vals['title']))
+        if vals.get('agent_id'):
+            parameters.append(('agent_id', '=', int(vals['agent_id'])))
+        if vals.get('birth_date_f'):
+            parameters.append(('birth_date', '=', vals['birth_date_f']))
+
+        search_result = self.env['tt.customer'].search(parameters)
+
+        if vals.get('mobile'):
+            for rec in search_result:
+                for rec2 in rec['phone_ids']:
+                    if rec2.phone_number == vals.get('mobile'):
+                        result.append(rec)
+        else:
+            result = search_result
+
+        if len(result) > 0:
+            return True
+        else:
+            return False
+
+    def commit_booking_api(self, data, context, **kwargs):
+        try:
+            response = {
+
+            }
+            res = Response().get_no_error(response)
+        except Exception as e:
+            res = Response().get_error(str(e), 500)
+        return res
+
+    def get_booking_api(self, data, context, **kwargs):
+        try:
+            response = {
+
+            }
+            res = Response().get_no_error(response)
+        except Exception as e:
+            res = Response().get_error(str(e), 500)
+        return res
+
+    def issued_by_api(self):
+        try:
+            response = {
+
+            }
             res = Response().get_no_error(response)
         except Exception as e:
             res = Response().get_error(str(e), 500)

@@ -30,7 +30,7 @@ class TourBooking(models.Model):
     sale_service_charge_ids = fields.One2many('tt.service.charge', 'booking_tour_id', 'Service Charge',
                                               readonly=True, states={'draft': [('readonly', False)]})
 
-    # passenger_ids = fields.One2many('tt.reservation.customer', 'customer_id', 'Passenger')
+    # passenger_ids = fields.One2many('tt.customer', 'customer_id', 'Passenger')
     # agent_invoice_ids = fields.One2many('tt.agent.invoice', 'res_id', 'Agent Invoice')  # One2Many -> tt.agent.invoice
 
     # provider_booking_ids = fields.One2many('tt.provider', 'booking_id', 'Provider Booking IDs')
