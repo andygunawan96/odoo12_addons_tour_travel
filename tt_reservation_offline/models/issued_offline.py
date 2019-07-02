@@ -2,7 +2,7 @@ from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 from datetime import datetime, timedelta
 import logging,traceback
-
+from ...tools.api import Response
 _logger = logging.getLogger(__name__)
 
 STATE_OFFLINE = [
@@ -690,99 +690,127 @@ class IssuedOffline(models.Model):
 
     # API
 
+    def get_config_api(self):
+        try:
+            res = {
+                'sector_type': self._fields['sector_type'].selection,
+                'transaction_type': [{'code': rec.code, 'name': rec.name} for rec in self.env['tt.provider.type'].search([])],
+                'carrier_id': [{'code': rec.code, 'name': rec.name, 'icao': rec.icao} for rec in self.env['tt.transport.carrier'].search([])],
+                'social_media_id': [{'name': rec.name} for rec in self.env['social.media.detail'].search([])],
+            }
+            res = Response().get_no_error(res)
+        except Exception as e:
+            res = Response().get_error(str(e), 500)
+        return res
+
+    # API FUNCTION step2.1
     def create_issued_offline_by_api(self, vals, api_context=None):
         # Notes: SubmitTopUp
-        # list_obj = []
-        # list_line = []
-        # for rec in vals['passenger_ids']:
-        #     a = self.env['issued.offline.passenger'].create({
-        #         'passenger_id': rec.get('id')
-        #     })
-        #     list_obj.append(a.id)
-        # for rec in vals['line_ids']:
-        #     origin = self.get_destination_id(vals['type'], rec['origin'])
-        #     destination = self.get_destination_id(vals['type'], rec['destination'])
-        #     a = self.env['issued.offline.lines'].create({
-        #         'origin_id': origin,
-        #         'destination_id': destination,
-        #         'carrier_code': rec['carrier_code'],
-        #         'carrier_number': rec['carrier_number'],
-        #         'departure_date': rec['departure'],
-        #         'return_date': rec['arrival'],
-        #         'class_of_service': rec['class_of_service'],
-        #         'sub_class': rec['sub_class']
-        #     })
-        #     list_line.append(a.id)
-        # values = {
-        #     'agent_id': int(vals['agent_id']),
-        #     'sub_agent_id': int(vals['sub_agent_id']),
-        #     'sub_agent_type': int(vals['sub_agent_type']),
-        #     'contact_id': int(vals['contact_id']),
-        #     'type': vals['type'],
-        #     'sector_type': vals['sector_type'] or '',
-        #     'total_sale_price': int(vals['total_sale_price']) or 0,
-        #     'agent_commission': 0,
-        #     'parent_agent_commission': 0,
-        #     'agent_nta_price': 0,
-        #     'description': vals['desc'],
-        #     'carrier_id': int(vals['carrier_id']),
-        #     'provider': vals['provider'],
-        #     'pnr': vals['pnr'],
-        #     'social_media_id': int(vals['social_media_id']),
-        #     'expired_date': vals['expired_date'],
-        #     'create_uid': int(vals['co_uid']),
-        #     'confirm_uid': int(vals['co_uid']),
-        #     'passanger_ids': [(6, 0, list_obj)],
-        #     'line_ids': [(6, 0, list_line)],
-        # }
-        # try:
-        #     res = self.env['issued.offline'].sudo().create(values)
-        # except Exception as e:
-        #     errors = []
-        #     errors.append(('Issued Offline Failure', str(e)))
-        #     return {
-        #         'error_code': 1,
-        #         'error_msg': errors,
-        #         'response': {
-        #             'message': '',
-        #         }
-        #     }
-        #
-        # self.confirm_api(res.id)
-        # return {
-        #     'error_code': 0,
-        #     'error_msg': '',
-        #     'response': {
-        #         'message': '',
-        #         'name': res.name
-        #     }
-        # }
-        pass
+        list_obj = []
+        list_line = []
+        for rec in vals['passenger_ids']:
+            a = self.env['issued.offline.passanger'].create({'passenger_id': rec.get('id')})
+            list_obj.append(a.id)
+        for rec in vals['line_ids']:
+            origin = self.get_destination_id(vals['type'], rec['origin'])
+            destination = self.get_destination_id(vals['type'], rec['destination'])
+            a = self.env['issued.offline.lines'].create({
+                'origin_id': origin,
+                'destination_id': destination,
+                'carrier_code': rec['carrier_code'],
+                'carrier_number': rec['carrier_number'],
+                'departure_date': rec['departure'],
+                'return_date': rec['arrival'],
+                'class_of_service': rec['class_of_service'],
+                'sub_class': rec['sub_class']
+            })
+            list_line.append(a.id)
+        values = {
+            'agent_id': int(vals['agent_id']),
+            'sub_agent_id': int(vals['sub_agent_id']),
+            'sub_agent_type': int(vals['sub_agent_type']),
+            'contact_id': int(vals['contact_id']),
+            'type': vals['type'],
+            'sector_type': vals['sector_type'] or '',
+            'total_sale_price': int(vals['total_sale_price']) or 0,
+            'agent_commission': 0,
+            'parent_agent_commission': 0,
+            'agent_nta_price': 0,
+            'description': vals['desc'],
+            'carrier_id': int(vals['carrier_id']),
+            'provider': vals['provider'],
+            'pnr': vals['pnr'],
+            'social_media_id': int(vals['social_media_id']),
+            'expired_date': vals['expired_date'],
+            'create_uid': int(vals['co_uid']),
+            'confirm_uid': int(vals['co_uid']),
+            'passanger_ids': [(6, 0, list_obj)],
+            'line_ids': [(6, 0, list_line)],
 
-    def get_issued_offline_api(self, req, api_context=None):
-        pass
+        }
+        try:
+            res = self.env['issued.offline'].sudo().create(values)
+        except Exception as e:
+            res = Response().get_error(str(e), 500)
+            return res
 
-    # def get_issued_offline_api(self, req, api_context=None):
-    #     def comp_agent_issued_offline(rec):
-    #         passenger = []
-    #         # jika ada passenger
-    #         if len(rec.passenger_ids) > 0:
-    #             # untuk setiap passenger
-    #             for pax in rec.passenger_ids:
-    #                 # masukkan data passenger ke dalam array
-    #                 passenger.append({
-    #                     # name : Mr. Andre Doang
-    #                     'name': pax.passenger_id.title + ' ' + pax.passenger_id.first_name + ' ' + pax.passenger_id.last_name
-    #                     # pax_type :
-    #                     # 'pax_type' : pax.passenger_id.pax_type
-    #
-    #                 })
+        self.confirm_api(res.id)
+        res = Response().get_no_error({'name':res.name})
+        return res
 
     def confirm_api(self, id):
         obj = self.sudo().browse(id)
         obj.action_confirm()
 
-    ####################################################################################################
+    # example
+    def get_issued_offline_api(self, req, api_context=None):
+        def comp_agent_issued_offline(rec):
+            passenger = []
+            if len(rec.passanger_ids) > 0:
+                for pax in rec.passanger_ids:
+                    passenger.append({
+                        'name': pax.passenger_id.title + ' ' + pax.passenger_id.first_name + ' ' + pax.passenger_id.last_name,
+                        'pax_type': pax.passenger_id.pax_type,
+                        'birth_date': pax.passenger_id.birth_date,
+                        'booker_type': pax.passenger_id.booker_type
+                    })
+            vals = {
+                'name': rec.name,
+                'create_date': rec.write_date,
+                'type': rec.type,
+                'total_tax': rec.total_tax,
+                'total_sale_price': rec.total_sale_price,
+                'state': rec.state,
+                'sub_agent_id': rec.sub_agent_id.name,
+                'agent_id': rec.agent_id.name,
+                'contact_id': rec.contact_id and rec.contact_id.first_name + ' ' + rec.contact_id.last_name and rec.contact_id.last_name or '',
+                'social_media_id': rec.social_media_id.name,
+                'provider': rec.provider,
+                'pnr': rec.pnr,
+                'passenger': passenger,
+                'parent_agent_commission': int(rec.parent_agent_commission),
+                'nta_price': int(rec.nta_price),
+                'id': rec.id,
+                'expired_date': rec.expired_date,
+                'description': rec.description,
+                'agent_nta_price': int(rec.agent_nta_price)
+            }
+            return vals
+
+        try:
+            user_obj = self.env['res.users'].browse(req['co_uid'])
+            # partner_obj = self.browse(user_obj.agent_id.id)
+            domain = ['|', ('agent_id', 'in', user_obj.allowed_customer_ids.ids),
+                      ('sub_agent_id', '=', user_obj.agent_id.id)]
+            order = api_context.get('order', 'id DESC')
+            issued_offline_ids = self.env['issued.offline'].search(domain, limit=req['limit'],
+                                                                   offset=req['offset'] * req['limit'], order=order)
+            res = Response().get_no_error({'issued_offline': [comp_agent_issued_offline(rec) for rec in issued_offline_ids]})
+
+
+        except Exception as e:
+            res = Response().get_error(str(e), 500)
+        return res
 
     # INVOICE
 
