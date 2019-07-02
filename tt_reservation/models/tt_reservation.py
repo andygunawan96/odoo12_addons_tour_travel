@@ -148,7 +148,7 @@ class TtReservation(models.Model):
 
     #yang jual
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True,
-                               default=lambda self: self.env.user.agent_id or self.env.user.company_id,
+                               default=lambda self: self.env.user.agent_id,
                                readonly=True, states={'draft': [('readonly', False)]})
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', related='agent_id.agent_type_id',
                                     store=True)
