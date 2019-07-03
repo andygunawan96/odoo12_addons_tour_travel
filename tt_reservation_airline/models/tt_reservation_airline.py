@@ -1,5 +1,5 @@
 from odoo import api,models,fields, _
-from ...tt_base.models.destinations import TRANSPORT_TYPE_TO_DESTINATION_TYPE
+# from ...tt_base.models.destinations import TRANSPORT_TYPE_TO_DESTINATION_TYPE
 from ...tools import util
 import logging,traceback
 import datetime
