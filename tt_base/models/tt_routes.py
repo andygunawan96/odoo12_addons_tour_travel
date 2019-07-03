@@ -152,7 +152,7 @@ class Routes(models.Model):
             keys = [rec for rec in req_data.keys()]
             diff_fields = list(set(mandatory_fields).difference(keys))
             if diff_fields:
-                raise Exception('Missing Mandatory fields')
+                raise Exception('Missing Mandatory fields, data : %s' % diff_fields)
 
             provider_obj = self.env['tt.provider.type'].sudo().search([('code', '=', provider_type)], limit=1)
             _obj = self.sudo().search([('carrier_code', '=', req_data['carrier_code']),
@@ -176,7 +176,7 @@ class Routes(models.Model):
             keys = [rec for rec in req_data.keys()]
             diff_fields = list(set(mandatory_fields).difference(keys))
             if diff_fields:
-                raise Exception('Missing Mandatory fields')
+                raise Exception('Missing Mandatory fields, data : %s' % diff_fields)
 
             provider_obj = self.env['tt.provider.type'].sudo().search([('code', '=', provider_type)], limit=1)
             _obj = self.sudo().search([('carrier_code', '=', req_data['carrier_code']),
@@ -185,7 +185,8 @@ class Routes(models.Model):
                                        ('provider_type_id', '=', provider_obj.id)])
 
             if _obj:
-                raise Exception('Data already exist')
+                # raise Exception('Data already exist')
+                return Response().get_no_error()
 
             origin_id = self.env['tt.destinations'].sudo().get_id(req_data['origin'], provider_obj)
             if not origin_id:
