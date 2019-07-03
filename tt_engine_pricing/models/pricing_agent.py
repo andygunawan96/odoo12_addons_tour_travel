@@ -1,7 +1,7 @@
 from odoo import models, fields, api, _
 
 
-class ApiConnector(models.Model):
-    _name = 'tt.api.connector'
+class PricingAgent(models.Model):
+    _name = 'tt.pricing.agent'
 
     name = fields.Char('Name')

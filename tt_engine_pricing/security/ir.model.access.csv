@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-tt_api_connector_all,tt.api.connector.all,model_tt_api_connector,,1,1,1,1
+tt_pricing_provider_all,tt.pricing.provider.all,model_tt_pricing_provider,,1,1,1,1
+tt_pricing_agent_all,tt.pricing.agent.all,model_tt_pricing_agent,,1,1,1,1
