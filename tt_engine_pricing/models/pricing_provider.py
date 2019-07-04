@@ -24,7 +24,7 @@ class PricingProviderLine(models.Model):
 
     name = fields.Char('Name', requried=True)
     sequence = fields.Integer('Sequence', default=50, required=True)
-    pricing_id = fields.Many2one('tt.pricing.provider', 'Pricing Provider')
+    pricing_id = fields.Many2one('tt.pricing.provider', 'Pricing Provider', readonly=1)
     date_from = fields.Datetime('Date From', required=True)
     date_to = fields.Datetime('Date To', required=True)
     origin_type = fields.Selection(variables.ACCESS_TYPE, 'Origin Type')
@@ -41,7 +41,7 @@ class PricingProviderLine(models.Model):
                                             string='Destination Cities')
     destination_country_ids = fields.Many2many('res.country', 'tt_pricing_line_destination_country_rel', 'pricing_line_id', 'country_id',
                                                string='Destination Countries')
-    currency_id = fields.Many2one('res.currency', 'Currency')
+    currency_id = fields.Many2one('res.currency', 'Currency', required=True)
     amount_per_route = fields.Float('Ammount per Route')
     amount_per_segment = fields.Float('Amount per Segment')
     amount_per_pax = fields.Float('Amount per Pax')
@@ -54,7 +54,7 @@ class PricingProviderLine(models.Model):
     lower_margin = fields.Monetary('Lower Margin', default=0)
     lower_amount_type = fields.Selection(variables.AMOUNT_TYPE, 'Lower Amount Type', default='amount')
     lower_amount = fields.Monetary('Lower Amount', default=0)
-    upper_margin = fields.Float('Upper Margin', default=0)
+    upper_margin = fields.Float('Equal Upper Margin', default=0)
     upper_amount_type = fields.Selection(variables.AMOUNT_TYPE, 'Upper Amount Type', default='percentage')
     upper_amount = fields.Float('Upper Ammount', default=0)
     active = fields.Boolean('Active', default=True)
