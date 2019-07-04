@@ -97,7 +97,7 @@ class TtReservation(models.Model):
     booked_date = fields.Datetime('Booked Date', readonly=True)
     issued_uid = fields.Many2one('res.users', 'Issued by', readonly=True)
     issued_date = fields.Datetime('Issued Date', readonly=True)
-    user_id = fields.Many2one('res.users', 'Create by', readonly=True) #create_uid
+    user_id = fields.Many2one('res.users', 'Create by', readonly=True)  # create_uid
 
     sid = fields.Char('SID')
     issued_sid = fields.Char('Issued SID')
@@ -120,7 +120,7 @@ class TtReservation(models.Model):
     # agent_invoice_ids = fields.One2many('tt.agent.invoice', '', 'Agent Invoice')  # One2Many -> tt.agent.invoice
     # agent_invoice_ids = fields.Char('Agent Invoice')##fixme invoice here
 
-    provider_type = fields.Many2one('tt.provider.type','Provider Type')
+    provider_type = fields.Many2one('tt.provider.type', 'Provider Type')
 
     adjustment_ids = fields.Char('Adjustment')  # One2Many -> tt.adjustment
     error_msg = fields.Char('Error Message')

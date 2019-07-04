@@ -1092,8 +1092,6 @@ class ReservationTrainApi(models.Model):
                 'direction': booking_obj.direction  #for compute r.ac per pax/route(OW/RT)
             }
 
-
-
             res = booking_obj._update_service_charges(book_info['pnr'], provider_obj, api_context, **kwargs)
 
             passenger_ids = copy.deepcopy(self.param_passenger_ids)

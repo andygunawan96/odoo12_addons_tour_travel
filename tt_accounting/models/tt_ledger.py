@@ -291,7 +291,7 @@ class Ledger(models.Model,test_to_dict.ToDict):
         ledger.state = 'done'
         return ledger
 
-    def create_ledger(self,provider_obj):
+    def create_ledger(self, provider_obj):
         # ## UPDATED by Samvi 2018/07/24
         # ## Terdetect 8888,,,,,,,,,sebagai administrator jika sudo
 
@@ -303,10 +303,8 @@ class Ledger(models.Model,test_to_dict.ToDict):
                 amount += sc.total
 
         booking_obj = provider_obj.booking_id
-        ledger_values = self.prepare_vals('Order : ' + booking_obj.name, booking_obj.name,
-                                                datetime.now(), 'transport', booking_obj.currency_id.id,
-                                                0, amount)
-
+        ledger_values = self.prepare_vals('Order : ' + booking_obj.name, booking_obj.name, datetime.now(),
+                                          'transport', booking_obj.currency_id.id, 0, amount)
 
         ledger_values.update({
             'res_model': booking_obj._name,
@@ -322,7 +320,7 @@ class Ledger(models.Model,test_to_dict.ToDict):
         booking_obj.agent_id.balance -= amount
         booking_obj.agent_id.actual_balance -= amount
 
-    def create_commission_ledger(self,provider_obj):
+    def create_commission_ledger(self, provider_obj):
         # ## UPDATED by Samvi 2018/07/24
         # ## Terdetect sebagai administrator jika sudo
 
@@ -342,13 +340,12 @@ class Ledger(models.Model,test_to_dict.ToDict):
                 booking_obj.agent_id.balance += amount
                 booking_obj.agent_id.actual_balance += amount
 
-
-                # ## UPDATED by Samvi 2018/08/14
+        # ## UPDATED by Samvi 2018/08/14
         # ## Update untuk komisi agent yang tercreate adalah komisi total
 
         for agent_id, amount in agent_commission.items():
             values = self.prepare_vals('Commission : ' + booking_obj.name, booking_obj.name, datetime.now(),
-                                             'commission', booking_obj.currency_id.id, amount, 0)
+                                       'commission', booking_obj.currency_id.id, amount, 0)
             values.update({
                 'res_model': booking_obj._name,
                 'res_id': booking_obj.id,
@@ -359,9 +356,7 @@ class Ledger(models.Model,test_to_dict.ToDict):
             })
             self.create(values)
 
-
-
-    def action_create_ledger(self,provider_obj):
+    def action_create_ledger(self, provider_obj):
         self.create_ledger(provider_obj)
         self.create_commission_ledger(provider_obj)
 

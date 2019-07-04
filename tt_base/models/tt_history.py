@@ -52,7 +52,12 @@ class TtHistory(models.Model):
         #tempat hardcode skip key
         skipped_keys = self.env['tt.skipped.keys'].SKIPPED_KEYS
 
+        print('Keys History : ' + str(key_list))
+
         for key in key_list:
+            old_value = ''
+            new_value = ''
+
             #skipped key
             if self._name in skipped_keys:
                 if key in skipped_keys[self._name]:
@@ -66,13 +71,16 @@ class TtHistory(models.Model):
             # start : kode ini masih beresiko (hard coded). dapat diubah kapan saja
             else:
                 if self.fields_get().get(key)['type'] == 'many2one':
-                    dict = self_dict[0]
-                    old_value = dict.get(key)
-                    if old_value is False:
-                        old_value = 'None'
-                    else:
-                        old_value = dict.get(key)[1]
-                    new_value = self.env[self.fields_get().get(key)['relation']].search([('id', 'in', [value[key]])]).name_get()[0][1]
+                    print('Self Dict : ' + str(self_dict))
+                    if self_dict:
+                        dict = self_dict[0]
+                        old_value = dict.get(key)
+                        if old_value is False:
+                            old_value = 'None'
+                        else:
+                            old_value = dict.get(key)[1]
+                        print(self.env[self.fields_get().get(key)['relation']].search([('id', 'in', [value[key]])]))
+                        new_value = self.env[self.fields_get().get(key)['relation']].search([('id', 'in', [value[key]])]).name_get()[0][1]
                     # end
 
                 # Non-Relation Field
@@ -103,12 +111,13 @@ class TtHistory(models.Model):
                                                  new_value,  # new value
                                                  self.env.user.name))  # User that Changed the Value
                 else:
-                    self.message_post(body=_("%s has been changed from %s to %s by %s.") %
-                                           (self.fields_get().get(key)['string'],  # Model String / Label
-                                            old_value,  # Old Value
-                                            # value[key],  # New Value
-                                            new_value,  # new value
-                                            self.env.user.name))  # User that Changed the Value
+                    if old_value == '' and new_value == '':
+                        self.message_post(body=_("%s has been changed from %s to %s by %s.") %
+                                               (self.fields_get().get(key)['string'],  # Model String / Label
+                                                old_value,  # Old Value
+                                                # value[key],  # New Value
+                                                new_value,  # new value
+                                                self.env.user.name))  # User that Changed the Value
         return super(TtHistory, self).write(value)
 
 # For Debug Purposes

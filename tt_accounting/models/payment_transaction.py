@@ -10,9 +10,9 @@ class PaymentTransaction(models.Model):
     origin_type = fields.Char('Document Ref. Type', readonly=True, states={'draft':[('readonly',False)]})
 
     currency_id = fields.Many2one('res.currency', 'Currency', required=True, default=lambda self: self.env.user.company_id.currency_id)
-    agent_id = fields.Many2one('res.partner', string="Agent", readonly=True, states={'draft':[('readonly',False)]})
+    agent_id = fields.Many2one('tt.agent', string="Agent", readonly=True, states={'draft':[('readonly',False)]})
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', related='agent_id.agent_type_id', readonly=True)
-    sub_agent_id = fields.Many2one('res.partner', string="Sub Agent", readonly=True, states={'draft':[('readonly',False)]})
+    sub_agent_id = fields.Many2one('tt.agent', string="Sub Agent", readonly=True, states={'draft':[('readonly',False)]})
     sub_agent_type_id = fields.Many2one('tt.agent.type', 'Sub Agent Type', related='sub_agent_id.agent_type_id', readonly=True)
 
     top_up_id = fields.Many2one('tt.top.up', 'Top Up', readonly=True, states={'draft':[('readonly',False)]})
@@ -147,7 +147,7 @@ class PaymentTransaction(models.Model):
             vals = ledger.prepare_vals('Admin Fee : ' + rec.name, rec.name, fields.Datetime.now(),
                                        'refund.admin.fee', rec.currency_id.id, rec.admin_fee, 0)
             vals['refund_id'] = rec.id
-            vals['agent_id'] = self.env['res.partner'].sudo().search([('is_HO', '=', True), ('parent_id', '=', False)],
+            vals['agent_id'] = self.env['tt.agent'].sudo().search([('is_HO', '=', True), ('parent_id', '=', False)],
                                                                      limit=1).id
             vals['transport_type'] = rec.transaction_type
             vals['pnr'] = rec.pnr

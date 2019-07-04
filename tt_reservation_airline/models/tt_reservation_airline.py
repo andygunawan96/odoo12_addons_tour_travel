@@ -763,12 +763,9 @@ class ReservationAirline(models.Model):
 
             context = self.update_api_context(agent_id, context)
 
-
             if not context['agent_id']:
                 raise Exception(_('Create booking failure, Customer or User, not have Agent (Agent ID)\n'
                                 'Please contact Administrator, to complete the data !'))
-
-
 
             header_val = self._prepare_booking(searchRQ, pax, context)
             contact_obj = self._create_contact(contact_data, context)
@@ -1345,7 +1342,7 @@ class ReservationAirlineApi(models.Model):
             provider_obj = self.env['tt.tb.provider.airline'].search(
                 [('booking_id', '=', booking_id), ('provider', '=', provider), ('sequence', '=', provider_sequence)])
             booking_obj = self.browse(booking_id)
-
+            print(booking_obj)
 
             # self._create_tb_seat_TRAIN(booking_obj, book_info)000
 
@@ -1358,8 +1355,6 @@ class ReservationAirlineApi(models.Model):
                 'book_info': book_info,
                 'direction': booking_obj.direction  #for compute r.ac per pax/route(OW/RT)
             }
-
-
 
             res = booking_obj._update_service_charges(book_info['pnr'], provider_obj, api_context, **kwargs)
 

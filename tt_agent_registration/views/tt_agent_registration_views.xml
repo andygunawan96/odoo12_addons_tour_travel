@@ -19,7 +19,7 @@
                         <field name="state" widget="statusbar" statusbar_visible="draft,confirm,progress,payment,validate,done"/>
                     </header>
                     <sheet>
-                        <button name="print_report_printout_invoice"
+                        <button name="print_agent_registration_invoice"
                                 class="oe_stat_button"
                                 string="Invoice (HO-AGENT)" type="object" icon="fa-print"
                                 states="validate,done"/>

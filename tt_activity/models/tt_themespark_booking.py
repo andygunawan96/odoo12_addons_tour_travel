@@ -44,7 +44,7 @@ class ThemesparkBooking(models.Model):
     themespark_product = fields.Char('Product Type')
     themespark_product_uuid = fields.Char('Product Type Uuid')
     visit_date = fields.Datetime('Visit Date')
-    agent_id = fields.Many2one('res.partner', 'Agent')
+    agent_id = fields.Many2one('tt.agent', 'Agent')
 
     total = fields.Monetary('Grand Total', compute='_calc_grand_total', store=True)
     total_fare = fields.Monetary('Total Fare', compute='_calc_grand_total', store=True)
@@ -411,7 +411,7 @@ class ThemesparkBooking(models.Model):
             context = self.update_api_context(agent_obj.id, context)
 
             if kwargs['force_issued']:
-                is_enough = self.env['res.partner'].check_balance_limit(agent_obj.id, kwargs['amount'])
+                is_enough = self.env['tt.agent'].check_balance_limit(agent_obj.id, kwargs['amount'])
                 if not is_enough['error_code'] == 0:
                     raise Exception('BALANCE not enough')
 
