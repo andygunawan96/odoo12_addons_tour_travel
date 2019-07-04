@@ -4,7 +4,7 @@ from odoo.exceptions import UserError
 import logging
 import traceback
 import copy
-
+from ...tools.api import Response
 _logger = logging.getLogger(__name__)
 
 
@@ -377,17 +377,17 @@ class TtVisa(models.Model):
         'force_issued': True
     }
 
-    def create_booking_visa(self):
-        sell_visa = copy.deepcopy(self.param_sell_visa)
-        booker = copy.deepcopy(self.param_booker)
-        contact = copy.deepcopy(self.param_contact)
-        passengers = copy.deepcopy(self.param_passenger)
-        search = copy.deepcopy(self.param_search)
-        context = copy.deepcopy(self.param_context)
-        kwargs = copy.deepcopy(self.param_kwargs)
+    def create_booking_visa_api(self, data, context, kwargs):
+        sell_visa = copy.deepcopy(data['sell_visa'])
+        booker = copy.deepcopy(data['booker'])
+        contact = copy.deepcopy(data['contact'])
+        passengers = copy.deepcopy(data['passenger'])
+        search = copy.deepcopy(data['search'])
+        context = copy.deepcopy(context)
+        kwargs = copy.deepcopy(kwargs)
 
         context.update({
-            'co_uid': self.env.user.id
+            'co_uid': context['co_uid']
         })
 
         try:
@@ -395,7 +395,7 @@ class TtVisa(models.Model):
             user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
             for contact_data in contact:
                 contact_data.update({
-                    'agent_id': user_obj.agent_id.id,
+                    'agent_id': context['agent_id'],
                     'commercial_agent_id': user_obj.agent_id.id,
                     'booker_type': 'FPO',
                 })
@@ -439,15 +439,14 @@ class TtVisa(models.Model):
             book_obj.sub_agent_id = self.env.user.agent_id  # kedepannya mungkin dihapus | contact['agent_id']
 
             book_obj.action_booked_visa(context)  # ubah state ke booked sekaligus
-            if kwargs.get('force_issued'):
-                book_obj.action_issued_visa(context)
-        except Exception as e:
-            self.env.cr.rollback()
-            _logger.error(msg=str(e) + '\n' + traceback.format_exc())
-            return {
-                'error_code': 1,
-                'error_msg': str(e)
+            book_obj.action_issued_visa(context)
+            response = {
+                'id': book_obj.name
             }
+            res = Response().get_no_error(response)
+        except Exception as e:
+            res = Response().get_error(str(e), 500)
+        return res
 
     def _update_api_context(self, contact, context):
         # sementara comment dulu. tunggu sampai ada agent_id di contact
