@@ -6,7 +6,6 @@ class PricingProvider(models.Model):
     _name = 'tt.pricing.provider'
 
     name = fields.Char('Name')
-    sequence = fields.Integer('Sequence')
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
     provider_id = fields.Many2one('tt.provider', 'Provider')
     pricing_type = fields.Selection([

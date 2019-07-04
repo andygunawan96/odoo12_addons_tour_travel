@@ -14,9 +14,9 @@ Key Features
     'website': 'rodextravel.tours',
     'depends': ['tt_base'],
     'data': [
-        # 'security/ir.mode.access.csv',
+        'security/ir.model.access.csv',
 
-        # 'views/pricing_provider_views.xml',
+        'views/pricing_provider_views.xml',
         # 'views/pricing_agent_views.xml',
     ],
     'demo': [],

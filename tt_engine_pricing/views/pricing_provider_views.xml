@@ -1,0 +1,73 @@
+<odoo>
+    <record id="pricing_provider_view_form" model="ir.ui.view">
+        <field name="name">pricing.provider.view.form</field>
+        <field name="model">tt.pricing.provider</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="provider_type_id"/>
+                            <field name="provider_id"/>
+                        </group>
+                        <group>
+                            <field name="pricing_type"/>
+                            <field name="is_all_carrier"/>
+                        </group>
+                    </group>
+                    <separator string="Carriers"/>
+                    <field name="line_ids"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="pricing_provider_view_tree" model="ir.ui.view">
+        <field name="name">pricing.provider.view.tree</field>
+        <field name="model">tt.pricing.provider</field>
+        <field name="arch" type="xml">
+        <tree>
+            <field name="name"/>
+            <field name="provider_type_id"/>
+            <field name="provider_id"/>
+            <field name="pricing_type"/>
+            <field name="active"/>
+        </tree>
+        </field>
+    </record>
+
+    <record id="pricing_provider_view_search" model="ir.ui.view">
+        <field name="name">pricing.provider.view.search</field>
+        <field name="model">tt.pricing.provider</field>
+        <field name="arch" type="xml">
+        <search>
+            <field name="name"/>
+            <field name="provider_id"/>
+            <field name="provider_type_id"/>
+            <filter name="inactive" string="Archived" domain="[('active','=',False)]"/>
+        </search>
+        </field>
+    </record>
+
+    <record id="pricing_provider_action" model="ir.actions.act_window">
+        <field name="name">Pricing Provider</field>
+        <field name="res_model">tt.pricing.provider</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <!--<field name="context">{'search_default_current':1, 'default_product_id': active_id}</field>-->
+        <field name="domain">['|',('active', '=', 1),('active', '=', 0)]</field>
+        <!--<field name="search_view_id" ref="api_connector_view_search"/>-->
+    </record>
+
+    <menuitem id="pricing_provider_menu" parent="tt_base.menu_tour_travel_pricing"
+              name="Pricing Provider" action="pricing_provider_action" sequence="10"/>
+</odoo>

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-
         <!-- Main Menu -->
         <!--Tours and Travel-->
         <menuitem id="main_tour_travel"
@@ -31,7 +30,6 @@
                   name="Customers"
                   sequence="1"
                   groups="base.group_user"/>
-
 
         <!--Customers-->
         <menuitem id="top_tour_travel_customers"
@@ -91,7 +89,6 @@
                   parent="tt_base.top_tour_travel_configuration"
                   sequence="6"/>
 
-
         <menuitem id="menu_tour_travel_destination"
                   name="Destination"
                   groups="tt_base.group_tt_tour_travel_operator"
@@ -103,5 +100,11 @@
                   groups="tt_base.group_tt_tour_travel_operator"
                   parent="tt_base.top_tour_travel_configuration"
                   sequence="8"/>
+
+        <menuitem id="menu_tour_travel_pricing"
+                  name="Pricing"
+                  groups="tt_base.group_tt_tour_travel_operator"
+                  parent="tt_base.top_tour_travel_configuration"
+                  sequence="9"/>
     </data>
 </odoo>
