@@ -141,14 +141,20 @@
                             <field name="child"/>
                             <field name="infant"/>
                         </group>
-                        <group string="Contact Information">
-                            <field name="contact_id"/>
-                            <field name="display_mobile"/>
+                        <group string="Booker Information">
+                            <field name="booker_id"/>
                         </group>
                     </group>
                     <notebook colspan="4">
+                        <page string="Contacts">
+                            <field name="contact_ids">
+                                <tree create="0">
+                                    <field name="name"/>
+                                    <field name="email"/>
+                                </tree>
+                            </field>
+                        </page>
                         <page string="Passengers">
-<!--                            <field name="to_passenger_ids"/>-->
                             <field name="to_passenger_ids">
                                 <tree create="0">
                                     <field name="passenger_id"/>

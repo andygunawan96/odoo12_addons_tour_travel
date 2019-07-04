@@ -28,6 +28,9 @@
         'data/ir_sequence_data.xml',
         'data/ir_cron_data.xml',
         'views/tt_agent_registration_views.xml',
+
+        'report/printout_menu.xml',
+        'report/printout_invoice_template.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

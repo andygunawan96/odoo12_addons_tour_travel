@@ -67,12 +67,19 @@ class AgentRegistration(models.Model):
                                         'Open Registration Documents', readonly=True,
                                         states={'validate': [('readonly', False)]})
 
-    def print_report_printout_invoice(self):
+    # def print_report_printout_invoice(self):
+    #     data = {
+    #         'ids': self.ids,
+    #         'model': self._name
+    #     }
+    #     self.env.ref('printout_invoice_model').report_action(self, data=data)
+
+    def print_agent_registration_invoice(self):
         data = {
             'ids': self.ids,
             'model': self._name
         }
-        self.env.ref('printout_invoice_model').report_action(self, data=data)
+        return self.env.ref('tt_agent_registration.action_report_printout_invoice').report_action(self, data=data)
 
     @api.onchange('agent_type_id')
     @api.depends('agent_type_id')

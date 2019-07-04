@@ -43,7 +43,7 @@ class IssuedOffline(models.Model):
     # type = fields.Selection(TYPE, required=True, readonly=True,
     #                         states={'draft': [('readonly', False)]}, string='Transaction Type')
     provider_type_id = fields.Many2one('tt.provider.type', required=True, readonly=True,
-                           states={'draft': [('readonly', False)]}, string='Transaction Type')
+                                       states={'draft': [('readonly', False)]}, string='Transaction Type')
 
     segment = fields.Integer('Number of Segment', compute='get_segment_length')
     person = fields.Integer('Person', readonly=True, states={'draft': [('readonly', False)],
@@ -629,7 +629,7 @@ class IssuedOffline(models.Model):
             rec.agent_nta_price = rec.total_sale_price - rec.agent_commission
 
     @api.onchange('total_commission_amount')
-    @api.depends('total_commission_amount', 'total_sale_price', 'incentive_amount')
+    @api.depends('total_commission_amount', 'total_sale_price')
     def _get_nta_price(self):
         print('Sale Price : ' + str(self.total_sale_price))
         for rec in self:

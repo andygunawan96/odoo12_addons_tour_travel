@@ -106,7 +106,7 @@
                                 <field name="agent_commission" invisible="1"/>
                                 <field name="parent_agent_commission" groups="tt_base.group_tt_agent_user_operator" invisible="1"/>
                                 <field name="ho_commission" groups="tt_base.group_tt_tour_travel_operator" invisible="1"/>
-                                <field name="incentive_amount" groups="tt_base.group_tt_tour_travel_operator"/>
+                                <field name="incentive_amount" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible': [('state', '=', 'draft')]}"/>
                                 <field name="nta_price" groups="tt_base.group_tt_tour_travel_operator"/>
                                 <field name="agent_nta_price"/>
                             </group>
@@ -258,7 +258,7 @@
                                 </field>
                             </page>
                             <page string="Passenger(s)">
-                                <field name="passenger_ids" context="{'default_agent_id': sub_agent_id}">
+                                <field name="passenger_ids">  <!--context="{'default_agent_id': sub_agent_id}"-->
                                     <tree editable="bottom">
                                         <field name="booking_id" invisible="1"/>
                                         <field name="ticket_number"/>
