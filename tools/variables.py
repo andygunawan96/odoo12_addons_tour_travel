@@ -30,3 +30,8 @@ ACCESS_TYPE = [
     ("allow", "Allowed"),
     ("restrict", "Restricted"),
 ]
+
+AMOUNT_TYPE = [
+    ("amount", "Amount"),
+    ("percentage", "Percentage"),
+]

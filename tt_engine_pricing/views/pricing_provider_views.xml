@@ -1,0 +1,199 @@
+<odoo>
+    <record id="pricing_provider_view_form" model="ir.ui.view">
+        <field name="name">pricing.provider.view.form</field>
+        <field name="model">tt.pricing.provider</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="provider_type_id"/>
+                            <field name="provider_id"/>
+                        </group>
+                        <group>
+                            <field name="pricing_type"/>
+                            <field name="is_all_carrier"/>
+                        </group>
+                    </group>
+                    <separator string="Carriers"/>
+                    <field name="carrier_ids"/>
+                    <separator string="Details"/>
+                    <field name="line_ids"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="pricing_provider_view_tree" model="ir.ui.view">
+        <field name="name">pricing.provider.view.tree</field>
+        <field name="model">tt.pricing.provider</field>
+        <field name="arch" type="xml">
+        <tree>
+            <field name="name"/>
+            <field name="provider_type_id"/>
+            <field name="provider_id"/>
+            <field name="pricing_type"/>
+            <field name="active"/>
+        </tree>
+        </field>
+    </record>
+
+    <record id="pricing_provider_view_search" model="ir.ui.view">
+        <field name="name">pricing.provider.view.search</field>
+        <field name="model">tt.pricing.provider</field>
+        <field name="arch" type="xml">
+        <search>
+            <field name="name"/>
+            <field name="provider_id"/>
+            <field name="provider_type_id"/>
+            <filter name="inactive" string="Archived" domain="[('active','=',False)]"/>
+        </search>
+        </field>
+    </record>
+
+    <record id="pricing_provider_action" model="ir.actions.act_window">
+        <field name="name">Pricing Provider</field>
+        <field name="res_model">tt.pricing.provider</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <!--<field name="context">{'search_default_current':1, 'default_product_id': active_id}</field>-->
+        <field name="domain">['|',('active', '=', 1),('active', '=', 0)]</field>
+        <!--<field name="search_view_id" ref="api_connector_view_search"/>-->
+    </record>
+
+    <menuitem id="pricing_provider_menu" parent="tt_base.menu_tour_travel_pricing"
+              name="Pricing Provider" action="pricing_provider_action" sequence="10"/>
+
+    <record id="pricing_provider_line_view_form" model="ir.ui.view">
+        <field name="name">pricing.provider.line.view.form</field>
+        <field name="model">tt.pricing.provider.line</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="pricing_id"/>
+                        </group>
+                        <group>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="currency_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="origin_type"/>
+                        </group>
+                        <group>
+                            <field name="destination_type"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Origin ID">
+                            <field name="origin_ids" nolabel="1"/>
+                        </group>
+                        <group string="Destination ID">
+                            <field name="destination_ids" nolabel="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Origin City">
+                            <field name="origin_city_ids" nolabel="1"/>
+                        </group>
+                        <group string="Destination City">
+                            <field name="destination_city_ids" nolabel="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Origin Countries">
+                            <field name="origin_country_ids" nolabel="1"/>
+                        </group>
+                        <group string="Destination Countries">
+                            <field name="destination_country_ids" nolabel="1"/>
+                        </group>
+                    </group>
+                    <separator string="Details"/>
+                    <group>
+                        <group>
+                            <field name="amount_per_route"/>
+                            <field name="amount_per_segment"/>
+                            <field name="amount_per_pax"/>
+                            <field name="basic_amount_type"/>
+                            <field name="basic_amount"/>
+                            <field name="tax_amount_type"/>
+                            <field name="tax_amount"/>
+                            <field name="after_tax_amount_type"/>
+                            <field name="after_tax_amount"/>
+                        </group>
+                        <group>
+                            <field name="lower_margin"/>
+                            <field name="lower_amount_type"/>
+                            <field name="lower_amount"/>
+                            <field name="upper_margin"/>
+                            <field name="upper_amount_type"/>
+                            <field name="upper_amount"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="pricing_provider_line_view_tree" model="ir.ui.view">
+        <field name="name">pricing.provider.line.view.tree</field>
+        <field name="model">tt.pricing.provider.line</field>
+        <field name="arch" type="xml">
+        <tree>
+            <field name="name"/>
+            <field name="sequence"/>
+            <field name="date_from"/>
+            <field name="date_to"/>
+            <field name="pricing_id"/>
+            <field name="active"/>
+        </tree>
+        </field>
+    </record>
+
+    <record id="pricing_provider_line_view_search" model="ir.ui.view">
+        <field name="name">pricing.provider.line.view.search</field>
+        <field name="model">tt.pricing.provider.line</field>
+        <field name="arch" type="xml">
+        <search>
+            <field name="name"/>
+            <filter name="inactive" string="Archived" domain="[('active','=',False)]"/>
+        </search>
+        </field>
+    </record>
+
+    <record id="pricing_provider_line_action" model="ir.actions.act_window">
+        <field name="name">Pricing Provider Line</field>
+        <field name="res_model">tt.pricing.provider.line</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <!--<field name="context">{'search_default_current':1, 'default_product_id': active_id}</field>-->
+        <field name="domain">['|',('active', '=', 1),('active', '=', 0)]</field>
+        <!--<field name="search_view_id" ref="api_connector_view_search"/>-->
+    </record>
+
+    <menuitem id="pricing_provider_line_menu" parent="tt_base.menu_tour_travel_pricing"
+              name="Pricing Provider Line" action="pricing_provider_line_action" sequence="11"/>
+</odoo>
