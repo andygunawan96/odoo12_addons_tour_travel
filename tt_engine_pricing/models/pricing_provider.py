@@ -1,5 +1,7 @@
 from odoo import models, fields, api, _
 from ...tools import variables
+from ...tools.api import Response
+import traceback
 
 
 class PricingProvider(models.Model):
@@ -11,12 +13,54 @@ class PricingProvider(models.Model):
     pricing_type = fields.Selection([
         ('sale', 'Sale'),
         ('commission', 'Commission'),
+        ('provider', 'provider'),
     ], 'Pricing Type', required=True)
     carrier_ids = fields.Many2many('tt.transport.carrier', 'tt_pricing_carrier_rel', 'pricing_id', 'carrier_id',
                                    string='Carriers')
     is_all_carrier = fields.Boolean('Is All Carrier', default=False)
     line_ids = fields.One2many('tt.pricing.provider.line', 'pricing_id', 'Configs')
     active = fields.Boolean('Active', default=True)
+
+    def get_pricing_data(self):
+        line_ids = [rec.get_pricing_data() for rec in self.line_ids if rec.active]
+        carrier_codes = [rec.code for rec in self.carrier_ids]
+        res = {
+            'provider_type': self.provider_type_id and self.provider_type_id.code,
+            'provider': self.provider_id and self.provider_id.code,
+            'pricing_type': self.pricing_type,
+            'carrier_codes': carrier_codes,
+            'is_all_carrier': self.is_all_carrier,
+            'line_ids': line_ids,
+        }
+        return res
+
+    def get_pricing_provider_api(self, provider_type):
+        try:
+            provider_type_obj = self.env['tt.provider.type'].sudo().search([('code', '=', provider_type)], limit=1)
+            if not provider_type_obj:
+                raise Exception('Provider Type not found, %s' % provider_type)
+
+            _obj = self.sudo().search([('provider_type_id', '=', provider_type_obj.id)])
+
+            response = {}
+            for rec in _obj:
+                if not rec.active:
+                    continue
+                temp = rec.get_pricing_data()
+                carrier_codes = temp.pop('carrier_codes')
+                provider = temp['provider']
+                if not response.get(provider):
+                    response[provider] = {}
+
+                for carrier_code in carrier_codes:
+                    response[provider].update({
+                        carrier_code: temp
+                    })
+            res = Response().get_no_error(response)
+        except Exception as e:
+            err_msg = '%s, %s' % (str(e), traceback.format_exc())
+            res = Response().get_error(err_msg, 500)
+        return res
 
 
 class PricingProviderLine(models.Model):
@@ -27,14 +71,14 @@ class PricingProviderLine(models.Model):
     pricing_id = fields.Many2one('tt.pricing.provider', 'Pricing Provider', readonly=1)
     date_from = fields.Datetime('Date From', required=True)
     date_to = fields.Datetime('Date To', required=True)
-    origin_type = fields.Selection(variables.ACCESS_TYPE, 'Origin Type')
+    origin_type = fields.Selection(variables.ACCESS_TYPE, 'Origin Type', required=True, default='all')
     origin_ids = fields.Many2many('tt.destinations', 'tt_pricing_line_origin_rel', 'pricing_line_id', 'origin_id',
                                   string='Origins')
     origin_city_ids = fields.Many2many('res.city', 'tt_pricing_line_origin_city_rel', 'pricing_line_id', 'city_id',
                                        string='Origin Cities')
     origin_country_ids = fields.Many2many('res.country', 'tt_pricing_line_origin_country_rel', 'pricing_line_id', 'country_id',
                                           string='Origin Countries')
-    destination_type = fields.Selection(variables.ACCESS_TYPE, 'Destination Type')
+    destination_type = fields.Selection(variables.ACCESS_TYPE, 'Destination Type', required=True, default='all')
     destination_ids = fields.Many2many('tt.destinations', 'tt_pricing_line_destination_rel', 'pricing_line_id', 'destination_id',
                                        string='Destinations')
     destination_city_ids = fields.Many2many('res.city', 'tt_pricing_line_destination_city_rel', 'pricing_line_id', 'city_id',
@@ -58,3 +102,39 @@ class PricingProviderLine(models.Model):
     upper_amount_type = fields.Selection(variables.AMOUNT_TYPE, 'Upper Amount Type', default='percentage')
     upper_amount = fields.Float('Upper Ammount', default=0)
     active = fields.Boolean('Active', default=True)
+
+    def get_pricing_data(self):
+        origin_codes = [rec.code for rec in self.origin_ids]
+        origin_city_ids = [rec.id for rec in self.origin_city_ids]
+        origin_country_codes = [rec.code for rec in self.origin_country_ids]
+        destination_codes = [rec.code for rec in self.destination_ids]
+        destination_city_ids = [rec.id for rec in self.destination_city_ids]
+        destination_country_codes = [rec.code for rec in self.destination_country_ids]
+        res = {
+            'date_from': self.date_from,
+            'date_to': self.date_to,
+            'origin_type': self.origin_type,
+            'origin_codes': origin_codes,
+            'origin_city_ids': origin_city_ids,
+            'origin_country_codes': origin_country_codes,
+            'destination_codes': destination_codes,
+            'destination_city_ids': destination_city_ids,
+            'destination_country_codes': destination_country_codes,
+            'currency_code': self.currency_id and self.currency_id.code or '',
+            'amount_per_route': self.amount_per_route,
+            'amount_per_segment': self.amount_per_segment,
+            'amount_per_pax': self.amount_per_pax,
+            'basic_amount_type': self.basic_amount_type,
+            'basic_amount': self.basic_amount,
+            'tax_amount_type': self.tax_amount_type,
+            'tax_amount': self.tax_amount,
+            'after_tax_amount_type': self.after_tax_amount_type,
+            'after_tax_amount': self.after_tax_amount,
+            'lower_margin': self.lower_margin,
+            'lower_amount_type': self.lower_amount_type,
+            'lower_amount': self.lower_amount,
+            'upper_margin': self.upper_margin,
+            'upper_amount_type': self.upper_amount_type,
+            'upper_amount': self.upper_amount,
+        }
+        return res
