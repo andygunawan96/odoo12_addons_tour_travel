@@ -21,15 +21,14 @@ class PricingProvider(models.Model):
     active = fields.Boolean('Active', default=True)
 
     def get_name(self):
+        # Perlu diupdate lagi, sementara menggunakan ini
         res = '%s (%s) - %s' % (self.provider_id.code.title(), self.pricing_type.title(), ','.join([rec.code for rec in self.carrier_ids]))
         return res
 
     @api.model
     def create(self, values):
         res = super(PricingProvider, self).create(values)
-        res.write({
-            'name': res.get_name()
-        })
+        res.write({})
         return res
 
     def write(self, values):
