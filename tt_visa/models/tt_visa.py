@@ -105,8 +105,6 @@ class TtVisa(models.Model):
     # STATE
     ######################################################################################################
 
-    @api.multi
-    @api.onchange('state')
     def _compute_commercial_state(self):
         for rec in self:
             if rec.state == 'issued':
@@ -268,114 +266,65 @@ class TtVisa(models.Model):
     # CREATE
     ######################################################################################################
 
-    param_sell_visa = {
-        "pax": {
-            "adult": 2,
-            "child": 1,
-            "infant": 0,
-            "elder": 0
-        },
-        "provider": "skytors_visa"
-    }
 
-    param_booker = {
-        "title": "MR",
-        "first_name": "ivan",
-        "last_name": "ivan",
-        "email": "asd@gmail.com",
-        "calling_code": "93",
-        "mobile": "8217312381",
-        "nationality_code": "ID",
-        "booker_id": ""
-    }
+    def get_booking_visa_api(self, data):
+        for rec in self.search([('name', '=', data['order_number'])]):
+            passenger = []
+            contact = []
+            for pax in rec.to_passenger_ids:
+                requirement = []
+                for require in pax.to_requirement_ids:
+                    requirement.append({
+                        'name': require.requirement_id.name,
+                        # 'required': require.required,
+                    })
+                passenger.append({
+                    'title': pax.passenger_id.title,
+                    'first_name': pax.passenger_id.first_name,
+                    'last_name': pax.passenger_id.last_name,
+                    'birth_date': pax.passenger_id.birth_date,
+                    'age': pax.passenger_id.age,
+                    'passport': pax.passenger_id.passport_number,
+                    'visa': {
+                        'price':
+                        {
+                            'sale_price': pax.pricelist_id.sale_price,
+                            'commission': pax.pricelist_id.commission_price,
+                            'currency': pax.pricelist_id.currency_id.name
+                        },
+                        'entry_type': dict(pax.pricelist_id._fields['entry_type'].selection).get(pax.pricelist_id.entry_type),
+                        'visa_type': dict(pax.pricelist_id._fields['visa_type'].selection).get(pax.pricelist_id.visa_type),
+                        'process': dict(pax.pricelist_id._fields['process_type'].selection).get(pax.pricelist_id.process_type),
+                        'pax_type': pax.pricelist_id.pax_type,
+                        'immigration_consulate': pax.pricelist_id.immigration_consulate,
+                        'requirement': requirement
+                    }
+                })
 
-    param_contact = [
-        {
-            "title": "MR",
-            "first_name": "ivan",
-            "last_name": "ivan",
-            "email": "asd@gmail.com",
-            "calling_code": "93",
-            "mobile": "8217312381",
-            "nationality_code": "ID",
-            "contact_id": ""
-        }
-    ]
+            for pax in rec.contact_ids:
+                contact.append({
+                    'title': pax.title,
+                    'name': pax.name,
+                    'phone_number': pax.phone_ids[0].phone_number if len(pax.phone_ids) > 0 else '',
+                })
+            res = {
+                'booker': {
+                    'title': rec.booker_id.title,
+                    'first_name': rec.booker_id.title,
+                    'last_name': rec.booker_id.title,
+                    'phone_number': rec.booker_id.phone_ids[0].phone_number if len(rec.booker_id.phone_ids) > 0 else '',
+                },
+                'journey': {
+                    'country': rec.country_id.name,
+                    'departure_date': rec.departure_date
+                },
+                'passenger': passenger,
+                'contact': contact,
 
-    param_passenger = [
-        {
-            "pax_type": "ADT",
-            "first_name": "pax",
-            "last_name": "satu",
-            "title": "MR",
-            "birth_date": "2002-03-20",
-            "nationality_code": "ID",
-            "country_of_issued_code": "",
-            "passport_expdate": "",
-            "passport_number": "",
-            "passenger_id": "",
-            "master_visa_Id": "1",
-            "required": [
-                {
-                    "boolean": True,
-                    "id": 1
-                }
-            ]
-        },
-        {
-            "pax_type": "ADT",
-            "first_name": "pax",
-            "last_name": "dua",
-            "title": "MR",
-            "birth_date": "2004-05-08",
-            "nationality_code": "ID",
-            "country_of_issued_code": "",
-            "passport_expdate": "",
-            "passport_number": "",
-            "passenger_id": "",
-            "master_visa_Id": "1",
-            "required": [
-                {
-                    "boolean": True,
-                    "id": 1
-                }
-            ]
-        },
-        {
-            "pax_type": "CHD",
-            "first_name": "pax",
-            "last_name": "tiga",
-            "title": "MR",
-            "birth_date": "2017-05-08",
-            "nationality_code": "ID",
-            "country_of_issued_code": "",
-            "passport_expdate": "",
-            "passport_number": "",
-            "passenger_id": "",
-            "master_visa_Id": "2",
-            "required": [
-                {
-                    "boolean": True,
-                    "id": 1
-                }
-            ]
-        }
-    ]
-
-    param_search = {
-        "destination": "Albania",
-        "consulate": "Jakarta",
-        "departure_date": "2019-06-28",
-        "provider": "skytors_visa"
-    }
-
-    param_context = {
-        'co_uid': 7
-    }
-
-    param_kwargs = {
-        'force_issued': True
-    }
+            }
+        if not res:
+            res = Response().get_error(str('Visa Booking not found'), 500)
+        return res
 
     def create_booking_visa_api(self, data, context, kwargs):
         sell_visa = copy.deepcopy(data['sell_visa'])
@@ -801,7 +750,7 @@ class TtVisa(models.Model):
         })
 
         self.write(vals)
-
+        self._compute_commercial_state()
         self._create_ledger_visa()
         self._create_ho_ledger_visa()
         # self._create_commission_ledger_visa()
