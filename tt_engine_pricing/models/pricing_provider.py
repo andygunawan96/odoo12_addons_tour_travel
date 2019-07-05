@@ -8,8 +8,8 @@ class PricingProvider(models.Model):
     _name = 'tt.pricing.provider'
 
     name = fields.Char('Name')
-    provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
-    provider_id = fields.Many2one('tt.provider', 'Provider')
+    provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', required=True)
+    provider_id = fields.Many2one('tt.provider', 'Provider', required=True)
     pricing_type = fields.Selection([
         ('sale', 'Sale'),
         ('commission', 'Commission'),
@@ -17,19 +17,35 @@ class PricingProvider(models.Model):
     ], 'Pricing Type', required=True)
     carrier_ids = fields.Many2many('tt.transport.carrier', 'tt_pricing_carrier_rel', 'pricing_id', 'carrier_id',
                                    string='Carriers')
-    is_all_carrier = fields.Boolean('Is All Carrier', default=False)
     line_ids = fields.One2many('tt.pricing.provider.line', 'pricing_id', 'Configs')
     active = fields.Boolean('Active', default=True)
 
+    def get_name(self):
+        # Perlu diupdate lagi, sementara menggunakan ini
+        res = '%s (%s) - %s' % (self.provider_id.code.title(), self.pricing_type.title(), ','.join([rec.code for rec in self.carrier_ids]))
+        return res
+
+    @api.model
+    def create(self, values):
+        res = super(PricingProvider, self).create(values)
+        res.write({})
+        return res
+
+    def write(self, values):
+        values.update({
+            'name': self.get_name()
+        })
+        return super(PricingProvider, self).write(values)
+
     def get_pricing_data(self):
         line_ids = [rec.get_pricing_data() for rec in self.line_ids if rec.active]
+        # line_ids = sorted(line_ids, key=lambda i: i['sequence'])
         carrier_codes = [rec.code for rec in self.carrier_ids]
         res = {
             'provider_type': self.provider_type_id and self.provider_type_id.code,
             'provider': self.provider_id and self.provider_id.code,
             'pricing_type': self.pricing_type,
             'carrier_codes': carrier_codes,
-            'is_all_carrier': self.is_all_carrier,
             'line_ids': line_ids,
         }
         return res
@@ -48,13 +64,17 @@ class PricingProvider(models.Model):
                     continue
                 temp = rec.get_pricing_data()
                 carrier_codes = temp.pop('carrier_codes')
-                provider = temp['provider']
+                provider = rec.provider_id.code
+                pricing_type = rec.pricing_type
+
                 if not response.get(provider):
                     response[provider] = {}
 
                 for carrier_code in carrier_codes:
-                    response[provider].update({
-                        carrier_code: temp
+                    if not response[provider].get(carrier_code):
+                        response[provider][carrier_code] = {}
+                    response[provider][carrier_code].update({
+                        pricing_type: temp
                     })
             res = Response().get_no_error(response)
         except Exception as e:
@@ -65,6 +85,7 @@ class PricingProvider(models.Model):
 
 class PricingProviderLine(models.Model):
     _name = 'tt.pricing.provider.line'
+    _order = 'sequence'
 
     name = fields.Char('Name', requried=True)
     sequence = fields.Integer('Sequence', default=50, required=True)
@@ -111,6 +132,7 @@ class PricingProviderLine(models.Model):
         destination_city_ids = [rec.id for rec in self.destination_city_ids]
         destination_country_codes = [rec.code for rec in self.destination_country_ids]
         res = {
+            'sequence': self.sequence,
             'date_from': self.date_from,
             'date_to': self.date_to,
             'origin_type': self.origin_type,

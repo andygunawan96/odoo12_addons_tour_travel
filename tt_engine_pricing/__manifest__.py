@@ -17,7 +17,7 @@ Key Features
         'security/ir.model.access.csv',
 
         'views/pricing_provider_views.xml',
-        # 'views/pricing_agent_views.xml',
+        'views/pricing_agent_views.xml',
     ],
     'demo': [],
     'qweb': [],

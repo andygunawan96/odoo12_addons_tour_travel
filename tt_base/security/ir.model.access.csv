@@ -74,7 +74,7 @@ tt_destinations_for_tour_travel_manager,tt.destinations.for.tour.travel.manager,
 tt_transport_carrier_for_public,tt.transport.carrier.for.public,model_tt_transport_carrier,,1,0,0,0
 tt_transport_carrier_for_tour_travel_operator,tt.transport.carrier.for.tour.travel.operator,model_tt_transport_carrier,tt_base.group_tt_tour_travel_operator,1,0,0,0
 tt_transport_carrier_for_tour_travel_supervisor,tt.transport.carrier.for.tour.travel.supervisor,model_tt_transport_carrier,tt_base.group_tt_tour_travel_supervisor,1,0,1,0
-tt_transport_carrier_for_tour_travel_manager,tt.transport.carrier.for.tour.travel.manager,model_tt_transport_carrier,tt_base.group_tt_tour_travel_manager,1,1,1,0
+tt_transport_carrier_for_tour_travel_manager,tt.transport.carrier.for.tour.travel.manager,model_tt_transport_carrier,tt_base.group_tt_tour_travel_manager,1,1,1,1
 
 access_tt_routes_for_public,tt.routes.for.public,model_tt_routes,,1,0,0,0
 access_tt_routes_for_tour_travel_operator,tt.routes.for.tour.travel.operator,model_tt_routes,tt_base.group_tt_tour_travel_operator,1,0,0,0

@@ -40,6 +40,7 @@ Key Features
         'views/tt_company_views.xml',
         'views/tt_provider_views.xml',
         'views/tt_provider_type_views.xml',
+        'views/transport_carrier_views.xml',
         'views/tt_agent_views.xml',
         'views/tt_agent_type_views.xml',
         'views/res_employee_views.xml',
