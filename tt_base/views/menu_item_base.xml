@@ -106,5 +106,11 @@
                   groups="tt_base.group_tt_tour_travel_operator"
                   parent="tt_base.top_tour_travel_configuration"
                   sequence="9"/>
+
+        <menuitem id="menu_tour_travel_carrier"
+                  name="Carrier"
+                  groups="tt_base.group_tt_tour_travel_operator"
+                  parent="tt_base.top_tour_travel_configuration"
+                  sequence="10"/>
     </data>
 </odoo>

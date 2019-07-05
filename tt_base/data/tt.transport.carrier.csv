@@ -3,3 +3,14 @@ tt_transport_carrier_1,Singapore Airlines,SQ,SIA,SINGAPORE,1,tt_base.tt_provider
 tt_transport_carrier_2,Cathay Pacific,CX,CPA,CATHAY,1,tt_base.tt_provider_type_1
 tt_transport_carrier_3,China Airlines,CI,CAL,DYNASTY,1,tt_base.tt_provider_type_1
 tt_transport_carrier_4,Garuda Indonesia,GA,GIA,INDONESIA,1,tt_base.tt_provider_type_1
+tt_transport_carrier_5,Silk Air,MI,SLK,SILKAIR,1,tt_base.tt_provider_type_1
+tt_transport_carrier_6,Etihad Airways,EY,ETD,ETIHAD,1,tt_base.tt_provider_type_1
+tt_transport_carrier_7,Malaysia Airlines Berhad,MH,MAS,MALAYSIAN,1,tt_base.tt_provider_type_1
+tt_transport_carrier_8,Srilankan Airlines,UL,ALK,SRILANKAN,1,tt_base.tt_provider_type_1
+tt_transport_carrier_9,Qantas,QF,QFA,QANTAS,1,tt_base.tt_provider_type_1
+tt_transport_carrier_10,Qatar Airways,QR,QTR,QATARI,1,tt_base.tt_provider_type_1
+tt_transport_carrier_11,Xiamen Air,MF,CXA,XIAMEN AIR,1,tt_base.tt_provider_type_1
+tt_transport_carrier_12,British Airways,BA,BAW SHT,SPEEDBIRD SHUTTLE,1,tt_base.tt_provider_type_1
+tt_transport_carrier_13,All Nippon Airways,NH,ANA,ALL NIPPON,1,tt_base.tt_provider_type_1
+tt_transport_carrier_14,Japan Airlines,JL,JAL,JAPAN AIR,1,tt_base.tt_provider_type_1
+tt_transport_carrier_15,Cathay Dragon,KA,HDA,DRAGON,1,tt_base.tt_provider_type_1
