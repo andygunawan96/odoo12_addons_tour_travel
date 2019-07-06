@@ -30,7 +30,9 @@ class TourBooking(models.Model):
     sale_service_charge_ids = fields.One2many('tt.service.charge', 'tour_id', 'Service Charge',
                                               readonly=True, states={'draft': [('readonly', False)]})
 
-    # passenger_ids = fields.One2many('tt.customer', 'customer_id', 'Passenger')
+    passenger_ids = fields.Many2many('tt.customer', 'tt_reservation_tour_passengers_rel', 'booking_id',
+                                     'passenger_id',
+                                     string='List of Passenger', readonly=True, states={'draft': [('readonly', False)]})
     # agent_invoice_ids = fields.One2many('tt.agent.invoice', 'res_id', 'Agent Invoice')  # One2Many -> tt.agent.invoice
 
     # provider_booking_ids = fields.One2many('tt.provider', 'booking_id', 'Provider Booking IDs')
@@ -40,7 +42,7 @@ class TourBooking(models.Model):
     # *STATE*
     def action_booked(self):
         self.write({
-            'state': 'book',
+            'state': 'booked',
             'booked_date': datetime.now(),
             'booked_uid': self.env.user.id,
             'hold_date': datetime.now() + relativedelta(days=1),
