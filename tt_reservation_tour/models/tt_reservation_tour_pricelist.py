@@ -440,8 +440,8 @@ class TourPricelist(models.Model):
                     'arrival_date_f': rec['arrival_date'] and datetime.strptime(str(rec['arrival_date']), '%Y-%m-%d').strftime("%A, %d-%m-%Y") or '',
                     'start_period_f': rec['start_period'] and datetime.strptime(str(rec['start_period']), '%Y-%m-%d').strftime('%B') or '',
                     'end_period_f': rec['end_period'] and datetime.strptime(str(rec['end_period']), '%Y-%m-%d').strftime('%B') or '',
-                    'departure_date': rec['departure_date'] and datetime.strptime(str(rec['departure_date']), '%Y-%m-%d').strftime('%d %b') or '',
-                    'arrival_date': rec['arrival_date'] and datetime.strptime(str(rec['arrival_date']), '%Y-%m-%d').strftime('%d %b') or '',
+                    'departure_date': rec['departure_date'] and datetime.strptime(str(rec['departure_date']), '%Y-%m-%d').strftime('%d %b %Y') or '',
+                    'arrival_date': rec['arrival_date'] and datetime.strptime(str(rec['arrival_date']), '%Y-%m-%d').strftime('%d %b %Y') or '',
                     'start_period': rec['start_period'] and datetime.strptime(str(rec['start_period']), '%Y-%m-%d').strftime('%B') or '',
                     'end_period': rec['end_period'] and datetime.strptime(str(rec['end_period']), '%Y-%m-%d').strftime('%B') or '',
                     'create_date': '',
@@ -645,26 +645,29 @@ class TourPricelist(models.Model):
 
             booker_obj = data['booking_data']['contact']
             booker_id = booker_obj.get('booker_id')
+            res_booker_id = False
+            res_pax_list = []
             if not sameBooker and not booker_id:
                 if not self.check_pax_similarity(booker_obj):
-                    cust_obj = self.env['tt.customer'].create({
+                    cust_obj = self.env['tt.customer'].sudo().create({
                         'title': booker_obj.get('title'),
                         'first_name': booker_obj.get('first_name'),
                         'last_name': booker_obj.get('last_name'),
                         'email': booker_obj.get('email'),
-                        'agent_id': booker_obj.get('agent_id'),
+                        'agent_id': booker_obj.get('agent_id') and booker_obj['agent_id'] or 2,
                     })
                     if booker_obj.get('mobile'):
-                        self.env['phone.detail'].create({
+                        self.env['phone.detail'].sudo().create({
                             'customer_id': cust_obj.id,
                             'type': 'work',
                             'name': 'Work',
                             'phone_number': booker_obj['mobile'],
                         })
+                    res_booker_id = cust_obj.id
 
             elif booker_id and not sameBooker:
                 temp_booker = self.env['tt.customer'].browse(int(booker_id))
-                temp_booker.update({
+                temp_booker.sudo().update({
                     'title': booker_obj.get('title') and booker_obj['title'] or temp_booker.title,
                     'first_name': booker_obj.get('first_name') and booker_obj['first_name'] or temp_booker.first_name,
                     'last_name': booker_obj.get('last_name') and booker_obj['last_name'] or temp_booker.last_name,
@@ -677,36 +680,38 @@ class TourPricelist(models.Model):
                         if ph.phone_number == booker_obj['mobile']:
                             found = True
                     if not found:
-                        self.env['phone.detail'].create({
+                        self.env['phone.detail'].sudo().create({
                             'customer_id': int(booker_id),
                             'type': 'work',
                             'name': 'Work',
                             'phone_number': booker_obj['mobile'],
                         })
+                res_booker_id = int(booker_id)
 
             for rec in data['booking_data']['all_pax']:
                 if not rec.get('passenger_id'):
                     if not self.check_pax_similarity(rec):
-                        cust_obj = self.env['tt.customer'].create({
+                        cust_obj = self.env['tt.customer'].sudo().create({
                             'title': rec.get('title'),
                             'first_name': rec.get('first_name'),
                             'last_name': rec.get('last_name'),
                             'email': rec.get('email'),
-                            'agent_id': rec.get('agent_id'),
+                            'agent_id': rec.get('agent_id') and rec['agent_id'] or 2,
                             'birth_date': rec.get('birth_date_f'),
                             'passport_number': rec.get('passport_number'),
                             'passport_exp_date': rec.get('passport_expdate_f'),
                         })
                         if rec.get('mobile'):
-                            self.env['phone.detail'].create({
+                            self.env['phone.detail'].sudo().create({
                                 'customer_id': cust_obj.id,
                                 'type': 'work',
                                 'name': 'Work',
                                 'phone_number': rec['mobile'],
                             })
+                        res_pax_list.append(cust_obj.id)
                 else:
                     temp = self.env['tt.customer'].browse(int(rec['passenger_id']))
-                    temp.update({
+                    temp.sudo().update({
                         'title': rec.get('title') and rec['title'] or temp.title,
                         'first_name': rec.get('first_name') and rec['first_name'] or temp.first_name,
                         'last_name': rec.get('last_name') and rec['last_name'] or temp.last_name,
@@ -722,15 +727,17 @@ class TourPricelist(models.Model):
                             if ph.phone_number == rec['mobile']:
                                 found = True
                         if not found:
-                            self.env['phone.detail'].create({
+                            self.env['phone.detail'].sudo().create({
                                 'customer_id': int(rec['passenger_id']),
                                 'type': 'work',
                                 'name': 'Work',
                                 'phone_number': rec['mobile'],
                             })
+                    res_pax_list.append(int(rec['passenger_id']))
 
             response = {
-
+                'booker_data': res_booker_id,
+                'pax_list': res_pax_list,
             }
             res = Response().get_no_error(response)
         except Exception as e:
@@ -768,9 +775,44 @@ class TourPricelist(models.Model):
 
     def commit_booking_api(self, data, context, **kwargs):
         try:
-            response = {
+            booking_data = data.get('booking_data')
+            pricelist_id = 0
+            if booking_data:
+                tour_data = booking_data.get('tour_data')
+                pricelist_id = tour_data.get('id') and tour_data['id'] or 0
+            force_issued = data.get('force_issued')
+            booker_id = data.get('booker_id') and data['booker_id'] or False
+            pax_ids_str = data.get('pax_ids') and data['pax_ids'] or '|'
+            temp = pax_ids_str.split('|')
+            pax_ids = []
+            for rec in temp:
+                if rec:
+                    pax_ids.append(int(rec))
 
-            }
+            booking_obj = self.env['tt.reservation.tour'].sudo().create({
+                'contact_id': booker_id != 'false' and int(booker_id) or False,
+                'passenger_ids': (6, 0, pax_ids),
+                'tour_id': pricelist_id,
+                'agent_id': 2
+            })
+
+            if booking_obj:
+                booking_obj.action_booked_tour()
+
+                if force_issued:
+                    booking_obj.write({
+                        'payment_method': data.get('payment_method') and data['payment_method'] or 'cash'
+                    })
+                    booking_obj.action_issued()
+
+                response = {
+                    'booking_id': booking_obj.id
+                }
+
+            else:
+                response = {
+                    'booking_id': 0
+                }
             res = Response().get_no_error(response)
         except Exception as e:
             res = Response().get_error(str(e), 500)
@@ -790,6 +832,27 @@ class TourPricelist(models.Model):
         try:
             response = {
 
+            }
+            res = Response().get_no_error(response)
+        except Exception as e:
+            res = Response().get_error(str(e), 500)
+        return res
+
+    def get_payment_rules_api(self, data, context, **kwargs):
+        try:
+            search_tour_id = data.get('id')
+            payment_rules = []
+            for payment in self.env['tt.reservation.tour.pricelist'].sudo().browse(int(search_tour_id)).payment_rules_ids:
+                vals = {
+                    'name': payment.name,
+                    'description': payment.description,
+                    'payment_percentage': payment.payment_percentage,
+                    'due_date': payment.due_date,
+                }
+                payment_rules.append(vals)
+
+            response = {
+                'payment_rules': payment_rules
             }
             res = Response().get_no_error(response)
         except Exception as e:
