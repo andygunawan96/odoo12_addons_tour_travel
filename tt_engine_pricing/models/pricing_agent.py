@@ -1,5 +1,10 @@
 from odoo import models, fields, api, _
 from ...tools import variables
+from ...tools.api import Response
+import logging, traceback
+
+
+_logger = logging.getLogger(__name__)
 
 
 class PricingAgent(models.Model):
@@ -7,6 +12,16 @@ class PricingAgent(models.Model):
 
     name = fields.Char('Name')
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', required=True)
+    provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', required=True)
+    provider_ids = fields.Many2many('tt.provider', 'tt_pricing_agent_provider_rel', 'pricing_id', 'provider_id',
+                                    string='Providers')
+    basic_amount_type = fields.Selection(variables.AMOUNT_TYPE, 'Basic Amount Type', default='percentage')
+    basic_amount = fields.Float('Basic Amount', default=0)
+    currency_id = fields.Many2one('res.currency', 'Currency', required=True)
+    fee_amount_per_route = fields.Monetary('Fee Amount per Route', default=0)
+    fee_amount_per_segment = fields.Monetary('Fee Amount per Segment', default=0)
+    fee_amount_per_pax = fields.Monetary('Fee Amount per Pax', default=0)
+    loop_level = fields.Integer('Loop Level', default=0)
     line_ids = fields.One2many('tt.pricing.agent.line', 'pricing_id', 'Pricing')
     active = fields.Boolean('Active', default=True)
 
@@ -18,28 +33,56 @@ class PricingAgent(models.Model):
     @api.model
     def create(self, values):
         res = super(PricingAgent, self).create(values)
-        res.write({})
         return res
 
     def write(self, values):
-        values.update({
-            'name': self.get_name()
-        })
         return super(PricingAgent, self).write(values)
+
+    def get_pricing_agent_api(self, _provider_type):
+        try:
+            provider_obj = self.env['tt.provider.type'].sudo().search([('code', '=', _provider_type)], limit=1)
+            if not provider_obj:
+                raise Exception('Provider Type not found')
+            _obj = self.sudo().search([('provider_type_id', '=', provider_obj.id), ('active', '=', 1)])
+            response = {}
+            for rec in _obj:
+                response.update({
+                    rec.agent_type_id.code: rec.get_data()
+                })
+            res = Response().get_no_error(response)
+        except Exception as e:
+            _logger.error('%s, %s' % (str(e), traceback.format_exc()))
+            res = Response().get_error(str(e), 500)
+        return res
+
+    def get_data(self):
+        line_ids = [rec.get_data() for rec in self.line_ids if rec.active]
+        provider_ids = [rec.code for rec in self.provider_ids]
+        res = {
+            'agent_type_id': self.agent_type_id.get_data(),
+            'provider_type': self.provider_type_id and self.provider_type_id.code or '',
+            'provider_ids': provider_ids,
+            'basic_amount_type': self.basic_amount_type,
+            'basic_amount': self.basic_amount,
+            'currency': self.currency_id and self.currency_id.code,
+            'fee_amount_per_route': self.fee_amount_per_route,
+            'fee_amount_per_segment': self.fee_amount_per_segment,
+            'fee_amount_per_pax': self.fee_amount_per_pax,
+            'loop_level': self.loop_level,
+            'line_ids': line_ids,
+        }
+        return res
 
 
 class PricingAgentLine(models.Model):
     _name = 'tt.pricing.agent.line'
 
     name = fields.Char('Name')
+    sequence = fields.Integer('Sequence')
     pricing_id = fields.Many2one('tt.pricing.agent', 'Pricing', readonly=True)
-    level = fields.Integer('Agent Level', required=True)
+    agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', required=True)
     basic_amount_type = fields.Selection(variables.AMOUNT_TYPE, 'Basic Amount Type', default='percentage')
     basic_amount = fields.Float('Basic Amount', default=0)
-    currency_id = fields.Many2one('res.currency', 'Currency', required=True)
-    fee_amount_per_route = fields.Monetary('Fee Amount per Route', default=0)
-    fee_amount_per_segment = fields.Monetary('Fee Amount per Segment', default=0)
-    fee_amount_per_pax = fields.Monetary('Fee Amount per Pax', default=0)
     active = fields.Boolean('Active', default=True)
 
     def get_name(self):
@@ -50,11 +93,16 @@ class PricingAgentLine(models.Model):
     @api.model
     def create(self, values):
         res = super(PricingAgentLine, self).create(values)
-        res.write({})
         return res
 
     def write(self, values):
-        values.update({
-            'name': self.get_name()
-        })
         return super(PricingAgentLine, self).write(values)
+
+    def get_data(self):
+        res = {
+            'sequence': self.sequence,
+            'agent_type_id': self.agent_type_id.get_data(),
+            'basic_amount_type': self.basic_amount_type,
+            'basic_amount': self.basic_amount,
+        }
+        return res

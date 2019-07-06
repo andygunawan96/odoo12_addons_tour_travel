@@ -63,6 +63,14 @@ class TtAgentType(models.Model):
         else:
             return 0, 0, total_payment
 
+    def get_data(self):
+        res = {
+            'id': self.id,
+            'name': self.name,
+            'code': self.code,
+        }
+        return res
+
 
 class CommissionRule(models.Model):
     _name = 'tt.commission.rule'

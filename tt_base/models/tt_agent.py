@@ -1,6 +1,11 @@
 from odoo import models, fields, api
 from PIL import Image
 from odoo.tools import image
+import logging, traceback
+from ...tools.api import Response
+
+
+_logger = logging.getLogger(__name__)
 
 
 class TtAgent(models.Model):
@@ -72,3 +77,32 @@ class TtAgent(models.Model):
         if not agent_obj:
             return 'Agent/Sub Agent not Found'
         return agent_obj.balance
+
+    def get_data(self):
+        res = {
+            'id': self.id,
+            'name': self.name,
+            'agent_type_id': self.agent_type_id and self.agent_type_id.get_data() or {},
+        }
+        return res
+
+    def get_agent_level_api(self, user_id):
+        try:
+            _obj = self.sudo().browse(int(user_id))
+            response = []
+
+            level = 0
+            temp = _obj
+            while True:
+                values = temp.get_data()
+                values.update({'agent_level': level})
+                response.append(values)
+                if not temp.parent_agent_id:
+                    break
+                temp = temp.parent_agent_id
+                level += 1
+            res = Response().get_no_error(response)
+        except Exception as e:
+            _logger.error('%s, %s' % (str(e), traceback.format_exc()))
+            res = Response().get_error(str(e), 500)
+        return res
