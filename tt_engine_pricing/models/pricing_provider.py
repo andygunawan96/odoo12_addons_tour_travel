@@ -15,7 +15,7 @@ class PricingProvider(models.Model):
         ('commission', 'Commission'),
         ('provider', 'provider'),
     ], 'Pricing Type', required=True)
-    carrier_ids = fields.Many2many('tt.transport.carrier', 'tt_pricing_carrier_rel', 'pricing_id', 'carrier_id',
+    carrier_ids = fields.Many2many('tt.transport.carrier', 'tt_pricing_provider_carrier_rel', 'pricing_id', 'carrier_id',
                                    string='Carriers')
     line_ids = fields.One2many('tt.pricing.provider.line', 'pricing_id', 'Configs')
     active = fields.Boolean('Active', default=True)
@@ -28,13 +28,9 @@ class PricingProvider(models.Model):
     @api.model
     def create(self, values):
         res = super(PricingProvider, self).create(values)
-        res.write({})
         return res
 
     def write(self, values):
-        values.update({
-            'name': self.get_name()
-        })
         return super(PricingProvider, self).write(values)
 
     def get_pricing_data(self):
@@ -56,7 +52,7 @@ class PricingProvider(models.Model):
             if not provider_type_obj:
                 raise Exception('Provider Type not found, %s' % provider_type)
 
-            _obj = self.sudo().search([('provider_type_id', '=', provider_type_obj.id)])
+            _obj = self.sudo().search([('provider_type_id', '=', provider_type_obj.id), ('active', '=', 1)])
 
             response = {}
             for rec in _obj:
@@ -93,18 +89,18 @@ class PricingProviderLine(models.Model):
     date_from = fields.Datetime('Date From', required=True)
     date_to = fields.Datetime('Date To', required=True)
     origin_type = fields.Selection(variables.ACCESS_TYPE, 'Origin Type', required=True, default='all')
-    origin_ids = fields.Many2many('tt.destinations', 'tt_pricing_line_origin_rel', 'pricing_line_id', 'origin_id',
+    origin_ids = fields.Many2many('tt.destinations', 'tt_pricing_provider_line_origin_rel', 'pricing_line_id', 'origin_id',
                                   string='Origins')
-    origin_city_ids = fields.Many2many('res.city', 'tt_pricing_line_origin_city_rel', 'pricing_line_id', 'city_id',
+    origin_city_ids = fields.Many2many('res.city', 'tt_pricing_provider_line_origin_city_rel', 'pricing_line_id', 'city_id',
                                        string='Origin Cities')
-    origin_country_ids = fields.Many2many('res.country', 'tt_pricing_line_origin_country_rel', 'pricing_line_id', 'country_id',
+    origin_country_ids = fields.Many2many('res.country', 'tt_pricing_provider_line_origin_country_rel', 'pricing_line_id', 'country_id',
                                           string='Origin Countries')
     destination_type = fields.Selection(variables.ACCESS_TYPE, 'Destination Type', required=True, default='all')
-    destination_ids = fields.Many2many('tt.destinations', 'tt_pricing_line_destination_rel', 'pricing_line_id', 'destination_id',
+    destination_ids = fields.Many2many('tt.destinations', 'tt_pricing_provider_line_destination_rel', 'pricing_line_id', 'destination_id',
                                        string='Destinations')
-    destination_city_ids = fields.Many2many('res.city', 'tt_pricing_line_destination_city_rel', 'pricing_line_id', 'city_id',
+    destination_city_ids = fields.Many2many('res.city', 'tt_pricing_provider_line_destination_city_rel', 'pricing_line_id', 'city_id',
                                             string='Destination Cities')
-    destination_country_ids = fields.Many2many('res.country', 'tt_pricing_line_destination_country_rel', 'pricing_line_id', 'country_id',
+    destination_country_ids = fields.Many2many('res.country', 'tt_pricing_provider_line_destination_country_rel', 'pricing_line_id', 'country_id',
                                                string='Destination Countries')
     currency_id = fields.Many2one('res.currency', 'Currency', required=True)
     amount_per_route = fields.Float('Ammount per Route')

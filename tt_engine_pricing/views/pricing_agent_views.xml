@@ -17,11 +17,21 @@
                     <group>
                         <group>
                             <field name="agent_type_id"/>
+                            <field name="provider_type_id"/>
+                            <field name="basic_amount_type"/>
+                            <field name="basic_amount"/>
+                            <field name="loop_level"/>
                         </group>
                         <group>
+                            <field name="currency_id"/>
+                            <field name="fee_amount_per_route"/>
+                            <field name="fee_amount_per_segment"/>
+                            <field name="fee_amount_per_pax"/>
                         </group>
                     </group>
-                    <separator string="Pricing"/>
+                    <separator string="Providers"/>
+                    <field name="provider_ids"/>
+                    <separator string="Uplines"/>
                     <field name="line_ids"/>
                 </sheet>
             </form>
@@ -35,6 +45,9 @@
         <tree>
             <field name="name"/>
             <field name="agent_type_id"/>
+            <field name="provider_type_id"/>
+            <field name="basic_amount_type"/>
+            <field name="basic_amount"/>
             <field name="active"/>
         </tree>
         </field>
@@ -83,15 +96,12 @@
                     <group>
                         <group>
                             <field name="pricing_id"/>
-                            <field name="basic_amount_type"/>
-                            <field name="basic_amount"/>
-                            <field name="level"/>
+                            <field name="agent_type_id"/>
+                            <field name="sequence"/>
                         </group>
                         <group>
-                            <field name="currency_id"/>
-                            <field name="fee_amount_per_route"/>
-                            <field name="fee_amount_per_segment"/>
-                            <field name="fee_amount_per_pax"/>
+                            <field name="basic_amount_type"/>
+                            <field name="basic_amount"/>
                         </group>
                     </group>
                 </sheet>
@@ -104,14 +114,11 @@
         <field name="model">tt.pricing.agent.line</field>
         <field name="arch" type="xml">
         <tree>
+            <field name="sequence" widget="handle"/>
             <field name="name"/>
-            <field name="level"/>
+            <field name="agent_type_id"/>
             <field name="basic_amount_type"/>
             <field name="basic_amount"/>
-            <field name="currency_id"/>
-            <field name="fee_amount_per_route"/>
-            <field name="fee_amount_per_segment"/>
-            <field name="fee_amount_per_pax"/>
             <field name="pricing_id"/>
             <field name="active"/>
         </tree>
