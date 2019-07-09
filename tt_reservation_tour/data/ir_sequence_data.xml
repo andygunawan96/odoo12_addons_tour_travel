@@ -3,7 +3,7 @@
     <data noupdate="1">
         <record id="seq_booking_tour_transaction" model="ir.sequence">
             <field name="name">Tour Booking Transaction</field>
-            <field name="code">transport.booking.tour</field>
+            <field name="code">reservation.tour.booking.code</field>
             <field name="prefix">TR.%(range_y)s%(range_month)s%(range_day)s%(range_sec)s</field>
             <field name="padding">2</field>
         </record>

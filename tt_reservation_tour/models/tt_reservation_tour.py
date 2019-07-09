@@ -40,6 +40,12 @@ class TourBooking(models.Model):
     payment_method = fields.Selection(PAYMENT_METHOD, 'Payment Method')
 
     # *STATE*
+    def action_confirm(self):
+        self.write({
+            'state': 'confirm',
+            'name': self.env['ir.sequence'].next_by_code('reservation.tour.booking.code'),
+        })
+
     def action_booked(self):
         self.write({
             'state': 'booked',
