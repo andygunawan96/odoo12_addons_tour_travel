@@ -14,7 +14,7 @@ access_tt_agent_for_agent_management_supervisor,tt_agent.for.agent.management.su
 access_tt_agent_for_agent_management_manager,tt_agent.for.agent.management.manager,model_tt_agent,group_tt_agent_management_manager,1,1,1,0
 access_tt_agent_for_tour_travel_operator,tt.agent.for.tour.travel.operator,model_tt_agent,group_tt_tour_travel_operator,1,1,0,0
 access_tt_agent_for_tour_travel_supervisor,tt.agent.for.tour.travel.supervisor,model_tt_agent,group_tt_tour_travel_supervisor,1,1,0,0
-access_tt_agent_for_tour_travel_manager,tt.agent.for.tour.travel.manager,model_tt_agent,group_tt_tour_travel_manager,1,1,0,0
+access_tt_agent_for_tour_travel_manager,tt.agent.for.tour.travel.manager,model_tt_agent,group_tt_tour_travel_manager,1,1,1,0
 
 access_tt_customer_for_public,tt.customer.for.public,model_tt_customer,,1,0,0,0
 access_tt_customer_for_agent_user_operator,tt_customer.for.agent.user.operator,model_tt_customer,tt_base.group_tt_agent_user_operator,1,1,1,0
