@@ -107,10 +107,10 @@ class TtReservation(models.Model):
     display_mobile = fields.Char('Contact Person for Urgent Situation',
                                  readonly=True, states={'draft': [('readonly', False)]})
 
-    elder = fields.Integer('Elder', readonly=True, states={'draft': [('readonly', False)]})
+    elder = fields.Integer('Elder', default=0, readonly=True, states={'draft': [('readonly', False)]})
     adult = fields.Integer('Adult', default=1, readonly=True, states={'draft': [('readonly', False)]})
-    child = fields.Integer('Child', readonly=True, states={'draft': [('readonly', False)]})
-    infant = fields.Integer('Infant', readonly=True, states={'draft': [('readonly', False)]})
+    child = fields.Integer('Child', default=0, readonly=True, states={'draft': [('readonly', False)]})
+    infant = fields.Integer('Infant', default=0, readonly=True, states={'draft': [('readonly', False)]})
 
     ledger_ids = fields.One2many('tt.ledger', 'res_id', 'Ledger')
 
