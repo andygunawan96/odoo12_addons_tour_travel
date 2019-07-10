@@ -195,6 +195,7 @@ class Routes(models.Model):
                     'code': req_data['origin'],
                     'provider_type_id': provider_obj.id,
                     'timezone_hour': req_data.get('origin_timezone_hour', 0),
+                    'city': '',
                 }
                 origin_obj = self.env['tt.destinations'].sudo().create(origin_values)
                 origin_id = origin_obj.id
@@ -206,6 +207,7 @@ class Routes(models.Model):
                     'code': req_data['destination'],
                     'provider_type_id': provider_obj.id,
                     'timezone_hour': req_data.get('destination_timezone_hour', 0),
+                    'city': '',
                 }
                 destination_obj = self.env['tt.destinations'].sudo().create(destination_values)
                 destination_id = destination_obj.id
