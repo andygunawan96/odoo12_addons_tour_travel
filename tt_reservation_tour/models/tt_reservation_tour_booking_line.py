@@ -1,9 +1,9 @@
 from odoo import api, fields, models, _
 
 PAX_TYPE = [
-    ('adt', 'Adult'),
-    ('chd', 'Child'),
-    ('inf', 'Infant')
+    ('ADT', 'Adult'),
+    ('CHD', 'Child'),
+    ('INF', 'Infant')
 ]
 
 BED_TYPE = [
@@ -22,7 +22,7 @@ class TourBookingLine(models.Model):
     pax_type = fields.Selection(PAX_TYPE, 'Pax Type')
     pax_mobile = fields.Char('Pax Mobile')
 
-    room_id = fields.Char('Room ID')
+    room_id = fields.Many2one('tt.reservation.tour.rooms', 'Room ID')
     # room_id = fields.Many2one('tt.reservation.tour.rooms', 'Tour ID')
     room_number = fields.Char('Room Number')
     extra_bed_description = fields.Char('Extra Bed Description')
