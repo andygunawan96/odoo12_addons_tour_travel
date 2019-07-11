@@ -86,9 +86,9 @@ class TtAgent(models.Model):
         }
         return res
 
-    def get_agent_level_api(self, user_id):
+    def get_agent_level_api(self, agent_id):
         try:
-            _obj = self.sudo().browse(int(user_id))
+            _obj = self.sudo().browse(int(agent_id))
             response = []
 
             level = 0

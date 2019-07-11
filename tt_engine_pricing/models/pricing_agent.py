@@ -56,7 +56,9 @@ class PricingAgent(models.Model):
         return res
 
     def get_data(self):
-        line_ids = [rec.get_data() for rec in self.line_ids if rec.active]
+        line_dict = {}
+        line_ids = []
+        [line_dict.update({rec.agent_type_id.code: rec.get_data()}) for rec in self.line_ids if rec.active]
         provider_ids = [rec.code for rec in self.provider_ids]
         res = {
             'agent_type_id': self.agent_type_id.get_data(),
@@ -69,7 +71,8 @@ class PricingAgent(models.Model):
             'fee_amount_per_segment': self.fee_amount_per_segment,
             'fee_amount_per_pax': self.fee_amount_per_pax,
             'loop_level': self.loop_level,
-            'line_ids': line_ids,
+            # 'line_ids': line_ids,
+            'line_dict': line_dict,
         }
         return res
 
