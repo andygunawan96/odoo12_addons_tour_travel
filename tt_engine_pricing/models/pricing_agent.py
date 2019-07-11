@@ -18,9 +18,10 @@ class PricingAgent(models.Model):
     basic_amount_type = fields.Selection(variables.AMOUNT_TYPE, 'Basic Amount Type', default='percentage')
     basic_amount = fields.Float('Basic Amount', default=0)
     currency_id = fields.Many2one('res.currency', 'Currency', required=True)
-    fee_amount_per_route = fields.Monetary('Fee Amount per Route', default=0)
-    fee_amount_per_segment = fields.Monetary('Fee Amount per Segment', default=0)
-    fee_amount_per_pax = fields.Monetary('Fee Amount per Pax', default=0)
+    fee_amount = fields.Monetary('Fee Amount', default=False)
+    is_per_route = fields.Boolean('Is per Route', default=False)
+    is_per_segment = fields.Boolean('Is per Segment', default=False)
+    is_per_pax = fields.Boolean('is per Pax', default=0)
     loop_level = fields.Integer('Loop Level', default=0)
     line_ids = fields.One2many('tt.pricing.agent.line', 'pricing_id', 'Pricing')
     active = fields.Boolean('Active', default=True)
@@ -67,9 +68,10 @@ class PricingAgent(models.Model):
             'basic_amount_type': self.basic_amount_type,
             'basic_amount': self.basic_amount,
             'currency': self.currency_id and self.currency_id.code,
-            'fee_amount_per_route': self.fee_amount_per_route,
-            'fee_amount_per_segment': self.fee_amount_per_segment,
-            'fee_amount_per_pax': self.fee_amount_per_pax,
+            'fee_amount': self.fee_amount,
+            'is_per_route': self.is_per_route,
+            'is_per_segment': self.is_per_segment,
+            'is_per_pax': self.is_per_pax,
             'loop_level': self.loop_level,
             # 'line_ids': line_ids,
             'line_dict': line_dict,
