@@ -133,9 +133,10 @@
                     <separator string="Details"/>
                     <group>
                         <group>
-                            <field name="amount_per_route"/>
-                            <field name="amount_per_segment"/>
-                            <field name="amount_per_pax"/>
+                            <field name="fee_amount"/>
+                            <field name="is_per_route"/>
+                            <field name="is_per_segment"/>
+                            <field name="is_per_pax"/>
                             <field name="basic_amount_type"/>
                             <field name="basic_amount"/>
                             <field name="tax_amount_type"/>

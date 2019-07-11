@@ -24,9 +24,10 @@
                         </group>
                         <group>
                             <field name="currency_id"/>
-                            <field name="fee_amount_per_route"/>
-                            <field name="fee_amount_per_segment"/>
-                            <field name="fee_amount_per_pax"/>
+                            <field name="fee_amount"/>
+                            <field name="is_per_route"/>
+                            <field name="is_per_segment"/>
+                            <field name="is_per_pax"/>
                         </group>
                     </group>
                     <separator string="Providers"/>

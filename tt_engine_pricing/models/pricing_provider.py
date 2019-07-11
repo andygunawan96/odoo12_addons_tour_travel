@@ -103,9 +103,10 @@ class PricingProviderLine(models.Model):
     destination_country_ids = fields.Many2many('res.country', 'tt_pricing_provider_line_destination_country_rel', 'pricing_line_id', 'country_id',
                                                string='Destination Countries')
     currency_id = fields.Many2one('res.currency', 'Currency', required=True)
-    amount_per_route = fields.Float('Ammount per Route')
-    amount_per_segment = fields.Float('Amount per Segment')
-    amount_per_pax = fields.Float('Amount per Pax')
+    fee_amount = fields.Monetary('Fee Amount', default=0)
+    is_per_route = fields.Boolean('Is Per Route', default=False)
+    is_per_segment = fields.Boolean('Is Per Segment', default=False)
+    is_per_pax = fields.Boolean('Is Per Pax', default=False)
     basic_amount_type = fields.Selection(variables.AMOUNT_TYPE, 'Basic Amount Type', default='percentage')
     basic_amount = fields.Float('Basic Amount', default=0)
     tax_amount_type = fields.Selection(variables.AMOUNT_TYPE, 'Tax Amount Type', default='percentage')
@@ -139,9 +140,10 @@ class PricingProviderLine(models.Model):
             'destination_city_ids': destination_city_ids,
             'destination_country_codes': destination_country_codes,
             'currency_code': self.currency_id and self.currency_id.code or '',
-            'amount_per_route': self.amount_per_route,
-            'amount_per_segment': self.amount_per_segment,
-            'amount_per_pax': self.amount_per_pax,
+            'fee_amount': self.fee_amount,
+            'is_per_route': self.is_per_route,
+            'is_per_segment': self.is_per_segment,
+            'is_per_pax': self.is_per_pax,
             'basic_amount_type': self.basic_amount_type,
             'basic_amount': self.basic_amount,
             'tax_amount_type': self.tax_amount_type,
