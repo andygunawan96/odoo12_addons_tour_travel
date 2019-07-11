@@ -1,5 +1,12 @@
 from odoo import api, fields, models, _
 import re
+import logging
+import traceback
+from ...tools.api import Response
+
+
+_logger = logging.getLogger(__name__)
+
 
 class TransportCarrier(models.Model):
     _name = 'tt.transport.carrier'
@@ -48,12 +55,6 @@ class TransportCarrier(models.Model):
                 'logo': False,
             }
 
-    def get_carrier_list(self, type='airline'):
-        data_ids = self.sudo().search([('transport_type', '=', type)])
-        res = {}
-        [res.update({data.code: data.name}) for data in data_ids if data.code and re.match("^[A-Za-z0-9]*$", data.code)]
-        return res
-
     def to_dict(self):
         return {
             'name': self.name,
@@ -63,3 +64,33 @@ class TransportCarrier(models.Model):
             'call_sign': self.transport_type,
             'active': self.active
         }
+
+    def get_carrier_data(self):
+        res = {
+            'name': self.name,
+            'code': self.code,
+            'icao': self.icao,
+            'call_sign': self.call_sign,
+        }
+        return res
+
+    def get_carrier_list_by_code(self, _provider_type):
+        provider_obj = self.env['tt.provider.type'].sudo().search([('code', '=', _provider_type)], limit=1)
+        if not provider_obj:
+            raise Exception('Provider type not found, %s' % _provider_type)
+
+        _obj = self.sudo().search([('provider_type_id', '=', provider_obj.id), ('active', '=', True)])
+        res = {}
+        for rec in _obj:
+            code = rec.code
+            res[code] = rec.get_carrier_data()
+        return res
+
+    def get_carrier_list_api(self, data, context):
+        try:
+            response = self.get_carrier_list_by_code(data['provider_type'])
+            res = Response().get_no_error(response)
+        except Exception as e:
+            _logger.error('Error Get Carrier List, %s, %s' % (str(e), traceback.format_exc()))
+            res = Response().get_error(str(e), 500)
+        return res
