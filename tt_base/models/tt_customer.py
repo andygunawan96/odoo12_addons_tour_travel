@@ -76,11 +76,12 @@ class TtCustomer(models.Model, test_to_dict.ToDict):
 
     @api.onchange('birth_date')
     def calculate_age(self):
-        if self.birth_date:
-            d1 = datetime.strptime(str(self.birth_date), "%Y-%m-%d").date()
-            d2 = datetime.today()
-            self.age = relativedelta(d2, d1).years
-            return self.age
+        for rec in self:
+            if rec.birth_date:
+                d1 = datetime.strptime(str(rec.birth_date), "%Y-%m-%d").date()
+                d2 = datetime.today()
+                rec.age = relativedelta(d2, d1).years
+        return rec.age
 
     @api.depends('logo')
     def _get_logo_image(self):

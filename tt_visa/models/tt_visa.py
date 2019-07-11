@@ -271,6 +271,8 @@ class TtVisa(models.Model):
         for rec in self.search([('name', '=', data['order_number'])]):
             passenger = []
             contact = []
+            sale = {}
+            type = []
             for pax in rec.to_passenger_ids:
                 requirement = []
                 for require in pax.to_requirement_ids:
@@ -283,11 +285,10 @@ class TtVisa(models.Model):
                     'first_name': pax.passenger_id.first_name,
                     'last_name': pax.passenger_id.last_name,
                     'birth_date': pax.passenger_id.birth_date,
-                    'age': pax.passenger_id.age,
+                    'age': pax.passenger_id.age or '',
                     'passport': pax.passenger_id.passport_number,
                     'visa': {
-                        'price':
-                        {
+                        'price': {
                             'sale_price': pax.pricelist_id.sale_price,
                             'commission': pax.pricelist_id.commission_price,
                             'currency': pax.pricelist_id.currency_id.name
@@ -300,7 +301,19 @@ class TtVisa(models.Model):
                         'requirement': requirement
                     }
                 })
-
+                type.append({
+                    'entry_type': dict(pax.pricelist_id._fields['entry_type'].selection).get(pax.pricelist_id.entry_type),
+                    'visa_type': dict(pax.pricelist_id._fields['visa_type'].selection).get(pax.pricelist_id.visa_type),
+                    'process': dict(pax.pricelist_id._fields['process_type'].selection).get(pax.pricelist_id.process_type)
+                })
+                sale[pax.passenger_id.first_name+' '+pax.passenger_id.last_name] = []
+                for sale_price in passenger[len(passenger)-1]['visa']['price']:
+                    if sale_price != 'currency':
+                        sale[pax.passenger_id.first_name+' '+pax.passenger_id.last_name].append({
+                            'charge_code': sale_price,
+                            'amount': passenger[len(passenger)-1]['visa']['price'][sale_price],
+                            'currency': passenger[len(passenger)-1]['visa']['price']['currency']
+                        })
             for pax in rec.contact_ids:
                 contact.append({
                     'title': pax.title,
@@ -316,10 +329,13 @@ class TtVisa(models.Model):
                 },
                 'journey': {
                     'country': rec.country_id.name,
-                    'departure_date': rec.departure_date
+                    'departure_date': rec.departure_date,
+                    'name': rec.name,
+                    'payment_status': rec.commercial_state
                 },
                 'passenger': passenger,
                 'contact': contact,
+                'sale_price': sale
 
             }
         if not res:
