@@ -74,7 +74,12 @@ class VisaPricelist(models.Model):
             for rec in self.sudo().search([]):
                 if not visa.get(rec.country_id.name): #kalau ngga ada bikin dict
                     visa[rec.country_id.name] = [] #append country
-                visa[rec.country_id.name].append(rec.immigration_consulate)
+                count = 0
+                for rec1 in visa[rec.country_id.name]:
+                    if rec1 == rec.immigration_consulate:
+                        count = 1
+                if count == 0:
+                    visa[rec.country_id.name].append(rec.immigration_consulate)
 
                 # for rec1 in self.search([('name', '=ilike', rec.country_id.id)]):
                 #
@@ -89,7 +94,7 @@ class VisaPricelist(models.Model):
         try:
             list_of_visa = []
 
-            for rec in self.sudo().search([('country_id.name', '=ilike', data['destination']), ('immigration_consulate', '=ilike', data['consulate'])]):
+            for idx, rec in enumerate(self.sudo().search([('country_id.name', '=ilike', data['destination']), ('immigration_consulate', '=ilike', data['consulate'])])):
                 requirement = []
                 for rec1 in rec.requirement_ids:
                     requirement.append({
@@ -99,6 +104,7 @@ class VisaPricelist(models.Model):
                         'id': rec1.id
                     })
                 list_of_visa.append({
+                    'sequence': idx,
                     'pax_type': rec.pax_type,
                     'entry_type': rec.entry_type,
                     'visa_type': rec.visa_type,
