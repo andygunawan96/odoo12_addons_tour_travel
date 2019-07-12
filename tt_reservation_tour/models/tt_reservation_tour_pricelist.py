@@ -840,6 +840,9 @@ class TourPricelist(models.Model):
             temp2 = book_line_ids_str.split('|')
             pax_ids = []
             book_line_ids = []
+            service_charge = []
+            service_charge_ids = []
+            def_currency = self.env['res.currency'].search([('name', '=', 'IDR')])[0].id
 
             for rec in temp:
                 if rec:
@@ -849,13 +852,208 @@ class TourPricelist(models.Model):
                 if rec:
                     book_line_ids.append(int(rec))
 
+            if price_itinerary.get('adult_amount'):
+                service_charge.append({
+                    'pax_type': 'ADT',
+                    'charge_code': 'fare',
+                    'charge_type': 'fare',
+                    'amount': price_itinerary['adult_price'] / price_itinerary['adult_amount'],
+                    'pax_count': price_itinerary['adult_amount'],
+                    'currency_id': def_currency,
+                    'foreign_currency_id': def_currency,
+                    'foreign_amount': 0,
+                    'description': 'Adult Price',
+                })
+                service_charge.append({
+                    'pax_type': 'ADT',
+                    'charge_code': 'tax',
+                    'charge_type': 'tax',
+                    'amount': price_itinerary['airport_tax_total'] / (price_itinerary['adult_amount'] + price_itinerary['child_amount'] + price_itinerary['infant_amount']),
+                    'pax_count': price_itinerary['adult_amount'],
+                    'currency_id': def_currency,
+                    'foreign_currency_id': def_currency,
+                    'foreign_amount': 0,
+                    'description': 'Airport Tax',
+                })
+
+            if price_itinerary.get('adult_surcharge_amount'):
+                service_charge.append({
+                    'pax_type': 'ADT',
+                    'charge_code': 'tax',
+                    'charge_type': 'tax',
+                    'amount': price_itinerary['adult_surcharge_price'] / price_itinerary['adult_surcharge_amount'],
+                    'pax_count': price_itinerary['adult_surcharge_amount'],
+                    'currency_id': def_currency,
+                    'foreign_currency_id': def_currency,
+                    'foreign_amount': 0,
+                    'description': 'Adult Surcharge',
+                })
+
+            if price_itinerary.get('single_supplement_amount'):
+                service_charge.append({
+                    'pax_type': 'ADT',
+                    'charge_code': 'tax',
+                    'charge_type': 'tax',
+                    'amount': price_itinerary['single_supplement_price'] / price_itinerary['single_supplement_amount'],
+                    'pax_count': price_itinerary['single_supplement_amount'],
+                    'currency_id': def_currency,
+                    'foreign_currency_id': def_currency,
+                    'foreign_amount': 0,
+                    'description': 'Single Supplement',
+                })
+
+            if price_itinerary.get('tipping_guide_amount'):
+                service_charge.append({
+                    'pax_type': 'ADT',
+                    'charge_code': 'tax',
+                    'charge_type': 'tax',
+                    'amount': price_itinerary['tipping_guide_total'] / price_itinerary['tipping_guide_amount'],
+                    'pax_count': price_itinerary['tipping_guide_amount'],
+                    'currency_id': def_currency,
+                    'foreign_currency_id': def_currency,
+                    'foreign_amount': 0,
+                    'description': 'Tipping Tour Guide',
+                })
+
+            if price_itinerary.get('tipping_tour_leader_amount'):
+                service_charge.append({
+                    'pax_type': 'ADT',
+                    'charge_code': 'tax',
+                    'charge_type': 'tax',
+                    'amount': price_itinerary['tipping_tour_leader_total'] / price_itinerary['tipping_tour_leader_amount'],
+                    'pax_count': price_itinerary['tipping_tour_leader_amount'],
+                    'currency_id': def_currency,
+                    'foreign_currency_id': def_currency,
+                    'foreign_amount': 0,
+                    'description': 'Tipping Tour Leader',
+                })
+
+            if price_itinerary.get('additional_charge_amount'):
+                service_charge.append({
+                    'pax_type': 'ADT',
+                    'charge_code': 'tax',
+                    'charge_type': 'tax',
+                    'amount': price_itinerary['additional_charge_total'] / price_itinerary['additional_charge_amount'],
+                    'pax_count': price_itinerary['additional_charge_amount'],
+                    'currency_id': def_currency,
+                    'foreign_currency_id': def_currency,
+                    'foreign_amount': 0,
+                    'description': 'Additional Charge',
+                })
+
+            if price_itinerary.get('child_amount'):
+                service_charge.append({
+                    'pax_type': 'CHD',
+                    'charge_code': 'fare',
+                    'charge_type': 'fare',
+                    'amount': price_itinerary['child_price'] / price_itinerary['child_amount'],
+                    'pax_count': price_itinerary['child_amount'],
+                    'currency_id': def_currency,
+                    'foreign_currency_id': def_currency,
+                    'foreign_amount': 0,
+                    'description': 'Child Price',
+                })
+                service_charge.append({
+                    'pax_type': 'CHD',
+                    'charge_code': 'tax',
+                    'charge_type': 'tax',
+                    'amount': price_itinerary['airport_tax_total'] / (price_itinerary['adult_amount'] + price_itinerary['child_amount'] + price_itinerary['infant_amount']),
+                    'pax_count': price_itinerary['child_amount'],
+                    'currency_id': def_currency,
+                    'foreign_currency_id': def_currency,
+                    'foreign_amount': 0,
+                    'description': 'Airport Tax',
+                })
+
+            if price_itinerary.get('child_surcharge_amount'):
+                service_charge.append({
+                    'pax_type': 'CHD',
+                    'charge_code': 'tax',
+                    'charge_type': 'tax',
+                    'amount': price_itinerary['child_surcharge_price'] / price_itinerary['child_surcharge_amount'],
+                    'pax_count': price_itinerary['child_surcharge_amount'],
+                    'currency_id': def_currency,
+                    'foreign_currency_id': def_currency,
+                    'foreign_amount': 0,
+                    'description': 'Child Surcharge',
+                })
+
+            if price_itinerary.get('infant_amount'):
+                service_charge.append({
+                    'pax_type': 'INF',
+                    'charge_code': 'fare',
+                    'charge_type': 'fare',
+                    'amount': price_itinerary['infant_price'] / price_itinerary['infant_amount'],
+                    'pax_count': price_itinerary['infant_amount'],
+                    'currency_id': def_currency,
+                    'foreign_currency_id': def_currency,
+                    'foreign_amount': 0,
+                    'description': 'Infant Price',
+                })
+                service_charge.append({
+                    'pax_type': 'INF',
+                    'charge_code': 'tax',
+                    'charge_type': 'tax',
+                    'amount': price_itinerary['airport_tax_total'] / (price_itinerary['adult_amount'] + price_itinerary['child_amount'] + price_itinerary['infant_amount']),
+                    'pax_count': price_itinerary['infant_amount'],
+                    'currency_id': def_currency,
+                    'foreign_currency_id': def_currency,
+                    'foreign_amount': 0,
+                    'description': 'Airport Tax',
+                })
+
+            if price_itinerary.get('commission_total'):
+                service_charge.append({
+                    'pax_type': 'ADT',
+                    'charge_code': 'r.ac',
+                    'charge_type': 'r.ac',
+                    'amount': price_itinerary['commission_total'] * -1,
+                    'pax_count': 1,
+                    'currency_id': def_currency,
+                    'foreign_currency_id': def_currency,
+                    'foreign_amount': 0,
+                    'description': 'Commission',
+                })
+
+            if price_itinerary.get('commission_total'):
+                service_charge.append({
+                    'pax_type': 'ADT',
+                    'charge_code': 'r.oc',
+                    'charge_type': 'r.oc',
+                    'amount': price_itinerary['commission_total'],
+                    'pax_count': 1,
+                    'currency_id': def_currency,
+                    'foreign_currency_id': def_currency,
+                    'foreign_amount': 0,
+                    'description': 'Commission',
+                })
+
+            if price_itinerary.get('discount_total_itinerary_price'):
+                service_charge.append({
+                    'pax_type': 'ADT',
+                    'charge_code': 'disc',
+                    'charge_type': 'disc',
+                    'amount': price_itinerary['discount_total_itinerary_price'] * -1,
+                    'pax_count': 1,
+                    'currency_id': def_currency,
+                    'foreign_currency_id': def_currency,
+                    'foreign_amount': 0,
+                    'description': 'Discount',
+                })
+
+            for rec in service_charge:
+                sc_obj = self.env['tt.service.charge'].create(rec)
+
+                if sc_obj:
+                    service_charge_ids.append(sc_obj.id)
+
             booking_obj = self.env['tt.reservation.tour'].sudo().create({
                 'contact_id': booker_id != 'false' and int(booker_id) or False,
                 'passenger_ids': [(6, 0, pax_ids)],
                 'tour_id': pricelist_id,
                 'agent_id': 2,
                 'line_ids': [(6, 0, book_line_ids)],
-                'total': price_itinerary.get('total_itinerary_price') and price_itinerary['total_itinerary_price'] or 0
+                'sale_service_charge_ids': [(6, 0, service_charge_ids)],
             })
 
             if booking_obj:
@@ -897,8 +1095,8 @@ class TourPricelist(models.Model):
                 'infant': book_obj.infant,
                 'departure_date': book_obj.departure_date,
                 'arrival_date': book_obj.arrival_date,
-                'total': book_obj.total,
                 'name': book_obj.name,
+                'hold_date': book_obj.hold_date,
             }
 
             if book_obj.contact_id:
@@ -951,11 +1149,118 @@ class TourPricelist(models.Model):
                         'room_notes': rec.description and rec.description or '-',
                     })
 
+            price_itinerary = {
+                'adult_amount': 0,
+                'adult_price': 0,
+                'adult_surcharge_amount': 0,
+                'adult_surcharge_price': 0,
+                'child_amount': 0,
+                'child_price': 0,
+                'child_surcharge_amount': 0,
+                'child_surcharge_price': 0,
+                'infant_amount': 0,
+                'infant_price': 0,
+                'single_supplement_amount': 0,
+                'single_supplement_price': 0,
+                'airport_tax_amount': 0,
+                'airport_tax_total': 0,
+                'tipping_guide_amount': 0,
+                'tipping_guide_total': 0,
+                'tipping_tour_leader_amount': 0,
+                'tipping_tour_leader_total': 0,
+                'additional_charge_amount': 0,
+                'additional_charge_total': 0,
+                'sub_total_itinerary_price': 0,
+                'discount_total_itinerary_price': 0,
+                'total_itinerary_price': 0,
+                'commission_total': 0,
+            }
+
+            grand_total = 0
+            for price in book_obj.sale_service_charge_ids:
+                if price.description == 'Adult Price':
+                    price_itinerary.update({
+                        'adult_amount': price.pax_count,
+                        'adult_price': int(price.total),
+                    })
+                    grand_total += int(price.total)
+                if price.description == 'Airport Tax':
+                    price_itinerary.update({
+                        'airport_tax_amount': price.pax_count,
+                        'airport_tax_total': int(price.total),
+                    })
+                    grand_total += int(price.total)
+                if price.description == 'Adult Surcharge':
+                    price_itinerary.update({
+                        'adult_surcharge_amount': price.pax_count,
+                        'adult_surcharge_price': int(price.total),
+                    })
+                    grand_total += int(price.total)
+                if price.description == 'Single Supplement':
+                    price_itinerary.update({
+                        'single_supplement_amount': price.pax_count,
+                        'single_supplement_price': int(price.total),
+                    })
+                    grand_total += int(price.total)
+                if price.description == 'Tipping Tour Guide':
+                    price_itinerary.update({
+                        'tipping_guide_amount': price.pax_count,
+                        'tipping_guide_total': int(price.total),
+                    })
+                    grand_total += int(price.total)
+                if price.description == 'Tipping Tour Leader':
+                    price_itinerary.update({
+                        'tipping_tour_leader_amount': price.pax_count,
+                        'tipping_tour_leader_total': int(price.total),
+                    })
+                    grand_total += int(price.total)
+                if price.description == 'Additional Charge':
+                    price_itinerary.update({
+                        'additional_charge_amount': price.pax_count,
+                        'additional_charge_total': int(price.total),
+                    })
+                    grand_total += int(price.total)
+                if price.description == 'Child Price':
+                    price_itinerary.update({
+                        'child_amount': price.pax_count,
+                        'child_price': int(price.total),
+                    })
+                    grand_total += int(price.total)
+                if price.description == 'Child Surcharge':
+                    price_itinerary.update({
+                        'child_surcharge_amount': price.pax_count,
+                        'child_surcharge_price': int(price.total),
+                    })
+                    grand_total += int(price.total)
+                if price.description == 'Infant Price':
+                    price_itinerary.update({
+                        'infant_amount': price.pax_count,
+                        'infant_price': int(price.total),
+                    })
+                    grand_total += int(price.total)
+                if price.description == 'Commission' and price.charge_code == 'r.oc':
+                    price_itinerary.update({
+                        'commission_total': int(price.total),
+                    })
+                if price.description == 'Discount':
+                    price_itinerary.update({
+                        'discount_total_itinerary_price': int(price.total),
+                    })
+                    grand_total -= int(price.total)
+
+            sub_total = grand_total + price_itinerary['discount_total_itinerary_price']
+
+            price_itinerary.update({
+                'total_itinerary_price': grand_total,
+                'sub_total_itinerary_price': sub_total,
+            })
+
             response = {
                 'result': result,
                 'tour_package': tour_package,
                 'passengers': passengers,
                 'rooms': rooms,
+                'price_itinerary': price_itinerary,
             }
             res = Response().get_no_error(response)
         except Exception as e:
