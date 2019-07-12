@@ -648,7 +648,25 @@ class TourPricelist(models.Model):
             res_booker_id = False
             res_pax_list = []
             book_line_list = []
-            if not sameBooker and not booker_id:
+            contact_person = data['booking_data']['contact_person']
+            if len(contact_person) > 0:
+                if not self.check_pax_similarity(contact_person[0]):
+                    cust_obj = self.env['tt.customer'].sudo().create({
+                        'title': contact_person[0].get('title'),
+                        'first_name': contact_person[0].get('first_name'),
+                        'last_name': contact_person[0].get('last_name'),
+                        'email': contact_person[0].get('email'),
+                        'agent_id': contact_person[0].get('agent_id') and contact_person[0]['agent_id'] or 2,
+                    })
+                    if contact_person[0].get('mobile'):
+                        self.env['phone.detail'].sudo().create({
+                            'customer_id': cust_obj.id,
+                            'type': 'work',
+                            'name': 'Work',
+                            'phone_number': contact_person[0]['mobile'],
+                        })
+                    res_booker_id = cust_obj.id
+            elif not sameBooker and not booker_id:
                 if not self.check_pax_similarity(booker_obj):
                     cust_obj = self.env['tt.customer'].sudo().create({
                         'title': booker_obj.get('title'),
@@ -689,9 +707,11 @@ class TourPricelist(models.Model):
                         })
                 res_booker_id = int(booker_id)
 
+            temp_idx = 0
             for rec in data['booking_data']['all_pax']:
                 if not rec.get('passenger_id'):
-                    if not self.check_pax_similarity(rec):
+                    similar = self.check_pax_similarity(rec)
+                    if not similar:
                         cust_obj = self.env['tt.customer'].sudo().create({
                             'title': rec.get('title'),
                             'first_name': rec.get('first_name'),
@@ -710,11 +730,23 @@ class TourPricelist(models.Model):
                                 'phone_number': rec['mobile'],
                             })
                         res_pax_list.append(cust_obj.id)
+                        if sameBooker and temp_idx == 0 and rec.get('pax_type') == 'ADT':
+                            res_booker_id = cust_obj.id
+                            temp_idx += 1
 
                         cust_line_obj = self.env['tt.reservation.tour.line'].sudo().create({
                             'passenger_id': cust_obj.id,
                             'room_id': rec.get('room_id') and rec['room_id'] or False,
                             'room_number': rec.get('room_seq') and rec['room_seq'] or False,
+                            'pax_type': rec.get('pax_type') and rec['pax_type'] or False,
+                        })
+                        book_line_list.append(cust_line_obj.id)
+                    else:
+                        cust_line_obj = self.env['tt.reservation.tour.line'].sudo().create({
+                            'passenger_id': similar.id,
+                            'room_id': rec.get('room_id') and rec['room_id'] or False,
+                            'room_number': rec.get('room_seq') and rec['room_seq'] or False,
+                            'pax_type': rec.get('pax_type') and rec['pax_type'] or False,
                         })
                         book_line_list.append(cust_line_obj.id)
 
@@ -747,6 +779,7 @@ class TourPricelist(models.Model):
                         'passenger_id': int(rec['passenger_id']),
                         'room_id': rec.get('room_id') and rec['room_id'] or False,
                         'room_number': rec.get('room_seq') and rec['room_seq'] or False,
+                        'pax_type': rec.get('pax_type') and rec['pax_type'] or False,
                     })
                     book_line_list.append(cust_line_obj.id)
 
@@ -785,17 +818,20 @@ class TourPricelist(models.Model):
             result = search_result
 
         if len(result) > 0:
-            return True
+            return result[0]
         else:
             return False
 
     def commit_booking_api(self, data, context, **kwargs):
         try:
             booking_data = data.get('booking_data')
+            price_itinerary = {}
+            tour_data = {}
             pricelist_id = 0
             if booking_data:
                 tour_data = booking_data.get('tour_data')
                 pricelist_id = tour_data.get('id') and int(tour_data['id']) or 0
+                price_itinerary = booking_data.get('price_itinerary')
             force_issued = data.get('force_issued') and int(data['force_issued']) or 0
             booker_id = data.get('booker_id') and data['booker_id'] or False
             pax_ids_str = data.get('pax_ids') and data['pax_ids'] or '|'
@@ -819,6 +855,7 @@ class TourPricelist(models.Model):
                 'tour_id': pricelist_id,
                 'agent_id': 2,
                 'line_ids': [(6, 0, book_line_ids)],
+                'total': price_itinerary.get('total_itinerary_price') and price_itinerary['total_itinerary_price'] or 0
             })
 
             if booking_obj:
@@ -832,12 +869,12 @@ class TourPricelist(models.Model):
                     booking_obj.action_issued()
 
                 response = {
-                    'booking_id': booking_obj.id
+                    'booking_num': booking_obj.name
                 }
 
             else:
                 response = {
-                    'booking_id': 0
+                    'booking_num': 0
                 }
             res = Response().get_no_error(response)
         except Exception as e:
@@ -846,8 +883,9 @@ class TourPricelist(models.Model):
 
     def get_booking_api(self, data, context, **kwargs):
         try:
-            search_booking_id = data.get('booking_id')
-            book_obj = self.env['tt.reservation'].sudo().browse(int(search_booking_id))
+            search_booking_num = data.get('order_number')
+            book_objs = self.env['tt.reservation.tour'].sudo().search([('name', '=', search_booking_num)])
+            book_obj = book_objs[0]
             result = {
                 'id': book_obj.id,
                 'pnr': book_obj.pnr,
@@ -859,16 +897,65 @@ class TourPricelist(models.Model):
                 'infant': book_obj.infant,
                 'departure_date': book_obj.departure_date,
                 'arrival_date': book_obj.arrival_date,
+                'total': book_obj.total,
+                'name': book_obj.name,
             }
+
+            if book_obj.contact_id:
+                contact_phone = self.env['phone.detail'].sudo().search([('customer_id', '=', book_obj.contact_id.id)])
+                result.update({
+                    'contact_first_name': book_obj.contact_id.first_name and book_obj.contact_id.first_name or '',
+                    'contact_last_name': book_obj.contact_id.last_name and book_obj.contact_id.last_name or '',
+                    'contact_title': book_obj.contact_id.title and book_obj.contact_id.title or '',
+                    'contact_email': book_obj.contact_id.email and book_obj.contact_id.email or '',
+                    'contact_phone': contact_phone[0].phone_number
+                })
 
             tour_package = {
-                'id': book_obj.tour_id.id
-
+                'id': book_obj.tour_id.id,
+                'name': book_obj.tour_id.name,
+                'duration': book_obj.tour_id.duration,
+                'departure_date': book_obj.tour_id.departure_date,
+                'arrival_date': book_obj.tour_id.arrival_date,
+                'departure_date_f': datetime.strptime(str(book_obj.tour_id.arrival_date), '%Y-%m-%d').strftime("%A, %d-%m-%Y") or '',
+                'arrival_date_f': datetime.strptime(str(book_obj.tour_id.arrival_date), '%Y-%m-%d').strftime("%A, %d-%m-%Y") or '',
+                'visa': book_obj.tour_id.visa,
+                'flight': book_obj.tour_id.flight,
             }
+
+            passengers = []
+            rooms = []
+            room_id_list = []
+            for rec in book_obj.line_ids:
+                passengers.append({
+                    'pax_id': rec.passenger_id.id,
+                    'first_name': rec.passenger_id.first_name and rec.passenger_id.first_name or '',
+                    'last_name': rec.passenger_id.last_name and rec.passenger_id.last_name or '',
+                    'title': rec.passenger_id.title and rec.passenger_id.title or '',
+                    'pax_type': rec.pax_type,
+                    'birth_date': rec.passenger_id.birth_date,
+                    'room_id': rec.room_id.id,
+                    'room_name': rec.room_id.name,
+                    'room_bed_type': rec.room_id.bed_type,
+                    'room_hotel': rec.room_id.hotel,
+                    'room_number': rec.room_number,
+                })
+
+                if rec.room_id.id not in room_id_list:
+                    room_id_list.append(rec.room_id.id)
+                    rooms.append({
+                        'room_number': rec.room_number,
+                        'room_name': rec.room_id.name,
+                        'room_bed_type': rec.room_id.bed_type,
+                        'room_hotel': rec.room_id.hotel and rec.room_id.hotel or '-',
+                        'room_notes': rec.description and rec.description or '-',
+                    })
 
             response = {
                 'result': result,
                 'tour_package': tour_package,
+                'passengers': passengers,
+                'rooms': rooms,
             }
             res = Response().get_no_error(response)
         except Exception as e:
@@ -877,12 +964,13 @@ class TourPricelist(models.Model):
 
     def issued_by_api(self, data, context, **kwargs):
         try:
-            search_booking_id = data.get('booking_id')
-            book_obj = self.env['tt.reservation'].sudo().browse(int(search_booking_id))
-            if book_obj:
+            search_booking_num = data.get('order_number')
+            book_objs = self.env['tt.reservation.tour'].sudo().search([('name', '=', search_booking_num)])
+            for book_obj in book_objs:
                 book_obj.action_issued()
+
             response = {
-                'booking_id': search_booking_id,
+                'order_number': book_objs[0].name,
             }
             res = Response().get_no_error(response)
         except Exception as e:
