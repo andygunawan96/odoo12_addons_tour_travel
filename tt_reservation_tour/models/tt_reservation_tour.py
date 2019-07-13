@@ -61,7 +61,8 @@ class TourBooking(models.Model):
             'issued_date': datetime.now(),
             'issued_uid': self.env.user.id
         })
-        # self.message_post(body='Order ISSUED')
+        self.create_ledger_tour()
+        self.create_commission_ledger_tour()
 
     def action_reissued(self):
         pax_amount = sum(1 for temp in self.line_ids if temp.pax_type != 'INF')
@@ -370,3 +371,153 @@ class TourBooking(models.Model):
                 'booker_type': 'FPO',
             })
         return context
+
+    def create_ledger_tour(self):
+        ledger = self.env['tt.ledger']
+        total_order = 0
+        for rec in self:
+            desc = ''
+
+            for sc in rec.sale_service_charge_ids:
+                # if rec.transport_type == 'passport':
+                #     if not sc.pricelist_id.apply_type in doc_type:
+                #         doc_type.append(sc.pricelist_id.apply_type)
+                #     desc = sc.pricelist_id.passport_type.upper() + ' ' + sc.pricelist_id.apply_type.upper()
+                # else:
+                if sc.charge_code == 'fare':
+                    if rec.payment_method == 'cash':
+                        desc = 'Cash ' + rec.tour_id.name + ' ' + str(rec.departure_date) + ' | ' + str(rec.return_date)
+                    elif rec.payment_method == 'installment':
+                        desc = 'Down Payment ' + rec.tour_id.name + ' ' + str(rec.departure_date) + ' | ' + str(
+                            rec.return_date)
+                    total_order += sc.total
+                print('Total fare : ' + str(sc.total))
+
+            vals = ledger.prepare_vals('Order Tour : ' + rec.name, rec.name, rec.issued_date,
+                                       'tour', rec.currency_id.id, 0, total_order)
+            vals.update({
+                'res_id': rec.id,
+                'res_model': rec._name,
+                'agent_id': rec.agent_id.id,
+                'pnr': rec.pnr,
+                'provider_type_id': rec.provider_type_id.id,
+                'description': desc
+            })
+
+            new_aml = ledger.sudo().create(vals)
+
+    def create_anti_ledger_tour(self):
+        ledger = self.env['tt.ledger']
+        total_order = 0
+        for rec in self:
+            desc = ''
+
+            for sc in rec.sale_service_charge_ids:
+                # if rec.transport_type == 'passport':
+                #     if not sc.pricelist_id.apply_type in doc_type:
+                #         doc_type.append(sc.pricelist_id.apply_type)
+                #     desc = sc.pricelist_id.passport_type.upper() + ' ' + sc.pricelist_id.apply_type.upper()
+                # else:
+                if sc.charge_code == 'fare':
+                    if rec.payment_method == 'cash':
+                        desc = 'Cash ' + rec.tour_id.name + ' ' + str(rec.departure_date) + ' | ' + str(rec.return_date)
+                    elif rec.payment_method == 'installment':
+                        desc = 'Down Payment ' + rec.tour_id.name + ' ' + str(rec.departure_date) + ' | ' + str(
+                            rec.return_date)
+                    total_order += sc.total
+                print('Total fare : ' + str(sc.total))
+
+            vals = ledger.prepare_vals('Order Tour : ' + rec.name, rec.name, rec.issued_date,
+                                       'tour', rec.currency_id.id, total_order, 0)
+            vals.update({
+                'res_id': rec.id,
+                'res_model': rec._name,
+                'agent_id': rec.agent_id.id,
+                'pnr': rec.pnr,
+                'provider_type_id': rec.provider_type_id.id,
+                'description': desc
+            })
+            # vals['transport_type'] = rec.transport_type
+            # vals['display_provider_name'] = rec.display_provider_name
+
+            new_aml = ledger.sudo().create(vals)
+
+    def _calc_grand_total(self):
+        for rec in self:
+            rec.total = 0
+            rec.total_tax = 0
+            rec.total_disc = 0
+            rec.total_commission = 0
+            rec.total_fare = 0
+
+            for line in rec.sale_service_charge_ids:
+                if line.charge_code == 'fare':
+                    rec.total_fare += line.total
+                if line.charge_code == 'tax':
+                    rec.total_tax += line.total
+                if line.charge_code == 'disc':
+                    rec.total_disc += line.total
+                if line.charge_code == 'r.oc':
+                    rec.total_commission += line.total
+
+            rec.total = rec.total_fare + rec.total_tax + rec.total_disc
+            rec.total_nta = rec.total - rec.total_commission
+
+    def create_commission_ledger_tour(self):
+        ledger = self.env['tt.ledger']
+        self._calc_grand_total()
+        for rec in self:
+            total_commission = rec.total_commission
+
+            if rec.agent_type_id.name == 'Citra':
+                agent_commission = total_commission * 0.8
+                parent_commission = 0
+                ho_commission = total_commission * 0.2
+            elif rec.agent_type_id.name == 'Japro':
+                agent_commission = total_commission * 0.7
+                parent_commission = total_commission * 0.1
+                ho_commission = total_commission * 0.2
+            elif rec.agent_type_id.name == 'BTBO':
+                agent_commission = total_commission * 0.7
+                parent_commission = total_commission * 0.1
+                ho_commission = total_commission * 0.2
+            elif rec.agent_type_id.name == 'BTBR':
+                agent_commission = total_commission * 0.7
+                parent_commission = total_commission * 0.1
+                ho_commission = total_commission * 0.2
+            else:
+                agent_commission = 0
+                parent_commission = 0
+                ho_commission = 0
+
+            desc = 'Agent Commission'
+
+            vals = ledger.prepare_vals('Commission Tour : ' + rec.name, rec.name, rec.issued_date,
+                                       'tour', rec.currency_id.id, agent_commission, 0)
+            vals.update({
+                'res_id': rec.id,
+                'res_model': rec._name,
+                'agent_id': rec.agent_id.id,
+                'pnr': rec.pnr,
+                'description': desc
+            })
+            # vals['transport_type'] = rec.transport_type
+            # vals['display_provider_name'] = rec.display_provider_name
+
+            new_aml = ledger.sudo().create(vals)
+
+            desc = 'HO Commission'
+
+            vals = ledger.prepare_vals('Commission Tour : ' + rec.name, rec.name, rec.issued_date,
+                                       'tour', rec.currency_id.id, ho_commission, 0)
+            vals.update({
+                'res_id': rec.id,
+                'res_model': rec._name,
+                'agent_id': rec.agent_id.parent_agent_id.id,
+                'pnr': rec.pnr,
+                'description': desc
+            })
+            # vals['transport_type'] = rec.transport_type
+            # vals['display_provider_name'] = rec.display_provider_name
+
+            new_aml = ledger.sudo().create(vals)

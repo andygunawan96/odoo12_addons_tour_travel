@@ -120,7 +120,7 @@ class TtReservation(models.Model):
     # agent_invoice_ids = fields.One2many('tt.agent.invoice', '', 'Agent Invoice')  # One2Many -> tt.agent.invoice
     # agent_invoice_ids = fields.Char('Agent Invoice')##fixme invoice here
 
-    provider_type = fields.Many2one('tt.provider.type', 'Provider Type')
+    provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
 
     adjustment_ids = fields.Char('Adjustment')  # One2Many -> tt.adjustment
     error_msg = fields.Char('Error Message')
@@ -139,12 +139,12 @@ class TtReservation(models.Model):
     # total_commission = fields.Monetary(string='Total Commission', default=0, compute="_compute_total_booking", store=True)
     # total_nta = fields.Monetary(string='NTA Amount', compute="_compute_total_booking", store=True)
 
-    total_fare = fields.Char(string='Total Fare', default=0)
-    total_tax = fields.Char(string='Total Tax', default=0)
-    total = fields.Char(string='Grand Total', default=0)
-    total_discount = fields.Char(string='Total Discount', default=0)
-    total_commission = fields.Char(string='Total Commission', default=0)
-    total_nta = fields.Char(string='NTA Amount')
+    total_fare = fields.Monetary(string='Total Fare', default=0)
+    total_tax = fields.Monetary(string='Total Tax', default=0)
+    total = fields.Monetary(string='Grand Total', default=0)
+    total_discount = fields.Monetary(string='Total Discount', default=0)
+    total_commission = fields.Monetary(string='Total Commission', default=0)
+    total_nta = fields.Monetary(string='NTA Amount')
 
     #yang jual
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True,
