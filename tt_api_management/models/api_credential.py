@@ -5,9 +5,11 @@ from ...tools.db_connector import BackendConnector
 from ...tools.api import Response
 from datetime import datetime
 import uuid, base64
+import logging, traceback
 
 
 _DB_CON = BackendConnector()
+_logger = logging.getLogger(__name__)
 
 
 class ApiManagement(models.Model):
@@ -121,6 +123,18 @@ class ResUsersApiInherit(models.Model):
         }
         if self.agent_id:
             res.update(self.agent_id.get_credential(prefix))
+        return res
+
+    def reset_password_api(self, data, context):
+        try:
+            user_obj = self.sudo().browse(int(context['co_uid']))
+            if not user_obj:
+                raise Exception('User does not exist')
+            user_obj.action_reset_password()
+            res = Response().get_no_error()
+        except Exception as e:
+            _logger.error('Error Reset Password API, %s, %s' % (str(e), traceback.format_exc()))
+            res = Response().get_error(str(e), 500)
         return res
 
 
