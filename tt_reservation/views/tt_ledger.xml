@@ -5,7 +5,7 @@
         <field name="inherit_id" ref="tt_accounting.tt_ledger_tree_view"/>
         <field name="arch" type="xml">
             <field name="ref" position="after">
-                <field name="provider_type"/>
+                <field name="provider_type_id"/>
             </field>
         </field>
     </record>

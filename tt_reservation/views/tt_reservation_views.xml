@@ -39,7 +39,7 @@
                             <field name="pnr"/>
                             <field name="agent_id"/>
                             <field name="sub_agent_id"/>
-                            <field name="provider_type"/>
+                            <field name="provider_type_id"/>
                         </group>
                         <group>
                             <field name="date"/>
