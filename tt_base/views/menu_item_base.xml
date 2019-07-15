@@ -79,7 +79,6 @@
                   parent="tt_base.top_tour_travel_configuration"
                   sequence="6"/>
 
-
         <menuitem id="menu_tour_travel_destination"
                   name="Destination"
                   groups="tt_base.group_tt_tour_travel_operator"
