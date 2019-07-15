@@ -9,7 +9,6 @@
 
             <xpath expr="//group[@name='paxgroup']" position="before">
                 <separator string="Trip Information"/>
-                <button name="to_dict" string="test to dict" type="object"/>
                 <group>
                     <group>
                         <field name="origin_id" string="Origin" options="{'no_create': True}"/>
@@ -62,35 +61,36 @@
 
             <xpath expr="//page[@name='anchor']" position="before">
                 <page string="Vendor" name="vendor">
-                    <field name="provider_booking_ids">
-                        <!--<tree>-->
-                        <!--<field name="pnr"/>-->
-                        <!--<field name="direction"/>-->
-                        <!--<field name="provider" groups="tt_base.group_tt_tour_travel_operator"/>-->
-                        <!--<field name="origin"/>-->
-                        <!--<field name="destination"/>-->
-                        <!--<field name="departure_date"/>-->
-                        <!--<field name="return_date"/>-->
-                        <!--&lt;!&ndash;<field name="total"/>&ndash;&gt;-->
-                        <!--<field name="state"/>-->
-                        <!--</tree>-->
-                    </field>
+                    <field name="provider_booking_ids"/>
+<!--                        &lt;!&ndash;<tree>&ndash;&gt;-->
+<!--                        &lt;!&ndash;<field name="pnr"/>&ndash;&gt;-->
+<!--                        &lt;!&ndash;<field name="direction"/>&ndash;&gt;-->
+<!--                        &lt;!&ndash;<field name="provider" groups="tt_base.group_tt_tour_travel_operator"/>&ndash;&gt;-->
+<!--                        &lt;!&ndash;<field name="origin"/>&ndash;&gt;-->
+<!--                        &lt;!&ndash;<field name="destination"/>&ndash;&gt;-->
+<!--                        &lt;!&ndash;<field name="departure_date"/>&ndash;&gt;-->
+<!--                        &lt;!&ndash;<field name="return_date"/>&ndash;&gt;-->
+<!--                        &lt;!&ndash;&lt;!&ndash;<field name="total"/>&ndash;&gt;&ndash;&gt;-->
+<!--                        &lt;!&ndash;<field name="state"/>&ndash;&gt;-->
+<!--                        &lt;!&ndash;</tree>&ndash;&gt;-->
+<!--                    </field>-->
                 </page>
             </xpath>
             <xpath expr="//group[@name='paxgroup']" position="after">
                 <separator string="Segment"/>
-                <field name="segment_ids">
-                    <tree>
-                        <field name="pnr"/>
-                        <field name="journey_type"/>
-                        <field name="carrier_id"/>
-                        <field name="carrier_name"/>
-                        <field name="origin_id"/>
-                        <field name="destination_id"/>
-                        <field name="departure_date_fmt"/>
-                        <field name="arrival_date_fmt"/>
-                    </tree>
-                </field>
+                    <field name="segment_ids"/>
+<!--                <field name="segment_ids">-->
+<!--                    <tree>-->
+<!--                        <field name="pnr"/>-->
+<!--                        <field name="journey_type"/>-->
+<!--                        <field name="carrier_id"/>-->
+<!--                        <field name="carrier_name"/>-->
+<!--                        <field name="origin_id"/>-->
+<!--                        <field name="destination_id"/>-->
+<!--                        <field name="departure_date_fmt"/>-->
+<!--                        <field name="arrival_date_fmt"/>-->
+<!--                    </tree>-->
+<!--                </field>-->
             </xpath>
         </field>
     </record>
@@ -101,10 +101,10 @@
         <field name="arch" type="xml">
 
             <tree>
-                <button type="object" string="Create Booking" name="create_booking_test"/>
+                <button type="object" string="Create Booking" name="create_booking_api"/>
                 <button type="object" string="ISSUED1" name="action_issued_api"/>
                 <field name="name"/>
-                <field name="sub_agent_id"/>
+                <field name="customer_parent_id"/>
                 <field name="pnr"/>
                 <field name="date"/>
                 <field name="expired_date"/>

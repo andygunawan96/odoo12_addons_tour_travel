@@ -1,86 +1,5 @@
 from odoo import api, fields, models, _
-
-BOOKING_STATE_TO_STR = {
-    'draft': 'New',
-    'confirm': 'Confirmed',
-    'cancel': 'Cancelled',
-    'cancel2': 'Expired',
-    'fail_booking': 'Failed (Book)',
-    'booked': 'Booked',
-    'partial_booked': 'Partial Booked',
-    'fail_issue': 'Failed (Issue)',
-    'partial_issued': 'Partial Issued',
-    'issued': 'Issued',
-    'done': 'Done',
-    'refund': 'Refund',
-    'reroute': 'Reroute',
-    'error': 'Connection Loss',
-    'in_progress': 'In Progress',
-    'fail_refunded': 'Failed (REFUNDED)',
-}
-
-BOOKING_STATE = [
-    ('draft', 'New'),
-    ('confirm', 'Confirmed'),
-    ('cancel', 'Cancelled'),
-    ('cancel2', 'Expired'),
-    ('error', 'Connection Loss'),
-    ('fail_booking', 'Failed (Book)'),
-    ('booked', 'Booked'), ('partial_booked', 'Partial Booked'),
-    ('in_progress', 'In Progress'),
-    ('fail_issue', 'Failed (Issue)'),
-    ('partial_issued', 'Partial Issued'),
-    ('issued', 'Issued'),
-    ('done', 'Done'),
-    ('fail_refunded', 'Failed (REFUNDED)'),
-    ('refund', 'Refund'),
-    ('reroute', 'Reroute'),
-]
-
-JOURNEY_DIRECTION = [
-    ('OW', 'One Way'),
-    ('RT', 'Return')
-]
-
-STATE = [
-    ('draft', 'Draft'),
-    ('book', 'Book'),
-    ('fail_book', 'Fail Book'),
-    ('partial_issued', 'Partial Issued'),
-    ('issued', 'Issued'),
-    ('fail_issued', 'Fail Issued'),
-    ('refund', 'Refund'),
-    ('book', 'Book')
-]
-
-RESERVATION_TYPE = [
-    ('airline', 'Airline'),
-    ('train', 'Train'),
-    ('ship', 'Ship'),
-    ('cruise', 'Cruise'),
-    ('car', 'Car/Rent'),
-    ('bus', 'Bus')
-]
-
-
-# class tt_ledger(models.Model):
-#     _inherit = 'tt.ledger'
-#
-#     resv_id = fields.Many2one('tt.reservation', 'Reservation', readonly=True)
-
-
-# class tt_adjustment(models.Model):
-#     _inherit = 'tt.adjustment'
-#
-#     resv_id = fields.Many2one('tt.reservation', 'Reservation', readonly=True)
-
-
-# class tt_agent_invoice(models.Model):
-#     _inherit = 'tt.agent.invoice'
-#
-#     resv_id = fields.Many2one('tt.reservation', 'Reservation', readonly=True)
-
-
+from ...tools import variables
 class TtReservation(models.Model):
     _name = 'tt.reservation'
 
@@ -91,16 +10,15 @@ class TtReservation(models.Model):
     expired_date = fields.Datetime('Expired Date', readonly=True)##fixme terpakai?
     hold_date = fields.Datetime('Hold Date', readonly=True)
 
-    state = fields.Selection(BOOKING_STATE, 'State', default='draft')
+    state = fields.Selection(variables.BOOKING_STATE, 'State', default='draft')
 
     booked_uid = fields.Many2one('res.users', 'Booked by', readonly=True)
     booked_date = fields.Datetime('Booked Date', readonly=True)
     issued_uid = fields.Many2one('res.users', 'Issued by', readonly=True)
     issued_date = fields.Datetime('Issued Date', readonly=True)
-    user_id = fields.Many2one('res.users', 'Create by', readonly=True)  # create_uid
+    user_id = fields.Many2one('res.users', 'Create by', readonly=True) #create_uid
 
-    sid = fields.Char('SID')
-    issued_sid = fields.Char('Issued SID')
+    sid_booked = fields.Char('SID Booked')# Signature generate sendiri
 
     contact_id = fields.Many2one('tt.customer', 'Contact Person', ondelete='restrict', readonly=True, states={'draft': [('readonly', False)]})
     contact_name = fields.Char('Contact Name')##fixme oncreate later
@@ -117,10 +35,7 @@ class TtReservation(models.Model):
     departure_date = fields.Date('Journey Date', readonly=True, states={'draft': [('readonly', False)]})  # , required=True
     return_date = fields.Date('Return Date', readonly=True, states={'draft': [('readonly', False)]})
 
-    # agent_invoice_ids = fields.One2many('tt.agent.invoice', '', 'Agent Invoice')  # One2Many -> tt.agent.invoice
-    # agent_invoice_ids = fields.Char('Agent Invoice')##fixme invoice here
-
-    provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
+    provider_type_id = fields.Many2one('tt.provider.type','Provider Type')
 
     adjustment_ids = fields.Char('Adjustment')  # One2Many -> tt.adjustment
     error_msg = fields.Char('Error Message')
@@ -153,13 +68,9 @@ class TtReservation(models.Model):
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', related='agent_id.agent_type_id',
                                     store=True)
 
-    #yang beli, kalau FPO sama dengan agent_id
-    sub_agent_id = fields.Many2one('tt.agent', 'Sub-Agent', readonly=True, states={'draft': [('readonly', False)]},
-                                   help='COR / POR')
-    sub_agent_type_id = fields.Many2one('tt.agent.type', 'Sub Agent Type', related='sub_agent_id.agent_type_id',
-                                        store=True, readonly=True)
 
-    @api.model
-    def create(self, vals_list):
-        vals_list['res_model'] = self._name
-        return super(TtReservation, self).create(vals_list)
+
+    customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer', readonly=True, states={'draft': [('readonly', False)]},
+                                   help='COR / POR')
+    customer_parent_type_id = fields.Many2one('tt.customer.parent.type', 'Customer Type', related='customer_parent_id.customer_parent_type_id',
+                                        store=True, readonly=True)

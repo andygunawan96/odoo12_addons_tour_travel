@@ -1092,6 +1092,8 @@ class ReservationTrainApi(models.Model):
                 'direction': booking_obj.direction  #for compute r.ac per pax/route(OW/RT)
             }
 
+
+
             res = booking_obj._update_service_charges(book_info['pnr'], provider_obj, api_context, **kwargs)
 
             passenger_ids = copy.deepcopy(self.param_passenger_ids)
@@ -1256,7 +1258,6 @@ class ReservationTrainApi(models.Model):
         # This function call from button on form
         # This function call by GATEWAY API also
 
-        print('1')
         api_context = copy.deepcopy(self.param_context)
 
         api_context.update({
@@ -1270,7 +1271,6 @@ class ReservationTrainApi(models.Model):
         order_number = temp_order_number.name
         order_obj = self.sudo().search([('name', '=', order_number), '|', ('agent_id', '=', user_obj.agent_id.id), ('sub_agent_id', '=', user_obj.agent_id.id)])
         if not order_obj:
-            print('order not found')
             _logger.error('Just Test : OrderNo %s, agent_id : %s' % (order_number, user_obj.agent_id.id))
             return {
                 'error_code': 1,
@@ -1279,14 +1279,12 @@ class ReservationTrainApi(models.Model):
             }
 
         if order_obj.state == 'issued':
-            print('issued')
             return {
                 'error_code': 0,
                 'error_msg': 'Success'
             }
 
         if order_obj.state not in ['booked', 'partial_booked', 'partial_issued']:
-            print('booked/issued')
             _logger.info(msg='TEST {} : {}'.format('Request Terminated', 'state not booked, {}'.format(order_obj.state)))
             return {
                 'error_code': 1,
@@ -1313,7 +1311,6 @@ class ReservationTrainApi(models.Model):
                 'error_msg': is_enough['error_msg']
             }
 
-        print('2')
         try:
             # order_obj.validate_issue(api_context=api_context)
             error_msg = []

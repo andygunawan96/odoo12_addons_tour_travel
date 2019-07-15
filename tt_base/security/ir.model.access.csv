@@ -27,10 +27,6 @@ access_tt_customer_for_tour_travel_operator,tt_customer.for.tour.travel.operator
 access_tt_customer_for_tour_travel_supervisor,tt_customer.for.tour.travel.supervisor,model_tt_customer,tt_base.group_tt_tour_travel_supervisor,1,1,1,0
 access_tt_customer_for_tour_travel_manager,tt_customer.for.tour.travel.manager,model_tt_customer,tt_base.group_tt_tour_travel_manager,1,1,1,0
 
-access_tt_company_for_public,tt.company.for.public,model_tt_company,,1,0,0,0
-access_tt_company_for_agent_management_operator,tt_company_for_agent_management_operator,model_tt_company,group_tt_agent_management_operator,1,1,1,0
-access_tt_company_for_tour_travel_operator,tt_company_for_tour_travel_operator,model_tt_company,tt_base.group_tt_tour_travel_operator,1,0,0,0
-
 access_res_employee_for_public,res_employee_for_public,model_res_employee,,1,0,0,0
 access_res_employee_for_agent_management_operator,res_employee_for_agent_management_operator,model_res_employee,group_tt_agent_management_operator,1,1,1,0
 access_res_employee_for_tour_travel_operator,res_employee_for_tour_travel_operator,model_res_employee,tt_base.group_tt_tour_travel_operator,1,0,0,0
@@ -101,11 +97,6 @@ access_agent_bank_detail_for_tour_travel_operator,agent.bank.detail.for.tour.tra
 access_agent_bank_detail_for_tour_travel_supervisor,agent.bank.detail.for.tour.travel.supervisor,model_agent_bank_detail,tt_base.group_tt_tour_travel_supervisor,1,0,1,0
 access_agent_bank_detail_for_tour_travel_manager,agent.bank.detail.for.tour.travel.manager,model_agent_bank_detail,tt_base.group_tt_tour_travel_manager,1,1,1,0
 
-access_company_bank_detail_for_public,company.bank.detail.for.public,model_company_bank_detail,,1,0,0,0
-access_company_bank_detail_for_tour_travel_operator,company.bank.detail.for.tour.travel.operator,model_company_bank_detail,tt_base.group_tt_tour_travel_operator,1,0,1,0
-access_company_bank_detail_for_tour_travel_supervisor,company.bank.detail.for.tour.travel.supervisor,model_company_bank_detail,tt_base.group_tt_tour_travel_supervisor,1,0,1,0
-access_company_bank_detail_for_tour_travel_manager,company.bank.detail.for.tour.travel.manager,model_company_bank_detail,tt_base.group_tt_tour_travel_manager,1,1,1,0
-
 access_customer_bank_detail_for_public,customer.bank.detail.for.public,model_customer_bank_detail,,1,0,0,0
 access_customer_bank_detail_for_tour_travel_operator,customer.bank.detail.for.tour.travel.operator,model_customer_bank_detail,tt_base.group_tt_tour_travel_operator,1,0,0,0
 access_customer_bank_detail_for_tour_travel_supervisor,customer.bank.detail.for.tour.travel.supervisor,model_customer_bank_detail,tt_base.group_tt_tour_travel_supervisor,1,0,1,0
@@ -171,3 +162,7 @@ access_tt_commission_rule_for_public,tt.commission.rule.for.public,model_tt_comm
 access_tt_commission_rule_for_agent_management_operator,tt.commission.rule.for.agent.man.operator,model_tt_commission_rule,group_tt_agent_management_operator,1,1,1,1
 access_tt_commission_rule_for_agent_management_supervisor,tt.commission.rule.for.agent.man.supervisor,model_tt_commission_rule,group_tt_agent_management_supervisor,1,1,1,1
 access_tt_commission_rule_for_agent_management_manager,tt.commission.rule.for.agent.man.manager,model_tt_commission_rule,group_tt_agent_management_manager,1,1,1,1
+
+access_tt_customer_parent_for_agent_management_manager,tt.customer.parent.for.agent.management.manager,model_tt_customer_parent,group_tt_agent_management_manager,1,1,1,1
+
+access_tt_customer_parent_type_for_agent_management_manager,tt.customer.parent.type.for.agent.management.manager,model_tt_customer_parent_type,group_tt_agent_management_manager,1,1,1,1

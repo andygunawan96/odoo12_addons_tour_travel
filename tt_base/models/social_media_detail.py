@@ -11,5 +11,4 @@ class SocialMediaDetail(models.Model):
     agent_id = fields.Many2one('tt.agent', 'Agent')
     agent_registration_id = fields.Many2one('tt.agent.registration', 'Agent Registration ID')
     customer_id = fields.Many2one('tt.customer', 'Customer', store=True)
-    company_id = fields.Many2one('tt.company', string='Company')
     active = fields.Boolean('Active', default=True)

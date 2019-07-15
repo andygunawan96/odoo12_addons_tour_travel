@@ -1,40 +1,38 @@
 from odoo import api, fields, models, _
-from .tt_reservation_airline import BOOKING_STATE, JOURNEY_DIRECTION
+from ...tools import variables
 from datetime import datetime
 
 
-class TransportBookingProvider(models.Model):
-    _name = 'tt.tb.provider.airline'
+class TtProviderAirline(models.Model):
+    _name = 'tt.provider.airline'
     _rec_name = 'pnr'
-    # _order = 'sequence'
     _order = 'departure_date'
 
     pnr = fields.Char('PNR')
-    provider = fields.Char('Provider')
-    state = fields.Selection(BOOKING_STATE, 'Status', default='draft')
+    provider_id = fields.Many2one('tt.provider','Provider')
+    state = fields.Selection(variables.BOOKING_STATE, 'Status', default='draft')
     booking_id = fields.Many2one('tt.reservation.airline', 'Order Number', ondelete='cascade')
     sequence = fields.Integer('Sequence')
 
-    direction = fields.Selection(JOURNEY_DIRECTION, string='Direction')
-    # origin_id = fields.Many2one('tt.destinations', 'Origin')
-    # destination_id = fields.Many2one('tt.destinations', 'Destination')
+    direction = fields.Selection(variables.JOURNEY_DIRECTION, string='Direction')
+    origin_id = fields.Many2one('tt.destinations', 'Origin')
+    destination_id = fields.Many2one('tt.destinations', 'Destination')
     departure_date = fields.Datetime('Departure Date')
     return_date = fields.Datetime('Return Date')
-    origin = fields.Char('Origin')
-    destination = fields.Char('Destination')
 
-    journey_ids = fields.One2many('tt.tb.journey.airline', 'provider_booking_id', string='Journeys')
+    sid_issued = fields.Char('SID Issued')#signature generate sendiri
+
+    journey_ids = fields.One2many('tt.journey.airline', 'provider_booking_id', string='Journeys')
     cost_service_charge_ids = fields.One2many('tt.service.charge', 'provider_airline_booking_id', 'Cost Service Charges')
 
-    # currency_id = fields.Many2one('res.currency', 'Currency', readonly=True, states={'draft': [('readonly', False)]},
-    #                               default=lambda self: self.env.user.company_id.currency_id)
+    currency_id = fields.Many2one('res.currency', 'Currency', readonly=True, states={'draft': [('readonly', False)]},
+                                  default=lambda self: self.env.user.company_id.currency_id)
+
     # total = fields.Monetary(string='Total', readonly=True)
     # total_fare = fields.Monetary(string='Total Fare', compute="_compute_provider_total_fare", readonly=True)
     # total_orig = fields.Monetary(string='Total (Original)', readonly=True)
     promotion_code = fields.Char(string='Promotion Code')
 
-    # sid_connector = fields.Char('SID Connector', readonly=True)
-    # sid = fields.Char('Session ID', readonly=True)
 
     # Booking Progress
     booked_uid = fields.Many2one('res.users', 'Booked By')
@@ -47,7 +45,7 @@ class TransportBookingProvider(models.Model):
     # refund_uid = fields.Many2one('res.users', 'Refund By')
     # refund_date = fields.Datetime('Refund Date')
 
-    ticket_ids = fields.One2many('tt.tb.ticket.airline', 'provider_id', 'Ticket Number')
+    ticket_ids = fields.One2many('tt.ticket.airline', 'provider_id', 'Ticket Number')
 
     error_msg = fields.Text('Message Error', readonly=True, states={'draft': [('readonly', False)]})
 
@@ -91,7 +89,7 @@ class TransportBookingProvider(models.Model):
             # ## UPDATED by Samvi 2018/07/24
             # ## Terdetect sebagai administrator jika sudo
             # provider_obj = self.env['tt.tb.provider'].sudo().browse(provider_id)
-            provider_obj = self.env['tt.tb.provider.airline'].browse(provider_id)
+            provider_obj = self.env['tt.provider.airline'].browse(provider_id)
             if not provider_obj:
                 return {
                     'error_code': -1,

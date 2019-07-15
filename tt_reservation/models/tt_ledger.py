@@ -1,16 +1,9 @@
 from odoo import models, fields
 
-SERVICE_TYPE = {
-    'tt.reservation.train': 'Train',
-    'tt.reservation.airline': 'Airline',
-    'issued.offline': 'Issued Offline'
-}
-
-
 class tt_ledger(models.Model):
     _inherit = 'tt.ledger'
 
-    provider_type_id = fields.Many2one('tt.provider.type', 'Service Type')
+    provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
     res_model = fields.Char(
         'Related Reservation Name', index=True)
     res_id = fields.Integer(
@@ -34,6 +27,4 @@ class tt_ledger(models.Model):
     def create(self, vals_list):
         if 'res_model' in vals_list and 'res_id' in vals_list:
             vals_list['provider_type_id'] = self.env[vals_list['res_model']].browse(vals_list['res_id']).provider_type_id.id
-            if not vals_list['provider_type_id']:
-                vals_list['provider_type_id'] = self.env[vals_list['res_model']].browse(vals_list['res_id']).provider_type_id.id
         super(tt_ledger, self).create(vals_list)

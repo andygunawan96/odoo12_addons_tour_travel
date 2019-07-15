@@ -27,16 +27,16 @@
                         </div>
                         <group>
                             <field name="agent_id" readonly="False"/>
+                            <field name="customer_parent_ids"/>
                             <field name="name" readonly="True"/>
                             <field name="nickname"/>
-                            <field name="title"/>
                             <field name="gender"/>
                             <field name="marital_status"/>
                             <field name="religion"/>
                             <field name="birth_date"/>
                             <field name="age"/>
                             <field name="passport_number"/>
-                            <field name="passport_exp_date"/>
+                            <field name="passport_expdate"/>
                             <field name="user_id"/>
                             <field name="customer_bank_detail_ids"/>
                         </group>
@@ -67,7 +67,6 @@
         <field name="model">tt.customer</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="title"/>
                 <field name="first_name"/>
                 <field name="last_name"/>
                 <field name="agent_id"/>
@@ -90,15 +89,8 @@
         </field>
     </record>
 
-    <menuitem id="menu_tour_travel_customer"
-              parent="tt_base.top_tour_travel_customers"
-              groups="tt_base.group_tt_tour_travel_operator"
-              name="Customer"
-              sequence="1"
-              action="tt_customer_action_view"/>
-
     <menuitem id="menu_customer_customer"
-              parent="tt_base.top_customers_customers"
+              parent="tt_base.top_tour_travel_customers"
               groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"
               name="Customer"
               sequence="1"

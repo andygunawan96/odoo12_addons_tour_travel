@@ -21,7 +21,6 @@
                     </div>
                     <group>
                         <field name="customer_id"/>
-                        <field name="company_id"/>
                         <field name="job"/>
                         <field name="job_title"/>
                     </group>

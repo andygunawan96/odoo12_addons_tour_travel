@@ -34,7 +34,6 @@
                             <field name="code"/>
                             <field name="bic"/>
                             <field name="agent_bank_ids"/>
-                            <field name="company_bank_ids"/>
                             <field name="customer_bank_ids"/>
                             <field name="payment_acquirer_ids"/>
                         </group>

@@ -1,7 +1,7 @@
 <odoo>
     <record id="tt_reservation_airline_provider_form_view" model="ir.ui.view">
         <field name="name">tt.transport.airline.provider.form.view</field>
-        <field name="model">tt.tb.provider.airline</field>
+        <field name="model">tt.provider.airline</field>
         <field name="arch" type="xml">
             <form>
                 <!--<header>-->
@@ -21,11 +21,11 @@
                 <sheet>
                     <group>
                         <group>
-                            <!--<field name="is_ledger_created"/>-->
+                            <field name="is_ledger_created"/>
                             <field name="sequence"/>
-                            <!--<field name="booking_id"/>-->
+                            <field name="booking_id"/>
                             <field name="pnr"/>
-                            <field name="provider" groups="tt_base.group_tt_tour_travel_operator"/>
+                            <field name="provider_id"/>
                             <field name="notes"/>
                             <field name="error_msg"/>
                         </group>
@@ -49,16 +49,15 @@
                     </field>
                     <group string="Itinerary Info">
                         <group>
-                            <field name="origin"/>
-                            <field name="destination"/>
+                            <field name="origin_id"/>
+                            <field name="destination_id"/>
                             <field name="departure_date"/>
                             <field name="return_date"/>
                             <field name="direction"/>
                         </group>
                         <group>
-                            <!--<field name="currency_id"/>-->
-                            <!--<field name="sid"/>-->
-                            <!--<field name="sid_connector"/>-->
+                            <field name="currency_id"/>
+                            <field name="sid_issued"/>
                             <field name="promotion_code"/>
                         </group>
                     </group>
@@ -77,14 +76,14 @@
 
     <record id="tt_reservation_airline_provider_tree_view" model="ir.ui.view">
         <field name="name">tt.transport.airline.provider.tree.view</field>
-        <field name="model">tt.tb.provider.airline</field>
+        <field name="model">tt.provider.airline</field>
         <field name="arch" type="xml">
             <tree>
                 <field name="pnr"/>
                 <field name="direction"/>
-                <field name="provider" groups="tt_base.group_tt_tour_travel_operator"/>
-                <field name="origin"/>
-                <field name="destination"/>
+                <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                <field name="origin_id"/>
+                <field name="destination_id"/>
                 <field name="departure_date"/>
                 <field name="return_date"/>
                 <!--<field name="total"/>-->
@@ -96,7 +95,7 @@
 
     <record id="tt_reservation_airline_provider_views" model="ir.actions.act_window">
         <field name="name">airline Provider</field>
-        <field name="res_model">tt.tb.provider.airline</field>
+        <field name="res_model">tt.provider.airline</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="context">

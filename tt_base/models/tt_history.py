@@ -46,78 +46,70 @@ class TtHistory(models.Model):
 
     @api.multi
     def write(self, value):
-        self_dict = self.read()
-        key_list = [key for key in value.keys()]
-
-        #tempat hardcode skip key
-        skipped_keys = self.env['tt.skipped.keys'].SKIPPED_KEYS
-
-        print('Keys History : ' + str(key_list))
-
-        for key in key_list:
-            old_value = ''
-            new_value = ''
-
-            #skipped key
-            if self._name in skipped_keys:
-                if key in skipped_keys[self._name]:
-                    continue
-
-            # One2Many Relation Field
-            if self.fields_get().get(key)['type'] == 'one2many':
-                self.message_post(body=_("%s Changed.") %
-                                       (self.fields_get().get(key)['string']))  # Model String / Label
-            # Many2One Relation Field
-            # start : kode ini masih beresiko (hard coded). dapat diubah kapan saja
-            else:
-                if self.fields_get().get(key)['type'] == 'many2one':
-                    print('Self Dict : ' + str(self_dict))
-                    if self_dict:
-                        dict = self_dict[0]
+        for rec in self:
+            rec_dict = rec.read()
+            key_list = [key for key in value.keys()]
+    
+            #tempat hardcode skip key
+            skipped_keys = rec.env['tt.skipped.keys'].SKIPPED_KEYS
+    
+            for key in key_list:
+                #skipped key
+                if rec._name in skipped_keys:
+                    if key in skipped_keys[rec._name]:
+                        continue
+    
+                # One2Many Relation Field
+                if rec.fields_get().get(key)['type'] == 'one2many':
+                    rec.message_post(body=_("%s Changed.") %
+                                           (rec.fields_get().get(key)['string']))  # Model String / Label
+                # Many2One Relation Field
+                # start : kode ini masih beresiko (hard coded). dapat diubah kapan saja
+                else:
+                    if rec.fields_get().get(key)['type'] == 'many2one':
+                        dict = rec_dict[0]
                         old_value = dict.get(key)
                         if old_value is False:
                             old_value = 'None'
                         else:
                             old_value = dict.get(key)[1]
-                        print(self.env[self.fields_get().get(key)['relation']].search([('id', 'in', [value[key]])]))
-                        new_value = self.env[self.fields_get().get(key)['relation']].search([('id', 'in', [value[key]])]).name_get()[0][1]
-                    # end
-
-                # Non-Relation Field
-                else:
-                    old_value = self_dict[0].get(key)
-                    new_value = value[key]
-                # print(key + ' : ' + str(new_value))
-
-                # Print History
-                if self.fields_get().get(key)['type'] == 'binary':
-                    self.message_post(body=_("%s has been changed.") %
-                                           (self.fields_get().get(key)['string']))  # Model String / Label
-                elif self.fields_get().get(key)['type'] == 'html':
-                    # Un-escape HTML
-                    old_value = html.unescape(old_value)
-                    new_value = html.unescape(new_value)
-
-                    # " to '
-                    old_value = old_value.replace('"', '\'')
-                    new_value = new_value.replace('"', '\'')
-
-                    if old_value != new_value:
-                        # print('test')
-                        self.message_post(body=_("%s has been changed from %s to %s by %s.") %
-                                                (self.fields_get().get(key)['string'],  # Model String / Label
-                                                 old_value,  # Old Value
-                                                 # value[key],  # New Value
-                                                 new_value,  # new value
-                                                 self.env.user.name))  # User that Changed the Value
-                else:
-                    if old_value == '' and new_value == '':
-                        self.message_post(body=_("%s has been changed from %s to %s by %s.") %
-                                               (self.fields_get().get(key)['string'],  # Model String / Label
+                        new_value = rec.env[rec.fields_get().get(key)['relation']].search([('id', 'in', [value[key]])]).name_get()[0][1]
+                        # end
+    
+                    # Non-Relation Field
+                    else:
+                        old_value = rec_dict[0].get(key)
+                        new_value = value[key]
+                    # print(key + ' : ' + str(new_value))
+    
+                    # Print History
+                    if rec.fields_get().get(key)['type'] == 'binary':
+                        rec.message_post(body=_("%s has been changed.") %
+                                               (rec.fields_get().get(key)['string']))  # Model String / Label
+                    elif rec.fields_get().get(key)['type'] == 'html':
+                        # Un-escape HTML
+                        old_value = html.unescape(old_value)
+                        new_value = html.unescape(new_value)
+    
+                        # " to '
+                        old_value = old_value.replace('"', '\'')
+                        new_value = new_value.replace('"', '\'')
+    
+                        if old_value != new_value:
+                            # print('test')
+                            rec.message_post(body=_("%s has been changed from %s to %s by %s.") %
+                                                    (rec.fields_get().get(key)['string'],  # Model String / Label
+                                                     old_value,  # Old Value
+                                                     # value[key],  # New Value
+                                                     new_value,  # new value
+                                                     rec.env.user.name))  # User that Changed the Value
+                    else:
+                        rec.message_post(body=_("%s has been changed from %s to %s by %s.") %
+                                               (rec.fields_get().get(key)['string'],  # Model String / Label
                                                 old_value,  # Old Value
                                                 # value[key],  # New Value
                                                 new_value,  # new value
-                                                self.env.user.name))  # User that Changed the Value
+                                                rec.env.user.name))  # User that Changed the Value
         return super(TtHistory, self).write(value)
 
 # For Debug Purposes

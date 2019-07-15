@@ -13,19 +13,15 @@
                                    options='{"terminology": "archive"}'/>
                         </button>
                     </div>
-                    <div class="oe_title">
-                        <label for="name" class="oe_edit_only" string="Name"/>
-                        <h1>
-                            <field name="name" required="True"/>
-                        </h1>
-                    </div>
+                    <button name="to_dict" string="test_print_dict" type="object"/>
                     <group>
                         <group>
+                            <field name="name"/>
                             <field name="code"/>
                             <field name="icao"/>
-                            <field name="city"/>
-                            <field name="country_id" required="1"/>
                             <field name="provider_type_id"/>
+                            <field name="country_id"/>
+                            <field name="city"/>
                         </group>
                         <group>
                             <field name="latitude"/>

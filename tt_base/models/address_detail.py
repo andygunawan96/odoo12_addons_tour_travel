@@ -25,7 +25,6 @@ class AddressDetail(models.Model):
     district_id = fields.Many2one('res.district', string='District')
     sub_district_id = fields.Many2one('res.sub.district', string='Sub District')
     customer_id = fields.Many2one('tt.customer', string='Customer')
-    company_id = fields.Many2one('tt.company', string='Company')
     agent_id = fields.Many2one('tt.agent', string='Agent')
     agent_registration_id = fields.Many2one('tt.agent.registration', string='Agent Registration ID')
     active = fields.Boolean('Active', default=True)

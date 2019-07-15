@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+    
+        <record id="tt_transport_carrier_airline_sq" model="tt.transport.carrier">
+            <field name="name">Singapore Airlines</field>
+            <field name="code">SQ</field>
+            <field name="icao">SIA</field>
+            <field name="call_sign">SINGAPORE</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_cx" model="tt.transport.carrier">
+            <field name="name">Cathay Pacific</field>
+            <field name="code">CX</field>
+            <field name="icao">CPA</field>
+            <field name="call_sign">CATHAY</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_ci" model="tt.transport.carrier">
+            <field name="name">China Airlines</field>
+            <field name="code">CI</field>
+            <field name="icao">CAL</field>
+            <field name="call_sign">DYNASTY</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_ga" model="tt.transport.carrier">
+            <field name="name">Garuda Indonesia</field>
+            <field name="code">GA</field>
+            <field name="icao">GIA</field>
+            <field name="call_sign">INDONESIA</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+    </data>
+</odoo>
+    

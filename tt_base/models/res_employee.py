@@ -8,7 +8,6 @@ class ResEmployee(models.Model):
 
     name = fields.Char('Name', required=True)
     customer_id = fields.Many2one('tt.customer', 'Customer')
-    company_id = fields.Many2one('tt.company', string='Company')
     job = fields.Char('Job')
     job_title = fields.Char('Job Title')
     active = fields.Boolean(string="Active", default=True)

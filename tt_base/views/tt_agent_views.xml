@@ -41,7 +41,7 @@
                         <field name="reference"/>
                         <field name="parent_agent_id"/>
                         <field name="user_ids"/>
-                        <field name="company_ids"/>
+                        <field name="customer_parent_ids"/>
                     </group>
 
                     <group string="Information">

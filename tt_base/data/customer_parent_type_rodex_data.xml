@@ -1,0 +1,19 @@
+<odoo>
+    <data>
+        <record id="agent_type_cor" model="tt.customer.parent.type">
+            <field name="name">COR</field>
+            <field name="code">cor</field>
+            <field name="active">True</field>
+        </record>
+        <record id="agent_type_por" model="tt.customer.parent.type">
+            <field name="name">POR</field>
+            <field name="code">por</field>
+            <field name="active">True</field>
+        </record>
+        <record id="agent_type_fpo" model="tt.customer.parent.type">
+            <field name="name">FPO</field>
+            <field name="code">fpo</field>
+            <field name="active">True</field>
+        </record>
+    </data>
+</odoo>

@@ -17,10 +17,8 @@ Key Features
         'data/ir_module_category_data.xml',
         'data/res_groups_data.xml',
         'data/agent_type_rodex_data.xml',
-        'data/tt.provider.type.csv',
-        'data/tt.provider.csv',
-        'data/tt.transport.carrier.csv',
-        'data/tt.destinations.csv',
+        'data/skipped_history_data.xml',
+        'data/customer_parent_type_rodex_data.xml',
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
 
@@ -35,9 +33,7 @@ Key Features
         'views/phone_detail_views.xml',
         'views/res_bank_views.xml',
         'views/agent_bank_detail_views.xml',
-        'views/company_bank_detail_views.xml',
         'views/customer_bank_detail_views.xml',
-        'views/tt_company_views.xml',
         'views/tt_provider_views.xml',
         'views/tt_provider_type_views.xml',
         'views/transport_carrier_views.xml',
@@ -53,9 +49,8 @@ Key Features
         'views/templates.xml',
         'views/tt_destination_views.xml',
         'views/tt_skipped_keys_views.xml',
-        'views/tt_routes_views.xml',
-
-        'data/skipped_history_data.xml'
+        'views/tt_customer_parent_views.xml',
+        'views/tt_routes_views.xml'
     ],
     'demo': [],
     'qweb': [],

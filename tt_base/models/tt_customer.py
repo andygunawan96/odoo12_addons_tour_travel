@@ -2,40 +2,10 @@ from odoo import models, fields, api, _
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from odoo.tools import image
-from ...tools import test_to_dict
-
-TITLE = [
-    ('MR', 'Mr.'),
-    ('MSTR', 'Mstr.'),
-    ('MRS', 'Mrs.'),
-    ('MS', 'Ms.'),
-    ('MISS', 'Miss')
-]
-
-GENDER = [
-    ('male', 'Male'),
-    ('female', 'Female')
-]
-
-MARITAL_STATUS = [
-    ('single', 'Single'),
-    ('married', 'Married'),
-    ('divorced', 'Divorced'),
-    ('widowed', 'Widowed')
-]
-
-RELIGION = [
-    ('islam', 'Islam'),
-    ('protestantism', 'Protestantism'),
-    ('catholicism', 'Catholicism'),
-    ('hinduism', 'Hinduism'),
-    ('buddhism', 'Buddhism'),
-    ('confucianism', 'Confucianism'),
-    ('others', 'Others')
-]
+from ...tools import variables
 
 
-class TtCustomer(models.Model, test_to_dict.ToDict):
+class TtCustomer(models.Model):
     _inherit = 'tt.history'
     _name = 'tt.customer'
     _rec_name = 'name'
@@ -48,10 +18,14 @@ class TtCustomer(models.Model, test_to_dict.ToDict):
     first_name = fields.Char('First Name')
     last_name = fields.Char('Last Name')
     nickname = fields.Char('Nickname')
-    title = fields.Selection(TITLE, string='Title')
-    gender = fields.Selection(GENDER, string='Gender')
-    marital_status = fields.Selection(MARITAL_STATUS, 'Marital Status')
-    religion = fields.Selection(RELIGION, 'Religion')
+
+    gender = fields.Selection(variables.GENDER, string='Gender')
+
+    marital_status = fields.Selection(variables.MARITAL_STATUS, 'Marital Status')
+    religion = fields.Selection(variables.RELIGION, 'Religion')
+
+    nationality_id = fields.Many2one('tt.country','Nationality')
+
     birth_date = fields.Date('Birth Date')
     age = fields.Char('Age', help='For Adult, age in year\nFor Child, age in month',
                       compute="calculate_age")
@@ -62,11 +36,15 @@ class TtCustomer(models.Model, test_to_dict.ToDict):
     social_media_ids = fields.One2many('social.media.detail', 'customer_id', 'Social Media Detail')
     employment_ids = fields.One2many('res.employee', 'customer_id', 'Employee')
     email = fields.Char('Email')
+    identity_type = fields.Selection(variables.IDENTITY_TYPE,'Identity Type')
+    identity_number = fields.Char('Identity Number')
     passport_number = fields.Char(string='Passport Number')
-    passport_exp_date = fields.Datetime(string='Passport Exp Date')
+    passport_expdate = fields.Datetime(string='Passport Exp Date')
     user_id = fields.One2many('res.users', 'customer_id', 'User')
     customer_bank_detail_ids = fields.One2many('customer.bank.detail', 'customer_id', 'Customer Bank Detail')
     agent_id = fields.Many2one('tt.agent', 'Agent')
+    customer_parent_ids = fields.Many2many('tt.customer.parent','tt_customer_customer_parent_rel','customer_id','customer_parent_id','Customer_parent')
+    can_book = fields.Boolean('Is Booker', default=False)
 
     active = fields.Boolean('Active', default=True)
 

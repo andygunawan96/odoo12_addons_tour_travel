@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="tt_provider_airline_sabre" model="tt.provider">
+            <field name="name">Sabre</field>
+            <field name="code">sabre</field>
+            <field name="active" eval="True"/>
+            <field name="provider_type_id" ref="tt_provider_type_airline"/>
+        </record>
+        <record id="tt_provider_airline_amadeus" model="tt.provider">
+            <field name="name">Amadeus</field>
+            <field name="code">amadeus</field>
+            <field name="active" eval="True"/>
+            <field name="provider_type_id" ref="tt_provider_type_airline"/>
+        </record>
+        <record id="tt_provider_airline_garuda" model="tt.provider">
+            <field name="name">Garuda</field>
+            <field name="code">garuda</field>
+            <field name="active" eval="True"/>
+            <field name="provider_type_id" ref="tt_provider_type_airline"/>
+        </record>
+        <record id="tt_provider_airline_citilink" model="tt.provider">
+            <field name="name">Citilink</field>
+            <field name="code">citilink</field>
+            <field name="active" eval="True"/>
+            <field name="provider_type_id" ref="tt_provider_type_airline"/>
+        </record>
+        <record id="tt_provider_airline_airasia" model="tt.provider">
+            <field name="name">Air Asia</field>
+            <field name="code">airasia</field>
+            <field name="active" eval="True"/>
+            <field name="provider_type_id" ref="tt_provider_type_airline"/>
+        </record>
+        <record id="tt_provider_airline_jetstar" model="tt.provider">
+            <field name="name">Jetstar</field>
+            <field name="code">jetstar</field>
+            <field name="active" eval="True"/>
+            <field name="provider_type_id" ref="tt_provider_type_airline"/>
+        </record>
+        <record id="tt_provider_airline_scoot" model="tt.provider">
+            <field name="name">Scoot</field>
+            <field name="code">scoot</field>
+            <field name="active" eval="True"/>
+            <field name="provider_type_id" ref="tt_provider_type_airline"/>
+        </record>
+        <record id="tt_provider_airline_singaporeairlines" model="tt.provider">
+            <field name="name">Singapore Airlines</field>
+            <field name="code">sia</field>
+            <field name="active" eval="True"/>
+            <field name="provider_type_id" ref="tt_provider_type_airline"/>
+        </record>
+        <record id="tt_provider_airline_trigana" model="tt.provider">
+            <field name="name">Trigana</field>
+            <field name="code">trigana</field>
+            <field name="active" eval="True"/>
+            <field name="provider_type_id" ref="tt_provider_type_airline"/>
+        </record>
+        <record id="tt_provider_airline_transnusa" model="tt.provider">
+            <field name="name">Transnusa</field>
+            <field name="code">transnusa</field>
+            <field name="active" eval="True"/>
+            <field name="provider_type_id" ref="tt_provider_type_airline"/>
+        </record>
+        <record id="tt_provider_airline_sriwijaya" model="tt.provider">
+            <field name="name">Sriwijaya</field>
+            <field name="code">sriwijaya</field>
+            <field name="active" eval="True"/>
+            <field name="provider_type_id" ref="tt_provider_type_airline"/>
+        </record>
+        <record id="tt_provider_airline_altea" model="tt.provider">
+            <field name="name">Altea</field>
+            <field name="code">altea</field>
+            <field name="active" eval="True"/>
+            <field name="provider_type_id" ref="tt_provider_type_airline"/>
+        </record>
+        <record id="tt_provider_airline_lionair" model="tt.provider">
+            <field name="name">Lion Air</field>
+            <field name="code">lionair</field>
+            <field name="active" eval="True"/>
+            <field name="provider_type_id" ref="tt_provider_type_airline"/>
+        </record>
+        <record id="tt_provider_airline_expressair" model="tt.provider">
+            <field name="name">Xpress Air</field>
+            <field name="code">xpressair</field>
+            <field name="active" eval="True"/>
+            <field name="provider_type_id" ref="tt_provider_type_airline"/>
+        </record>
+    </data>
+</odoo>

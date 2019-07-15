@@ -6,11 +6,5 @@
             <field name="code">airline</field>
             <field name="active" eval="True"/>
         </record>
-        <record id="tt_provider_type_airline" model="tt.provider.type">
-            <field name="name">Tour</field>
-            <field name="code">tour</field>
-            <field name="active" eval="True"/>
-        </record>
     </data>
-
 </odoo>

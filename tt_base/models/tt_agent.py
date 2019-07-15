@@ -36,14 +36,14 @@ class TtAgent(models.Model):
     address_ids = fields.One2many('address.detail', 'agent_id', string='Addresses')
     phone_ids = fields.One2many('phone.detail', 'agent_id', string='Phones')
     social_media_ids = fields.One2many('social.media.detail', 'agent_id', 'Social Media')
-    # reservation_id = fields.Char(string="Reservation Detail", required=False, )
+    customer_parent_ids = fields.One2many('tt.customer.parent', 'parent_agent_id', 'Customer Parent')
+    customer_parent_walkin_id = fields.Many2one('tt.customer.parent','Walk In Parent')
     customer_ids = fields.One2many('tt.customer', 'agent_id', 'Customer')
     # ledger_id = fields.One2many('tt.ledger', 'agent_id', 'Ledger', required=False, )  # tt_ledger
     ledger_id = fields.Char('Ledger', required=False, )  # tt_ledger
     parent_agent_id = fields.Many2one('tt.agent', string="Parent Agent")
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type')
     history_ids = fields.Char(string="History", required=False, )  # tt_history
-    company_ids = fields.One2many('tt.company', 'agent_id', string='Company')
     user_ids = fields.One2many('res.users', 'agent_id', 'User')
     payment_acquirer_ids = fields.Char(string="Payment Acquirer", required=False, )  # payment_acquirer
     agent_bank_detail_ids = fields.One2many('agent.bank.detail', 'agent_id', 'Agent Bank')  # agent_bank_detail
@@ -71,6 +71,22 @@ class TtAgent(models.Model):
     #                                 value[key],  # New Value
     #                                 self.env.user.name))  # User that Changed the Value
     #     return super(TtAgent, self).write(value)
+
+    @api.model
+    def create(self, vals_list):
+        new_agent = super(TtAgent, self).create(vals_list)
+        agent_name = str(new_agent.name)
+        walkin_obj = self.env['tt.customer.parent'].create(
+            {
+                'parent_agent_id': new_agent.id,
+                'customer_parent_type_id': self.env.ref('tt_base.agent_type_fpo').id,
+                'name': agent_name + ' FPO'
+            }
+        )
+        new_agent.write({
+            'customer_parent_walkin_id': walkin_obj.id
+        })
+        return new_agent
 
     def get_balance(self, agent_id):
         agent_obj = self.env['tt.agent'].browse([agent_id])

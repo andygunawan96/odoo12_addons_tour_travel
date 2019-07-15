@@ -42,7 +42,6 @@
                                 <field name="provider_id"/>
                                 <field name="agent_id"/>
                                 <field name="bank_id"/>
-                                <field name="company_id" groups="base.group_multi_company" options="{&quot;no_open&quot;:True}"/>
                             </group>
                         </group>
                         <notebook attrs="{'invisible': ['&amp;', ('module_id', '!=', False), ('module_state', '!=', 'installed')]}">

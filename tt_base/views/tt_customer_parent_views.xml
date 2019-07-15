@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+        <record id="tt_customer_parent_form_view" model="ir.ui.view">
+        <field name="name">tt.customer.parent.form.view</field>
+        <field name="model">tt.customer.parent</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_customer_parent_tree_view" model="ir.ui.view">
+        <field name="name">tt.customer.parent.tree.view</field>
+        <field name="model">tt.customer.parent</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="parent_agent_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_customer_parent_action_view" model="ir.actions.act_window">
+        <field name="name">Customer Parent</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.customer.parent</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context"/>
+    </record>
+
+    <menuitem id="menu_customer_customer_parent"
+              parent="tt_base.top_tour_travel_customers"
+              groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"
+              name="Customer Parent"
+              sequence="1"
+              action="tt_customer_parent_action_view"/>
+
+</odoo>

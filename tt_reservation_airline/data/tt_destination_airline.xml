@@ -1,0 +1,3638 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+    
+        <record id="tt_destination_airline_sub" model="tt.destinations">
+            <field name="name">Juanda International Airport</field>
+            <field name="code">SUB</field>
+            <field name="icao">WARR</field>
+            <field name="city">Surabaya</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-7.379831</field>
+            <field name="longitude">112.786858</field>
+            <field name="altitude">9</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nah" model="tt.destinations">
+            <field name="name">Naha</field>
+            <field name="code">NAH</field>
+            <field name="icao">WAMH</field>
+            <field name="city">Naha</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">3.683214</field>
+            <field name="longitude">125.528019</field>
+            <field name="altitude">16</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_upg" model="tt.destinations">
+            <field name="name">Hasanuddin</field>
+            <field name="code">UPG</field>
+            <field name="icao">WAAA</field>
+            <field name="city">Ujung Pandang</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-5.061631</field>
+            <field name="longitude">119.554042</field>
+            <field name="altitude">47</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bik" model="tt.destinations">
+            <field name="name">Frans Kaisiepo</field>
+            <field name="code">BIK</field>
+            <field name="icao">WABB</field>
+            <field name="city">Biak</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-1.190017</field>
+            <field name="longitude">136.107997</field>
+            <field name="altitude">46</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Jayapura</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nbx" model="tt.destinations">
+            <field name="name">Nabire</field>
+            <field name="code">NBX</field>
+            <field name="icao">WABI</field>
+            <field name="city">Nabire</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-3.368183</field>
+            <field name="longitude">135.496406</field>
+            <field name="altitude">20</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Jayapura</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tim" model="tt.destinations">
+            <field name="name">Moses Kilangin</field>
+            <field name="code">TIM</field>
+            <field name="icao">WABP</field>
+            <field name="city">Timika</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-4.528275</field>
+            <field name="longitude">136.887375</field>
+            <field name="altitude">103</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Jayapura</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_djj" model="tt.destinations">
+            <field name="name">Sentani</field>
+            <field name="code">DJJ</field>
+            <field name="icao">WAJJ</field>
+            <field name="city">Jayapura</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-2.576953</field>
+            <field name="longitude">140.516372</field>
+            <field name="altitude">289</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Jayapura</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wmx" model="tt.destinations">
+            <field name="name">Wamena</field>
+            <field name="code">WMX</field>
+            <field name="icao">WAJW</field>
+            <field name="city">Wamena</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-4.102511</field>
+            <field name="longitude">138.957372</field>
+            <field name="altitude">5085</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Jayapura</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mkq" model="tt.destinations">
+            <field name="name">Mopah</field>
+            <field name="code">MKQ</field>
+            <field name="icao">WAKK</field>
+            <field name="city">Merauke</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-8.520294</field>
+            <field name="longitude">140.418453</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Jayapura</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gto" model="tt.destinations">
+            <field name="name">Jalaluddin</field>
+            <field name="code">GTO</field>
+            <field name="icao">WAMG</field>
+            <field name="city">Gorontalo</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">0.637119</field>
+            <field name="longitude">122.849858</field>
+            <field name="altitude">105</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_plw" model="tt.destinations">
+            <field name="name">Mutiara</field>
+            <field name="code">PLW</field>
+            <field name="icao">WAML</field>
+            <field name="city">Palu</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-0.918542</field>
+            <field name="longitude">119.909642</field>
+            <field name="altitude">284</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mdc" model="tt.destinations">
+            <field name="name">Sam Ratulangi</field>
+            <field name="code">MDC</field>
+            <field name="icao">WAMM</field>
+            <field name="city">Manado</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">1.549447</field>
+            <field name="longitude">124.925878</field>
+            <field name="altitude">264</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_psj" model="tt.destinations">
+            <field name="name">Kasiguncu</field>
+            <field name="code">PSJ</field>
+            <field name="icao">WAMP</field>
+            <field name="city">Poso</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-1.416753</field>
+            <field name="longitude">120.657669</field>
+            <field name="altitude">174</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_oti" model="tt.destinations">
+            <field name="name">Pitu</field>
+            <field name="code">OTI</field>
+            <field name="icao">WAMR</field>
+            <field name="city">Morotai Island</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">2.045992</field>
+            <field name="longitude">128.324708</field>
+            <field name="altitude">49</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Jayapura</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tte" model="tt.destinations">
+            <field name="name">Sultan Babullah</field>
+            <field name="code">TTE</field>
+            <field name="icao">WAMT</field>
+            <field name="city">Ternate</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">0.831414</field>
+            <field name="longitude">127.381486</field>
+            <field name="altitude">49</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Jayapura</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_luw" model="tt.destinations">
+            <field name="name">Bubung</field>
+            <field name="code">LUW</field>
+            <field name="icao">WAMW</field>
+            <field name="city">Luwuk</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-1.038919</field>
+            <field name="longitude">122.771906</field>
+            <field name="altitude">56</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_amq" model="tt.destinations">
+            <field name="name">Pattimura</field>
+            <field name="code">AMQ</field>
+            <field name="icao">WAPP</field>
+            <field name="city">Ambon</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-3.710264</field>
+            <field name="longitude">128.089136</field>
+            <field name="altitude">33</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Jayapura</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fkq" model="tt.destinations">
+            <field name="name">Fak Fak</field>
+            <field name="code">FKQ</field>
+            <field name="icao">WASF</field>
+            <field name="city">Fak Fak</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-2.920192</field>
+            <field name="longitude">132.267031</field>
+            <field name="altitude">462</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Jayapura</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kng" model="tt.destinations">
+            <field name="name">Kaimana</field>
+            <field name="code">KNG</field>
+            <field name="icao">WASK</field>
+            <field name="city">Kaimana</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-3.644517</field>
+            <field name="longitude">133.695553</field>
+            <field name="altitude">19</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Jayapura</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bxb" model="tt.destinations">
+            <field name="name">Babo</field>
+            <field name="code">BXB</field>
+            <field name="icao">WASO</field>
+            <field name="city">Babo</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-2.532242</field>
+            <field name="longitude">133.438894</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Jayapura</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mkw" model="tt.destinations">
+            <field name="name">Rendani</field>
+            <field name="code">MKW</field>
+            <field name="icao">WASR</field>
+            <field name="city">Manokwari</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-0.891833</field>
+            <field name="longitude">134.049183</field>
+            <field name="altitude">23</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Jayapura</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_soq" model="tt.destinations">
+            <field name="name">Jefman</field>
+            <field name="code">SOQ</field>
+            <field name="icao">WASS</field>
+            <field name="city">Sorong</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-0.926358</field>
+            <field name="longitude">131.121194</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Jayapura</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pku" model="tt.destinations">
+            <field name="name">Sultan Syarif Kasim Ii</field>
+            <field name="code">PKU</field>
+            <field name="icao">WIBB</field>
+            <field name="city">Pekanbaru</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">0.460786</field>
+            <field name="longitude">101.444539</field>
+            <field name="altitude">102</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dum" model="tt.destinations">
+            <field name="name">Pinang Kampai</field>
+            <field name="code">DUM</field>
+            <field name="icao">WIBD</field>
+            <field name="city">Dumai</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">1.609194</field>
+            <field name="longitude">101.433558</field>
+            <field name="altitude">55</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cgk" model="tt.destinations">
+            <field name="name">Soekarno Hatta Intl</field>
+            <field name="code">CGK</field>
+            <field name="icao">WIII</field>
+            <field name="city">Jakarta</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-6.125567</field>
+            <field name="longitude">106.655897</field>
+            <field name="altitude">34</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gns" model="tt.destinations">
+            <field name="name">Binaka</field>
+            <field name="code">GNS</field>
+            <field name="icao">WIMB</field>
+            <field name="city">Gunung Sitoli</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">1.166381</field>
+            <field name="longitude">97.704681</field>
+            <field name="altitude">20</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_aeg" model="tt.destinations">
+            <field name="name">Aek Godang</field>
+            <field name="code">AEG</field>
+            <field name="icao">WIME</field>
+            <field name="city">Padang Sidempuan</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">1.400103</field>
+            <field name="longitude">99.430453</field>
+            <field name="altitude">922</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pdg" model="tt.destinations">
+            <field name="name">Minangkabau International Airport</field>
+            <field name="code">PDG</field>
+            <field name="icao">WIEE</field>
+            <field name="city">Padang</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-0.874989</field>
+            <field name="longitude">100.351881</field>
+            <field name="altitude">9</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mes" model="tt.destinations">
+            <field name="name">Polonia</field>
+            <field name="code">MES</field>
+            <field name="icao">WIMM</field>
+            <field name="city">Medan</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">3.558056</field>
+            <field name="longitude">98.671722</field>
+            <field name="altitude">114</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_flz" model="tt.destinations">
+            <field name="name">Dr Ferdinand Lumban Tobing</field>
+            <field name="code">FLZ</field>
+            <field name="icao">WIMS</field>
+            <field name="city">Sibolga</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">1.555944</field>
+            <field name="longitude">98.888908</field>
+            <field name="altitude">43</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_npo" model="tt.destinations">
+            <field name="name">Nanga Pinoh I</field>
+            <field name="code">NPO</field>
+            <field name="icao">WIOG</field>
+            <field name="city">Nangapinoh</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-0.348869</field>
+            <field name="longitude">111.747606</field>
+            <field name="altitude">123</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ktg" model="tt.destinations">
+            <field name="name">Rahadi Usman</field>
+            <field name="code">KTG</field>
+            <field name="icao">WIOK</field>
+            <field name="city">Ketapang</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-1.816639</field>
+            <field name="longitude">109.963483</field>
+            <field name="altitude">46</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pnk" model="tt.destinations">
+            <field name="name">Supadio</field>
+            <field name="code">PNK</field>
+            <field name="icao">WIOO</field>
+            <field name="city">Pontianak</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-0.150711</field>
+            <field name="longitude">109.403892</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_djb" model="tt.destinations">
+            <field name="name">Sultan Thaha</field>
+            <field name="code">DJB</field>
+            <field name="icao">WIPA</field>
+            <field name="city">Jambi</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-1.638017</field>
+            <field name="longitude">103.644378</field>
+            <field name="altitude">82</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bks" model="tt.destinations">
+            <field name="name">Fatmawati Soekarno</field>
+            <field name="code">BKS</field>
+            <field name="icao">WIPL</field>
+            <field name="city">Bengkulu</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-3.8637</field>
+            <field name="longitude">102.339036</field>
+            <field name="altitude">50</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_plm" model="tt.destinations">
+            <field name="name">Sultan Mahmud Badaruddin Ii</field>
+            <field name="code">PLM</field>
+            <field name="icao">WIPP</field>
+            <field name="city">Palembang</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-2.89825</field>
+            <field name="longitude">104.699903</field>
+            <field name="altitude">49</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rgt" model="tt.destinations">
+            <field name="name">Japura</field>
+            <field name="code">RGT</field>
+            <field name="icao">WIPR</field>
+            <field name="city">Rengat</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-0.352808</field>
+            <field name="longitude">102.334917</field>
+            <field name="altitude">62</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lsx" model="tt.destinations">
+            <field name="name">Lhok Sukon</field>
+            <field name="code">LSX</field>
+            <field name="icao">WITL</field>
+            <field name="city">Lhok Sukon</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">5.069506</field>
+            <field name="longitude">97.259192</field>
+            <field name="altitude">28</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_btj" model="tt.destinations">
+            <field name="name">Sultan Iskandarmuda</field>
+            <field name="code">BTJ</field>
+            <field name="icao">WITT</field>
+            <field name="city">Banda Aceh</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">5.523522</field>
+            <field name="longitude">95.420372</field>
+            <field name="altitude">65</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mxb" model="tt.destinations">
+            <field name="name">Andi Jemma</field>
+            <field name="code">MXB</field>
+            <field name="icao">WAWM</field>
+            <field name="city">Masamba</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-2.558044</field>
+            <field name="longitude">120.324383</field>
+            <field name="altitude">164</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sqr" model="tt.destinations">
+            <field name="name">Soroako</field>
+            <field name="code">SQR</field>
+            <field name="icao">WAWS</field>
+            <field name="city">Soroako</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-2.531203</field>
+            <field name="longitude">121.357639</field>
+            <field name="altitude">1388</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ttr" model="tt.destinations">
+            <field name="name">Pongtiku</field>
+            <field name="code">TTR</field>
+            <field name="icao">WAWT</field>
+            <field name="city">Makale</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-3.044736</field>
+            <field name="longitude">119.821536</field>
+            <field name="altitude">2884</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kdi" model="tt.destinations">
+            <field name="name">Wolter Monginsidi</field>
+            <field name="code">KDI</field>
+            <field name="icao">WAWW</field>
+            <field name="city">Kendari</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-4.081608</field>
+            <field name="longitude">122.418231</field>
+            <field name="altitude">538</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sbg" model="tt.destinations">
+            <field name="name">Maimun Saleh</field>
+            <field name="code">SBG</field>
+            <field name="icao">WITB</field>
+            <field name="city">Sabang</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">5.874131</field>
+            <field name="longitude">95.339672</field>
+            <field name="altitude">393</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tsy" model="tt.destinations">
+            <field name="name">Cibeureum</field>
+            <field name="code">TSY</field>
+            <field name="icao">WICM</field>
+            <field name="city">Tasikmalaya</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-7.346603</field>
+            <field name="longitude">108.246092</field>
+            <field name="altitude">1148</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mlg" model="tt.destinations">
+            <field name="name">Abdul Rachman Saleh</field>
+            <field name="code">MLG</field>
+            <field name="icao">WARA</field>
+            <field name="city">Malang</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-7.926556</field>
+            <field name="longitude">112.714514</field>
+            <field name="altitude">1726</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bdo" model="tt.destinations">
+            <field name="name">Husein Sastranegara</field>
+            <field name="code">BDO</field>
+            <field name="icao">WICC</field>
+            <field name="city">Bandung</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-6.900625</field>
+            <field name="longitude">107.576294</field>
+            <field name="altitude">2436</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cbn" model="tt.destinations">
+            <field name="name">Penggung</field>
+            <field name="code">CBN</field>
+            <field name="icao">WICD</field>
+            <field name="city">Cirebon</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-6.756144</field>
+            <field name="longitude">108.539672</field>
+            <field name="altitude">89</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jog" model="tt.destinations">
+            <field name="name">Adi Sutjipto</field>
+            <field name="code">JOG</field>
+            <field name="icao">WARJ</field>
+            <field name="city">Yogyakarta</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-7.788181</field>
+            <field name="longitude">110.431758</field>
+            <field name="altitude">350</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cxp" model="tt.destinations">
+            <field name="name">Tunggul Wulung</field>
+            <field name="code">CXP</field>
+            <field name="icao">WIHL</field>
+            <field name="city">Cilacap</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-7.645056</field>
+            <field name="longitude">109.033911</field>
+            <field name="altitude">69</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pcb" model="tt.destinations">
+            <field name="name">Pondok Cabe</field>
+            <field name="code">PCB</field>
+            <field name="icao">WIHP</field>
+            <field name="city">Jakarta</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-6.336964</field>
+            <field name="longitude">106.764561</field>
+            <field name="altitude">200</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_srg" model="tt.destinations">
+            <field name="name">Achmad Yani</field>
+            <field name="code">SRG</field>
+            <field name="icao">WARS</field>
+            <field name="city">Semarang</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-6.971447</field>
+            <field name="longitude">110.374122</field>
+            <field name="altitude">13</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bth" model="tt.destinations">
+            <field name="name">Hang Nadim</field>
+            <field name="code">BTH</field>
+            <field name="icao">WIDD</field>
+            <field name="city">Batam</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">1.121028</field>
+            <field name="longitude">104.118753</field>
+            <field name="altitude">126</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tjq" model="tt.destinations">
+            <field name="name">H As Hanandjoeddin</field>
+            <field name="code">TJQ</field>
+            <field name="icao">WIOD</field>
+            <field name="city">Tanjung Pandan</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-2.745722</field>
+            <field name="longitude">107.754917</field>
+            <field name="altitude">164</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pgk" model="tt.destinations">
+            <field name="name">Depati Amir</field>
+            <field name="code">PGK</field>
+            <field name="icao">WIPK</field>
+            <field name="city">Pangkal Pinang</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-2.1622</field>
+            <field name="longitude">106.139064</field>
+            <field name="altitude">109</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tnj" model="tt.destinations">
+            <field name="name">Kijang</field>
+            <field name="code">TNJ</field>
+            <field name="icao">WIDN</field>
+            <field name="city">Tanjung Pinang</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">0.922683</field>
+            <field name="longitude">104.532311</field>
+            <field name="altitude">52</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_siq" model="tt.destinations">
+            <field name="name">Dabo</field>
+            <field name="code">SIQ</field>
+            <field name="icao">WIDS</field>
+            <field name="city">Singkep</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-0.479189</field>
+            <field name="longitude">104.579283</field>
+            <field name="altitude">95</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bdj" model="tt.destinations">
+            <field name="name">Syamsudin Noor</field>
+            <field name="code">BDJ</field>
+            <field name="icao">WAOO</field>
+            <field name="city">Banjarmasin</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-3.442356</field>
+            <field name="longitude">114.762553</field>
+            <field name="altitude">66</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_btw" model="tt.destinations">
+            <field name="name">Batu Licin</field>
+            <field name="code">BTW</field>
+            <field name="icao">WAOC</field>
+            <field name="city">Batu Licin</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-3.412408</field>
+            <field name="longitude">115.995136</field>
+            <field name="altitude">3</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pkn" model="tt.destinations">
+            <field name="name">Iskandar</field>
+            <field name="code">PKN</field>
+            <field name="icao">WAOI</field>
+            <field name="city">Pangkalan Bun</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-2.705197</field>
+            <field name="longitude">111.673208</field>
+            <field name="altitude">75</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pky" model="tt.destinations">
+            <field name="name">Tjilik Riwut</field>
+            <field name="code">PKY</field>
+            <field name="icao">WAOP</field>
+            <field name="city">Palangkaraya</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-2.225128</field>
+            <field name="longitude">113.942661</field>
+            <field name="altitude">82</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mof" model="tt.destinations">
+            <field name="name">Wai Oti</field>
+            <field name="code">MOF</field>
+            <field name="icao">WATC</field>
+            <field name="city">Maumere</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-8.640647</field>
+            <field name="longitude">122.236889</field>
+            <field name="altitude">115</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ene" model="tt.destinations">
+            <field name="name">H Hasan Aroeboesman</field>
+            <field name="code">ENE</field>
+            <field name="icao">WATE</field>
+            <field name="city">Ende</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-8.849294</field>
+            <field name="longitude">121.660644</field>
+            <field name="altitude">49</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rtg" model="tt.destinations">
+            <field name="name">Satar Tacik</field>
+            <field name="code">RTG</field>
+            <field name="icao">WATG</field>
+            <field name="city">Ruteng</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-8.597011</field>
+            <field name="longitude">120.477061</field>
+            <field name="altitude">3510</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_koe" model="tt.destinations">
+            <field name="name">El Tari</field>
+            <field name="code">KOE</field>
+            <field name="icao">WATT</field>
+            <field name="city">Kupang</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-10.171583</field>
+            <field name="longitude">123.671136</field>
+            <field name="altitude">335</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lbj" model="tt.destinations">
+            <field name="name">Mutiara Ii</field>
+            <field name="code">LBJ</field>
+            <field name="icao">WATO</field>
+            <field name="city">Labuan Bajo</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-8.486656</field>
+            <field name="longitude">119.88905</field>
+            <field name="altitude">66</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bpn" model="tt.destinations">
+            <field name="name">Sepinggan</field>
+            <field name="code">BPN</field>
+            <field name="icao">WALL</field>
+            <field name="city">Balikpapan</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-1.268272</field>
+            <field name="longitude">116.894478</field>
+            <field name="altitude">12</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_trk" model="tt.destinations">
+            <field name="name">Juwata</field>
+            <field name="code">TRK</field>
+            <field name="icao">WALR</field>
+            <field name="city">Tarakan</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">3.326694</field>
+            <field name="longitude">117.565569</field>
+            <field name="altitude">20</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sri" model="tt.destinations">
+            <field name="name">Temindung</field>
+            <field name="code">SRI</field>
+            <field name="icao">WALS</field>
+            <field name="city">Samarinda</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-0.484531</field>
+            <field name="longitude">117.157111</field>
+            <field name="altitude">33</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tsx" model="tt.destinations">
+            <field name="name">Tanjung Santan</field>
+            <field name="code">TSX</field>
+            <field name="icao">WALT</field>
+            <field name="city">Tanjung Santan</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-0.093215</field>
+            <field name="longitude">117.439292</field>
+            <field name="altitude">121</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ami" model="tt.destinations">
+            <field name="name">Selaparang</field>
+            <field name="code">AMI</field>
+            <field name="icao">WADA</field>
+            <field name="city">Mataram</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-8.560708</field>
+            <field name="longitude">116.094656</field>
+            <field name="altitude">52</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bmu" model="tt.destinations">
+            <field name="name">Muhammad Salahuddin</field>
+            <field name="code">BMU</field>
+            <field name="icao">WADB</field>
+            <field name="city">Bima</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-8.539647</field>
+            <field name="longitude">118.687322</field>
+            <field name="altitude">3</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wgp" model="tt.destinations">
+            <field name="name">Mau Hau</field>
+            <field name="code">WGP</field>
+            <field name="icao">WADW</field>
+            <field name="city">Waingapu</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-9.669217</field>
+            <field name="longitude">120.302006</field>
+            <field name="altitude">33</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_soc" model="tt.destinations">
+            <field name="name">Adi Sumarmo Wiryokusumo</field>
+            <field name="code">SOC</field>
+            <field name="icao">WARQ</field>
+            <field name="city">Solo City</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-7.516089</field>
+            <field name="longitude">110.756892</field>
+            <field name="altitude">421</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dps" model="tt.destinations">
+            <field name="name">Bali Ngurah Rai</field>
+            <field name="code">DPS</field>
+            <field name="icao">WADD</field>
+            <field name="city">Denpasar</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-8.748169</field>
+            <field name="longitude">115.167172</field>
+            <field name="altitude">14</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_swq" model="tt.destinations">
+            <field name="name">Sumbawa Besar Airport</field>
+            <field name="code">SWQ</field>
+            <field name="icao">WADS</field>
+            <field name="city">Sumbawa Island</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-8.489039</field>
+            <field name="longitude">117.412119</field>
+            <field name="altitude">16</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tmc" model="tt.destinations">
+            <field name="name">Tambolaka Airport</field>
+            <field name="code">TMC</field>
+            <field name="icao">WADT</field>
+            <field name="city">Waikabubak-Sumba Island</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-9.409717</field>
+            <field name="longitude">119.244494</field>
+            <field name="altitude">161</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bui" model="tt.destinations">
+            <field name="name">Bokondini Airport</field>
+            <field name="code">BUI</field>
+            <field name="icao">WAJB</field>
+            <field name="city">Bokondini-Papua Island</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-3.58365</field>
+            <field name="longitude">138.533</field>
+            <field name="altitude">9104</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Jayapura</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_seh" model="tt.destinations">
+            <field name="name">Senggeh Airport</field>
+            <field name="code">SEH</field>
+            <field name="icao">WAJS</field>
+            <field name="city">Senggeh-Papua Island</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-3.43333</field>
+            <field name="longitude">140.817</field>
+            <field name="altitude">914</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Jayapura</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tjs" model="tt.destinations">
+            <field name="name">Tanjung Harapan Airport</field>
+            <field name="code">TJS</field>
+            <field name="icao">WALG</field>
+            <field name="city">Tanjung Selor-Borneo Island</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">2.83641</field>
+            <field name="longitude">117.374</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dtd" model="tt.destinations">
+            <field name="name">Datadawai Airport</field>
+            <field name="code">DTD</field>
+            <field name="icao">WALJ</field>
+            <field name="city">Datadawai-Borneo Island</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">0.717</field>
+            <field name="longitude">116.483</field>
+            <field name="altitude">229</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bej" model="tt.destinations">
+            <field name="name">Barau(Kalimaru) Airport</field>
+            <field name="code">BEJ</field>
+            <field name="icao">WALK</field>
+            <field name="city">Tanjung Redep-Borneo Island</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">2.155497</field>
+            <field name="longitude">117.432256</field>
+            <field name="altitude">59</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tjg" model="tt.destinations">
+            <field name="name">Warukin Airport</field>
+            <field name="code">TJG</field>
+            <field name="icao">WAON</field>
+            <field name="city">Tanjung-Borneo Island</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-2.21656</field>
+            <field name="longitude">115.436</field>
+            <field name="altitude">197</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_smq" model="tt.destinations">
+            <field name="name">Sampit(Hasan) Airport</field>
+            <field name="code">SMQ</field>
+            <field name="icao">WAOS</field>
+            <field name="city">Sampit-Borneo Island</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-2.499194</field>
+            <field name="longitude">112.974992</field>
+            <field name="altitude">50</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_luv" model="tt.destinations">
+            <field name="name">Dumatubun Airport</field>
+            <field name="code">LUV</field>
+            <field name="icao">WAPL</field>
+            <field name="city">Langgur-Kei Islands</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-5.661619</field>
+            <field name="longitude">132.731431</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Jayapura</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ard" model="tt.destinations">
+            <field name="name">Mali Airport</field>
+            <field name="code">ARD</field>
+            <field name="icao">WATM</field>
+            <field name="city">Alor Island</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-8.13234</field>
+            <field name="longitude">124.597</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tkg" model="tt.destinations">
+            <field name="name">Radin Inten II (Branti) Airport</field>
+            <field name="code">TKG</field>
+            <field name="icao">WICT</field>
+            <field name="city">Bandar Lampung-Sumatra Island</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-5.242339</field>
+            <field name="longitude">105.178939</field>
+            <field name="altitude">282</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hlp" model="tt.destinations">
+            <field name="name">Halim Perdanakusuma International Airport</field>
+            <field name="code">HLP</field>
+            <field name="icao">WIHH</field>
+            <field name="city">Jakarta</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-6.26661</field>
+            <field name="longitude">106.891</field>
+            <field name="altitude">84</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ntx" model="tt.destinations">
+            <field name="name">Ranai Airport</field>
+            <field name="code">NTX</field>
+            <field name="icao">WION</field>
+            <field name="city">Ranai-Natuna Besar Island</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">3.908714</field>
+            <field name="longitude">108.387897</field>
+            <field name="altitude">7</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_psu" model="tt.destinations">
+            <field name="name">Pangsuma Airport</field>
+            <field name="code">PSU</field>
+            <field name="icao">WIOP</field>
+            <field name="city">Putussibau-Borneo Island</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">0.835578</field>
+            <field name="longitude">112.937144</field>
+            <field name="altitude">297</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sqg" model="tt.destinations">
+            <field name="name">Susilo Airport</field>
+            <field name="code">SQG</field>
+            <field name="icao">WIOS</field>
+            <field name="city">Sintang-Borneo Island</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">0.063619</field>
+            <field name="longitude">111.473428</field>
+            <field name="altitude">98</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pdo" model="tt.destinations">
+            <field name="name">Pendopo Airport</field>
+            <field name="code">PDO</field>
+            <field name="icao">WIPQ</field>
+            <field name="city">Talang Gudang-Sumatra Island</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-3.286069</field>
+            <field name="longitude">103.8796</field>
+            <field name="altitude">184</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lsw" model="tt.destinations">
+            <field name="name">Malikus Saleh Airport</field>
+            <field name="code">LSW</field>
+            <field name="icao">WITM</field>
+            <field name="city">Lhok Seumawe-Sumatra Island</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">5.226681</field>
+            <field name="longitude">96.950342</field>
+            <field name="altitude">90</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kbu" model="tt.destinations">
+            <field name="name">Stagen Airport</field>
+            <field name="code">KBU</field>
+            <field name="icao">WRBK</field>
+            <field name="city">Laut Island</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-3.29472</field>
+            <field name="longitude">116.165</field>
+            <field name="altitude">4</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lbw" model="tt.destinations">
+            <field name="name">Long Bawan Airport</field>
+            <field name="code">LBW</field>
+            <field name="icao">WRLB</field>
+            <field name="city">Long Bawan-Borneo Island</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">3.867</field>
+            <field name="longitude">115.683</field>
+            <field name="altitude">3590</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nnx" model="tt.destinations">
+            <field name="name">Nunukan Airport</field>
+            <field name="code">NNX</field>
+            <field name="icao">WRLF</field>
+            <field name="city">Nunukan-Nunukan Island</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">4.13653</field>
+            <field name="longitude">117.667</field>
+            <field name="altitude">52</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lpu" model="tt.destinations">
+            <field name="name">Long Apung Airport</field>
+            <field name="code">LPU</field>
+            <field name="icao">WRLP</field>
+            <field name="city">Long Apung-Borneo Island</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">0.583</field>
+            <field name="longitude">115.6</field>
+            <field name="altitude">627</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_krc" model="tt.destinations">
+            <field name="name">Depati Parbo Airport</field>
+            <field name="code">KRC</field>
+            <field name="icao">WIPH</field>
+            <field name="city">Sungai Penuh</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">1.881071</field>
+            <field name="longitude">101.442261</field>
+            <field name="altitude">2000</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mju" model="tt.destinations">
+            <field name="name">Tampa Padang</field>
+            <field name="code">MJU</field>
+            <field name="icao">WAWJ</field>
+            <field name="city">Mamuju</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-2.583333</field>
+            <field name="longitude">119.033333</field>
+            <field name="altitude">2</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_war" model="tt.destinations">
+            <field name="name">Waris Airport</field>
+            <field name="code">WAR</field>
+            <field name="icao">WAJR</field>
+            <field name="city">Waris-Papua Island</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-3.22243</field>
+            <field name="longitude">140.9790039</field>
+            <field name="altitude">1224</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Jayapura</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_meq" model="tt.destinations">
+            <field name="name">Cut Nyak Dhien Nagan Raya Airport</field>
+            <field name="code">MEQ</field>
+            <field name="icao">WITC</field>
+            <field name="city">Nagan Raya</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">4.045172</field>
+            <field name="longitude">96.249608</field>
+            <field name="altitude">3</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_abu" model="tt.destinations">
+            <field name="name">A. A. Bere Tallo Atambua / Haliwen Airport</field>
+            <field name="code">ABU</field>
+            <field name="icao">WATA</field>
+            <field name="city">Atambua</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-9.075278</field>
+            <field name="longitude">124.902778</field>
+            <field name="altitude">1145</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kno" model="tt.destinations">
+            <field name="name">Kualanamu</field>
+            <field name="code">KNO</field>
+            <field name="icao">WIMM</field>
+            <field name="city">Medan</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">3.642353</field>
+            <field name="longitude">98.885358</field>
+            <field name="altitude">13</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bwx" model="tt.destinations">
+            <field name="name">Blimbingsari Airport</field>
+            <field name="code">BWX</field>
+            <field name="icao">WADY</field>
+            <field name="city">Banyuwangi</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-8.312371</field>
+            <field name="longitude">114.339392</field>
+            <field name="altitude">84</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jbb" model="tt.destinations">
+            <field name="name">Notohadinegoro Airport</field>
+            <field name="code">JBB</field>
+            <field name="icao">WARE</field>
+            <field name="city">Jember</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-8.240096</field>
+            <field name="longitude">113.693653</field>
+            <field name="altitude">288</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tli" model="tt.destinations">
+            <field name="name">Sultan Bantilan Airport</field>
+            <field name="code">TLI</field>
+            <field name="icao">WAMI</field>
+            <field name="city">Toli-Toli</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">1.123428</field>
+            <field name="longitude">120.793658</field>
+            <field name="altitude">40</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bjw" model="tt.destinations">
+            <field name="name">Turelelo Soa Airport</field>
+            <field name="code">BJW</field>
+            <field name="icao">WATB</field>
+            <field name="city">Bawaja</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-8.7125</field>
+            <field name="longitude">121.0625</field>
+            <field name="altitude">4.326</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lka" model="tt.destinations">
+            <field name="name">Gewayantana Airport</field>
+            <field name="code">LKA</field>
+            <field name="icao">WATL</field>
+            <field name="city">Larantuka</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-8.274544</field>
+            <field name="longitude">123.002328</field>
+            <field name="altitude">29.5276</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nam" model="tt.destinations">
+            <field name="name">Namlea Airport</field>
+            <field name="code">NAM</field>
+            <field name="icao">WAPR</field>
+            <field name="city">Namlea</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-37.663712</field>
+            <field name="longitude">144.844788</field>
+            <field name="altitude">41</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Jayapura</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dtb" model="tt.destinations">
+            <field name="name">Silangit International Airport</field>
+            <field name="code">DTB</field>
+            <field name="icao">WIMN</field>
+            <field name="city">Siborong-Borong</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">2.259731</field>
+            <field name="longitude">98.99185</field>
+            <field name="altitude">4.66</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jayapura</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_uol" model="tt.destinations">
+            <field name="name">Pogogul Airport</field>
+            <field name="code">UOL</field>
+            <field name="icao">WAMY</field>
+            <field name="city">Buol</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">1.1584</field>
+            <field name="longitude">121.4361</field>
+            <field name="altitude">49</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Makassar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sin" model="tt.destinations">
+            <field name="name">Changi Intl</field>
+            <field name="code">SIN</field>
+            <field name="icao">WSSS</field>
+            <field name="city">Singapore</field>
+            <field name="country_id" ref="base.sg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">1.350189</field>
+            <field name="longitude">103.994433</field>
+            <field name="altitude">22</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Singapore</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lgw" model="tt.destinations">
+            <field name="name">Gatwick</field>
+            <field name="code">LGW</field>
+            <field name="icao">EGKK</field>
+            <field name="city">London</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">51.148056</field>
+            <field name="longitude">-0.190278</field>
+            <field name="altitude">202</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/London</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pek" model="tt.destinations">
+            <field name="name">Capital Intl</field>
+            <field name="code">PEK</field>
+            <field name="icao">ZBAA</field>
+            <field name="city">Beijing</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.080111</field>
+            <field name="longitude">116.584556</field>
+            <field name="altitude">116</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hkg" model="tt.destinations">
+            <field name="name">Hong Kong Intl</field>
+            <field name="code">HKG</field>
+            <field name="icao">VHHH</field>
+            <field name="city">Hong Kong</field>
+            <field name="country_id" ref="base.hk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">22.308919</field>
+            <field name="longitude">113.914603</field>
+            <field name="altitude">28</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Hong_Kong</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hnd" model="tt.destinations">
+            <field name="name">Haneda International Airport</field>
+            <field name="code">HND</field>
+            <field name="icao">RJTT</field>
+            <field name="city">Tokyo</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.552258</field>
+            <field name="longitude">139.779694</field>
+            <field name="altitude">35</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bkk" model="tt.destinations">
+            <field name="name">Suvarnabhumi Intl</field>
+            <field name="code">BKK</field>
+            <field name="icao">VTBS</field>
+            <field name="city">Bangkok</field>
+            <field name="country_id" ref="base.th"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">13.681108</field>
+            <field name="longitude">100.747283</field>
+            <field name="altitude">5</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Bangkok</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dad" model="tt.destinations">
+            <field name="name">Danang Intl</field>
+            <field name="code">DAD</field>
+            <field name="icao">VVDN</field>
+            <field name="city">Danang</field>
+            <field name="country_id" ref="base.vn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">16.043917</field>
+            <field name="longitude">108.19937</field>
+            <field name="altitude">33</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Saigon</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_han" model="tt.destinations">
+            <field name="name">Noibai Intl</field>
+            <field name="code">HAN</field>
+            <field name="icao">VVNB</field>
+            <field name="city">Hanoi</field>
+            <field name="country_id" ref="base.vn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">21.221192</field>
+            <field name="longitude">105.807178</field>
+            <field name="altitude">39</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Saigon</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sgn" model="tt.destinations">
+            <field name="name">Tansonnhat Intl</field>
+            <field name="code">SGN</field>
+            <field name="icao">VVTS</field>
+            <field name="city">Ho Chi Minh City</field>
+            <field name="country_id" ref="base.vn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">10.818797</field>
+            <field name="longitude">106.651856</field>
+            <field name="altitude">33</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Saigon</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hkt" model="tt.destinations">
+            <field name="name">Phuket Intl</field>
+            <field name="code">HKT</field>
+            <field name="icao">VTSP</field>
+            <field name="city">Phuket</field>
+            <field name="country_id" ref="base.th"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">8.1132</field>
+            <field name="longitude">98.316872</field>
+            <field name="altitude">82</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Bangkok</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cnx" model="tt.destinations">
+            <field name="name">Chiang Mai Intl</field>
+            <field name="code">CNX</field>
+            <field name="icao">VTCC</field>
+            <field name="city">Chiang Mai</field>
+            <field name="country_id" ref="base.th"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">18.766847</field>
+            <field name="longitude">98.962644</field>
+            <field name="altitude">1036</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Bangkok</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_usm" model="tt.destinations">
+            <field name="name">Samui</field>
+            <field name="code">USM</field>
+            <field name="icao">VTSM</field>
+            <field name="city">Ko Samui</field>
+            <field name="country_id" ref="base.th"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">9.547794</field>
+            <field name="longitude">100.062272</field>
+            <field name="altitude">64</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Bangkok</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_klo" model="tt.destinations">
+            <field name="name">Kalibo</field>
+            <field name="code">KLO</field>
+            <field name="icao">RPVK</field>
+            <field name="city">Kalibo</field>
+            <field name="country_id" ref="base.ph"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">11.679431</field>
+            <field name="longitude">122.376294</field>
+            <field name="altitude">14</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Manila</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ceb" model="tt.destinations">
+            <field name="name">Mactan Cebu Intl</field>
+            <field name="code">CEB</field>
+            <field name="icao">RPVM</field>
+            <field name="city">Cebu</field>
+            <field name="country_id" ref="base.ph"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">10.307542</field>
+            <field name="longitude">123.979439</field>
+            <field name="altitude">31</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Manila</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dvo" model="tt.destinations">
+            <field name="name">Francisco Bangoy International</field>
+            <field name="code">DVO</field>
+            <field name="icao">RPMD</field>
+            <field name="city">Davao</field>
+            <field name="country_id" ref="base.ph"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">7.125522</field>
+            <field name="longitude">125.645778</field>
+            <field name="altitude">59</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Manila</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pen" model="tt.destinations">
+            <field name="name">Penang Intl</field>
+            <field name="code">PEN</field>
+            <field name="icao">WMKP</field>
+            <field name="city">Penang</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">5.297139</field>
+            <field name="longitude">100.276864</field>
+            <field name="altitude">11</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bki" model="tt.destinations">
+            <field name="name">Kota Kinabalu Intl</field>
+            <field name="code">BKI</field>
+            <field name="icao">WBKK</field>
+            <field name="city">Kota Kinabalu</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">5.937208</field>
+            <field name="longitude">116.051181</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lgk" model="tt.destinations">
+            <field name="name">Langkawi Intl</field>
+            <field name="code">LGK</field>
+            <field name="icao">WMKL</field>
+            <field name="city">Pulau</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">6.329728</field>
+            <field name="longitude">99.728667</field>
+            <field name="altitude">29</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kch" model="tt.destinations">
+            <field name="name">Kuching Intl</field>
+            <field name="code">KCH</field>
+            <field name="icao">WBGG</field>
+            <field name="city">Kuching</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">1.484697</field>
+            <field name="longitude">110.346933</field>
+            <field name="altitude">89</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rgn" model="tt.destinations">
+            <field name="name">Yangon Intl</field>
+            <field name="code">RGN</field>
+            <field name="icao">VYYY</field>
+            <field name="city">Yangon</field>
+            <field name="country_id" ref="base.mm"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">16.907305</field>
+            <field name="longitude">96.133222</field>
+            <field name="altitude">109</field>
+            <field name="timezone_hour">6.5</field>
+            <field name="tz">Asia/Rangoon</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mdl" model="tt.destinations">
+            <field name="name">Mandalay Intl</field>
+            <field name="code">MDL</field>
+            <field name="icao">VYMD</field>
+            <field name="city">Mandalay</field>
+            <field name="country_id" ref="base.mm"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">21.702156</field>
+            <field name="longitude">95.977928</field>
+            <field name="altitude">300</field>
+            <field name="timezone_hour">6.5</field>
+            <field name="tz">Asia/Rangoon</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mnl" model="tt.destinations">
+            <field name="name">Ninoy Aquino Intl</field>
+            <field name="code">MNL</field>
+            <field name="icao">RPLL</field>
+            <field name="city">Manila</field>
+            <field name="country_id" ref="base.ph"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">14.508647</field>
+            <field name="longitude">121.019581</field>
+            <field name="altitude">75</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Manila</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pnh" model="tt.destinations">
+            <field name="name">Phnom Penh Intl</field>
+            <field name="code">PNH</field>
+            <field name="icao">VDPP</field>
+            <field name="city">Phnom-penh</field>
+            <field name="country_id" ref="base.kh"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">11.546556</field>
+            <field name="longitude">104.844139</field>
+            <field name="altitude">40</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Phnom_Penh</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rep" model="tt.destinations">
+            <field name="name">Siem Reap</field>
+            <field name="code">REP</field>
+            <field name="icao">VDSR</field>
+            <field name="city">Siem-reap</field>
+            <field name="country_id" ref="base.kh"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">13.410666</field>
+            <field name="longitude">103.81284</field>
+            <field name="altitude">60</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Phnom_Penh</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vte" model="tt.destinations">
+            <field name="name">Wattay Intl</field>
+            <field name="code">VTE</field>
+            <field name="icao">VLVT</field>
+            <field name="city">Vientiane</field>
+            <field name="country_id" ref="base.la"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">17.988322</field>
+            <field name="longitude">102.563256</field>
+            <field name="altitude">564</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Vientiane</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lpq" model="tt.destinations">
+            <field name="name">Luang Phabang Intl</field>
+            <field name="code">LPQ</field>
+            <field name="icao">VLLB</field>
+            <field name="city">Luang Prabang</field>
+            <field name="country_id" ref="base.la"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">19.897914</field>
+            <field name="longitude">102.160764</field>
+            <field name="altitude">955</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Vientiane</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bwn" model="tt.destinations">
+            <field name="name">Brunei Intl</field>
+            <field name="code">BWN</field>
+            <field name="icao">WBSB</field>
+            <field name="city">Bandar Seri Begawan</field>
+            <field name="country_id" ref="base.mm"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">4.9442</field>
+            <field name="longitude">114.928353</field>
+            <field name="altitude">73</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Brunei</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_can" model="tt.destinations">
+            <field name="name">Baiyun Intl</field>
+            <field name="code">CAN</field>
+            <field name="icao">ZGGG</field>
+            <field name="city">Guangzhou</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">23.392436</field>
+            <field name="longitude">113.298786</field>
+            <field name="altitude">50</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_csx" model="tt.destinations">
+            <field name="name">Huanghua</field>
+            <field name="code">CSX</field>
+            <field name="icao">ZGHA</field>
+            <field name="city">Changcha</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">28.189158</field>
+            <field name="longitude">113.219633</field>
+            <field name="altitude">217</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ctu" model="tt.destinations">
+            <field name="name">Shuangliu</field>
+            <field name="code">CTU</field>
+            <field name="icao">ZUUU</field>
+            <field name="city">Chengdu</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">30.578528</field>
+            <field name="longitude">103.947086</field>
+            <field name="altitude">1625</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ckg" model="tt.destinations">
+            <field name="name">Jiangbei</field>
+            <field name="code">CKG</field>
+            <field name="icao">ZUCK</field>
+            <field name="city">Chongqing</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">29.719217</field>
+            <field name="longitude">106.641678</field>
+            <field name="altitude">1365</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kmg" model="tt.destinations">
+            <field name="name">Wujiaba</field>
+            <field name="code">KMG</field>
+            <field name="icao">ZPPP</field>
+            <field name="city">Kunming</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">24.992364</field>
+            <field name="longitude">102.743536</field>
+            <field name="altitude">6217</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_szx" model="tt.destinations">
+            <field name="name">Baoan Intl</field>
+            <field name="code">SZX</field>
+            <field name="icao">ZGSZ</field>
+            <field name="city">Shenzhen</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">22.639258</field>
+            <field name="longitude">113.810664</field>
+            <field name="altitude">13</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_xmn" model="tt.destinations">
+            <field name="name">Xiamen Gaoqi International Airport</field>
+            <field name="code">XMN</field>
+            <field name="icao">ZSAM</field>
+            <field name="city">Xiamen Shi</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">24.544036</field>
+            <field name="longitude">118.127739</field>
+            <field name="altitude">59</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wuh" model="tt.destinations">
+            <field name="name">Tianhe</field>
+            <field name="code">WUH</field>
+            <field name="icao">ZHHH</field>
+            <field name="city">Wuhan</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">30.783758</field>
+            <field name="longitude">114.2081</field>
+            <field name="altitude">113</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_foc" model="tt.destinations">
+            <field name="name">Changle</field>
+            <field name="code">FOC</field>
+            <field name="icao">ZSFZ</field>
+            <field name="city">Fuzhou</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">25.935064</field>
+            <field name="longitude">119.663272</field>
+            <field name="altitude">46</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sha" model="tt.destinations">
+            <field name="name">Hongqiao Intl</field>
+            <field name="code">SHA</field>
+            <field name="icao">ZSSS</field>
+            <field name="city">Shanghai</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">31.197875</field>
+            <field name="longitude">121.336319</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tpe" model="tt.destinations">
+            <field name="name">Taoyuan Intl</field>
+            <field name="code">TPE</field>
+            <field name="icao">RCTP</field>
+            <field name="city">Taipei</field>
+            <field name="country_id" ref="base.tw"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">25.077731</field>
+            <field name="longitude">121.232822</field>
+            <field name="altitude">106</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Taipei</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nrt" model="tt.destinations">
+            <field name="name">Narita International Airport</field>
+            <field name="code">NRT</field>
+            <field name="icao">RJAA</field>
+            <field name="city">Tokyo</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.764722</field>
+            <field name="longitude">140.386389</field>
+            <field name="altitude">141</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kix" model="tt.destinations">
+            <field name="name">Kansai</field>
+            <field name="code">KIX</field>
+            <field name="icao">RJBB</field>
+            <field name="city">Osaka</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">34.4347222</field>
+            <field name="longitude">135.244167</field>
+            <field name="altitude">49</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fuk" model="tt.destinations">
+            <field name="name">Fukuoka</field>
+            <field name="code">FUK</field>
+            <field name="icao">RJFF</field>
+            <field name="city">Fukuoka</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">33.585942</field>
+            <field name="longitude">130.450686</field>
+            <field name="altitude">32</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ngo" model="tt.destinations">
+            <field name="name">Chubu Centrair Intl</field>
+            <field name="code">NGO</field>
+            <field name="icao">RJGG</field>
+            <field name="city">Nagoya</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">34.858414</field>
+            <field name="longitude">136.805408</field>
+            <field name="altitude">15</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hij" model="tt.destinations">
+            <field name="name">Hiroshima</field>
+            <field name="code">HIJ</field>
+            <field name="icao">RJOA</field>
+            <field name="city">Hiroshima</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">34.436111</field>
+            <field name="longitude">132.919444</field>
+            <field name="altitude">1088</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_icn" model="tt.destinations">
+            <field name="name">Incheon Intl</field>
+            <field name="code">ICN</field>
+            <field name="icao">RKSI</field>
+            <field name="city">Seoul</field>
+            <field name="country_id" ref="base.kr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.469075</field>
+            <field name="longitude">126.450517</field>
+            <field name="altitude">23</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Seoul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_chc" model="tt.destinations">
+            <field name="name">Christchurch Intl</field>
+            <field name="code">CHC</field>
+            <field name="icao">NZCH</field>
+            <field name="city">Christchurch</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-43.489358</field>
+            <field name="longitude">172.532225</field>
+            <field name="altitude">123</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_akl" model="tt.destinations">
+            <field name="name">Auckland Intl</field>
+            <field name="code">AKL</field>
+            <field name="icao">NZAA</field>
+            <field name="city">Auckland</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-37.008056</field>
+            <field name="longitude">174.791667</field>
+            <field name="altitude">23</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wlg" model="tt.destinations">
+            <field name="name">Wellington Intl</field>
+            <field name="code">WLG</field>
+            <field name="icao">NZWN</field>
+            <field name="city">Wellington</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-41.327221</field>
+            <field name="longitude">174.805278</field>
+            <field name="altitude">41</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cbr" model="tt.destinations">
+            <field name="name">Canberra</field>
+            <field name="code">CBR</field>
+            <field name="icao">YSCB</field>
+            <field name="city">Canberra</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-35.306944</field>
+            <field name="longitude">149.195</field>
+            <field name="altitude">1886</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Australia/Sydney</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bne" model="tt.destinations">
+            <field name="name">Brisbane Intl</field>
+            <field name="code">BNE</field>
+            <field name="icao">YBBN</field>
+            <field name="city">Brisbane</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-27.384167</field>
+            <field name="longitude">153.1175</field>
+            <field name="altitude">13</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Australia/Brisbane</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cns" model="tt.destinations">
+            <field name="name">Cairns Intl</field>
+            <field name="code">CNS</field>
+            <field name="icao">YBCS</field>
+            <field name="city">Cairns</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-16.885833</field>
+            <field name="longitude">145.755278</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Australia/Brisbane</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_drw" model="tt.destinations">
+            <field name="name">Darwin Intl</field>
+            <field name="code">DRW</field>
+            <field name="icao">YPDN</field>
+            <field name="city">Darwin</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-12.4083333</field>
+            <field name="longitude">130.87266</field>
+            <field name="altitude">103</field>
+            <field name="timezone_hour">9.5</field>
+            <field name="tz">Australia/Darwin</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mel" model="tt.destinations">
+            <field name="name">Melbourne Intl</field>
+            <field name="code">MEL</field>
+            <field name="icao">YMML</field>
+            <field name="city">Melbourne</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-37.673333</field>
+            <field name="longitude">144.843333</field>
+            <field name="altitude">434</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Australia/Hobart</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_per" model="tt.destinations">
+            <field name="name">Perth Intl</field>
+            <field name="code">PER</field>
+            <field name="icao">YPPH</field>
+            <field name="city">Perth</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-31.940278</field>
+            <field name="longitude">115.966944</field>
+            <field name="altitude">67</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Australia/Perth</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_syd" model="tt.destinations">
+            <field name="name">Sydney Intl</field>
+            <field name="code">SYD</field>
+            <field name="icao">YSSY</field>
+            <field name="city">Sydney</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-33.946111</field>
+            <field name="longitude">151.177222</field>
+            <field name="altitude">21</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Australia/Sydney</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ams" model="tt.destinations">
+            <field name="name">Schiphol</field>
+            <field name="code">AMS</field>
+            <field name="icao">EHAM</field>
+            <field name="city">Amsterdam</field>
+            <field name="country_id" ref="base.nl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">52.308613</field>
+            <field name="longitude">4.763889</field>
+            <field name="altitude">-11</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Amsterdam</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_arn" model="tt.destinations">
+            <field name="name">Arlanda</field>
+            <field name="code">ARN</field>
+            <field name="icao">ESSA</field>
+            <field name="city">Stockholm</field>
+            <field name="country_id" ref="base.se"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">59.651944</field>
+            <field name="longitude">17.918611</field>
+            <field name="altitude">137</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Stockholm</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bcn" model="tt.destinations">
+            <field name="name">Barcelona</field>
+            <field name="code">BCN</field>
+            <field name="icao">LEBL</field>
+            <field name="city">Barcelona</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.297078</field>
+            <field name="longitude">2.078464</field>
+            <field name="altitude">12</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cdg" model="tt.destinations">
+            <field name="name">Charles De Gaulle</field>
+            <field name="code">CDG</field>
+            <field name="icao">LFPG</field>
+            <field name="city">Paris</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">49.012779</field>
+            <field name="longitude">2.55</field>
+            <field name="altitude">392</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cph" model="tt.destinations">
+            <field name="name">Kastrup</field>
+            <field name="code">CPH</field>
+            <field name="icao">EKCH</field>
+            <field name="city">Copenhagen</field>
+            <field name="country_id" ref="base.dk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">55.617917</field>
+            <field name="longitude">12.655972</field>
+            <field name="altitude">17</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Copenhagen</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dme" model="tt.destinations">
+            <field name="name">Domododevo</field>
+            <field name="code">DME</field>
+            <field name="icao">UUDD</field>
+            <field name="city">Moscow</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">55.408611</field>
+            <field name="longitude">37.906111</field>
+            <field name="altitude">588</field>
+            <field name="timezone_hour">4</field>
+            <field name="tz">Europe/Moscow</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fra" model="tt.destinations">
+            <field name="name">Frankfurt Main</field>
+            <field name="code">FRA</field>
+            <field name="icao">EDDF</field>
+            <field name="city">Frankfurt</field>
+            <field name="country_id" ref="base.de"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">50.026421</field>
+            <field name="longitude">8.543125</field>
+            <field name="altitude">364</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Berlin</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_muc" model="tt.destinations">
+            <field name="name">Franz Josef Strauss</field>
+            <field name="code">MUC</field>
+            <field name="icao">EDDM</field>
+            <field name="city">Munich</field>
+            <field name="country_id" ref="base.de"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.353783</field>
+            <field name="longitude">11.786086</field>
+            <field name="altitude">1487</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Berlin</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dus" model="tt.destinations">
+            <field name="name">Dusseldorf</field>
+            <field name="code">DUS</field>
+            <field name="icao">EDDL</field>
+            <field name="city">Duesseldorf</field>
+            <field name="country_id" ref="base.de"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">51.289453</field>
+            <field name="longitude">6.766775</field>
+            <field name="altitude">147</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Berlin</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lhr" model="tt.destinations">
+            <field name="name">Heathrow</field>
+            <field name="code">LHR</field>
+            <field name="icao">EGLL</field>
+            <field name="city">London</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">51.4775</field>
+            <field name="longitude">-0.461389</field>
+            <field name="altitude">83</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/London</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_man" model="tt.destinations">
+            <field name="name">Manchester</field>
+            <field name="code">MAN</field>
+            <field name="icao">EGCC</field>
+            <field name="city">Manchester</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">53.353744</field>
+            <field name="longitude">-2.27495</field>
+            <field name="altitude">257</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/London</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mxp" model="tt.destinations">
+            <field name="name">Malpensa</field>
+            <field name="code">MXP</field>
+            <field name="icao">LIMC</field>
+            <field name="city">Milano</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.630606</field>
+            <field name="longitude">8.728111</field>
+            <field name="altitude">767</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fco" model="tt.destinations">
+            <field name="name">Leonardo da Vinci–Fiumicino</field>
+            <field name="code">FCO</field>
+            <field name="icao">LIRF</field>
+            <field name="city">Rome</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.90048111</field>
+            <field name="longitude">12.50200069</field>
+            <field name="altitude">189</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zrh" model="tt.destinations">
+            <field name="name">Zurich</field>
+            <field name="code">ZRH</field>
+            <field name="icao">LSZH</field>
+            <field name="city">Zurich</field>
+            <field name="country_id" ref="base.ch"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">47.464722</field>
+            <field name="longitude">8.549167</field>
+            <field name="altitude">1416</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Zurich</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ist" model="tt.destinations">
+            <field name="name">Ataturk</field>
+            <field name="code">IST</field>
+            <field name="icao">LTBA</field>
+            <field name="city">Istanbul</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.976922</field>
+            <field name="longitude">28.814606</field>
+            <field name="altitude">163</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_iah" model="tt.destinations">
+            <field name="name">George Bush Intercontinental</field>
+            <field name="code">IAH</field>
+            <field name="icao">KIAH</field>
+            <field name="city">Houston</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">29.984433</field>
+            <field name="longitude">-95.341442</field>
+            <field name="altitude">97</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jfk" model="tt.destinations">
+            <field name="name">John F Kennedy Intl</field>
+            <field name="code">JFK</field>
+            <field name="icao">KJFK</field>
+            <field name="city">New York</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.639751</field>
+            <field name="longitude">-73.778925</field>
+            <field name="altitude">13</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lax" model="tt.destinations">
+            <field name="name">Los Angeles Intl</field>
+            <field name="code">LAX</field>
+            <field name="icao">KLAX</field>
+            <field name="city">Los Angeles</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">33.942536</field>
+            <field name="longitude">-118.408075</field>
+            <field name="altitude">126</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Los_Angeles</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sfo" model="tt.destinations">
+            <field name="name">San Francisco Intl</field>
+            <field name="code">SFO</field>
+            <field name="icao">KSFO</field>
+            <field name="city">San Francisco</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.618972</field>
+            <field name="longitude">-122.374889</field>
+            <field name="altitude">13</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Los_Angeles</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bom" model="tt.destinations">
+            <field name="name">Chhatrapati Shivaji Intl</field>
+            <field name="code">BOM</field>
+            <field name="icao">VABB</field>
+            <field name="city">Mumbai</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">19.088686</field>
+            <field name="longitude">72.867919</field>
+            <field name="altitude">37</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_del" model="tt.destinations">
+            <field name="name">Indira Gandhi Intl</field>
+            <field name="code">DEL</field>
+            <field name="icao">VIDP</field>
+            <field name="city">Delhi</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">28.5665</field>
+            <field name="longitude">77.103088</field>
+            <field name="altitude">777</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ccu" model="tt.destinations">
+            <field name="name">Netaji Subhash Chandra Bose Intl</field>
+            <field name="code">CCU</field>
+            <field name="icao">VECC</field>
+            <field name="city">Kolkata</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">22.654739</field>
+            <field name="longitude">88.446722</field>
+            <field name="altitude">16</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_maa" model="tt.destinations">
+            <field name="name">Chennai Intl</field>
+            <field name="code">MAA</field>
+            <field name="icao">VOMM</field>
+            <field name="city">Madras</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">12.994414</field>
+            <field name="longitude">80.180517</field>
+            <field name="altitude">52</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dac" model="tt.destinations">
+            <field name="name">Zia Intl</field>
+            <field name="code">DAC</field>
+            <field name="icao">VGZR</field>
+            <field name="city">Dhaka</field>
+            <field name="country_id" ref="base.bd"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">23.843333</field>
+            <field name="longitude">90.397781</field>
+            <field name="altitude">30</field>
+            <field name="timezone_hour">6</field>
+            <field name="tz">Asia/Dhaka</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_blr" model="tt.destinations">
+            <field name="name">Bangalore</field>
+            <field name="code">BLR</field>
+            <field name="icao">VOBL</field>
+            <field name="city">Bangalore</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">12.949986</field>
+            <field name="longitude">77.668206</field>
+            <field name="altitude">2912</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_amd" model="tt.destinations">
+            <field name="name">Ahmedabad</field>
+            <field name="code">AMD</field>
+            <field name="icao">VAAH</field>
+            <field name="city">Ahmedabad</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">23.077242</field>
+            <field name="longitude">72.63465</field>
+            <field name="altitude">189</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_trv" model="tt.destinations">
+            <field name="name">Thiruvananthapuram Intl</field>
+            <field name="code">TRV</field>
+            <field name="icao">VOTV</field>
+            <field name="city">Trivandrum</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">8.482122</field>
+            <field name="longitude">76.920114</field>
+            <field name="altitude">15</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hyd" model="tt.destinations">
+            <field name="name">Hyderabad</field>
+            <field name="code">HYD</field>
+            <field name="icao">VOHY</field>
+            <field name="city">Hyderabad</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">17.453117</field>
+            <field name="longitude">78.467586</field>
+            <field name="altitude">1742</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cok" model="tt.destinations">
+            <field name="name">Cochin</field>
+            <field name="code">COK</field>
+            <field name="icao">VOCI</field>
+            <field name="city">Kochi</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">10.155556</field>
+            <field name="longitude">76.391389</field>
+            <field name="altitude">8</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cjb" model="tt.destinations">
+            <field name="name">Coimbatore</field>
+            <field name="code">CJB</field>
+            <field name="icao">VOCB</field>
+            <field name="city">Coimbatore</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">11.030031</field>
+            <field name="longitude">77.043383</field>
+            <field name="altitude">1324</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ktm" model="tt.destinations">
+            <field name="name">Tribhuvan Intl</field>
+            <field name="code">KTM</field>
+            <field name="icao">VNKT</field>
+            <field name="city">Kathmandu</field>
+            <field name="country_id" ref="base.np"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">27.696583</field>
+            <field name="longitude">85.3591</field>
+            <field name="altitude">4390</field>
+            <field name="timezone_hour">5.75</field>
+            <field name="tz">Asia/Katmandu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vtz" model="tt.destinations">
+            <field name="name">Vishakhapatnam</field>
+            <field name="code">VTZ</field>
+            <field name="icao">VEVZ</field>
+            <field name="city">Vishakhapatnam</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">17.721167</field>
+            <field name="longitude">83.224483</field>
+            <field name="altitude">15</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cmb" model="tt.destinations">
+            <field name="name">Bandaranaike Intl Colombo</field>
+            <field name="code">CMB</field>
+            <field name="icao">VCBI</field>
+            <field name="city">Colombo</field>
+            <field name="country_id" ref="base.lk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">7.180756</field>
+            <field name="longitude">79.884117</field>
+            <field name="altitude">30</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Colombo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dxb" model="tt.destinations">
+            <field name="name">Dubai Intl</field>
+            <field name="code">DXB</field>
+            <field name="icao">OMDB</field>
+            <field name="city">Dubai</field>
+            <field name="country_id" ref="base.ae"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">25.252778</field>
+            <field name="longitude">55.364444</field>
+            <field name="altitude">62</field>
+            <field name="timezone_hour">4</field>
+            <field name="tz">Asia/Dubai</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jnb" model="tt.destinations">
+            <field name="name">Johannesburg Intl</field>
+            <field name="code">JNB</field>
+            <field name="icao">FAJS</field>
+            <field name="city">Johannesburg</field>
+            <field name="country_id" ref="base.za"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-26.139166</field>
+            <field name="longitude">28.246</field>
+            <field name="altitude">5558</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Africa/Johannesburg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cpt" model="tt.destinations">
+            <field name="name">Cape Town Intl</field>
+            <field name="code">CPT</field>
+            <field name="icao">FACT</field>
+            <field name="city">Cape Town</field>
+            <field name="country_id" ref="base.za"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-33.964806</field>
+            <field name="longitude">18.601667</field>
+            <field name="altitude">151</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Africa/Johannesburg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mle" model="tt.destinations">
+            <field name="name">Male Intl</field>
+            <field name="code">MLE</field>
+            <field name="icao">VRMM</field>
+            <field name="city">Male</field>
+            <field name="country_id" ref="base.mv"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">4.191833</field>
+            <field name="longitude">73.529128</field>
+            <field name="altitude">6</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Indian/Maldives</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dmk" model="tt.destinations">
+            <field name="name">Don Mueang International Airport</field>
+            <field name="code">DMK</field>
+            <field name="icao">VTBD</field>
+            <field name="city">Bangkok</field>
+            <field name="country_id" ref="base.th"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">13.736717</field>
+            <field name="longitude">100.523186</field>
+            <field name="altitude">3</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Bangkok</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pvg" model="tt.destinations">
+            <field name="name">Shanghai Pudong International Airport</field>
+            <field name="code">PVG</field>
+            <field name="icao">ZSPD</field>
+            <field name="city">Shanghai</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">31.230416</field>
+            <field name="longitude">121.473701</field>
+            <field name="altitude">13</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Shanghai</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cts" model="tt.destinations">
+            <field name="name">New Chitose Airport</field>
+            <field name="code">CTS</field>
+            <field name="icao">RJCC</field>
+            <field name="city">Chitose</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">42.792594</field>
+            <field name="longitude">141.670479</field>
+            <field name="altitude">63.812336</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wnz" model="tt.destinations">
+            <field name="name">Wenzhou Longwan International Airport</field>
+            <field name="code">WNZ</field>
+            <field name="icao">ZSWZ</field>
+            <field name="city">Wenzhou Shi</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">27.91566</field>
+            <field name="longitude">120.84738</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hgh" model="tt.destinations">
+            <field name="name">Hangzhou Xiaoshan International Airport</field>
+            <field name="code">HGH</field>
+            <field name="icao">ZSHC</field>
+            <field name="city">Hangzhou</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">30.2295</field>
+            <field name="longitude">120.433998</field>
+            <field name="altitude">63.43</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ber" model="tt.destinations">
+            <field name="name">Berlin Brandenburg Airport</field>
+            <field name="code">BER</field>
+            <field name="icao">EDDB</field>
+            <field name="city">Tatarstan</field>
+            <field name="country_id" ref="base.de"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">52.516266</field>
+            <field name="longitude">13.377775</field>
+            <field name="altitude">121</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Berlin</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_haj" model="tt.destinations">
+            <field name="name">Hannover Airport</field>
+            <field name="code">HAJ</field>
+            <field name="icao">EDDV</field>
+            <field name="city">Hannover</field>
+            <field name="country_id" ref="base.de"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">52.461849</field>
+            <field name="longitude">9.688992</field>
+            <field name="altitude">183</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Berlin</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ynd" model="tt.destinations">
+            <field name="name">Gatineau-Ottawa Executive Airport</field>
+            <field name="code">YND</field>
+            <field name="icao">CYND</field>
+            <field name="city">Gatineau</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.521667</field>
+            <field name="longitude">-75.563611</field>
+            <field name="altitude">209.974</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">Canada/Eastern</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_yow" model="tt.destinations">
+            <field name="name">Ottawa Macdonald–Cartier International Airport</field>
+            <field name="code">YOW</field>
+            <field name="icao">CYOW</field>
+            <field name="city">Ottawa</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.7158</field>
+            <field name="longitude">139.7292</field>
+            <field name="altitude">377.297</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">Canada/Eastern</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_yvr" model="tt.destinations">
+            <field name="name">Vancouver International Airport</field>
+            <field name="code">YVR</field>
+            <field name="icao">CYVR</field>
+            <field name="city">Richmond</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">49.199564</field>
+            <field name="longitude">-123.186233</field>
+            <field name="altitude">13.1234</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">Canada/Pacific</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jed" model="tt.destinations">
+            <field name="name">King Abdulaziz International Airport</field>
+            <field name="code">JED</field>
+            <field name="icao">OEJN</field>
+            <field name="city">Jeddah</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">21.679444</field>
+            <field name="longitude">39.156667</field>
+            <field name="altitude">49.2126</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Asia/Bahrain</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_yhu" model="tt.destinations">
+            <field name="name">Montreal Saint-Hubert Longueuil Airport</field>
+            <field name="code">YHU</field>
+            <field name="icao">CYHU</field>
+            <field name="city">Longueuil</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.518056</field>
+            <field name="longitude">-73.416944</field>
+            <field name="altitude">88.5827</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">Canada/Eastern</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pus" model="tt.destinations">
+            <field name="name">Gimhae International Airport</field>
+            <field name="code">PUS</field>
+            <field name="icao">RKPK</field>
+            <field name="city">Busan</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.179444</field>
+            <field name="longitude">128.938333</field>
+            <field name="altitude">6.56168</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Seoul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_khh" model="tt.destinations">
+            <field name="name">Kaohsiung International Airport</field>
+            <field name="code">KHH</field>
+            <field name="icao">RCKH</field>
+            <field name="city">Kaohsiung</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">22.576944</field>
+            <field name="longitude">120.35</field>
+            <field name="altitude">31</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Taipei</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sea" model="tt.destinations">
+            <field name="name">Seattle–Tacoma International Airport</field>
+            <field name="code">SEA</field>
+            <field name="icao">KSEA</field>
+            <field name="city">Seatac</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">47.443546</field>
+            <field name="longitude">-122.301659</field>
+            <field name="altitude">377.297</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Vancouver</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cts" model="tt.destinations">
+            <field name="name">New Chitose Airport</field>
+            <field name="code">CTS</field>
+            <field name="icao">RJCC</field>
+            <field name="city">Chitose</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">42.792594</field>
+            <field name="longitude">141.670478</field>
+            <field name="altitude">63.812336</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_xiy" model="tt.destinations">
+            <field name="name">Xi'an Xianyang International Airport</field>
+            <field name="code">XIY</field>
+            <field name="icao">ZLXY</field>
+            <field name="city">Xianyang</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">34.341568</field>
+            <field name="longitude">108.940175</field>
+            <field name="altitude">1.572</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Hong_Kong</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hgh" model="tt.destinations">
+            <field name="name">Hangzhou Xiaoshan International Airport</field>
+            <field name="code">HGH</field>
+            <field name="icao">ZSHC</field>
+            <field name="city">Hangzhou</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">30.2295</field>
+            <field name="longitude">120.433998</field>
+            <field name="altitude">22.99869</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Hong_Kong</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nkg" model="tt.destinations">
+            <field name="name">Nanjing Lukou International Airport</field>
+            <field name="code">NKG</field>
+            <field name="icao">ZSNJ</field>
+            <field name="city">Wuhan</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">31.7</field>
+            <field name="longitude">118.9</field>
+            <field name="altitude">14.94</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Hong_Kong</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_str" model="tt.destinations">
+            <field name="name">Stuttgart Airport</field>
+            <field name="code">STR</field>
+            <field name="icao">EDDS</field>
+            <field name="city">Stuttgart</field>
+            <field name="country_id" ref="base.de"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.6880556</field>
+            <field name="longitude">9.21</field>
+            <field name="altitude">1276.25</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Berlin</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ham" model="tt.destinations">
+            <field name="name">Hamburg Airport</field>
+            <field name="code">HAM</field>
+            <field name="icao">EDDH</field>
+            <field name="city">Hamburg</field>
+            <field name="country_id" ref="base.de"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">53.633622</field>
+            <field name="longitude">9.997413</field>
+            <field name="altitude">53</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Berlin</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_auh" model="tt.destinations">
+            <field name="name">Abu Dhabi International Airport</field>
+            <field name="code">AUH</field>
+            <field name="icao">OMAA</field>
+            <field name="city">Abu Dhabi</field>
+            <field name="country_id" ref="base.ae"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">24.432928</field>
+            <field name="longitude">54.644539</field>
+            <field name="altitude">88</field>
+            <field name="timezone_hour">4</field>
+            <field name="tz">Asia/Dubai</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mkz" model="tt.destinations">
+            <field name="name">Malacca International Airport</field>
+            <field name="code">MKZ</field>
+            <field name="icao">WMKM</field>
+            <field name="city">Malacca</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">2.26336</field>
+            <field name="longitude">102.251999</field>
+            <field name="altitude">35.006562</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ool" model="tt.destinations">
+            <field name="name">Gold Coast Airport</field>
+            <field name="code">OOL</field>
+            <field name="icao">YBCG</field>
+            <field name="city">Bilinga</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-28.165645</field>
+            <field name="longitude">153.509074</field>
+            <field name="altitude">12.92</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Australia/Queensland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vie" model="tt.destinations">
+            <field name="name">Vienna International Airport</field>
+            <field name="code">VIE</field>
+            <field name="icao">LOWW</field>
+            <field name="city">Schwechat</field>
+            <field name="country_id" ref="base.at"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.122814</field>
+            <field name="longitude">16.533358</field>
+            <field name="altitude">600</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Amsterdam</field>
+            <field name="active">1</field>
+        </record>
+
+    </data>
+</odoo>
+    

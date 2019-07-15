@@ -100,7 +100,6 @@
                         <field name="type_id"/>
                         <field name="agent_id"/>
                         <field name="customer_id"/>
-                        <field name="company_id"/>
                     </group>
                 </sheet>
             </form>

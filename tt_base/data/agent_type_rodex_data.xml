@@ -42,18 +42,6 @@
             <!--<field name="fee_schema_id" ref="tt_agent_accounting_rodex.fee_schema_btbr"/>-->
             <field name="active">True</field>
         </record>
-        <record id="agent_type_cor" model="tt.agent.type">
-            <field name="name">Customer COR</field>
-            <field name="code">cor</field>
-            <!--<field name="fee_schema_id" ref="tt_agent_accounting_rodex.fee_schema_cor_por"/>-->
-            <field name="active">True</field>
-        </record>
-        <record id="agent_type_por" model="tt.agent.type">
-            <field name="name">Customer POR</field>
-            <field name="code">por</field>
-            <!--<field name="fee_schema_id" ref="tt_agent_accounting_rodex.fee_schema_cor_por"/>-->
-            <field name="active">True</field>
-        </record>
         <!--<record id="customer_type_individu" model="tt.agent.type">-->
             <!--<field name="name">Customer Individual</field>-->
             <!--&lt;!&ndash;<field name="fee_schema_id" ref="tt_agent_accounting_rodex.fee_schema_individu"/>&ndash;&gt;-->

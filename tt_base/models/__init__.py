@@ -22,7 +22,9 @@ from . import tt_company
 from . import tt_customer
 from . import tt_agent_type
 from . import tt_agent
-from . import destinations
+from . import tt_destinations
 from . import transport_carrier
 from . import tt_routes
 from . import tt_provider_type
+from . import tt_customer_parent
+from . import tt_customer_parent_type

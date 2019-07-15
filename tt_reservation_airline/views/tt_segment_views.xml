@@ -1,7 +1,7 @@
 <odoo>
     <record id="tt_reservation_airline_segment_form_view" model="ir.ui.view">
         <field name="name">tt.transport.airline.segment.form.view</field>
-        <field name="model">tt.tb.segment.airline</field>
+        <field name="model">tt.segment.airline</field>
         <field name="arch" type="xml">
             <form>
                  <sheet>
@@ -16,9 +16,8 @@
                             <field name="sequence"/>
                         </group>
                         <group>
+                            <field name="carrier_id"/>
                             <field name="carrier_code"/>
-                            <!--<field name="airline_name" invisible="1"/>-->
-                            <field name="carrier_name"/>
                         </group>
                     </group>
                     <group>
@@ -26,7 +25,7 @@
                             <!--<field name="agent_id"/>-->
                             <field name="name"/>
                             <field name="journey_type"/>
-                            <field name="provider"/>
+                            <field name="provider_id"/>
                         </group>
                         <group>
 
@@ -71,17 +70,6 @@
                             <!--<field name="provider" invisible="1"/>-->
                         <!--</tree>-->
                     <!--</field>-->
-                    <separator colspan="6" string="Service Charge"/>
-                    <!--<field name="additional_service_charge_ids">-->
-                        <!--<tree>-->
-                            <!--<field name="segment_id"/>-->
-                            <!--<field name="sequence"/>-->
-                            <!--<field name="charge_code"/>-->
-                            <!--<field name="pax_type"/>-->
-                            <!--<field name="total"/>-->
-                            <!--<field name="pax_count"/>-->
-                        <!--</tree>-->
-                    <!--</field>-->
                     <separator colspan="6" string="Seats"/>
                     <field name="seat_ids">
                         <tree>
@@ -96,26 +84,24 @@
         </field>
     </record>
 
-    <!--<record id="tt_reservation_airline_segment_tree_view" model="ir.ui.view">-->
-        <!--<field name="name">tt.transport.airline.segment.tree.view</field>-->
-        <!--<field name="model">tt.tb.segment.airline</field>-->
-        <!--<field name="arch" type="xml">-->
-            <!--<tree>-->
-                <!--<field name="pnr"/>-->
-                <!--<field name="provider" groups="tt_base.group_tt_tour_travel_operator"/>-->
-                <!--<field name="origin_id"/>-->
-                <!--<field name="destination_id"/>-->
-                <!--<field name="departure_date"/>-->
-                <!--<field name="return_date"/>-->
-                <!--&lt;!&ndash;<field name="total"/>&ndash;&gt;-->
-                <!--<field name="state"/>-->
-            <!--</tree>-->
-        <!--</field>-->
-    <!--</record>-->
+    <record id="tt_reservation_airline_segment_tree_view" model="ir.ui.view">
+        <field name="name">tt.transport.airline.segment.tree.view</field>
+        <field name="model">tt.segment.airline</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="pnr"/>
+                <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                <field name="origin_id"/>
+                <field name="destination_id"/>
+                <field name="departure_date"/>
+            </tree>
+        </field>
+    </record>
 
     <record id="transport_segment_action" model="ir.actions.act_window">
         <field name="name">Transport Ticket</field>
-        <field name="res_model">tt.tb.segment.airline</field>
+        <field name="res_model">tt.segment.airline</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
     </record>

@@ -6,7 +6,7 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button string="Set to Draft" name="action_draft" type="object"/>
+                    <button string="Set to Draft" name="action_set_as_draft" type="object"/>
                     <button string="Set to Booked" name="action_set_as_booked" type="object"/>
                     <button string="Set to Issued" name="action_set_as_issued" type="object"/>
                     <button string="Set Booking State" name="action_check_provider_state" type="object"/>
@@ -38,7 +38,7 @@
                         <group>
                             <field name="pnr"/>
                             <field name="agent_id"/>
-                            <field name="sub_agent_id"/>
+                            <field name="customer_parent_id"/>
                             <field name="provider_type_id"/>
                         </group>
                         <group>
@@ -62,6 +62,7 @@
                                 <field name="issued_uid" readonly="1" class="oe_inline"/> -
                                 <field name="issued_date" readonly="1" class="oe_inline"/>
                             </div>
+                            <field name="sid_booked"/>
                         </group>
                     </group>
 

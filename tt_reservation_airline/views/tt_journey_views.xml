@@ -1,7 +1,7 @@
 <odoo>
     <record id="tt_reservation_airline_journey_form_view" model="ir.ui.view">
         <field name="name">tt.transport.airline.journey.form.view</field>
-        <field name="model">tt.tb.journey.airline</field>
+        <field name="model">tt.journey.airline</field>
         <field name="arch" type="xml">
             <form>
                 <!--<header>-->
@@ -24,9 +24,7 @@
                             <field name="sequence"/>
                             <field name="booking_id"/>
                             <field name="pnr"/>
-                            <field name="provider" groups="tt_base.group_tt_tour_travel_operator"/>
-                            <field name="notes"/>
-                            <field name="error_msg"/>
+                            <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
                         </group>
                         <group>
                             <!--<field name="hold_date"/>-->
@@ -71,25 +69,21 @@
 
     <record id="transport_journey_tree_view" model="ir.ui.view">
         <field name="name">transport.journey.tree.view</field>
-        <field name="model">tt.tb.journey.airline</field>
+        <field name="model">tt.journey.airline</field>
         <field name="arch" type="xml">
             <tree>
                 <field name="pnr"/>
-                <field name="direction"/>
-                <field name="provider" groups="tt_base.group_tt_tour_travel_operator"/>
-                <field name="origin"/>
-                <field name="destination"/>
+                <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                <field name="origin_id"/>
+                <field name="destination_id"/>
                 <field name="departure_date"/>
-                <field name="return_date"/>
-                <!--<field name="total"/>-->
-                <field name="state"/>
             </tree>
         </field>
     </record>
 
     <record id="transport_journey_action" model="ir.actions.act_window">
         <field name="name">Transport Ticket</field>
-        <field name="res_model">tt.tb.journey.airline</field>
+        <field name="res_model">tt.journey.airline</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
     </record>
