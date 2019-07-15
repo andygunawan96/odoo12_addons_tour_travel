@@ -1,5 +1,10 @@
 from odoo import api, fields, models, _
 from ...tools import test_to_dict
+from ...tools.api import Response
+import logging, traceback
+
+
+_logger = logging.getLogger(__name__)
 
 
 class Country(models.Model, test_to_dict.ToDict):
@@ -11,6 +16,31 @@ class Country(models.Model, test_to_dict.ToDict):
     address_detail_ids = fields.One2many('address.detail', 'country_id', string='Addresses')
     provide_code_ids = fields.One2many('tt.provider.code', 'country_id', string='Provide Code')
     active = fields.Boolean('Active', default=True)
+
+    def get_country_data(self):
+        res = {
+            'name': self.name,
+            'code': self.code,
+            'phone_code': self.phone_code,
+        }
+        return res
+
+    def get_country_data_by_code(self):
+        _obj = self.sudo().search([('active', '=', True)])
+        res = {}
+        for rec in _obj:
+            code = rec.code
+            res.update({code: rec.get_country_data()})
+        return res
+
+    def get_country_list_api(self, data, context):
+        try:
+            response = self.get_country_data_by_code()
+            res = Response().get_no_error(response)
+        except Exception as e:
+            _logger.error('Error Get Country Data API, %s, %s' % (str(e), traceback.format_exc()))
+            res = Response().get_error(str(e), 500)
+        return res
 
 
 class CountryState(models.Model,test_to_dict.ToDict):
