@@ -24,7 +24,6 @@ class TtCustomer(models.Model):
     marital_status = fields.Selection(variables.MARITAL_STATUS, 'Marital Status')
     religion = fields.Selection(variables.RELIGION, 'Religion')
 
-    nationality_id = fields.Many2one('tt.country','Nationality')
 
     birth_date = fields.Date('Birth Date')
     age = fields.Char('Age', help='For Adult, age in year\nFor Child, age in month',
