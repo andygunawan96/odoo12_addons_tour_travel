@@ -136,6 +136,7 @@ class PricingProviderLine(models.Model):
             'origin_codes': origin_codes,
             'origin_city_ids': origin_city_ids,
             'origin_country_codes': origin_country_codes,
+            'destination_type': self.destination_type,
             'destination_codes': destination_codes,
             'destination_city_ids': destination_city_ids,
             'destination_country_codes': destination_country_codes,
