@@ -53,6 +53,7 @@ class ReservationTrain(models.Model):
             tmp += rec.carrier_name and rec.carrier_name + '\n' or '\n'
         return tmp
 
+
     def action_create_invoice(self):
 
         invoice_id = self.env['tt.agent.invoice'].search([('contact_id','=',self.contact_id.id), ('state','=','draft')])
