@@ -1,5 +1,7 @@
 from odoo import api, fields, models, _
 from ...tools import variables
+
+
 class TtReservation(models.Model):
     _name = 'tt.reservation'
 
@@ -67,8 +69,6 @@ class TtReservation(models.Model):
                                readonly=True, states={'draft': [('readonly', False)]})
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', related='agent_id.agent_type_id',
                                     store=True)
-
-
 
     customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer', readonly=True, states={'draft': [('readonly', False)]},
                                    help='COR / POR')

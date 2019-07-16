@@ -33,7 +33,7 @@
                   parent="tt_base.main_tour_travel"
 
                   name="Configuration"
-                  sequence="2"
+                  sequence="90"
                   groups="base.group_user"/>
                   <!--action="tt_base.res_country_action_view"-->
         <!--Menu (tag) Inside Top Menu-->

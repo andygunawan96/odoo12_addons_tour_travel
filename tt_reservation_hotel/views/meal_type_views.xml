@@ -1,0 +1,36 @@
+<odoo>
+    <record model="ir.ui.view" id="meal_type_view_form_rodex" >
+        <field name="name">tt.meal.type.view.form.rodex</field>
+        <field name="model">tt.meal.type</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <group>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <field name="provider_id"/>
+                    </group>
+                </group>
+            </form>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="meal_type_view_tree_rodex" >
+        <field name="name">tt.meal.type.view.tree.rodex</field>
+        <field name="model">tt.meal.type</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="provider_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="meal_type_view_action_rodex">
+        <field name="name">Meal Type</field>
+        <field name="res_model">tt.meal.type</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>
