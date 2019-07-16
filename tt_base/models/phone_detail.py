@@ -11,7 +11,7 @@ class PhoneDetail(models.Model):
     _name = 'phone.detail'
     _description = 'Tour & Travel - Phone Detail'
 
-    type = fields.Selection(TYPE, 'Address Type', required=True, default='work')
+    type = fields.Selection(TYPE, 'Phone Type', required=True, default='work')
     name = fields.Char('Type Name')
     country_id = fields.Many2one('res.country', string='Country')
     phone_number = fields.Char('Phone Number', required=True)
