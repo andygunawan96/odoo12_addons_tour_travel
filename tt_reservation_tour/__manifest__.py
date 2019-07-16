@@ -32,6 +32,8 @@
         'views/tt_reservation_tour_package_quotation_views.xml',
         'views/tt_reservation_tour_pricelist_views.xml',
         'data/ir_sequence_data.xml',
+        'data/tt_provider_type_data.xml',
+        'data/tt_provider_tour.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
