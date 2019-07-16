@@ -18,14 +18,14 @@ class FlightSegment(models.Model):
 
     journey_type = fields.Selection(JOURNEY_TYPE, 'Journey Type', default='DP')
 
-    carrier_id = fields.Many2one('tt.transport.carrier', 'Airline', domain=[('transport_type', '=', 'airline')])
+    carrier_id = fields.Many2one('tt.transport.carrier', 'Airline', domain=[('provider_type_id.name', '=', 'Airline')])
     carrier_code = fields.Char('Flight Code', related='carrier_id.code', store=True)
     carrier_number = fields.Char('Flight Number')
 
-    origin_id = fields.Many2one('tt.destinations', 'Origin', domain=[('provider_type.name', '=', 'Airline')])
+    origin_id = fields.Many2one('tt.destinations', 'Origin', domain=[('provider_type_id.name', '=', 'Airline')])
     origin_terminal = fields.Char('Origin Terminal')
 
-    destination_id = fields.Many2one('tt.destinations', 'Destination', domain=[('provider_type.name', '=', 'Airline')])
+    destination_id = fields.Many2one('tt.destinations', 'Destination', domain=[('provider_type_id.name', '=', 'Airline')])
     destination_terminal = fields.Char('Destination Terminal')
 
     departure_date_fmt = fields.Datetime('Departure Date (FMT)')
