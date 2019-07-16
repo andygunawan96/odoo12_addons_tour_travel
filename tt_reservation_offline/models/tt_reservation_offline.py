@@ -1,8 +1,10 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 from datetime import datetime, timedelta
-import logging,traceback
-from ...tools.api import Response
+import logging
+import traceback
+import copy
+
 _logger = logging.getLogger(__name__)
 
 STATE_OFFLINE = [
@@ -34,16 +36,17 @@ SECTOR_TYPE = [
 
 class IssuedOffline(models.Model):
     _inherit = ['tt.history', 'tt.reservation']
-    _name = 'issued.offline'
+    _name = 'tt.reservation.offline'
 
     sub_agent_id = fields.Many2one('tt.agent', 'Sub-Agent', readonly=True, states={'draft': [('readonly', False)]},
-                                   help='COR / POR', related='contact_id.agent_id')
+                                   help='COR / POR', related='booker_id.agent_id')
 
     state = fields.Selection(STATE_OFFLINE, 'State', default='draft')
     # type = fields.Selection(TYPE, required=True, readonly=True,
     #                         states={'draft': [('readonly', False)]}, string='Transaction Type')
     provider_type_id = fields.Many2one('tt.provider.type', required=True, readonly=True,
                                        states={'draft': [('readonly', False)]}, string='Transaction Type')
+    provider_type_name = fields.Char('Transaction Name', readonly=True, related='provider_type_id.code')
 
     segment = fields.Integer('Number of Segment', compute='get_segment_length')
     person = fields.Integer('Person', readonly=True, states={'draft': [('readonly', False)],
@@ -98,11 +101,11 @@ class IssuedOffline(models.Model):
     # cancel_sub_ledger_id = fields.Many2one('tt.ledger', 'Cancel Sub Agent', copy=False)
     # cancel_commission_ledger_id = fields.Many2one('tt.ledger', 'Cancel Commission', copy=False)
     invoice_ids = fields.Many2many('tt.agent.invoice', 'issued_invoice_rel', 'issued_id', 'invoice_id', 'Invoice(s)')
-    ledger_ids = fields.One2many('tt.ledger', 'res_id', 'Ledger(s)', domain=[('res_model', '=', 'issued.offline')])
+    ledger_ids = fields.One2many('tt.ledger', 'res_id', 'Ledger(s)', domain=[('res_model', '=', 'tt.reservation.offline')])
 
     # Attachment
-    attachment_ids = fields.Many2many('ir.attachment', 'issued_offline_rel',
-                                      'tt_issued_id', 'attachment_id', domain=[('res_model', '=', 'issued.offline')]
+    attachment_ids = fields.Many2many('ir.attachment', 'tt_reservation_offline_rel',
+                                      'tt_issued_id', 'attachment_id', domain=[('res_model', '=', 'tt.reservation.offline')]
                                       , string='Attachments', readonly=True, states={'paid': [('readonly', False)]})
     guest_ids = fields.Many2many('tt.customer', 'tt_issued_guest_rel', 'resv_issued_id', 'tt_product_id',
                                  'Guest(s)', readonly=True, states={'draft': [('readonly', False)]})
@@ -122,9 +125,9 @@ class IssuedOffline(models.Model):
     # arrival_city = fields.Many2one('res.country.city', 'Arrival City', readonly=True,
     #                            states={'draft': [('readonly', False)]})
 
-    line_ids = fields.One2many('issued.offline.lines', 'booking_id', 'Issued Offline', readonly=True,
+    line_ids = fields.One2many('tt.reservation.offline.lines', 'booking_id', 'Issued Offline', readonly=True,
                                states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
-    passenger_ids = fields.One2many('issued.offline.passenger', 'booking_id', 'Issued Offline', readonly=True,
+    passenger_ids = fields.One2many('tt.reservation.offline.passenger', 'booking_id', 'Issued Offline', readonly=True,
                                     states={'draft': [('readonly', False)]})
 
     incentive_amount = fields.Monetary('Insentif')
@@ -142,12 +145,14 @@ class IssuedOffline(models.Model):
     provider_booking_ids = fields.One2many('tt.tb.provider.offline', 'booking_id', string='Provider Booking',
                                            readonly=True, states={'draft': [('readonly', False)]})
 
-    contact_id = fields.Many2one('tt.customer', 'Contact Person', ondelete='restrict', readonly=True,
-                                 states={'draft': [('readonly', False)]})
+    contact_ids = fields.One2many('tt.customer', 'reservation_offline_id', 'Contact Person', readonly=True,
+                                  states={'draft': [('readonly', False)]})
+    booker_id = fields.Many2one('tt.customer', 'Booker', ondelete='restrict', readonly=True,
+                                states={'draft': [('readonly', False)]})
+
     # display_mobile = fields.Char('Contact Person for Urgent Situation',
     #                              readonly=True, states={'draft': [('readonly', False)]})
     # refund_id = fields.Many2one('tt.refund', 'Refund')
-    # contact_id = fields.Many2one('tt.customer.contact', 'Booker / Contact')
 
     def check_line_empty(self):
         empty = True
@@ -176,7 +181,7 @@ class IssuedOffline(models.Model):
                         if self.total_sale_price != 0:
                             self.name = 'New'
                             if self.name == 'New':
-                                self.name = self.env['ir.sequence'].next_by_code('issued.offline')
+                                self.name = self.env['ir.sequence'].next_by_code('tt.reservation.offline')
                             else:
                                 self.name = self.name
                             self.state = 'confirm'
@@ -318,7 +323,7 @@ class IssuedOffline(models.Model):
 
     def create_ledger_offline(self):
         # fixme : comment dulu. tunggu tt_ledger
-        provider_obj = self.env['issued.offline.lines'].search([('booking_id', '=', self.id)])
+        provider_obj = self.env['tt.reservation.offline.lines'].search([('booking_id', '=', self.id)])
         # booking_obj = self.browse(self.id)
 
         try:
@@ -338,7 +343,7 @@ class IssuedOffline(models.Model):
             }
 
     def create_reverse_ledger_offline(self):
-        provider_obj = self.env['issued.offline.lines'].search([('booking_id', '=', self.id)])
+        provider_obj = self.env['tt.reservation.offline.lines'].search([('booking_id', '=', self.id)])
 
         try:
             self.sudo().create_reverse_ledger(provider_obj)
@@ -688,129 +693,581 @@ class IssuedOffline(models.Model):
 
     ####################################################################################################
 
-    # API
+    # API & Create
 
-    def get_config_api(self):
-        try:
-            res = {
-                'sector_type': self._fields['sector_type'].selection,
-                'transaction_type': [{'code': rec.code, 'name': rec.name} for rec in self.env['tt.provider.type'].search([])],
-                'carrier_id': [{'code': rec.code, 'name': rec.name, 'icao': rec.icao} for rec in self.env['tt.transport.carrier'].search([])],
-                'social_media_id': [{'name': rec.name} for rec in self.env['social.media.detail'].search([])],
-            }
-            res = Response().get_no_error(res)
-        except Exception as e:
-            res = Response().get_error(str(e), 500)
-        return res
+    pass
 
-    # API FUNCTION step2.1
-    def create_issued_offline_by_api(self, vals, api_context=None):
-        # Notes: SubmitTopUp
-        list_obj = []
-        list_line = []
-        for rec in vals['passenger_ids']:
-            a = self.env['issued.offline.passanger'].create({'passenger_id': rec.get('id')})
-            list_obj.append(a.id)
-        for rec in vals['line_ids']:
-            origin = self.get_destination_id(vals['type'], rec['origin'])
-            destination = self.get_destination_id(vals['type'], rec['destination'])
-            a = self.env['issued.offline.lines'].create({
-                'origin_id': origin,
-                'destination_id': destination,
-                'carrier_code': rec['carrier_code'],
-                'carrier_number': rec['carrier_number'],
-                'departure_date': rec['departure'],
-                'return_date': rec['arrival'],
-                'class_of_service': rec['class_of_service'],
-                'sub_class': rec['sub_class']
-            })
-            list_line.append(a.id)
-        values = {
-            'agent_id': int(vals['agent_id']),
-            'sub_agent_id': int(vals['sub_agent_id']),
-            'sub_agent_type': int(vals['sub_agent_type']),
-            'contact_id': int(vals['contact_id']),
-            'type': vals['type'],
-            'sector_type': vals['sector_type'] or '',
-            'total_sale_price': int(vals['total_sale_price']) or 0,
-            'agent_commission': 0,
-            'parent_agent_commission': 0,
-            'agent_nta_price': 0,
-            'description': vals['desc'],
-            'carrier_id': int(vals['carrier_id']),
-            'provider': vals['provider'],
-            'pnr': vals['pnr'],
-            'social_media_id': int(vals['social_media_id']),
-            'expired_date': vals['expired_date'],
-            'create_uid': int(vals['co_uid']),
-            'confirm_uid': int(vals['co_uid']),
-            'passanger_ids': [(6, 0, list_obj)],
-            'line_ids': [(6, 0, list_line)],
+    # AIRLINE
+    # param_booker = {
+    #     "title": "MR",
+    #     "first_name": "ivan",
+    #     "last_name": "suryajaya",
+    #     "email": "sad@gmail.com",
+    #     "calling_code": "62",
+    #     "mobile": "82173712381",
+    #     "nationality_code": "ID",
+    #     "booker_id": ""
+    # }
+    #
+    # param_passenger = [
+    #     {
+    #         "pax_type": "ADT",
+    #         "first_name": "ivan",
+    #         "last_name": "suryajaya",
+    #         "title": "MR",
+    #         "birth_date": "2000-06-20",
+    #         "nationality_code": "ID",
+    #         "country_of_issued_code": "ID",
+    #         "passport_expdate": "2021-06-20",
+    #         "passport_number": "a12323",
+    #         "passenger_id": ""
+    #     }
+    # ]
+    #
+    # param_contact = [
+    #     {
+    #         "title": "MR",
+    #         "first_name": "ivan",
+    #         "last_name": "suryajaya",
+    #         "email": "asd@gmail.com",
+    #         "calling_code": "62",
+    #         "mobile": "82138281321",
+    #         "nationality_code": "ID",
+    #         "contact_id": ""
+    #     }
+    # ]
+    #
+    # param_data_reservation_offline = {
+    #     "type": "airline",
+    #     "total_sale_price": 10000,
+    #     "desc": "Testing",
+    #     "pnr": "a132123",
+    #     "social_media_id": "3",
+    #     "expired_date": "2019-07-11 05:05",
+    #     "line_ids": [
+    #         {
+    #             "origin": "SUB",
+    #             "destination": "SIN",
+    #             "provider": "Garuda Indonesia",
+    #             "departure": "2019-07-17 20:20",
+    #             "arrival": "2019-07-18 01:01",
+    #             "carrier_code": "GA",
+    #             "carrier_number": "X123",
+    #             "sub_class": "B",
+    #             "class_of_service": "eco"
+    #         }
+    #     ],
+    #     "provider": "skytors_issued_offline",
+    #     "sector_type": "domestic"
+    # }
 
+    pass
+
+    # TRAIN
+    # param_booker = {
+    #     "title": "MR",
+    #     "first_name": "ivan",
+    #     "last_name": "suryajaya",
+    #     "email": "ad2@gmail.com",
+    #     "calling_code": "62",
+    #     "mobile": "81237213812",
+    #     "nationality_code": "ID",
+    #     "booker_id": ""
+    # }
+    #
+    # param_contact = [
+    #     {
+    #         "title": "MR",
+    #         "first_name": "ivan",
+    #         "last_name": "suryajaya",
+    #         "email": "ad2@gmail.com",
+    #         "calling_code": "62",
+    #         "mobile": "81237213812",
+    #         "nationality_code": "ID",
+    #         "contact_id": ""
+    #     }
+    # ]
+    #
+    # param_passenger = [
+    #     {
+    #         "pax_type": "ADT",
+    #         "first_name": "pax",
+    #         "last_name": "satu",
+    #         "title": "MR",
+    #         "birth_date": "2000-06-20",
+    #         "nationality_code": "ID",
+    #         "country_of_issued_code": "",
+    #         "passport_expdate": "",
+    #         "passport_number": "",
+    #         "passenger_id": ""
+    #     }
+    # ]
+    #
+    # param_data_reservation_offline = {
+    #     "type": "train",
+    #     "total_sale_price": 10000,
+    #     "desc": "Testing",
+    #     "pnr": "asd123",
+    #     "social_media_id": "1",
+    #     "expired_date": "2019-07-08 05:50",
+    #     "line_ids": [
+    #         {
+    #             "origin": "BD",
+    #             "destination": "GMR",
+    #             "provider": "kai_outlet",
+    #             "departure": "2019-07-17 05:05",
+    #             "arrival": "2019-07-17 10:10",
+    #             "carrier_code": "ARGO PARAYANGAN",
+    #             "carrier_number": "5000",
+    #             "sub_class": "B",
+    #             "class_of_service": "eco"
+    #         }
+    #     ]
+    # }
+
+    pass
+
+    # HOTEL
+    # param_booker = {
+    #     "title": "MR",
+    #     "first_name": "ivan",
+    #     "last_name": "suryajaya",
+    #     "email": "ad2@gmail.com",
+    #     "calling_code": "62",
+    #     "mobile": "81237213812",
+    #     "nationality_code": "ID",
+    #     "booker_id": ""
+    # }
+    #
+    # param_contact = [
+    #     {
+    #         "title": "MR",
+    #         "first_name": "ivan",
+    #         "last_name": "suryajaya",
+    #         "email": "ad2@gmail.com",
+    #         "calling_code": "62",
+    #         "mobile": "81237213812",
+    #         "nationality_code": "ID",
+    #         "contact_id": ""
+    #     }
+    # ]
+    #
+    # param_passenger = [
+    #     {
+    #         "pax_type": "ADT",
+    #         "first_name": "pax",
+    #         "last_name": "satu",
+    #         "title": "MR",
+    #         "birth_date": "2000-06-20",
+    #         "nationality_code": "ID",
+    #         "country_of_issued_code": "",
+    #         "passport_expdate": "",
+    #         "passport_number": "",
+    #         "passenger_id": ""
+    #     }
+    # ]
+    #
+    # param_data_reservation_offline = {
+    #     "type": "hotel",
+    #     "total_sale_price": 10000,
+    #     "desc": "Testing",
+    #     "pnr": "asd123",
+    #     "social_media_id": "1",
+    #     "expired_date": "2019-07-08 05:50",
+    #     "line_ids": [
+    #         {
+    #             "name": "JW MARRIOT",
+    #             "room": "DELUXE",
+    #             "qty": "2",
+    #             "check_in": "2019-07-09 14:00",
+    #             "check_out": "2019-07-17 12:00",
+    #             "description": "ROOM TESTING"
+    #         }
+    #     ]
+    # }
+
+    pass
+
+    # ACTIVITY
+    param_booker = {
+        "title": "MR",
+        "first_name": "ivan",
+        "last_name": "suryajaya",
+        "email": "ad2@gmail.com",
+        "calling_code": "62",
+        "mobile": "81237213812",
+        "nationality_code": "ID",
+        "booker_id": ""
+    }
+
+    param_contact = [
+        {
+            "title": "MR",
+            "first_name": "ivan",
+            "last_name": "suryajaya",
+            "email": "ad2@gmail.com",
+            "calling_code": "62",
+            "mobile": "81237213812",
+            "nationality_code": "ID",
+            "contact_id": ""
         }
-        try:
-            res = self.env['issued.offline'].sudo().create(values)
-        except Exception as e:
-            res = Response().get_error(str(e), 500)
-            return res
+    ]
 
-        self.confirm_api(res.id)
-        res = Response().get_no_error({'name':res.name})
-        return res
+    param_passenger = [
+        {
+            "pax_type": "ADT",
+            "first_name": "pax",
+            "last_name": "satu",
+            "title": "MR",
+            "birth_date": "2000-06-20",
+            "nationality_code": "ID",
+            "country_of_issued_code": "ID",
+            "passport_expdate": "2020-06-20",
+            "passport_number": "a402022",
+            "passenger_id": ""
+        }
+    ]
+
+    param_data_reservation_offline = {
+        "type": "activity",
+        "total_sale_price": 10000,
+        "desc": "Testing",
+        "pnr": "a123312",
+        "social_media_id": "1",
+        "expired_date": "2019-07-11 05:05",
+        "line_ids": [
+            {
+                "name": "USS",
+                "package": "Singapore",
+                "qty": "2",
+                "visit_date": "2019-07-26 20:00",
+                "description": "Testing 1"
+            }
+        ]
+    }
+
+    param_context = {
+        'co_uid': 7
+    }
+
+    def create_booking_reservation_offline(self):
+        booker = copy.deepcopy(self.param_booker)
+        data_reservation_offline = copy.deepcopy(self.param_data_reservation_offline)
+        passenger = copy.deepcopy(self.param_passenger)
+        contact = copy.deepcopy(self.param_contact)
+        context = copy.deepcopy(self.param_context)
+        lines = data_reservation_offline['line_ids']
+
+        context.update({
+            'co_uid': self.env.user.id
+        })
+
+        try:
+            user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
+            # remove sementara update_api_context
+            context.update({
+                'agent_id': user_obj.agent_id.id,
+                'user_id': user_obj.id
+            })
+            booker_id = self._create_booker(context, booker)  # create booker
+            passenger_ids = self._create_passenger(context, passenger)  # create passenger
+            contact_ids = self._create_contact(context, contact)
+            booking_line_ids = self._create_line(lines, data_reservation_offline)  # create booking line
+            iss_off_psg_ids = self._create_reservation_offline_order(passenger)
+            header_val = {
+                'booker_id': booker_id,
+                'passenger_ids': [(6, 0, iss_off_psg_ids)],
+                'contact_ids': [(6, 0, contact_ids)],
+                'line_ids': [(6, 0, booking_line_ids)],
+                'provider_type_id': self.env['tt.provider.type'].sudo()
+                                        .search([('code', '=', data_reservation_offline.get('type'))], limit=1).id,
+                'description': data_reservation_offline.get('desc'),
+                'total_sale_price': data_reservation_offline['total_sale_price'],
+                "social_media_id": data_reservation_offline.get('social_media_id'),
+                "expired_date": data_reservation_offline.get('expired_date'),
+                'state': 'confirm',
+                'agent_id': context['agent_id'],
+                'user_id': context['co_uid'],
+            }
+            if data_reservation_offline['type'] == 'airline':
+                header_val.update({
+                    'sector_type': data_reservation_offline.get('sector_type'),
+                })
+            book_obj = self.create(header_val)
+            book_obj.action_confirm(context)
+        except Exception as e:
+            self.env.cr.rollback()
+            _logger.error(msg=str(e) + '\n' + traceback.format_exc())
+            return {
+                'error_code': 1,
+                'error_msg': str(e)
+            }
+
+    def _create_booker(self, context, booker):
+        country_env = self.env['res.country'].sudo()
+        booker_env = self.env['tt.customer'].sudo()
+        if booker['booker_id']:  # jika id booker ada
+            booker['booker_id'] = int(booker['booker_id'])
+            booker_rec = booker_env.browse(booker['booker_id'])
+            if booker_rec:
+                booker_rec.update({
+                    'email': booker.get('email', booker_rec.email),
+                    # 'mobile': vals.get('mobile', contact_rec.phone_ids[0]),
+                })
+            return booker_rec.id
+        else:  # jika tidak ada id booker
+            country = country_env.search([('code', '=', booker.pop('nationality_code'))])
+            booker.update({
+                'commercial_agent_id': context['agent_id'],
+                'agent_id': context['agent_id'],
+                'nationality_id': country and country[0].id or False,
+                'email': booker.get('email', booker['email']),
+                # 'mobile': booker.get('mobile', booker['mobile']),
+            })
+            booker_obj = booker_env.create(booker)
+            booker_obj.update({
+                'phone_ids': booker_obj.phone_ids.create({
+                    'phone_number': booker.get('mobile', booker['mobile']),
+                    'type': 'custom'
+                }),
+            })
+            return booker_obj.id
+
+    def _create_contact(self, context, contact):  # odoo10 : hanya 1 contact | odoo12 : bisa lebih dari 1 contact
+        contact_env = self.env['tt.customer'].sudo()
+        country_env = self.env['res.country'].sudo()
+        contact_list = []
+        contact_count = 0
+        for con in contact:
+            contact_count += 1
+            # cek jika sudah ada contact
+            if con['contact_id']:
+                con['contact_id'] = int(con['contact_id'])
+                contact_rec = contact_env.browse(con['contact_id'])
+                if contact_rec:
+                    contact_rec.update({
+                        'email': con.get('email', contact_rec.email),
+                        # 'mobile': vals.get('mobile', contact_rec.phone_ids[0]),
+                    })
+                # return contact_rec
+                contact_list.append(con['contact_id'])
+            # jika tidak ada, buat customer baru
+            else:
+                country = country_env.search([('code', '=', con.pop('nationality_code'))])  # diubah ke country_code
+                con.update({
+                    'commercial_agent_id': context['agent_id'],
+                    'agent_id': context['agent_id'],
+                    'nationality_id': country and country[0].id or False,
+                    # 'passenger_type': 'ADT',
+                    'email': con.get('email', con['email'])
+                })
+                contact_obj = contact_env.create(con)
+                contact_obj.update({
+                    'phone_ids': contact_obj.phone_ids.create({
+                        'phone_number': con.get('mobile', con['mobile']),
+                        'type': 'custom'
+                    }),
+                })
+                contact_list.append(contact_obj.id)
+        return contact_list
+
+    def _create_passenger(self, context, passenger):
+        passenger_list = []
+        country_env = self.env['res.country'].sudo()
+        passenger_env = self.env['tt.customer'].sudo()
+        passenger_count = 0
+        for psg in passenger:
+            passenger_count += 1
+            passenger_id = psg['passenger_id']
+            if passenger_id:
+                p_object = passenger_env.browse(int(passenger_id))
+                if p_object:
+                    passenger_list.append(passenger_id)
+                    if psg.get('passport_number'):
+                        p_object['passport_number'] = psg['passport_number']
+                    if psg.get('passport_expdate'):
+                        p_object['passport_expdate'] = psg['passport_expdate']
+                    if psg.get('country_of_issued_id'):
+                        p_object['country_of_issued_id'] = psg['country_of_issued_id']
+                    print('Passenger Type : ' + str(psg['passenger_type']))
+                    p_object.write({
+                        'domicile': psg.get('domicile'),
+                        # 'mobile': psg.get('mobile')
+                    })
+            else:
+                country = country_env.search([('code', '=', psg.pop('nationality_code'))])
+                psg['nationality_id'] = country and country[0].id or False
+                if psg['country_of_issued_code']:
+                    country = country_env.search([('code', '=', psg.pop('country_of_issued_code'))])
+                    psg['country_of_issued_id'] = country and country[0].id or False
+                if not psg.get('passport_expdate'):
+                    psg.pop('passport_expdate')
+
+                psg.update({
+                    'passenger_id': False,
+                    'agent_id': context['agent_id']
+                })
+                psg_res = passenger_env.create(psg)
+                psg.update({
+                    'passenger_id': psg_res.id,
+                })
+                passenger_list.append(psg_res.id)
+        return passenger_list
+
+    def _create_line(self, lines, data_reservation_offline):
+        line_list = []
+        destination_env = self.env['tt.destinations'].sudo()
+        line_env = self.env['tt.reservation.offline.lines'].sudo()
+        provider_type = data_reservation_offline['type']
+        print('Provider_type : ' + provider_type)
+        if provider_type in ['airline', 'train']:
+            for line in lines:
+                print('Origin: ' + str(destination_env.search([('code', '=', line.get('origin'))], limit=1).name))
+                print('Destination: ' + str(destination_env.search([('code', '=', line.get('destination'))], limit=1).name))
+                line_tmp = {
+                    "origin_id": destination_env.search([('code', '=', line.get('origin'))], limit=1).id,
+                    "destination_id": destination_env.search([('code', '=', line.get('destination'))], limit=1).id,
+                    "provider": line.get('provider'),
+                    "departure_date": line.get('departure'),
+                    "return_date": line.get('arrival'),
+                    "carrier_code": line.get('carrier_code'),
+                    "carrier_number": line.get('carrier_number'),
+                    "subclass": line.get('sub_class'),
+                    "class_of_service": line.get('class_of_service'),
+                }
+                line_obj = line_env.create(line_tmp)
+                line_list.append(line_obj.id)
+        elif provider_type == 'hotel':
+            for line in lines:
+                line_tmp = {
+                    "provider": line.get('name'),
+                    "obj_subname": line.get('room'),
+                    "qty": int(line.get('qty')),
+                    "description": line.get('description'),
+                    "check_in": line.get('check_in'),
+                    "check_out": line.get('check_out'),
+                }
+                line_obj = line_env.create(line_tmp)
+                line_list.append(line_obj.id)
+        elif provider_type == 'activity':
+            for line in lines:
+                line_tmp = {
+                    "provider": line.get('name'),
+                    "obj_subname": line.get('package'),
+                    "qty": int(line.get('qty')),
+                    "description": line.get('description'),
+                    "visit_date": line.get('visit_date'),
+                }
+                line_obj = line_env.create(line_tmp)
+                line_list.append(line_obj.id)
+        return line_list
+
+    def _create_reservation_offline_order(self, passenger):
+        iss_off_psg_env = self.env['tt.reservation.offline.passenger'].sudo()
+        iss_off_pas_list = []
+        for psg in passenger:
+            psg_vals = {
+                'passenger_id': psg['passenger_id'],
+                'agent_id': self.env.user.agent_id.id,
+                'pax_type': psg['pax_type']
+            }
+            iss_off_psg_obj = iss_off_psg_env.create(psg_vals)
+            iss_off_pas_list.append(iss_off_psg_obj.id)
+        return iss_off_pas_list
+
+    def create_reservation_offline_by_api(self, vals, api_context=None):
+        # Notes: SubmitTopUp
+        # list_obj = []
+        # list_line = []
+        # for rec in vals['passenger_ids']:
+        #     a = self.env['tt.reservation.offline.passenger'].create({
+        #         'passenger_id': rec.get('id')
+        #     })
+        #     list_obj.append(a.id)
+        # for rec in vals['line_ids']:
+        #     origin = self.get_destination_id(vals['type'], rec['origin'])
+        #     destination = self.get_destination_id(vals['type'], rec['destination'])
+        #     a = self.env['tt.reservation.offline.lines'].create({
+        #         'origin_id': origin,
+        #         'destination_id': destination,
+        #         'carrier_code': rec['carrier_code'],
+        #         'carrier_number': rec['carrier_number'],
+        #         'departure_date': rec['departure'],
+        #         'return_date': rec['arrival'],
+        #         'class_of_service': rec['class_of_service'],
+        #         'sub_class': rec['sub_class']
+        #     })
+        #     list_line.append(a.id)
+        # values = {
+        #     'agent_id': int(vals['agent_id']),
+        #     'sub_agent_id': int(vals['sub_agent_id']),
+        #     'sub_agent_type': int(vals['sub_agent_type']),
+        #     'contact_id': int(vals['contact_id']),
+        #     'type': vals['type'],
+        #     'sector_type': vals['sector_type'] or '',
+        #     'total_sale_price': int(vals['total_sale_price']) or 0,
+        #     'agent_commission': 0,
+        #     'parent_agent_commission': 0,
+        #     'agent_nta_price': 0,
+        #     'description': vals['desc'],
+        #     'carrier_id': int(vals['carrier_id']),
+        #     'provider': vals['provider'],
+        #     'pnr': vals['pnr'],
+        #     'social_media_id': int(vals['social_media_id']),
+        #     'expired_date': vals['expired_date'],
+        #     'create_uid': int(vals['co_uid']),
+        #     'confirm_uid': int(vals['co_uid']),
+        #     'passanger_ids': [(6, 0, list_obj)],
+        #     'line_ids': [(6, 0, list_line)],
+        # }
+        # try:
+        #     res = self.env['tt.reservation.offline'].sudo().create(values)
+        # except Exception as e:
+        #     errors = []
+        #     errors.append(('Issued Offline Failure', str(e)))
+        #     return {
+        #         'error_code': 1,
+        #         'error_msg': errors,
+        #         'response': {
+        #             'message': '',
+        #         }
+        #     }
+        #
+        # self.confirm_api(res.id)
+        # return {
+        #     'error_code': 0,
+        #     'error_msg': '',
+        #     'response': {
+        #         'message': '',
+        #         'name': res.name
+        #     }
+        # }
+        pass
+
+    def get_reservation_offline_api(self, req, api_context=None):
+        pass
+
+    # def get_reservation_offline_api(self, req, api_context=None):
+    #     def comp_agent_issued_offline(rec):
+    #         passenger = []
+    #         # jika ada passenger
+    #         if len(rec.passenger_ids) > 0:
+    #             # untuk setiap passenger
+    #             for pax in rec.passenger_ids:
+    #                 # masukkan data passenger ke dalam array
+    #                 passenger.append({
+    #                     # name : Mr. Andre Doang
+    #                     'name': pax.passenger_id.title + ' ' + pax.passenger_id.first_name + ' ' + pax.passenger_id.last_name
+    #                     # pax_type :
+    #                     # 'pax_type' : pax.passenger_id.pax_type
+    #
+    #                 })
 
     def confirm_api(self, id):
         obj = self.sudo().browse(id)
         obj.action_confirm()
 
-    # example
-    def get_issued_offline_api(self, req, api_context=None):
-        def comp_agent_issued_offline(rec):
-            passenger = []
-            if len(rec.passanger_ids) > 0:
-                for pax in rec.passanger_ids:
-                    passenger.append({
-                        'name': pax.passenger_id.title + ' ' + pax.passenger_id.first_name + ' ' + pax.passenger_id.last_name,
-                        'pax_type': pax.passenger_id.pax_type,
-                        'birth_date': pax.passenger_id.birth_date,
-                        'booker_type': pax.passenger_id.booker_type
-                    })
-            vals = {
-                'name': rec.name,
-                'create_date': rec.write_date,
-                'type': rec.type,
-                'total_tax': rec.total_tax,
-                'total_sale_price': rec.total_sale_price,
-                'state': rec.state,
-                'sub_agent_id': rec.sub_agent_id.name,
-                'agent_id': rec.agent_id.name,
-                'contact_id': rec.contact_id and rec.contact_id.first_name + ' ' + rec.contact_id.last_name and rec.contact_id.last_name or '',
-                'social_media_id': rec.social_media_id.name,
-                'provider': rec.provider,
-                'pnr': rec.pnr,
-                'passenger': passenger,
-                'parent_agent_commission': int(rec.parent_agent_commission),
-                'nta_price': int(rec.nta_price),
-                'id': rec.id,
-                'expired_date': rec.expired_date,
-                'description': rec.description,
-                'agent_nta_price': int(rec.agent_nta_price)
-            }
-            return vals
-
-        try:
-            user_obj = self.env['res.users'].browse(req['co_uid'])
-            # partner_obj = self.browse(user_obj.agent_id.id)
-            domain = ['|', ('agent_id', 'in', user_obj.allowed_customer_ids.ids),
-                      ('sub_agent_id', '=', user_obj.agent_id.id)]
-            order = api_context.get('order', 'id DESC')
-            issued_offline_ids = self.env['issued.offline'].search(domain, limit=req['limit'],
-                                                                   offset=req['offset'] * req['limit'], order=order)
-            res = Response().get_no_error({'issued_offline': [comp_agent_issued_offline(rec) for rec in issued_offline_ids]})
-
-
-        except Exception as e:
-            res = Response().get_error(str(e), 500)
-        return res
+    ####################################################################################################
 
     # INVOICE
 
@@ -891,3 +1348,11 @@ class IssuedOffline(models.Model):
         #     self.write({
         #         'invoice_ids': [(6, 0, [invoice.id])]
         #     })
+
+    # @api.multi
+    # def write(self, vals):
+    #     if self.env.user.agent_id.agent:
+    #         res = super(IssuedOffline, self).write(vals)
+    #         return res
+    #     else:
+    #         raise
