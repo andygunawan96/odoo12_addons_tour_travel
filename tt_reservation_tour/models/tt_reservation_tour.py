@@ -41,28 +41,31 @@ class TourBooking(models.Model):
 
     # *STATE*
     def action_confirm(self):
-        self.write({
-            'state': 'confirm',
-            'name': self.env['ir.sequence'].next_by_code('reservation.tour.booking.code'),
-        })
+        if self.state != 'confirm':
+            self.write({
+                'state': 'confirm',
+                'name': self.env['ir.sequence'].next_by_code('reservation.tour.booking.code'),
+            })
 
     def action_booked(self):
-        self.write({
-            'state': 'booked',
-            'booked_date': datetime.now(),
-            'booked_uid': self.env.user.id,
-            'hold_date': datetime.now() + relativedelta(days=1),
-        })
+        if self.state != 'booked':
+            self.write({
+                'state': 'booked',
+                'booked_date': datetime.now(),
+                'booked_uid': self.env.user.id,
+                'hold_date': datetime.now() + relativedelta(days=1),
+            })
         # self.message_post(body='Order BOOKED')
 
     def action_issued(self):
-        self.write({
-            'state': 'issued',
-            'issued_date': datetime.now(),
-            'issued_uid': self.env.user.id
-        })
-        self.create_ledger_tour()
-        self.create_commission_ledger_tour()
+        if self.state != 'issued':
+            self.write({
+                'state': 'issued',
+                'issued_date': datetime.now(),
+                'issued_uid': self.env.user.id
+            })
+            self.create_ledger_tour()
+            self.create_commission_ledger_tour()
 
     def action_reissued(self):
         pax_amount = sum(1 for temp in self.line_ids if temp.pax_type != 'INF')
@@ -469,19 +472,19 @@ class TourBooking(models.Model):
         for rec in self:
             total_commission = rec.total_commission
 
-            if rec.agent_type_id.name == 'Citra':
+            if rec.agent_type_id.id == self.env.ref('tt_base.agent_type_citra').id:
                 agent_commission = total_commission * 0.8
                 parent_commission = 0
                 ho_commission = total_commission * 0.2
-            elif rec.agent_type_id.name == 'Japro':
+            elif rec.agent_type_id.id == self.env.ref('tt_base.agent_type_japro').id:
                 agent_commission = total_commission * 0.7
                 parent_commission = total_commission * 0.1
                 ho_commission = total_commission * 0.2
-            elif rec.agent_type_id.name == 'BTBO':
+            elif rec.agent_type_id.id == self.env.ref('tt_base.agent_type_btbo').id:
                 agent_commission = total_commission * 0.7
                 parent_commission = total_commission * 0.1
                 ho_commission = total_commission * 0.2
-            elif rec.agent_type_id.name == 'BTBR':
+            elif rec.agent_type_id.id == self.env.ref('tt_base.agent_type_btbr').id:
                 agent_commission = total_commission * 0.7
                 parent_commission = total_commission * 0.1
                 ho_commission = total_commission * 0.2

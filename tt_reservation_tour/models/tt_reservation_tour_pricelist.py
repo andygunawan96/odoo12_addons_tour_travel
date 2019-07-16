@@ -649,8 +649,10 @@ class TourPricelist(models.Model):
             res_pax_list = []
             book_line_list = []
             contact_person = data['booking_data']['contact_person']
+            tour_data = data['booking_data']['tour_data']
             if len(contact_person) > 0:
-                if not self.check_pax_similarity(contact_person[0]):
+                similar = self.check_pax_similarity(contact_person[0])
+                if not similar:
                     cust_obj = self.env['tt.customer'].sudo().create({
                         'title': contact_person[0].get('title'),
                         'first_name': contact_person[0].get('first_name'),
@@ -666,8 +668,11 @@ class TourPricelist(models.Model):
                             'phone_number': contact_person[0]['mobile'],
                         })
                     res_booker_id = cust_obj.id
+                else:
+                    res_booker_id = similar.id
             elif not sameBooker and not booker_id:
-                if not self.check_pax_similarity(booker_obj):
+                similar = self.check_pax_similarity(booker_obj)
+                if not similar:
                     cust_obj = self.env['tt.customer'].sudo().create({
                         'title': booker_obj.get('title'),
                         'first_name': booker_obj.get('first_name'),
@@ -683,6 +688,8 @@ class TourPricelist(models.Model):
                             'phone_number': booker_obj['mobile'],
                         })
                     res_booker_id = cust_obj.id
+                else:
+                    res_booker_id = similar.id
 
             elif booker_id and not sameBooker:
                 temp_booker = self.env['tt.customer'].browse(int(booker_id))
@@ -731,6 +738,16 @@ class TourPricelist(models.Model):
                             })
                         res_pax_list.append(cust_obj.id)
                         if sameBooker and temp_idx == 0 and rec.get('pax_type') == 'ADT':
+                            cust_obj.update({
+                                'email': booker_obj.get('email'),
+                            })
+                            if booker_obj.get('mobile'):
+                                self.env['phone.detail'].sudo().create({
+                                    'customer_id': cust_obj.id,
+                                    'type': 'work',
+                                    'name': 'Work',
+                                    'phone_number': booker_obj['mobile'],
+                                })
                             res_booker_id = cust_obj.id
                             temp_idx += 1
 
@@ -739,6 +756,7 @@ class TourPricelist(models.Model):
                             'room_id': rec.get('room_id') and rec['room_id'] or False,
                             'room_number': rec.get('room_seq') and rec['room_seq'] or False,
                             'pax_type': rec.get('pax_type') and rec['pax_type'] or False,
+                            'tour_pricelist_id': tour_data and tour_data['id'] or False,
                         })
                         book_line_list.append(cust_line_obj.id)
                     else:
@@ -747,6 +765,7 @@ class TourPricelist(models.Model):
                             'room_id': rec.get('room_id') and rec['room_id'] or False,
                             'room_number': rec.get('room_seq') and rec['room_seq'] or False,
                             'pax_type': rec.get('pax_type') and rec['pax_type'] or False,
+                            'tour_pricelist_id': tour_data and tour_data['id'] or False,
                         })
                         book_line_list.append(cust_line_obj.id)
 
@@ -780,6 +799,7 @@ class TourPricelist(models.Model):
                         'room_id': rec.get('room_id') and rec['room_id'] or False,
                         'room_number': rec.get('room_seq') and rec['room_seq'] or False,
                         'pax_type': rec.get('pax_type') and rec['pax_type'] or False,
+                        'tour_pricelist_id': tour_data and tour_data['id'] or False,
                     })
                     book_line_list.append(cust_line_obj.id)
 
