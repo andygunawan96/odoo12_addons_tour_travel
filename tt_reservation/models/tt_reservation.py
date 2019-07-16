@@ -20,8 +20,13 @@ class TtReservation(models.Model):
 
     sid_booked = fields.Char('SID Booked')# Signature generate sendiri
 
+    booker_id = fields.Many2one('tt.customer','Booker', ondelete='restrict', readonly=True, states={'draft':[('readonly',False)]})
     contact_id = fields.Many2one('tt.customer', 'Contact Person', ondelete='restrict', readonly=True, states={'draft': [('readonly', False)]})
+
     contact_name = fields.Char('Contact Name')##fixme oncreate later
+    contact_email = fields.Char('Contact Email')
+    contact_phone = fields.Char('Contact Phone')
+
     display_mobile = fields.Char('Contact Person for Urgent Situation',
                                  readonly=True, states={'draft': [('readonly', False)]})
 

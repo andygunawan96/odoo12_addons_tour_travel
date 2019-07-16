@@ -68,15 +68,21 @@
 
 
                     <group name="paxgroup">
+                        <group string="Booker Information">
+                            <field name="booker_id"/>
+                        </group>
+                        <group string="Contact Information">
+                            <field name="contact_id"/>
+                            <field name="contact_name"/>
+                            <field name="contact_email"/>
+                            <field name="contact_phone"/>
+                        </group>
                         <group string="Paxs">
                             <field name="adult"/>
                             <field name="infant"/>
                         </group>
-                        <group string="Contact Information">
-                            <field name="contact_id"/>
-                            <field name="display_mobile"/>
-                        </group>
                     </group>
+
 
                     <!--<group>-->
                     <!--</group>-->

@@ -43,7 +43,6 @@ class TtCustomer(models.Model):
     customer_bank_detail_ids = fields.One2many('customer.bank.detail', 'customer_id', 'Customer Bank Detail')
     agent_id = fields.Many2one('tt.agent', 'Agent')
     customer_parent_ids = fields.Many2many('tt.customer.parent','tt_customer_customer_parent_rel','customer_id','customer_parent_id','Customer_parent')
-    can_book = fields.Boolean('Is Booker', default=False)
 
     active = fields.Boolean('Active', default=True)
 

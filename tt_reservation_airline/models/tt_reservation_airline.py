@@ -383,7 +383,7 @@ class ReservationAirline(models.Model):
     }
 
     def create_booking_api(self, req):
-        # req = copy.deepcopy(self.param_global)
+        req = copy.deepcopy(self.param_global)
         search_RQ = req['searchRQ']
         booker = req['booker']
         contacts = req['contacts']
@@ -399,8 +399,11 @@ class ReservationAirline(models.Model):
         values.update({
             'user_id': context['co_uid'],
             'sid_booked': context['signature'],
+            'booker_id': booker_obj.id,
             'contact_id': contact_obj.id,
-            'contanct_name': contact_obj.name,
+            'contact_name': contact_obj.name,
+            'contact_email': contact_obj.email,
+            'contact_phone': contact_obj.phone_ids[0].phone_number,
             'passenger_ids': [(6,0,list_passengers)]
         })
 
@@ -451,7 +454,7 @@ class ReservationAirline(models.Model):
             if booker_rec:
                 if vals.get('mobile'):
                     new_phone = [(0,0,{
-                        'phone_number': '%s%s' % (vals.get('calling_code',''),vals.get('mobile',''))
+                        'phone_number': '+%s%s' % (vals.get('calling_code',''),vals.get('mobile',''))
                     })]
                 else:
                     new_phone = False
@@ -470,7 +473,7 @@ class ReservationAirline(models.Model):
             'nationality_id': country and country[0].id or False,
             'email': vals.get('email'),
             'phone_ids': [(0,0,{
-                'phone_number': '%s%s' % (vals.get('calling_code',''),vals.get('mobile','')),
+                'phone_number': '+%s%s' % (vals.get('calling_code',''),vals.get('mobile','')),
                 'country_id': country and country[0].id or False,
             })],
             'first_name': vals.get('first_name'),
@@ -495,7 +498,7 @@ class ReservationAirline(models.Model):
             if contact_rec:
                 if vals.get('mobile'):
                     new_phone = [(0,0,{
-                        'phone_number': '%s%s' % (vals.get('calling_code',''),vals.get('mobile',''))
+                        'phone_number': '+%s%s' % (vals.get('calling_code',''),vals.get('mobile',''))
                     })]
                 else:
                     new_phone = False
@@ -514,7 +517,7 @@ class ReservationAirline(models.Model):
             'nationality_id': country and country[0].id or False,
             'email': vals.get('email'),
             'phone_ids': [(0,0,{
-                'phone_number': '%s%s' % (vals.get('calling_code',''),vals.get('mobile','')),
+                'phone_number': '+%s%s' % (vals.get('calling_code',''),vals.get('mobile','')),
                 'country_id': country and country[0].id or False,
             })],
             'first_name': vals.get('first_name'),
