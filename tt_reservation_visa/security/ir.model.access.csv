@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+tt_reservation_visa,tt.reservation.visa,model_tt_reservation_visa,,1,1,1,1
+tt_reservation_visa_order_passengers,tt.reservation.visa.order.passengers,model_tt_reservation_visa_order_passengers,,1,1,1,1
+tt_reservation_visa_order_requirements,tt.reservation.visa.order.requirements,model_tt_reservation_visa_order_requirements,,1,1,1,1
+tt_reservation_visa_requirements,tt.reservation.visa.requirements,model_tt_reservation_visa_requirements,,1,1,1,1
+tt_reservation_visa_vendor,tt.reservation.visa.vendor,model_tt_reservation_visa_vendor,,1,1,1,1
+tt_reservation_visa_vendor_lines,tt.reservation.visa.vendor.lines,model_tt_reservation_visa_vendor_lines,,1,1,1,1
+tt_reservation_visa_pricelist,tt.reservation.visa.pricelist,model_tt_reservation_visa_pricelist,,1,1,1,1

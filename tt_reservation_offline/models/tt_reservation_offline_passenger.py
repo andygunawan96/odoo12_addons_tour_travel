@@ -17,14 +17,12 @@ STATE = [
 
 
 class IssuedOfflinePassenger(models.Model):
-    _name = 'issued.offline.passenger'
+    _name = 'tt.reservation.offline.passenger'
 
-    booking_id = fields.Many2one('issued.offline', 'Issued Offline')
+    booking_id = fields.Many2one('tt.reservation.offline', 'Issued Offline')
     passenger_id = fields.Many2one('tt.customer', 'Passengers', readonly=True,
                                    states={'draft': [('readonly', False)]})
-    agent_id = fields.Many2one('tt.agent', 'Agent', readonly=True,
-                               default=lambda self: self.env['tt.agent']
-                               .search([('agent_id', '=', self.booking_id.agent_id.id)], limit=1))
+    agent_id = fields.Many2one('tt.agent', 'Agent', readonly=True, default=lambda self: self.env.user.agent_id.id)
     pax_type = fields.Selection(PAX_TYPE)  # , related='passenger_id.pax_type'
     ticket_number = fields.Char('Ticket Number.', readonly=True, states={'draft': [('readonly', False)],
                                                                          'confirm': [('readonly', False)],

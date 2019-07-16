@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+tt_reservation_passport,tt.reservation.passport,model_tt_reservation_passport,,1,1,1,1
+tt_reservation_passport_customer,tt.reservation.passport.customer,model_tt_reservation_passport,,1,1,1,1
+tt_reservation_passport_order_passengers,tt.reservation.passport.order.passengers,model_tt_reservation_passport_order_passengers,,1,1,1,1
+tt_reservation_passport_order_requirements,tt.reservation.passport.order.requirements,model_tt_reservation_passport_order_requirements,,1,1,1,1
+tt_reservation_passport_pricelist,tt.reservation.passport.pricelist,model_tt_reservation_passport_pricelist,,1,1,1,1
+tt_reservation_passport_vendor,tt.reservation.passport.vendor,model_tt_reservation_passport_vendor,,1,1,1,1
+tt_reservation_passport_vendor_lines,tt.reservation.passport.vendor.lines,model_tt_reservation_passport_vendor_lines,,1,1,1,1
+tt_reservation_passport_requirements,tt.reservation.passport.requirements,model_tt_reservation_passport_requirements,,1,1,1,1
