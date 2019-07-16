@@ -383,7 +383,7 @@ class ReservationAirline(models.Model):
     }
 
     def create_booking_api(self, req):
-        req = copy.deepcopy(self.param_global)
+        # req = copy.deepcopy(self.param_global)
         search_RQ = req['searchRQ']
         booker = req['booker']
         contacts = req['contacts']
@@ -441,6 +441,7 @@ class ReservationAirline(models.Model):
 
     ##todo kalau kejadian saling tumpuk data customer karena ada yang kosong
     ##dibuatkan mekanisme pop isi dictionary yang valuenya kosong
+
     def _create_booker_api(self, vals, context):
         booker_obj = self.env['tt.customer'].sudo()
 
@@ -476,7 +477,6 @@ class ReservationAirline(models.Model):
             'last_name': vals.get('last_name'),
             'gender': vals.get('gender'),
             'customer_parent_ids': [(4,agent_obj.customer_parent_walkin_id.id )],
-            'can_book': True
         })
 
 
@@ -545,9 +545,9 @@ class ReservationAirline(models.Model):
             }) for key in update_list if psg.get(key)]
 
             booker_contact_id = -1
-            if psg.get('is_booker'):
+            if psg.get('is_also_booker'):
                 booker_contact_id = booker_id
-            elif psg.get('is_contact'):
+            elif psg.get('is_also_contact'):
                 booker_contact_id = contact_id
 
             if psg.get('passenger_id') or booker_contact_id > 0:

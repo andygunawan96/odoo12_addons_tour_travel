@@ -19,7 +19,7 @@ TT_TRANSPORT
         'data/tt_destination_airline.xml',
         'data/tt_transport_carrier_airline.xml',
         'security/ir.model.access.csv',
-        
+
         'views/menu_item_base.xml',
         'views/tt_reservation_airline.xml',
         'views/tt_provider_views.xml',
