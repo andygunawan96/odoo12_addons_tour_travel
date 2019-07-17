@@ -149,6 +149,8 @@ class IssuedOffline(models.Model):
                                   states={'draft': [('readonly', False)]})
     booker_id = fields.Many2one('tt.customer', 'Booker', ondelete='restrict', readonly=True,
                                 states={'draft': [('readonly', False)]})
+    contact_id = fields.Many2one('tt.customer', 'Contact Person', ondelete='restrict', readonly=True,
+                                 states={'draft': [('readonly', False)]}, domain="[('agent_id', '=', agent_id)]")
 
     quick_issued = fields.Boolean('Quick Issued', default=False)
 
@@ -317,7 +319,13 @@ class IssuedOffline(models.Model):
 
     @api.one
     def action_quick_issued(self):
-        pass
+        if self.total_sale_price > 0 and self.nta_price > 0:
+            for rec in self.line_ids:
+                if not rec.pnr:
+                    raise UserError(_('PNR can\'t be empty'))
+            self.action_issued_backend()
+        else:
+            raise UserError(_('Sale Price or NTA Price can\'t be 0 (Zero)'))
 
     # @api.one
     # def create_reverse_ledger(self):
@@ -450,7 +458,7 @@ class IssuedOffline(models.Model):
                 vals1.update({
                     'agent_id': ho_agent.id,
                     'agent_type_id': ho_agent.agent_type_id.id,
-                    'rel_agent_name': rec.agent_id.name,
+                    'rel_agent_name': rec.ho_agent.name,
                     'display_provider_name': provider_obj.get_provider_list(),
                     'provider_type': rec.provider_type_id.id,
                     'pnr': provider_obj.get_pnr_list(),
@@ -469,7 +477,7 @@ class IssuedOffline(models.Model):
                                                       ledger_type, rec.currency_id.id, rec.total_sale_price, 0)
             vals.update({
                 'agent_id': rec.agent_id.id,
-                'agent_type_id': rec.sub_agent_type_id.id,
+                'agent_type_id': rec.agent_type_id.id,
                 'pnr': provider_obj.get_pnr_list(),
                 'transport_type': rec.provider_type_id.code in ['airline', 'train', 'cruise'] and rec.provider_type_id or False,
                 'display_provider_name': provider_obj.get_provider_list(),
@@ -502,7 +510,7 @@ class IssuedOffline(models.Model):
                     'res_model': rec._name,
                     'validate_uid': rec.confirm_uid.id,
                 })
-                commission_aml = rec.create_sub_agent_ledger(vals1)
+                commission_aml = rec.env['tt.ledger'].create(vals1)
                 # commission_aml.action_done()
                 # rec.commission_ledger_id = commission_aml
 
@@ -689,6 +697,13 @@ class IssuedOffline(models.Model):
     def _compute_vendor_text(self):
         for rec in self:
             rec.vendor = rec.master_vendor_id.name
+
+    @api.onchange('contact_id')
+    def _filter_customer_parent(self):
+        if self.contact_id:
+            return {'domain': {
+                'customer_parent_id': [('customer_ids', 'in', self.contact_id.id)]
+            }}
 
     ####################################################################################################
 

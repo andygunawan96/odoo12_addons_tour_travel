@@ -1,7 +1,0 @@
-tt_visa_pricelist_for_operator,tt.visa.pricelist.for.operator,model_tt_visa_pricelist,tt_base.group_tt_tour_travel_operator,1,1,0,0
-tt_visa_pricelist_for_supervisor,tt.visa.pricelist.for.supervisor,model_tt_visa_pricelist,tt_base.group_tt_tour_travel_supervisor,1,1,1,0
-tt_visa_pricelist_for_manager,tt.visa.pricelist.for.manager,model_tt_visa_pricelist,tt_base.group_tt_tour_travel_manager,1,1,1,1
-,,,,,,,
-tt_visa_pricelist_for_agent_user_operator,tt.visa.pricelist.for.agent.user.operator,model_tt_visa_pricelist,tt_base.group_tt_agent_user_operator,1,0,0,0
-tt_visa_pricelist_for_agent_user_supervisor,tt.visa.pricelist.for.agent.user.supervisor,model_tt_visa_pricelist,tt_base.group_tt_agent_user_supervisor,1,0,0,0
-tt_visa_pricelist_for_agent_user_manager,tt.visa.pricelist.for.agent.user.manager,model_tt_visa_pricelist,tt_base.group_tt_agent_user_manager,1,0,0,0

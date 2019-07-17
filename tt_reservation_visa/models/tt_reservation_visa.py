@@ -581,7 +581,7 @@ class TtVisa(models.Model):
                 contact_obj.update({
                     'phone_ids': contact_obj.phone_ids.create({
                         'phone_number': con.get('mobile', con['mobile']),
-                        'type': 'custom'
+                        'type': 'work'
                     }),
                 })
                 contact_list.append(contact_obj.id)
