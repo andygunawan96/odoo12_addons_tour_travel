@@ -1,8 +1,10 @@
 from odoo import api,models,fields, _
 from ...tools import util,variables
+from ...tools.api import Response
 import logging,traceback
 import datetime
 import copy
+
 
 
 
@@ -277,7 +279,7 @@ class ReservationAirline(models.Model):
             "is_combo_price": True,
             "provider": "sia"
         },
-        "journeys_booking_data": {
+        "providers_booking_data": {
             "sia": {
                 "1": {
                     "journey_codes": {
@@ -382,40 +384,49 @@ class ReservationAirline(models.Model):
         }
     }
 
-    def create_booking_api(self, req):
+    def create_booking_airline_api(self, req):
         req = copy.deepcopy(self.param_global)
         search_RQ = req['searchRQ']
         booker = req['booker']
         contacts = req['contacts']
         passengers = req['passengers']
-        journeys = req['journeys_booking_data']
+        journeys = req['providers_booking_data']
         context = req['context']
+        try:
+            values = self._prepare_booking_api(search_RQ,context)
+            booker_obj = self._create_booker_api(booker,context)
+            contact_obj = self._create_contact_api(contacts[0],booker_obj,context)
+            list_passengers = self._create_passenger_api(passengers,context,booker_obj.id,contact_obj.id)
 
-        values = self._prepare_booking_api(search_RQ,context)
-        booker_obj = self._create_booker_api(booker,context)
-        contact_obj = self._create_contact_api(contacts[0],booker_obj,context)
-        list_passengers = self._create_passenger_api(passengers,context,booker_obj.id,contact_obj.id)
+            values.update({
+                'user_id': context['co_uid'],
+                'sid_booked': context['signature'],
+                'booker_id': booker_obj.id,
+                'contact_id': contact_obj.id,
+                'contact_name': contact_obj.name,
+                'contact_email': contact_obj.email,
+                'contact_phone': contact_obj.phone_ids[0].phone_number,
+                'passenger_ids': [(6,0,list_passengers)]
+            })
 
-        values.update({
-            'user_id': context['co_uid'],
-            'sid_booked': context['signature'],
-            'booker_id': booker_obj.id,
-            'contact_id': contact_obj.id,
-            'contact_name': contact_obj.name,
-            'contact_email': contact_obj.email,
-            'contact_phone': contact_obj.phone_ids[0].phone_number,
-            'passenger_ids': [(6,0,list_passengers)]
-        })
+            book_obj = self.create(values)
 
-        book_obj = self.create(values)
-
-        self._create_provider_api(journeys,book_obj.id,context)
-
-        return {
-            'error_code': 0,
-            'error_msg': 'Success',
-            'order_id': book_obj.id,
-        }
+            provider_ids = book_obj._create_provider_api(journeys,context)
+            response_provider_ids = []
+            for provider in provider_ids:
+                response_provider_ids.append({
+                    'id': provider.id,
+                    'code': provider.provider_id.code,
+                })
+            response = {
+                'book_id': book_obj.id,
+                'provider_ids': response_provider_ids
+            }
+            print(response)
+            return Response().get_no_error(response)
+        except Exception as e:
+            #_logger
+            return Response().get_error("Internal Server Error",500)
 
     def validate_booking(self, api_context=None):
         user_obj = self.env['res.users'].browse(api_context['co_uid'])
@@ -572,11 +583,10 @@ class ReservationAirline(models.Model):
 
         return res_ids
 
-    def _create_provider_api(self, providers, book_id, api_context):
+    def _create_provider_api(self, providers, api_context):
         dest_obj = self.env['tt.destinations']
         provider_airline_obj = self.env['tt.provider.airline']
         carrier_obj = self.env['tt.transport.carrier']
-        country_obj = self.env['res.country']
         provider_obj = self.env['tt.provider']
 
         _destination_type = self.provider_type_id
@@ -650,7 +660,7 @@ class ReservationAirline(models.Model):
 
                 values = {
                     'provider_id': provider_id,
-                    'booking_id': book_id,
+                    'booking_id': self.id,
                     'sequence': sequence,
                     'direction': provider_direction,
                     'origin_id': provider_origin,
