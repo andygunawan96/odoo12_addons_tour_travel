@@ -3,13 +3,13 @@
     <data>
 
         <record id="issued_offline_view_search" model="ir.ui.view">
-            <field name="name">issued.offline.view.search</field>
-            <field name="model">issued.offline</field>
+            <field name="name">tt.reservation.offline.view.search</field>
+            <field name="model">tt.reservation.offline</field>
             <field name="arch" type="xml">
                 <search string="Search Issued Offline Booking">
 <!--                   <field name="name" string="string" domain="[()]"/>-->
                     <field name="name"/>
-                    <field name="sub_agent_id"/>
+                    <field name="customer_parent_id"/>
 <!--                    <field name="provider"/>-->
                     <field name="contact_id"/>
                     <field name="pnr"/>
@@ -40,8 +40,8 @@
                     <group expand="0" string="Group By">
                         <filter string="Agent" name="agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
                         <filter string="Agent Type" name="agent_type_id" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
-                        <filter string="Sub Agent" name="sub_agent" domain="[]" context="{'group_by':'sub_agent_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
-                        <filter string="Sub Agent Type" name="sub_agent_type_id" domain="[]" context="{'group_by':'sub_agent_type_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                        <filter string="Customer Parent" name="customer_parent_id" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                        <filter string="Customer Parent Type" name="customer_parent_type_id" domain="[]" context="{'group_by':'customer_parent_type_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                         <filter string="Sector" name="sector" domain="[]" context="{'group_by':'sector_type'}"/>
                         <filter string="State" name="state" domain="[]" context="{'group_by':'state'}"/>
                     </group>
@@ -50,15 +50,15 @@
        </record>
 
         <record id="issued_offline_view_tree" model="ir.ui.view">
-            <field name="name">issued.offline.view.tree</field>
-            <field name="model">issued.offline</field>
+            <field name="name">tt.reservation.offline.view.tree</field>
+            <field name="model">tt.reservation.offline</field>
             <field name="arch" type="xml">
                 <tree string="Issued Offline">
                     <field name="name"/>
                     <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>
                     <field name="agent_type_id" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <field name="sub_agent_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
-                    <field name="sub_agent_type_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                    <field name="customer_parent_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                    <field name="customer_parent_type_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                     <field name="contact_id"/>
                     <field name="state"/>
                 </tree>
@@ -66,8 +66,8 @@
         </record>
 
         <record id="issued_offline_view_form" model="ir.ui.view">
-            <field name="name">issued.offline.view.form</field>
-            <field name="model">issued.offline</field>
+            <field name="name">tt.reservation.offline.view.form</field>
+            <field name="model">tt.reservation.offline</field>
             <field name="arch" type="xml">
                 <form>
                     <header>
@@ -90,9 +90,10 @@
                         <group>
                             <group>
                                 <field name="agent_id" readonly="1" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
-                                <field name="sub_agent_id" readonly="1" required="1" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
-                                <field name="sub_agent_type_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
-                                <field name="contact_id" required="1" context="{'default_commercial_agent_id': sub_agent_id}" options="{'no_quick_create': True}"/>
+<!--                                <field name="customer_parent_ids" domain="[('customer_ids', 'in', 'contact_id')]" required="1" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>-->
+                                <field name="customer_parent_id" readonly="0" required="1" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                                <!--<field name="customer_parent_type_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>-->
+                                <field name="contact_id" required="1" context="{'default_commercial_agent_id': agent_id}" options="{'no_quick_create': True}"/>  <!--ganti jadi customer parent id-->
                                 <!--<field name="display_mobile" required="1"/>-->
                                 <field name="provider_type_id" domain="[('code', 'not in', ['tour','visa','passport'])]"/>
                                 <field name="sector_type" attrs="{'invisible': [('provider_type_id', 'not in', 2)]}"/>
@@ -305,7 +306,7 @@
                                         <tree>
                                             <field name="name"/>
                                             <field name="agent_id"/>
-                                            <field name="sub_agent_id"/>
+<!--                                            <field name="customer_parent_id"/>-->
                                             <field name="contact_id"/>
 <!--                                            <field name="date_invoice"/>-->
 <!--                                            <field name="date_due"/>-->
@@ -332,8 +333,8 @@
         </record>
 
         <record model="ir.ui.view" id="issued_offline_view_tree">
-            <field name="name">issued.offline.view.tree</field>
-            <field name="model">issued.offline</field>
+            <field name="name">tt.reservation.offline.view.tree</field>
+            <field name="model">tt.reservation.offline</field>
             <field name="arch" type="xml">
                 <tree>
                     <field name="name"/>
@@ -346,7 +347,7 @@
 
         <record model="ir.actions.act_window" id="issued_offline_all_action">
             <field name="name">Issued Offline All</field>
-            <field name="res_model">issued.offline</field>
+            <field name="res_model">tt.reservation.offline</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="search_view_id" ref="issued_offline_view_search"/>
@@ -361,7 +362,7 @@
 
         <record model="ir.actions.act_window" id="issued_offline_draft_action">
             <field name="name">Issued Offline Draft</field>
-            <field name="res_model">issued.offline</field>
+            <field name="res_model">tt.reservation.offline</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="search_view_id" ref="issued_offline_view_search"/>
@@ -376,7 +377,7 @@
 
         <record model="ir.actions.act_window" id="issued_offline_confirm_action">
             <field name="name">Issued Offline Confirm</field>
-            <field name="res_model">issued.offline</field>
+            <field name="res_model">tt.reservation.offline</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="search_view_id" ref="issued_offline_view_search"/>
@@ -391,7 +392,7 @@
 
         <record model="ir.actions.act_window" id="issued_offline_paid_action">
             <field name="name">Issued Offline Paid</field>
-            <field name="res_model">issued.offline</field>
+            <field name="res_model">tt.reservation.offline</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="search_view_id" ref="issued_offline_view_search"/>
@@ -406,7 +407,7 @@
 
         <record model="ir.actions.act_window" id="issued_offline_done_action">
             <field name="name">Issued Offline Done</field>
-            <field name="res_model">issued.offline</field>
+            <field name="res_model">tt.reservation.offline</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="search_view_id" ref="issued_offline_view_search"/>
@@ -421,7 +422,7 @@
 
         <record model="ir.actions.act_window" id="issued_offline_cancel_expired_refund_action">
             <field name="name">Issued Offline Cancel Expired Refund</field>
-            <field name="res_model">issued.offline</field>
+            <field name="res_model">tt.reservation.offline</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="search_view_id" ref="issued_offline_view_search"/>
