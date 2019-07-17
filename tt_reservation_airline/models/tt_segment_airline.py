@@ -8,7 +8,7 @@ from datetime import datetime
 class TtSegmentAirline(models.Model):
     _name = 'tt.segment.airline'
     _rec_name = 'name'
-    _order = 'sequence'
+    _order = 'departure_date'
 
     name = fields.Char('Name', compute='_fill_name')
     segment_code = fields.Char('Segment Code')
