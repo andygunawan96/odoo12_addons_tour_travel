@@ -1,4 +1,5 @@
 from odoo import api, fields, models, _
+from ...tools.api import Response
 
 PAX_TYPE = [
     ('ADT', 'Adult'),
@@ -64,3 +65,73 @@ class VisaPricelist(models.Model):
     def _compute_duration(self):
         for rec in self:
             rec.commercial_duration = '%s day(s)' % str(rec.duration)
+
+    def get_config_api(self, data, context, kwargs):
+        try:
+            visa = {}
+            for rec in self.sudo().search([]):
+                if not visa.get(rec.country_id.name): #kalau ngga ada bikin dict
+                    visa[rec.country_id.name] = [] #append country
+                count = 0
+                for rec1 in visa[rec.country_id.name]:
+                    if rec1 == rec.immigration_consulate:
+                        count = 1
+                if count == 0:
+                    visa[rec.country_id.name].append(rec.immigration_consulate)
+
+                # for rec1 in self.search([('name', '=ilike', rec.country_id.id)]):
+                #
+                # pass
+            response = visa
+            res = Response().get_no_error(response)
+        except Exception as e:
+            res = Response().get_error(str(e), 500)
+        return res
+
+    def search_api(self, data, context, kwargs):
+        try:
+            list_of_visa = []
+
+            for idx, rec in enumerate(self.sudo().search([('country_id.name', '=ilike', data['destination']), ('immigration_consulate', '=ilike', data['consulate'])])):
+                requirement = []
+                for rec1 in rec.requirement_ids:
+                    requirement.append({
+                        'name': rec1.type_id.name,
+                        'description': rec1.type_id.description,
+                        'required': rec1.required,
+                        'id': rec1.id
+                    })
+                list_of_visa.append({
+                    'sequence': idx,
+                    'pax_type': rec.pax_type,
+                    'entry_type': rec.entry_type,
+                    'visa_type': rec.visa_type,
+                    'type': {
+                        'process_type': rec.process_type,
+                        'duration': rec.duration
+                    },
+                    'consulate': {
+                        'city': rec.immigration_consulate,
+                        'address': rec.description
+                    },
+                    'requirements': requirement,
+                    'sale_price': {
+                        'commission': rec.commission_price,
+                        'total_price': rec.sale_price,
+                        'currency': rec.currency_id.name
+                    },
+                    'id': rec.id
+
+                })
+
+                # for rec1 in self.search([('name', '=ilike', rec.country_id.id)]):
+                #
+                # pass
+            response = {
+                'country': data['destination'],
+                'list_of_visa': list_of_visa
+            }
+            res = Response().get_no_error(response)
+        except Exception as e:
+            res = Response().get_error(str(e), 500)
+        return res
