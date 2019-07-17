@@ -544,7 +544,7 @@ class TtVisa(models.Model):
             booker_obj.update({
                 'phone_ids': booker_obj.phone_ids.create({
                     'phone_number': booker.get('mobile', booker['mobile']),
-                    'type': 'custom'
+                    'type': 'work'
                 }),
             })
             return booker_obj.id

@@ -93,7 +93,7 @@
                                         <tree create="true">
                                             <field name="name" string="PIC Name"/>
                                             <field name="birth_date"/>
-                                            <field name="title"/>
+<!--                                            <field name="title"/>-->
                                             <field name="phone_ids"/>
                                         </tree>
                                     </field>
