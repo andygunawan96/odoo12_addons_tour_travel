@@ -29,5 +29,5 @@ class IssuedOfflinePassenger(models.Model):
                                                                          'paid': [('readonly', False)]})
     state = fields.Selection(STATE, string='State', default='draft', related='booking_id.state')
 
-    def compute_agent_id(self):
-        self.agent_id = self.booking_id.sub_agent_id
+    # def compute_agent_id(self):
+    #     self.agent_id = self.booking_id.sub_agent_id

@@ -150,6 +150,8 @@ class IssuedOffline(models.Model):
     booker_id = fields.Many2one('tt.customer', 'Booker', ondelete='restrict', readonly=True,
                                 states={'draft': [('readonly', False)]})
 
+    quick_issued = fields.Boolean('Quick Issued', default=False)
+
     # display_mobile = fields.Char('Contact Person for Urgent Situation',
     #                              readonly=True, states={'draft': [('readonly', False)]})
     # refund_id = fields.Many2one('tt.refund', 'Refund')
@@ -255,7 +257,7 @@ class IssuedOffline(models.Model):
     @api.one
     def action_paid(self, kwargs={}):
         # cek saldo sub agent
-        is_enough = self.env['tt.ledger'].check_balance_limit(self.sub_agent_id.id, self.total_sale_price)
+        is_enough = self.env['tt.ledger'].check_balance_limit(self.agent_id.id, self.total_sale_price)
         # jika saldo mencukupi
         if is_enough['error_code'] == 0:
             self.validate_date = fields.Datetime.now()
@@ -312,6 +314,10 @@ class IssuedOffline(models.Model):
     @api.one
     def action_refund(self):
         self.state = 'refund'
+
+    @api.one
+    def action_quick_issued(self):
+        pass
 
     # @api.one
     # def create_reverse_ledger(self):
@@ -377,8 +383,8 @@ class IssuedOffline(models.Model):
                 'res_id': rec.id,
                 'res_model': rec._name,  #
                 'validate_uid': rec.sudo().confirm_uid.id,
-                'agent_id': rec.sub_agent_id.id,
-                'agent_type_id': rec.sub_agent_type_id.id
+                'agent_id': rec.agent_id.id,
+                'agent_type_id': rec.agent_type_id.id
             })
 
             # new_aml = rec.create_agent_ledger(vals)
@@ -394,8 +400,8 @@ class IssuedOffline(models.Model):
                 vals1.update({
                     # 'agent_id': rec.sub_agent_id.parent_agent_id.id,
                     # 'agent_type_id': rec.sub_agent_id.parent_agent_id.agent_type_id.id,
-                    'agent_id': rec.sub_agent_id.id,
-                    'agent_type_id': rec.sub_agent_id.agent_type_id.id,
+                    'agent_id': rec.agent_id.id,
+                    'agent_type_id': rec.agent_id.agent_type_id.id,
                     'display_provider_name': provider_obj.get_provider_list(),
                     'provider_type': rec.provider_type_id.id,
                     'pnr': provider_obj.get_pnr_list(),
@@ -418,9 +424,9 @@ class IssuedOffline(models.Model):
                                                            rec.parent_agent_commission, 0)
                 # vals1.update(vals_comm_temp)
                 vals1.update({
-                    'agent_id': rec.sub_agent_id.parent_agent_id.id,
-                    'agent_type_id': rec.sub_agent_id.parent_agent_id.agent_type_id.id,
-                    'rel_agent_name': rec.sub_agent_id.name,
+                    'agent_id': rec.agent_id.parent_agent_id.id,
+                    'agent_type_id': rec.agent_id.parent_agent_id.agent_type_id.id,
+                    'rel_agent_name': rec.agent_id.name,
                     'display_provider_name': provider_obj.get_provider_list(),
                     'provider_type': rec.provider_type_id.id,
                     'pnr': provider_obj.get_pnr_list(),
@@ -444,7 +450,7 @@ class IssuedOffline(models.Model):
                 vals1.update({
                     'agent_id': ho_agent.id,
                     'agent_type_id': ho_agent.agent_type_id.id,
-                    'rel_agent_name': rec.sub_agent_id.name,
+                    'rel_agent_name': rec.agent_id.name,
                     'display_provider_name': provider_obj.get_provider_list(),
                     'provider_type': rec.provider_type_id.id,
                     'pnr': provider_obj.get_pnr_list(),
@@ -462,7 +468,7 @@ class IssuedOffline(models.Model):
             vals = self.env['tt.ledger'].prepare_vals('Resv : ' + rec.name + ' - REVERSE', rec.name, rec.validate_date,
                                                       ledger_type, rec.currency_id.id, rec.total_sale_price, 0)
             vals.update({
-                'agent_id': rec.sub_agent_id.id,
+                'agent_id': rec.agent_id.id,
                 'agent_type_id': rec.sub_agent_type_id.id,
                 'pnr': provider_obj.get_pnr_list(),
                 'transport_type': rec.provider_type_id.code in ['airline', 'train', 'cruise'] and rec.provider_type_id or False,
@@ -485,8 +491,8 @@ class IssuedOffline(models.Model):
                                                            'commission', rec.currency_id.id, 0, rec.agent_commission)
                 # vals1.update(vals_comm_temp)
                 vals1.update({
-                    'agent_id': rec.sub_agent_id.id,
-                    'agent_type_id': rec.sub_agent_id.agent_type_id.id,
+                    'agent_id': rec.agent_id.id,
+                    'agent_type_id': rec.agent_id.agent_type_id.id,
                     'display_provider_name': provider_obj.get_provider_list(),
                     'pnr': provider_obj.get_pnr_list(),
                     'provider_type': rec.provider_type_id.id,
@@ -509,8 +515,8 @@ class IssuedOffline(models.Model):
                                                            rec.parent_agent_commission)
                 # vals1.update(vals_comm_temp)
                 vals1.update({
-                    'agent_id': rec.sub_agent_id.parent_agent_id.id,
-                    'rel_agent_name': rec.sub_agent_id.parent_agent_id.name,
+                    'agent_id': rec.agent_id.parent_agent_id.id,
+                    'rel_agent_name': rec.agent_id.parent_agent_id.name,
                     'display_provider_name': provider_obj.get_provider_list(),
                     'pnr': provider_obj.get_pnr_list(),
                     'provider_type': rec.provider_type_id.id,
@@ -537,7 +543,7 @@ class IssuedOffline(models.Model):
                 vals1.update({
                     'agent_id': ho_agent.id,
                     'agent_type_id': ho_agent.agent_type_id.id,
-                    'rel_agent_name': rec.sub_agent_id.name,
+                    'rel_agent_name': rec.agent_id.name,
                     'display_provider_name': provider_obj.get_provider_list(),
                     'pnr': provider_obj.get_pnr_list(),
                     'provider_type': rec.provider_type_id.id,
@@ -629,9 +635,10 @@ class IssuedOffline(models.Model):
     def _get_agent_commission(self):
         # pass
         for rec in self:
-            rec.agent_commission, rec.parent_agent_commission, rec.ho_commission = rec.sub_agent_type_id.calc_commission(
-                rec.total_commission_amount, rec.segment * rec.person)
-            rec.agent_nta_price = rec.total_sale_price - rec.agent_commission
+            pass
+            # rec.agent_commission, rec.parent_agent_commission, rec.ho_commission = rec.sub_agent_type_id.calc_commission(
+            #     rec.total_commission_amount, rec.segment * rec.person)
+            # rec.agent_nta_price = rec.total_sale_price - rec.agent_commission
 
     @api.onchange('total_commission_amount')
     @api.depends('total_commission_amount', 'total_sale_price')

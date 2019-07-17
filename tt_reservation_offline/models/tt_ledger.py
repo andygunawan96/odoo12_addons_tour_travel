@@ -28,9 +28,9 @@ class TtLedger(models.Model):
     rel_agent_name = fields.Char('Partner', help='Used to know Network commission from')
     issued_uid = fields.Many2one('res.users', 'Issued By', related=False)
 
-    def get_rel_agent_id(self):
-        for rec in self:
-            # rec.rel_agent_name = rec.reservation_offline_id and rec.reservation_offline_id.sub_agent_id.name or False
+    # def get_rel_agent_id(self):
+    #     for rec in self:
+    #         rec.rel_agent_name = rec.reservation_offline_id and rec.reservation_offline_id.sub_agent_id.name or False
 
     def change_vendor_to_provider(self):
         for rec in self:
