@@ -1,0 +1,60 @@
+<odoo>
+    <record model="ir.ui.view" id="tt_room_bookin_view_form_rodex" >
+        <field name="name">tt.room.info.booking.view.form.rodex</field>
+        <field name="model">tt.room.info.booking</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group string="Information">
+                        <field name="date"/>
+                        <field name="room_info_id"/>
+                        <field name="qty"/>
+                        <field name="max_guest"/>
+                    </group>
+                    <group>
+                        <field name="reservation_id"/>
+                        <field name="guest_name"/>
+                        <field name="hotel_id"/>
+                        <!--<field name="provider_id"/>-->
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tt_room_booking_view_tree_rodex" >
+        <field name="name">tt.room.info.booking.view.tree.rodex</field>
+        <field name="model">tt.room.info.booking</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="date"/>
+                <field name="room_info_id"/>
+                <field name="qty"/>
+                <field name="reservation_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tt_room_booking_view_calendar_rodex" >
+        <field name="name">tt.room.info.booking.view.calendar.rodex</field>
+        <field name="model">tt.room.info.booking</field>
+        <field eval="2" name="priority"/>
+        <field name="arch" type="xml">
+            <calendar color="hotel_id" date_start="date" date_delay="duration" string="Event Tracks"
+                      display="[hotel_id], [room_name], Booked : [qty] / [max_qty]">
+                <field name="hotel_id"/>
+                <field name="room_name"/>
+                <field name="qty"/>
+                <field name="max_qty"/>
+            </calendar>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_room_info_booking_action_rodex">
+        <field name="name">Booking History</field>
+        <field name="res_model">tt.room.info.booking</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form,calendar,graph</field>
+        <!--<field name="search_view_id" ref="tt_room_booking_view_search"/>-->
+    </record>
+</odoo>

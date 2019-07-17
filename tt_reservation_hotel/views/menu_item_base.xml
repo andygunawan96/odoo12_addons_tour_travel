@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="top_reservations_hotel"
+                  parent="tt_reservation.main_reservations"
+                  name="Hotel"
+                  sequence="30"/>
+
+        <menuitem id="menu_reservations_hotel"
+                  parent="top_reservations_hotel"
+                  name="All"
+                  sequence="10"
+                  action="tt_reservation_hotel.tt_hotel_reservation_action"
+        />
+
+    <!--Top Menu Tour & Travel Hotel-->
+    <menuitem id="top_tour_travel_hotel"
+              parent="tt_base.main_tour_travel"
+              name="Hotel"
+              sequence="2"
+              groups="base.group_user"/>
+
+        <!--Menu Hotel-->
+        <menuitem id="menu_tour_travel_hotel"
+                  name="Master Data"
+                  parent="tt_reservation_hotel.top_tour_travel_hotel"
+                  sequence="10"
+                  action="tt_reservation_hotel.tt_hotel_view_action_rodex"/>
+
+        <menuitem id="menu_hotel_type"
+                  parent="tt_reservation_hotel.top_tour_travel_hotel"
+                  name="Type"
+                  sequence="20"
+                  action="tt_reservation_hotel.tt_hotel_type_view_action_rodex"/>
+
+        <menuitem id="menu_hotel_room"
+                  parent="tt_reservation_hotel.top_tour_travel_hotel"
+                  name="Room"
+                  sequence="30"
+                  action="tt_reservation_hotel.tt_room_view_action_rodex"/>
+
+        <menuitem id="menu_hotel_room_type"
+                  parent="tt_reservation_hotel.top_tour_travel_hotel"
+                  name="Room Type"
+                  sequence="31"
+                  action="tt_reservation_hotel.tt_room_type_view_action_rodex"/>
+
+        <menuitem id="menu_hotel_facility"
+                  parent="tt_reservation_hotel.top_tour_travel_hotel"
+                  name="Facility"
+                  sequence="40"
+                  action="tt_reservation_hotel.tt_facility_view_action_rodex"/>
+
+        <menuitem id="menu_hotel_facility_type"
+                  parent="tt_reservation_hotel.top_tour_travel_hotel"
+                  name="Facility Type"
+                  sequence="50"
+                  action="tt_reservation_hotel.tt_facility_type_view_action_rodex"/>
+
+        <menuitem id="menu_meal_type"
+                  parent="tt_reservation_hotel.top_tour_travel_hotel"
+                  name="Meal"
+                  sequence="60"
+                  action="tt_reservation_hotel.meal_type_view_action_rodex"/>
+
+        <!--Menu Landmark-->
+        <menuitem id="menu_hotel_landmark"
+                  name="Landmark"
+                  parent="tt_reservation_hotel.top_tour_travel_hotel"
+                  sequence="70"
+                  action="tt_reservation_hotel.tt_landmark_action"/>
+
+        <menuitem id="menu_hotel_landmark_type"
+                  parent="tt_reservation_hotel.top_tour_travel_hotel"
+                  name="Landmark Type"
+                  sequence="71"
+                  action="tt_reservation_hotel.tt_landmark_type_action"/>
+</odoo>

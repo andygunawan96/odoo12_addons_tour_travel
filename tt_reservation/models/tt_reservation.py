@@ -75,8 +75,7 @@ class TtReservation(models.Model):
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', related='agent_id.agent_type_id',
                                     store=True)
 
-    customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer Parent', readonly=True,
-                                         states={'draft': [('readonly', False)]}, help='COR / POR')
-    customer_parent_type_id = fields.Many2one('tt.customer.parent.type', 'Customer Type',
-                                              related='customer_parent_id.customer_parent_type_id', store=True,
-                                              readonly=True)
+    customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer', readonly=True, states={'draft': [('readonly', False)]},
+                                   help='COR / POR')
+    customer_parent_type_id = fields.Many2one('tt.customer.parent.type', 'Customer Type', related='customer_parent_id.customer_parent_type_id',
+                                        store=True, readonly=True)

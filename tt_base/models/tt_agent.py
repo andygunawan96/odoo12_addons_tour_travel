@@ -108,12 +108,14 @@ class TtAgent(models.Model):
             response = []
 
             level = 0
+            temp_agent_ids = []
             temp = _obj
             while True:
                 values = temp.get_data()
                 values.update({'agent_level': level})
                 response.append(values)
-                if not temp.parent_agent_id:
+                temp_agent_ids.append(temp.id)
+                if not temp.parent_agent_id or temp.parent_agent_id.id in temp_agent_ids:
                     break
                 temp = temp.parent_agent_id
                 level += 1

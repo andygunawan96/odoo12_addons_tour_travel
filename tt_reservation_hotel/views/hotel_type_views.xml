@@ -1,0 +1,55 @@
+<odoo>
+
+    <record model="ir.ui.view" id="tt_hotel_type_view_form_rodex" >
+        <field name="name">tt.hotel.type.view.form.rodex</field>
+        <field name="model">tt.hotel.type</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name">Hotel Type</label>
+                        <h1>
+                            <field name="name" default_focus="1" placeholder="Name" nolabel="1" required="True"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="usage"/>
+                            <field name="description"/>
+                        </group>
+                        <group></group>
+                    </group>
+                    <notebook></notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="tt_hotel_type_view_tree_rodex" >
+        <field name="name">tt.hotel.type.view.tree.rodex</field>
+        <field name="model">tt.hotel.type</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="description"/>
+            </tree>
+        </field>
+    </record>
+    <record id="tt_hotel_type_view_search" model="ir.ui.view">
+        <field name="name">tt.hotel.type.view.search</field>
+        <field name="model">tt.hotel.type</field>
+        <field name="arch" type="xml">
+            <search string="member Type">
+                <field name="name" string="Name"/>
+                <field name="description" string="Description"/>
+            </search>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_hotel_type_view_action_rodex">
+        <field name="name">Hotel Type</field>
+        <field name="res_model">tt.hotel.type</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="tt_hotel_type_view_search"/>
+    </record>
+</odoo>
