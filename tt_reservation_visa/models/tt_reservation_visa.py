@@ -4,6 +4,7 @@ from odoo.exceptions import UserError
 import logging
 import traceback
 import copy
+from ...tools.api import Response
 
 _logger = logging.getLogger(__name__)
 
@@ -377,25 +378,101 @@ class TtVisa(models.Model):
         'force_issued': True
     }
 
-    def create_booking_visa(self):
-        sell_visa = copy.deepcopy(self.param_sell_visa)
-        booker = copy.deepcopy(self.param_booker)
-        contact = copy.deepcopy(self.param_contact)
-        passengers = copy.deepcopy(self.param_passenger)
-        search = copy.deepcopy(self.param_search)
-        context = copy.deepcopy(self.param_context)
-        kwargs = copy.deepcopy(self.param_kwargs)
+    def get_booking_visa_api(self, data):
+        for rec in self.search([('name', '=', data['order_number'])]):
+            passenger = []
+            contact = []
+            sale = {}
+            type = []
+            for pax in rec.to_passenger_ids:
+                requirement = []
+                for require in pax.to_requirement_ids:
+                    requirement.append({
+                        'name': require.requirement_id.name,
+                        # 'required': require.required,
+                    })
+                passenger.append({
+                    'title': pax.passenger_id.title,
+                    'first_name': pax.passenger_id.first_name,
+                    'last_name': pax.passenger_id.last_name,
+                    'birth_date': pax.passenger_id.birth_date,
+                    'age': pax.passenger_id.age or '',
+                    'passport': pax.passenger_id.passport_number,
+                    'visa': {
+                        'price': {
+                            'sale_price': pax.pricelist_id.sale_price,
+                            'commission': pax.pricelist_id.commission_price,
+                            'currency': pax.pricelist_id.currency_id.name
+                        },
+                        'entry_type': dict(pax.pricelist_id._fields['entry_type'].selection).get(pax.pricelist_id.entry_type),
+                        'visa_type': dict(pax.pricelist_id._fields['visa_type'].selection).get(pax.pricelist_id.visa_type),
+                        'process': dict(pax.pricelist_id._fields['process_type'].selection).get(pax.pricelist_id.process_type),
+                        'pax_type': pax.pricelist_id.pax_type,
+                        'duration': pax.pricelist_id.duration,
+                        'immigration_consulate': pax.pricelist_id.immigration_consulate,
+                        'requirement': requirement
+                    }
+                })
+                type.append({
+                    'entry_type': dict(pax.pricelist_id._fields['entry_type'].selection).get(pax.pricelist_id.entry_type),
+                    'visa_type': dict(pax.pricelist_id._fields['visa_type'].selection).get(pax.pricelist_id.visa_type),
+                    'process': dict(pax.pricelist_id._fields['process_type'].selection).get(pax.pricelist_id.process_type)
+                })
+                sale[pax.passenger_id.first_name+' '+pax.passenger_id.last_name] = []
+                for sale_price in passenger[len(passenger)-1]['visa']['price']:
+                    if sale_price != 'currency':
+                        sale[pax.passenger_id.first_name+' '+pax.passenger_id.last_name].append({
+                            'charge_code': sale_price,
+                            'amount': passenger[len(passenger)-1]['visa']['price'][sale_price],
+                            'currency': passenger[len(passenger)-1]['visa']['price']['currency']
+                        })
+            for pax in rec.contact_ids:
+                contact.append({
+                    'title': pax.title,
+                    'name': pax.name,
+                    'phone_number': pax.phone_ids[0].phone_number if len(pax.phone_ids) > 0 else '',
+                })
+            res = {
+                'booker': {
+                    'title': rec.booker_id.title,
+                    'first_name': rec.booker_id.title,
+                    'last_name': rec.booker_id.title,
+                    'phone_number': rec.booker_id.phone_ids[0].phone_number if len(rec.booker_id.phone_ids) > 0 else '',
+                },
+                'journey': {
+                    'country': rec.country_id.name,
+                    'departure_date': rec.departure_date,
+                    'name': rec.name,
+                    'payment_status': rec.commercial_state
+                },
+                'passenger': passenger,
+                'contact': contact,
+                'sale_price': sale
+
+            }
+        if not res:
+            res = Response().get_error(str('Visa Booking not found'), 500)
+        return Response().get_no_error(res)
+
+    def create_booking_visa_api(self, data, context, kwargs):
+        sell_visa = copy.deepcopy(data['sell_visa'])
+        booker = copy.deepcopy(data['booker'])
+        contact = copy.deepcopy(data['contact'])
+        passengers = copy.deepcopy(data['passenger'])
+        search = copy.deepcopy(data['search'])
+        context = copy.deepcopy(context)
+        kwargs = copy.deepcopy(kwargs)
 
         context.update({
-            'co_uid': self.env.user.id
+            'co_uid': context['co_uid']
         })
 
         try:
             context = self._update_api_context(contact, context)  # update agent_id dan booker
             user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
-            for contact_data in contact:  # update agent_id & booker_type
+            for contact_data in contact:
                 contact_data.update({
-                    'agent_id': user_obj.agent_id.id,
+                    'agent_id': context['agent_id'],
                     'commercial_agent_id': user_obj.agent_id.id,
                     'booker_type': 'FPO',
                 })
@@ -436,18 +513,17 @@ class TtVisa(models.Model):
             })
 
             book_obj = self.sudo().create(header_val)
-            book_obj.sub_agent_id = self.env.user.agent_id  # kedepannya mungkin dihapus | contact['agent_id']
+            # book_obj.sub_agent_id = self.env.user.agent_id  # kedepannya mungkin dihapus | contact['agent_id']
 
             book_obj.action_booked_visa(context)  # ubah state ke booked sekaligus
-            if kwargs.get('force_issued'):
-                book_obj.action_issued_visa(context)
-        except Exception as e:
-            self.env.cr.rollback()
-            _logger.error(msg=str(e) + '\n' + traceback.format_exc())
-            return {
-                'error_code': 1,
-                'error_msg': str(e)
+            book_obj.action_issued_visa(context)
+            response = {
+                'id': book_obj.name
             }
+            res = Response().get_no_error(response)
+        except Exception as e:
+            res = Response().get_error(str(e), 500)
+        return res
 
     def _update_api_context(self, contact, context):
         # sementara comment dulu. tunggu sampai ada agent_id di contact

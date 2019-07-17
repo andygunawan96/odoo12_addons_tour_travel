@@ -8,7 +8,6 @@
             <search string="Search Visa Booking">
                 <field name="name"/>
                 <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>
-                <field name="sub_agent_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                 <field name="contact_id"/>
                 <field name="country_id"/>
                 <group>
@@ -41,7 +40,6 @@
                 <group expand="0" string="Group By">
                     <filter string="Agent" name="agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
                     <filter string="Agent Type" name="agent_type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <filter string="Sub Agent" name="sub_agent" domain="[]" context="{'group_by':'sub_agent_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                     <filter string="Sub Agent Type" name="sub_agent_type" domain="[]" context="{'group_by':'sub_agent_type_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                     <filter string="State" name="state" domain="[]" context="{'group_by':'state_visa'}"/>
                 </group>
@@ -84,7 +82,6 @@
                     <group>
                         <group>
                             <field name="agent_id"/>
-                            <field name="sub_agent_id"/>
                             <field name="currency_id" invisible="1"/>
 <!--                            <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>-->
 <!--                            <field name="refund_id"/>-->
@@ -249,7 +246,6 @@
                 <field name="name"/>
                 <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>
                 <field name="agent_type_id" groups="tt_base.group_tt_tour_travel_operator"/>
-                <field name="sub_agent_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                 <field name="sub_agent_type_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                 <field name="contact_id"/>
                 <field name="country_id"/>

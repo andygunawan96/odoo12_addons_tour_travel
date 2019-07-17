@@ -297,6 +297,7 @@ class TtVisa(models.Model):
                         'visa_type': dict(pax.pricelist_id._fields['visa_type'].selection).get(pax.pricelist_id.visa_type),
                         'process': dict(pax.pricelist_id._fields['process_type'].selection).get(pax.pricelist_id.process_type),
                         'pax_type': pax.pricelist_id.pax_type,
+                        'duration': pax.pricelist_id.duration,
                         'immigration_consulate': pax.pricelist_id.immigration_consulate,
                         'requirement': requirement
                     }
@@ -340,7 +341,7 @@ class TtVisa(models.Model):
             }
         if not res:
             res = Response().get_error(str('Visa Booking not found'), 500)
-        return res
+        return Response().get_no_error(res)
 
     def create_booking_visa_api(self, data, context, kwargs):
         sell_visa = copy.deepcopy(data['sell_visa'])
@@ -401,7 +402,7 @@ class TtVisa(models.Model):
             })
 
             book_obj = self.sudo().create(header_val)
-            book_obj.sub_agent_id = self.env.user.agent_id  # kedepannya mungkin dihapus | contact['agent_id']
+            # book_obj.sub_agent_id = self.env.user.agent_id  # kedepannya mungkin dihapus | contact['agent_id']
 
             book_obj.action_booked_visa(context)  # ubah state ke booked sekaligus
             book_obj.action_issued_visa(context)
@@ -461,7 +462,7 @@ class TtVisa(models.Model):
         user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
         context.update({
             'agent_id': user_obj.agent_id.id,
-            'sub_agent_id': user_obj.agent_id.id,
+            # 'sub_agent_id': user_obj.agent_id.id,
             'booker_type': 'FPO',
         })
         return context

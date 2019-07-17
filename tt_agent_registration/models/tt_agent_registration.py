@@ -1,6 +1,7 @@
 from odoo import models, fields, api, _
 from datetime import datetime
 from odoo.exceptions import UserError
+from ...tools.api import Response
 
 COMPANY_TYPE = [
     ('individual', 'Individual'),
@@ -299,3 +300,18 @@ class AgentRegistration(models.Model):
                 rec.open_document_ids.active = False
 
         self.state = 'draft'
+
+    def get_config_api(self, data, context, kwargs):
+        try:
+            agent_type = []
+            for rec in self.env['tt.agent.type'].search([]):
+                agent_type.append({
+                    'name': rec.name,
+                    'is_allow_regis': rec.is_allow_regis
+                })
+
+            response = agent_type
+            res = Response().get_no_error(response)
+        except Exception as e:
+            res = Response().get_error(str(e), 500)
+        return res
