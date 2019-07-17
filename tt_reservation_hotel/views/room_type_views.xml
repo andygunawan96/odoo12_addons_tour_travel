@@ -1,0 +1,75 @@
+<odoo>
+    <record model="ir.ui.view" id="tt_room_type_view_form_rodex" >
+        <field name="name">tt.room.type.view.form.rodex</field>
+        <field name="model">tt.room.type</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name">Room Type</label>
+                        <h1>
+                            <field name="name" default_focus="1" placeholder="Room Type" nolabel="1" required="True"/>
+                        </h1>
+                    </div>
+                    <group string="Information">
+                        <!--<field name="name"/>-->
+                        <field name="guest_count"/>
+                    </group>
+
+                    <!--<notebook>-->
+                        <!--<page string="Facility">-->
+                            <!--<field name="facility_ids" >-->
+                                <!--<tree editable="bottom">-->
+                                    <!--<field name="name"/>-->
+                                    <!--<field name="facility_type_id"/>-->
+                                    <!--<field name="description"/>-->
+                                <!--</tree>-->
+                                <!--<form>-->
+                                    <!--&lt;!&ndash;<field name="hotel_id"/>&ndash;&gt;-->
+                                    <!--<field name="name"/>-->
+                                    <!--&lt;!&ndash;<field name="service_id"/>&ndash;&gt;-->
+                                    <!--<field name="facility_type_id"/>-->
+                                    <!--<field name="description"/>-->
+                                    <!--<field name="is_room_facility"/>-->
+                                    <!--<field name="is_hotel_facility"/>-->
+                                    <!--<field name="currency_id"/>-->
+                                    <!--&lt;!&ndash;<field name="price"/>&ndash;&gt;-->
+                                <!--</form>-->
+                            <!--</field>-->
+                        <!--</page>-->
+                    <!--</notebook>-->
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="tt_room_type_view_tree_rodex" >
+        <field name="name">tt.room.type.view.tree.rodex</field>
+        <field name="model">tt.room.type</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="guest_count"/>
+            </tree>
+        </field>
+    </record>
+    <record id="tt_room_type_view_search" model="ir.ui.view">
+        <field name="name">tt.room.type.view.search</field>
+        <field name="model">tt.room.type</field>
+        <field name="arch" type="xml">
+            <search string="Hotel Facility">
+                <field name="name" string="Name"/>
+                <group expand="0" string="Group By...">
+                    <filter name="group_by_gust_count" string="Guest" domain="[]" context="{'group_by':'guest_count'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_room_type_view_action_rodex">
+        <field name="name">Room Type</field>
+        <field name="res_model">tt.room.type</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="tt_room_type_view_search"/>
+    </record>
+</odoo>
