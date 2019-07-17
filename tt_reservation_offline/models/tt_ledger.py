@@ -21,21 +21,21 @@ SERVICE_TYPE = [
 class TtLedger(models.Model):
     _inherit = 'tt.ledger'
 
-    issued_offline_id = fields.Many2one('issued.offline', 'Issued Offline')
+    reservation_offline_id = fields.Many2one('tt.reservation.offline', 'Issued Offline')
     provider_type_id = fields.Many2one('tt.provider.type', 'Service Type')
     display_provider_name = fields.Char(string='Name')
 
     rel_agent_name = fields.Char('Partner', help='Used to know Network commission from')
     issued_uid = fields.Many2one('res.users', 'Issued By', related=False)
 
-    def get_rel_agent_id(self):
-        for rec in self:
-            rec.rel_agent_name = rec.issued_offline_id and rec.issued_offline_id.sub_agent_id.name or False
+    # def get_rel_agent_id(self):
+    #     for rec in self:
+    #         rec.rel_agent_name = rec.reservation_offline_id and rec.reservation_offline_id.sub_agent_id.name or False
 
     def change_vendor_to_provider(self):
         for rec in self:
-            if rec.issued_offline_id:
-                rec.display_provider_name = rec.issued_offline_id.provider
+            if rec.reservation_offline_id:
+                rec.display_provider_name = rec.reservation_offline_id.provider
 
     def remove_name_pnr(self):
         for rec in self:

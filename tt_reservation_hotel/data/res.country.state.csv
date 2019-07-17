@@ -1,0 +1,41 @@
+id,country_id/id,code,name
+res_country_state_id_1,base.id,ACEH,Nanggroe Aceh Darussalam
+res_country_state_id_17,base.id,BALI,Bali
+res_country_state_id_6,base.id,BABEL,Kepulauan Bangka-Belitung
+res_country_state_id_11,base.id,BANTE,Banten
+res_country_state_id_8,base.id,BENGKULU,Bengkulu
+res_country_state_id_24,base.id,GTO,Gorontalo
+res_country_state_id_12,base.id,DKI,DKI Jakarta
+res_country_state_id_7,base.id,JAMBI,Jambi
+res_country_state_id_13,base.id,JABAR,Jawa Barat
+res_country_state_id_14,base.id,JATENG,Jawa Tengah
+res_country_state_id_16,base.id,JATIM,Jawa Timur
+res_country_state_id_20,base.id,KALBAR,Kalimantan Barat
+res_country_state_id_22,base.id,KALSEL,Kalimantan Selatan
+res_country_state_id_21,base.id,KALTENG,Kalimantan Tengah
+res_country_state_id_23,base.id,KALTIM,Kalimantan Timur
+res_country_state_id_34,base.id,KALTAR,Kalimantan Utara
+res_country_state_id_5,base.id,KRIAU,Kepulauan Riau
+res_country_state_id_10,base.id,LAMPUNG,Lampung
+res_country_state_id_30,base.id,MALUKU,Maluku
+res_country_state_id_31,base.id,MALUT,Maluku Utara
+res_country_state_id_18,base.id,NNB,Nusa Tenggara Barat
+res_country_state_id_19,base.id,NNT,Nusa Tenggara Timur
+res_country_state_id_33,base.id,PAPUA,Papua
+res_country_state_id_32,base.id,PABAR,Papua Barat
+res_country_state_id_4,base.id,RIAU,Riau
+res_country_state_id_29,base.id,SULBAR,Sulawesi Barat
+res_country_state_id_25,base.id,SULSEL,Sulawesi Selatan
+res_country_state_id_27,base.id,SULTENG,Sulawesi Tengah
+res_country_state_id_26,base.id,SULTRA,Sulawesi Tenggara
+res_country_state_id_28,base.id,SULUT,Sulawesi Utara
+res_country_state_id_2,base.id,SUMUT,Sumatera Utara
+res_country_state_id_9,base.id,SUMSEL,Sumatera Selatan
+res_country_state_id_3,base.id,SUBAR,Sumatera Barat
+res_country_state_id_15,base.id,JOGJA,Daerah Istimewa Yogyakarta
+
+
+
+
+
+

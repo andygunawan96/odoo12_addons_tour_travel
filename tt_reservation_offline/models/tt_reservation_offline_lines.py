@@ -34,15 +34,17 @@ CLASS_OF_SERVICE = [
 
 
 class IssuedOfflineLines(models.Model):
-    _name = 'issued.offline.lines'
+    _name = 'tt.reservation.offline.lines'
 
     pnr = fields.Char('PNR', readonly=True, states={'confirm': [('readonly', False)]})
 
-    booking_id = fields.Many2one('issued.offline', 'Issued Offline')
+    booking_id = fields.Many2one('tt.reservation.offline', 'Reservation Offline')
     obj_qty = fields.Integer('Qty', readonly=True, states={'draft': [('readonly', False)],
                                                            'confirm': [('readonly', False)]}, default=1)
     state = fields.Selection(STATE, string='State', default='draft', related='booking_id.state')
     transaction_type = fields.Many2one('tt.provider.type', 'Service Type', related='booking_id.provider_type_id')
+    transaction_name = fields.Char('Service Name', readonly=True, related='booking_id.provider_type_name')
+    provider_id = fields.Many2one('tt.provider', 'Provider ID', readonly=True, states={'confirm': [('readonly', False)]})
 
     # Airplane / Train
     departure_date = fields.Datetime('Departure Date', readonly=True, states={'draft': [('readonly', False)],
@@ -65,6 +67,8 @@ class IssuedOfflineLines(models.Model):
     subclass = fields.Char('SubClass')
 
     # Hotel / Activity
+    visit_date = fields.Datetime('Visit Date', readonly=True, states={'draft': [('readonly', False)],
+                                                                      'confirm': [('readonly', False)]})
     check_in = fields.Date('Check In', readonly=True, states={'draft': [('readonly', False)],
                                                               'confirm': [('readonly', False)]})
     check_out = fields.Date('Check Out', readonly=True, states={'draft': [('readonly', False)],
@@ -81,12 +85,13 @@ class IssuedOfflineLines(models.Model):
     cost_service_charge_ids = fields.One2many('tt.service.charge', 'provider_offline_booking_id',
                                               'Cost Service Charges')
 
-    @api.onchange('transaction_type')
+    @api.onchange('transaction_type', 'booking_id.provider_type_id')
     def onchange_domain(self):
+        print('Provider Type ID : ' + str(self.booking_id.provider_type_id))
         booking_type = self.booking_id.provider_type_id.code
 
         return {'domain': {
-            'carrier_id': [('transport_type', '=', booking_type)]
+            'carrier_id': [('provider_type_id', '=', self.booking_id.provider_type_id.id)]
         }}
 
     @api.onchange('carrier_id')

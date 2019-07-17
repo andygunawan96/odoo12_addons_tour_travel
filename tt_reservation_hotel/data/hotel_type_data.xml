@@ -1,0 +1,371 @@
+<odoo>
+    <data noupdate="0">
+        <!--<record id="hotel_type_0" model="tt.hotel.type">-->
+        <!--<field name="name">No Star Hotel</field>-->
+        <!--<field name="description">No Star Hotel</field>-->
+        <!--</record>-->
+        <!--<record id="hotel_type_1" model="tt.hotel.type">-->
+        <!--<field name="name">1 Star Hotel</field>-->
+        <!--<field name="description">1 Star Hotel</field>-->
+        <!--</record>-->
+        <!--<record id="hotel_type_2" model="tt.hotel.type">-->
+        <!--<field name="name">2 Star Hotel</field>-->
+        <!--<field name="description">2 Star Hotel</field>-->
+        <!--</record>-->
+        <!--<record id="hotel_type_3" model="tt.hotel.type">-->
+        <!--<field name="name">3 Star Hotel</field>-->
+        <!--<field name="description">3 Star Hotel</field>-->
+        <!--</record>-->
+        <!--<record id="hotel_type_4" model="tt.hotel.type">-->
+        <!--<field name="name">4 Star Hotel</field>-->
+        <!--<field name="description">4 Star Hotel</field>-->
+        <!--</record>-->
+        <!--<record id="hotel_type_5" model="tt.hotel.type">-->
+        <!--<field name="name">5 Star Hotel</field>-->
+        <!--<field name="description">5 Star Hotel</field>-->
+        <!--</record>-->
+        <record id="hotel_type_hotel" model="tt.hotel.type">
+            <field name="name">Hotel</field>
+            <field name="description">Hotel</field>
+        </record>
+        <record id="hotel_type_condotel" model="tt.hotel.type">
+            <field name="name">Condotel</field>
+            <field name="description">Condotel</field>
+        </record>
+        <record id="hotel_type_cottage" model="tt.hotel.type">
+            <field name="name">Cottage</field>
+            <field name="description">Cottage</field>
+        </record>
+        <record id="hotel_type_resort" model="tt.hotel.type">
+            <field name="name">Resort</field>
+            <field name="description">Resort</field>
+        </record>
+
+        <record id="room_type_suites" model="tt.room.type">
+            <field name="name">Suites</field>
+            <field name="guest_count">2</field>
+        </record>
+        <record id="room_type_deluxe" model="tt.room.type">
+            <field name="name">Deluxe</field>
+            <field name="guest_count">2</field>
+        </record>
+        <record id="room_type_superior" model="tt.room.type">
+            <field name="name">Superior</field>
+            <field name="guest_count">2</field>
+        </record>
+        <record id="room_type_family" model="tt.room.type">
+            <field name="name">Family</field>
+            <field name="guest_count">4</field>
+        </record>
+        <record id="room_type_single" model="tt.room.type">
+            <field name="name">Single</field>
+            <field name="guest_count">1</field>
+        </record>
+        <record id="room_type_twin" model="tt.room.type">
+            <field name="name">Twin / Double</field>
+            <field name="guest_count">2</field>
+        </record>
+        <record id="room_type_triple" model="tt.room.type">
+            <field name="name">Triple</field>
+            <field name="guest_count">3</field>
+        </record>
+        <record id="room_type_quad" model="tt.room.type">
+            <field name="name">Quad</field>
+            <field name="guest_count">4</field>
+        </record>
+
+        <record id="hotel_facility_type_basic" model="tt.hotel.facility.type">
+            <field name="name">Basic Facilities</field>
+            <field name="description">Basic Facilities</field>
+        </record>
+        <record id="hotel_facility_type_room" model="tt.hotel.facility.type">
+            <field name="name">Room Amenities</field>
+            <field name="description">Room Amenities</field>
+        </record>
+        <record id="hotel_facility_type_bathroom" model="tt.hotel.facility.type">
+            <field name="name">Bathroom Amenities</field>
+            <field name="description">Bathroom Amenities</field>
+        </record>
+
+        <record id="hotel_facility_internet" model="tt.hotel.facility">
+            <field name="name">Internet Access</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Internet Access</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_non-smoking" model="tt.hotel.facility">
+            <field name="name">Non Smoking Rooms</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Non Smoking Rooms</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_welc-drinks" model="tt.hotel.facility">
+            <field name="name">Welcome Drinks</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Welcome Drinks</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_swim-pool" model="tt.hotel.facility">
+            <field name="name">Swimming Pool</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Swimming Pool</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_rest" model="tt.hotel.facility">
+            <field name="name">Restaurant</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Restaurant</field>
+            <field name="is_room_facility" eval="False"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_front-desk" model="tt.hotel.facility">
+            <field name="name">24 Hours Front Desk</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">24 Hours Front Desk</field>
+            <field name="is_room_facility" eval="False"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_eleva" model="tt.hotel.facility">
+            <field name="name">Elevator</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Elevator</field>
+            <field name="is_room_facility" eval="False"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_wheel-chair" model="tt.hotel.facility">
+            <field name="name">Wheelchair Access</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Wheelchair Access</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_meeting" model="tt.hotel.facility">
+            <field name="name">Meeting Facilities</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Meeting Facilities</field>
+            <field name="is_room_facility" eval="False"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_airport" model="tt.hotel.facility">
+            <field name="name">Airport Transfer</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Airport Transfer</field>
+            <field name="is_room_facility" eval="False"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_laundry" model="tt.hotel.facility">
+            <field name="name">Laundry</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Laundry</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_housekeeping" model="tt.hotel.facility">
+            <field name="name">Housekeeping</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Housekeeping</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_turndown" model="tt.hotel.facility">
+            <field name="name">Turndown Service</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Turndown Service</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_room-ser" model="tt.hotel.facility">
+            <field name="name">Room Service</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Room Service</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_telp" model="tt.hotel.facility">
+            <field name="name">Telephone</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Telephone</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_tea-makker" model="tt.hotel.facility">
+            <field name="name">Coffee / Tea Maker</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_room"/>
+            <field name="description">Coffee / Tea Maker</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="False"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_desk" model="tt.hotel.facility">
+            <field name="name">Desk</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_room"/>
+            <field name="description">Desk</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="False"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_water" model="tt.hotel.facility">
+            <field name="name">Complimentary Bottled Water</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_room"/>
+            <field name="description">Complimentary Bottled Water</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="False"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_tv" model="tt.hotel.facility">
+            <field name="name">Television</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_room"/>
+            <field name="description">Television</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="False"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_room-safe" model="tt.hotel.facility">
+            <field name="name">In-room Safe</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_room"/>
+            <field name="description">In-room Safe</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="False"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_news" model="tt.hotel.facility">
+            <field name="name">Free Newspaper</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_room"/>
+            <field name="description">Free Newspaper</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="False"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_iron" model="tt.hotel.facility">
+            <field name="name">Ironing Facility</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_room"/>
+            <field name="description">Ironing Facility</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="False"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_balcony" model="tt.hotel.facility">
+            <field name="name">Balcony</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_room"/>
+            <field name="description">Balcony</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_curtain" model="tt.hotel.facility">
+            <field name="name">Blackout Drapes / Curtains</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_room"/>
+            <field name="description">Blackout Drapes / Curtains</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="False"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_refri" model="tt.hotel.facility">
+            <field name="name">Refrigator</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_room"/>
+            <field name="description">Refrigator</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="False"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_movie" model="tt.hotel.facility">
+            <field name="name">In-house Movies</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_room"/>
+            <field name="description">In-house Movies</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="False"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_minibar" model="tt.hotel.facility">
+            <field name="name">MiniBar</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_room"/>
+            <field name="description">MiniBar</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="False"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_slippers" model="tt.hotel.facility">
+            <field name="name">Slippers</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_room"/>
+            <field name="description">Slippers</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="False"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_cribs" model="tt.hotel.facility">
+            <field name="name">Free Cribs</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_room"/>
+            <field name="description">Free Cribs</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="False"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_shower" model="tt.hotel.facility">
+            <field name="name">Shower</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_bathroom"/>
+            <field name="description">Shower</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="False"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_bathtub" model="tt.hotel.facility">
+            <field name="name">Bathtub</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_bathroom"/>
+            <field name="description">Bathtub</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="False"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_bathrobes" model="tt.hotel.facility">
+            <field name="name">Bathrobes</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_bathroom"/>
+            <field name="description">Bathrobes</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="False"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_toiletries" model="tt.hotel.facility">
+            <field name="name">Toiletries</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_bathroom"/>
+            <field name="description">Toiletries</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="False"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_dryers" model="tt.hotel.facility">
+            <field name="name">Hair Dryers</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_bathroom"/>
+            <field name="description">Hair Dryers</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="False"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+
+        <record id="hotel_no_refund_policy" model="cancellation.policy">
+            <field name="name">The Reservation in non-refundable.</field>
+            <field name="max_cancel_days">-1</field>
+            <field name="charge_type">prc</field>
+            <field name="charge_rate">100</field>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+    </data>
+</odoo>

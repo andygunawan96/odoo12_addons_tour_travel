@@ -1,0 +1,216 @@
+<odoo>
+    <record model="ir.ui.view" id="tt_service_charge_view_form_rodex" >
+        <field name="name">tt.service.charge.view.form.rodex</field>
+        <field name="model">tt.service.charge</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+
+                </header>
+                <sheet>
+                    <!--<button name= "%(action_store_default_pricelist)d" type="action"-->
+                            <!--class="oe_stat_button" icon="fa-bookmark-o">-->
+                        <!--<div class="o_form_field o_stat_info">-->
+                            <!--<span class="o_stat_text">a</span>-->
+                        <!--</div>-->
+                    <!--</button>-->
+                    <div class="oe_title">
+                        <label for="name">Service Charge</label>
+                        <h1>
+                            <field name="name" default_focus="1" placeholder="Service Charge Name" required="True"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Apply On">
+                            <field name="rule_for"/>
+                            <field name="charge_for"/>
+                        </group>
+                        <group string="Detail">
+                            <field name="default_rule"/>
+                            <field name="provider" attrs="{'invisible':[('charge_for','!=','provider')]}"/>
+                            <field name="partner_id" attrs="{'invisible':[('charge_for','!=','provider')]}"/>
+                            <field name="country_id" attrs="{'invisible':[('charge_for','!=','hotel')]}"/>
+                            <field name="city_id" attrs="{'invisible':[('charge_for','!=','hotel')]}"/>
+                            <field name="hotel_id" attrs="{'invisible':[('charge_for','!=','hotel')]}"/>
+                            <field name="room_info_id" attrs="{'invisible':[('charge_for','!=','hotel')]}"/>
+                            <field name="facility_id" attrs="{'invisible':[('hotel_id','=',False),
+                             ('room_info_id','=',False)]}"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Quantity">
+                            <field name="is_fixed"/>
+                            <field name="max_qty"/>
+                            <field name="max_qty_multiple"/>
+                        </group>
+                        <group string="Computation">
+                            <field name="type"/>
+                            <field name="sale_nominal" attrs="{'invisible':[('type','!=','fix')]}"/>
+                            <field name="calculate_var" attrs="{'invisible':[('type','!=','pct')]}"/>
+                            <field name="currency_id"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="tt_service_charge_view_tree_rodex" >
+        <field name="name">tt.service.charge.view.tree.rodex</field>
+        <field name="model">tt.service.charge</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="hotel_id"/>
+                <field name="room_info_id"/>
+                <field name="facility_id"/>
+                <field name="sale_nominal"/>
+            </tree>
+        </field>
+    </record>
+    <record id="tt_service_charge_view_search" model="ir.ui.view">
+        <field name="name">tt.service.charge.view.search</field>
+        <field name="model">tt.service.charge</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" string="Name"/>
+                <field name="hotel_id" string="Hotel"/>
+                <field name="room_info_id" string="Name"/>
+                <field name="facility_id" string="Facility"/>
+                <field name="sale_nominal" string="sale_nominal"/>
+
+                <group expand="0" string="Group By...">
+                    <filter name="group_by_provider" string="Provider" domain="[]" context="{'group_by':'provider'}"/>
+                    <filter name="group_by_provider" string="Type" domain="[]" context="{'group_by':'Type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_service_charge_view_action_rodex">
+        <field name="name">Service Charge</field>
+        <field name="res_model">tt.service.charge</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="tt_service_charge_view_search"/>
+    </record>
+
+    <record model="ir.ui.view" id="tt_service_line_view_form" >
+        <field name="name">test.search.view.form</field>
+        <field name="model">test.search</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="search_hotel" string="Line" type="object" class="oe_highlight"/>
+                    <button name="search_rule_for_each_user" string="User Paid" type="object" class="oe_highlight"/>
+                    <button name="search_hotel_1" string="Rate" type="object" class="oe_info"/>
+                    <button name="create_reservation_dummy" string="Reservation" type="object"/>
+                    <button name="reservation_success_dummy" string="Confirm" type="object"/>
+                    <button name="get_booking_dummy" string="Print Booking" type="object"/>
+                    <button name="dummy_get_themepark_detail" string="Theme Park" type="object"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name">Service Charge</label>
+                        <h1>
+                            <field name="name" default_focus="1" placeholder="Service Charge Name" required="True"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Data">
+                            <field name="rate_id"/>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                            <field name="nights"/>
+                            <field name="guest"/>
+                        </group>
+                        <group string="Data">
+                            <field name="hotel_id"/>
+                            <field name="room_id"/>
+                            <field name="day"/>
+                        </group>
+                        <group>
+                            <field name="user_price"/>
+                            <field name="rodex_profit"/>
+                            <field name="vendor_payment"/>
+                        </group>
+                    </group>
+                    <field name="line_ids">
+                        <tree string="Line" editable="bottom">
+                            <field name="sequence"/>
+                            <field name="name"/>
+                            <field name="sale_price" readonly="1"/>
+                            <field name="max_qty" readonly="1"/>
+                            <field name="qty" attrs="{'readonly':[('is_fixed','=', True)]}"/>
+                            <field name="currency_id"/>
+                            <field name="special_request"/>
+                            <field name="subtotal_price"/>
+                            <field name="is_fixed" invisible="1"/>
+                        </tree>
+                    </field>
+                    <field name="line_2_ids">
+                        <tree string="Line" editable="bottom">
+                            <field name="sequence"/>
+                            <field name="name"/>
+                            <field name="sale_price" readonly="1"/>
+                            <field name="max_qty" readonly="1"/>
+                            <field name="qty" attrs="{'readonly':[('is_fixed','=', True)]}"/>
+                            <field name="currency_id"/>
+                            <field name="special_request"/>
+                            <field name="subtotal_price"/>
+                            <field name="is_fixed" invisible="1"/>
+                        </tree>
+                    </field>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_charge_action">
+        <field name="name">Charge Line</field>
+        <field name="res_model">test.search</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!--<menuitem id="menu_charge_side_menu" parent="menu_configuration_hotel_header_side_menu"-->
+              <!--name="Charge" sequence="11" action="tt_service_charge_view_action_rodex"/>-->
+
+    <!--<menuitem id="menu_charge_line_side_menu" parent="menu_configuration_hotel_header_side_menu"-->
+              <!--name="Search Line" sequence="13" action="tt_charge_action"/>-->
+
+    <record model="ir.ui.view" id="hotel_content_history_view_tree_rodex" >
+        <field name="name">hotel.content.history.view.tree.rodex</field>
+        <field name="model">hotel.content.history</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="file_name"/>
+                <field name="provider_id"/>
+                <field name="start"/>
+                <field name="end"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_tt_content_history">
+        <field name="name">Content History</field>
+        <field name="res_model">hotel.content.history</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_tt_scrap_history">
+        <field name="name">Scrap History</field>
+        <field name="res_model">scrap.history</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_content_history_side_menu" parent="menu_configuration_hotel_header_side_menu"
+              name="Content History" sequence="13" action="action_tt_content_history"/>
+
+    <menuitem id="menu_scrap_history_side_menu" parent="menu_configuration_hotel_header_side_menu"
+              name="Scrap History" sequence="14" action="action_tt_scrap_history"/>
+
+</odoo>

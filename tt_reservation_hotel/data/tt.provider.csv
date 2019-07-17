@@ -1,0 +1,9 @@
+id,name,alias,code,active,provider_type_id/id
+tt_hotel_provider_mg,MG BedBank,A1,mg,1,tt_base.tt_provider_type_1
+tt_hotel_provider_hotelspro,HotelsPro,A2,hotelspro,1,tt_base.tt_provider_type_1
+tt_hotel_provider_miki,Miki Travel,A3,miki,1,tt_base.tt_provider_type_1
+tt_hotel_provider_itank,Itank,A4,itank,1,tt_base.tt_provider_type_1
+tt_hotel_provider_quantum,Quantum Singapore,A5,quantum,1,tt_base.tt_provider_type_1
+tt_hotel_provider_webbeds,Webbeds / Fitruums,A6,webbeds,1,tt_base.tt_provider_type_1
+tt_hotel_provider_hotelbeds,HotelBeds,A7,hotelbeds,1,tt_base.tt_provider_type_1
+tt_hotel_provider_dida,Dida Hotel Vendor,A8,dida,1,tt_base.tt_provider_type_1

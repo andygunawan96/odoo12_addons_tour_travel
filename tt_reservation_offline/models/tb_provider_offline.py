@@ -11,7 +11,7 @@ class ProviderOffline(models.Model):
     pnr = fields.Char('PNR')
     provider = fields.Char('Provider')
     # state = fields.Selection(BOOKING_STATE, 'Status', default='draft')
-    booking_id = fields.Many2one('issued.offline', 'Order Number', ondelete='cascade')
+    booking_id = fields.Many2one('tt.reservation.offline', 'Order Number', ondelete='cascade')
     sequence = fields.Integer('Sequence')
 
     # direction = fields.Selection(JOURNEY_DIRECTION, string='Direction')

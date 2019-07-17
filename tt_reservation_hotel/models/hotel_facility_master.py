@@ -1,0 +1,19 @@
+from odoo import api, fields, models, _
+
+
+class HotelFacility(models.Model):
+    _name = 'tt.hotel.facility'
+    _description = 'Hotel Facility'
+
+    name = fields.Char('Facility / Service Name', required=True)
+    facility_type_id = fields.Many2one('tt.hotel.facility.type', 'Type of Facility / Service', required="True")
+    description = fields.Char('Description')
+    is_room_facility = fields.Boolean('Is Room Facility', default="False")
+    is_hotel_facility = fields.Boolean('Is Hotel Facility', default="True")
+    currency_id = fields.Many2one('res.currency', 'Currency')
+    is_paid = fields.Boolean('Need Payment', default="False")
+    css_class = fields.Char('Website CSS Class')
+
+    image_url = fields.Char('Image URL #1')
+    image_url2 = fields.Char('Image URL #2')
+    image_url3 = fields.Char('Image URL #3')

@@ -1,0 +1,14 @@
+id,description,name,is_price
+tt_facility_type_1,Main Facility,Main Facility,False
+tt_facility_type_2,Public Facility,Public Facility,False
+tt_facility_type_3,Room Facility,Room Facility,False
+tt_facility_type_4,Hotel Services,Hotel Services,False
+tt_facility_type_5,Food and Beverage,Food and Beverage,False
+tt_facility_type_6,Public Facility,Public Facility,False
+tt_facility_type_7,Transportation,Transportation,False
+tt_facility_type_8,Nearest Facility,Nearest Facility,False
+tt_facility_type_9,Pick Up Service,Pick Up Service,False
+tt_facility_type_10,Accessbility,Accessbility,False
+tt_facility_type_11,Business Facility,Business Facility,False
+tt_facility_type_12,Conectivity,Conectivity,False
+tt_facility_type_13,Sport and Recreation,Sport and Recreation,False

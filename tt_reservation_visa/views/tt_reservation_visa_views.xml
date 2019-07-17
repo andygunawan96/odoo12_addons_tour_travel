@@ -1,0 +1,408 @@
+<odoo>
+
+    <!--Visa Document Filter-->
+    <record id="tt_reservation_visa_view_filter" model="ir.ui.view">
+        <field name="name">tt.reservation.visa.view.filter</field>
+        <field name="model">tt.reservation.visa</field>
+        <field name="arch" type="xml">
+            <search string="Search Visa Booking">
+                <field name="name"/>
+                <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                <field name="sub_agent_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                <field name="contact_id"/>
+                <field name="country_id"/>
+                <group>
+                    <filter string="All" name="all"/>
+                    <filter string="Open" name="draft" domain="[('state_visa','=','draft')]"/>
+                    <filter string="Confirm to HO/Validated by HO" name="confirm_validate" domain="['|', ('state_visa','=','confirm'),('state_visa','=','validate')]"/>
+                    <filter string="Send to Vendor/Proceed by Vendor" name="to_vendor_vendor_process" domain="['|', ('state_visa','=','to_vendor'),('state_visa','=','vendor_process')]"/>
+                    <filter string="In Process/Payment" name="in_process_payment" domain="['|', ('state_visa','=','in_process'),('state_visa','=','payment')]"/>
+                    <filter string="Partial Proceed/Proceed" name="partial_proceed_proceed" domain="['|', ('state_visa','=','partial_proceed'),('state_visa','=','proceed')]"/>
+                    <filter string="Delivered/Ready" name="delivered_ready" domain="['|', ('state_visa','=','delivered'),('state_visa','=','ready')]"/>
+                    <filter string="Done" name="done" domain="[('state_visa','=','done')]"/>
+                    <filter string="Canceled" name="cancel" domain="[('state_visa','=','cancel')]"/>
+                </group>
+                <separator/>
+                <filter name="today" string="Today" domain="[('date','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>
+                <filter name="yesterday" string="Yesterday"
+                        domain="[
+                                ('date', '&lt;', (context_today()).strftime('%Y-%m-%d')),
+                                ('date', '&gt;=', (context_today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d'))
+                        ]"/>
+                <filter name="week" string="This Week"
+                        domain="[
+                                '&amp;',
+                                ('date', '>=', (context_today() + relativedelta(weeks=-1,days=1,weekday=0)).strftime('%Y-%m-%d')),
+                                ('date', '&lt;=', (context_today() + relativedelta(weekday=6)).strftime('%Y-%m-%d')),
+                            ]"/>
+                <filter string="This Month" name="thismonth" domain="[('date','&gt;=',time.strftime('%%Y-%%m-01'))]"/>
+                <filter string="This Year" name="thisyear" domain="[('date','&gt;=',time.strftime('%%Y-01-01'))]"/>
+
+                <group expand="0" string="Group By">
+                    <filter string="Agent" name="agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <filter string="Agent Type" name="agent_type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <filter string="Sub Agent" name="sub_agent" domain="[]" context="{'group_by':'sub_agent_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                    <filter string="Sub Agent Type" name="sub_agent_type" domain="[]" context="{'group_by':'sub_agent_type_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                    <filter string="State" name="state" domain="[]" context="{'group_by':'state_visa'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!--Visa Document Form-->
+    <record model="ir.ui.view" id="tt_reservation_visa_view_form">
+        <field name="name">tt.reservation.visa.view.form</field>
+        <field name="model">tt.reservation.visa</field>
+        <field name="arch" type="xml">
+            <form>
+                <field name="state" invisible="1"/>
+                <header>
+                    <field name="state_visa" widget="statusbar" statusbar_visible="draft,confirm,validate,in_process,proceed,delivered,ready,done"/> <!--statusbar_visible=""-->
+                    <button string="Set to Draft" name="action_draft_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'cancel')]}" groups="tt_base.group_tt_tour_travel_manager"/>
+                    <button string="Confirm to HO" name="action_confirm_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'draft')]}" groups="tt_base.group_tt_agent_user_operator"/>
+                    <button string="Validate" name="action_validate_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'confirm')]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <button string="To Vendor" name="action_to_vendor_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'validate')]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <button string="Vendor Process" name="action_vendor_process_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'to_vendor')]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <button string="In Process" name="action_in_process_visa" type="object" attrs="{'invisible': [('state_visa', 'not in', ['validate','vendor_process'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <button string="Process to Consulate" name="action_in_process_consulate_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'payment')]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <button string="Cancel All" name="action_cancel_visa" type="object" attrs="{'invisible': [('state_visa', 'in', ['cancel'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
+<!--                    <button string="Confirm" name="action_confirm" type="object" attrs="{'invisible': [('state_visa', '!=', 'draft')]}" groups="tt_base.group_tt_agent_user_manager"/>-->
+<!--                    <button string="Validate" name="action_validate" type="object" attrs="{'invisible': [('state_visa', '!=', 'confirm')]}" groups="tt_base.group_tt_agent_user_manager"/>-->
+<!--                    <button string="Processing" name="action_processing" type="object" attrs="{'invisible': [('state_visa', '!=', 'validate')]}" groups="tt_base.group_tt_agent_user_manager"/>-->
+<!--                    <button string="Set Interview" name="action_interview" type="object" attrs="{'invisible': [('state_visa', '!=', 'processing')]}" groups="tt_base.group_tt_agent_user_manager"/>-->
+<!--                    <button string="Ready" name="action_ready" type="object" attrs="{'invisible': [('state_visa', '!=', 'posted')]}" groups="tt_base.group_tt_agent_user_manager"/>-->
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                    </div>
+                    <div class="oe_title">
+<!--                        <label for="Name" class="oe_edit_only"/>-->
+                        <h1>
+                            <field name="name" readonly="1"/>  <!--attrs="{'readonly': [('state_visa', '!=', 'draft')]}"-->
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="agent_id"/>
+                            <field name="sub_agent_id"/>
+                            <field name="currency_id" invisible="1"/>
+<!--                            <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>-->
+<!--                            <field name="refund_id"/>-->
+                            <field name="payment_date" attrs="{'readonly': [('state_visa', '!=', 'in_process')]}"/>
+                            <field name="use_vendor"/>
+                            <field name="vendor_ids" attrs="{'required': [('use_vendor', '=', True)], 'readonly': [('state_visa', 'in', ['delivered','ready','done'])]}" groups="tt_base.group_tt_tour_travel_operator,account.group_account_user">
+                                <tree editable="bottom">
+                                    <field name="vendor_id"/>
+                                    <field name="reference_number"/>
+                                    <field name="amount"/>
+                                    <field name="payment_date"/>
+                                    <field name="currency_id" invisible="1"/>
+                                </tree>
+                            </field>
+                        </group>
+                        <group>
+                            <field name="commercial_state"/>
+
+                            <label for="booked_uid" string="Issued"/>
+                            <div>
+                                <field name="booked_uid" readonly="1" class="oe_inline"/> -
+                                <field name="booked_date" readonly="1" class="oe_inline"/>
+                            </div>
+
+                            <label for="confirmed_uid" string="Confirmed"/>
+                            <div>
+                                <field name="confirmed_uid" readonly="1" class="oe_inline"/> -
+                                <field name="confirmed_date" readonly="1" class="oe_inline"/>
+                            </div>
+
+                            <label for="validate_uid" string="Validated"/>
+                            <div>
+                                <field name="validate_uid" readonly="1" class="oe_inline"/> -
+                                <field name="validate_date" readonly="1" class="oe_inline"/>
+                            </div>
+
+                            <field name="in_process_date"/>
+                            <field name="ready_date"/>
+                            <field name="done_date"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+
+                        </group>
+                        <group>
+                            <field name="country_id"/>
+                            <field name="departure_date"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Paxs">
+                            <field name="adult"/>
+                            <field name="child"/>
+                            <field name="infant"/>
+                        </group>
+                        <group string="Booker Information">
+                            <field name="booker_id"/>
+                        </group>
+                    </group>
+                    <notebook colspan="4">
+                        <page string="Contacts">
+                            <field name="contact_ids">
+                                <tree create="0">
+                                    <field name="name"/>
+                                    <field name="email"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Passengers">
+                            <field name="to_passenger_ids">
+                                <tree create="0">
+                                    <field name="passenger_id"/>
+                                    <field name="passenger_type"/>
+                                    <field name="pricelist_id"/>
+                                    <field name="in_process_date"/>
+                                    <field name="call_date"/>
+                                    <field name="out_process_date"/>
+                                    <field name="to_HO_date"/>
+                                    <field name="ready_date"/>
+                                    <field name="process_status"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Prices" name="prices" >
+                            <!--<field name="sale_service_charge_ids" readonly="1">-->
+<!--                            groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"-->
+                            <field name="sale_service_charge_ids">
+                                <tree>
+                                    <field name="charge_code"/>
+                                    <field name="pax_type"/>
+                                    <field name="pax_count"/>
+                                    <field name="amount"/>
+                                    <field name="total"/>
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="description"/>
+                                </tree>
+                            </field>
+                        </page>
+<!--                        <page string="Vendor" name="vendor">-->
+<!--                            <field name="vendor_ids">-->
+<!--                                <tree>-->
+<!--                                    <field name="reference_number"/>-->
+<!--                                    <field name="vendor_id"/>-->
+<!--                                    <field name="amount"/>-->
+<!--                                    <field name="payment_date"/>-->
+<!--                                </tree>-->
+<!--                            </field>-->
+<!--                        </page>-->
+                        <page string="Ledgers" name="ledger_page">
+<!--                            groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"-->
+                            <field name="ledger_ids">
+                                <tree create="false">
+                                    <field name="date"/>
+                                    <field name="ref"/>
+                                    <field name="name"/>
+                                    <field name="agent_id"/>
+                                    <field name="description"/>
+                                    <field name="transaction_type"/>
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="debit" sum="Total Debit"/>
+                                    <field name="credit" sum="Total Credit"/>
+                                    <field name="balance" invisible="1" sum="Total Balance"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                    <group>
+                        <group>
+                            <field name="notes"/>
+                        </group>
+                        <group>
+                            <field name="error_msg"/>
+                        </group>
+                        <group>
+
+                        </group>
+                        <group string="Total Information" class="oe_subtotal_footer oe_right">
+                            <!--<field name="total_insentif_amount" class="oe_subtotal_footer_separator"/>-->
+                            <field name="total_fare" class="oe_subtotal_footer_separator"/>
+                            <field name="total_tax" class="oe_subtotal_footer_separator"/>
+                            <field name="total" class="oe_subtotal_footer_separator"/>
+                            <field name="total_commission" class="oe_subtotal_footer_separator" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator"/>
+                            <field name="total_nta" class="oe_subtotal_footer_separator" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator"/>
+                            <!--<field name="total_sale_price" class="oe_subtotal_footer_separator"/>-->
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!--Visa Document Tree-->
+    <record model="ir.ui.view" id="tt_reservation_visa_view_tree">
+        <field name="name">tt.reservation.visa.view.tree</field>
+        <field name="model">tt.reservation.visa</field>
+        <field name="arch" type="xml">
+            <tree create="true">
+                <button type="object" string="Create Booking Visa" name="create_booking_visa"/>
+                <field name="name"/>
+                <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                <field name="agent_type_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                <field name="sub_agent_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                <field name="sub_agent_type_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                <field name="contact_id"/>
+                <field name="country_id"/>
+                <field name="issued_uid"/>
+                <field name="issued_date"/>
+                <field name="state_visa"/>
+                <field name="state" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!--Visa Document Filter ALL-->
+    <record model="ir.actions.act_window" id="tt_reservation_visa_all_view_action">
+        <field name="name">Visa Document</field>
+        <field name="res_model">tt.reservation.visa</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="tt_reservation_visa_view_filter"/>
+        <field name="context">
+            {
+                'form_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_form',
+                'tree_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_tree',
+                'search_default_all': 1,
+            }
+        </field>
+    </record>
+
+    <!--Visa Document Filter Draft-->
+    <record model="ir.actions.act_window" id="tt_reservation_visa_draft_view_action">
+        <field name="name">Visa Document</field>
+        <field name="res_model">tt.reservation.visa</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="tt_reservation_visa_view_filter"/>
+        <field name="context">
+            {
+                'form_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_form',
+                'tree_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_tree',
+                'search_default_draft': 1,
+            }
+        </field>
+    </record>
+
+    <!--Visa Document Filter Confirm Validate-->
+    <record model="ir.actions.act_window" id="tt_reservation_visa_confirm_validate_view_action">
+        <field name="name">Visa Document</field>
+        <field name="res_model">tt.reservation.visa</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="tt_reservation_visa_view_filter"/>
+        <field name="context">
+            {
+                'form_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_form',
+                'tree_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_tree',
+                'search_default_confirm_validate': 1,
+            }
+        </field>
+    </record>
+
+    <!--Visa Document Filter In Process Payment-->
+    <record model="ir.actions.act_window" id="tt_reservation_visa_in_process_payment_view_action">
+        <field name="name">Visa Document</field>
+        <field name="res_model">tt.reservation.visa</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="tt_reservation_visa_view_filter"/>
+        <field name="context">
+            {
+                'form_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_form',
+                'tree_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_tree',
+                'search_default_in_process_payment': 1,
+            }
+        </field>
+    </record>
+
+    <!--Visa Document Filter Delivered Ready-->
+    <record model="ir.actions.act_window" id="tt_reservation_visa_delivered_ready_view_action">
+        <field name="name">Visa Document</field>
+        <field name="res_model">tt.reservation.visa</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="tt_reservation_visa_view_filter"/>
+        <field name="context">
+            {
+                'form_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_form',
+                'tree_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_tree',
+                'search_default_delivered_ready': 1,
+            }
+        </field>
+    </record>
+
+    <!--Visa Document Filter Done-->
+    <record model="ir.actions.act_window" id="tt_reservation_visa_done_view_action">
+        <field name="name">Visa Document</field>
+        <field name="res_model">tt.reservation.visa</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="tt_reservation_visa_view_filter"/>
+        <field name="context">
+            {
+                'form_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_form',
+                'tree_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_tree',
+                'search_default_done': 1,
+            }
+        </field>
+    </record>
+
+    <!--Visa Document Filter Cancel-->
+    <record model="ir.actions.act_window" id="tt_reservation_visa_cancel_view_action">
+        <field name="name">Visa Document</field>
+        <field name="res_model">tt.reservation.visa</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="tt_reservation_visa_view_filter"/>
+        <field name="context">
+            {
+                'form_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_form',
+                'tree_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_tree',
+                'search_default_cancel': 1,
+            }
+        </field>
+    </record>
+
+    <!--Visa Document Menu Item ALL-->
+    <menuitem id="menu_visa_all" parent="menu_visa_order" name="ALL"
+              action="tt_reservation_visa_all_view_action" sequence="1"/>
+
+    <!--Visa Document Menu Item Draft-->
+    <menuitem id="menu_visa_draft" parent="menu_visa_order" name="Draft"
+              action="tt_reservation_visa_draft_view_action" sequence="2"/>
+
+    <!--Visa Document Menu Item Confirm Validate-->
+    <menuitem id="menu_visa_confirm_validate" parent="menu_visa_order" name="Confirm/Validate"
+              action="tt_reservation_visa_confirm_validate_view_action" sequence="3"/>
+
+    <!--Visa Document Menu Item In Process Payment-->
+    <menuitem id="menu_visa_in_process_payment" parent="menu_visa_order" name="In Process/Paymet"
+              action="tt_reservation_visa_in_process_payment_view_action" sequence="4"/>
+
+    <!--Visa Document Menu Item Delivered Ready-->
+    <menuitem id="menu_visa_delivered_ready" parent="menu_visa_order" name="Delivered/Ready"
+              action="tt_reservation_visa_delivered_ready_view_action" sequence="5"/>
+
+    <!--Visa Document Menu Item Done-->
+    <menuitem id="menu_visa_done" parent="menu_visa_order" name="Done"
+              action="tt_reservation_visa_done_view_action" sequence="6"/>
+
+    <!--Visa Document Menu Item Cancel-->
+    <menuitem id="menu_visa_cancel" parent="menu_visa_order" name="Cancel"
+              action="tt_reservation_visa_cancel_view_action" sequence="7"/>
+
+</odoo>

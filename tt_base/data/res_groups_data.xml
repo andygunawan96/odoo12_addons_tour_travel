@@ -133,4 +133,11 @@
         <field name="implied_ids" eval="[(4, ref('group_tt_tour_travel_supervisor'))]"/>
     </record>
 
+    <!-- LINK kan group yg baur dibuat dengan ADMIN-->
+    <record id="base.user_admin" model="res.users">
+        <field name="groups_id" eval="[(4,ref('tt_base.group_tt_tour_travel_manager')),(4,ref('tt_base.group_tt_agent_management_manager')),(4,ref('tt_base.group_tt_agent_invoice_manager')),(4,ref('tt_base.group_tt_billing_statement_manager'))]"/>
+    </record>
+    <record id="base.user_root" model="res.users">
+        <field name="groups_id" eval="[(4,ref('tt_base.group_tt_tour_travel_manager')),(4,ref('tt_base.group_tt_agent_management_manager')),(4,ref('tt_base.group_tt_agent_invoice_manager')),(4,ref('tt_base.group_tt_billing_statement_manager'))]"/>
+    </record>
 </odoo>

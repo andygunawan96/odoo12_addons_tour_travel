@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Add external key for Provider type Hotel.-->
+        <record id="tt_provider_type_hotel" model="tt.provider.type">
+            <field name="name">Hotel</field>
+            <field name="code">hotel</field>
+            <field name="active">1</field>
+        </record>
+
+        <!-- Add Hotel Provider -->
+        <record id="tt_hotel_provider_mg" model="tt.provider">
+            <field name="name">MG Bedbank</field>
+            <field name="alias">A1</field>
+            <field name="code">mg</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
+        <record id="tt_hotel_provider_hotelspro" model="tt.provider">
+            <field name="name">Hotels Pro</field>
+            <field name="alias">A2</field>
+            <field name="code">hotelspro</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
+        <record id="tt_hotel_provider_miki" model="tt.provider">
+            <field name="name">Miki Travel</field>
+            <field name="alias">A3</field>
+            <field name="code">miki</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
+        <record id="tt_hotel_provider_itank" model="tt.provider">
+            <field name="name">Itank</field>
+            <field name="alias">A4</field>
+            <field name="code">itank</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
+        <record id="tt_hotel_provider_quantum" model="tt.provider">
+            <field name="name">Quantum</field>
+            <field name="alias">A5</field>
+            <field name="code">quantum</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
+        <record id="tt_hotel_provider_webbeds" model="tt.provider">
+            <field name="name">Webbeds / Fitruums</field>
+            <field name="alias">A6</field>
+            <field name="code">webbeds</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
+        <record id="tt_hotel_provider_hotelbeds" model="tt.provider">
+            <field name="name">HotelBeds</field>
+            <field name="alias">A7</field>
+            <field name="code">hotelbeds</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
+        <record id="tt_hotel_provider_dida" model="tt.provider">
+            <field name="name">Dida Hotel Vendor</field>
+            <field name="alias">A8</field>
+            <field name="code">dida</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
+    </data>
+</odoo>
