@@ -1,5 +1,7 @@
 from odoo import api, fields, models, _
 from ...tools import variables
+
+
 class TtReservation(models.Model):
     _name = 'tt.reservation'
 
@@ -7,7 +9,7 @@ class TtReservation(models.Model):
     pnr = fields.Char('PNR', readonly=True, states={'draft': [('readonly', False)]})
 
     date = fields.Datetime('Booking Date', default=lambda self: fields.Datetime.now(), readonly=True, states={'draft': [('readonly', False)]})
-    expired_date = fields.Datetime('Expired Date', readonly=True)##fixme terpakai?
+    expired_date = fields.Datetime('Expired Date', readonly=True)  # fixme terpakai?
     hold_date = fields.Datetime('Hold Date', readonly=True)
 
     state = fields.Selection(variables.BOOKING_STATE, 'State', default='draft')
@@ -16,14 +18,14 @@ class TtReservation(models.Model):
     booked_date = fields.Datetime('Booked Date', readonly=True)
     issued_uid = fields.Many2one('res.users', 'Issued by', readonly=True)
     issued_date = fields.Datetime('Issued Date', readonly=True)
-    user_id = fields.Many2one('res.users', 'Create by', readonly=True) #create_uid
+    user_id = fields.Many2one('res.users', 'Create by', readonly=True)  # create_uid
 
-    sid_booked = fields.Char('SID Booked')# Signature generate sendiri
+    sid_booked = fields.Char('SID Booked')  # Signature generate sendiri
 
     booker_id = fields.Many2one('tt.customer','Booker', ondelete='restrict', readonly=True, states={'draft':[('readonly',False)]})
     contact_id = fields.Many2one('tt.customer', 'Contact Person', ondelete='restrict', readonly=True, states={'draft': [('readonly', False)]})
 
-    contact_name = fields.Char('Contact Name')##fixme oncreate later
+    contact_name = fields.Char('Contact Name')  # fixme oncreate later
     contact_email = fields.Char('Contact Email')
     contact_phone = fields.Char('Contact Phone')
 
@@ -66,16 +68,15 @@ class TtReservation(models.Model):
     total_commission = fields.Monetary(string='Total Commission', default=0)
     total_nta = fields.Monetary(string='NTA Amount')
 
-    #yang jual
+    # yang jual
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True,
                                default=lambda self: self.env.user.agent_id,
                                readonly=True, states={'draft': [('readonly', False)]})
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', related='agent_id.agent_type_id',
                                     store=True)
 
-
-
-    customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer', readonly=True, states={'draft': [('readonly', False)]},
-                                   help='COR / POR')
-    customer_parent_type_id = fields.Many2one('tt.customer.parent.type', 'Customer Type', related='customer_parent_id.customer_parent_type_id',
-                                        store=True, readonly=True)
+    customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer Parent', readonly=True,
+                                         states={'draft': [('readonly', False)]}, help='COR / POR')
+    customer_parent_type_id = fields.Many2one('tt.customer.parent.type', 'Customer Type',
+                                              related='customer_parent_id.customer_parent_type_id', store=True,
+                                              readonly=True)
