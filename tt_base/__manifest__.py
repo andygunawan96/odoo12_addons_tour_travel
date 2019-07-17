@@ -19,6 +19,7 @@ Key Features
         'data/agent_type_rodex_data.xml',
         'data/skipped_history_data.xml',
         'data/customer_parent_type_rodex_data.xml',
+        'data/tt.bank.csv',
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
 
