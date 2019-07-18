@@ -6,19 +6,16 @@
             <field name="model">payment.acquirer</field>
             <field name="arch" type="xml">
                 <form string="Provider">
+                    <header>
+                        <button string="Test" name="test_payment" type="object"/>
+                    </header>
                     <sheet>
                         <div class="oe_button_box" name="button_box">
-                            <button attrs="{'invisible': [('environment', '=', 'test')]}" class="oe_stat_button" name="toggle_enviroment_value" type="object" icon="fa-play">
-                                <div class="o_stat_info o_form_field">
-                                    <span class="text-success">Production</span>
-                                    <span class="o_stat_text">Environment</span>
-                                </div>
-                            </button>
-                            <button attrs="{'invisible': [('environment', '=', 'prod')]}" class="oe_stat_button" name="toggle_enviroment_value" type="object" icon="fa-stop">
-                                <div class="o_stat_info o_form_field">
-                                    <span class="o_warning_text">Test</span>
-                                    <span class="o_stat_text">Environment</span>
-                                </div>
+                            <button name="toggle_website_published"
+                                    class="oe_stat_button"
+                                    type="object" icon="fa-globe">
+                                <field name="website_published" widget="boolean_button"
+                                    options='{"terminology": {"string_true": "Published", "hover_false": "Publish"}}'/>
                             </button>
                             <button class="oe_stat_button" name="237" type="action" icon="fa-money" string="Payments">
                             </button>
@@ -39,9 +36,14 @@
                                 <field name="environment" invisible="1"/>
                                 <field name="module_id" invisible="1"/>
                                 <field name="module_state" invisible="1"/>
-                                <field name="provider_id"/>
                                 <field name="agent_id"/>
-                                <field name="bank_id"/>
+                                <field name="type"/>
+                            </group>
+                            <group name="acquirer_right">
+                                <field name="bank_id" attrs="{'invisible': [('type','=','cash')]}"/>
+                                <field name="provider_id" attrs="{'invisible': [('type','in',['cash','transfer'])]}"/>
+                                <field name="account_number" attrs="{'invisible': [('type','not in',['transfer','va'])]}"/>
+                                <field name="account_name" attrs="{'invisible': [('type','!=','transfer')]}"/>
                             </group>
                         </group>
                         <notebook attrs="{'invisible': ['&amp;', ('module_id', '!=', False), ('module_state', '!=', 'installed')]}">

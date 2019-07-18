@@ -15,13 +15,33 @@
                         <field name="name"/>
                     </h1>
                     <group>
-                        <field name="payment_uid"/>
-                        <field name="total_amount"/>
-                        <field name="used_amount"/>
-                        <field name="residual_amount"/>
-                        <field name="fee"/>
-                        <field name="currency_id" invisible="1"/>
-                        <field name="payment_date"/>
+                        <group string="Agent">
+                            <field name="agent_id"/>
+                            <field name="payment_date"/>
+                            <field name="acquirer_id"/>
+                            <field name="reference"/>
+                        </group>
+                        <group string="User">
+                            <label for="confirm_uid" string="Confirm By"/>
+                            <div>
+                                <field name="confirm_uid" readonly="1" class="oe_inline"/> -
+                                <field name="confirm_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <label for="validate_uid" string="Validate By"/>
+                            <div>
+                                <field name="validate_uid" readonly="1" class="oe_inline"/> -
+                                <field name="validate_date" readonly="1" class="oe_inline"/>
+                            </div>
+                        </group>
+                        <group string="Amount">
+                            <field name="total_amount"/>
+                            <field name="fee"/>
+                            <field name="used_amount"/>
+                            <field name="residual_amount"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group string="Amount">
+                        </group>
                     </group>
                 </sheet>
             </form>
@@ -37,7 +57,7 @@
                 <field name="name"/>
                 <field name="used_amount"/>
                 <field name="total_amount"/>
-                <field name="payment_uid"/>
+                <field name="agent_id"/>
                 <field name="state"/>
                 <field name="currency_id" invisible="1"/>
             </tree>
