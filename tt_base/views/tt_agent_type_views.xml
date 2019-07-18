@@ -37,6 +37,8 @@
                                 <group>
                                     <!--<field name="downline_ids"/>-->
                                     <field name="code"/>
+                                    <field name="can_register_agent"/>
+                                    <field name="can_be_registered"/>
                                     <field name="upline_ids"/>
                                     <field name="currency_id"/>
                                     <field name="registration_fee"/>
