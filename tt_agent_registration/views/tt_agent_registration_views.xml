@@ -68,7 +68,7 @@
                         </group>
                         <group>
                             <group>
-                                <field name="agent_type_id" domain="[('name','in',['Citra','Japro','BTBR','BTBO','Fipro'])]"/>
+                                <field name="agent_type_id" domain="[('can_be_registered','in',[True])]"/>
                                 <field name="reference_id"/>
                                 <field name="parent_agent_id"/>
                                 <field name="agent_level"/>

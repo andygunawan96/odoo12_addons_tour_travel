@@ -436,7 +436,7 @@ class TtVisa(models.Model):
             })
 
             book_obj = self.sudo().create(header_val)
-            book_obj.sub_agent_id = self.env.user.agent_id  # kedepannya mungkin dihapus | contact['agent_id']
+            book_obj.agent_id = self.env.user.agent_id  # kedepannya mungkin dihapus | contact['agent_id']
 
             book_obj.action_booked_visa(context)  # ubah state ke booked sekaligus
             if kwargs.get('force_issued'):
@@ -497,7 +497,7 @@ class TtVisa(models.Model):
         user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
         context.update({
             'agent_id': user_obj.agent_id.id,
-            'sub_agent_id': user_obj.agent_id.id,
+            # 'sub_agent_id': user_obj.agent_id.id,
             'booker_type': 'FPO',
         })
         return context
@@ -900,7 +900,7 @@ class TtVisa(models.Model):
         # pass
         for rec in self:
             ledger_obj = rec.env['tt.ledger']
-            agent_commission, parent_commission, ho_commission = rec.sub_agent_id.agent_type_id.calc_commission(
+            agent_commission, parent_commission, ho_commission = rec.agent_id.agent_type_id.calc_commission(
                 rec.total_commission, 1)
             print('Agent Comm : ' + str(agent_commission))
             print('Parent Comm : ' + str(parent_commission))
@@ -910,7 +910,7 @@ class TtVisa(models.Model):
                 vals = ledger_obj.prepare_vals('Commission : ' + rec.name, rec.name, rec.issued_date, 'commission',
                                                rec.currency_id.id, agent_commission, 0)
                 vals.update({
-                    'agent_id': rec.sub_agent_id.id,
+                    'agent_id': rec.agent_id.id,
                     'res_id': rec.id,
                 })
                 commission_aml = ledger_obj.create(vals)
@@ -921,7 +921,7 @@ class TtVisa(models.Model):
                                                'commission',
                                                rec.currency_id.id, parent_commission, 0)
                 vals.update({
-                    'agent_id': rec.sub_agent_id.parent_agent_id.id,
+                    'agent_id': rec.agent_id.parent_agent_id.id,
                     'res_id': rec.id,
                 })
                 commission_aml = ledger_obj.create(vals)
@@ -1015,13 +1015,13 @@ class TtVisa(models.Model):
         # pass
         for rec in self:
             ledger_obj = rec.env['tt.ledger']
-            agent_commission, parent_commission, ho_commission = rec.sub_agent_id.agent_type_id.calc_commission(
+            agent_commission, parent_commission, ho_commission = rec.agent_id.agent_type_id.calc_commission(
                 rec.total_commission, 1)
             if agent_commission > 0:
                 vals = ledger_obj.prepare_vals('Commission : ' + rec.name, rec.name, rec.issued_date, 'commission',
                                                rec.currency_id.id, 0, agent_commission)
                 vals.update({
-                    'agent_id': rec.sub_agent_id.id,
+                    'agent_id': rec.agent_id.id,
                     'res_id': rec.id,
                 })
                 commission_aml = ledger_obj.create(vals)
@@ -1032,7 +1032,7 @@ class TtVisa(models.Model):
                                                'commission',
                                                rec.currency_id.id, 0, parent_commission)
                 vals.update({
-                    'agent_id': rec.sub_agent_id.parent_agent_id.id,
+                    'agent_id': rec.agent_id.parent_agent_id.id,
                     'res_id': rec.id,
                 })
                 commission_aml = ledger_obj.create(vals)
