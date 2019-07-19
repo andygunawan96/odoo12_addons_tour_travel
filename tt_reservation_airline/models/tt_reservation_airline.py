@@ -84,6 +84,12 @@ class ReservationAirline(models.Model):
     def action_check_provider_state(self):
         pass##fixme later
 
+    def action_booked_api(self,pnr_list):
+        self.write({
+            'name': self.env['ir.sequence'].next_by_code('reservation.airline'),
+            'state': 'booked',
+            'pnr': ', '.join(pnr_list)
+        })
 
     def action_cancel(self):
         self.cancel_date = fields.Datetime.now()
@@ -354,198 +360,348 @@ class ReservationAirline(models.Model):
     param_update_pnr = {
         "booking_commit_provider": [
             {
-                "bookings": [
+                "id": 70,
+                "sequence": "1",
+                "pnr": "QPVVFP",
+                "pnr2": "QPVVFP",
+                "reference": "QPVVFP",
+                "expired_date": "2019-07-23 16:00:00",
+                "hold_date": "2019-07-23 16:00:00",
+                "status": "BOOKED",
+                "currency": "IDR",
+                "balance_due": 129600000,
+                "provider": "amadeus",
+                "pax_list": [
+                    {
+                        "qualifier": "PT",
+                        "number": "2"
+                    },
+                    {
+                        "qualifier": "PT",
+                        "number": "3"
+                    },
+                    {
+                        "qualifier": "PT",
+                        "number": "5"
+                    },
+                    {
+                        "qualifier": "PT",
+                        "number": "6"
+                    },
+                    {
+                        "qualifier": "PT",
+                        "number": "4"
+                    }
+                ],
+                "journeys": [
                     {
                         "sequence": 1,
-                        "pnr": "QEUJMO",
-                        "pnr2": "QEUJMO",
-                        "reference": "QEUJMO",
-                        "expired_date": "2019-07-21 16:00:00",
-                        "hold_date": "2019-07-21 16:00:00",
-                        "status": "BOOKED",
-                        "currency": "IDR",
-                        "balance_due": 129600000,
+                        "origin": "SUB",
+                        "origin_terminal": "2",
+                        "origin_utc": 0,
+                        "departure_date": "2019-09-15 18:40:00",
+                        "destination": "BKK",
+                        "destination_terminal": "",
+                        "destination_utc": 0,
+                        "arrival_date": "2019-09-16 11:05:00",
+                        "journey_type": "",
+                        "departure_date_return": "",
+                        "arrival_date_return": "",
+                        "elapsed_time_return": "",
+                        "transit_count": 1,
+                        "transit_count_return": 0,
+                        "elapsed_time": "0:16:25:0",
+                        "journey_code": "SQ,5225,SUB,2,2019-09-15 18:40:00,SIN,2,2019-09-15 21:55:00,amadeus;SQ,972,SIN,2,2019-09-16 09:35:00,BKK,,2019-09-16 11:05:00,amadeus",
+                        "is_combo_price": False,
+                        "is_international": False,
                         "provider": "amadeus",
-                        "pax_list": [
-                            {
-                                "qualifier": "PT",
-                                "number": "2"
-                            },
-                            {
-                                "qualifier": "PT",
-                                "number": "3"
-                            },
-                            {
-                                "qualifier": "PT",
-                                "number": "5"
-                            },
-                            {
-                                "qualifier": "PT",
-                                "number": "6"
-                            },
-                            {
-                                "qualifier": "PT",
-                                "number": "4"
-                            }
+                        "carrier_code_list": [
+                            "SQ"
                         ],
-                        "journeys": [
+                        "cabin_class_list": [
+                            ""
+                        ],
+                        "operating_airline_code_list": [],
+                        "segments": [
                             {
                                 "sequence": 1,
                                 "origin": "SUB",
                                 "origin_terminal": "2",
                                 "origin_utc": 0,
-                                "departure_date": "2019-09-15 10:10:00",
-                                "destination": "BKK",
-                                "destination_terminal": "",
+                                "departure_date": "2019-09-15 18:40:00",
+                                "destination": "SIN",
+                                "destination_terminal": "2",
                                 "destination_utc": 0,
-                                "arrival_date": "2019-09-15 19:00:00",
+                                "arrival_date": "2019-09-15 21:55:00",
                                 "journey_type": "",
-                                "departure_date_return": "",
-                                "arrival_date_return": "",
-                                "elapsed_time_return": "",
-                                "transit_count": 1,
-                                "transit_count_return": 0,
-                                "elapsed_time": "0:8:50:0",
-                                "journey_code": "SQ,931,SUB,2,2019-09-15 10:10:00,SIN,0,2019-09-15 13:30:00,amadeus;SQ,982,SIN,2,2019-09-15 17:30:00,BKK,,2019-09-15 19:00:00,amadeus",
-                                "is_combo_price": False,
+                                "transit_count": 0,
+                                "transit_duration": "",
+                                "elapsed_time": "0:3:15:0",
+                                "segment_code": "SQ,5225,SUB,2,2019-09-15 18:40:00,SIN,2,2019-09-15 21:55:00,amadeus",
+                                "segment_code2": "SUB-SIN",
+                                "carrier_name": "SQ 5225",
+                                "carrier_code": "SQ",
+                                "carrier_number": "5225",
+                                "operating_airline_code": "",
                                 "is_international": False,
-                                "provider": "amadeus",
-                                "carrier_code_list": [
-                                    "SQ"
-                                ],
                                 "cabin_class_list": [
                                     ""
                                 ],
-                                "operating_airline_code_list": [],
-                                "segments": [
+                                "provider": "amadeus",
+                                "legs": [
                                     {
                                         "sequence": 1,
                                         "origin": "SUB",
                                         "origin_terminal": "2",
                                         "origin_utc": 0,
-                                        "departure_date": "2019-09-15 10:10:00",
+                                        "departure_date": "2019-09-15 18:40:00",
                                         "destination": "SIN",
-                                        "destination_terminal": "0",
+                                        "destination_terminal": "2",
                                         "destination_utc": 0,
-                                        "arrival_date": "2019-09-15 13:30:00",
-                                        "journey_type": "",
-                                        "transit_count": 0,
+                                        "arrival_date": "2019-09-15 21:55:00",
                                         "transit_duration": "",
-                                        "elapsed_time": "0:3:20:0",
-                                        "segment_code": "SQ,931,SUB,2,2019-09-15 10:10:00,SIN,0,2019-09-15 13:30:00,amadeus",
-                                        "segment_code2": "SUB-SIN",
-                                        "carrier_name": "SQ 931",
+                                        "carrier_name": "SQ 5225",
                                         "carrier_code": "SQ",
-                                        "carrier_number": "931",
-                                        "operating_airline_code": "",
+                                        "carrier_number": "5225",
+                                        "elapsed_time": "0:3:15:0",
+                                        "journey_type": "",
+                                        "leg_code": "SQ,5225,SUB,2,2019-09-15 18:40:00,SIN,2,2019-09-15 21:55:00,amadeus",
+                                        "leg_code2": "SUB-SIN",
                                         "is_international": False,
-                                        "cabin_class_list": [
-                                            ""
-                                        ],
-                                        "provider": "amadeus",
-                                        "legs": [
-                                            {
-                                                "sequence": 1,
-                                                "origin": "SUB",
-                                                "origin_terminal": "2",
-                                                "origin_utc": 0,
-                                                "departure_date": "2019-09-15 10:10:00",
-                                                "destination": "SIN",
-                                                "destination_terminal": "0",
-                                                "destination_utc": 0,
-                                                "arrival_date": "2019-09-15 13:30:00",
-                                                "transit_duration": "",
-                                                "carrier_name": "SQ 931",
-                                                "carrier_code": "SQ",
-                                                "carrier_number": "931",
-                                                "elapsed_time": "0:3:20:0",
-                                                "journey_type": "",
-                                                "leg_code": "SQ,931,SUB,2,2019-09-15 10:10:00,SIN,0,2019-09-15 13:30:00,amadeus",
-                                                "leg_code2": "SUB-SIN",
-                                                "is_international": False,
-                                                "operating_airline_code": "",
-                                                "provider": "amadeus"
-                                            }
-                                        ],
-                                        "fares": [
-                                            {
-                                                "sequence": 1,
-                                                "fare_code": "M",
-                                                "cabin_class": "",
-                                                "class_of_service": "M",
-                                                "rule_number": "",
-                                                "product_class": "M",
-                                                "product_name": "",
-                                                "description": "",
-                                                "available_count": -1,
-                                                "service_charges": [],
-                                                "fare_basis_codes": [],
-                                                "details": [],
-                                                "fare_rules": [],
-                                                "service_charge_summary": []
-                                            }
-                                        ]
-                                    },
+                                        "operating_airline_code": "",
+                                        "provider": "amadeus"
+                                    }
+                                ],
+                                "fares": [
                                     {
-                                        "sequence": 2,
+                                        "sequence": 1,
+                                        "fare_code": "M",
+                                        "cabin_class": "",
+                                        "class_of_service": "M",
+                                        "rule_number": "",
+                                        "product_class": "M",
+                                        "product_name": "",
+                                        "description": "",
+                                        "available_count": -1,
+                                        "service_charges": [],
+                                        "fare_basis_codes": [],
+                                        "details": [],
+                                        "fare_rules": [],
+                                        "service_charge_summary": []
+                                    }
+                                ]
+                            },
+                            {
+                                "sequence": 2,
+                                "origin": "SIN",
+                                "origin_terminal": "2",
+                                "origin_utc": 0,
+                                "departure_date": "2019-09-16 09:35:00",
+                                "destination": "BKK",
+                                "destination_terminal": "",
+                                "destination_utc": 0,
+                                "arrival_date": "2019-09-16 11:05:00",
+                                "journey_type": "",
+                                "transit_count": 0,
+                                "transit_duration": "0:11:40:0",
+                                "elapsed_time": "0:1:30:0",
+                                "segment_code": "SQ,972,SIN,2,2019-09-16 09:35:00,BKK,,2019-09-16 11:05:00,amadeus",
+                                "segment_code2": "SIN-BKK",
+                                "carrier_name": "SQ 972",
+                                "carrier_code": "SQ",
+                                "carrier_number": "972",
+                                "operating_airline_code": "",
+                                "is_international": False,
+                                "cabin_class_list": [
+                                    ""
+                                ],
+                                "provider": "amadeus",
+                                "legs": [
+                                    {
+                                        "sequence": 1,
                                         "origin": "SIN",
                                         "origin_terminal": "2",
                                         "origin_utc": 0,
-                                        "departure_date": "2019-09-15 17:30:00",
+                                        "departure_date": "2019-09-16 09:35:00",
                                         "destination": "BKK",
                                         "destination_terminal": "",
                                         "destination_utc": 0,
-                                        "arrival_date": "2019-09-15 19:00:00",
-                                        "journey_type": "",
-                                        "transit_count": 0,
-                                        "transit_duration": "0:4:0:0",
-                                        "elapsed_time": "0:1:30:0",
-                                        "segment_code": "SQ,982,SIN,2,2019-09-15 17:30:00,BKK,,2019-09-15 19:00:00,amadeus",
-                                        "segment_code2": "SIN-BKK",
-                                        "carrier_name": "SQ 982",
+                                        "arrival_date": "2019-09-16 11:05:00",
+                                        "transit_duration": "",
+                                        "carrier_name": "SQ 972",
                                         "carrier_code": "SQ",
-                                        "carrier_number": "982",
-                                        "operating_airline_code": "",
+                                        "carrier_number": "972",
+                                        "elapsed_time": "0:1:30:0",
+                                        "journey_type": "",
+                                        "leg_code": "SQ,972,SIN,2,2019-09-16 09:35:00,BKK,,2019-09-16 11:05:00,amadeus",
+                                        "leg_code2": "SIN-BKK",
                                         "is_international": False,
-                                        "cabin_class_list": [
-                                            ""
-                                        ],
-                                        "provider": "amadeus",
-                                        "legs": [
+                                        "operating_airline_code": "",
+                                        "provider": "amadeus"
+                                    }
+                                ],
+                                "fares": [
+                                    {
+                                        "sequence": 1,
+                                        "fare_code": "M",
+                                        "cabin_class": "",
+                                        "class_of_service": "M",
+                                        "rule_number": "",
+                                        "product_class": "M",
+                                        "product_name": "",
+                                        "description": "",
+                                        "available_count": -1,
+                                        "service_charges": [
                                             {
                                                 "sequence": 1,
-                                                "origin": "SIN",
-                                                "origin_terminal": "2",
-                                                "origin_utc": 0,
-                                                "departure_date": "2019-09-15 17:30:00",
-                                                "destination": "BKK",
-                                                "destination_terminal": "",
-                                                "destination_utc": 0,
-                                                "arrival_date": "2019-09-15 19:00:00",
-                                                "transit_duration": "",
-                                                "carrier_name": "SQ 982",
-                                                "carrier_code": "SQ",
-                                                "carrier_number": "982",
-                                                "elapsed_time": "0:1:30:0",
-                                                "journey_type": "",
-                                                "leg_code": "SQ,982,SIN,2,2019-09-15 17:30:00,BKK,,2019-09-15 19:00:00,amadeus",
-                                                "leg_code2": "SIN-BKK",
-                                                "is_international": False,
-                                                "operating_airline_code": "",
-                                                "provider": "amadeus"
+                                                "charge_code": "fare",
+                                                "charge_type": "FARE",
+                                                "currency": "IDR",
+                                                "amount": 4800000,
+                                                "foreign_currency": "IDR",
+                                                "foreign_amount": 4800000,
+                                                "pax_count": 3,
+                                                "pax_type": "ADT",
+                                                "total": 14400000
+                                            },
+                                            {
+                                                "sequence": 2,
+                                                "charge_code": "D5",
+                                                "charge_type": "TAX",
+                                                "currency": "IDR",
+                                                "amount": 210000,
+                                                "foreign_currency": "IDR",
+                                                "foreign_amount": 210000,
+                                                "pax_count": 3,
+                                                "pax_type": "ADT",
+                                                "total": 630000
+                                            },
+                                            {
+                                                "sequence": 3,
+                                                "charge_code": "L7",
+                                                "charge_type": "TAX",
+                                                "currency": "IDR",
+                                                "amount": 31200,
+                                                "foreign_currency": "IDR",
+                                                "foreign_amount": 31200,
+                                                "pax_count": 3,
+                                                "pax_type": "ADT",
+                                                "total": 93600
+                                            },
+                                            {
+                                                "sequence": 4,
+                                                "charge_code": "SG",
+                                                "charge_type": "TAX",
+                                                "currency": "IDR",
+                                                "amount": 62400,
+                                                "foreign_currency": "IDR",
+                                                "foreign_amount": 62400,
+                                                "pax_count": 3,
+                                                "pax_type": "ADT",
+                                                "total": 187200
+                                            },
+                                            {
+                                                "sequence": 5,
+                                                "charge_code": "E7",
+                                                "charge_type": "TAX",
+                                                "currency": "IDR",
+                                                "amount": 16100,
+                                                "foreign_currency": "IDR",
+                                                "foreign_amount": 16100,
+                                                "pax_count": 3,
+                                                "pax_type": "ADT",
+                                                "total": 48300
+                                            },
+                                            {
+                                                "sequence": 6,
+                                                "charge_code": "G8",
+                                                "charge_type": "TAX",
+                                                "currency": "IDR",
+                                                "amount": 6900,
+                                                "foreign_currency": "IDR",
+                                                "foreign_amount": 6900,
+                                                "pax_count": 3,
+                                                "pax_type": "ADT",
+                                                "total": 20700
+                                            },
+                                            {
+                                                "sequence": 7,
+                                                "charge_code": "fare",
+                                                "charge_type": "FARE",
+                                                "currency": "IDR",
+                                                "amount": 3600000,
+                                                "foreign_currency": "IDR",
+                                                "foreign_amount": 3600000,
+                                                "pax_count": 2,
+                                                "pax_type": "CHD",
+                                                "total": 7200000
+                                            },
+                                            {
+                                                "sequence": 8,
+                                                "charge_code": "D5",
+                                                "charge_type": "TAX",
+                                                "currency": "IDR",
+                                                "amount": 210000,
+                                                "foreign_currency": "IDR",
+                                                "foreign_amount": 210000,
+                                                "pax_count": 2,
+                                                "pax_type": "CHD",
+                                                "total": 420000
+                                            },
+                                            {
+                                                "sequence": 9,
+                                                "charge_code": "L7",
+                                                "charge_type": "TAX",
+                                                "currency": "IDR",
+                                                "amount": 31200,
+                                                "foreign_currency": "IDR",
+                                                "foreign_amount": 31200,
+                                                "pax_count": 2,
+                                                "pax_type": "CHD",
+                                                "total": 62400
+                                            },
+                                            {
+                                                "sequence": 10,
+                                                "charge_code": "SG",
+                                                "charge_type": "TAX",
+                                                "currency": "IDR",
+                                                "amount": 62400,
+                                                "foreign_currency": "IDR",
+                                                "foreign_amount": 62400,
+                                                "pax_count": 2,
+                                                "pax_type": "CHD",
+                                                "total": 124800
+                                            },
+                                            {
+                                                "sequence": 11,
+                                                "charge_code": "E7",
+                                                "charge_type": "TAX",
+                                                "currency": "IDR",
+                                                "amount": 16100,
+                                                "foreign_currency": "IDR",
+                                                "foreign_amount": 16100,
+                                                "pax_count": 2,
+                                                "pax_type": "CHD",
+                                                "total": 32200
+                                            },
+                                            {
+                                                "sequence": 12,
+                                                "charge_code": "G8",
+                                                "charge_type": "TAX",
+                                                "currency": "IDR",
+                                                "amount": 6900,
+                                                "foreign_currency": "IDR",
+                                                "foreign_amount": 6900,
+                                                "pax_count": 2,
+                                                "pax_type": "CHD",
+                                                "total": 13800
                                             }
                                         ],
-                                        "fares": [
+                                        "fare_basis_codes": [],
+                                        "details": [],
+                                        "fare_rules": [],
+                                        "service_charge_summary": [
                                             {
-                                                "sequence": 1,
-                                                "fare_code": "M",
-                                                "cabin_class": "",
-                                                "class_of_service": "M",
-                                                "rule_number": "",
-                                                "product_class": "M",
-                                                "product_name": "",
-                                                "description": "",
-                                                "available_count": -1,
                                                 "service_charges": [
                                                     {
                                                         "sequence": 1,
@@ -561,66 +717,23 @@ class ReservationAirline(models.Model):
                                                     },
                                                     {
                                                         "sequence": 2,
-                                                        "charge_code": "D5",
+                                                        "charge_code": "tax",
                                                         "charge_type": "TAX",
                                                         "currency": "IDR",
-                                                        "amount": 210000,
+                                                        "amount": 326600,
                                                         "foreign_currency": "IDR",
-                                                        "foreign_amount": 210000,
+                                                        "foreign_amount": 326600,
                                                         "pax_count": 3,
                                                         "pax_type": "ADT",
-                                                        "total": 630000
-                                                    },
+                                                        "total": 979800
+                                                    }
+                                                ],
+                                                "pax_type": "ADT"
+                                            },
+                                            {
+                                                "service_charges": [
                                                     {
-                                                        "sequence": 3,
-                                                        "charge_code": "L7",
-                                                        "charge_type": "TAX",
-                                                        "currency": "IDR",
-                                                        "amount": 31200,
-                                                        "foreign_currency": "IDR",
-                                                        "foreign_amount": 31200,
-                                                        "pax_count": 3,
-                                                        "pax_type": "ADT",
-                                                        "total": 93600
-                                                    },
-                                                    {
-                                                        "sequence": 4,
-                                                        "charge_code": "SG",
-                                                        "charge_type": "TAX",
-                                                        "currency": "IDR",
-                                                        "amount": 62400,
-                                                        "foreign_currency": "IDR",
-                                                        "foreign_amount": 62400,
-                                                        "pax_count": 3,
-                                                        "pax_type": "ADT",
-                                                        "total": 187200
-                                                    },
-                                                    {
-                                                        "sequence": 5,
-                                                        "charge_code": "E7",
-                                                        "charge_type": "TAX",
-                                                        "currency": "IDR",
-                                                        "amount": 16100,
-                                                        "foreign_currency": "IDR",
-                                                        "foreign_amount": 16100,
-                                                        "pax_count": 3,
-                                                        "pax_type": "ADT",
-                                                        "total": 48300
-                                                    },
-                                                    {
-                                                        "sequence": 6,
-                                                        "charge_code": "G8",
-                                                        "charge_type": "TAX",
-                                                        "currency": "IDR",
-                                                        "amount": 6900,
-                                                        "foreign_currency": "IDR",
-                                                        "foreign_amount": 6900,
-                                                        "pax_count": 3,
-                                                        "pax_type": "ADT",
-                                                        "total": 20700
-                                                    },
-                                                    {
-                                                        "sequence": 7,
+                                                        "sequence": 1,
                                                         "charge_code": "fare",
                                                         "charge_type": "FARE",
                                                         "currency": "IDR",
@@ -632,363 +745,276 @@ class ReservationAirline(models.Model):
                                                         "total": 7200000
                                                     },
                                                     {
-                                                        "sequence": 8,
-                                                        "charge_code": "D5",
+                                                        "sequence": 2,
+                                                        "charge_code": "tax",
                                                         "charge_type": "TAX",
                                                         "currency": "IDR",
-                                                        "amount": 210000,
+                                                        "amount": 326600,
                                                         "foreign_currency": "IDR",
-                                                        "foreign_amount": 210000,
+                                                        "foreign_amount": 326600,
                                                         "pax_count": 2,
                                                         "pax_type": "CHD",
-                                                        "total": 420000
-                                                    },
-                                                    {
-                                                        "sequence": 9,
-                                                        "charge_code": "L7",
-                                                        "charge_type": "TAX",
-                                                        "currency": "IDR",
-                                                        "amount": 31200,
-                                                        "foreign_currency": "IDR",
-                                                        "foreign_amount": 31200,
-                                                        "pax_count": 2,
-                                                        "pax_type": "CHD",
-                                                        "total": 62400
-                                                    },
-                                                    {
-                                                        "sequence": 10,
-                                                        "charge_code": "SG",
-                                                        "charge_type": "TAX",
-                                                        "currency": "IDR",
-                                                        "amount": 62400,
-                                                        "foreign_currency": "IDR",
-                                                        "foreign_amount": 62400,
-                                                        "pax_count": 2,
-                                                        "pax_type": "CHD",
-                                                        "total": 124800
-                                                    },
-                                                    {
-                                                        "sequence": 11,
-                                                        "charge_code": "E7",
-                                                        "charge_type": "TAX",
-                                                        "currency": "IDR",
-                                                        "amount": 16100,
-                                                        "foreign_currency": "IDR",
-                                                        "foreign_amount": 16100,
-                                                        "pax_count": 2,
-                                                        "pax_type": "CHD",
-                                                        "total": 32200
-                                                    },
-                                                    {
-                                                        "sequence": 12,
-                                                        "charge_code": "G8",
-                                                        "charge_type": "TAX",
-                                                        "currency": "IDR",
-                                                        "amount": 6900,
-                                                        "foreign_currency": "IDR",
-                                                        "foreign_amount": 6900,
-                                                        "pax_count": 2,
-                                                        "pax_type": "CHD",
-                                                        "total": 13800
+                                                        "total": 653200
                                                     }
                                                 ],
-                                                "fare_basis_codes": [],
-                                                "details": [],
-                                                "fare_rules": [],
-                                                "service_charge_summary": [
-                                                    {
-                                                        "service_charges": [
-                                                            {
-                                                                "sequence": 1,
-                                                                "charge_code": "fare",
-                                                                "charge_type": "FARE",
-                                                                "currency": "IDR",
-                                                                "amount": 4800000,
-                                                                "foreign_currency": "IDR",
-                                                                "foreign_amount": 4800000,
-                                                                "pax_count": 3,
-                                                                "pax_type": "ADT",
-                                                                "total": 14400000
-                                                            },
-                                                            {
-                                                                "sequence": 2,
-                                                                "charge_code": "tax",
-                                                                "charge_type": "TAX",
-                                                                "currency": "IDR",
-                                                                "amount": 326600,
-                                                                "foreign_currency": "IDR",
-                                                                "foreign_amount": 326600,
-                                                                "pax_count": 3,
-                                                                "pax_type": "ADT",
-                                                                "total": 979800
-                                                            }
-                                                        ],
-                                                        "pax_type": "ADT"
-                                                    },
-                                                    {
-                                                        "service_charges": [
-                                                            {
-                                                                "sequence": 1,
-                                                                "charge_code": "fare",
-                                                                "charge_type": "FARE",
-                                                                "currency": "IDR",
-                                                                "amount": 3600000,
-                                                                "foreign_currency": "IDR",
-                                                                "foreign_amount": 3600000,
-                                                                "pax_count": 2,
-                                                                "pax_type": "CHD",
-                                                                "total": 7200000
-                                                            },
-                                                            {
-                                                                "sequence": 2,
-                                                                "charge_code": "tax",
-                                                                "charge_type": "TAX",
-                                                                "currency": "IDR",
-                                                                "amount": 326600,
-                                                                "foreign_currency": "IDR",
-                                                                "foreign_amount": 326600,
-                                                                "pax_count": 2,
-                                                                "pax_type": "CHD",
-                                                                "total": 653200
-                                                            }
-                                                        ],
-                                                        "pax_type": "CHD"
-                                                    }
-                                                ]
+                                                "pax_type": "CHD"
                                             }
                                         ]
                                     }
                                 ]
                             }
-                        ],
-                        "contacts": [],
-                        "passengers": [
-                            {
-                                "sequence": 1,
-                                "title": "MR",
-                                "first_name": "LINA",
-                                "last_name": "DALTON",
-                                "pax_type": "ADT",
-                                "gender": "",
-                                "birth_date": "",
-                                "mobile": "",
-                                "identity_type": "",
-                                "identity_number": "",
-                                "nationality_code": "",
-                                "passport_number": "",
-                                "passport_expdate": "",
-                                "country_of_issue_code": "",
-                                "ticket_number": ""
-                            },
-                            {
-                                "sequence": 2,
-                                "title": "MRS",
-                                "first_name": "LIO",
-                                "last_name": "DALTON",
-                                "pax_type": "ADT",
-                                "gender": "",
-                                "birth_date": "",
-                                "mobile": "",
-                                "identity_type": "",
-                                "identity_number": "",
-                                "nationality_code": "",
-                                "passport_number": "",
-                                "passport_expdate": "",
-                                "country_of_issue_code": "",
-                                "ticket_number": ""
-                            },
-                            {
-                                "sequence": 3,
-                                "title": "MSTR",
-                                "first_name": "TIKI",
-                                "last_name": "DALTON",
-                                "pax_type": "CHD",
-                                "gender": "",
-                                "birth_date": "2010-10-10",
-                                "mobile": "",
-                                "identity_type": "",
-                                "identity_number": "",
-                                "nationality_code": "",
-                                "passport_number": "",
-                                "passport_expdate": "",
-                                "country_of_issue_code": "",
-                                "ticket_number": ""
-                            },
-                            {
-                                "sequence": 4,
-                                "title": "MISS",
-                                "first_name": "ELLA",
-                                "last_name": "",
-                                "pax_type": "CHD",
-                                "gender": "",
-                                "birth_date": "2010-02-14",
-                                "mobile": "",
-                                "identity_type": "",
-                                "identity_number": "",
-                                "nationality_code": "",
-                                "passport_number": "",
-                                "passport_expdate": "",
-                                "country_of_issue_code": "",
-                                "ticket_number": ""
-                            },
-                            {
-                                "sequence": 5,
-                                "title": "MS",
-                                "first_name": "LEA",
-                                "last_name": "",
-                                "pax_type": "ADT",
-                                "gender": "",
-                                "birth_date": "",
-                                "mobile": "",
-                                "identity_type": "",
-                                "identity_number": "",
-                                "nationality_code": "",
-                                "passport_number": "",
-                                "passport_expdate": "",
-                                "country_of_issue_code": "",
-                                "ticket_number": ""
-                            }
                         ]
                     }
                 ],
-                "sequence": "1",
-                "provider": "amadeus"
-            },
-            {
-                "bookings": [
+                "contacts": [],
+                "passengers": [
                     {
                         "sequence": 1,
-                        "pnr": "QEUCKN",
-                        "pnr2": "QEUCKN",
-                        "reference": "QEUCKN",
-                        "expired_date": "2019-07-17 08:33:30",
-                        "hold_date": "2019-07-17 08:33:30",
-                        "status": "BOOKED",
-                        "currency": "IDR",
-                        "balance_due": 1140475,
+                        "title": "MR",
+                        "first_name": "LINA",
+                        "last_name": "DALTON",
+                        "pax_type": "ADT",
+                        "gender": "",
+                        "birth_date": "",
+                        "mobile": "",
+                        "identity_type": "",
+                        "identity_number": "",
+                        "nationality_code": "",
+                        "passport_number": "",
+                        "passport_expdate": "",
+                        "country_of_issue_code": "",
+                        "ticket_number": ""
+                    },
+                    {
+                        "sequence": 2,
+                        "title": "MRS",
+                        "first_name": "LIO",
+                        "last_name": "DALTON",
+                        "pax_type": "ADT",
+                        "gender": "",
+                        "birth_date": "",
+                        "mobile": "",
+                        "identity_type": "",
+                        "identity_number": "",
+                        "nationality_code": "",
+                        "passport_number": "",
+                        "passport_expdate": "",
+                        "country_of_issue_code": "",
+                        "ticket_number": ""
+                    },
+                    {
+                        "sequence": 3,
+                        "title": "MSTR",
+                        "first_name": "TIKI",
+                        "last_name": "DALTON",
+                        "pax_type": "CHD",
+                        "gender": "",
+                        "birth_date": "2010-10-10",
+                        "mobile": "",
+                        "identity_type": "",
+                        "identity_number": "",
+                        "nationality_code": "",
+                        "passport_number": "",
+                        "passport_expdate": "",
+                        "country_of_issue_code": "",
+                        "ticket_number": ""
+                    },
+                    {
+                        "sequence": 4,
+                        "title": "MISS",
+                        "first_name": "ELLA",
+                        "last_name": "",
+                        "pax_type": "CHD",
+                        "gender": "",
+                        "birth_date": "2010-02-14",
+                        "mobile": "",
+                        "identity_type": "",
+                        "identity_number": "",
+                        "nationality_code": "",
+                        "passport_number": "",
+                        "passport_expdate": "",
+                        "country_of_issue_code": "",
+                        "ticket_number": ""
+                    },
+                    {
+                        "sequence": 5,
+                        "title": "MS",
+                        "first_name": "LEA",
+                        "last_name": "",
+                        "pax_type": "ADT",
+                        "gender": "",
+                        "birth_date": "",
+                        "mobile": "",
+                        "identity_type": "",
+                        "identity_number": "",
+                        "nationality_code": "",
+                        "passport_number": "",
+                        "passport_expdate": "",
+                        "country_of_issue_code": "",
+                        "ticket_number": ""
+                    }
+                ]
+            },
+            {
+                "id": 71,
+                "sequence": "2",
+                "pnr": "QPWB2Y",
+                "pnr2": "QPWB2Y",
+                "reference": "QPWB2Y",
+                "expired_date": "2019-07-19 06:57:15",
+                "hold_date": "2019-07-19 06:57:15",
+                "status": "BOOKED",
+                "currency": "IDR",
+                "balance_due": 1785420,
+                "provider": "amadeus",
+                "pax_list": [
+                    {
+                        "qualifier": "PT",
+                        "number": "2"
+                    },
+                    {
+                        "qualifier": "PT",
+                        "number": "3"
+                    },
+                    {
+                        "qualifier": "PT",
+                        "number": "5"
+                    },
+                    {
+                        "qualifier": "PT",
+                        "number": "6"
+                    },
+                    {
+                        "qualifier": "PT",
+                        "number": "4"
+                    }
+                ],
+                "journeys": [
+                    {
+                        "sequence": 1,
+                        "origin": "BKK",
+                        "origin_terminal": "",
+                        "origin_utc": 0,
+                        "departure_date": "2019-09-22 08:15:00",
+                        "destination": "SUB",
+                        "destination_terminal": "2",
+                        "destination_utc": 0,
+                        "arrival_date": "2019-09-22 18:00:00",
+                        "journey_type": "",
+                        "departure_date_return": "",
+                        "arrival_date_return": "",
+                        "elapsed_time_return": "",
+                        "transit_count": 1,
+                        "transit_count_return": 0,
+                        "elapsed_time": "0:9:45:0",
+                        "journey_code": "CX,700,BKK,,2019-09-22 08:15:00,HKG,1,2019-09-22 12:10:00,amadeus;CX,779,HKG,1,2019-09-22 14:10:00,SUB,2,2019-09-22 18:00:00,amadeus",
+                        "is_combo_price": False,
+                        "is_international": False,
                         "provider": "amadeus",
-                        "pax_list": [
-                            {
-                                "qualifier": "PT",
-                                "number": "2"
-                            },
-                            {
-                                "qualifier": "PT",
-                                "number": "3"
-                            },
-                            {
-                                "qualifier": "PT",
-                                "number": "5"
-                            },
-                            {
-                                "qualifier": "PT",
-                                "number": "6"
-                            },
-                            {
-                                "qualifier": "PT",
-                                "number": "4"
-                            }
+                        "carrier_code_list": [
+                            "CX"
                         ],
-                        "journeys": [
+                        "cabin_class_list": [
+                            ""
+                        ],
+                        "operating_airline_code_list": [],
+                        "segments": [
                             {
                                 "sequence": 1,
                                 "origin": "BKK",
                                 "origin_terminal": "",
                                 "origin_utc": 0,
-                                "departure_date": "2019-09-22 06:35:00",
-                                "destination": "SUB",
-                                "destination_terminal": "2",
+                                "departure_date": "2019-09-22 08:15:00",
+                                "destination": "HKG",
+                                "destination_terminal": "1",
                                 "destination_utc": 0,
-                                "arrival_date": "2019-09-22 18:00:00",
+                                "arrival_date": "2019-09-22 12:10:00",
                                 "journey_type": "",
-                                "departure_date_return": "",
-                                "arrival_date_return": "",
-                                "elapsed_time_return": "",
-                                "transit_count": 1,
-                                "transit_count_return": 0,
-                                "elapsed_time": "0:11:25:0",
-                                "journey_code": "CX,616,BKK,,2019-09-22 06:35:00,HKG,1,2019-09-22 10:25:00,amadeus;CX,779,HKG,1,2019-09-22 14:10:00,SUB,2,2019-09-22 18:00:00,amadeus",
-                                "is_combo_price": False,
+                                "transit_count": 0,
+                                "transit_duration": "",
+                                "elapsed_time": "0:3:55:0",
+                                "segment_code": "CX,700,BKK,,2019-09-22 08:15:00,HKG,1,2019-09-22 12:10:00,amadeus",
+                                "segment_code2": "BKK-HKG",
+                                "carrier_name": "CX 700",
+                                "carrier_code": "CX",
+                                "carrier_number": "700",
+                                "operating_airline_code": "",
                                 "is_international": False,
-                                "provider": "amadeus",
-                                "carrier_code_list": [
-                                    "CX"
-                                ],
                                 "cabin_class_list": [
                                     ""
                                 ],
-                                "operating_airline_code_list": [],
-                                "segments": [
+                                "provider": "amadeus",
+                                "legs": [
                                     {
                                         "sequence": 1,
                                         "origin": "BKK",
                                         "origin_terminal": "",
                                         "origin_utc": 0,
-                                        "departure_date": "2019-09-22 06:35:00",
+                                        "departure_date": "2019-09-22 08:15:00",
                                         "destination": "HKG",
                                         "destination_terminal": "1",
                                         "destination_utc": 0,
-                                        "arrival_date": "2019-09-22 10:25:00",
-                                        "journey_type": "",
-                                        "transit_count": 0,
+                                        "arrival_date": "2019-09-22 12:10:00",
                                         "transit_duration": "",
-                                        "elapsed_time": "0:3:50:0",
-                                        "segment_code": "CX,616,BKK,,2019-09-22 06:35:00,HKG,1,2019-09-22 10:25:00,amadeus",
-                                        "segment_code2": "BKK-HKG",
-                                        "carrier_name": "CX 616",
+                                        "carrier_name": "CX 700",
                                         "carrier_code": "CX",
-                                        "carrier_number": "616",
-                                        "operating_airline_code": "",
+                                        "carrier_number": "700",
+                                        "elapsed_time": "0:3:55:0",
+                                        "journey_type": "",
+                                        "leg_code": "CX,700,BKK,,2019-09-22 08:15:00,HKG,1,2019-09-22 12:10:00,amadeus",
+                                        "leg_code2": "BKK-HKG",
                                         "is_international": False,
-                                        "cabin_class_list": [
-                                            ""
-                                        ],
-                                        "provider": "amadeus",
-                                        "legs": [
-                                            {
-                                                "sequence": 1,
-                                                "origin": "BKK",
-                                                "origin_terminal": "",
-                                                "origin_utc": 0,
-                                                "departure_date": "2019-09-22 06:35:00",
-                                                "destination": "HKG",
-                                                "destination_terminal": "1",
-                                                "destination_utc": 0,
-                                                "arrival_date": "2019-09-22 10:25:00",
-                                                "transit_duration": "",
-                                                "carrier_name": "CX 616",
-                                                "carrier_code": "CX",
-                                                "carrier_number": "616",
-                                                "elapsed_time": "0:3:50:0",
-                                                "journey_type": "",
-                                                "leg_code": "CX,616,BKK,,2019-09-22 06:35:00,HKG,1,2019-09-22 10:25:00,amadeus",
-                                                "leg_code2": "BKK-HKG",
-                                                "is_international": False,
-                                                "operating_airline_code": "",
-                                                "provider": "amadeus"
-                                            }
-                                        ],
-                                        "fares": [
-                                            {
-                                                "sequence": 1,
-                                                "fare_code": "B",
-                                                "cabin_class": "",
-                                                "class_of_service": "B",
-                                                "rule_number": "",
-                                                "product_class": "B",
-                                                "product_name": "",
-                                                "description": "",
-                                                "available_count": -1,
-                                                "service_charges": [],
-                                                "fare_basis_codes": [],
-                                                "details": [],
-                                                "fare_rules": [],
-                                                "service_charge_summary": []
-                                            }
-                                        ]
-                                    },
+                                        "operating_airline_code": "",
+                                        "provider": "amadeus"
+                                    }
+                                ],
+                                "fares": [
                                     {
-                                        "sequence": 2,
+                                        "sequence": 1,
+                                        "fare_code": "Y",
+                                        "cabin_class": "",
+                                        "class_of_service": "Y",
+                                        "rule_number": "",
+                                        "product_class": "Y",
+                                        "product_name": "",
+                                        "description": "",
+                                        "available_count": -1,
+                                        "service_charges": [],
+                                        "fare_basis_codes": [],
+                                        "details": [],
+                                        "fare_rules": [],
+                                        "service_charge_summary": []
+                                    }
+                                ]
+                            },
+                            {
+                                "sequence": 2,
+                                "origin": "HKG",
+                                "origin_terminal": "1",
+                                "origin_utc": 0,
+                                "departure_date": "2019-09-22 14:10:00",
+                                "destination": "SUB",
+                                "destination_terminal": "2",
+                                "destination_utc": 0,
+                                "arrival_date": "2019-09-22 18:00:00",
+                                "journey_type": "",
+                                "transit_count": 0,
+                                "transit_duration": "0:2:0:0",
+                                "elapsed_time": "0:3:50:0",
+                                "segment_code": "CX,779,HKG,1,2019-09-22 14:10:00,SUB,2,2019-09-22 18:00:00,amadeus",
+                                "segment_code2": "HKG-SUB",
+                                "carrier_name": "CX 779",
+                                "carrier_code": "CX",
+                                "carrier_number": "779",
+                                "operating_airline_code": "",
+                                "is_international": False,
+                                "cabin_class_list": [
+                                    ""
+                                ],
+                                "provider": "amadeus",
+                                "legs": [
+                                    {
+                                        "sequence": 1,
                                         "origin": "HKG",
                                         "origin_terminal": "1",
                                         "origin_utc": 0,
@@ -997,400 +1023,389 @@ class ReservationAirline(models.Model):
                                         "destination_terminal": "2",
                                         "destination_utc": 0,
                                         "arrival_date": "2019-09-22 18:00:00",
-                                        "journey_type": "",
-                                        "transit_count": 0,
-                                        "transit_duration": "0:3:45:0",
-                                        "elapsed_time": "0:3:50:0",
-                                        "segment_code": "CX,779,HKG,1,2019-09-22 14:10:00,SUB,2,2019-09-22 18:00:00,amadeus",
-                                        "segment_code2": "HKG-SUB",
+                                        "transit_duration": "",
                                         "carrier_name": "CX 779",
                                         "carrier_code": "CX",
                                         "carrier_number": "779",
-                                        "operating_airline_code": "",
+                                        "elapsed_time": "0:3:50:0",
+                                        "journey_type": "",
+                                        "leg_code": "CX,779,HKG,1,2019-09-22 14:10:00,SUB,2,2019-09-22 18:00:00,amadeus",
+                                        "leg_code2": "HKG-SUB",
                                         "is_international": False,
-                                        "cabin_class_list": [
-                                            ""
-                                        ],
-                                        "provider": "amadeus",
-                                        "legs": [
+                                        "operating_airline_code": "",
+                                        "provider": "amadeus"
+                                    }
+                                ],
+                                "fares": [
+                                    {
+                                        "sequence": 1,
+                                        "fare_code": "Y",
+                                        "cabin_class": "",
+                                        "class_of_service": "Y",
+                                        "rule_number": "",
+                                        "product_class": "Y",
+                                        "product_name": "",
+                                        "description": "",
+                                        "available_count": -1,
+                                        "service_charges": [
                                             {
                                                 "sequence": 1,
-                                                "origin": "HKG",
-                                                "origin_terminal": "1",
-                                                "origin_utc": 0,
-                                                "departure_date": "2019-09-22 14:10:00",
-                                                "destination": "SUB",
-                                                "destination_terminal": "2",
-                                                "destination_utc": 0,
-                                                "arrival_date": "2019-09-22 18:00:00",
-                                                "transit_duration": "",
-                                                "carrier_name": "CX 779",
-                                                "carrier_code": "CX",
-                                                "carrier_number": "779",
-                                                "elapsed_time": "0:3:50:0",
-                                                "journey_type": "",
-                                                "leg_code": "CX,779,HKG,1,2019-09-22 14:10:00,SUB,2,2019-09-22 18:00:00,amadeus",
-                                                "leg_code2": "HKG-SUB",
-                                                "is_international": False,
-                                                "operating_airline_code": "",
-                                                "provider": "amadeus"
+                                                "charge_code": "fare",
+                                                "charge_type": "FARE",
+                                                "currency": "THB",
+                                                "amount": 56680,
+                                                "foreign_currency": "THB",
+                                                "foreign_amount": 56680,
+                                                "pax_count": 3,
+                                                "pax_type": "ADT",
+                                                "total": 170040
+                                            },
+                                            {
+                                                "sequence": 2,
+                                                "charge_code": "YR",
+                                                "charge_type": "TAX",
+                                                "currency": "IDR",
+                                                "amount": 473400,
+                                                "foreign_currency": "IDR",
+                                                "foreign_amount": 473400,
+                                                "pax_count": 3,
+                                                "pax_type": "ADT",
+                                                "total": 1420200
+                                            },
+                                            {
+                                                "sequence": 3,
+                                                "charge_code": "E7",
+                                                "charge_type": "TAX",
+                                                "currency": "IDR",
+                                                "amount": 16100,
+                                                "foreign_currency": "IDR",
+                                                "foreign_amount": 16100,
+                                                "pax_count": 3,
+                                                "pax_type": "ADT",
+                                                "total": 48300
+                                            },
+                                            {
+                                                "sequence": 4,
+                                                "charge_code": "G8",
+                                                "charge_type": "TAX",
+                                                "currency": "IDR",
+                                                "amount": 6900,
+                                                "foreign_currency": "IDR",
+                                                "foreign_amount": 6900,
+                                                "pax_count": 3,
+                                                "pax_type": "ADT",
+                                                "total": 20700
+                                            },
+                                            {
+                                                "sequence": 5,
+                                                "charge_code": "TS",
+                                                "charge_type": "TAX",
+                                                "currency": "IDR",
+                                                "amount": 322000,
+                                                "foreign_currency": "IDR",
+                                                "foreign_amount": 322000,
+                                                "pax_count": 3,
+                                                "pax_type": "ADT",
+                                                "total": 966000
+                                            },
+                                            {
+                                                "sequence": 6,
+                                                "charge_code": "G3",
+                                                "charge_type": "TAX",
+                                                "currency": "IDR",
+                                                "amount": 126100,
+                                                "foreign_currency": "IDR",
+                                                "foreign_amount": 126100,
+                                                "pax_count": 3,
+                                                "pax_type": "ADT",
+                                                "total": 378300
+                                            },
+                                            {
+                                                "sequence": 7,
+                                                "charge_code": "I5",
+                                                "charge_type": "TAX",
+                                                "currency": "IDR",
+                                                "amount": 90100,
+                                                "foreign_currency": "IDR",
+                                                "foreign_amount": 90100,
+                                                "pax_count": 3,
+                                                "pax_type": "ADT",
+                                                "total": 270300
+                                            },
+                                            {
+                                                "sequence": 8,
+                                                "charge_code": "fare",
+                                                "charge_type": "FARE",
+                                                "currency": "THB",
+                                                "amount": 42510,
+                                                "foreign_currency": "THB",
+                                                "foreign_amount": 42510,
+                                                "pax_count": 2,
+                                                "pax_type": "CHD",
+                                                "total": 85020
+                                            },
+                                            {
+                                                "sequence": 9,
+                                                "charge_code": "YR",
+                                                "charge_type": "TAX",
+                                                "currency": "IDR",
+                                                "amount": 473400,
+                                                "foreign_currency": "IDR",
+                                                "foreign_amount": 473400,
+                                                "pax_count": 2,
+                                                "pax_type": "CHD",
+                                                "total": 946800
+                                            },
+                                            {
+                                                "sequence": 10,
+                                                "charge_code": "E7",
+                                                "charge_type": "TAX",
+                                                "currency": "IDR",
+                                                "amount": 16100,
+                                                "foreign_currency": "IDR",
+                                                "foreign_amount": 16100,
+                                                "pax_count": 2,
+                                                "pax_type": "CHD",
+                                                "total": 32200
+                                            },
+                                            {
+                                                "sequence": 11,
+                                                "charge_code": "G8",
+                                                "charge_type": "TAX",
+                                                "currency": "IDR",
+                                                "amount": 6900,
+                                                "foreign_currency": "IDR",
+                                                "foreign_amount": 6900,
+                                                "pax_count": 2,
+                                                "pax_type": "CHD",
+                                                "total": 13800
+                                            },
+                                            {
+                                                "sequence": 12,
+                                                "charge_code": "TS",
+                                                "charge_type": "TAX",
+                                                "currency": "IDR",
+                                                "amount": 322000,
+                                                "foreign_currency": "IDR",
+                                                "foreign_amount": 322000,
+                                                "pax_count": 2,
+                                                "pax_type": "CHD",
+                                                "total": 644000
+                                            },
+                                            {
+                                                "sequence": 13,
+                                                "charge_code": "G3",
+                                                "charge_type": "TAX",
+                                                "currency": "IDR",
+                                                "amount": 126100,
+                                                "foreign_currency": "IDR",
+                                                "foreign_amount": 126100,
+                                                "pax_count": 2,
+                                                "pax_type": "CHD",
+                                                "total": 252200
+                                            },
+                                            {
+                                                "sequence": 14,
+                                                "charge_code": "I5",
+                                                "charge_type": "TAX",
+                                                "currency": "IDR",
+                                                "amount": 90100,
+                                                "foreign_currency": "IDR",
+                                                "foreign_amount": 90100,
+                                                "pax_count": 2,
+                                                "pax_type": "CHD",
+                                                "total": 180200
                                             }
                                         ],
-                                        "fares": [
+                                        "fare_basis_codes": [],
+                                        "details": [],
+                                        "fare_rules": [],
+                                        "service_charge_summary": [
                                             {
-                                                "sequence": 1,
-                                                "fare_code": "B",
-                                                "cabin_class": "",
-                                                "class_of_service": "B",
-                                                "rule_number": "",
-                                                "product_class": "B",
-                                                "product_name": "",
-                                                "description": "",
-                                                "available_count": -1,
                                                 "service_charges": [
                                                     {
                                                         "sequence": 1,
                                                         "charge_code": "fare",
                                                         "charge_type": "FARE",
                                                         "currency": "THB",
-                                                        "amount": 36205,
+                                                        "amount": 56680,
                                                         "foreign_currency": "THB",
-                                                        "foreign_amount": 36205,
+                                                        "foreign_amount": 56680,
                                                         "pax_count": 3,
                                                         "pax_type": "ADT",
-                                                        "total": 108615
+                                                        "total": 170040
                                                     },
                                                     {
                                                         "sequence": 2,
-                                                        "charge_code": "YR",
+                                                        "charge_code": "tax",
                                                         "charge_type": "TAX",
                                                         "currency": "IDR",
-                                                        "amount": 473400,
+                                                        "amount": 1034600,
                                                         "foreign_currency": "IDR",
-                                                        "foreign_amount": 473400,
+                                                        "foreign_amount": 1034600,
                                                         "pax_count": 3,
                                                         "pax_type": "ADT",
-                                                        "total": 1420200
-                                                    },
+                                                        "total": 3103800
+                                                    }
+                                                ],
+                                                "pax_type": "ADT"
+                                            },
+                                            {
+                                                "service_charges": [
                                                     {
-                                                        "sequence": 3,
-                                                        "charge_code": "E7",
-                                                        "charge_type": "TAX",
-                                                        "currency": "IDR",
-                                                        "amount": 16100,
-                                                        "foreign_currency": "IDR",
-                                                        "foreign_amount": 16100,
-                                                        "pax_count": 3,
-                                                        "pax_type": "ADT",
-                                                        "total": 48300
-                                                    },
-                                                    {
-                                                        "sequence": 4,
-                                                        "charge_code": "G8",
-                                                        "charge_type": "TAX",
-                                                        "currency": "IDR",
-                                                        "amount": 6900,
-                                                        "foreign_currency": "IDR",
-                                                        "foreign_amount": 6900,
-                                                        "pax_count": 3,
-                                                        "pax_type": "ADT",
-                                                        "total": 20700
-                                                    },
-                                                    {
-                                                        "sequence": 5,
-                                                        "charge_code": "TS",
-                                                        "charge_type": "TAX",
-                                                        "currency": "IDR",
-                                                        "amount": 322000,
-                                                        "foreign_currency": "IDR",
-                                                        "foreign_amount": 322000,
-                                                        "pax_count": 3,
-                                                        "pax_type": "ADT",
-                                                        "total": 966000
-                                                    },
-                                                    {
-                                                        "sequence": 6,
-                                                        "charge_code": "G3",
-                                                        "charge_type": "TAX",
-                                                        "currency": "IDR",
-                                                        "amount": 126100,
-                                                        "foreign_currency": "IDR",
-                                                        "foreign_amount": 126100,
-                                                        "pax_count": 3,
-                                                        "pax_type": "ADT",
-                                                        "total": 378300
-                                                    },
-                                                    {
-                                                        "sequence": 7,
-                                                        "charge_code": "I5",
-                                                        "charge_type": "TAX",
-                                                        "currency": "IDR",
-                                                        "amount": 90100,
-                                                        "foreign_currency": "IDR",
-                                                        "foreign_amount": 90100,
-                                                        "pax_count": 3,
-                                                        "pax_type": "ADT",
-                                                        "total": 270300
-                                                    },
-                                                    {
-                                                        "sequence": 8,
+                                                        "sequence": 1,
                                                         "charge_code": "fare",
                                                         "charge_type": "FARE",
                                                         "currency": "THB",
-                                                        "amount": 27155,
+                                                        "amount": 42510,
                                                         "foreign_currency": "THB",
-                                                        "foreign_amount": 27155,
+                                                        "foreign_amount": 42510,
                                                         "pax_count": 2,
                                                         "pax_type": "CHD",
-                                                        "total": 54310
+                                                        "total": 85020
                                                     },
                                                     {
-                                                        "sequence": 9,
-                                                        "charge_code": "YR",
+                                                        "sequence": 2,
+                                                        "charge_code": "tax",
                                                         "charge_type": "TAX",
                                                         "currency": "IDR",
-                                                        "amount": 473400,
+                                                        "amount": 1034600,
                                                         "foreign_currency": "IDR",
-                                                        "foreign_amount": 473400,
+                                                        "foreign_amount": 1034600,
                                                         "pax_count": 2,
                                                         "pax_type": "CHD",
-                                                        "total": 946800
-                                                    },
-                                                    {
-                                                        "sequence": 10,
-                                                        "charge_code": "E7",
-                                                        "charge_type": "TAX",
-                                                        "currency": "IDR",
-                                                        "amount": 16100,
-                                                        "foreign_currency": "IDR",
-                                                        "foreign_amount": 16100,
-                                                        "pax_count": 2,
-                                                        "pax_type": "CHD",
-                                                        "total": 32200
-                                                    },
-                                                    {
-                                                        "sequence": 11,
-                                                        "charge_code": "G8",
-                                                        "charge_type": "TAX",
-                                                        "currency": "IDR",
-                                                        "amount": 6900,
-                                                        "foreign_currency": "IDR",
-                                                        "foreign_amount": 6900,
-                                                        "pax_count": 2,
-                                                        "pax_type": "CHD",
-                                                        "total": 13800
-                                                    },
-                                                    {
-                                                        "sequence": 12,
-                                                        "charge_code": "TS",
-                                                        "charge_type": "TAX",
-                                                        "currency": "IDR",
-                                                        "amount": 322000,
-                                                        "foreign_currency": "IDR",
-                                                        "foreign_amount": 322000,
-                                                        "pax_count": 2,
-                                                        "pax_type": "CHD",
-                                                        "total": 644000
-                                                    },
-                                                    {
-                                                        "sequence": 13,
-                                                        "charge_code": "G3",
-                                                        "charge_type": "TAX",
-                                                        "currency": "IDR",
-                                                        "amount": 126100,
-                                                        "foreign_currency": "IDR",
-                                                        "foreign_amount": 126100,
-                                                        "pax_count": 2,
-                                                        "pax_type": "CHD",
-                                                        "total": 252200
-                                                    },
-                                                    {
-                                                        "sequence": 14,
-                                                        "charge_code": "I5",
-                                                        "charge_type": "TAX",
-                                                        "currency": "IDR",
-                                                        "amount": 90100,
-                                                        "foreign_currency": "IDR",
-                                                        "foreign_amount": 90100,
-                                                        "pax_count": 2,
-                                                        "pax_type": "CHD",
-                                                        "total": 180200
+                                                        "total": 2069200
                                                     }
                                                 ],
-                                                "fare_basis_codes": [],
-                                                "details": [],
-                                                "fare_rules": [],
-                                                "service_charge_summary": [
-                                                    {
-                                                        "service_charges": [
-                                                            {
-                                                                "sequence": 1,
-                                                                "charge_code": "fare",
-                                                                "charge_type": "FARE",
-                                                                "currency": "THB",
-                                                                "amount": 36205,
-                                                                "foreign_currency": "THB",
-                                                                "foreign_amount": 36205,
-                                                                "pax_count": 3,
-                                                                "pax_type": "ADT",
-                                                                "total": 108615
-                                                            },
-                                                            {
-                                                                "sequence": 2,
-                                                                "charge_code": "tax",
-                                                                "charge_type": "TAX",
-                                                                "currency": "IDR",
-                                                                "amount": 1034600,
-                                                                "foreign_currency": "IDR",
-                                                                "foreign_amount": 1034600,
-                                                                "pax_count": 3,
-                                                                "pax_type": "ADT",
-                                                                "total": 3103800
-                                                            }
-                                                        ],
-                                                        "pax_type": "ADT"
-                                                    },
-                                                    {
-                                                        "service_charges": [
-                                                            {
-                                                                "sequence": 1,
-                                                                "charge_code": "fare",
-                                                                "charge_type": "FARE",
-                                                                "currency": "THB",
-                                                                "amount": 27155,
-                                                                "foreign_currency": "THB",
-                                                                "foreign_amount": 27155,
-                                                                "pax_count": 2,
-                                                                "pax_type": "CHD",
-                                                                "total": 54310
-                                                            },
-                                                            {
-                                                                "sequence": 2,
-                                                                "charge_code": "tax",
-                                                                "charge_type": "TAX",
-                                                                "currency": "IDR",
-                                                                "amount": 1034600,
-                                                                "foreign_currency": "IDR",
-                                                                "foreign_amount": 1034600,
-                                                                "pax_count": 2,
-                                                                "pax_type": "CHD",
-                                                                "total": 2069200
-                                                            }
-                                                        ],
-                                                        "pax_type": "CHD"
-                                                    }
-                                                ]
+                                                "pax_type": "CHD"
                                             }
                                         ]
                                     }
                                 ]
                             }
-                        ],
-                        "contacts": [],
-                        "passengers": [
-                            {
-                                "sequence": 1,
-                                "title": "MR",
-                                "first_name": "LINA",
-                                "last_name": "DALTON",
-                                "pax_type": "ADT",
-                                "gender": "",
-                                "birth_date": "",
-                                "mobile": "",
-                                "identity_type": "",
-                                "identity_number": "",
-                                "nationality_code": "",
-                                "passport_number": "",
-                                "passport_expdate": "",
-                                "country_of_issue_code": "",
-                                "ticket_number": ""
-                            },
-                            {
-                                "sequence": 2,
-                                "title": "MRS",
-                                "first_name": "LIO",
-                                "last_name": "DALTON",
-                                "pax_type": "ADT",
-                                "gender": "",
-                                "birth_date": "",
-                                "mobile": "",
-                                "identity_type": "",
-                                "identity_number": "",
-                                "nationality_code": "",
-                                "passport_number": "",
-                                "passport_expdate": "",
-                                "country_of_issue_code": "",
-                                "ticket_number": ""
-                            },
-                            {
-                                "sequence": 3,
-                                "title": "MSTR",
-                                "first_name": "TIKI",
-                                "last_name": "DALTON",
-                                "pax_type": "CHD",
-                                "gender": "",
-                                "birth_date": "2010-10-10",
-                                "mobile": "",
-                                "identity_type": "",
-                                "identity_number": "",
-                                "nationality_code": "",
-                                "passport_number": "",
-                                "passport_expdate": "",
-                                "country_of_issue_code": "",
-                                "ticket_number": ""
-                            },
-                            {
-                                "sequence": 4,
-                                "title": "MISS",
-                                "first_name": "ELLA",
-                                "last_name": "",
-                                "pax_type": "CHD",
-                                "gender": "",
-                                "birth_date": "2010-02-14",
-                                "mobile": "",
-                                "identity_type": "",
-                                "identity_number": "",
-                                "nationality_code": "",
-                                "passport_number": "",
-                                "passport_expdate": "",
-                                "country_of_issue_code": "",
-                                "ticket_number": ""
-                            },
-                            {
-                                "sequence": 5,
-                                "title": "MS",
-                                "first_name": "LEA",
-                                "last_name": "",
-                                "pax_type": "ADT",
-                                "gender": "",
-                                "birth_date": "",
-                                "mobile": "",
-                                "identity_type": "",
-                                "identity_number": "",
-                                "nationality_code": "",
-                                "passport_number": "",
-                                "passport_expdate": "",
-                                "country_of_issue_code": "",
-                                "ticket_number": ""
-                            }
                         ]
                     }
                 ],
-                "sequence": "2",
-                "provider": "amadeus"
+                "contacts": [],
+                "passengers": [
+                    {
+                        "sequence": 1,
+                        "title": "MR",
+                        "first_name": "LINA",
+                        "last_name": "DALTON",
+                        "pax_type": "ADT",
+                        "gender": "",
+                        "birth_date": "",
+                        "mobile": "",
+                        "identity_type": "",
+                        "identity_number": "",
+                        "nationality_code": "",
+                        "passport_number": "",
+                        "passport_expdate": "",
+                        "country_of_issue_code": "",
+                        "ticket_number": ""
+                    },
+                    {
+                        "sequence": 2,
+                        "title": "MRS",
+                        "first_name": "LIO",
+                        "last_name": "DALTON",
+                        "pax_type": "ADT",
+                        "gender": "",
+                        "birth_date": "",
+                        "mobile": "",
+                        "identity_type": "",
+                        "identity_number": "",
+                        "nationality_code": "",
+                        "passport_number": "",
+                        "passport_expdate": "",
+                        "country_of_issue_code": "",
+                        "ticket_number": ""
+                    },
+                    {
+                        "sequence": 3,
+                        "title": "MSTR",
+                        "first_name": "TIKI",
+                        "last_name": "DALTON",
+                        "pax_type": "CHD",
+                        "gender": "",
+                        "birth_date": "2010-10-10",
+                        "mobile": "",
+                        "identity_type": "",
+                        "identity_number": "",
+                        "nationality_code": "",
+                        "passport_number": "",
+                        "passport_expdate": "",
+                        "country_of_issue_code": "",
+                        "ticket_number": ""
+                    },
+                    {
+                        "sequence": 4,
+                        "title": "MISS",
+                        "first_name": "ELLA",
+                        "last_name": "",
+                        "pax_type": "CHD",
+                        "gender": "",
+                        "birth_date": "2010-02-14",
+                        "mobile": "",
+                        "identity_type": "",
+                        "identity_number": "",
+                        "nationality_code": "",
+                        "passport_number": "",
+                        "passport_expdate": "",
+                        "country_of_issue_code": "",
+                        "ticket_number": ""
+                    },
+                    {
+                        "sequence": 5,
+                        "title": "MS",
+                        "first_name": "LEA",
+                        "last_name": "",
+                        "pax_type": "ADT",
+                        "gender": "",
+                        "birth_date": "",
+                        "mobile": "",
+                        "identity_type": "",
+                        "identity_number": "",
+                        "nationality_code": "",
+                        "passport_number": "",
+                        "passport_expdate": "",
+                        "country_of_issue_code": "",
+                        "ticket_number": ""
+                    }
+                ]
             }
         ],
-        "book_id": 63,
-        "provider_ids": [
-            {
-                "id": 45,
-                "code": "amadeus"
+        "book_id": 76,
+        "context": {
+            "uid": 6,
+            "user_name": "sam.api",
+            "user_login": "sam.api",
+            "agent_id": 2,
+            "agent_name": "Rodex PTC",
+            "agent_type_id": "",
+            "agent_type_name": "",
+            "agent_type_code": "",
+            "api_role": "operator",
+            "host_ips": [],
+            "configs": {
+                "airline": {
+                    "provider_access": "all",
+                    "providers": {}
+                }
             },
-            {
-                "id": 46,
-                "code": "amadeus"
-            }
-        ]
+            "co_uid": 6,
+            "co_user_name": "sam.api",
+            "co_user_login": "sam.api",
+            "co_agent_id": 2,
+            "co_agent_name": "Rodex PTC",
+            "co_agent_type_id": "",
+            "co_agent_type_name": "",
+            "co_agent_type_code": "",
+            "sid": "8964180d6fc024fc135f45f774325463f71072f9",
+            "signature": "fc17ac8d2dc642b5a91e7be2db0704e8",
+            "expired_date": "2019-07-19 07:26:47"
+        }
     }
 
     def create_booking_airline_api(self, req):
@@ -1439,7 +1454,64 @@ class ReservationAirline(models.Model):
 
     def update_pnr_provider_airline_api(self, req):
         print(json.dumps(req))
-        return Response().get_no_error()
+        # req = self.param_update_pnr
+        try:
+
+            book_obj = self.env['tt.reservation.airline'].browse(req['book_id'])
+            if not book_obj:
+                raise Exception('Booking ID not found')
+
+            book_status = []
+            pnr_list = []
+            for provider in req['booking_commit_provider']:
+                provider_obj = self.env['tt.provider.airline'].browse(provider['provider_id'])
+
+                if not provider_obj:
+                    raise Exception('Provider ID not found')
+
+                if provider['status'] == 'BOOKED' and not provider.get('error_code'):
+                    ##generate leg data
+                    provider_type = self.env['tt.provider.type'].search([('code','=','airline')])[0]
+                    for idx,journey in enumerate(provider_obj.journey_ids):
+                        for idx1,segment in enumerate(journey.segment_ids):
+                            param_segment = provider['journeys'][idx]['segments'][idx1]
+                            if segment.segment_code == param_segment['segment_code']:
+                                this_segment_legs = []
+                                for idx2,leg in enumerate(param_segment['legs']):
+                                    leg_org = self.env['tt.destinations'].get_id(leg['origin'],provider_type)
+                                    leg_dest = self.env['tt.destinations'].get_id(leg['destination'],provider_type)
+                                    leg_prov = self.env['tt.provider'].get_provider_id(leg['provider'],provider_type)
+                                    this_segment_legs.append((0,0,{
+                                        'sequence': idx2,
+                                        'leg_code': leg['leg_code'],
+                                        'origin_terminal': leg['origin_terminal'],
+                                        'destination_terminal': leg['destination_terminal'],
+                                        'origin_id': leg_org,
+                                        'destination_id': leg_dest,
+                                        'departure_date': datetime.datetime.strptime(leg['departure_date'],"%Y-%m-%d %H:%M:%S"),
+                                        'arrival_date': datetime.datetime.strptime(leg['arrival_date'],"%Y-%m-%d %H:%M:%S"),
+                                        'provider_id': leg_prov
+                                    }))
+
+                                segment.write({
+                                    'leg_ids': this_segment_legs
+                                })
+
+                    provider_obj.action_booked_api_airline(provider,req['context'])
+                    book_status.append(1)
+                    pnr_list.append(provider['pnr'])
+                else:
+                    book_status.append(0)
+                    continue
+
+
+            if all(book_status) == 1:
+                book_obj.action_booked_api(pnr_list)
+                return Response().get_no_error()
+
+        except Exception as e:
+            _logger.error(str(e) + traceback.format_exc())
+        return Response().get_error("Maintenace",500)
 
     def validate_booking(self, api_context=None):
         user_obj = self.env['res.users'].browse(api_context['co_uid'])
@@ -1644,6 +1716,7 @@ class ReservationAirline(models.Model):
                     ###Create Journey
                     print(journey_type)
                     this_journey_seg = []
+                    this_journey_seg_sequence = 0
                     for segment in journey_value:
                         ###Create Segment
                         carrier_id = carrier_obj.get_id(segment['carrier_code'],_destination_type)
@@ -1664,6 +1737,7 @@ class ReservationAirline(models.Model):
                             'destination_terminal': segment['destination_terminal'],
                             'departure_date': segment['departure_date'],
                             'arrival_date': segment['arrival_date'],
+                            'sequence': this_journey_seg_sequence+1
                         }))
 
                     ###journey_type DEP or RET

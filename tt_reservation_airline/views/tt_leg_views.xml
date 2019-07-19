@@ -23,7 +23,6 @@
                     <group>
                         <group>
                             <!--<field name="agent_id"/>-->
-                            <field name="name"/>
                             <field name="journey_type"/>
                             <field name="provider_id"/>
                         </group>

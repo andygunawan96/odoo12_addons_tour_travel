@@ -9,7 +9,6 @@ class TtLegAirline(models.Model):
     _name = 'tt.leg.airline'
     _order = 'sequence'
 
-    name = fields.Char('Name', compute='_fill_name')
     leg_code = fields.Char('Leg Code')
     journey_type = fields.Selection(variables.JOURNEY_TYPE, string='Journey Type', default='DEP',
                                     states={'draft': [('readonly', False)]})
@@ -23,13 +22,9 @@ class TtLegAirline(models.Model):
     # Journey Information
     origin_id = fields.Many2one('tt.destinations', 'Origin')
     destination_id = fields.Many2one('tt.destinations', 'Destination')
-    #departure_date & arrival_date MUST CHAR TYPE, krn mengikuti user.timezone
-    #departure_date_fmt & arrival_date_fmt TELAH mengikuti user.lang.format
     departure_date = fields.Char('Departure Date')
-    departure_date_fmt = fields.Char('Departure Date', compute='_compute_date_fmt')
 
     arrival_date = fields.Char('Arrival Date')
-    arrival_date_fmt = fields.Char('Arrival Date', compute='_compute_date_fmt')
 
     elapsed_time = fields.Char('Elapsed Time')
     class_of_service = fields.Char('Class')

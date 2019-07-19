@@ -9,6 +9,7 @@ class TtProviderAirline(models.Model):
     _order = 'departure_date'
 
     pnr = fields.Char('PNR')
+    pnr2 = fields.Char('PNR2')
     provider_id = fields.Many2one('tt.provider','Provider')
     state = fields.Selection(variables.BOOKING_STATE, 'Status', default='draft')
     booking_id = fields.Many2one('tt.reservation.airline', 'Order Number', ondelete='cascade')
@@ -53,22 +54,22 @@ class TtProviderAirline(models.Model):
 
     notes = fields.Text('Notes', readonly=True, states={'draft': [('readonly', False)]})
 
-    def action_booked(self, pnr, api_context):
+    def action_booked_api_airline(self, provider_data, api_context):
         for rec in self:
             rec.write({
-                'pnr': pnr,
+                'pnr': provider_data['pnr'],
+                'pnr2': provider_data['pnr2'],
                 'state': 'booked',
                 'booked_uid': api_context['co_uid'],
                 'booked_date': fields.Datetime.now(),
+                'hold_date': datetime.strptime(provider_data['hold_date'],"%Y-%m-%d %H:%M:%S"),
             })
-        self.env.cr.commit()
 
     def action_set_as_booked(self):
         self.write({
             'state': 'booked',
         })
-        self.booking_id.action_check_provider_state()
-        self.booking_id.message_post(body=_("PNR set as BOOKED: {} (Provider : {})".format(self.pnr, self.provider)))
+        # self.booking_id.action_check_provider_state()
 
     def action_issued(self, api_context=None):
         if not api_context: #Jika dari Backend, TIDAK ada api_context
