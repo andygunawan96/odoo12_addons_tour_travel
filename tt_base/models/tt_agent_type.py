@@ -11,7 +11,7 @@ class TtAgentType(models.Model):
     state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'), ('cancel', 'Cancelled')], string='State',
                              default='draft')
     active = fields.Boolean('Active', default='True')
-    upline_ids = fields.Many2many('tt.agent.type', 'tt_agent_type_upline_1_2_rel', 'agent_1', 'agent_2')
+    registration_upline_ids = fields.Many2many('tt.agent.type', 'tt_agent_type_upline_1_2_rel', 'agent_1', 'agent_2')
     description = fields.Text('Description')
     currency_id = fields.Many2one('res.currency', 'Currency')
     registration_fee = fields.Monetary('Registration Fee')

@@ -19,15 +19,25 @@ STATE = [
 
 
 class AgentRegistration(models.Model):
-    _inherit = 'tt.agent'
     _name = 'tt.agent.registration'
+    _order = 'registration_num desc'
 
-    image = fields.Binary('Image')
-    state = fields.Selection(STATE, 'State', default='draft')
+    name = fields.Char('Name', required=True, default='')
+    image = fields.Binary('Image', store=True)
+    state = fields.Selection(STATE, 'State', default='draft',
+                             help='''draft = Requested
+                                     confirm = HO Accepted
+                                     progress = HO Processing
+                                     payment = Payment
+                                     validate = Validate
+                                     done = Done''')
     active = fields.Boolean('Active', default=True)
+    parent_agent_id = fields.Many2one('tt.agent', string="Parent Agent", Help="Agent who became Parent of This Agent")
+    agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', required=True)
     partner_id = fields.Many2one('tt.agent', 'Partner id', readonly=True)
+    currency_id = fields.Many2one('res.currency', string='Currency')
     company_type = fields.Selection(COMPANY_TYPE, 'Company Type', default='individual')
-    registration_num = fields.Char('Registration Number', readonly=True)
+    registration_num = fields.Char('Registration No.', readonly=True)
     registration_fee = fields.Float('Registration Fee', store=True, compute='get_registration_fee')
     discount = fields.Float('Discount', readonly=True, states={'draft': [('readonly', False)]})
     opening_balance = fields.Float('Opening Balance', readonly=True, states={'draft': [('readonly', False)],
@@ -43,20 +53,22 @@ class AgentRegistration(models.Model):
     address_ids = fields.One2many('address.detail', 'agent_registration_id', string='Addresses')
     social_media_ids = fields.One2many('social.media.detail', 'agent_registration_id', 'Social Media')
 
-    agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', readonly=True, required=True,
-                                    states={'draft': [('readonly', False)]})
-    reference_id = fields.Many2one('tt.agent', 'Reference', readonly=True, default=lambda self: self.env.user.agent_id)
-    parent_agent_id = fields.Many2one('tt.agent', 'Parent Agent', readonly=True, store=True,
-                                      compute='default_parent_agent_id')
+    # agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', readonly=True, required=True,
+    #                                 states={'draft': [('readonly', False)]})
+    reference_id = fields.Many2one('tt.agent', 'Reference', readonly=False, default=lambda self: self.env.user.agent_id)
+    # parent_agent_id = fields.Many2one('tt.agent', 'Parent Agent', readonly=True, store=True,
+    #                                   compute='default_parent_agent_id')
     agent_level = fields.Integer('Agent Level', readonly=True)
 
-    ledger_ids = fields.One2many('tt.ledger', 'res_id', 'Ledger', readonly=True)
+    ledger_ids = fields.One2many('tt.ledger', 'res_id', 'Ledger', readonly=True,
+                                 domain=[('res_model', '=', 'tt.agent.registration')])
 
     contact_ids = fields.One2many('tt.customer', 'agent_id', 'Contact Information')
 
     registration_document_ids = fields.One2many('tt.agent.registration.document', 'registration_document_id',
                                                 'Agent Registration Documents', readonly=True,
-                                                states={'confirm': [('readonly', False)]})
+                                                states={'confirm': [('readonly', False)]},
+                                                help='''Dokumen yang perlu dilengkapi saat pendaftaran, seperti KTP, NPWP, dll''')
 
     payment_ids = fields.One2many('tt.agent.registration.payment', 'agent_registration_id', 'Payment Terms',
                                   readonly=True, states={'progress': [('readonly', False)],
@@ -65,7 +77,11 @@ class AgentRegistration(models.Model):
 
     open_document_ids = fields.One2many('tt.agent.registration.document', 'opening_document_id',
                                         'Open Registration Documents', readonly=True,
-                                        states={'validate': [('readonly', False)]})
+                                        states={'validate': [('readonly', False)]},
+                                        help='''Checklist dokumen untuk agent, seperti seragam, banner, kartu nama, dll''')
+
+    tac = fields.Text('Terms and Conditions', readonly=True, states={'draft': [('readonly', False)],
+                                                                     'confirm': [('readonly', False)]})
 
     # def print_report_printout_invoice(self):
     #     data = {
@@ -110,24 +126,68 @@ class AgentRegistration(models.Model):
             raise UserError('Please Input an Address')
 
     def create_registration_documents(self):
-        doc_id = self.env['tt.document.type'].sudo().search([('name', '=', 'KTP')], limit=1).id
-        vals = {
-            'state': 'draft',
-            'qty': 0,
-            'receive_qty': 0,
-            'document_id': doc_id
-        }
-        self.registration_document_ids = self.env['tt.agent.registration.document'].create(vals)
+        vals_list = []
+        doc_type_env = self.env['tt.document.type'].sudo().search([('agent_type_ids', '=', self.agent_type_id.id), ('document_type', '=', 'registration')])
+        for rec in doc_type_env:
+            vals = {
+                'state': 'draft',
+                'qty': 0,
+                'receive_qty': 0,
+                'document_id': rec.id
+            }
+            vals_list.append(vals)
+        self.registration_document_ids = self.env['tt.agent.registration.document'].create(vals_list)
+
+        # doc_id = self.env['tt.document.type'].sudo().search([('name', '=', 'KTP')], limit=1).id
+        # vals1 = {
+        #     'state': 'draft',
+        #     'qty': 0,
+        #     'receive_qty': 0,
+        #     'document_id': doc_id
+        # }
+        # vals_list.append(vals1)
+        #
+        # if self.company_type == 'company':
+        #     doc_id = self.env['tt.document.type'].sudo().search([('name', '=', 'NPWP')], limit=1).id
+        #     vals = {
+        #         'state': 'draft',
+        #         'qty': 0,
+        #         'receive_qty': 0,
+        #         'document_id': doc_id
+        #     }
+        #     vals_list.append(vals)
+        #
+        # self.registration_document_ids = vals_list
+
+    def check_registration_documents(self):
+        for rec in self.registration_document_ids:
+            if rec.state != 'done':
+                raise UserError(_('You have to Confirmed all The Registration Documents first.'))
 
     def create_opening_documents(self):
-        doc_id = self.env['tt.document.type'].sudo().search([('name', '=', 'KTP')], limit=1).id
-        vals = {
-            'state': 'draft',
-            'qty': 0,
-            'receive_qty': 0,
-            'document_id': doc_id
-        }
-        self.open_document_ids = self.env['tt.agent.registration.document'].create(vals)
+        vals_list = []
+        doc_type_env = self.env['tt.document.type'].sudo().search([('agent_type_ids', '=', self.agent_type_id.id), ('document_type', '=', 'opening')])
+        for rec in doc_type_env:
+            vals = {
+                'state': 'draft',
+                'qty': 0,
+                'receive_qty': 0,
+                'document_id': rec.id
+            }
+            vals_list.append(vals)
+        # doc_id = self.env['tt.document.type'].sudo().search([('name', '=', 'KTP')], limit=1).id
+        # vals = {
+        #     'state': 'draft',
+        #     'qty': 0,
+        #     'receive_qty': 0,
+        #     'document_id': doc_id
+        # }
+        self.open_document_ids = self.env['tt.agent.registration.document'].create(vals_list)
+
+    def check_opening_documents(self):
+        for rec in self.open_document_ids:
+            if rec.state != 'done':
+                raise UserError(_('You have to Confirmed all The Opening Documents first.'))
 
     def set_agent_address(self):
         print('Set Agent Address')
@@ -153,7 +213,8 @@ class AgentRegistration(models.Model):
                                                              'commission', self.currency_id.id, agent_comm, 0)
         agent_comm_vals.update({
             'agent_id': self.parent_agent_id.id,
-            'res_id': self.id
+            'res_id': self.id,
+            'res_model': self._name
         })
         self.env['tt.ledger'].create(agent_comm_vals)
 
@@ -163,7 +224,8 @@ class AgentRegistration(models.Model):
                                                                     parent_agent_comm, 0)
         parent_agent_comm_vals.update({
             'agent_id': self.parent_agent_id.parent_agent_id.id,
-            'res_id': self.id
+            'res_id': self.id,
+            'res_model': self._name
         })
         self.env['tt.ledger'].create(parent_agent_comm_vals)
 
@@ -172,7 +234,8 @@ class AgentRegistration(models.Model):
                                                           'commission', self.currency_id.id, ho_comm, 0)
         ho_comm_vals.update({
             'agent_id': self.env['tt.agent'].sudo().search([('agent_type_id.name', '=', 'HO')], limit=1).id,
-            'res_id': self.id
+            'res_id': self.id,
+            'res_model': self._name
         })
         self.env['tt.ledger'].create(ho_comm_vals)
 
@@ -182,7 +245,8 @@ class AgentRegistration(models.Model):
                                                          self.currency_id.id, 0, self.opening_balance)
         vals_credit.update({
             'agent_id': self.parent_agent_id.id,
-            'res_id': self.id
+            'res_id': self.id,
+            'res_model': self._name
         })
         self.env['tt.ledger'].create(vals_credit)
 
@@ -190,7 +254,8 @@ class AgentRegistration(models.Model):
                                                         'commission', self.currency_id.id, self.opening_balance, 0)
         vals_debit.update({
             'agent_id': self.partner_id.id,
-            'res_id': self.id
+            'res_id': self.id,
+            'res_model': self._name
         })
         self.env['tt.ledger'].create(vals_debit)
 
@@ -235,6 +300,8 @@ class AgentRegistration(models.Model):
 
     def action_progress(self):
         self.check_tac()
+        self.check_registration_documents()
+
         self.state = 'progress'
 
     def action_payment(self):
@@ -258,6 +325,7 @@ class AgentRegistration(models.Model):
             raise UserError('Please complete all the payments.')
 
     def action_done(self):
+        self.check_opening_documents()
         self.partner_id = self.create_partner_agent()
         if self.contact_ids:
             self.create_customers_contact()
@@ -299,3 +367,22 @@ class AgentRegistration(models.Model):
                 rec.open_document_ids.active = False
 
         self.state = 'draft'
+
+    param_company = {
+        "company_type": "individual",
+        "business_license": "",
+        "npwp": "",
+        "name": "suryajaya",
+        "zip": "60112",
+        "street": "surabaya",
+        "street2": "",
+        "city": "516"
+    }
+
+    param_other = {
+        "social_media": 0,
+        "agent_type": "Agent Citra"
+    }
+
+    def create_agent_registration_api(self):
+        pass
