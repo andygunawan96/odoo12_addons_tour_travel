@@ -2,3 +2,5 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 tt_agent_registration,tt.agent.registration,model_tt_agent_registration,,1,1,1,1
 tt_agent_registration_document,tt.agent.registration.document,model_tt_agent_registration_document,,1,1,1,1
 tt_agent_registration_payment,tt.agent.registration.payment,model_tt_agent_registration_payment,,1,1,1,1
+tt_document_type,tt.document.type,model_tt_document_type,,1,1,1,1
+tt_company_type,tt.company.type,model_tt_company_type,,1,1,1,1

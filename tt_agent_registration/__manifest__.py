@@ -29,6 +29,7 @@
         'data/ir_cron_data.xml',
         'data/tt_provider_type_data.xml',
         'views/tt_agent_registration_views.xml',
+        'views/tt_document_type_views.xml',
 
         # 'report/printout_menu.xml',
         # 'report/printout_invoice_template.xml',
