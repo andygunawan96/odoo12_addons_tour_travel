@@ -120,7 +120,6 @@
             <field name="agent_type_id"/>
             <field name="basic_amount_type"/>
             <field name="basic_amount"/>
-            <field name="pricing_id"/>
             <field name="active"/>
         </tree>
         </field>
