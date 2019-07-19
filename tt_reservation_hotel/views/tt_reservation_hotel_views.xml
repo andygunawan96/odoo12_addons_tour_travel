@@ -157,7 +157,7 @@
                     <button string="Invoice" groups="tt_base.group_tt_agent_user_operator" name="create_agent_invoice" states="confirm,approved,issued" type="object"/>
 
                     <button string="Refund" groups="tt_base.group_tt_agent_user_supervisor" name="action_refund" states="cancel" type="object"/>
-                    <button string="Check Booking Status" name="check_booking_status" type="object"/>
+                    <button string="Check Booking Status" name="check_booking_status" type="object" states="confirm,issued,fail,cancel" />
                     <button string="Cancel Booking (Policy Applied)" groups="base.group_no_one" name="cancel_booking" states="issued" type="object"/>
                     <button string="Booking Policy" groups="base.group_no_one" name="check_booking_policy" type="object"/>
 

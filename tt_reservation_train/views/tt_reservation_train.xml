@@ -104,7 +104,6 @@
                 <button type="object" string="Create Booking" name="create_booking"/>
                 <button type="object" string="ISSUED1" name="action_issued_api"/>
                 <field name="name"/>
-                <field name="sub_agent_id"/>
                 <field name="pnr"/>
                 <field name="date"/>
                 <field name="expired_date"/>
