@@ -226,52 +226,109 @@ class ReservationAirline(models.Model):
         pass
 
     param_global = {
+        "force_issued": True,
         "booker": {
             "title": "MR",
-            "first_name": "Topi",
-            "last_name": "Dalton",
-            "email": "topi@gmail.com",
+            "first_name": "ivan",
+            "last_name": "suryajaya",
+            "email": "asd@gmail.com",
             "calling_code": "62",
-            "mobile": "8123456789",
+            "mobile": "82381283812",
             "nationality_code": "ID",
-            "is_also_booker": True
+            "booker_id": ""
         },
         "contacts": [
             {
                 "title": "MR",
-                "first_name": "Topi",
-                "last_name": "Dalton",
-                "email": "topi@gmail.com",
+                "first_name": "ivan",
+                "last_name": "suryajaya",
+                "email": "asd@gmail.com",
                 "calling_code": "62",
-                "mobile": "8123456789",
+                "mobile": "82381283812",
                 "nationality_code": "ID",
                 "is_also_booker": True,
                 "sequence": 1,
-                "gender": "male"
-            },
-            {
-                "title": "MR",
-                "first_name": "Putih",
-                "last_name": "Dalton",
-                "email": "rommie@gmail.com",
-                "calling_code": "62",
-                "mobile": "8139634586",
-                "nationality_code": "ID",
-                "is_also_booker": False,
-                "sequence": 2,
-                "gender": "male"
+                "gender": "male",
+                "contact_id": ""
             }
         ],
+        "passengers": [
+            {
+                "title": "MR",
+                "first_name": "ivan",
+                "last_name": "suryajaya",
+                "birth_date": "2002-04-08",
+                "pax_type": "ADT",
+                "nationality_code": "ID",
+                "passport_number": "",
+                "passport_expdate": "",
+                "country_of_issued_code": "",
+                "is_also_booker": False,
+                "is_also_contact": False,
+                "sequence": 1,
+                "gender": "male",
+                "passenger_id": ""
+            }
+        ],
+        "searchRQ": {
+            "origin": "SUB",
+            "destination": "SIN",
+            "departure_date": "2019-07-18",
+            "return_date": "2019-07-18",
+            "direction": "OW",
+            "adult": 1,
+            "child": 0,
+            "infant": 0,
+            "cabin_class": "Y",
+            "carrier_codes": [
+                "CX",
+                "SQ"
+            ],
+            "is_combo_price": False,
+            "provider": "amadeus"
+        },
+        "providers_booking_data": {
+            "amadeus": {
+                "1": {
+                    "journey_codes": {
+                        "DEP": [
+                            {
+                                "segment_code": "SQ,5223,SUB,2,2019-07-18 16:30:00,SIN,2,2019-07-18 19:55:00,amadeus",
+                                "journey_type": "DEP",
+                                "fare_code": "M",
+                                "carrier_code": "SQ",
+                                "carrier_number": "5223",
+                                "origin": "SUB",
+                                "origin_terminal": "2",
+                                "departure_date": "2019-07-18 16:30:00",
+                                "destination": "SIN",
+                                "destination_terminal": "2",
+                                "arrival_date": "2019-07-18 19:55:00",
+                                "provider": "amadeus",
+                                "class_of_service": "M"
+                            }
+                        ],
+                        "RET": []
+                    },
+                    "paxs": {
+                        "ADT": 1,
+                        "CHD": 0,
+                        "INF": 0
+                    },
+                    "is_combo_price": False
+                }
+            }
+        },
         "context": {
-            "uid": 6,
-            "user_name": "sam.api",
-            "user_login": "sam.api",
-            "agent_id": 2,
-            "agent_name": "Rodex PTC",
-            "agent_type_id": "",
-            "agent_type_name": "",
-            "agent_type_code": "",
-            "api_role": "operator",
+            "uid": 9,
+            "user_name": "Ivan Credential",
+            "user_login": "mob.it@rodextravel.tours",
+            "agent_id": 4,
+            "agent_name": "Rodex Bonbin",
+            "agent_type_id": 2,
+            "agent_type_name": "Agent Citra",
+            "agent_type_code": "citra",
+            "api_role": "manager",
             "host_ips": [],
             "configs": {
                 "airline": {
@@ -279,200 +336,19 @@ class ReservationAirline(models.Model):
                     "providers": {}
                 }
             },
-            "co_uid": 6,
-            "co_user_name": "sam.api",
-            "co_user_login": "sam.api",
-            "co_agent_id": 2,
-            "co_agent_name": "Rodex PTC",
-            "co_agent_type_id": "",
-            "co_agent_type_name": "",
-            "co_agent_type_code": "",
-            "sid": "39c96f0c04d6e56f5a5638f46349ebde19f33767",
-            "signature": "0346e6499b444a318eb42a1f2adf9b20",
-            "expired_date": "2019-07-17 09:02:57"
+            "co_uid": 9,
+            "co_user_name": "Ivan Credential",
+            "co_user_login": "mob.it@rodextravel.tours",
+            "co_agent_id": 4,
+            "co_agent_name": "Rodex Bonbin",
+            "co_agent_type_id": 2,
+            "co_agent_type_name": "Agent Citra",
+            "co_agent_type_code": "citra",
+            "sid": "eee5465b965087dc75f75cd45a80fea1fd4b1822",
+            "signature": "f80632a549804274a07b0ee7a29c2323",
+            "expired_date": "2019-07-18 09:31:14"
         },
-        "force_issued": False,
-        "passengers": [
-            {
-                "title": "MR",
-                "first_name": "Lina",
-                "last_name": "Dalton",
-                "birth_date": "1989-03-20",
-                "pax_type": "ADT",
-                "nationality_code": "ID",
-                "passport_number": "BG123456",
-                "passport_expdate": "2022-03-20",
-                "country_of_issued_code": "ID",
-                "is_also_booker": False,
-                "is_also_contact": False,
-                "sequence": 1,
-                "gender": "male"
-            },
-            {
-                "title": "MRS",
-                "first_name": "Lio",
-                "last_name": "Dalton",
-                "birth_date": "1992-06-15",
-                "pax_type": "ADT",
-                "nationality_code": "ID",
-                "passport_number": "GF6135",
-                "passport_expdate": "2022-06-15",
-                "country_of_issued_code": "ID",
-                "is_also_booker": False,
-                "is_also_contact": False,
-                "sequence": 2,
-                "gender": "female"
-            },
-            {
-                "title": "MS",
-                "first_name": "Lea",
-                "last_name": "",
-                "birth_date": "1992-08-15",
-                "pax_type": "ADT",
-                "nationality_code": "ID",
-                "passport_number": "GF6135",
-                "passport_expdate": "2022-08-15",
-                "country_of_issued_code": "ID",
-                "is_also_booker": False,
-                "is_also_contact": False,
-                "sequence": 3,
-                "gender": "female"
-            },
-            {
-                "title": "MSTR",
-                "first_name": "Tiki",
-                "last_name": "Dalton",
-                "birth_date": "2010-10-10",
-                "pax_type": "CHD",
-                "nationality_code": "ID",
-                "passport_number": "AC4843",
-                "passport_expdate": "2022-10-10",
-                "country_of_issued_code": "ID",
-                "is_also_booker": False,
-                "is_also_contact": False,
-                "sequence": 4,
-                "gender": "male"
-            },
-            {
-                "title": "MISS",
-                "first_name": "Ella",
-                "last_name": "",
-                "birth_date": "2010-02-14",
-                "pax_type": "CHD",
-                "nationality_code": "ID",
-                "passport_number": "GA5135",
-                "passport_expdate": "2022-02-14",
-                "country_of_issued_code": "ID",
-                "is_also_booker": False,
-                "is_also_contact": False,
-                "sequence": 5,
-                "gender": "female"
-            }
-        ],
-        "provider_type": "airline",
-        "providers_booking_data": {
-            "amadeus": {
-                "1": {
-                    "journey_codes": {
-                        "DEP": [
-                            {
-                                "segment_code": "SQ,931,SUB,2,2019-09-15 10:10:00,SIN,0,2019-09-15 13:30:00,amadeus",
-                                "journey_type": "DEP",
-                                "fare_code": "M",
-                                "carrier_code": "SQ",
-                                "carrier_number": "931",
-                                "origin": "SUB",
-                                "origin_terminal": "2",
-                                "departure_date": "2019-09-15 10:10:00",
-                                "destination": "SIN",
-                                "destination_terminal": "0",
-                                "arrival_date": "2019-09-15 13:30:00",
-                                "provider": "amadeus"
-                            },
-                            {
-                                "segment_code": "SQ,982,SIN,2,2019-09-15 17:30:00,BKK,,2019-09-15 19:00:00,amadeus",
-                                "journey_type": "DEP",
-                                "fare_code": "M",
-                                "carrier_code": "SQ",
-                                "carrier_number": "982",
-                                "origin": "SIN",
-                                "origin_terminal": "2",
-                                "departure_date": "2019-09-15 17:30:00",
-                                "destination": "BKK",
-                                "destination_terminal": "",
-                                "arrival_date": "2019-09-15 19:00:00",
-                                "provider": "amadeus"
-                            }
-                        ],
-                        "RET": []
-                    },
-                    "paxs": {
-                        "ADT": 3,
-                        "CHD": 2,
-                        "INF": 0
-                    },
-                    "is_combo_price": False
-                },
-                "2": {
-                    "journey_codes": {
-                        "DEP": [],
-                        "RET": [
-                            {
-                                "segment_code": "CX,616,BKK,,2019-09-22 06:35:00,HKG,1,2019-09-22 10:25:00,amadeus",
-                                "journey_type": "RET",
-                                "fare_code": "B",
-                                "carrier_code": "CX",
-                                "carrier_number": "616",
-                                "origin": "BKK",
-                                "origin_terminal": "",
-                                "departure_date": "2019-09-22 06:35:00",
-                                "destination": "HKG",
-                                "destination_terminal": "1",
-                                "arrival_date": "2019-09-22 10:25:00",
-                                "provider": "amadeus"
-                            },
-                            {
-                                "segment_code": "CX,779,HKG,1,2019-09-22 14:10:00,SUB,2,2019-09-22 18:00:00,amadeus",
-                                "journey_type": "RET",
-                                "fare_code": "B",
-                                "carrier_code": "CX",
-                                "carrier_number": "779",
-                                "origin": "HKG",
-                                "origin_terminal": "1",
-                                "departure_date": "2019-09-22 14:10:00",
-                                "destination": "SUB",
-                                "destination_terminal": "2",
-                                "arrival_date": "2019-09-22 18:00:00",
-                                "provider": "amadeus"
-                            }
-                        ]
-                    },
-                    "paxs": {
-                        "ADT": 3,
-                        "CHD": 2,
-                        "INF": 0
-                    },
-                    "is_combo_price": False
-                }
-            }
-        },
-        "searchRQ": {
-            "origin": "SUB",
-            "destination": "BKK",
-            "departure_date": "2019-09-15",
-            "return_date": "2019-09-22",
-            "direction": "RT",
-            "adult": 3,
-            "child": 2,
-            "infant": 0,
-            "cabin_class": "Y",
-            "carrier_codes": [
-                "SQ",
-                "CX"
-            ],
-            "is_combo_price": False,
-            "provider": "amadeus"
-        }
+        "provider_type": "airline"
     }
 
     param_update_pnr = {
@@ -1516,8 +1392,9 @@ class ReservationAirline(models.Model):
             }
         ]
     }
+
     def create_booking_airline_api(self, req):
-        req = copy.deepcopy(self.param_global)
+        # req = copy.deepcopy(self.param_global)
         print(json.dumps(req))
         search_RQ = req['searchRQ']
         booker = req['booker']
@@ -1598,17 +1475,23 @@ class ReservationAirline(models.Model):
         if vals.get('booker_id'):
             booker_id = int(vals['booker_id'])
             booker_rec = booker_obj.browse(booker_id)
+            update_value = {}
             if booker_rec:
                 if vals.get('mobile'):
-                    new_phone = [(0,0,{
-                        'phone_number': '+%s%s' % (vals.get('calling_code',''),vals.get('mobile',''))
-                    })]
-                else:
-                    new_phone = False
-                booker_rec.update({
-                    'email': vals.get('email', booker_rec.email),
-                    'phone_ids': new_phone or booker_rec.phone_ids
-                })
+                    for phone in booker_rec.phone_ids:
+                        vals_phone_number = '+%s%s' % (vals.get('calling_code',''),vals['mobile'])
+                        if phone.phone_number == vals_phone_number:
+                            new_phone = [(1,phone.id,{
+                                'phone_number': vals_phone_number
+                            })]
+                        else:
+                            new_phone = [(0, 0, {
+                                'phone_number': vals_phone_number
+                            })]
+                        update_value['phone_ids'] = new_phone
+                update_value['email'] =vals.get('email', booker_rec.email)
+
+                booker_rec.update(update_value)
                 return booker_rec
 
         country = self.env['res.country'].sudo().search([('code', '=', vals.pop('nationality_code'))])
@@ -1636,24 +1519,43 @@ class ReservationAirline(models.Model):
         contact_obj = self.env['tt.customer'].sudo()
 
         if vals.get('contact_id') or vals.get('is_also_booker'):
-            if 'contact_id' in vals:
+            if vals.get('contact_id'):
                 contact_id = int(vals['contact_id'])
             else:
                 contact_id = booker.id
 
             contact_rec = contact_obj.browse(contact_id)
+            update_value = {}
             if contact_rec:
                 if vals.get('mobile'):
-                    new_phone = [(0,0,{
-                        'phone_number': '+%s%s' % (vals.get('calling_code',''),vals.get('mobile',''))
-                    })]
-                else:
-                    new_phone = False
-                contact_rec.update({
-                    'email': vals.get('email', contact_rec.email),
-                    'phone_ids': new_phone or contact_rec.phone_ids
-                })
+                    for phone in contact_rec.phone_ids:
+                        vals_phone_number = '+%s%s' % (vals.get('calling_code',''),vals['mobile'])
+                        if phone.phone_number == vals_phone_number:
+                            new_phone = [(1,phone.id,{
+                                'phone_number': vals_phone_number
+                            })]
+                        else:
+                            new_phone = [(0, 0, {
+                                'phone_number': vals_phone_number
+                            })]
+                        update_value['phone_ids'] = new_phone
+                update_value['email'] =vals.get('email', contact_rec.email)
+
+                contact_rec.update(update_value)
                 return contact_rec
+
+            # if contact_rec:
+            #     if vals.get('mobile'):
+            #         new_phone = [(0,0,{
+            #             'phone_number': '+%s%s' % (vals.get('calling_code',''),vals.get('mobile',''))
+            #         })]
+            #     else:
+            #         new_phone = False
+            #     contact_rec.update({
+            #         'email': vals.get('email', contact_rec.email),
+            #         'phone_ids': new_phone or contact_rec.phone_ids
+            #     })
+            #     return contact_rec
 
 
         country = self.env['res.country'].sudo().search([('code', '=', vals.pop('nationality_code'))])
@@ -1702,15 +1604,15 @@ class ReservationAirline(models.Model):
 
             if psg.get('passenger_id') or booker_contact_id > 0:
 
-                current_passenger = passenger_obj.browse(int(psg.get('passenger_id'),booker_contact_id))
+                current_passenger = passenger_obj.browse(int(psg.get('passenger_id',booker_contact_id)))
                 if current_passenger:
                     current_passenger.update(vals_for_update)
                     res_ids.append(current_passenger.id)
                     continue
 
+            util.pop_empty_key(psg)
             psg['agent_id'] = context['agent_id']
             agent_obj = self.env['tt.agent'].sudo().browse(context['agent_id'])
-
             psg.update({
                 'customer_parent_ids': [(4, agent_obj.customer_parent_walkin_id.id)],
             })
