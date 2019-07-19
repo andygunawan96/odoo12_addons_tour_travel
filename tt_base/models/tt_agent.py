@@ -18,7 +18,7 @@ class TtAgent(models.Model):
     logo = fields.Binary('Agent Logo', attachment=True)
     logo_thumb = fields.Binary('Agent Logo Thumb', compute="_get_logo_image", store=True, attachment=True)
 
-    reference = fields.Many2one('tt.agent', 'Reference')
+    reference = fields.Many2one('tt.agent', 'Reference', help="Agent who Refers This Agent")
     balance = fields.Monetary(string="Balance",  required=False, )
     actual_balance = fields.Monetary(string="Actual Balance",  required=False, )
     annual_revenue_target = fields.Monetary(string="Annual Revenue Target", required=False, )
@@ -41,7 +41,7 @@ class TtAgent(models.Model):
     customer_ids = fields.One2many('tt.customer', 'agent_id', 'Customer')
     # ledger_id = fields.One2many('tt.ledger', 'agent_id', 'Ledger', required=False, )  # tt_ledger
     ledger_id = fields.Char('Ledger', required=False, )  # tt_ledger
-    parent_agent_id = fields.Many2one('tt.agent', string="Parent Agent")
+    parent_agent_id = fields.Many2one('tt.agent', string="Parent Agent", Help="Agent who became Parent of This Agent")
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type')
     history_ids = fields.Char(string="History", required=False, )  # tt_history
     user_ids = fields.One2many('res.users', 'agent_id', 'User')

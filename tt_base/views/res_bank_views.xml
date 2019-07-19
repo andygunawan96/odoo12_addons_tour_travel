@@ -8,13 +8,6 @@
             <field name="arch" type="xml">
                 <form string="Res Bank Form">
                     <sheet>
-                        <!--<div class="oe_button_box" name="button_box">-->
-                            <!--<button name="toggle_active" type="object"-->
-                                    <!--class="oe_stat_button" icon="fa-archive">-->
-                                <!--<field name="active" widget="boolean_button"-->
-                                    <!--options='{"terminology": "archive"}'/>-->
-                            <!--</button>-->
-                        <!--</div>-->
                         <div class="oe_button_box" name="button_box">
                             <button name="toggle_active" type="object" groups="base.group_user"
                                     class="oe_stat_button" icon="fa-archive">
@@ -22,26 +15,28 @@
                                        options='{"terminology": "archive"}'/>
                             </button>
                         </div>
-                        <!--<div class="oe_title">-->
-                            <!--<label for="name" class="oe_edit_only"/>-->
-                            <!--<h1>-->
-                                <!--<field name="name" placeholder="TT Agent Type Placeholder" attrs="{'required' : True}"/>-->
-                            <!--</h1>-->
-                        <!--</div>-->
+                        <field name="image" widget="image" class="oe_avatar" options="{&quot;preview_image&quot;: &quot;image_medium&quot;}"/>
+                        <div class="oe_title">
+                            <h1><field name="name" placeholder="Name"/></h1>
+                        </div>
                         <group>
-                            <field name="name"/>
-                            <field name="logo" widget="image"/>
-                            <field name="code"/>
-                            <field name="bic"/>
-                            <field name="agent_bank_ids"/>
-                            <field name="customer_bank_ids"/>
-                            <field name="payment_acquirer_ids"/>
+                            <group>
+                                <field name="code"/>
+                                <field name="bic"/>
+                            </group>
                         </group>
+                        <notebook>
+                            <page string="Agent">
+                                <field name="agent_bank_ids"/>
+                            </page>
+                            <page string="Customer">
+                                <field name="customer_bank_ids"/>
+                            </page>
+                            <page string="Payment">
+                                <field name="payment_acquirer_ids"/>
+                            </page>
+                        </notebook>
                     </sheet>
-                    <div class="oe_chatter">
-                        <field name="message_follower_ids" widget="mail_followers"/>
-                        <field name="message_ids" widget="mail_thread"/>
-                    </div>
                 </form>
             </field>
         </record>

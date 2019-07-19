@@ -11,7 +11,7 @@ class TtAgentType(models.Model):
     state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'), ('cancel', 'Cancelled')], string='State',
                              default='draft')
     active = fields.Boolean('Active', default='True')
-    upline_ids = fields.Many2many('tt.agent.type', 'tt_agent_type_upline_1_2_rel', 'agent_1', 'agent_2')
+    registration_upline_ids = fields.Many2many('tt.agent.type', 'tt_agent_type_upline_1_2_rel', 'agent_1', 'agent_2')
     description = fields.Text('Description')
     currency_id = fields.Many2one('res.currency', 'Currency')
     registration_fee = fields.Monetary('Registration Fee')
@@ -22,7 +22,9 @@ class TtAgentType(models.Model):
     registration_form = fields.Html(string="Registration Form")
     document = fields.Char(string="Document", required=False, )
     agent_ids = fields.One2many('tt.agent', 'agent_type_id', 'Agent')
-    is_allow_regis = fields.Boolean('Allow Registration', default=False)
+    # is_allow_regis = fields.Boolean('Allow Registration', default=False)
+    can_register_agent = fields.Boolean('Can Register Agent', default=False)
+    can_be_registered = fields.Boolean('Can be Registered', default=False)
     commission_rule_ids = fields.One2many('tt.commission.rule', 'agent_type_id', 'Commission Rule(s)')
     recruitment_commission_ids = fields.One2many('tt.commission.rule', 'agent_type2_id',
                                                  'Recruitment Commission Rule(s)')

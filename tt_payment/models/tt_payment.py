@@ -1,10 +1,12 @@
-from odoo import fields, api, models
+from odoo import fields, api, models, _
 import datetime
+
 
 class PaymentTransaction(models.Model):
     _name = 'tt.payment'
     _rec_name = 'display_name_1'
-    name = fields.Char('Name')
+    
+    name = fields.Char('Name', default='New', help='Sequence number set on Confirm state example:PAY.XXX')
     # pay_amount = fields.Monetary('Payment amount', ) # yang bisa dipakai membayar
     # unique_amount = fields.Monetary('Unique Number', help='For validating direct transfer') # dimasukkan ke payment
     fee = fields.Monetary('Fee', help='Third party fee') # g dihitung sebagai uang yg bisa digunakan
@@ -14,7 +16,6 @@ class PaymentTransaction(models.Model):
 
     display_name_1 = fields.Char('Display Name')
 
-    payment_uid = fields.Many2one('tt.agent', 'Payer', required=True)
     payment_date = fields.Datetime('Payment Date') #required
 
     total_amount = fields.Monetary('Total Payment', required=True ) # yang benar benar di transfer
@@ -22,11 +23,21 @@ class PaymentTransaction(models.Model):
 
     top_up_id = fields.Char('Top Up')
 
-    # payment_aquirer = fields.Many2one()
-    
     state = fields.Selection([('draft','Draft'),
                               ('confirm','Confirm'),
-                              ('validated','Validated')],'State',default='draft')
+                              ('validated','Validated')], 'State', default='draft', help='Draft: New payment can be edited,'
+                                                                                         'Confirm: Agent Confirmed the payment'
+                                                                                         'Validate: HO Confirmed the payment')
+
+    # Tambahan
+    confirm_uid = fields.Many2one('res.users', 'Confirm by')
+    confirm_date = fields.Datetime('Confirm on')
+    validate_uid = fields.Many2one('res.users', 'Validate by')
+    validate_date = fields.Datetime('Validate on')
+    reference = fields.Char('Trans. Ref.', help='Transaction Reference / Approval number')
+    agent_id = fields.Many2one('tt.agent', 'Agent', required=True)
+    acquirer_id = fields.Many2one('payment.acquirer', 'Acquirer', domain="['|', ('agent_id', '=', agent_id), ('agent_id', '=', False)]")
+
     #Todo:
     # 1. Pertimbangkan penggunaan monetary field untuk integer field (pertimbangkan multi currency juga)
 
@@ -40,6 +51,8 @@ class PaymentTransaction(models.Model):
 
     @api.model
     def create(self, vals_list):
+        if 'name' not in vals_list or vals_list['name'] == _('New'):
+            vals_list['name'] = self.env['ir.sequence'].next_by_code('tt.payment') or _('New')
         new_payment = super(PaymentTransaction, self).create(vals_list)
         new_payment.calculate_amount()
         new_payment.state = 'confirm'

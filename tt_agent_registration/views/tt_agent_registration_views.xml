@@ -68,7 +68,7 @@
                         </group>
                         <group>
                             <group>
-                                <field name="agent_type_id" />
+                                <field name="agent_type_id" domain="[('can_be_registered','in',[True])]"/>
                                 <field name="reference_id"/>
                                 <field name="parent_agent_id"/>
                                 <field name="agent_level"/>
@@ -231,6 +231,7 @@
             <field name="model">tt.agent.registration</field>
             <field name="arch" type="xml">
                 <tree string="Agent Registration">
+                    <button type="object" string="Create Agent Registration" name="create_agent_registration_api"/>
                     <field name="name"/>
                     <field name="registration_num"/>
                     <field name="agent_type_id"/>

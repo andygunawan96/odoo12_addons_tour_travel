@@ -26,5 +26,6 @@ class tt_ledger(models.Model):
 
     def create(self, vals_list):
         if 'res_model' in vals_list and 'res_id' in vals_list:
-            vals_list['provider_type_id'] = self.env[vals_list['res_model']].browse(vals_list['res_id']).provider_type_id.id
+            if 'provider_type_id' in self.env[vals_list['res_model']].browse(vals_list['res_id']):
+                vals_list['provider_type_id'] = self.env[vals_list['res_model']].browse(vals_list['res_id']).provider_type_id.id
         super(tt_ledger, self).create(vals_list)
