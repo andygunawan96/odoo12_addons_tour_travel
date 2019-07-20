@@ -1511,7 +1511,7 @@ class ReservationAirline(models.Model):
 
         except Exception as e:
             _logger.error(str(e) + traceback.format_exc())
-        return Response().get_error("Maintenace",500)
+            return Response().get_error("Maintenace",500)
 
     def validate_booking(self, api_context=None):
         user_obj = self.env['res.users'].browse(api_context['co_uid'])
@@ -1543,8 +1543,9 @@ class ReservationAirline(models.Model):
 
     def _create_booker_api(self, vals, context):
         booker_obj = self.env['tt.customer'].sudo()
+        get_booker_id = util.get_without_empty(vals.get('booker_id'))
 
-        if vals.get('booker_id'):
+        if get_booker_id:
             booker_id = int(vals['booker_id'])
             booker_rec = booker_obj.browse(booker_id)
             update_value = {}
@@ -1589,15 +1590,18 @@ class ReservationAirline(models.Model):
 
     def _create_contact_api(self, vals, booker, context):
         contact_obj = self.env['tt.customer'].sudo()
+        get_contact_id = util.get_without_empty(vals['contact_id'],False)
 
-        if vals.get('contact_id') or vals.get('is_also_booker'):
-            if vals.get('contact_id'):
-                contact_id = int(vals['contact_id'])
+
+        if get_contact_id or vals.get('is_also_booker'):
+            if get_contact_id:
+                contact_id = int(get_contact_id)
             else:
                 contact_id = booker.id
 
             contact_rec = contact_obj.browse(contact_id)
             update_value = {}
+
             if contact_rec:
                 if vals.get('mobile'):
                     for phone in contact_rec.phone_ids:
@@ -1615,20 +1619,6 @@ class ReservationAirline(models.Model):
 
                 contact_rec.update(update_value)
                 return contact_rec
-
-            # if contact_rec:
-            #     if vals.get('mobile'):
-            #         new_phone = [(0,0,{
-            #             'phone_number': '+%s%s' % (vals.get('calling_code',''),vals.get('mobile',''))
-            #         })]
-            #     else:
-            #         new_phone = False
-            #     contact_rec.update({
-            #         'email': vals.get('email', contact_rec.email),
-            #         'phone_ids': new_phone or contact_rec.phone_ids
-            #     })
-            #     return contact_rec
-
 
         country = self.env['res.country'].sudo().search([('code', '=', vals.pop('nationality_code'))])
         agent_obj = self.env['tt.agent'].sudo().browse(context['agent_id'])
@@ -1674,9 +1664,11 @@ class ReservationAirline(models.Model):
             elif psg.get('is_also_contact'):
                 booker_contact_id = contact_id
 
-            if psg.get('passenger_id') or booker_contact_id > 0:
+            get_psg_id = util.get_without_empty(psg.get('passenger_id'))
 
-                current_passenger = passenger_obj.browse(int(psg.get('passenger_id',booker_contact_id)))
+            if get_psg_id or booker_contact_id > 0:
+
+                current_passenger = passenger_obj.browse(int(get_psg_id or booker_contact_id))
                 if current_passenger:
                     current_passenger.update(vals_for_update)
                     res_ids.append(current_passenger.id)

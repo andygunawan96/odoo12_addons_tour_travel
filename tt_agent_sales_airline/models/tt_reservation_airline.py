@@ -116,7 +116,7 @@ class ReservationTrain(models.Model):
         for psg in self.passenger_ids:
 
             #fixme this later
-            if int(psg.calculate_age()) >= 17:
+            if int(psg.age) >= 17:
                 psg.pax_type = 'ADT'
             else:
                 psg.pax_type = 'CHD'

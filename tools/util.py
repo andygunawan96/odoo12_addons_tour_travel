@@ -41,3 +41,9 @@ def pop_empty_key(data):
 
     for key in temp_key:
         data.pop(key)
+
+def get_without_empty(data,else_param=False):
+    if data not in [0,'',False]:
+            return data
+    else:
+        return else_param
