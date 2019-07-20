@@ -958,6 +958,19 @@ class TourPricelist(models.Model):
                     'description': 'Tipping Tour Leader',
                 })
 
+            if price_itinerary.get('tipping_driver_amount'):
+                service_charge.append({
+                    'pax_type': 'ADT',
+                    'charge_code': 'tax',
+                    'charge_type': 'tax',
+                    'amount': price_itinerary['tipping_driver_total'] / price_itinerary['tipping_driver_amount'],
+                    'pax_count': price_itinerary['tipping_driver_amount'],
+                    'currency_id': def_currency,
+                    'foreign_currency_id': def_currency,
+                    'foreign_amount': 0,
+                    'description': 'Tipping Driver',
+                })
+
             if price_itinerary.get('additional_charge_amount'):
                 service_charge.append({
                     'pax_type': 'ADT',
