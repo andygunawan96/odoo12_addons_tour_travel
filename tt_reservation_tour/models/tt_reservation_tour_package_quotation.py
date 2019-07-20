@@ -24,44 +24,10 @@ class TourPackageQuotation(models.Model):
 
     airport_tax = fields.Monetary('Airport Tax', readonly=True, states={'draft': [('readonly', False)]}, default=0)
 
-    # GUIDE
-    tipping_guide = fields.Monetary('Tipping Guide', readonly=True, states={'draft': [('readonly', False)]}, default=0)
-    tipping_guide_currency = fields.Char('Tipping Guide Currency')
-    tipping_guide_rate = fields.Monetary('Tipping Guide Rate', readonly=True, states={'draft': [('readonly', False)]},
-                                         default=0)
-    rupiah_tipping_guide = fields.Monetary('Rupiah (Rp) Tipping Guide', readonly=True,
-                                           states={'draft': [('readonly', False)]}, default=0)
-    rupiah_tipping_guide_rel = fields.Monetary('Tipping Guide (Rupiah)', related='rupiah_tipping_guide', readonly=True)
-
-    # TOUR LEADER
-    tipping_tour_leader = fields.Monetary('Tipping Tour Leader', readonly=True, states={'draft': [('readonly', False)]},
-                                          default=0)
-    tipping_tour_leader_currency = fields.Char('Tipping Tour Leader Currency')
-    tipping_tour_leader_rate = fields.Monetary('Tipping Tour Leader Rate', readonly=True,
-                                               states={'draft': [('readonly', False)]}, default=0)
-    rupiah_tipping_tour_leader = fields.Monetary('Rupiah (Rp) Tipping Tour Leader', readonly=True,
-                                                 states={'draft': [('readonly', False)]}, default=0)
-    rupiah_tipping_tour_leader_rel = fields.Monetary('Rupiah (Rp) Tipping Tour Leader',
-                                                     related='rupiah_tipping_tour_leader', readonly=True)
-
-    # DRIVER
-    tipping_driver = fields.Monetary('Tipping Driver', readonly=True, states={'draft': [('readonly', False)]}, default=0)
-    tipping_driver_currency = fields.Char('Tipping Driver Currency')
-    tipping_driver_rate = fields.Monetary('Tipping Driver Rate', readonly=True, states={'draft': [('readonly', False)]},
-                                          default=0)
-    rupiah_tipping_driver = fields.Monetary('Rupiah (Rp) Tipping Driver', readonly=True,
-                                            states={'draft': [('readonly', False)]}, default=0)
-    rupiah_tipping_driver_rel = fields.Monetary('Rupiah (Rp) Tipping Driver',
-                                                related='rupiah_tipping_driver', readonly=True)
-
-    guiding_days = fields.Integer('Guiding Days', readonly=True, states={'draft': [('readonly', False)]}, default=1)
-    total_tipping = fields.Monetary('Total Tipping', readonly=True, states={'draft': [('readonly', False)]}, default=0)
-
     tour_pricelist_id = fields.Many2one('tt.reservation.tour.pricelist', 'Tour')
 
     # PAX
     pax_type = fields.Selection(PAX_TYPE, 'Pax Type', default='adt')
-    pax_amount = fields.Integer('Participant Amount', readonly=True, states={'draft': [('readonly', False)]}, default=1)
 
     # PERIOD
     start_period = fields.Date('Start Period', readonly=True, states={'draft': [('readonly', False)]})
@@ -234,10 +200,6 @@ class TourPackageQuotation(models.Model):
     total_variable_cost_rel = fields.Monetary('Total Variable Cost', related='total_variable_cost', readonly=True,
                                               default=0)
 
-    based_on_pax = fields.Monetary('Based on Pax', readonly=True,
-                                   states={'draft': [('readonly', False)]}, default=0)
-    based_on_pax_rel = fields.Monetary('Based on Pax', related='based_on_pax', readonly=True, default=0)
-
     # TOTALS
     total_exclude = fields.Monetary('Grand Total (EXC. Tipping, Airport Tax, Visa)', readonly=True,
                                     states={'draft': [('readonly', False)]}, default=0)
@@ -263,12 +225,14 @@ class TourPackageQuotation(models.Model):
     total_extra_cost = fields.Monetary('Total Extra Cost', readonly=True,
                                        states={'draft': [('readonly', False)]}, default=0)
     total_extra_cost_rel = fields.Monetary('Total Extra Cost', related='total_extra_cost', readonly=True, default=0)
+    total_tipping = fields.Monetary('Total Tipping', readonly=True, states={'draft': [('readonly', False)]}, default=0)
 
-    @api.depends('tour_pricelist_id', 'rupiah_tipping_driver')
-    @api.onchange('tour_pricelist_id', 'rupiah_tipping_driver')
+    @api.depends('tour_pricelist_id')
+    @api.onchange('tour_pricelist_id')
     def _compute_total_tipping(self):
         self.total_tipping = (self.tour_pricelist_id.tipping_guide * self.tour_pricelist_id.guiding_days) + (
-                    self.tour_pricelist_id.tipping_tour_leader * self.tour_pricelist_id.duration) + self.rupiah_tipping_driver
+                    self.tour_pricelist_id.tipping_tour_leader * self.tour_pricelist_id.duration) + (
+                    self.tour_pricelist_id.tipping_driver * self.tour_pricelist_id.driving_times)
 
     @api.depends('porter_ids')
     @api.onchange('porter_ids')
@@ -298,19 +262,14 @@ class TourPackageQuotation(models.Model):
                 tot += rec.rupiah_extra_cost
         self.total_extra_cost = tot
 
-    @api.depends('total_variable_cost', 'pax_amount')
-    @api.onchange('total_variable_cost', 'pax_amount')
-    def _compute_based_on_pax(self):
-        self.based_on_pax = self.total_variable_cost / self.pax_amount
-
     @api.depends('rupiah_international_flight', 'rupiah_domestic_flight', 'rupiah_train_cost', 'rupiah_land_package',
-                 'rupiah_insurance_cost', 'total_porter_cost', 'total_extra_cost', 'total_merchandise', 'based_on_pax')
+                 'rupiah_insurance_cost', 'total_porter_cost', 'total_extra_cost', 'total_merchandise', 'total_variable_cost')
     @api.onchange('rupiah_international_flight', 'rupiah_domestic_flight', 'rupiah_train_cost', 'rupiah_land_package',
-                  'rupiah_insurance_cost', 'total_porter_cost', 'total_extra_cost', 'total_merchandise', 'based_on_pax')
+                  'rupiah_insurance_cost', 'total_porter_cost', 'total_extra_cost', 'total_merchandise', 'total_variable_cost')
     def _compute_total_exclude(self):
         self.total_exclude = self.rupiah_international_flight + self.rupiah_domestic_flight + self.rupiah_train_cost + \
                              self.rupiah_land_package + self.rupiah_insurance_cost + self.total_porter_cost + \
-                             self.total_extra_cost + self.total_merchandise + self.based_on_pax
+                             self.total_extra_cost + self.total_merchandise + self.total_variable_cost
         print('Total Exclude : ' + str(self.total_exclude))
 
     @api.depends('total_exclude_rel', 'service_charge', 'pax_type')
@@ -350,11 +309,6 @@ class TourPackageQuotation(models.Model):
     @api.onchange('land_package', 'land_package_rate')
     def _compute_rupiah_land_package(self):
         self.rupiah_land_package = self.land_package * self.land_package_rate
-
-    @api.depends('tipping_driver', 'tipping_driver_rate', 'tour_pricelist_id')
-    @api.onchange('tipping_driver', 'tipping_driver_rate', 'tour_pricelist_id')
-    def _compute_rupiah_tipping_driver(self):
-        self.rupiah_tipping_driver = self.tipping_driver * self.tipping_driver_rate * self.tour_pricelist_id.guiding_days
 
     @api.depends('insurance_cost', 'insurance_rate')
     @api.onchange('insurance_cost', 'insurance_rate')
