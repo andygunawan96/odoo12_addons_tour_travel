@@ -10,7 +10,7 @@ _logger = logging.getLogger(__name__)
 class PricingAgent(models.Model):
     _name = 'tt.pricing.agent'
 
-    name = fields.Char('Name')
+    name = fields.Char('Name', readonly=1)
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', required=True)
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', required=True)
     provider_ids = fields.Many2many('tt.provider', 'tt_pricing_agent_provider_rel', 'pricing_id', 'provider_id',
@@ -28,16 +28,20 @@ class PricingAgent(models.Model):
 
     def get_name(self):
         # Perlu diupdate lagi, sementara menggunakan ini
-        res = '%s' % self.agent_type_id.code.title()
+        res = '%s - %s' % (self.agent_type_id.code.title(), self.provider_type_id.code.title())
         return res
 
     @api.model
     def create(self, values):
         res = super(PricingAgent, self).create(values)
+        res.write({})
         return res
 
     def write(self, values):
-        return super(PricingAgent, self).write(values)
+        res = super(PricingAgent, self).write(values)
+        if not values.get('name'):
+            self.write({'name': self.get_name()})
+        return res
 
     def get_pricing_agent_api(self, _provider_type):
         try:
