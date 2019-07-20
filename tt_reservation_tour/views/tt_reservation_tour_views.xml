@@ -22,7 +22,7 @@
                             <group>
                                 <field name="tour_id" string="Tour Package Name" readonly="1"/>  <!--readonly="1"-->
                                 <field name="agent_id"/>  <!--readonly="1"--> <!--groups="tt_base.group_tt_tour_travel_operator"-->
-<!--                                <field name="sub_agent_id"/>  &lt;!&ndash;readonly="1"&ndash;&gt; &lt;!&ndash;groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"&ndash;&gt;-->
+                                <field name="customer_parent_id"/>  <!--readonly="1"--> <!--groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"-->
                                 <field name="contact_id"/>  <!--readonly="1"-->
                                 <field name="display_mobile"/>
                                 <field name="user_id"/>  <!--readonly="1"-->
@@ -122,8 +122,8 @@
                     <field name="arrival_date"/>
                     <field name="agent_id"/>  <!--groups="tt_base.group_tt_tour_travel_operator"-->
                     <field name="agent_type_id"/>  <!--groups="tt_base.group_tt_tour_travel_operator"-->
-<!--                    <field name="sub_agent_id"/>  &lt;!&ndash;groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"&ndash;&gt;-->
-<!--                    <field name="sub_agent_type_id"/>  &lt;!&ndash;groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"&ndash;&gt;-->
+                    <field name="customer_parent_id"/>  <!--groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"-->
+                    <field name="customer_parent_type_id"/>  <!--groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"-->
                     <field name="contact_id"/>
                     <field name="booked_uid"/>
                     <field name="booked_date"/>
