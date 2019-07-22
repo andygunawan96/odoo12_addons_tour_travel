@@ -35,7 +35,7 @@ class TtCustomer(models.Model):
     social_media_ids = fields.One2many('social.media.detail', 'customer_id', 'Social Media Detail')
     employment_ids = fields.One2many('res.employee', 'customer_id', 'Employee')
     email = fields.Char('Email')
-    identity_type = fields.Selection(variables.IDENTITY_TYPE,'Identity Type')
+    identity_type = fields.Selection(variables.IDENTITY_TYPE, 'Identity Type')
     identity_number = fields.Char('Identity Number')
     passport_number = fields.Char(string='Passport Number')
     passport_expdate = fields.Datetime(string='Passport Exp Date')
