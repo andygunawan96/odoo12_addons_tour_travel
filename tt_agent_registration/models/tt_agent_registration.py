@@ -504,10 +504,8 @@ class AgentRegistration(models.Model):
             agent_type = self.env['tt.agent.type'].sudo().search([('name', '=', other.get('agent_type'))], limit=1)
             header = self.prepare_header(company, other, agent_type)
             contact_ids = self.prepare_contact(pic)
-            address_ids = self.prepare_address(company)
             header.update({
                 'contact_ids': [(6, 0, contact_ids)],
-                'address_ids': [(6, 0, address_ids)],
                 'registration_fee': agent_type.registration_fee,
                 'registration_date': datetime.now(),
                 'create_uid': self.env.user.id
@@ -545,7 +543,6 @@ class AgentRegistration(models.Model):
                     'name': rec.name,
                     'is_allow_regis': rec.is_allow_regis
                 })
-
             response = agent_type
             res = Response().get_no_error(response)
         except Exception as e:

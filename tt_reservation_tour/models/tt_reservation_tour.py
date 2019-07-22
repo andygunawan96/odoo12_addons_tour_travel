@@ -335,7 +335,7 @@ class TourBooking(models.Model):
                 raise Exception('ERROR Validate %s, key : %s' % (type, ls))
         return True
 
-    def update_api_context(self, sub_agent_id, context):
+    def update_api_context(self, customer_parent_id, context):
         context['co_uid'] = int(context['co_uid'])
         user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
         if context['is_company_website']:
@@ -347,21 +347,21 @@ class TourBooking(models.Model):
                 # ===== COR/POR User =====
                 context.update({
                     'agent_id': user_obj.agent_id.parent_agent_id.id,
-                    'sub_agent_id': user_obj.agent_id.id,
+                    'customer_parent_id': user_obj.agent_id.id,
                     'booker_type': 'COR/POR',
                 })
-            elif sub_agent_id:
+            elif customer_parent_id:
                 # ===== COR/POR in Contact =====
                 context.update({
                     'agent_id': user_obj.agent_id.id,
-                    'sub_agent_id': sub_agent_id,
+                    'customer_parent_id': customer_parent_id,
                     'booker_type': 'COR/POR',
                 })
             else:
                 # ===== FPO in Contact =====
                 context.update({
                     'agent_id': user_obj.agent_id.id,
-                    'sub_agent_id': user_obj.agent_id.id,
+                    'customer_parent_id': user_obj.agent_id.id,
                     'booker_type': 'FPO',
                 })
         else:
@@ -370,7 +370,7 @@ class TourBooking(models.Model):
             # ===============================================
             context.update({
                 'agent_id': user_obj.agent_id.id,
-                'sub_agent_id': user_obj.agent_id.id,
+                'customer_parent_id': user_obj.agent_id.id,
                 'booker_type': 'FPO',
             })
         return context

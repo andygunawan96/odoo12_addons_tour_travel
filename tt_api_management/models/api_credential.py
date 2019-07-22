@@ -15,6 +15,7 @@ _logger = logging.getLogger(__name__)
 class ApiManagement(models.Model):
     _name = 'tt.api.credential'
 
+    name = fields.Char('Name', required=True)
     api_key = fields.Char(string='API Key')
     active = fields.Boolean(string='Active', default=True)
     api_role = fields.Selection(selection=variables.ROLE_TYPE, required=True, default='operator')

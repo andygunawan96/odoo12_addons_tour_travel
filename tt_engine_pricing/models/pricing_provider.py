@@ -7,7 +7,7 @@ import traceback
 class PricingProvider(models.Model):
     _name = 'tt.pricing.provider'
 
-    name = fields.Char('Name')
+    name = fields.Char('Name', readonly=1)
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', required=True)
     provider_id = fields.Many2one('tt.provider', 'Provider', required=True)
     pricing_type = fields.Selection([
@@ -15,8 +15,7 @@ class PricingProvider(models.Model):
         ('commission', 'Commission'),
         ('provider', 'provider'),
     ], 'Pricing Type', required=True)
-    carrier_ids = fields.Many2many('tt.transport.carrier', 'tt_pricing_provider_carrier_rel', 'pricing_id', 'carrier_id',
-                                   string='Carriers')
+    carrier_ids = fields.Many2many('tt.transport.carrier', 'tt_pricing_provider_carrier_rel', 'pricing_id', 'carrier_id', string='Carriers')
     line_ids = fields.One2many('tt.pricing.provider.line', 'pricing_id', 'Configs')
     active = fields.Boolean('Active', default=True)
 
@@ -28,10 +27,14 @@ class PricingProvider(models.Model):
     @api.model
     def create(self, values):
         res = super(PricingProvider, self).create(values)
+        res.write({})
         return res
 
     def write(self, values):
-        return super(PricingProvider, self).write(values)
+        res = super(PricingProvider, self).write(values)
+        if not values.get('name'):
+            self.write({'name': self.get_name()})
+        return res
 
     def get_pricing_data(self):
         line_ids = [rec.get_pricing_data() for rec in self.line_ids if rec.active]

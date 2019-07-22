@@ -20,7 +20,6 @@
                     <group>
                         <group>
                             <field name="pax_type"/>
-                            <field name="pax_amount"/>
                             <field name="code"/>
                             <field name="date"/>
                             <field name="start_period"/>
@@ -85,15 +84,6 @@
                         </group>
 
                         <group>
-                            <field name="tipping_driver" placeholder="Original Price"/>
-                            <field name="tipping_driver_currency" placeholder="Currency (i.e: USD, JPY)"/>
-                            <field name="tipping_driver_rate" placeholder="Exchange Rate"/>
-                            <!--<field name="tipping_driver_days" placeholder="Days"/>-->
-                            <field name="rupiah_tipping_driver" placeholder="Final Price" invisible="1"/>
-                            <field name="rupiah_tipping_driver_rel" placeholder="Final Price"/>
-                        </group>
-
-                        <group>
                             <field name="insurance_cost" placeholder="Original Price"/>
                             <field name="insurance_currency" placeholder="Currency (i.e: USD, JPY)"/>
                             <field name="insurance_rate" placeholder="Exchange Rate"/>
@@ -103,6 +93,9 @@
 
                         <group>
                             <field name="visa" placeholder="Visa Price"/>
+                        </group>
+                        <group>
+                            <field name="airport_tax" placeholder="Airport Tax"/>
                         </group>
                     </group>
 
@@ -120,7 +113,7 @@
                         </group>
                     </group>
 
-                    <group string="Variable Cost">
+                    <group string="Variable Cost (Per Passenger)">
                         <group>
                             <field name="tour_leader_fee" placeholder="Original Price"/>
                             <field name="tour_leader_fee_currency" placeholder="Currency (i.e: USD, JPY)"/>

@@ -167,7 +167,22 @@
             <field name="name"/>
             <field name="date_from"/>
             <field name="date_to"/>
-            <field name="pricing_id"/>
+            <field name="fee_amount"/>
+            <field name="is_per_route"/>
+            <field name="is_per_segment"/>
+            <field name="is_per_pax"/>
+            <field name="basic_amount_type"/>
+            <field name="basic_amount"/>
+            <field name="tax_amount_type"/>
+            <field name="tax_amount"/>
+            <field name="after_tax_amount_type"/>
+            <field name="after_tax_amount"/>
+            <field name="lower_margin"/>
+            <field name="lower_amount_type"/>
+            <field name="lower_amount"/>
+            <field name="upper_margin"/>
+            <field name="upper_amount_type"/>
+            <field name="upper_amount"/>
             <field name="active"/>
         </tree>
         </field>

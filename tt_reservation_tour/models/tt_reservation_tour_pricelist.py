@@ -29,7 +29,7 @@ class TourPricelist(models.Model):
                                   'Route', required=True, default='international')
     tour_category = fields.Selection([('group', 'Group (Series)'), ('fit', 'Land Tour (FIT)')],
                                      'Tour Category', required=True, default='group')
-    tour_type = fields.Selection([('sic', 'SIC'), ('private', 'Private')], 'Tour Type', default='sic')
+    tour_type = fields.Selection([('sic', 'SIC (Without Tour Leader)'), ('series', 'Series (With Tour Leader)'), ('land', 'Land Only'), ('city', 'City Tour')], 'Tour Type', default='sic')
 
     departure_date = fields.Date('Departure Date')
     arrival_date = fields.Date('Arrival Date')
@@ -63,10 +63,18 @@ class TourPricelist(models.Model):
                             'Visa', required=True, default='include')
     flight = fields.Selection([('include', 'Include'), ('exclude', 'Exclude')],
                               'Flight', required=True, default='exclude')
-    airport_tax = fields.Monetary('Airport Tax Total', help="(/pax)", default=0)
+    airport_tax = fields.Monetary('Airport Tax', help="(/pax)", default=0)
     tipping_guide = fields.Monetary('Tipping Guide', help="(/pax /day)", default=0)
     tipping_tour_leader = fields.Monetary('Tipping Tour Leader', help="(/pax /day)", default=0)
+    tipping_driver = fields.Monetary('Tipping Driver', help="(/pax /day)", default=0)
+    tipping_guide_child = fields.Boolean('Apply for Child', default=True)
+    tipping_tour_leader_child = fields.Boolean('Apply for Child', default=True)
+    tipping_driver_child = fields.Boolean('Apply for Child', default=True)
+    tipping_guide_infant = fields.Boolean('Apply for Infant', default=True)
+    tipping_tour_leader_infant = fields.Boolean('Apply for Infant', default=True)
+    tipping_driver_infant = fields.Boolean('Apply for Infant', default=True)
     guiding_days = fields.Integer('Guiding Days', default=1)
+    driving_times = fields.Integer('Driving Times', default=0)
 
     adult_nta_price = fields.Monetary('Adult NTA Price', default=0)
     adult_citra_price = fields.Monetary('Adult Citra Price', default=0)
@@ -280,14 +288,14 @@ class TourPricelist(models.Model):
             if rec.pax_type == 'adt':
                 print('Adult')
                 adult_nta += rec.total_exclude
-                adult_sale += rec.retail_price_exclude + rec.rupiah_tipping_driver + rec.visa
-                adult_citra += rec.retail_price_exclude + rec.rupiah_tipping_driver + rec.visa - rec.service_charge
+                adult_sale += rec.retail_price_exclude + rec.visa
+                adult_citra += rec.retail_price_exclude + rec.visa - rec.service_charge
                 adult_citra_real += rec.retail_price_include - rec.service_charge
                 adult_sale_real += rec.retail_price_include
             elif rec.pax_type == 'chd':
                 child_nta += rec.total_exclude
-                child_sale += rec.retail_price_exclude + rec.rupiah_tipping_driver + rec.visa
-                child_citra += rec.retail_price_exclude + rec.rupiah_tipping_driver + rec.visa - rec.service_charge
+                child_sale += rec.retail_price_exclude + rec.visa
+                child_citra += rec.retail_price_exclude + rec.visa - rec.service_charge
                 child_citra_real += rec.retail_price_include - rec.service_charge
                 child_sale_real += rec.retail_price_include
             elif rec.pax_type == 'inf':
@@ -435,6 +443,7 @@ class TourPricelist(models.Model):
                     'airport_tax_with_comma': self.int_with_commas(rec['airport_tax']),
                     'tipping_guide_with_comma': self.int_with_commas(rec['tipping_guide']),
                     'tipping_tour_leader_comma': self.int_with_commas(rec['tipping_tour_leader']),
+                    'tipping_driver_with_comma': self.int_with_commas(rec['tipping_driver']),
                     'images_obj': images,
                     'departure_date_f': rec['departure_date'] and datetime.strptime(str(rec['departure_date']), '%Y-%m-%d').strftime("%A, %d-%m-%Y") or '',
                     'arrival_date_f': rec['arrival_date'] and datetime.strptime(str(rec['arrival_date']), '%Y-%m-%d').strftime("%A, %d-%m-%Y") or '',
@@ -597,6 +606,7 @@ class TourPricelist(models.Model):
                     'airport_tax_with_comma': self.int_with_commas(rec['airport_tax']),
                     'tipping_guide_with_comma': self.int_with_commas(rec['tipping_guide']),
                     'tipping_tour_leader_with_comma': self.int_with_commas(rec['tipping_tour_leader']),
+                    'tipping_driver_with_comma': self.int_with_commas(rec['tipping_driver']),
                     'discount': json.dumps(discount),
                     'departure_date_f': rec['departure_date'] and datetime.strptime(str(rec['departure_date']), '%Y-%m-%d').strftime("%A, %d-%m-%Y") or '',
                     'arrival_date_f': rec['arrival_date'] and datetime.strptime(str(rec['arrival_date']), '%Y-%m-%d').strftime("%A, %d-%m-%Y") or '',
@@ -946,6 +956,19 @@ class TourPricelist(models.Model):
                     'foreign_currency_id': def_currency,
                     'foreign_amount': 0,
                     'description': 'Tipping Tour Leader',
+                })
+
+            if price_itinerary.get('tipping_driver_amount'):
+                service_charge.append({
+                    'pax_type': 'ADT',
+                    'charge_code': 'tax',
+                    'charge_type': 'tax',
+                    'amount': price_itinerary['tipping_driver_total'] / price_itinerary['tipping_driver_amount'],
+                    'pax_count': price_itinerary['tipping_driver_amount'],
+                    'currency_id': def_currency,
+                    'foreign_currency_id': def_currency,
+                    'foreign_amount': 0,
+                    'description': 'Tipping Driver',
                 })
 
             if price_itinerary.get('additional_charge_amount'):

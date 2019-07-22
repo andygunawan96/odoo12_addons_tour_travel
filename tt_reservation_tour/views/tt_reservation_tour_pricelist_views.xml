@@ -49,6 +49,8 @@
                             <field name="start_period" attrs="{'invisible': [('tour_type', '!=', 'private')], 'required': [('tour_type', '=', 'private')]}"/>
                             <field name="end_period" attrs="{'invisible': [('tour_type', '!=', 'private')], 'required': [('tour_type', '=', 'private')]}"/>
                             <field name="duration"/>
+                            <field name="guiding_days"/>
+                            <field name="driving_times"/>
                             <field name="survey_date"/>
                             <label for="seat" string="Available Seat"/>
                             <div>
@@ -153,9 +155,6 @@
                                 </group>
                             </group>
                         </page>
-                        <page string="Tour Price Backup">  <!--attrs="{'invisible':[('adult_nta_price_backup','=', False)]}"-->
-
-                        </page>
                         <page string="Quotation">  <!--groups="tt_base.group_tt_tour_travel_operator"-->
                             <field name="quotation_ids" context="">
                                 <tree edit="false">
@@ -164,7 +163,6 @@
                                     <field name="code"/>
                                     <field name="currency_id"/>
                                     <field name="pax_type"/>
-                                    <field name="pax_amount"/>
                                     <field name="start_period"/>
                                     <field name="end_period"/>
                                     <field name="state"/>
@@ -174,9 +172,23 @@
                         <page string="Additional Charge">
                             <group>
                                 <field name="airport_tax"/>
-                                <field name="tipping_guide"/>
-                                <field name="tipping_tour_leader"/>
-                                <field name="guiding_days"/>
+                            </group>
+                            <group col="3">
+                                <group>
+                                    <field name="tipping_guide"/>
+                                    <field name="tipping_tour_leader"/>
+                                    <field name="tipping_driver"/>
+                                </group>
+                                <group>
+                                    <field name="tipping_guide_child"/>
+                                    <field name="tipping_tour_leader_child"/>
+                                    <field name="tipping_driver_child"/>
+                                </group>
+                                <group>
+                                    <field name="tipping_guide_infant"/>
+                                    <field name="tipping_tour_leader_infant"/>
+                                    <field name="tipping_driver_infant"/>
+                                </group>
                             </group>
                         </page>
                         <page string="Discount">
@@ -335,7 +347,7 @@
                         <tree>
                             <field name="title"/>
                             <field name="description"/>
-<!--                            <field name="date"/>-->
+                            <!--                            <field name="date"/>-->
                         </tree>
                     </field>
 

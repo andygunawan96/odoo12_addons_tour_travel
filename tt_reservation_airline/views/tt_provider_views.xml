@@ -25,6 +25,7 @@
                             <field name="sequence"/>
                             <field name="booking_id"/>
                             <field name="pnr"/>
+                            <field name="pnr2"/>
                             <field name="provider_id"/>
                             <field name="notes"/>
                             <field name="error_msg"/>
