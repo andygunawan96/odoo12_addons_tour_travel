@@ -73,7 +73,7 @@ class TtHistory(models.Model):
                             old_value = 'None'
                         else:
                             old_value = dict.get(key)[1]
-                        new_value = rec.env[rec.fields_get().get(key)['relation']].search([('id', 'in', [value[key]])]).name_get()[0][1]
+                        new_value = rec.env[rec.fields_get().get(key)['relation']].search([('id', 'in', [value[key]])]).name_get()  # [0][1]
                         # end
     
                     # Non-Relation Field
