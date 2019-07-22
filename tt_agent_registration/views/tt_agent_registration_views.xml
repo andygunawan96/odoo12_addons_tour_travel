@@ -166,7 +166,7 @@
                                 </page>
                                 <page string="Opening Document">
                                     <field name="open_document_ids">
-                                        <tree create="true">
+                                        <tree editable="bottom" create="true">
                                             <field name="document_id"/>
                                             <field name="schedule_date"/>
                                             <field name="receive_date"/>
