@@ -91,3 +91,10 @@ IDENTITY_TYPE = [
     ('ktp', 'KTP'),
     ('passport', 'Passport'),
 ]
+
+PAX_TYPE = [
+    ('YCD', 'Elder'),
+    ('ADT', 'Adult'),
+    ('CHD', 'Child'),
+    ('INF', 'Infant')
+]

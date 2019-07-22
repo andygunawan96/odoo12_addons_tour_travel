@@ -135,39 +135,42 @@ class TtProviderAirline(models.Model):
             'ticket_number': rec['ticket_number']
         }) for rec in passenger_list]
 
-
-
     @api.one
-    def _create_service_charge(self, service_charge_summary):
-        if not service_charge_summary:
-            pass
-        for rec in self.cost_service_charge_ids:
-            if rec.charge_type != 'VOUCHER':
-                rec.sudo().unlink()
-        # self.cost_service_charge_ids.sudo().unlink()
+    def create_service_charge(self, service_charge_vals):
         service_chg_obj = self.env['tt.service.charge']
-        # Update Service Charge - Provider
-        for scs in service_charge_summary:
-            for val in scs['service_charges']:
-                if val['amount']:
-                    val['provider_airline_booking_id'] = self.id
-                    service_chg_obj.create(val)
-            self._compute_total()
+        currency_obj = self.env['res.currency']
 
-    @api.depends('cost_service_charge_ids')
-    def _compute_total(self):
-        for rec in self:
-            total = 0
-            total_orig = 0
-            for sc in rec.cost_service_charge_ids:
-                if sc.charge_code.find('r.ac') < 0:
-                    total += sc.total
-                # total_orig adalah NTA
-                total_orig += sc.total
-            rec.write({
-                'total': total,
-                'total_orig': total_orig
-            })
+        for scs in service_charge_vals:
+            scs['currency_id'] = currency_obj.get_id(scs.pop('currency'))
+            scs['foreign_currency_id'] = currency_obj.get_id(scs.pop('foreign_currency'))
+            scs['provider_airline_booking_id'] = self.id
+            service_chg_obj.create(scs)
+
+        # "sequence": 1,
+        # "charge_code": "fare",
+        # "charge_type": "FARE",
+        # "currency": "IDR",
+        # "amount": 4800000,
+        # "foreign_currency": "IDR",
+        # "foreign_amount": 4800000,
+        # "pax_count": 3,
+        # "pax_type": "ADT",
+        # "total": 14400000
+
+    # @api.depends('cost_service_charge_ids')
+    # def _compute_total(self):
+    #     for rec in self:
+    #         total = 0
+    #         total_orig = 0
+    #         for sc in rec.cost_service_charge_ids:
+    #             if sc.charge_code.find('r.ac') < 0:
+    #                 total += sc.total
+    #             # total_orig adalah NTA
+    #             total_orig += sc.total
+    #         rec.write({
+    #             'total': total,
+    #             'total_orig': total_orig
+    #         })
 
     def action_create_ledger(self):
         if not self.is_ledger_created:

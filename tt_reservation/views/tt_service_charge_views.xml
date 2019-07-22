@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_service_charge_form_view" model="ir.ui.view">
+        <field name="name">tt.service.charge.form.view</field>
+        <field name="model">tt.service.charge</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="charge_code"/>
+                        <field name="charge_type"/>
+                        <field name="pax_type"/>
+                        <field name="pax_count"/>
+                        <field name="currency_id"/>
+                        <field name="amount"/>
+                        <field name="foreign_currency_id"/>
+                        <field name="foreign_amount"/>
+                        <field name="sequence"/>
+                        <field name="description"/>
+                        <field name="total"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_service_charge_tree_view" model="ir.ui.view">
+        <field name="name">tt.service.charge.tree.view</field>
+        <field name="model">tt.service.charge</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="charge_code"/>
+                <field name="charge_type"/>
+                <field name="pax_type"/>
+                <field name="pax_count"/>
+                <field name="currency_id"/>
+                <field name="amount"/>
+                <field name="total"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_service_charge_action_views" model="ir.actions.act_window">
+        <field name="name">tt.service.charge.action.views</field>
+        <field name="res_model">tt.service.charge</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

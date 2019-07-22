@@ -1452,6 +1452,9 @@ class ReservationAirline(models.Model):
             return Response().get_error("Internal Server Error",500)
 
     def update_pnr_provider_airline_api(self, req):
+        ### dapatkan PNR dan ubah ke booked
+        ### kemudian update service charges
+
         print(json.dumps(req))
         # req = self.param_update_pnr
         try:
@@ -1496,6 +1499,10 @@ class ReservationAirline(models.Model):
                                     'leg_ids': this_segment_legs
                                 })
 
+                                for fare in param_segment['fares']:
+                                    provider_obj.create_service_charge(fare['service_charges'])
+
+
                     provider_obj.action_booked_api_airline(provider,req['context'])
                     book_status.append(1)
                     pnr_list.append(provider['pnr'])
@@ -1503,8 +1510,8 @@ class ReservationAirline(models.Model):
                     book_status.append(0)
                     continue
 
-
             if all(book_status) == 1:
+                book_obj.calculate_service_charge()
                 book_obj.action_booked_api(pnr_list)
                 return Response().get_no_error()
 
@@ -1707,23 +1714,50 @@ class ReservationAirline(models.Model):
         }
         return res
 
-    @api.one
-    def action_booked(self, api_context=None):
-        if not api_context:
-            api_context = {
-                'co_uid': self.provider_booking_ids[0].booked_uid.id
-            }
-        if self.name == 'New':
-            now_date = datetime.datetime.now()
-            hold_date = now_date + datetime.timedelta(minutes=30)
-            self.write({
-                'name': self.env['ir.sequence'].next_by_code('dummy.airline'),
-                'state': 'partial_booked',
-                'booked_uid': api_context['co_uid'],
-                'booked_date': now_date,
-                'hold_date': hold_date,
-                'expired_date': hold_date,
-            })
+    def calculate_service_charge(self):
+        for service_charge in self.sale_service_charge_ids:
+            service_charge.unlink()
+
+        sc_value = {}
+        for provider in self.provider_booking_ids:
+            for p_sc in provider.cost_service_charge_ids:
+                p_charge_type = p_sc.charge_type
+                p_pax_type = p_sc.pax_type
+                if not sc_value.get(p_charge_type):
+                    sc_value[p_charge_type] = {}
+                if not sc_value[p_charge_type].get(p_pax_type):
+                    sc_value[p_charge_type][p_pax_type] = {}
+                    sc_value[p_charge_type][p_pax_type].update({
+                        'amount': 0,
+                        'total': 0,
+                        'foreign_amount': 0
+                    })
+
+                sc_value[p_charge_type][p_pax_type].update({
+                    'charge_code': p_charge_type,
+                    'pax_count': p_sc.pax_count,
+                    'currency_id': p_sc.currency_id.id,
+                    'foreign_currency_id': p_sc.foreign_currency_id.id,
+                    'amount': sc_value[p_charge_type][p_pax_type]['amount'] + p_sc.amount,
+                    'total': sc_value[p_charge_type][p_pax_type]['total'] + p_sc.total,
+                    'foreign_amount': sc_value[p_charge_type][p_pax_type]['foreign_amount'] + p_sc.foreign_amount,
+                })
+
+        print(sc_value)
+        values = []
+        for c_type,c_val in sc_value.items():
+            for p_type,p_val in c_val.items():
+                curr_dict = {}
+                curr_dict['charge_type'] = c_type
+                curr_dict['pax_type'] = p_type
+                curr_dict['booking_airline_id'] = self.id
+                curr_dict.update(p_val)
+                values.append((0,0,curr_dict))
+
+        self.write({
+            'sale_service_charge_ids': values
+        })
+
 
 # class ReservationAirlineApi(models.Model):
 #     _inherit = 'tt.reservation.airline'

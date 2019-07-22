@@ -64,8 +64,9 @@
                     </group>
                     <separator string="Journeys"/>
                     <field name="journey_ids"/>
-                    <!--<separator string="Service Charges" groups="tt_base.group_tt_tour_travel_operator"/>-->
-                    <!--<field name="cost_service_charge_ids" groups="tt_base.group_tt_tour_travel_operator"/>-->
+                    <separator string="Service Charges"/>
+                    <field name="cost_service_charge_ids"/>
+
                     <!--<group string="Total Information" class="oe_subtotal_footer oe_right" groups="tt_base.group_tt_tour_travel_operator">-->
                         <!--<field name="total" class="oe_subtotal_footer_separator"/>-->
                         <!--<field name="total_fare" class="oe_subtotal_footer_seperator"/>-->
@@ -94,13 +95,12 @@
     </record>
 
 
-    <record id="tt_reservation_airline_provider_views" model="ir.actions.act_window">
-        <field name="name">airline Provider</field>
+    <record id="tt_reservation_airline_provider_action_views" model="ir.actions.act_window">
+        <field name="name">tt.reservation.airline.provider.action.views</field>
         <field name="res_model">tt.provider.airline</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="context">
-
         </field>
     </record>
 
