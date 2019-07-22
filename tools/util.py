@@ -1,5 +1,6 @@
 import base64
 
+
 def encode_authorization(_id, _username, _password):
     credential = '%s:%s:%s' % (_id, _username, _password)
     res = base64.b64encode(credential.encode())
@@ -35,6 +36,7 @@ def get_request_data(request):
         'action': request.httprequest.environ.get('HTTP_ACTION', False),
     }
     return res
+
 
 def pop_empty_key(data):
     temp_key = [key for key,value in data.items() if not value]

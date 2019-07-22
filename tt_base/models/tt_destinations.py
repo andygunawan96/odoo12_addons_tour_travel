@@ -20,7 +20,7 @@ class Destinations(models.Model):
     _order = 'display_name'
 
     name = fields.Char('Name', required=True)
-    provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')  # , required=True
+    provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', required=True)
     code = fields.Char('Code', help="Can be filled with IATA code", required=True)
     display_name = fields.Char('Display Name',store=True)
     country_id = fields.Many2one('res.country', 'Country')
