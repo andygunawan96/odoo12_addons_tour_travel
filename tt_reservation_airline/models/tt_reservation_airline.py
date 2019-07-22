@@ -24,7 +24,6 @@ class ReservationAirline(models.Model):
     _inherit = "tt.reservation"
     _order = "id desc"
 
-
     direction = fields.Selection(variables.JOURNEY_DIRECTION, string='Direction', default='OW', required=True, readonly=True, states={'draft': [('readonly', False)]})
     origin_id = fields.Many2one('tt.destinations', 'Origin', readonly=True, states={'draft': [('readonly', False)]})
     destination_id = fields.Many2one('tt.destinations', 'Destination', readonly=True, states={'draft': [('readonly', False)]})
@@ -1419,9 +1418,9 @@ class ReservationAirline(models.Model):
         context = req['context']
         try:
             values = self._prepare_booking_api(search_RQ,context)
-            booker_obj = self._create_booker_api(booker,context)
-            contact_obj = self._create_contact_api(contacts[0],booker_obj,context)
-            list_passengers = self._create_passenger_api(passengers,context,booker_obj.id,contact_obj.id)
+            booker_obj = self.create_booker_api(booker,context)
+            contact_obj = self.create_contact_api(contacts[0],booker_obj,context)
+            list_passengers = self.create_passenger_api(passengers,context,booker_obj.id,contact_obj.id)
 
             values.update({
                 'user_id': context['co_uid'],
@@ -1521,14 +1520,14 @@ class ReservationAirline(models.Model):
 
     def _prepare_booking_api(self, searchRQ, context_gateway):
         dest_obj = self.env['tt.destinations']
-
+        provider_type_id = self.env.ref('tt_reservation_airline.tt_provider_type_airline')
         booking_tmp = {
             'direction': searchRQ['direction'],
             'departure_date': searchRQ['departure_date'],
             'return_date': searchRQ['return_date'],
-            'origin_id': dest_obj.get_id(searchRQ['origin'], self.provider_type_id),
-            'destination_id': dest_obj.get_id(searchRQ['destination'], self.provider_type_id),
-            'provider_type_id': self.env.ref('tt_reservation_airline.tt_provider_type_airline').id,
+            'origin_id': dest_obj.get_id(searchRQ['origin'], provider_type_id),
+            'destination_id': dest_obj.get_id(searchRQ['destination'], provider_type_id),
+            'provider_type_id': provider_type_id.id,
             'adult': searchRQ['adult'],
             'child': searchRQ['child'],
             'infant': searchRQ['infant'],
@@ -1540,150 +1539,6 @@ class ReservationAirline(models.Model):
 
     ##todo kalau kejadian saling tumpuk data customer karena ada yang kosong
     ##dibuatkan mekanisme pop isi dictionary yang valuenya kosong
-
-    def _create_booker_api(self, vals, context):
-        booker_obj = self.env['tt.customer'].sudo()
-        get_booker_id = util.get_without_empty(vals.get('booker_id'))
-
-        if get_booker_id:
-            booker_id = int(vals['booker_id'])
-            booker_rec = booker_obj.browse(booker_id)
-            update_value = {}
-            if booker_rec:
-                if vals.get('mobile'):
-                    for phone in booker_rec.phone_ids:
-                        vals_phone_number = '+%s%s' % (vals.get('calling_code',''),vals['mobile'])
-                        if phone.phone_number == vals_phone_number:
-                            new_phone = [(1,phone.id,{
-                                'phone_number': vals_phone_number
-                            })]
-                        else:
-                            new_phone = [(0, 0, {
-                                'phone_number': vals_phone_number
-                            })]
-                        update_value['phone_ids'] = new_phone
-                update_value['email'] =vals.get('email', booker_rec.email)
-
-                booker_rec.update(update_value)
-                return booker_rec
-
-        country = self.env['res.country'].sudo().search([('code', '=', vals.pop('nationality_code'))])
-        agent_obj = self.env['tt.agent'].sudo().browse(context['agent_id'])
-
-
-        vals.update({
-            'agent_id': context['agent_id'],
-            'nationality_id': country and country[0].id or False,
-            'email': vals.get('email'),
-            'phone_ids': [(0,0,{
-                'phone_number': '+%s%s' % (vals.get('calling_code',''),vals.get('mobile','')),
-                'country_id': country and country[0].id or False,
-            })],
-            'first_name': vals.get('first_name'),
-            'last_name': vals.get('last_name'),
-            'gender': vals.get('gender'),
-            'customer_parent_ids': [(4,agent_obj.customer_parent_walkin_id.id )],
-        })
-
-
-        return booker_obj.create(vals)
-
-    def _create_contact_api(self, vals, booker, context):
-        contact_obj = self.env['tt.customer'].sudo()
-        get_contact_id = util.get_without_empty(vals['contact_id'],False)
-
-
-        if get_contact_id or vals.get('is_also_booker'):
-            if get_contact_id:
-                contact_id = int(get_contact_id)
-            else:
-                contact_id = booker.id
-
-            contact_rec = contact_obj.browse(contact_id)
-            update_value = {}
-
-            if contact_rec:
-                if vals.get('mobile'):
-                    for phone in contact_rec.phone_ids:
-                        vals_phone_number = '+%s%s' % (vals.get('calling_code',''),vals['mobile'])
-                        if phone.phone_number == vals_phone_number:
-                            new_phone = [(1,phone.id,{
-                                'phone_number': vals_phone_number
-                            })]
-                        else:
-                            new_phone = [(0, 0, {
-                                'phone_number': vals_phone_number
-                            })]
-                        update_value['phone_ids'] = new_phone
-                update_value['email'] =vals.get('email', contact_rec.email)
-
-                contact_rec.update(update_value)
-                return contact_rec
-
-        country = self.env['res.country'].sudo().search([('code', '=', vals.pop('nationality_code'))])
-        agent_obj = self.env['tt.agent'].sudo().browse(context['agent_id'])
-
-        vals.update({
-            'agent_id': context['agent_id'],
-            'nationality_id': country and country[0].id or False,
-            'email': vals.get('email'),
-            'phone_ids': [(0,0,{
-                'phone_number': '+%s%s' % (vals.get('calling_code',''),vals.get('mobile','')),
-                'country_id': country and country[0].id or False,
-            })],
-            'first_name': vals.get('first_name'),
-            'last_name': vals.get('last_name'),
-            'customer_parent_ids': [(4, agent_obj.customer_parent_walkin_id.id)],
-            'gender': vals.get('gender')
-        })
-
-        return contact_obj.create(vals)
-
-    def _create_passenger_api(self,passengers,context,booker_id=False,contact_id=False):
-        country_obj = self.env['res.country'].sudo()
-        passenger_obj = self.env['tt.customer'].sudo()
-
-        res_ids = []
-
-        for psg in passengers:
-            country = country_obj.search([('code', '=', psg.pop('nationality_code'))])
-            psg['nationality_id'] = country and country[0].id or False
-            if psg.get('country_of_issued_code'):
-                country = country_obj.search([('code', '=', psg.pop('country_of_issued_code'))])
-                psg['country_of_issued_id'] = country and country[0].id or False
-
-            vals_for_update = {}
-            update_list = ['passport_number', 'passport_expdate', 'nationality_id', 'country_of_issued_id', 'passport_issued_date', 'identity_type', 'birth_date']
-            [vals_for_update.update({
-                key: psg[key]
-            }) for key in update_list if psg.get(key)]
-
-            booker_contact_id = -1
-            if psg.get('is_also_booker'):
-                booker_contact_id = booker_id
-            elif psg.get('is_also_contact'):
-                booker_contact_id = contact_id
-
-            get_psg_id = util.get_without_empty(psg.get('passenger_id'))
-
-            if get_psg_id or booker_contact_id > 0:
-
-                current_passenger = passenger_obj.browse(int(get_psg_id or booker_contact_id))
-                if current_passenger:
-                    current_passenger.update(vals_for_update)
-                    res_ids.append(current_passenger.id)
-                    continue
-
-            util.pop_empty_key(psg)
-            psg['agent_id'] = context['agent_id']
-            agent_obj = self.env['tt.agent'].sudo().browse(context['agent_id'])
-            psg.update({
-                'customer_parent_ids': [(4, agent_obj.customer_parent_walkin_id.id)],
-            })
-            psg_obj = passenger_obj.create(psg)
-            res_ids.append(psg_obj.id)
-
-        return res_ids
 
     def _create_provider_api(self, providers, api_context):
         dest_obj = self.env['tt.destinations']
