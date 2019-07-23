@@ -61,12 +61,12 @@ class TtReservation(models.Model):
     # total_commission = fields.Monetary(string='Total Commission', default=0, compute="_compute_total_booking", store=True)
     # total_nta = fields.Monetary(string='NTA Amount', compute="_compute_total_booking", store=True)
 
-    total_fare = fields.Monetary(string='Total Fare', default=0)
-    total_tax = fields.Monetary(string='Total Tax', default=0)
-    total = fields.Monetary(string='Grand Total', default=0)
+    total_fare = fields.Monetary(string='Total Fare', default=0, compute= "_compute_total_fare")
+    total_tax = fields.Monetary(string='Total Tax', default=0, compute='_compute_total_tax')
+    total = fields.Monetary(string='Grand Total', default=0, compute='_compute_grand_total')
     total_discount = fields.Monetary(string='Total Discount', default=0)
-    total_commission = fields.Monetary(string='Total Commission', default=0)
-    total_nta = fields.Monetary(string='NTA Amount')
+    total_commission = fields.Monetary(string='Total Commission', default=0, compute='_compute_total_commission')
+    total_nta = fields.Monetary(string='NTA Amount',compute='_compute_total_nta')
 
     # yang jual
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True,
@@ -205,6 +205,11 @@ class TtReservation(models.Model):
 
             get_psg_id = util.get_without_empty(psg, 'passenger_id')
 
+            ##experimental
+            if psg.get('title') == 'MRS':
+                psg['marital_status'] = 'married'
+            ##
+
             if get_psg_id or booker_contact_id > 0:
 
                 current_passenger = passenger_obj.browse(int(get_psg_id or booker_contact_id))
@@ -223,3 +228,58 @@ class TtReservation(models.Model):
             res_ids.append(psg_obj.id)
 
         return res_ids
+
+    def _compute_total_fare(self):
+        fare_total = 0
+        for rec in self.sale_service_charge_ids:
+            if rec.charge_type == 'FARE':
+                fare_total += rec.total
+        self.total_fare = fare_total
+
+    def _compute_total_tax(self):
+        tax_total = 0
+        for rec in self.sale_service_charge_ids:
+            if rec.charge_type == 'TAX':
+                tax_total += rec.total
+        self.total_tax = tax_total
+
+    def _compute_grand_total(self):
+        grand_total = 0
+        for rec in self.sale_service_charge_ids:
+            if rec.charge_type != 'RAC':
+                grand_total += rec.total
+        self.total = grand_total
+
+    def _compute_total_commission(self):
+        commission_total = 0
+        for rec in self.sale_service_charge_ids:
+            if rec.charge_type == 'RAC':
+                commission_total += abs(rec.total)
+        self.total_commission = commission_total
+
+    def _compute_total_nta(self):
+        nta_total = 0
+        for rec in self.sale_service_charge_ids:
+            nta_total += rec.total
+        self.total_nta = nta_total
+
+    def to_dict(self):
+        res = {
+            'order_number': self.name,
+            'pnr': self.pnr,
+            'state': self.state,
+            'hold_date': self.hold_date and self.hold_date.strftime('%Y-%m-%d %H:%M:%S') or '',
+            'sid_booked': self.sid_booked,
+            'YCD': self.elder,
+            'ADT': self.adult,
+            'CHD': self.child,
+            'INF': self.infant,
+            'departure_date': self.departure_date and self.departure_date.strftime('%Y-%m-%d') or '',
+            'return_date': self.return_date and self.return_date.strftime('%Y-%m-%d') or '',
+            'agent_id': self.agent_id.id,
+            'agent_type': self.agent_type_id.code,
+            'customer_parent': self.customer_parent_id.id and self.customer_parent_id.id or '',
+            'customer_parent_type': self.customer_parent_type_id.code and self.customer_parent_type_id.code or ''
+        }
+
+        return res

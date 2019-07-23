@@ -14,12 +14,12 @@ class TtProviderAirline(models.Model):
     state = fields.Selection(variables.BOOKING_STATE, 'Status', default='draft')
     booking_id = fields.Many2one('tt.reservation.airline', 'Order Number', ondelete='cascade')
     sequence = fields.Integer('Sequence')
-
+    balance_due = fields.Float('Balance Due')
     direction = fields.Selection(variables.JOURNEY_DIRECTION, string='Direction')
     origin_id = fields.Many2one('tt.destinations', 'Origin')
     destination_id = fields.Many2one('tt.destinations', 'Destination')
-    departure_date = fields.Datetime('Departure Date')
-    return_date = fields.Datetime('Return Date')
+    departure_date = fields.Char('Departure Date')
+    return_date = fields.Char('Return Date')
 
     sid_issued = fields.Char('SID Issued')#signature generate sendiri
 
@@ -40,7 +40,7 @@ class TtProviderAirline(models.Model):
     booked_date = fields.Datetime('Booking Date')
     issued_uid = fields.Many2one('res.users', 'Issued By')
     issued_date = fields.Datetime('Issued Date')
-    hold_date = fields.Datetime('Hold Date')
+    hold_date = fields.Char('Hold Date')
     expired_date = fields.Datetime('Expired Date')
     #
     # refund_uid = fields.Many2one('res.users', 'Refund By')
@@ -194,3 +194,28 @@ class TtProviderAirline(models.Model):
                 'error_code': -1,
                 'error_msg': str(e)
             }
+
+    def to_dict(self):
+        journey_list = []
+        for rec in self.journey_ids:
+            journey_list.append(rec.to_dict())
+        res = {
+            'pnr': self.pnr,
+            'pnr2': self.pnr2,
+            'provider': self.provider_id.code,
+            'state': self.state,
+            'sequence': self.sequence,
+            'balance_due': self.balance_due,
+            'direction': self.direction,
+            'origin': self.origin_id.code,
+            'destination': self.destination_id.code,
+            'departure_date': self.departure_date,
+            'return_date': self.return_date,
+            'sid_issued': self.sid_issued,
+            'journeys': journey_list,
+            'currency': self.currency_id.name,
+            'hold_date': self.hold_date,
+            'tickets': []
+        }
+
+        return res

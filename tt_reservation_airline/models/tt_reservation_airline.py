@@ -1513,11 +1513,49 @@ class ReservationAirline(models.Model):
             if all(book_status) == 1:
                 book_obj.calculate_service_charge()
                 book_obj.action_booked_api(pnr_list)
-                return Response().get_no_error()
+                return Response().get_no_error({
+                    'order_number': book_obj.name
+                })
 
         except Exception as e:
             _logger.error(str(e) + traceback.format_exc())
-            return Response().get_error("Maintenace",500)
+            return Response().get_error(str(e),500)
+
+    def get_booking_airline_api(self,req):
+        try:
+            order_number = req.get('order_number')
+            if order_number:
+                book_obj = self.env['tt.reservation.airline'].search([('name','=',order_number)])
+                if book_obj:
+                    res = book_obj.to_dict()
+                    psg_list = []
+                    for rec in book_obj.passenger_ids:
+                        psg_list.append(rec.to_dict())
+                    prov_list = []
+                    for rec in book_obj.provider_booking_ids:
+                        prov_list.append(rec.to_dict())
+                    seg_list = []
+                    for rec in book_obj.segment_ids:
+                        seg_list.append(rec.to_dict())
+                    res.update({
+                        'direction': book_obj.direction,
+                        'origin': book_obj.origin_id.code,
+                        'destination': book_obj.destination_id.code,
+                        'sector_type': book_obj.sector_type,
+                        'passenger_ids': psg_list,
+                        'provider_booking_ids': prov_list,
+                        'segment_ids': seg_list,
+                        'provider_type': book_obj.provider_type_id.code
+                    })
+                    print(json.dumps(res))
+                    return Response().get_no_error(res)
+                else:
+                    raise('Booking not found')
+            else:
+                raise('No Order Number provided')
+        except Exception as e:
+            _logger.info(str(e) + traceback.format_exc())
+            return Response().get_error(str(e),500)
 
     def validate_booking(self, api_context=None):
         user_obj = self.env['res.users'].browse(api_context['co_uid'])

@@ -84,14 +84,7 @@
                     </group>
 
 
-                    <!--<group>-->
-                    <!--</group>-->
-                    <!--<field name="total_fare"/>-->
-                    <!--<field name="total_tax"/>-->
-                    <!--<field name="total"/>-->
-                    <!--<field name="total_discount"/>-->
-                    <!--<field namFe="total_commission"/>-->
-                    <!--<field name="total_nta"/>-->
+
                     <notebook colspan="4" name="notebooks">
 
                         <page string="anchor" name="anchor" invisible="1"/>
@@ -100,6 +93,16 @@
                                    context="{'tree_view_ref': 'tt_accounting.tt_ledger_tree_view_page'}"/>
                         </page>
                     </notebook>
+                    <footer>
+                        <group string="Total Information" class="oe_subtotal_footer oe_right">
+                            <field name="total_fare" class="oe_subtotal_footer_separator"/>
+                            <field name="total_tax" class="oe_subtotal_footer_separator"/>
+                            <field name="total" class="oe_subtotal_footer_separator"/>
+                            <field name="total_discount" class="oe_subtotal_footer_separator"/>
+                            <field name="total_commission" class="oe_subtotal_footer_separator"/>
+                            <field name="total_nta" class="oe_subtotal_footer_separator"/>
+                        </group>
+                    </footer>
                 </sheet>
             </form>
         </field>

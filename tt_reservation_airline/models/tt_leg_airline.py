@@ -12,11 +12,7 @@ class TtLegAirline(models.Model):
     leg_code = fields.Char('Leg Code')
     journey_type = fields.Selection(variables.JOURNEY_TYPE, string='Journey Type', default='DEP',
                                     states={'draft': [('readonly', False)]})
-    pnr = fields.Char('PNR', related='segment_id.pnr', store=True)
 
-    carrier_id = fields.Many2one('tt.transport.carrier','Plane')
-    carrier_code = fields.Char('Flight Code')
-    carrier_number = fields.Char('Flight Number')
     provider_id = fields.Many2one('tt.provider','Provider')
 
     # Journey Information
@@ -27,12 +23,22 @@ class TtLegAirline(models.Model):
     arrival_date = fields.Char('Arrival Date')
 
     elapsed_time = fields.Char('Elapsed Time')
-    class_of_service = fields.Char('Class')
-    subclass = fields.Char('SubClass')
-    cabin_class = fields.Char('Cabin Class')
     # agent_id = fields.Many2one('res.partner', related='segment_id.agent_id', store=True)
 
     sequence = fields.Integer('Sequence')
 
     segment_id = fields.Many2one('tt.segment.airline', 'Segment', ondelete='cascade')
     booking_id = fields.Many2one('tt.reservation.airline', 'Order Number', related='segment_id.booking_id', store=True)
+
+    def to_dict(self):
+        res = {
+            'leg_code': self.leg_code,
+            'journey_type': self.journey_type,
+            'origin': self.origin_id.code,
+            'destination': self.destination_id.code,
+            'departure_date': self.departure_date,
+            'arrival_date': self.arrival_date,
+            'elapsed_time': self.elapsed_time,
+            'sequence': self.sequence
+        }
+        return res

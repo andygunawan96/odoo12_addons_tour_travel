@@ -54,3 +54,34 @@ class TtSegmentAirline(models.Model):
     def _fill_name(self):
         for rec in self:
             rec.name = "%s - %s" % (rec.carrier_code,rec.carrier_number)
+
+    def to_dict(self):
+        leg_list = []
+        for rec in self.leg_ids:
+            leg_list.append(rec.to_dict())
+        res = {
+            'segment_code': self.segment_code,
+            'fare_code': self.fare_code,
+            'journey_type': self.journey_type,
+            'pnr': self.pnr,
+            'airline_pnr_ref': self.airline_pnr_ref,
+            'carrier_name': self.carrier_id.name,
+            'carrier_code': self.carrier_code,
+            'carrier_number': self.carrier_number,
+            'provider': self.provider_id.code,
+            'origin': self.origin_id.code,
+            'origin_terinal': self.origin_terminal,
+            'destination': self.destination_id.code,
+            'destination_terminal': self.destination_terminal,
+            'departure_date': self.departure_date,
+            'arrival_date': self.arrival_date,
+            'elapsed_time': self.elapsed_time,
+            'class_of_service': self.class_of_service,
+            'subclass': self.subclass,
+            'cabin_class': self.cabin_class,
+            'sequence': self.sequence,
+            'seat_ids': [],
+            'leg_ids': leg_list
+        }
+
+        return res

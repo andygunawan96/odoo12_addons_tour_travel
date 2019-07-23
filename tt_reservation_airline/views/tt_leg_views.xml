@@ -10,14 +10,9 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="pnr"/>
                             <field name="booking_id" invisible="1"/>
                             <field name="segment_id"/>
                             <field name="leg_code"/>
-                        </group>
-                        <group>
-                            <field name="carrier_id"/>
-                            <field name="carrier_code"/>
                         </group>
                     </group>
                     <group>

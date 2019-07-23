@@ -48,7 +48,7 @@ class TtCustomer(models.Model):
 
     @api.depends('first_name', 'last_name')
     def _compute_name(self):
-        self.name = "%s %s" % (self.first_name, self.last_name)
+        self.name = "%s %s" % (self.first_name and self.first_name or '', self.last_name and self.last_name or '')
 
     @api.onchange('birth_date')
     def calculate_age(self):
@@ -86,3 +86,21 @@ class TtCustomer(models.Model):
     #                                  self.env.user.name))  # User that Changed the Value
     #     return super(TtCustomer, self).write(value)
 
+    def to_dict(self):
+        res = {
+            'name': self.name,
+            'first_name': self.first_name,
+            'last_name': self.last_name and self.last_name or '',
+            'gender': self.gender,
+            'marital_status': self.marital_status,
+            'religion': self.religion,
+            'birth_date': self.birth_date.strftime('%Y-%m-%d %H:%M:%S'),
+            'age': self.age,
+            'nationality_code': self.nationality_id.code,
+            'country_of_issued_id': self.country_of_issued_id.code,
+            'identity_type': self.identity_type,
+            'identity_number': self.identity_number,
+            'agent_id': self.agent_id.id,
+        }
+
+        return res
