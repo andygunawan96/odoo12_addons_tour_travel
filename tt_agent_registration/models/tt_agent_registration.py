@@ -46,7 +46,8 @@ class AgentRegistration(models.Model):
     company_type = fields.Selection(COMPANY_TYPE, 'Company Type', default='individual')
     registration_num = fields.Char('Registration No.', readonly=True)
     registration_fee = fields.Float('Registration Fee', store=True, compute='get_registration_fee')
-    discount = fields.Float('Discount', readonly=True, states={'draft': [('readonly', False)]})
+    discount = fields.Float('Discount', readonly=True, states={'draft': [('readonly', False)],
+                                                               'confirm': [('readonly', False)]})
     opening_balance = fields.Float('Opening Balance', readonly=True, states={'draft': [('readonly', False)],
                                                                              'confirm': [('readonly', False)]})
     total_fee = fields.Monetary('Total Fee', store=True, compute='compute_total_fee')
@@ -282,7 +283,7 @@ class AgentRegistration(models.Model):
         }
         if self.contact_ids:
             vals.update({
-                'website': self.contact_ids[0].website,
+                # 'website': self.contact_ids[0].website,
                 'email': self.contact_ids[0].email,
                 'phone_ids': self.contact_ids.phone_ids,
             })
@@ -292,8 +293,37 @@ class AgentRegistration(models.Model):
     def create_customers_contact(self):
         contact_objs = []
         for rec in self:
-            contact_obj = self.env['tt.customer'].create(rec.contact_ids.read())
-            contact_objs.append(contact_obj)
+            print(rec.contact_ids.read())
+            for con in rec.contact_ids:
+                contact_vals = {
+                    'name': con['name'],
+                    'logo': con['logo'],
+                    'logo_thumb': con['logo_thumb'],
+                    'first_name': con['first_name'],
+                    'last_name': con['last_name'],
+                    'nickname': con['nickname'],
+                    'gender': con['gender'],
+                    'marital_status': con['marital_status'],
+                    'religion': con['religion'],
+                    'birth_date': con['birth_date'],
+                    'nationality_id': con['nationality_id'],
+                    'country_of_issued_id': con['country_of_issued_id'],
+                    'address_ids': con['address_ids'],
+                    'phone_ids': con['phone_ids'],
+                    'social_media_ids': con['social_media_ids'],
+                    'email': con['email'],
+                    'identity_type': con['identity_type'],
+                    'identity_number': con['identity_number'],
+                    'passport_number': con['passport_number'],
+                    'passport_expdate': con['passport_expdate'],
+                    'customer_bank_detail_ids': con['customer_bank_detail_ids'],
+                    'agent_id': con['agent_id'],
+                    'customer_parent_ids': con['customer_parent_ids'],
+                    'active': con['active'],
+                    'agent_registration_id': con['agent_registration_id'].id,
+                }
+                contact_obj = self.env['tt.customer'].create(contact_vals)
+                contact_objs.append(contact_obj)
         # contact_obj = self.env['tt.customer'].create(self.contact_ids)
         return contact_objs
 
@@ -384,6 +414,17 @@ class AgentRegistration(models.Model):
         "name": "suryajaya",
     }
 
+    # param_company = {
+    #     "company_type": "individual",
+    #     "business_license": "",
+    #     "npwp": "",
+    #     "name": "suryajaya",
+    #     "zip": "60112",
+    #     "street": "surabaya",
+    #     "street2": "",
+    #     "city": "516"
+    # }
+
     param_company = {
         "company_type": "individual",
         "business_license": "",
@@ -439,27 +480,6 @@ class AgentRegistration(models.Model):
         ],
     }
 
-    # plan_param_regis_doc = {
-    #     {
-    #         "name": "KTP",
-    #         "data": "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAQAAAAAYLlVAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAHdElNRQfjBhsHEDrd3TvUAAADgklEQVRo3u2ZTWxMURiGnzvTRkv/FFEkqqWpxL+UBQthQyQWFmzKQqPSWBCijYhQxE8TQUUrlZC0kQgWNtViIfGfEBo2xEQ0TUwVDUPJYGauRTvVmTnn3nNOZyyk79nd77vf8845997vzrkWevIykzLmU0whk0gnlzB9fOUDPl7zjPt81qyorAzW0cJHbMcRpoMDzEw2vIRT9LqgY8dTKhjlWLOUlYxTgU+nmZAWPDr81JAprGlRRwSbXpa6TftBgkbw6OhkPVYCvnEw3uGEX4RvWPDouMnkGPzZIbGQDG6xnZ9JwdvYfGLtYN2muJhQaQlpwx0RarGwaEiICJTFrSTj+0cz5wVHE5TJ7ZTgJSMtDp/ONZar3J38wEeAACGyGU8xOUpnuarR1XOQViqYhTfuzELKuchX7TmI0RaXZD87yXP8AZlU8tLUQCk/HBK/sYMMpVn0UuXaMwQGvDxySGtjqtZSTqRV18BWh6R6PAbX03bC6gZy+SBJCLHRAA5gKT1PBnRIEo5QaYw/o74EWdJuvz/F+AED2yTBO0Zrr4MfMPBCGApQmHK8DbBAEjpiiD+tgbcB6oSBnzGvEeqq0cLb8gW4YISHbl0DBUSEgXmGBvxa+HcepiS8NAK08dzQwEmt7FMWUENZ3OEvHKHT0ACsYzVjFPK+08ZVY8qIRjSiEf03svhXj84i9pAbcyRECzegWqt7VRsbuC6o5gfd/v3eED9b2PTvgYcCrUJhQwO7hE3/JqD5/lJjhJ8s2e4p0zXQJPwd7jomrObrr6aOP2OIn0ZAWG9ffzjVeC93hfV+R/91pBYv/9d5KZqQWnyVpGKEheoG7hvjN0l3mS//TVKZgfqELSl3eTgqrRekSM+AzQOma+GnOW5O7BuaqnoX9LGf0UrwDHbwzaHSE9JMDNjY9LCXCY7wsVS7dJdA/PcUHQP99287W5kVt3WRxhw2084vl7PDrInFW9iYKcgbuunDSx55lCjuIVZzPP6Q7gwMZ9SKPCWmNXLl3+ETDZzDwqI2yfAQVbJViU1sGHzqbZD0MJPRzQr5ZRES4gGKeZgU/A0mOl2XHRI8gIdKeoYF76Hc7cZYQi82EeokLSeXw3w2ggc46PJ1YUD5rKLUMSObnZrfEN+wm3wVuI4Wc4JXCuh6Vqhv8ep3+gKWMZcZlJBPDjmE+U4ffrp4y2Oe0KVX7g80n8kI3NRLcgAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOS0wNi0yN1QwNToxNjo1OCswMjowMGCy6rIAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTktMDYtMjdUMDU6MTY6NTgrMDI6MDAR71IOAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAABJRU5ErkJggg==",
-    #         "content_type": "image/png",
-    #         "qty": 1
-    #     },
-    #     {
-    #         "name": "NPWP",
-    #         "data": "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAQAAAAAYLlVAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAHdElNRQfjBhsHEDrd3TvUAAADgklEQVRo3u2ZTWxMURiGnzvTRkv/FFEkqqWpxL+UBQthQyQWFmzKQqPSWBCijYhQxE8TQUUrlZC0kQgWNtViIfGfEBo2xEQ0TUwVDUPJYGauRTvVmTnn3nNOZyyk79nd77vf8845997vzrkWevIykzLmU0whk0gnlzB9fOUDPl7zjPt81qyorAzW0cJHbMcRpoMDzEw2vIRT9LqgY8dTKhjlWLOUlYxTgU+nmZAWPDr81JAprGlRRwSbXpa6TftBgkbw6OhkPVYCvnEw3uGEX4RvWPDouMnkGPzZIbGQDG6xnZ9JwdvYfGLtYN2muJhQaQlpwx0RarGwaEiICJTFrSTj+0cz5wVHE5TJ7ZTgJSMtDp/ONZar3J38wEeAACGyGU8xOUpnuarR1XOQViqYhTfuzELKuchX7TmI0RaXZD87yXP8AZlU8tLUQCk/HBK/sYMMpVn0UuXaMwQGvDxySGtjqtZSTqRV18BWh6R6PAbX03bC6gZy+SBJCLHRAA5gKT1PBnRIEo5QaYw/o74EWdJuvz/F+AED2yTBO0Zrr4MfMPBCGApQmHK8DbBAEjpiiD+tgbcB6oSBnzGvEeqq0cLb8gW4YISHbl0DBUSEgXmGBvxa+HcepiS8NAK08dzQwEmt7FMWUENZ3OEvHKHT0ACsYzVjFPK+08ZVY8qIRjSiEf03svhXj84i9pAbcyRECzegWqt7VRsbuC6o5gfd/v3eED9b2PTvgYcCrUJhQwO7hE3/JqD5/lJjhJ8s2e4p0zXQJPwd7jomrObrr6aOP2OIn0ZAWG9ffzjVeC93hfV+R/91pBYv/9d5KZqQWnyVpGKEheoG7hvjN0l3mS//TVKZgfqELSl3eTgqrRekSM+AzQOma+GnOW5O7BuaqnoX9LGf0UrwDHbwzaHSE9JMDNjY9LCXCY7wsVS7dJdA/PcUHQP99287W5kVt3WRxhw2084vl7PDrInFW9iYKcgbuunDSx55lCjuIVZzPP6Q7gwMZ9SKPCWmNXLl3+ETDZzDwqI2yfAQVbJViU1sGHzqbZD0MJPRzQr5ZRES4gGKeZgU/A0mOl2XHRI8gIdKeoYF76Hc7cZYQi82EeokLSeXw3w2ggc46PJ1YUD5rKLUMSObnZrfEN+wm3wVuI4Wc4JXCuh6Vqhv8ep3+gKWMZcZlJBPDjmE+U4ffrp4y2Oe0KVX7g80n8kI3NRLcgAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOS0wNi0yN1QwNToxNjo1OCswMjowMGCy6rIAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTktMDYtMjdUMDU6MTY6NTgrMDI6MDAR71IOAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAABJRU5ErkJggg==",
-    #         "content_type": "image/png",
-    #         "qty": 1
-    #     },
-    #     {
-    #         "name": "SIUP",
-    #         "data": "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAQAAAAAYLlVAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAHdElNRQfjBhsHEDrd3TvUAAADgklEQVRo3u2ZTWxMURiGnzvTRkv/FFEkqqWpxL+UBQthQyQWFmzKQqPSWBCijYhQxE8TQUUrlZC0kQgWNtViIfGfEBo2xEQ0TUwVDUPJYGauRTvVmTnn3nNOZyyk79nd77vf8845997vzrkWevIykzLmU0whk0gnlzB9fOUDPl7zjPt81qyorAzW0cJHbMcRpoMDzEw2vIRT9LqgY8dTKhjlWLOUlYxTgU+nmZAWPDr81JAprGlRRwSbXpa6TftBgkbw6OhkPVYCvnEw3uGEX4RvWPDouMnkGPzZIbGQDG6xnZ9JwdvYfGLtYN2muJhQaQlpwx0RarGwaEiICJTFrSTj+0cz5wVHE5TJ7ZTgJSMtDp/ONZar3J38wEeAACGyGU8xOUpnuarR1XOQViqYhTfuzELKuchX7TmI0RaXZD87yXP8AZlU8tLUQCk/HBK/sYMMpVn0UuXaMwQGvDxySGtjqtZSTqRV18BWh6R6PAbX03bC6gZy+SBJCLHRAA5gKT1PBnRIEo5QaYw/o74EWdJuvz/F+AED2yTBO0Zrr4MfMPBCGApQmHK8DbBAEjpiiD+tgbcB6oSBnzGvEeqq0cLb8gW4YISHbl0DBUSEgXmGBvxa+HcepiS8NAK08dzQwEmt7FMWUENZ3OEvHKHT0ACsYzVjFPK+08ZVY8qIRjSiEf03svhXj84i9pAbcyRECzegWqt7VRsbuC6o5gfd/v3eED9b2PTvgYcCrUJhQwO7hE3/JqD5/lJjhJ8s2e4p0zXQJPwd7jomrObrr6aOP2OIn0ZAWG9ffzjVeC93hfV+R/91pBYv/9d5KZqQWnyVpGKEheoG7hvjN0l3mS//TVKZgfqELSl3eTgqrRekSM+AzQOma+GnOW5O7BuaqnoX9LGf0UrwDHbwzaHSE9JMDNjY9LCXCY7wsVS7dJdA/PcUHQP99287W5kVt3WRxhw2084vl7PDrInFW9iYKcgbuunDSx55lCjuIVZzPP6Q7gwMZ9SKPCWmNXLl3+ETDZzDwqI2yfAQVbJViU1sGHzqbZD0MJPRzQr5ZRES4gGKeZgU/A0mOl2XHRI8gIdKeoYF76Hc7cZYQi82EeokLSeXw3w2ggc46PJ1YUD5rKLUMSObnZrfEN+wm3wVuI4Wc4JXCuh6Vqhv8ep3+gKWMZcZlJBPDjmE+U4ffrp4y2Oe0KVX7g80n8kI3NRLcgAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOS0wNi0yN1QwNToxNjo1OCswMjowMGCy6rIAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTktMDYtMjdUMDU6MTY6NTgrMDI6MDAR71IOAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAABJRU5ErkJggg==",
-    #         "content_type": "image/png",
-    #         "qty": 1
-    #     }
-    # }
-
     param_other = {
         "social_media": 0,
         "agent_type": "Agent Citra"
@@ -479,8 +499,6 @@ class AgentRegistration(models.Model):
         context.update({
             'co_uid': self.env.user.id
         })
-
-        print(other.get('agent_type'))
 
         try:
             agent_type = self.env['tt.agent.type'].sudo().search([('name', '=', other.get('agent_type'))], limit=1)
@@ -508,18 +526,12 @@ class AgentRegistration(models.Model):
             }
 
     def prepare_header(self, company, other, agent_type):
-        address_env = self.env['address.detail'].sudo()
-
         header = {
             'company_type': company['company_type'],
             'name': company['name'],
             'business_license': company['business_license'],
-            'npwp': company['npwp'],
+            'tax_identity_number': company['npwp'],
             'agent_type_id': agent_type.id,
-            # 'address_ids': [(0, 0, {
-            #     'phone_number': '',
-            #     'country_id': '',
-            # })],
         }
         return header
 
@@ -558,6 +570,17 @@ class AgentRegistration(models.Model):
             })
             vals_list.append(contact_obj.id)
         return vals_list
+
+    def prepare_address(self, company):
+        address_list = []
+        address_id = self.address_ids.create({
+            'zip': company.get('zip'),
+            'address': company.get('street'),
+            'city': company.get('city'),
+            'type': 'home'
+        })
+        address_list.append(address_id.id)
+        return address_list
 
     def input_regis_document_data(self, regis_doc):
         created_doc = self.create_registration_documents()
@@ -600,4 +623,5 @@ class AgentRegistration(models.Model):
                     break
         print(doc_list)
         self.registration_document_ids = self.env['tt.agent.registration.document'].create(doc_list)
+        self.state = 'confirm'
         # self.state = 'confirm'
