@@ -18,8 +18,11 @@ class TtLegAirline(models.Model):
     # Journey Information
     origin_id = fields.Many2one('tt.destinations', 'Origin')
     destination_id = fields.Many2one('tt.destinations', 'Destination')
-    departure_date = fields.Char('Departure Date')
 
+    origin_terminal = fields.Char('Origin Terminal')
+    destination_terminal = fields.Char('Destination Terminal')
+
+    departure_date = fields.Char('Departure Date')
     arrival_date = fields.Char('Arrival Date')
 
     elapsed_time = fields.Char('Elapsed Time')
@@ -38,7 +41,7 @@ class TtLegAirline(models.Model):
             'destination': self.destination_id.code,
             'departure_date': self.departure_date,
             'arrival_date': self.arrival_date,
-            'elapsed_time': self.elapsed_time,
+            'elapsed_time': self.elapsed_time and self.elapsed_time or '',
             'sequence': self.sequence
         }
         return res

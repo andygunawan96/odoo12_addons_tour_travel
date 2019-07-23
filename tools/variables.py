@@ -46,6 +46,25 @@ BOOKING_STATE = [
     ('reroute', 'Reroute'), #diganti reissue
 ]
 
+BOOKING_STATE_STR = {
+    'draft': 'New',
+    'confirm': 'Confirmed',
+    'cancel': 'Cancelled',
+    'cancel2': 'Expired',
+    'error': 'Connection Loss', #diganti failed issue
+    'fail_booking': 'Failed (Book)',
+    'booked': 'Booked',
+    'partial_booked': 'Partial Booked',
+    'in_progress': 'In Progress',
+    'fail_issue': 'Failed (Issue)',
+    'partial_issued': 'Partial Issued',
+    'issued': 'Issued',
+    'done': 'Done',
+    'fail_refunded': 'Failed (REFUNDED)',
+    'refund': 'Refund',
+    'reroute': 'Reroute', #diganti reissue
+}
+
 JOURNEY_DIRECTION = [
     ('OW', 'One Way'),
     ('RT', 'Return'),

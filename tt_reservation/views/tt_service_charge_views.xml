@@ -33,7 +33,7 @@
                 <field name="charge_type"/>
                 <field name="pax_type"/>
                 <field name="pax_count"/>
-                <field name="currency_id"/>
+                <field name="currency_id" invisible="1"/>
                 <field name="amount"/>
                 <field name="total"/>
             </tree>

@@ -63,8 +63,14 @@ class TtProviderAirline(models.Model):
                 'booked_uid': api_context['co_uid'],
                 'booked_date': fields.Datetime.now(),
                 'hold_date': datetime.strptime(provider_data['hold_date'],"%Y-%m-%d %H:%M:%S"),
+                'balance_due': provider_data['balance_due']
             })
 
+    def action_failed_booked_api_airline(self):
+        for rec in self:
+            rec.write({
+                'state': 'fail_booking'
+            })
     def action_set_as_booked(self):
         self.write({
             'state': 'booked',
@@ -200,10 +206,11 @@ class TtProviderAirline(models.Model):
         for rec in self.journey_ids:
             journey_list.append(rec.to_dict())
         res = {
-            'pnr': self.pnr,
-            'pnr2': self.pnr2,
+            'pnr': self.pnr and self.pnr or '',
+            'pnr2': self.pnr2 and self.pnr2 or '',
             'provider': self.provider_id.code,
             'state': self.state,
+            'state_description': variables.BOOKING_STATE_STR[self.state],
             'sequence': self.sequence,
             'balance_due': self.balance_due,
             'direction': self.direction,
@@ -211,10 +218,10 @@ class TtProviderAirline(models.Model):
             'destination': self.destination_id.code,
             'departure_date': self.departure_date,
             'return_date': self.return_date,
-            'sid_issued': self.sid_issued,
+            'sid_issued': self.sid_issued and self.sid_issued or '',
             'journeys': journey_list,
             'currency': self.currency_id.name,
-            'hold_date': self.hold_date,
+            'hold_date': self.hold_date and self.hold_date or '',
             'tickets': []
         }
 

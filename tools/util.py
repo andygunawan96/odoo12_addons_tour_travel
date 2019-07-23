@@ -44,6 +44,7 @@ def pop_empty_key(data):
     for key in temp_key:
         data.pop(key)
 
+
 def get_without_empty(dict,key,else_param=False):
     if key in dict:
         value = dict['key']
