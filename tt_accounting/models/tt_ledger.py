@@ -96,15 +96,16 @@ LEDGER_TYPE = [
     (80, 'Group Booking'),
 ]
 
-class Ledger(models.Model,test_to_dict.ToDict):
+
+class Ledger(models.Model):
     _name = 'tt.ledger'
     _order = 'id DESC'
     # _order = 'date, id'
 
     # adjustment_id = fields.Many2one('tt.saldo.adjustment', 'Saldo Adjustment')
-    adjustment_id = fields.Char('Saldo Adjustment')
+    adjustment_id = fields.Char('Saldo Adjustment') # hapus
     # komisi dari transaksi tersebut
-    commission = fields.Float('Commission')
+    commission = fields.Float('Commission') # hapus
     state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirm'), ('done', 'Done')], copy=False, default='draft')
     # move_id = fields.Many2one('tt.account.move')
     name = fields.Char('Name', copy=False)
