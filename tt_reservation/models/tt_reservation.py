@@ -270,7 +270,6 @@ class TtReservation(models.Model):
             'state': self.state,
             'state_description': variables.BOOKING_STATE_STR[self.state],
             'hold_date': self.hold_date and self.hold_date.strftime('%Y-%m-%d %H:%M:%S') or '',
-            'sid_booked': self.sid_booked,
             'YCD': self.elder,
             'ADT': self.adult,
             'CHD': self.child,

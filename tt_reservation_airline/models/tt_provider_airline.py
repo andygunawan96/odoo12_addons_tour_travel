@@ -218,7 +218,6 @@ class TtProviderAirline(models.Model):
             'destination': self.destination_id.code,
             'departure_date': self.departure_date,
             'return_date': self.return_date,
-            'sid_issued': self.sid_issued and self.sid_issued or '',
             'journeys': journey_list,
             'currency': self.currency_id.name,
             'hold_date': self.hold_date and self.hold_date or '',
