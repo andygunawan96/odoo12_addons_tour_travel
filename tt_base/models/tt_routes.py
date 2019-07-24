@@ -164,7 +164,8 @@ class Routes(models.Model):
                 raise Exception('Data not Found')
 
             _obj.write(req_data)
-            return Response().get_no_error()
+            response = _obj.get_route_data()
+            return Response().get_no_error(response)
         except Exception as e:
             error_msg = '%s, %s' % (str(e), traceback.format_exc())
             return Response().get_error(error_msg, 500)
@@ -186,7 +187,8 @@ class Routes(models.Model):
 
             if _obj:
                 # raise Exception('Data already exist')
-                return Response().get_no_error()
+                response = _obj.get_route_data()
+                return Response().get_no_error(response)
 
             origin_id = self.env['tt.destinations'].sudo().get_id(req_data['origin'], provider_obj)
             if not origin_id:
@@ -231,7 +233,8 @@ class Routes(models.Model):
             req_data['name'] = '{carrier_code} {carrier_number} - {origin}'.format(**req_data)
             data = self.sudo().create(req_data)
             data.merge_route()
-            return Response().get_no_error()
+            response = data.get_route_data()
+            return Response().get_no_error(response)
         except Exception as e:
             error_msg = '%s, %s' % (str(e), traceback.format_exc())
             return Response().get_error(error_msg, 500)
