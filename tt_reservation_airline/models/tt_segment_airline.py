@@ -17,7 +17,6 @@ class TtSegmentAirline(models.Model):
                                     states={'draft': [('readonly', False)]})
 
     pnr = fields.Char('PNR', related='journey_id.pnr', store=True)
-    airline_pnr_ref = fields.Char('Airline PNR Ref')## PNR dari sabre ke AIRLINE
 
     carrier_id  = fields.Many2one('tt.transport.carrier','Plane')
     carrier_code = fields.Char('Flight Code')
@@ -64,7 +63,6 @@ class TtSegmentAirline(models.Model):
             'fare_code': self.fare_code,
             'journey_type': self.journey_type,
             'pnr': self.pnr,
-            'airline_pnr_ref': self.airline_pnr_ref,
             'carrier_name': self.carrier_id.name,
             'carrier_code': self.carrier_code,
             'carrier_number': self.carrier_number,
@@ -75,10 +73,10 @@ class TtSegmentAirline(models.Model):
             'destination_terminal': self.destination_terminal,
             'departure_date': self.departure_date,
             'arrival_date': self.arrival_date,
-            'elapsed_time': self.elapsed_time,
-            'class_of_service': self.class_of_service,
-            'subclass': self.subclass,
-            'cabin_class': self.cabin_class,
+            'elapsed_time': self.elapsed_time and self.elapsed_time or '',
+            'class_of_service': self.class_of_service and self.class_of_service or '',
+            'subclass': self.subclass and self.subclass or '',
+            'cabin_class': self.cabin_class and self.cabin_class or '',
             'sequence': self.sequence,
             'seat_ids': [],
             'leg_ids': leg_list

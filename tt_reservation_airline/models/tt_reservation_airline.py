@@ -83,11 +83,12 @@ class ReservationAirline(models.Model):
     def action_check_provider_state(self):
         pass##fixme later
 
-    def action_booked_api(self,pnr_list):
+    def action_booked_api(self,pnr_list,hold_date):
         self.write({
             'name': self.env['ir.sequence'].next_by_code('reservation.airline'),
             'state': 'booked',
-            'pnr': ', '.join(pnr_list)
+            'pnr': ', '.join(pnr_list),
+            'hold_date': hold_date,
         })
 
     def action_cancel(self):
@@ -1407,7 +1408,7 @@ class ReservationAirline(models.Model):
         }
     }
 
-    def create_booking_airline_api(self, req):
+    def create_booking_airline_api(self, req, context):
         # req = copy.deepcopy(self.param_global)
         print(json.dumps(req))
         search_RQ = req['searchRQ']
@@ -1415,7 +1416,7 @@ class ReservationAirline(models.Model):
         contacts = req['contacts']
         passengers = req['passengers']
         journeys = req['providers_booking_data']
-        context = req['context']
+
         try:
             values = self._prepare_booking_api(search_RQ,context)
             booker_obj = self.create_booker_api(booker,context)
@@ -1451,10 +1452,10 @@ class ReservationAirline(models.Model):
             _logger.error(str(e) + traceback.format_exc())
             return Response().get_error("Internal Server Error",500)
 
-    def update_pnr_provider_airline_api(self, req):
+    def update_pnr_provider_airline_api(self, req, context):
         ### dapatkan PNR dan ubah ke booked
         ### kemudian update service charges
-
+        req['booking_commit_provider'][-1]['status'] = 'FAILED'
         print(json.dumps(req))
         # req = self.param_update_pnr
         try:
@@ -1465,6 +1466,7 @@ class ReservationAirline(models.Model):
 
             book_status = []
             pnr_list = []
+            hold_date = datetime.datetime(9999,12,31,23,59,59,999999)
             for provider in req['booking_commit_provider']:
                 provider_obj = self.env['tt.provider.airline'].browse(provider['provider_id'])
 
@@ -1503,25 +1505,32 @@ class ReservationAirline(models.Model):
                                     provider_obj.create_service_charge(fare['service_charges'])
 
 
-                    provider_obj.action_booked_api_airline(provider,req['context'])
+                    provider_obj.action_booked_api_airline(provider,context)
                     book_status.append(1)
                     pnr_list.append(provider['pnr'])
+                    curr_hold_date =datetime.datetime.strptime(provider['hold_date'],'%Y-%m-%d %H:%M:%S')
+                    if curr_hold_date < hold_date:
+                        hold_date = curr_hold_date
                 else:
                     book_status.append(0)
+                    provider_obj.action_failed_booked_api_airline()
                     continue
 
-            if all(book_status) == 1:
+            if any(book_status) == 1:
                 book_obj.calculate_service_charge()
-                book_obj.action_booked_api(pnr_list)
+                book_obj.action_booked_api(pnr_list,hold_date)
                 return Response().get_no_error({
                     'order_number': book_obj.name
                 })
+            else:
+                raise('Update Booking Failed')
+
 
         except Exception as e:
             _logger.error(str(e) + traceback.format_exc())
-            return Response().get_error(str(e),500)
+            return Response().get_error(str(e), 500)
 
-    def get_booking_airline_api(self,req):
+    def get_booking_airline_api(self,req, context):
         try:
             order_number = req.get('order_number')
             if order_number:
@@ -1615,6 +1624,7 @@ class ReservationAirline(models.Model):
                         org_id = dest_obj.get_id(segment['origin'],_destination_type)
                         dest_id = dest_obj.get_id(segment['destination'],_destination_type)
 
+                        this_journey_seg_sequence += 1
                         this_journey_seg.append((0,0,{
                             'segment_code': segment['segment_code'],
                             'fare_code': segment.get('fare_code', ''),
@@ -1629,17 +1639,17 @@ class ReservationAirline(models.Model):
                             'destination_terminal': segment['destination_terminal'],
                             'departure_date': segment['departure_date'],
                             'arrival_date': segment['arrival_date'],
-                            'sequence': this_journey_seg_sequence+1
+                            'sequence': this_journey_seg_sequence
                         }))
 
                     ###journey_type DEP or RET
 
                     if len(journey_value) < 1:
                         continue
-
+                    journey_sequence+=1
                     this_pnr_journey.append((0,0, {
                         'provider_id': provider_id,
-                        'sequence': journey_sequence+1,
+                        'sequence': journey_sequence,
                         'journey_type': journey_type,
                         'origin_id': this_journey_seg[0][2]['origin_id'],
                         'destination_id': this_journey_seg[-1][2]['destination_id'],
