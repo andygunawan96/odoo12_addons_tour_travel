@@ -27,9 +27,9 @@ class TourPricelist(models.Model):
     tour_code = fields.Char('Tour Code', readonly=True, copy=False)
     tour_route = fields.Selection([('international', 'International'), ('domestic', 'Domestic')],
                                   'Route', required=True, default='international')
-    tour_category = fields.Selection([('group', 'Group (Series)'), ('fit', 'Land Tour (FIT)')],
+    tour_category = fields.Selection([('group', 'Group'), ('private', 'Private')],
                                      'Tour Category', required=True, default='group')
-    tour_type = fields.Selection([('sic', 'SIC (Without Tour Leader)'), ('series', 'Series (With Tour Leader)'), ('land', 'Land Only'), ('city', 'City Tour')], 'Tour Type', default='sic')
+    tour_type = fields.Selection([('series', 'Series (With Tour Leader)'), ('sic', 'SIC (Without Tour Leader)'), ('land', 'Land Only'), ('city', 'City Tour'), ('private', 'Private Tour')], 'Tour Type', default='series')
 
     departure_date = fields.Date('Departure Date')
     arrival_date = fields.Date('Arrival Date')
@@ -159,29 +159,24 @@ class TourPricelist(models.Model):
     @api.onchange('tour_category', 'tour_type')
     def _set_to_null(self):
         for rec in self:
+            if rec.tour_category == 'private':
+                rec.tour_type = 'private'
+                rec.departure_date = False
+                rec.arrival_date = False
             if rec.tour_category == 'group':
-                rec.tour_type = False
                 rec.start_period = False
                 rec.end_period = False
-            if rec.tour_category == 'fit':
+                if rec.tour_type == 'private':
+                    rec.tour_type = 'series'
                 if rec.tour_type == 'sic':
-                    rec.start_period = False
-                    rec.end_period = False
-                elif rec.tour_type == 'private':
-                    rec.departure_date = False
-                    rec.arrival_date = False
-                else:
-                    rec.start_period = False
-                    rec.end_period = False
-                    rec.departure_date = False
-                    rec.arrival_date = False
+                    rec.tipping_tour_leader = 0
 
     def action_validate(self):
         self.state_tour = 'open'
         self.create_uid = self.env.user.id
         if self.tour_category == 'group':
             self.tour_code = self.env['ir.sequence'].next_by_code('tour.pricelist.code.group')
-        elif self.tour_category == 'fit':
+        elif self.tour_category == 'private':
             self.tour_code = self.env['ir.sequence'].next_by_code('tour.pricelist.code.fit')
 
     def action_closed(self):
@@ -360,11 +355,10 @@ class TourPricelist(models.Model):
     def search_tour_api(self, data, context, **kwargs):
         try:
             search_request = {
-                'country_id': data['country_id'] and data['country_id'] or '0',
-                'departure_month': data['month'] and data['month'] or '00',
-                'departure_year': data['year'] and data['year'] or '0000',
-                'budget_min': data['budget_min'] and data['budget_min'] or 0,
-                'budget_max': data['budget_max'] and data['budget_max'] or 0,
+                'country_id': data.get('country_id') and data['country_id'] or '0',
+                'departure_month': data.get('month') and data['month'] or '00',
+                'departure_year': data.get('year') and data['year'] or '0000',
+                'tour_query': data.get('tour_query') and '%' + str(data['tour_query']) + '%' or '',
             }
 
             search_request.update({
@@ -379,10 +373,16 @@ class TourPricelist(models.Model):
                     'country_name': temp[0]['name']
                 })
 
-            if search_request['country_id'] != '0':
-                self.env.cr.execute("""SELECT * FROM tt_reservation_tour_pricelist tp LEFT JOIN tour_country_rel tcr ON tp.id = tcr.pricelist_id WHERE tp.state_tour IN ('open', 'definite', 'sold') AND tcr.country_id =%s AND tp.adult_sale_price BETWEEN %s AND %s ORDER BY sequence DESC;""", (search_request['country_id'], search_request['budget_min'], search_request['budget_max']))
+            if search_request.get('tour_query'):
+                if search_request['country_id'] != '0':
+                    self.env.cr.execute("""SELECT * FROM tt_reservation_tour_pricelist tp LEFT JOIN tour_country_rel tcr ON tp.id = tcr.pricelist_id WHERE tp.state_tour IN ('open', 'definite', 'sold') AND tp.name ILIKE '%s' AND tcr.country_id = %s;""" % (search_request['tour_query'], search_request['country_id']))
+                else:
+                    self.env.cr.execute("""SELECT * FROM tt_reservation_tour_pricelist WHERE state_tour IN ('open', 'definite', 'sold') AND name ILIKE '%s';""" % (search_request['tour_query']))
             else:
-                self.env.cr.execute("""SELECT * FROM tt_reservation_tour_pricelist WHERE state_tour IN ('open', 'definite', 'sold') AND adult_sale_price BETWEEN %s AND %s ORDER BY sequence DESC;""", (search_request['budget_min'], search_request['budget_max']))
+                if search_request['country_id'] != '0':
+                    self.env.cr.execute("""SELECT * FROM tt_reservation_tour_pricelist tp LEFT JOIN tour_country_rel tcr ON tp.id = tcr.pricelist_id WHERE tp.state_tour IN ('open', 'definite', 'sold') AND tcr.country_id = %s;""" % (search_request['country_id']))
+                else:
+                    self.env.cr.execute("""SELECT * FROM tt_reservation_tour_pricelist WHERE state_tour IN ('open', 'definite', 'sold');""")
 
             result_temp = self.env.cr.dictfetchall()
 
@@ -450,8 +450,10 @@ class TourPricelist(models.Model):
                     'start_period_f': rec['start_period'] and datetime.strptime(str(rec['start_period']), '%Y-%m-%d').strftime('%B') or '',
                     'end_period_f': rec['end_period'] and datetime.strptime(str(rec['end_period']), '%Y-%m-%d').strftime('%B') or '',
                     'departure_date': rec['departure_date'] and datetime.strptime(str(rec['departure_date']), '%Y-%m-%d').strftime('%d %b %Y') or '',
+                    'departure_date_ori': rec['departure_date'] and rec['departure_date'] or '',
                     'arrival_date': rec['arrival_date'] and datetime.strptime(str(rec['arrival_date']), '%Y-%m-%d').strftime('%d %b %Y') or '',
                     'start_period': rec['start_period'] and datetime.strptime(str(rec['start_period']), '%Y-%m-%d').strftime('%B') or '',
+                    'start_period_ori': rec['start_period'] and rec['start_period'] or '',
                     'end_period': rec['end_period'] and datetime.strptime(str(rec['end_period']), '%Y-%m-%d').strftime('%B') or '',
                     'create_date': '',
                     'write_date': '',
@@ -590,6 +592,14 @@ class TourPricelist(models.Model):
                     images = self.env.cr.dictfetchall()
                 except Exception:
                     images = []
+
+                for img_temp in images:
+                    img_key_list = [key for key in img_temp.keys()]
+                    for key in img_key_list:
+                        if img_temp[key] is None:
+                            img_temp.update({
+                                key: ''
+                            })
 
                 rec.update({
                     'name': rec['name'],

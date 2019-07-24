@@ -43,11 +43,11 @@
                             <field name="tour_code"/>
                             <field name="description"/>
                             <field name="tour_category"/>
-                            <field name="tour_type" attrs="{'invisible': [('tour_category', '!=', 'fit')], 'required': [('tour_category', '=', 'fit')]}"/>
-                            <field name="departure_date" attrs="{'invisible': [('tour_type', '=', 'private')], 'required': [('tour_type', '!=', 'private')]}"/>
-                            <field name="arrival_date" attrs="{'invisible': [('tour_type', '=', 'private')], 'required': [('tour_type', '!=', 'private')]}"/>
-                            <field name="start_period" attrs="{'invisible': [('tour_type', '!=', 'private')], 'required': [('tour_type', '=', 'private')]}"/>
-                            <field name="end_period" attrs="{'invisible': [('tour_type', '!=', 'private')], 'required': [('tour_type', '=', 'private')]}"/>
+                            <field name="tour_type" attrs="{'invisible': [('tour_category', '=', 'private')], 'required': [('tour_category', '!=', 'private')]}"/>
+                            <field name="departure_date" attrs="{'invisible': [('tour_category', '=', 'private')], 'required': [('tour_category', '!=', 'private')]}"/>
+                            <field name="arrival_date" attrs="{'invisible': [('tour_category', '=', 'private')], 'required': [('tour_category', '!=', 'private')]}"/>
+                            <field name="start_period" attrs="{'invisible': [('tour_category', '!=', 'private')], 'required': [('tour_category', '=', 'private')]}"/>
+                            <field name="end_period" attrs="{'invisible': [('tour_category', '!=', 'private')], 'required': [('tour_category', '=', 'private')]}"/>
                             <field name="duration"/>
                             <field name="guiding_days"/>
                             <field name="driving_times"/>
@@ -176,17 +176,17 @@
                             <group col="3">
                                 <group>
                                     <field name="tipping_guide"/>
-                                    <field name="tipping_tour_leader"/>
+                                    <field name="tipping_tour_leader" attrs="{'invisible': [('tour_type', '=', 'sic')]}"/>
                                     <field name="tipping_driver"/>
                                 </group>
                                 <group>
                                     <field name="tipping_guide_child"/>
-                                    <field name="tipping_tour_leader_child"/>
+                                    <field name="tipping_tour_leader_child" attrs="{'invisible': [('tour_type', '=', 'sic')]}"/>
                                     <field name="tipping_driver_child"/>
                                 </group>
                                 <group>
                                     <field name="tipping_guide_infant"/>
-                                    <field name="tipping_tour_leader_infant"/>
+                                    <field name="tipping_tour_leader_infant" attrs="{'invisible': [('tour_type', '=', 'sic')]}"/>
                                     <field name="tipping_driver_infant"/>
                                 </group>
                             </group>
