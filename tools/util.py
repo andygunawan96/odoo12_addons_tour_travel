@@ -47,7 +47,7 @@ def pop_empty_key(data):
 
 def get_without_empty(dict,key,else_param=False):
     if key in dict:
-        value = dict['key']
+        value = dict[key]
         if value not in [0,'']:
             return value
     return else_param

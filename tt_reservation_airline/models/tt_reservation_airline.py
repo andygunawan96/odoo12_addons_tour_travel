@@ -89,6 +89,7 @@ class ReservationAirline(models.Model):
             'state': 'booked',
             'pnr': ', '.join(pnr_list),
             'hold_date': hold_date,
+            # 'booked_by':
         })
 
     def action_cancel(self):
@@ -1455,7 +1456,7 @@ class ReservationAirline(models.Model):
     def update_pnr_provider_airline_api(self, req, context):
         ### dapatkan PNR dan ubah ke booked
         ### kemudian update service charges
-        req['booking_commit_provider'][-1]['status'] = 'FAILED'
+        # req['booking_commit_provider'][-1]['status'] = 'FAILED'
         print(json.dumps(req))
         # req = self.param_update_pnr
         try:
@@ -1467,12 +1468,11 @@ class ReservationAirline(models.Model):
             book_status = []
             pnr_list = []
             hold_date = datetime.datetime(9999,12,31,23,59,59,999999)
+
             for provider in req['booking_commit_provider']:
                 provider_obj = self.env['tt.provider.airline'].browse(provider['provider_id'])
-
                 if not provider_obj:
                     raise Exception('Provider ID not found')
-
                 if provider['status'] == 'BOOKED' and not provider.get('error_code'):
                     ##generate leg data
                     provider_type = self.env['tt.provider.type'].search([('code','=','airline')])[0]
@@ -1543,9 +1543,6 @@ class ReservationAirline(models.Model):
                     prov_list = []
                     for rec in book_obj.provider_booking_ids:
                         prov_list.append(rec.to_dict())
-                    seg_list = []
-                    for rec in book_obj.segment_ids:
-                        seg_list.append(rec.to_dict())
                     res.update({
                         'direction': book_obj.direction,
                         'origin': book_obj.origin_id.code,
@@ -1553,7 +1550,6 @@ class ReservationAirline(models.Model):
                         'sector_type': book_obj.sector_type,
                         'passenger_ids': psg_list,
                         'provider_booking_ids': prov_list,
-                        'segment_ids': seg_list,
                         'provider_type': book_obj.provider_type_id.code
                     })
                     print(json.dumps(res))
@@ -1616,8 +1612,14 @@ class ReservationAirline(models.Model):
                 for journey_type, journey_value in pnr['journey_codes'].items():
                     ###Create Journey
                     print(journey_type)
+
+
+                    if len(journey_value) < 1:
+                        continue
+
                     this_journey_seg = []
                     this_journey_seg_sequence = 0
+
                     for segment in journey_value:
                         ###Create Segment
                         carrier_id = carrier_obj.get_id(segment['carrier_code'],_destination_type)
@@ -1644,8 +1646,6 @@ class ReservationAirline(models.Model):
 
                     ###journey_type DEP or RET
 
-                    if len(journey_value) < 1:
-                        continue
                     journey_sequence+=1
                     this_pnr_journey.append((0,0, {
                         'provider_id': provider_id,
@@ -1658,23 +1658,20 @@ class ReservationAirline(models.Model):
                         'segment_ids': this_journey_seg
                     }))
 
-                DEP_len = len(this_pnr_journey[0])
-                RET_len = len(this_pnr_journey[-1])
-
-                if DEP_len > 0 and RET_len > 0 :
+                JRN_len = len(this_pnr_journey)
+                print("JRNlen : %s" % (JRN_len))
+                if JRN_len > 1:
                     provider_direction = 'RT'
                     provider_origin = this_pnr_journey[0][2]['origin_id']
                     provider_destination = this_pnr_journey[0][2]['destination_id']
                     provider_departure_date = this_pnr_journey[0][2]['departure_date']
                     provider_return_date = this_pnr_journey[-1][2]['departure_date']
-                elif DEP_len > 0 :
+                else:
                     provider_direction = 'OW'
                     provider_origin = this_pnr_journey[0][2]['origin_id']
                     provider_destination = this_pnr_journey[0][2]['destination_id']
-                elif RET_len > 0 :
-                    provider_direction = 'OW'
-                    provider_origin = this_pnr_journey[-1][2]['origin_id']
-                    provider_destination = this_pnr_journey[-1][2]['destination_id']
+                    provider_departure_date = this_pnr_journey[0][2]['departure_date']
+                    provider_return_date = False
 
                 values = {
                     'provider_id': provider_id,
