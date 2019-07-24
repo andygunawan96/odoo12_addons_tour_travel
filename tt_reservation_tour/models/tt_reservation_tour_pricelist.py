@@ -593,6 +593,14 @@ class TourPricelist(models.Model):
                 except Exception:
                     images = []
 
+                for img_temp in images:
+                    img_key_list = [key for key in img_temp.keys()]
+                    for key in img_key_list:
+                        if img_temp[key] is None:
+                            img_temp.update({
+                                key: ''
+                            })
+
                 rec.update({
                     'name': rec['name'],
                     'accommodations': accommodation,
