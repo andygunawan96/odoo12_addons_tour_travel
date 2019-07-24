@@ -147,12 +147,12 @@ class Routes(models.Model):
 
     def update_route_api(self, req_data, provider_type):
         try:
-            mandatory_fields = ['origin', 'destination', 'departure_time', 'arrival_time', 'carrier_code', 'carrier_number']
-
-            keys = [rec for rec in req_data.keys()]
-            diff_fields = list(set(mandatory_fields).difference(keys))
-            if diff_fields:
-                raise Exception('Missing Mandatory fields, data : %s' % diff_fields)
+            # mandatory_fields = ['origin', 'destination', 'departure_time', 'arrival_time', 'carrier_code', 'carrier_number']
+            #
+            # keys = [rec for rec in req_data.keys()]
+            # diff_fields = list(set(mandatory_fields).difference(keys))
+            # if diff_fields:
+            #     raise Exception('Missing Mandatory fields, data : %s' % diff_fields)
 
             provider_obj = self.env['tt.provider.type'].sudo().search([('code', '=', provider_type)], limit=1)
             _obj = self.sudo().search([('carrier_code', '=', req_data['carrier_code']),
@@ -171,12 +171,12 @@ class Routes(models.Model):
 
     def create_route_api(self, req_data, provider_type):
         try:
-            mandatory_fields = ['origin', 'destination', 'departure_time', 'arrival_time', 'carrier_code', 'carrier_number']
-
-            keys = [rec for rec in req_data.keys()]
-            diff_fields = list(set(mandatory_fields).difference(keys))
-            if diff_fields:
-                raise Exception('Missing Mandatory fields, data : %s' % diff_fields)
+            # mandatory_fields = ['origin', 'destination', 'departure_time', 'arrival_time', 'carrier_code', 'carrier_number']
+            #
+            # keys = [rec for rec in req_data.keys()]
+            # diff_fields = list(set(mandatory_fields).difference(keys))
+            # if diff_fields:
+            #     raise Exception('Missing Mandatory fields, data : %s' % diff_fields)
 
             provider_obj = self.env['tt.provider.type'].sudo().search([('code', '=', provider_type)], limit=1)
             _obj = self.sudo().search([('carrier_code', '=', req_data['carrier_code']),
