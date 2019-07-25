@@ -35,7 +35,6 @@ class TtSegmentAirline(models.Model):
     elapsed_time = fields.Char('Elapsed Time')
 
     class_of_service = fields.Char('Class')
-    subclass = fields.Char('SubClass')
     cabin_class = fields.Char('Cabin Class')
     # agent_id = fields.Many2one('res.partner', related='booking_id.agent_id', store=True)
 
@@ -75,11 +74,10 @@ class TtSegmentAirline(models.Model):
             'arrival_date': self.arrival_date,
             'elapsed_time': self.elapsed_time and self.elapsed_time or '',
             'class_of_service': self.class_of_service and self.class_of_service or '',
-            'subclass': self.subclass and self.subclass or '',
             'cabin_class': self.cabin_class and self.cabin_class or '',
             'sequence': self.sequence,
-            'seat_ids': [],
-            'leg_ids': leg_list
+            'seats': [],
+            'legs': leg_list
         }
 
         return res

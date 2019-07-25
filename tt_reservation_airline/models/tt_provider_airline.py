@@ -221,7 +221,35 @@ class TtProviderAirline(models.Model):
             'journeys': journey_list,
             'currency': self.currency_id.name,
             'hold_date': self.hold_date and self.hold_date or '',
-            'tickets': []
+            'tickets': [],
+            'cost_service_charges': self.get_cost_service_charges()
         }
 
         return res
+
+    def get_cost_service_charges(self):
+        sc_value={}
+        for p_sc in self.cost_service_charge_ids:
+            p_charge_type = p_sc.charge_type
+            p_pax_type = p_sc.pax_type
+            if p_charge_type == 'RAC' and p_sc.charge_code !=  'rac':
+                continue
+            if not sc_value.get(p_pax_type):
+                sc_value[p_pax_type] = {}
+            if not sc_value[p_pax_type].get(p_charge_type):
+                sc_value[p_pax_type][p_charge_type] = {}
+                sc_value[p_pax_type][p_charge_type].update({
+                    'amount': 0,
+                    'total': 0,
+                    'foreign_amount': 0
+                })
+            sc_value[p_pax_type][p_charge_type].update({
+                'charge_code': p_charge_type,
+                'pax_count': p_sc.pax_count,
+                'currency_id': p_sc.currency_id.id,
+                'foreign_currency_id': p_sc.foreign_currency_id.id,
+                'amount': sc_value[p_pax_type][p_charge_type]['amount'] + p_sc.amount,
+                'total': sc_value[p_pax_type][p_charge_type]['total'] + p_sc.total,
+                'foreign_amount': sc_value[p_pax_type][p_charge_type]['foreign_amount'] + p_sc.foreign_amount,
+            })
+        return sc_value

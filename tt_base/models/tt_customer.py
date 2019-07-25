@@ -99,7 +99,6 @@ class TtCustomer(models.Model):
             'country_of_issued_id': self.country_of_issued_id.code and self.country_of_issued_id.code or '',
             'identity_type': self.identity_type and self.identity_type or '',
             'identity_number': self.identity_number and self.identity_number or '',
-            'agent_id': self.agent_id.id and self.agent_id.id or '',
         }
 
         return res

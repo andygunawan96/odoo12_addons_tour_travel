@@ -39,8 +39,8 @@ class TtReservation(models.Model):
 
     ledger_ids = fields.One2many('tt.ledger', 'res_id', 'Ledger')
 
-    departure_date = fields.Date('Journey Date', readonly=True, states={'draft': [('readonly', False)]})  # , required=True
-    return_date = fields.Date('Return Date', readonly=True, states={'draft': [('readonly', False)]})
+    departure_date = fields.Char('Journey Date', readonly=True, states={'draft': [('readonly', False)]})  # , required=True
+    return_date = fields.Char('Return Date', readonly=True, states={'draft': [('readonly', False)]})
 
     provider_type_id = fields.Many2one('tt.provider.type','Provider Type')
 
@@ -274,12 +274,8 @@ class TtReservation(models.Model):
             'ADT': self.adult,
             'CHD': self.child,
             'INF': self.infant,
-            'departure_date': self.departure_date and self.departure_date.strftime('%Y-%m-%d') or '',
-            'return_date': self.return_date and self.return_date.strftime('%Y-%m-%d') or '',
-            'agent_id': self.agent_id.id,
-            'agent_type': self.agent_type_id.code,
-            'customer_parent': self.customer_parent_id.id and self.customer_parent_id.id or '',
-            'customer_parent_type': self.customer_parent_type_id.code and self.customer_parent_type_id.code or ''
+            'departure_date': self.departure_date and self.departure_date or '',
+            'return_date': self.return_date and self.return_date or '',
         }
 
         return res

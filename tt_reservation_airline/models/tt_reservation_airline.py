@@ -1492,8 +1492,8 @@ class ReservationAirline(models.Model):
                                         'destination_terminal': leg['destination_terminal'],
                                         'origin_id': leg_org,
                                         'destination_id': leg_dest,
-                                        'departure_date': datetime.datetime.strptime(leg['departure_date'],"%Y-%m-%d %H:%M:%S"),
-                                        'arrival_date': datetime.datetime.strptime(leg['arrival_date'],"%Y-%m-%d %H:%M:%S"),
+                                        'departure_date': leg['departure_date'],
+                                        'arrival_date': leg['arrival_date'],
                                         'provider_id': leg_prov
                                     }))
 
@@ -1523,7 +1523,7 @@ class ReservationAirline(models.Model):
                     'order_number': book_obj.name
                 })
             else:
-                raise('Update Booking Failed')
+                raise Exception('Update Booking Failed')
 
 
         except Exception as e:
@@ -1533,11 +1533,13 @@ class ReservationAirline(models.Model):
     def get_booking_airline_api(self,req, context):
         try:
             order_number = req.get('order_number')
+            print(json.dumps(context))
             if order_number:
-                book_obj = self.env['tt.reservation.airline'].search([('name','=',order_number)])
-                if book_obj:
+                book_obj = self.env['tt.reservation.airline'].search([('name','=',order_number)],limit=1)
+                if book_obj and book_obj.agent_id.id == context.get('co_agent_id',-1):
                     res = book_obj.to_dict()
                     psg_list = []
+
                     for rec in book_obj.passenger_ids:
                         psg_list.append(rec.to_dict())
                     prov_list = []
@@ -1548,16 +1550,16 @@ class ReservationAirline(models.Model):
                         'origin': book_obj.origin_id.code,
                         'destination': book_obj.destination_id.code,
                         'sector_type': book_obj.sector_type,
-                        'passenger_ids': psg_list,
-                        'provider_booking_ids': prov_list,
+                        'passengers': psg_list,
+                        'provider_bookings': prov_list,
                         'provider_type': book_obj.provider_type_id.code
                     })
                     print(json.dumps(res))
                     return Response().get_no_error(res)
                 else:
-                    raise('Booking not found')
+                    raise Exception('Booking not found')
             else:
-                raise('No Order Number provided')
+                raise Exception('No Order Number provided')
         except Exception as e:
             _logger.info(str(e) + traceback.format_exc())
             return Response().get_error(str(e),500)
@@ -1768,30 +1770,48 @@ class ReservationAirline(models.Model):
             for p_sc in provider.cost_service_charge_ids:
                 p_charge_type = p_sc.charge_type
                 p_pax_type = p_sc.pax_type
-                if not sc_value.get(p_charge_type):
-                    sc_value[p_charge_type] = {}
-                if not sc_value[p_charge_type].get(p_pax_type):
-                    sc_value[p_charge_type][p_pax_type] = {}
-                    sc_value[p_charge_type][p_pax_type].update({
+                if not sc_value.get(p_pax_type):
+                    sc_value[p_pax_type] = {}
+                if not sc_value[p_pax_type].get(p_charge_type):
+                    sc_value[p_pax_type][p_charge_type] = {}
+                    sc_value[p_pax_type][p_charge_type].update({
                         'amount': 0,
                         'total': 0,
                         'foreign_amount': 0
                     })
-
-                sc_value[p_charge_type][p_pax_type].update({
+                sc_value[p_pax_type][p_charge_type].update({
                     'charge_code': p_charge_type,
                     'pax_count': p_sc.pax_count,
                     'currency_id': p_sc.currency_id.id,
                     'foreign_currency_id': p_sc.foreign_currency_id.id,
-                    'amount': sc_value[p_charge_type][p_pax_type]['amount'] + p_sc.amount,
-                    'total': sc_value[p_charge_type][p_pax_type]['total'] + p_sc.total,
-                    'foreign_amount': sc_value[p_charge_type][p_pax_type]['foreign_amount'] + p_sc.foreign_amount,
+                    'amount': sc_value[p_pax_type][p_charge_type]['amount'] + p_sc.amount,
+                    'total': sc_value[p_pax_type][p_charge_type]['total'] + p_sc.total,
+                    'foreign_amount': sc_value[p_pax_type][p_charge_type]['foreign_amount'] + p_sc.foreign_amount,
                 })
+                # if not sc_value.get(p_charge_type):
+                #     sc_value[p_charge_type] = {}
+                # if not sc_value[p_charge_type].get(p_pax_type):
+                #     sc_value[p_charge_type][p_pax_type] = {}
+                #     sc_value[p_charge_type][p_pax_type].update({
+                #         'amount': 0,
+                #         'total': 0,
+                #         'foreign_amount': 0
+                #     })
+                #
+                # sc_value[p_charge_type][p_pax_type].update({
+                #     'charge_code': p_charge_type,
+                #     'pax_count': p_sc.pax_count,
+                #     'currency_id': p_sc.currency_id.id,
+                #     'foreign_currency_id': p_sc.foreign_currency_id.id,
+                #     'amount': sc_value[p_charge_type][p_pax_type]['amount'] + p_sc.amount,
+                #     'total': sc_value[p_charge_type][p_pax_type]['total'] + p_sc.total,
+                #     'foreign_amount': sc_value[p_charge_type][p_pax_type]['foreign_amount'] + p_sc.foreign_amount,
+                # })
 
         print(sc_value)
         values = []
-        for c_type,c_val in sc_value.items():
-            for p_type,p_val in c_val.items():
+        for p_type,c_val in sc_value.items():
+            for c_type,p_val in c_val.items():
                 curr_dict = {}
                 curr_dict['charge_type'] = c_type
                 curr_dict['pax_type'] = p_type

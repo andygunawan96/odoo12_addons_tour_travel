@@ -48,7 +48,6 @@
                         <group>
                             <field name="cabin_class"/>
                             <field name="class_of_service"/>
-                            <field name="subclass"/>
                         </group>
                     </group>
                     <separator colspan="6" string="Legs"/>
