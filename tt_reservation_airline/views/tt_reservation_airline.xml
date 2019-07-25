@@ -101,8 +101,6 @@
         <field name="arch" type="xml">
 
             <tree>
-                <button type="object" string="Create Booking" name="create_booking_airline_api"/>
-                <button type="object" string="ISSUED1" name="action_issued_api"/>
                 <field name="name"/>
                 <field name="customer_parent_id"/>
                 <field name="pnr"/>

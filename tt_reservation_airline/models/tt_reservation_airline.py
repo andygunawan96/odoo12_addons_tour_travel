@@ -1539,8 +1539,7 @@ class ReservationAirline(models.Model):
                 if book_obj and book_obj.agent_id.id == context.get('co_agent_id',-1):
                     res = book_obj.to_dict()
                     psg_list = []
-
-                    for rec in book_obj.passenger_ids:
+                    for rec in book_obj.sudo().passenger_ids:
                         psg_list.append(rec.to_dict())
                     prov_list = []
                     for rec in book_obj.provider_booking_ids:
@@ -1563,6 +1562,13 @@ class ReservationAirline(models.Model):
         except Exception as e:
             _logger.info(str(e) + traceback.format_exc())
             return Response().get_error(str(e),500)
+
+    ##ini potong ledger dan update final price
+    def payment_airline_api(self):
+        return True
+
+    def issued_booking_airline_api(self):
+        return True
 
     def validate_booking(self, api_context=None):
         user_obj = self.env['res.users'].browse(api_context['co_uid'])
