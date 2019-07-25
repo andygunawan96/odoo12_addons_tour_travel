@@ -34,7 +34,12 @@ class AgentInvoice(models.Model,test_to_dict.ToDict):
 
         new_invoice_line =  super(AgentInvoice, self).create(vals_list)
 
-        new_invoice_line.model_type = new_invoice_line.get_reservation_obj().provider_type.id
+        new_invoice_line_obj = new_invoice_line.get_reservation_obj()
+
+        if 'provider_type_id' in new_invoice_line_obj:
+            new_invoice_line.model_type = new_invoice_line_obj.provider_type_id.id
+        elif 'provider_type' in new_invoice_line_obj:
+            new_invoice_line.model_type = new_invoice_line_obj.provider_type.id
 
         return new_invoice_line
 
@@ -64,10 +69,7 @@ class AgentInvoice(models.Model,test_to_dict.ToDict):
             'target': 'current',
         }
 
-
     def open_split_wizard(self):
-
-
         wizard_obj = self.env['tt.split.invoice.wizard'].create({
             'current_invoice_line': self.id,
             'invoice_id': self.invoice_id.id,
@@ -83,8 +85,6 @@ class AgentInvoice(models.Model,test_to_dict.ToDict):
             'new_invoice_number': 18,
             'split_wizard_id': wizard_obj.id,
         }).id for p in detail_ids]
-
-
 
         form_id = self.env['tt.split.invoice.wizard'].get_form_id()
 

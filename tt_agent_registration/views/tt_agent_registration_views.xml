@@ -201,7 +201,7 @@
                         </group>
                         <group string="Ledger">
                             <notebook>
-                                <page string="Ledger">
+                                <page string="Ledger" name="ledger">
                                     <field name="ledger_ids">
                                         <tree>
                                             <field name="date"/>

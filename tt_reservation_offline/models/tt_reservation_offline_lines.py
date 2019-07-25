@@ -43,7 +43,7 @@ class IssuedOfflineLines(models.Model):
                                                            'confirm': [('readonly', False)]}, default=1)
     state = fields.Selection(STATE, string='State', default='draft', related='booking_id.state')
     transaction_type = fields.Many2one('tt.provider.type', 'Service Type', related='booking_id.provider_type_id')
-    transaction_name = fields.Char('Service Name', readonly=True, related='booking_id.provider_type_name')
+    transaction_name = fields.Char('Service Name', readonly=True, related='booking_id.provider_type_id_name')
     provider_id = fields.Many2one('tt.provider', 'Provider ID', readonly=True, states={'confirm': [('readonly', False)]})
 
     # Airplane / Train

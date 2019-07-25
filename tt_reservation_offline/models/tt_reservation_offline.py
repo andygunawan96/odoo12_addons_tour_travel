@@ -46,7 +46,7 @@ class IssuedOffline(models.Model):
     #                         states={'draft': [('readonly', False)]}, string='Transaction Type')
     provider_type_id = fields.Many2one('tt.provider.type', required=True, readonly=True,
                                        states={'draft': [('readonly', False)]}, string='Transaction Type')
-    provider_type_name = fields.Char('Transaction Name', readonly=True, related='provider_type_id.code')
+    provider_type_id_name = fields.Char('Transaction Name', readonly=True, related='provider_type_id.code')
 
     segment = fields.Integer('Number of Segment', compute='get_segment_length')
     person = fields.Integer('Person', readonly=True, states={'draft': [('readonly', False)],
