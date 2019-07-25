@@ -1,12 +1,9 @@
 from odoo import models, fields, api, _
 
 
-class ReservationOffline(models.Model):
+class ReservationVisa(models.Model):
 
-    _inherit = 'tt.reservation.offline'
-
-    # invoice_line_ids = fields.One2many('tt.agent.invoice.line.','res_id_resv', 'Invoice',
-    #                               domain="[('res_model_resv','=','self._name'),('res_id_resv','=','self.id')]")
+    _inherit = 'tt.reservation.visa'
 
     state_invoice = fields.Selection([('wait', 'Waiting'), ('partial', 'Partial'), ('full', 'Full')],
                                      'Invoice Status', help="Agent Invoice status", default='wait',
@@ -52,12 +49,10 @@ class ReservationOffline(models.Model):
             'res_model_resv': self._name,
             'res_id_resv': self.id,
             'invoice_id': invoice_id.id,
-            'desc': 'Testing Offline Invoice'
+            'desc': 'Testing Visa Invoice'
         })
 
         invoice_line_id = inv_line_obj.id
-
-        # get charge code name
 
         # get prices
         def get_pax_price():
@@ -66,20 +61,20 @@ class ReservationOffline(models.Model):
                 'CHD': 0,
                 'INF': 0,
             }
-            for svrc in self.cost_service_charge_ids:
+            for svrc in self.sale_service_charge_ids:
                 if 'r.ac' not in svrc.charge_code:
                     res[svrc.pax_type] += svrc.amount
             return res
 
         pax_price = get_pax_price()
 
-        for psg in self.passenger_ids:
-            desc_text = psg.passenger_id.first_name + ' ' + psg.passenger_id.last_name + ', ' + psg.pax_type
+        for psg in self.to_passenger_ids:
+            desc_text = psg.passenger_id.first_name + ' ' + psg.passenger_id.last_name + ', ' + psg.passenger_type
 
             inv_line_obj.write({
                 'invoice_line_detail_ids': [(0,0,{
                     'desc': desc_text,
-                    'price_unit': pax_price[psg.pax_type],
+                    'price_unit': pax_price[psg.passenger_type],
                     'quantity': 1,
                     'invoice_line_id': invoice_line_id,
                 })]

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.config_parameter" id="web_base_url_attachment">
+            <field name="key">web_base_url_attachment.create</field>
+            <field name="value">/home/rodex-it-02/Downloads/attachments</field>
+        </record>
+    </data>
+</odoo>

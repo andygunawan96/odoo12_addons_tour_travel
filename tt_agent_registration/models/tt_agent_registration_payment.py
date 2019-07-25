@@ -37,7 +37,10 @@ class AgentRegistrationPayment(models.Model):
 
     @api.model
     def _cron_check_payment(self):
-        print('test')
-        recs = self.search([('due_date', '<', fields.Datetime.now()), ('state', '!=', 'paid')])
-        for rec in recs:
+        late_payments = self.search([('due_date', '<', fields.Datetime.now()), ('state', '!=', 'paid')])
+        paid_payments = self.search([('due_date', '<', fields.Datetime.now()), ('state', '=', 'paid')])
+        for rec in late_payments:
             rec.state = 'late'
+        for rec in paid_payments:
+            # Create agent invoice
+            pass

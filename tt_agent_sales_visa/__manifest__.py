@@ -20,13 +20,12 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'base_setup', 'tt_agent_sales', 'tt_visa'],
+    'depends': ['base', 'base_setup', 'tt_agent_sales', 'tt_reservation_visa'],
 
     # always loaded
     'data': [
         # 'security/ir.model.access.csv',
-        'views/views.xml',
-        'views/templates.xml',
+        'views/tt_reservation_visa_views.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

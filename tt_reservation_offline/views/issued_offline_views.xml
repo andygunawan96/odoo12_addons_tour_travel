@@ -302,25 +302,25 @@
                                     <field name="ledger_ids" readonly="1"/>  <!--groups="tt_base.group_tt_tour_travel_operator"-->
                                 </group>
                             </page>
-                            <page string="Invoice" attrs="{'invisible': [('state', '=', 'draft')]}">
-                                <group>
-                                    <field name="invoice_ids" readonly="1">
-                                        <tree>
-                                            <field name="name"/>
-                                            <field name="agent_id"/>
-<!--                                            <field name="customer_parent_id"/>-->
-                                            <field name="contact_id"/>
-<!--                                            <field name="date_invoice"/>-->
-<!--                                            <field name="date_due"/>-->
-<!--                                            <field name="amount_total"/>-->
-                                            <field name="currency_id" invisible="1"/>
-                                            <field name="state"/>
-<!--                                            <button name="open_record" type="object" class="oe_highlight"-->
-<!--                                            icon="fa-asterisk text-success"/>-->
-                                        </tree>
-                                    </field>
-                                </group>
-                            </page>
+<!--                            <page string="Invoice" attrs="{'invisible': [('state', '=', 'draft')]}">-->
+<!--                                <group>-->
+<!--                                    <field name="invoice_ids" readonly="1">-->
+<!--                                        <tree>-->
+<!--                                            <field name="name"/>-->
+<!--                                            <field name="agent_id"/>-->
+<!--&lt;!&ndash;                                            <field name="customer_parent_id"/>&ndash;&gt;-->
+<!--                                            <field name="contact_id"/>-->
+<!--&lt;!&ndash;                                            <field name="date_invoice"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <field name="date_due"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <field name="amount_total"/>&ndash;&gt;-->
+<!--                                            <field name="currency_id" invisible="1"/>-->
+<!--                                            <field name="state"/>-->
+<!--&lt;!&ndash;                                            <button name="open_record" type="object" class="oe_highlight"&ndash;&gt;-->
+<!--&lt;!&ndash;                                            icon="fa-asterisk text-success"/>&ndash;&gt;-->
+<!--                                        </tree>-->
+<!--                                    </field>-->
+<!--                                </group>-->
+<!--                            </page>-->
                             <page name="attachment" string="Attachment">
                                 <field name="attachment_ids" widget="many2many_binary" />
                             </page>
@@ -437,6 +437,21 @@
 
         <menuitem id="menu_issued_offline_side_menu_all" parent="menu_issued_offline_top_menu"
                   name="ALL" sequence='1' action="issued_offline_all_action"/>
+
+        <menuitem id="menu_issued_offline_side_menu_draft" parent="menu_issued_offline_top_menu"
+                  name="Draft" sequence='2' action="issued_offline_draft_action"/>
+
+        <menuitem id="menu_issued_offline_side_menu_confirm" parent="menu_issued_offline_top_menu"
+                  name="Confirm" sequence='3' action="issued_offline_confirm_action"/>
+
+        <menuitem id="menu_issued_offline_side_menu_paid" parent="menu_issued_offline_top_menu"
+                  name="Paid" sequence='4' action="issued_offline_paid_action"/>
+
+        <menuitem id="menu_issued_offline_side_menu_done" parent="menu_issued_offline_top_menu"
+                  name="Done" sequence='5' action="issued_offline_done_action"/>
+
+        <menuitem id="menu_issued_offline_side_menu_cancel_expired_refund" parent="menu_issued_offline_top_menu"
+                  name="Cancel/Expired/Refund" sequence='6' action="issued_offline_cancel_expired_refund_action"/>
 
     </data>
 </odoo>

@@ -24,6 +24,7 @@
                             <field name="district_id"/>
                             <field name="sub_district_id"/>
                             <field name="address"/>
+                            <field name="zip"/>
                             <field name="rt"/>
                             <field name="rw"/>
                             <field name="sequence"/>

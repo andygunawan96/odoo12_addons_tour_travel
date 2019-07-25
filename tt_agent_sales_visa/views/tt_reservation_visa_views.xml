@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="tt_reservation_offline_sales_form_view" model="ir.ui.view">
-        <field name="name">tt.reservation.offline.sales.form.view</field>
-        <field name="model">tt.reservation.offline</field>
-        <field name="inherit_id" ref="tt_reservation_offline.issued_offline_view_form"/>
+    <record id="tt_reservation_visa_sales_form_view" model="ir.ui.view">
+        <field name="name">tt.reservation.visa.sales.form.view</field>
+        <field name="model">tt.reservation.visa</field>
+        <field name="inherit_id" ref="tt_reservation_visa.tt_reservation_visa_view_form"/>
         <field name="arch" type="xml">
 
-            <field name="description" position="after">
+            <field name="booker_id" position="after">
                 <field name="state_invoice"/>
             </field>
-            <xpath expr="//button[@name='action_cancel']" position="after">
-                <button string="CREATE INVOICE" name="action_create_invoice" states="paid,posted" type="object"/>
+            <xpath expr="//button[@name='action_cancel_visa']" position="after">
+                <button string="CREATE INVOICE" name="action_create_invoice" type="object"/>
             </xpath>
-            <xpath expr="//page[@name='attachment']" position="after">
+            <xpath expr="//page[@name='ledger_page']" position="after">
                 <page string="Agent Invoice" name="agent_invoice">
                     <field name="invoice_names" invisible="1"/>
                     <field name="invoice_line_ids" readonly="1">
