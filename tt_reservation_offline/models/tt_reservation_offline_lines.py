@@ -82,7 +82,7 @@ class IssuedOfflineLines(models.Model):
     is_ledger_created = fields.Boolean('Ledger Created', default=False, readonly=True,
                                        states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
 
-    cost_service_charge_ids = fields.One2many('tt.service.charge', 'provider_offline_booking_id',
+    sale_service_charge_ids = fields.One2many('tt.service.charge', 'provider_offline_booking_id',
                                               'Cost Service Charges')
 
     @api.onchange('transaction_type', 'booking_id.provider_type_id')

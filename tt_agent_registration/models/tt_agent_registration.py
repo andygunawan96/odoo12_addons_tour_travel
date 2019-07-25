@@ -135,7 +135,9 @@ class AgentRegistration(models.Model):
 
     def create_registration_documents(self):  # create nya jgn list of dict
         vals_list = []
-        doc_type_env = self.env['tt.document.type'].sudo().search([('agent_type_ids', '=', self.agent_type_id.id), ('document_type', '=', 'registration')])
+        agent_regis_doc_ids = []
+        doc_type_env = self.env['tt.document.type'].sudo().search([('agent_type_ids', '=', self.agent_type_id.id),
+                                                                   ('document_type', '=', 'registration')])
         for rec in doc_type_env:
             vals = {
                 'state': 'draft',
@@ -143,30 +145,11 @@ class AgentRegistration(models.Model):
                 'receive_qty': 0,
                 'document_id': rec.id
             }
+            agent_regis_doc_obj = self.env['tt.agent.registration.document'].create(vals)
+            agent_regis_doc_ids.append(agent_regis_doc_obj.id)
             vals_list.append(vals)
-        self.registration_document_ids = self.env['tt.agent.registration.document'].create(vals_list)
+        self.registration_document_ids = [(6, 0, agent_regis_doc_ids)]
         return vals_list
-
-        # doc_id = self.env['tt.document.type'].sudo().search([('name', '=', 'KTP')], limit=1).id
-        # vals1 = {
-        #     'state': 'draft',
-        #     'qty': 0,
-        #     'receive_qty': 0,
-        #     'document_id': doc_id
-        # }
-        # vals_list.append(vals1)
-        #
-        # if self.company_type == 'company':
-        #     doc_id = self.env['tt.document.type'].sudo().search([('name', '=', 'NPWP')], limit=1).id
-        #     vals = {
-        #         'state': 'draft',
-        #         'qty': 0,
-        #         'receive_qty': 0,
-        #         'document_id': doc_id
-        #     }
-        #     vals_list.append(vals)
-        #
-        # self.registration_document_ids = vals_list
 
     def check_registration_documents(self):
         for rec in self.registration_document_ids:
@@ -175,7 +158,9 @@ class AgentRegistration(models.Model):
 
     def create_opening_documents(self):  # create nya jgn list of dict
         vals_list = []
-        doc_type_env = self.env['tt.document.type'].sudo().search([('agent_type_ids', '=', self.agent_type_id.id), ('document_type', '=', 'opening')])
+        opening_doc_ids = []
+        doc_type_env = self.env['tt.document.type'].sudo().search([('agent_type_ids', '=', self.agent_type_id.id),
+                                                                   ('document_type', '=', 'opening')])
         for rec in doc_type_env:
             vals = {
                 'state': 'draft',
@@ -183,15 +168,10 @@ class AgentRegistration(models.Model):
                 'receive_qty': 0,
                 'document_id': rec.id
             }
+            opening_doc_obj = self.env['tt.agent.registration.document'].create(vals)
+            opening_doc_ids.append(opening_doc_obj.id)
             vals_list.append(vals)
-        # doc_id = self.env['tt.document.type'].sudo().search([('name', '=', 'KTP')], limit=1).id
-        # vals = {
-        #     'state': 'draft',
-        #     'qty': 0,
-        #     'receive_qty': 0,
-        #     'document_id': doc_id
-        # }
-        self.open_document_ids = self.env['tt.agent.registration.document'].create(vals_list)
+        self.open_document_ids = [(6, 0, opening_doc_ids)]
 
     def check_opening_documents(self):
         for rec in self.open_document_ids:

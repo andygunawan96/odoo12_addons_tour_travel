@@ -273,7 +273,7 @@
                                 </field>
                             </page>
                             <page string="Prices" name="prices" groups="tt_base.group_tt_tour_travel_operator">  <!--attrs="{'invisible': [('state', '=', 'draft')]}"-->
-                                <field name="cost_service_charge_ids">
+                                <field name="sale_service_charge_ids">
                                     <tree>
                                         <field name="charge_code"/>
                                         <field name="pax_type"/>
@@ -339,6 +339,7 @@
             <field name="model">tt.reservation.offline</field>
             <field name="arch" type="xml">
                 <tree>
+                    <button type="object" string="Create Issued Offline" name="create_booking_reservation_offline"/>
                     <field name="name"/>
                     <field name="provider_type_id"/>
 <!--                    <field name="provider"/>-->

@@ -139,7 +139,7 @@ class IssuedOffline(models.Model):
     social_media_id = fields.Many2one('social.media.detail', 'Order From(Media)', readonly=True,
                                       states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
 
-    cost_service_charge_ids = fields.One2many('tt.service.charge', 'booking_offline_id', 'Service Charge',
+    sale_service_charge_ids = fields.One2many('tt.service.charge', 'booking_offline_id', 'Service Charge',
                                               readonly=True, states={'draft': [('readonly', False)]})
 
     provider_booking_ids = fields.One2many('tt.tb.provider.offline', 'booking_id', string='Provider Booking',
@@ -1050,7 +1050,7 @@ class IssuedOffline(models.Model):
             booker_obj.update({
                 'phone_ids': booker_obj.phone_ids.create({
                     'phone_number': booker.get('mobile', booker['mobile']),
-                    'type': 'custom'
+                    'type': 'work'
                 }),
             })
             return booker_obj.id
@@ -1087,7 +1087,7 @@ class IssuedOffline(models.Model):
                 contact_obj.update({
                     'phone_ids': contact_obj.phone_ids.create({
                         'phone_number': con.get('mobile', con['mobile']),
-                        'type': 'custom'
+                        'type': 'work'
                     }),
                 })
                 contact_list.append(contact_obj.id)
