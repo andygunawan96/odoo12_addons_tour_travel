@@ -26,7 +26,6 @@
     'data': [
         # 'security/ir.model.access.csv',
         'views/tt_reservation_airline.xml'
-
     ],
     # only loaded in demonstration mode
     'demo': [
