@@ -1,7 +1,10 @@
 from odoo import api, fields, models, _
 import datetime
 from ...tools.api import Response
+import logging
 import traceback
+
+_logger = logging.getLogger(__name__)
 
 TRANSPORT_TYPE = [('airline', 'Airline'),
                   ('train', 'Train'),
@@ -116,6 +119,7 @@ class Routes(models.Model):
             return Response().get_no_error(response)
         except Exception as e:
             error_msg = '%s, %s' % (str(e), traceback.format_exc())
+            _logger.error('Error Get All Routes API, %s, %s' % (str(e), traceback.format_exc()))
             return Response().get_error(error_msg, 500)
 
     def get_all_routes_api_by_code(self, _provider_type):
@@ -129,6 +133,7 @@ class Routes(models.Model):
             return Response().get_no_error(response)
         except Exception as e:
             error_msg = '%s, %s' % (str(e), traceback.format_exc())
+            _logger.error('Error Get All Routes API by Code, %s, %s' % (str(e), traceback.format_exc()))
             return Response().get_error(error_msg, 500)
 
     def get_routes_api_by_code(self, _carrier_codes, _provider_type):
@@ -143,16 +148,17 @@ class Routes(models.Model):
             return Response().get_no_error(response)
         except Exception as e:
             error_msg = '%s, %s' % (str(e), traceback.format_exc())
+            _logger.error('Error Gets Route API by Code, %s, %s' % (str(e), traceback.format_exc()))
             return Response().get_error(error_msg, 500)
 
     def update_route_api(self, req_data, provider_type):
         try:
-            mandatory_fields = ['origin', 'destination', 'departure_time', 'arrival_time', 'carrier_code', 'carrier_number']
-
-            keys = [rec for rec in req_data.keys()]
-            diff_fields = list(set(mandatory_fields).difference(keys))
-            if diff_fields:
-                raise Exception('Missing Mandatory fields, data : %s' % diff_fields)
+            # mandatory_fields = ['origin', 'destination', 'departure_time', 'arrival_time', 'carrier_code', 'carrier_number']
+            #
+            # keys = [rec for rec in req_data.keys()]
+            # diff_fields = list(set(mandatory_fields).difference(keys))
+            # if diff_fields:
+            #     raise Exception('Missing Mandatory fields, data : %s' % diff_fields)
 
             provider_obj = self.env['tt.provider.type'].sudo().search([('code', '=', provider_type)], limit=1)
             _obj = self.sudo().search([('carrier_code', '=', req_data['carrier_code']),
@@ -164,19 +170,21 @@ class Routes(models.Model):
                 raise Exception('Data not Found')
 
             _obj.write(req_data)
-            return Response().get_no_error()
+            response = _obj.get_route_data()
+            return Response().get_no_error(response)
         except Exception as e:
             error_msg = '%s, %s' % (str(e), traceback.format_exc())
+            _logger.error('Error Update Route API, %s, %s' % (str(e), traceback.format_exc()))
             return Response().get_error(error_msg, 500)
 
     def create_route_api(self, req_data, provider_type):
         try:
-            mandatory_fields = ['origin', 'destination', 'departure_time', 'arrival_time', 'carrier_code', 'carrier_number']
-
-            keys = [rec for rec in req_data.keys()]
-            diff_fields = list(set(mandatory_fields).difference(keys))
-            if diff_fields:
-                raise Exception('Missing Mandatory fields, data : %s' % diff_fields)
+            # mandatory_fields = ['origin', 'destination', 'departure_time', 'arrival_time', 'carrier_code', 'carrier_number']
+            #
+            # keys = [rec for rec in req_data.keys()]
+            # diff_fields = list(set(mandatory_fields).difference(keys))
+            # if diff_fields:
+            #     raise Exception('Missing Mandatory fields, data : %s' % diff_fields)
 
             provider_obj = self.env['tt.provider.type'].sudo().search([('code', '=', provider_type)], limit=1)
             _obj = self.sudo().search([('carrier_code', '=', req_data['carrier_code']),
@@ -186,7 +194,13 @@ class Routes(models.Model):
 
             if _obj:
                 # raise Exception('Data already exist')
-                return Response().get_no_error()
+                response = _obj.get_route_data()
+                return Response().get_no_error(response)
+
+            # July 24 - SAM
+            if self.is_similar_route(req_data, provider_obj.id):
+                _logger.info('Create Route API, Data is Similar')
+                return Response().get_error('', 500)
 
             origin_id = self.env['tt.destinations'].sudo().get_id(req_data['origin'], provider_obj)
             if not origin_id:
@@ -231,10 +245,25 @@ class Routes(models.Model):
             req_data['name'] = '{carrier_code} {carrier_number} - {origin}'.format(**req_data)
             data = self.sudo().create(req_data)
             data.merge_route()
-            return Response().get_no_error()
+            response = data.get_route_data()
+            return Response().get_no_error(response)
         except Exception as e:
             error_msg = '%s, %s' % (str(e), traceback.format_exc())
+            _logger.error('Error Create Route API, %s, %s' % (str(e), traceback.format_exc()))
             return Response().get_error(error_msg, 500)
+
+    def is_similar_route(self, data, provider_id):
+        _obj = self.sudo().search([('carrier_code', '=', data['carrier_code']),
+                                   ('carrier_number', '=', data['carrier_number']),
+                                   ('provider_type_id', '=', provider_id)])
+        origin_list = []
+        destination_list = []
+        for rec in _obj:
+            origin_list.append(rec.origin)
+            destination_list.append(rec.destination)
+        if data['origin'] in origin_list and data['destination'] in destination_list:
+            return True
+        return False
 
     def merge_route(self):
         _obj = self.sudo().search([('carrier_code', '=', self.carrier_code),
@@ -242,7 +271,7 @@ class Routes(models.Model):
         if len(_obj) <= 1:
             return True
 
-        _obj = sorted(_obj, key=lambda i: i.departure_time)
+        _obj = sorted(_obj, key=lambda i: '%s%s%s%s' % (i.departure_time[0:2], i.departure_time[3:5], i.arrival_time[0:2], i.arrival_time[3:5]))
         del_ids = []
         for idx, rec in enumerate(_obj):
             if idx < 1:
@@ -268,6 +297,7 @@ class Routes(models.Model):
                     'departure_time': temp.arrival_time,
                     'arrival_time': rec.arrival_time,
                 }
+                del_ids.append(rec)
             elif temp.destination == rec.destination:
                 values = {
                     'name': rec.name,
@@ -288,10 +318,9 @@ class Routes(models.Model):
                     'departure_time': temp.departure_time,
                     'arrival_time': rec.departure_time,
                 }
+                del_ids.append(temp)
             else:
                 continue
-
-            del_ids.append(rec)
             self.sudo().create(values)
 
         for rec in del_ids:
