@@ -225,7 +225,7 @@ class TtReservation(models.Model):
                 'customer_parent_ids': [(4, agent_obj.customer_parent_walkin_id.id)],
             })
             psg_obj = passenger_obj.create(psg)
-            res_ids.append(psg_obj.id)
+            res_ids.append(psg_obj)
 
         return res_ids
 

@@ -1424,6 +1424,10 @@ class ReservationAirline(models.Model):
             contact_obj = self.create_contact_api(contacts[0],booker_obj,context)
             list_passengers = self.create_passenger_api(passengers,context,booker_obj.id,contact_obj.id)
 
+            list_passengers_id = []
+            for rec in list_passengers:
+                list_passengers_id.append(rec.id)
+
             values.update({
                 'user_id': context['co_uid'],
                 'sid_booked': context['signature'],
@@ -1432,7 +1436,7 @@ class ReservationAirline(models.Model):
                 'contact_name': contact_obj.name,
                 'contact_email': contact_obj.email,
                 'contact_phone': contact_obj.phone_ids[0].phone_number,
-                'passenger_ids': [(6,0,list_passengers)]
+                'passenger_ids': [(6,0,list_passengers_id)]
             })
 
             book_obj = self.create(values)
