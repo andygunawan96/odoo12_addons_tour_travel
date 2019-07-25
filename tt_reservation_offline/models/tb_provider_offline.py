@@ -23,7 +23,7 @@ class ProviderOffline(models.Model):
     # destination = fields.Char('Destination')
 
     # journey_ids = fields.One2many('tt.tb.journey.train', 'provider_booking_id', string='Journeys')
-    cost_service_charge_ids = fields.One2many('tt.service.charge', 'provider_offline_booking_id', 'Cost Service Charges')
+    sale_service_charge_ids = fields.One2many('tt.service.charge', 'provider_offline_booking_id', 'Cost Service Charges')
 
     currency_id = fields.Many2one('res.currency', 'Currency', readonly=True, states={'draft': [('readonly', False)]},
                                   default=lambda self: self.env.user.company_id.currency_id)
@@ -67,12 +67,12 @@ class ProviderOffline(models.Model):
             })
         self.env.cr.commit()
 
-    @api.depends('cost_service_charge_ids')
+    @api.depends('sale_service_charge_ids')
     def _compute_total(self):
         for rec in self:
             total = 0
             total_orig = 0
-            for sc in self.cost_service_charge_ids:
+            for sc in self.sale_service_charge_ids:
                 if sc.charge_code.find('r.ac') < 0:
                     total += sc.total
                     # total_orig adalah NTA
