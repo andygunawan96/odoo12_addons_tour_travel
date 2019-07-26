@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="tt_reservation_visa_sales_form_view" model="ir.ui.view">
-        <field name="name">tt.reservation.visa.sales.form.view</field>
-        <field name="model">tt.reservation.visa</field>
-        <field name="inherit_id" ref="tt_reservation_visa.tt_reservation_visa_view_form"/>
+    <record id="tt_reservation_passport_sales_form_view" model="ir.ui.view">
+        <field name="name">tt.reservation.passport.sales.form.view</field>
+        <field name="model">tt.reservation.passport</field>
+        <field name="inherit_id" ref="tt_reservation_passport.tt_reservation_passport_view_form"/>
         <field name="arch" type="xml">
 
-            <field name="contact_id" position="after">
+            <field name="booker_id" position="after">
                 <field name="state_invoice"/>
             </field>
-            <xpath expr="//button[@name='action_cancel_visa']" position="after">
+            <xpath expr="//button[@name='action_cancel_passport']" position="after">
                 <button string="CREATE INVOICE" name="action_create_invoice" type="object"/>
             </xpath>
             <xpath expr="//page[@name='ledger_page']" position="after">

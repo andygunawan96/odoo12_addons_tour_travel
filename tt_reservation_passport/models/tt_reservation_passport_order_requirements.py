@@ -29,12 +29,12 @@ class PassportOrderRequirements(models.Model):
                 rec.check_uid = False
                 rec.check_date = False
 
-    @api.onchange('is_copy_HO', 'is_ori_HO')
+    @api.onchange('validate_HO')
     def _document_check_by_HO(self):
         for rec in self:
-            if rec.is_ori_HO or rec.is_copy_HO:
+            if rec.validate_HO:
                 rec.check_uid_HO = self.env.user.id
                 rec.check_date_HO = datetime.now()
-            elif not rec.is_ori_HO or not rec.is_copy_HO:
+            elif not rec.validate_HO:
                 rec.check_uid_HO = False
                 rec.check_date_HO = False

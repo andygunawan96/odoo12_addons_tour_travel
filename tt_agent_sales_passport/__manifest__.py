@@ -10,26 +10,22 @@
         Long description of module's purpose
     """,
 
-    'author': "My Company",
-    'website': "http://www.yourcompany.com",
+    'author': "Skytors",
+    'website': "http://www.skytors.id",
 
     # Categories can be used to filter modules in modules listing
     # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
-    'category': 'Uncategorized',
+    'category': 'Tour & Travel',
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'base_setup', 'tt_agent_sales', 'tt_passport'],
+    'depends': ['base', 'base_setup', 'tt_agent_sales', 'tt_reservation_passport'],
 
     # always loaded
     'data': [
-        # 'security/ir.model.access.csv',
-        'views/views.xml',
-        'views/templates.xml',
+        'views/tt_reservation_passport.xml',
     ],
     # only loaded in demonstration mode
-    'demo': [
-        'demo/demo.xml',
-    ],
+    'demo': [],
 }
