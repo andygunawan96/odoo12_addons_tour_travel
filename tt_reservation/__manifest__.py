@@ -19,7 +19,8 @@
 
         'views/tt_reservation_views.xml',
         'views/tt_ledger.xml',
-        'views/tt_service_charge_views.xml'
+        'views/tt_service_charge_views.xml',
+        'views/tt_reservation_passenger_views.xml'
     ],
     'demo': [],
     'qweb': [],

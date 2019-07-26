@@ -1,8 +1,7 @@
 from odoo import models, fields, api, _
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
 from odoo.tools import image
-from ...tools import variables
+from ...tools import variables,util
 
 
 class TtCustomer(models.Model):
@@ -14,20 +13,13 @@ class TtCustomer(models.Model):
     name = fields.Char(string='Name', compute='_compute_name', store=True)
     logo = fields.Binary('Agent Logo', attachment=True)
     logo_thumb = fields.Binary('Agent Logo Thumb', compute="_get_logo_image", store=True, attachment=True)
-
     first_name = fields.Char('First Name')
     last_name = fields.Char('Last Name')
     nickname = fields.Char('Nickname')
-
     gender = fields.Selection(variables.GENDER, string='Gender')
-
     marital_status = fields.Selection(variables.MARITAL_STATUS, 'Marital Status')
     religion = fields.Selection(variables.RELIGION, 'Religion')
-
-
     birth_date = fields.Date('Birth Date')
-    age = fields.Char('Age', help='For Adult, age in year\nFor Child, age in month',
-                      compute="calculate_age")
     nationality_id = fields.Many2one('res.country', 'Nationality')
     country_of_issued_id = fields.Many2one('res.country', 'Country of Issued')
     address_ids = fields.One2many('address.detail', 'customer_id', 'Address Detail')
@@ -50,15 +42,6 @@ class TtCustomer(models.Model):
     def _compute_name(self):
         self.name = "%s %s" % (self.first_name and self.first_name or '', self.last_name and self.last_name or '')
 
-    @api.onchange('birth_date')
-    def calculate_age(self):
-        for rec in self:
-            if rec.birth_date:
-                d1 = datetime.strptime(str(rec.birth_date), "%Y-%m-%d").date()
-                d2 = datetime.today()
-                rec.age = relativedelta(d2, d1).years
-        return rec.age
-
     @api.depends('logo')
     def _get_logo_image(self):
         for record in self:
@@ -73,6 +56,10 @@ class TtCustomer(models.Model):
             body = "Message has been approved on %s", datetime.now()
             rec.message_post(body=body)
 
+    @api.model
+    def create(self, vals_list):
+        util.pop_empty_key(vals_list)
+        return super(TtCustomer, self).create(vals_list)
     # @api.multi
     # def write(self, value):
     #     self_dict = self.read()
@@ -86,19 +73,34 @@ class TtCustomer(models.Model):
     #                                  self.env.user.name))  # User that Changed the Value
     #     return super(TtCustomer, self).write(value)
 
-    def to_dict(self):
+    # def to_dict(self):
+    #     res = {
+    #         'name': self.name,
+    #         'first_name': self.first_name,
+    #         'last_name': self.last_name and self.last_name or '',
+    #         'gender': self.gender,
+    #         'marital_status': self.marital_status and self.marital_status or '',
+    #         'birth_date': self.birth_date.strftime('%Y-%m-%d'),
+    #         'age': self.age,
+    #         'nationality_code': self.nationality_id.code and self.nationality_id.code or '',
+    #         'country_of_issued_id': self.country_of_issued_id.code and self.country_of_issued_id.code or '',
+    #         'identity_type': self.identity_type and self.identity_type or '',
+    #         'identity_number': self.identity_number and self.identity_number or '',
+    #     }
+    #
+    #     return res
+
+    def copy_to_passenger(self):
         res = {
             'name': self.name,
             'first_name': self.first_name,
-            'last_name': self.last_name and self.last_name or '',
+            'last_name': self.last_name,
             'gender': self.gender,
-            'marital_status': self.marital_status and self.marital_status or '',
-            'birth_date': self.birth_date.strftime('%Y-%m-%d %H:%M:%S'),
-            'age': self.age,
-            'nationality_code': self.nationality_id.code and self.nationality_id.code or '',
-            'country_of_issued_id': self.country_of_issued_id.code and self.country_of_issued_id.code or '',
-            'identity_type': self.identity_type and self.identity_type or '',
-            'identity_number': self.identity_number and self.identity_number or '',
+            'birth_date': self.birth_date.strftime('%Y-%m-%d'),
+            'nationality_code': self.nationality_id.id,
+            'country_of_issued_id': self.country_of_issued_id.id,
+            'identity_type': self.identity_type,
+            'identity_number': self.identity_number,
+            'customer_id': self.id,
         }
-
         return res

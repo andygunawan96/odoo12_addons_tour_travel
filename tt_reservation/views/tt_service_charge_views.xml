@@ -10,14 +10,12 @@
                         <field name="charge_code"/>
                         <field name="charge_type"/>
                         <field name="pax_type"/>
-                        <field name="pax_count"/>
                         <field name="currency_id"/>
                         <field name="amount"/>
                         <field name="foreign_currency_id"/>
                         <field name="foreign_amount"/>
                         <field name="sequence"/>
                         <field name="description"/>
-                        <field name="total"/>
                     </group>
                 </sheet>
             </form>
@@ -32,10 +30,8 @@
                 <field name="charge_code"/>
                 <field name="charge_type"/>
                 <field name="pax_type"/>
-                <field name="pax_count"/>
                 <field name="currency_id" invisible="1"/>
                 <field name="amount"/>
-                <field name="total"/>
             </tree>
         </field>
     </record>

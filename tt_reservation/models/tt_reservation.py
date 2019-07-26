@@ -178,7 +178,7 @@ class TtReservation(models.Model):
 
         return contact_obj.create(vals)
 
-    def create_passenger_api(self,passengers,context,booker_id=False,contact_id=False):
+    def create_customer_api(self,passengers,context,booker_id=False,contact_id=False,extra_list=[]):
         country_obj = self.env['res.country'].sudo()
         passenger_obj = self.env['tt.customer'].sudo()
 
@@ -205,17 +205,16 @@ class TtReservation(models.Model):
 
             get_psg_id = util.get_without_empty(psg, 'passenger_id')
 
-            ##experimental
-            if psg.get('title') == 'MRS':
-                psg['marital_status'] = 'married'
-            ##
-
+            extra = {}
+            for key,value in psg.items():
+                if key in extra_list:
+                    extra[key] = value
             if get_psg_id or booker_contact_id > 0:
 
                 current_passenger = passenger_obj.browse(int(get_psg_id or booker_contact_id))
                 if current_passenger:
                     current_passenger.update(vals_for_update)
-                    res_ids.append(current_passenger.id)
+                    res_ids.append((current_passenger,extra))
                     continue
 
             util.pop_empty_key(psg)
@@ -225,7 +224,7 @@ class TtReservation(models.Model):
                 'customer_parent_ids': [(4, agent_obj.customer_parent_walkin_id.id)],
             })
             psg_obj = passenger_obj.create(psg)
-            res_ids.append(psg_obj)
+            res_ids.append((psg_obj,extra))
 
         return res_ids
 
@@ -233,34 +232,34 @@ class TtReservation(models.Model):
         fare_total = 0
         for rec in self.sale_service_charge_ids:
             if rec.charge_type == 'FARE':
-                fare_total += rec.total
+                fare_total += rec.amount
         self.total_fare = fare_total
 
     def _compute_total_tax(self):
         tax_total = 0
         for rec in self.sale_service_charge_ids:
             if rec.charge_type == 'TAX':
-                tax_total += rec.total
+                tax_total += rec.amount
         self.total_tax = tax_total
 
     def _compute_grand_total(self):
         grand_total = 0
         for rec in self.sale_service_charge_ids:
             if rec.charge_type != 'RAC':
-                grand_total += rec.total
+                grand_total += rec.amount
         self.total = grand_total
 
     def _compute_total_commission(self):
         commission_total = 0
         for rec in self.sale_service_charge_ids:
             if rec.charge_type == 'RAC':
-                commission_total += abs(rec.total)
+                commission_total += abs(rec.amount)
         self.total_commission = commission_total
 
     def _compute_total_nta(self):
         nta_total = 0
         for rec in self.sale_service_charge_ids:
-            nta_total += rec.total
+            nta_total += rec.amount
         self.total_nta = nta_total
 
     def to_dict(self):

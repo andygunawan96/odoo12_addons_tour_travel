@@ -146,11 +146,19 @@ class TtProviderAirline(models.Model):
         service_chg_obj = self.env['tt.service.charge']
         currency_obj = self.env['res.currency']
 
-        for scs in service_charge_vals:
-            scs['currency_id'] = currency_obj.get_id(scs.pop('currency'))
-            scs['foreign_currency_id'] = currency_obj.get_id(scs.pop('foreign_currency'))
-            scs['provider_airline_booking_id'] = self.id
-            service_chg_obj.create(scs)
+        sc_values = []
+
+        for psg in self.ticket_ids:
+            for scs in service_charge_vals:
+                if scs['pax_type'] == psg.pax_type:
+                    scs['currency_id'] = currency_obj.get_id(scs.get('currency'))
+                    scs['foreign_currency_id'] = currency_obj.get_id(scs.get('foreign_currency'))
+                    scs['provider_airline_booking_id'] = self.id
+                    scs['passenger_airline_id'] = psg.passenger_id.id
+                    scs['pax_count'] = 1
+                    service_chg_obj.create(scs)
+
+
 
         # "sequence": 1,
         # "charge_code": "fare",
@@ -205,6 +213,9 @@ class TtProviderAirline(models.Model):
         journey_list = []
         for rec in self.journey_ids:
             journey_list.append(rec.to_dict())
+        ticket_list = []
+        for rec in self.ticket_ids:
+            ticket_list.append(rec.to_dict())
         res = {
             'pnr': self.pnr and self.pnr or '',
             'pnr2': self.pnr2 and self.pnr2 or '',
@@ -221,14 +232,14 @@ class TtProviderAirline(models.Model):
             'journeys': journey_list,
             'currency': self.currency_id.name,
             'hold_date': self.hold_date and self.hold_date or '',
-            'tickets': [],
+            'tickets': ticket_list,
             'cost_service_charges': self.get_cost_service_charges()
         }
 
         return res
 
     def get_cost_service_charges(self):
-        sc_value={}
+        sc_value = {}
         for p_sc in self.cost_service_charge_ids:
             p_charge_type = p_sc.charge_type
             p_pax_type = p_sc.pax_type
@@ -240,16 +251,13 @@ class TtProviderAirline(models.Model):
                 sc_value[p_pax_type][p_charge_type] = {}
                 sc_value[p_pax_type][p_charge_type].update({
                     'amount': 0,
-                    'total': 0,
                     'foreign_amount': 0
                 })
             sc_value[p_pax_type][p_charge_type].update({
-                'charge_code': p_charge_type,
-                'pax_count': p_sc.pax_count,
-                'currency_id': p_sc.currency_id.id,
-                'foreign_currency_id': p_sc.foreign_currency_id.id,
+                'charge_code': p_sc.charge_code,
+                'currency': p_sc.currency_id.name,
+                'foreign_currency': p_sc.foreign_currency_id.name,
                 'amount': sc_value[p_pax_type][p_charge_type]['amount'] + p_sc.amount,
-                'total': sc_value[p_pax_type][p_charge_type]['total'] + p_sc.total,
                 'foreign_amount': sc_value[p_pax_type][p_charge_type]['foreign_amount'] + p_sc.foreign_amount,
             })
         return sc_value

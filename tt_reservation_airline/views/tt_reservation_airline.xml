@@ -26,20 +26,15 @@
             <xpath expr="//page[@name='anchor']" position="before">
                 <page string="Passengers">
                     <field name="passenger_ids">
-                        <!--<tree editable="bottom">-->
-                        <!--<tree>-->
-                        <!--<field name="id" groups="base.group_no_one"/>-->
-                        <!--<field name="title"/>-->
-                        <!--<field name="first_name"/>-->
-                        <!--<field name="last_name"/>-->
-                        <!--<field name="pax_type"/>-->
-                        <!--<field name="age"/>-->
-                        <!--<field name="nationality_id"/>-->
-                        <!--<field name="passport_number"/>-->
-                        <!--<field name="passport_expdate"/>-->
-                        <!--&lt;!&ndash;<field name="gender"/>&ndash;&gt;-->
-                        <!--<field name="state" invisible="1"/>-->
-                        <!--</tree>-->
+                        <tree>
+                            <field name="title"/>
+                            <field name="first_name"/>
+                            <field name="last_name"/>
+                            <field name="gender"/>
+                            <field name="birth_date"/>
+                            <field name="nationality_id"/>
+                            <field name="passport_number"/>
+                        </tree>
                     </field>
                 </page>
             </xpath>
@@ -48,12 +43,10 @@
                     <field name="sale_service_charge_ids">
                         <tree>
                             <field name="charge_code"/>
+                            <field name="charge_type"/>
                             <field name="pax_type"/>
-                            <field name="pax_count"/>
                             <field name="amount"/>
-                            <field name="total"/>
                             <field name="currency_id" invisible="1"/>
-                            <field name="description"/>
                         </tree>
                     </field>
                 </page>

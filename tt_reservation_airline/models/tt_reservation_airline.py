@@ -32,8 +32,8 @@ class ReservationAirline(models.Model):
     sale_service_charge_ids = fields.One2many('tt.service.charge', 'booking_airline_id', 'Service Charge',
                                               readonly=True, states={'draft': [('readonly', False)]})
 
-    passenger_ids = fields.Many2many('tt.customer', 'tt_reservation_airline_passengers_rel', 'booking_id', 'passenger_id',
-                                     string='List of Passenger', readonly=True, states={'draft': [('readonly', False)]})
+    passenger_ids = fields.One2many('tt.reservation.passenger.airline', 'booking_id',
+                                    readonly=True, states={'draft': [('readonly', False)]})
 
     ledger_ids = fields.One2many('tt.ledger', 'res_id', 'Ledger', domain=[('res_model','=','tt.reservation.airline')])
 
@@ -1422,11 +1422,8 @@ class ReservationAirline(models.Model):
             values = self._prepare_booking_api(search_RQ,context)
             booker_obj = self.create_booker_api(booker,context)
             contact_obj = self.create_contact_api(contacts[0],booker_obj,context)
-            list_passengers = self.create_passenger_api(passengers,context,booker_obj.id,contact_obj.id)
-
-            list_passengers_id = []
-            for rec in list_passengers:
-                list_passengers_id.append(rec.id)
+            list_customer_obj = self.create_customer_api(passengers,context,booker_obj.id,contact_obj.id,['title'])
+            list_passenger_id = self.create_passenger_api(list_customer_obj)
 
             values.update({
                 'user_id': context['co_uid'],
@@ -1436,7 +1433,7 @@ class ReservationAirline(models.Model):
                 'contact_name': contact_obj.name,
                 'contact_email': contact_obj.email,
                 'contact_phone': contact_obj.phone_ids[0].phone_number,
-                'passenger_ids': [(6,0,list_passengers_id)]
+                'passenger_ids': [(6,0,list_passenger_id)]
             })
 
             book_obj = self.create(values)
@@ -1480,6 +1477,22 @@ class ReservationAirline(models.Model):
                 if provider['status'] == 'BOOKED' and not provider.get('error_code'):
                     ##generate leg data
                     provider_type = self.env['tt.provider.type'].search([('code','=','airline')])[0]
+
+                    ticket_list = []
+                    for psg in provider['passengers']:
+                        psg_obj = book_obj.passenger_ids.filtered(lambda x: x.name.replace(' ','').lower() ==
+                                ('%s%s' % (psg.get('first_name',''),psg.get('last_name',''))).lower())
+
+                        ticket_list.append((0,0,{
+                            'pax_type': psg.get('pax_type'),
+                            'ticket_number': psg.get('ticket_number'),
+                            'passenger_id': psg_obj.id
+                        }))
+                    provider_obj.write({
+                        'ticket_ids': ticket_list
+                    })
+
+                    #update leg dan create service charge
                     for idx,journey in enumerate(provider_obj.journey_ids):
                         for idx1,segment in enumerate(journey.segment_ids):
                             param_segment = provider['journeys'][idx]['segments'][idx1]
@@ -1507,7 +1520,6 @@ class ReservationAirline(models.Model):
 
                                 for fare in param_segment['fares']:
                                     provider_obj.create_service_charge(fare['service_charges'])
-
 
                     provider_obj.action_booked_api_airline(provider,context)
                     book_status.append(1)
@@ -1598,6 +1610,16 @@ class ReservationAirline(models.Model):
         }
 
         return booking_tmp
+
+    def create_passenger_api(self,list_customer):
+        passenger_obj = self.env['tt.reservation.passenger.airline']
+        list_passenger = []
+        for rec in list_customer:
+            vals = rec[0].copy_to_passenger()
+            if rec[1]:
+                vals.update(rec[1])
+            list_passenger.append(passenger_obj.create(vals).id)
+        return list_passenger
 
     ##todo kalau kejadian saling tumpuk data customer karena ada yang kosong
     ##dibuatkan mekanisme pop isi dictionary yang valuenya kosong
@@ -1778,57 +1800,50 @@ class ReservationAirline(models.Model):
         sc_value = {}
         for provider in self.provider_booking_ids:
             for p_sc in provider.cost_service_charge_ids:
+                p_charge_code = p_sc.charge_code
                 p_charge_type = p_sc.charge_type
                 p_pax_type = p_sc.pax_type
                 if not sc_value.get(p_pax_type):
                     sc_value[p_pax_type] = {}
-                if not sc_value[p_pax_type].get(p_charge_type):
-                    sc_value[p_pax_type][p_charge_type] = {}
-                    sc_value[p_pax_type][p_charge_type].update({
-                        'amount': 0,
-                        'total': 0,
-                        'foreign_amount': 0
-                    })
-                sc_value[p_pax_type][p_charge_type].update({
-                    'charge_code': p_charge_type,
-                    'pax_count': p_sc.pax_count,
+                if p_charge_type != 'RAC':
+                    if not sc_value[p_pax_type].get(p_charge_type):
+                        sc_value[p_pax_type][p_charge_type] = {}
+                        sc_value[p_pax_type][p_charge_type].update({
+                            'amount': 0,
+                            'foreign_amount': 0,
+                        })
+                    c_type = p_charge_type
+                    c_code = p_charge_type.lower()
+                elif p_charge_type == 'RAC':
+                    if not sc_value[p_pax_type].get(p_charge_code):
+                        sc_value[p_pax_type][p_charge_code] = {}
+                        sc_value[p_pax_type][p_charge_code].update({
+                            'amount': 0,
+                            'foreign_amount': 0,
+                        })
+                    c_type = p_charge_code
+                    c_code = p_charge_code
+                sc_value[p_pax_type][c_type].update({
+                    'charge_type': p_charge_type,
+                    'charge_code': c_code,
                     'currency_id': p_sc.currency_id.id,
                     'foreign_currency_id': p_sc.foreign_currency_id.id,
-                    'amount': sc_value[p_pax_type][p_charge_type]['amount'] + p_sc.amount,
-                    'total': sc_value[p_pax_type][p_charge_type]['total'] + p_sc.total,
-                    'foreign_amount': sc_value[p_pax_type][p_charge_type]['foreign_amount'] + p_sc.foreign_amount,
+                    'amount': sc_value[p_pax_type][c_type]['amount'] + p_sc.amount,
+                    'foreign_amount': sc_value[p_pax_type][c_type]['foreign_amount'] + p_sc.foreign_amount,
                 })
-                # if not sc_value.get(p_charge_type):
-                #     sc_value[p_charge_type] = {}
-                # if not sc_value[p_charge_type].get(p_pax_type):
-                #     sc_value[p_charge_type][p_pax_type] = {}
-                #     sc_value[p_charge_type][p_pax_type].update({
-                #         'amount': 0,
-                #         'total': 0,
-                #         'foreign_amount': 0
-                #     })
-                #
-                # sc_value[p_charge_type][p_pax_type].update({
-                #     'charge_code': p_charge_type,
-                #     'pax_count': p_sc.pax_count,
-                #     'currency_id': p_sc.currency_id.id,
-                #     'foreign_currency_id': p_sc.foreign_currency_id.id,
-                #     'amount': sc_value[p_charge_type][p_pax_type]['amount'] + p_sc.amount,
-                #     'total': sc_value[p_charge_type][p_pax_type]['total'] + p_sc.total,
-                #     'foreign_amount': sc_value[p_charge_type][p_pax_type]['foreign_amount'] + p_sc.foreign_amount,
-                # })
 
         print(sc_value)
         values = []
-        for p_type,c_val in sc_value.items():
-            for c_type,p_val in c_val.items():
+        for p_type,p_val in sc_value.items():
+            for c_type,c_val in p_val.items():
                 curr_dict = {}
-                curr_dict['charge_type'] = c_type
                 curr_dict['pax_type'] = p_type
                 curr_dict['booking_airline_id'] = self.id
-                curr_dict.update(p_val)
+                curr_dict['total'] = c_val['amount']
+                curr_dict.update(c_val)
                 values.append((0,0,curr_dict))
 
+        print(json.dumps(values))
         self.write({
             'sale_service_charge_ids': values
         })

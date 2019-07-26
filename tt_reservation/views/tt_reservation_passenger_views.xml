@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<!--    <record id="tt_reservation_passenger_form_view" model="ir.ui.view">-->
+<!--        <field name="name">tt.reservation.passenger.form.view</field>-->
+<!--        <field name="model">tt.reservation.passenger</field>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <form>-->
+<!--                <sheet>-->
+<!--                    <group>-->
+<!--                        <field name="name"/>-->
+<!--                        <field name="title"/>-->
+<!--                        <field name="first_name"/>-->
+<!--                        <field name="last_name"/>-->
+<!--                        <field name="birth_date"/>-->
+<!--                        <field name="nationality_id"/>-->
+<!--                    </group>-->
+<!--                </sheet>-->
+<!--            </form>-->
+<!--        </field>-->
+<!--    </record>-->
+
+    <record id="tt_reservation_passenger_tree_view" model="ir.ui.view">
+        <field name="name">tt.reservation.passenger.tree.view</field>
+        <field name="model">tt.reservation.passenger</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="title"/>
+                <field name="first_name"/>
+                <field name="last_name"/>
+                <field name="birth_date"/>
+                <field name="nationality_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_reservation_passenger_action_views" model="ir.actions.act_window">
+        <field name="name">tt.reservation.passenger.action.views</field>
+        <field name="res_model">tt.reservation.passenger</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

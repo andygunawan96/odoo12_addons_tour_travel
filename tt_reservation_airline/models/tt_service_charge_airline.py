@@ -6,3 +6,5 @@ class TtServiceChargeAirline(models.Model):
     provider_airline_booking_id = fields.Many2one('tt.provider.airline', 'Provider Booking ID')
 
     booking_airline_id = fields.Many2one('tt.reservation.airline', 'Booking', ondelete='cascade', index=True, copy=False)
+
+    passenger_airline_id = fields.Many2one('tt.reservation.passenger.airline', 'Passenger Airline')
