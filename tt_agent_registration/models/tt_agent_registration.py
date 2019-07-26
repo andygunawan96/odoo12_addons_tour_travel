@@ -73,6 +73,9 @@ class AgentRegistration(models.Model):
 
     contact_ids = fields.One2many('tt.customer', 'agent_registration_id', 'Contact Information')
 
+    agent_registration_customer_ids = fields.One2many('tt.agent.registration.customer', 'agent_registration_id',
+                                                      'Agent Registration Contact')
+
     registration_document_ids = fields.One2many('tt.agent.registration.document', 'registration_document_id',
                                                 'Agent Registration Documents', readonly=True,
                                                 states={'confirm': [('readonly', False)]},
@@ -270,42 +273,66 @@ class AgentRegistration(models.Model):
         partner_obj = self.env['tt.agent'].create(vals)
         return partner_obj
 
-    def create_customers_contact(self):
+    def create_customers_contact(self, agent_id):
         contact_objs = []
         for rec in self:
-            print(rec.contact_ids.read())
-            for con in rec.contact_ids:
-                contact_vals = {
-                    'name': con['name'],
-                    'logo': con['logo'],
-                    'logo_thumb': con['logo_thumb'],
+            for con in rec.agent_registration_customer_ids:
+                vals = {
                     'first_name': con['first_name'],
                     'last_name': con['last_name'],
-                    'nickname': con['nickname'],
+                    'agent_id': agent_id.id,
+                    'email': con['email'],
+                    'birth_date': con['birth_date'],
+                    'phone': con['phone'],
+                    'mobile': con['mobile'],
                     'gender': con['gender'],
                     'marital_status': con['marital_status'],
                     'religion': con['religion'],
-                    'birth_date': con['birth_date'],
-                    'nationality_id': con['nationality_id'],
-                    'country_of_issued_id': con['country_of_issued_id'],
-                    'address_ids': con['address_ids'],
-                    'phone_ids': con['phone_ids'],
-                    'social_media_ids': con['social_media_ids'],
-                    'email': con['email'],
-                    'identity_type': con['identity_type'],
-                    'identity_number': con['identity_number'],
-                    'passport_number': con['passport_number'],
-                    'passport_expdate': con['passport_expdate'],
-                    'customer_bank_detail_ids': con['customer_bank_detail_ids'],
-                    'agent_id': con['agent_id'],
-                    'customer_parent_ids': con['customer_parent_ids'],
-                    'active': con['active'],
-                    'agent_registration_id': con['agent_registration_id'].id,
                 }
-                contact_obj = self.env['tt.customer'].create(contact_vals)
-                contact_objs.append(contact_obj)
-        # contact_obj = self.env['tt.customer'].create(self.contact_ids)
+                customer_id = self.env['tt.customer'].create(vals)
+                # todo : create phone_ids untuk contact
+                contact_objs.append(customer_id.id)
+                con.update({
+                    'customer_id': customer_id.id
+                })
         return contact_objs
+
+    # def create_customers_contact(self):
+    #     contact_objs = []
+    #     for rec in self:
+    #         print(rec.contact_ids.read())
+    #         for con in rec.contact_ids:
+    #             contact_vals = {
+    #                 'name': con['name'],
+    #                 'logo': con['logo'],
+    #                 'logo_thumb': con['logo_thumb'],
+    #                 'first_name': con['first_name'],
+    #                 'last_name': con['last_name'],
+    #                 'nickname': con['nickname'],
+    #                 'gender': con['gender'],
+    #                 'marital_status': con['marital_status'],
+    #                 'religion': con['religion'],
+    #                 'birth_date': con['birth_date'],
+    #                 'nationality_id': con['nationality_id'],
+    #                 'country_of_issued_id': con['country_of_issued_id'],
+    #                 'address_ids': con['address_ids'],
+    #                 'phone_ids': con['phone_ids'],
+    #                 'social_media_ids': con['social_media_ids'],
+    #                 'email': con['email'],
+    #                 'identity_type': con['identity_type'],
+    #                 'identity_number': con['identity_number'],
+    #                 'passport_number': con['passport_number'],
+    #                 'passport_expdate': con['passport_expdate'],
+    #                 'customer_bank_detail_ids': con['customer_bank_detail_ids'],
+    #                 'agent_id': con['agent_id'],
+    #                 'customer_parent_ids': con['customer_parent_ids'],
+    #                 'active': con['active'],
+    #                 'agent_registration_id': con['agent_registration_id'].id,
+    #             }
+    #             contact_obj = self.env['tt.customer'].create(contact_vals)
+    #             contact_objs.append(contact_obj)
+    #     # contact_obj = self.env['tt.customer'].create(self.contact_ids)
+    #     return contact_objs
 
     def action_confirm(self):
         # self.check_address()
@@ -344,9 +371,9 @@ class AgentRegistration(models.Model):
 
     def action_done(self):
         self.check_opening_documents()
-        self.partner_id = self.create_partner_agent()
-        if self.contact_ids:
-            self.create_customers_contact()
+        agent_id = self.create_partner_agent()
+        if self.agent_registration_customer_ids:
+            self.create_customers_contact(agent_id)
         self.create_opening_balance_ledger()
         self.state = 'done'
 
@@ -486,10 +513,11 @@ class AgentRegistration(models.Model):
         try:
             agent_type = self.env['tt.agent.type'].sudo().search([('name', '=', other.get('agent_type'))], limit=1)
             header = self.prepare_header(company, other, agent_type)
-            contact_ids = self.prepare_contact(pic)
+            # contact_ids = self.prepare_contact(pic)
+            agent_registration_customer_ids = self.prepare_customer(pic)
             address_ids = self.prepare_address(address)
             header.update({
-                'contact_ids': [(6, 0, contact_ids)],
+                'agent_registration_customer_ids': [(6, 0, agent_registration_customer_ids)],
                 'address_ids': [(6, 0, address_ids)],
                 'registration_fee': agent_type.registration_fee,
                 'registration_date': datetime.now(),
@@ -534,27 +562,47 @@ class AgentRegistration(models.Model):
             res = Response().get_error(str(e), 500)
         return res
 
-    def prepare_contact(self, pic):
-        contact_env = self.env['tt.customer'].sudo()
+    def prepare_customer(self, pic):
+        customer_env = self.env['tt.agent.registration.customer']
         vals_list = []
-
         for rec in pic:
             vals = {
-                'birth_date': rec.get('birth_date'),
                 'first_name': rec.get('first_name'),
                 'last_name': rec.get('last_name'),
                 'email': rec.get('email'),
-                # 'phone': rec.get('phone'),
+                'birth_date': rec.get('birth_date'),
+                'phone': rec.get('phone'),
+                'mobile': rec.get('mobile'),
+                'gender': rec.get('gender'),
+                'marital_status': rec.get('marital_status'),
+                'religion': rec.get('religion'),
             }
-            contact_obj = contact_env.create(vals)
-            contact_obj.update({
-                'phone_ids': contact_obj.phone_ids.create({
-                    'phone_number': rec.get('mobile', rec['mobile']),
-                    'type': 'work'
-                }),
-            })
-            vals_list.append(contact_obj.id)
+            customer_obj = customer_env.create(vals)
+            vals_list.append(customer_obj.id)
         return vals_list
+
+    # def prepare_contact(self, pic):
+    #     contact_env = self.env['tt.customer'].sudo()
+    #     vals_list = []
+    #
+    #     for rec in pic:
+    #         vals = {
+    #             'birth_date': rec.get('birth_date'),
+    #             'first_name': rec.get('first_name'),
+    #             'last_name': rec.get('last_name'),
+    #             'email': rec.get('email'),
+    #             'agent_id': self.env.user.agent_id.id
+    #             # 'phone': rec.get('phone'),
+    #         }
+    #         contact_obj = contact_env.create(vals)
+    #         contact_obj.update({
+    #             'phone_ids': contact_obj.phone_ids.create({
+    #                 'phone_number': rec.get('mobile', rec['mobile']),
+    #                 'type': 'work'
+    #             }),
+    #         })
+    #         vals_list.append(contact_obj.id)
+    #     return vals_list
 
     def prepare_address(self, address):
         print(address)

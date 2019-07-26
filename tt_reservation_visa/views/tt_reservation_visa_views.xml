@@ -143,17 +143,18 @@
                         </group>
                         <group string="Booker Information">
                             <field name="booker_id"/>
+                            <field name="contact_id"/>
                         </group>
                     </group>
                     <notebook colspan="4">
-                        <page string="Contacts">
-                            <field name="contact_ids">
-                                <tree create="0">
-                                    <field name="name"/>
-                                    <field name="email"/>
-                                </tree>
-                            </field>
-                        </page>
+<!--                        <page string="Contacts">-->
+<!--                            <field name="contact_ids">-->
+<!--                                <tree create="0">-->
+<!--                                    <field name="name"/>-->
+<!--                                    <field name="email"/>-->
+<!--                                </tree>-->
+<!--                            </field>-->
+<!--                        </page>-->
                         <page string="Passengers">
                             <field name="to_passenger_ids">
                                 <tree create="0">
@@ -249,7 +250,7 @@
         <field name="model">tt.reservation.visa</field>
         <field name="arch" type="xml">
             <tree create="true">
-                <button type="object" string="Create Booking Visa" name="create_booking_visa"/>
+                <button type="object" string="Create Booking Visa" name="create_booking_visa_api"/>
                 <field name="name"/>
                 <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>
                 <field name="agent_type_id" groups="tt_base.group_tt_tour_travel_operator"/>

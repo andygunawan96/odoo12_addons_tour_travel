@@ -98,6 +98,7 @@
                                 <field name="contact_id" required="1" context="{'default_commercial_agent_id': agent_id}" options="{'no_quick_create': True}"/>  <!--ganti jadi customer parent id-->
                                 <!--<field name="display_mobile" required="1"/>-->
                                 <field name="provider_type_id" domain="[('code', 'not in', ['tour','visa','passport'])]"/>
+                                <field name="provider_type_id_name" invisible="1"/>
                                 <field name="sector_type" attrs="{'invisible': [('provider_type_id', 'not in', 2)]}"/>
                                 <!--<field name="customer_id"/>-->
                                 <field name="cancel_message" states="cancel"
@@ -161,7 +162,7 @@
                             <group>
 <!--                                <field name="refund_id"  attrs="{'invisible': [('refund_id', '=', False)]}"/>-->
                                 <!--<field name="description"/>-->
-                                <field name="description" attrs="{'invisible': [('provider_type_id', 'in', [1,2]), ('state','=','draft')]}"/>
+                                <field name="description" attrs="{'invisible': [('provider_type_id_name', 'in', ['airline', 'train']), ('state','=','draft')]}"/>
                             </group>
                             <group string="Booking Value" groups="tt_base.group_tt_tour_travel_operator" states="paid,posted">
                                 <field name="resv_code"/>
@@ -176,7 +177,7 @@
                             </group>
                         </group>
                         <notebook>
-                            <page string="Line(s)" attrs="{'invisible': [('provider_type_id', 'not in', [1,2,3,4])]}">  <!--Airlines, Train, Hotel, Activity-->
+                            <page string="Line(s)" attrs="{'invisible': [('provider_type_id_name', 'not in', ['airline','train','hotel','activity'])]}">  <!--Airlines, Train, Hotel, Activity-->
                                 <field name="line_ids">
                                     <tree>
                                         <field name="booking_id" invisible="1"/>
@@ -196,7 +197,8 @@
                                         </header>
                                         <field name="booking_id" invisible="1"/>
                                         <field name="transaction_type" invisible="1"/>
-                                        <group attrs="{'invisible': [('transaction_type', 'not in', [1,2])]}">  <!--'airline','train'-->
+                                        <field name="transaction_name" invisible="1"/>
+                                        <group attrs="{'invisible': [('transaction_name', 'not in', ['airline','train'])]}">  <!--'airline','train'-->
                                             <!--Airline / Train-->
                                             <group>
                                                 <field name="origin_id"/>
@@ -222,7 +224,7 @@
                                                 <field name="subclass"/>
                                             </group>
                                         </group>
-                                        <group attrs="{'invisible': [('transaction_type', 'not in', [3,4])]}">  <!--'hotel','activity'-->
+                                        <group attrs="{'invisible': [('transaction_name', 'not in', ['hotel','activity'])]}">  <!--'hotel','activity'-->
                                             <!--Hotel / Themes Park-->
                                             <group>
                                                 <field name="pnr"/>

@@ -12,7 +12,7 @@
                         <button string="Progress" name="action_progress" attrs="{'invisible': [('state', '!=', 'confirm')]}" type="object"/>
                         <button string="Payment" name="action_payment" attrs="{'invisible': [('state', '!=', 'progress')]}" type="object"/>
                         <button string="Validate" name="action_validate" attrs="{'invisible': [('state', '!=', 'payment')]}" type="object"/>
-                        <button string="Done" name="action_done" attrs="{'invisible': [('state', '!=', 'validate')]}" type="object"/>
+                        <button string="Done" name="action_done" attrs="{'invisible': [('state', '!=', 'validate')]}" type="object" groups="tt_base.group_tt_tour_travel_operator"/>
 <!--                        <button string="Cancel" name="action_cancel" attrs="{'invisible': [('state', '!=', ['confirm','progress','payment','validate'])]}" type="object"/>-->
                          <button string="Cancel" name="action_cancel" type="object" states="confirm,progress,payment,validate"/>
                         <button string="Set to Draft" name="action_draft" attrs="{'invisible': [('state', '!=', 'cancel')]}" type="object" confirm="All data will be deleted. Proceed?"/>
@@ -89,14 +89,7 @@
                                     </field>
                                 </page>
                                 <page string="Contact Information">
-                                    <field name="contact_ids">
-                                        <tree create="true">
-                                            <field name="name" string="PIC Name"/>
-                                            <field name="birth_date"/>
-<!--                                            <field name="title"/>-->
-                                            <field name="phone_ids"/>
-                                        </tree>
-                                    </field>
+                                    <field name="agent_registration_customer_ids"/>
                                 </page>
                             </notebook>
                         </group>

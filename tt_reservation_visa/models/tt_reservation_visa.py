@@ -371,7 +371,7 @@ class TtVisa(models.Model):
     }
 
     param_context = {
-        'co_uid': 7
+        'co_uid': 23
     }
 
     param_kwargs = {
@@ -491,16 +491,19 @@ class TtVisa(models.Model):
                         })
 
             header_val = self._visa_header_normalization(search, sell_visa)
-            booker_id = self._create_booker(context, booker)
-            contact_ids = self._create_contact(context, contact)  # create contact
-            passenger_ids = self._create_passenger(context, passengers)  # create passenger
+            booker_id = self.create_booker_api(booker, context)
+            # contact_ids = self._create_contact(context, contact)  # create contact
+            contact_id = self.create_contact_api(contact[0], booker_id, context)
+            # passenger_ids = self._create_passenger(context, passengers)  # create passenger
+            passenger_ids = self.create_passenger_api(passengers, context, booker_id, contact_id)  # create passenger
             ssc_ids = self._create_sale_service_charge(passengers)  # create pricing
-            to_psg_ids = self._create_visa_order(passengers)  # create visa order
+            to_psg_ids = self._create_visa_order(passengers, passenger_ids)  # create visa order
 
             header_val.update({
                 'country_id': self.env['res.country'].sudo().search([('name', '=', search['destination'])], limit=1).id,
-                'booker_id': booker_id,
-                'contact_ids': [(6, 0, contact_ids)],
+                'booker_id': booker_id.id,
+                # 'contact_ids': [(6, 0, contact_ids)],
+                'contact_id': contact_id.id,
                 'passenger_ids': [(6, 0, passenger_ids)],
                 'sale_service_charge_ids': [(6, 0, ssc_ids)],
                 'to_passenger_ids': [(6, 0, to_psg_ids)],
@@ -523,6 +526,8 @@ class TtVisa(models.Model):
             res = Response().get_no_error(response)
         except Exception as e:
             res = Response().get_error(str(e), 500)
+            self.env.cr.rollback()
+            _logger.error(msg=str(e) + '\n' + traceback.format_exc())
         return res
 
     def _update_api_context(self, contact, context):
@@ -775,17 +780,63 @@ class TtVisa(models.Model):
 
         return pricing_list
 
-    def _create_visa_order(self, passengers):
+    # def _create_visa_order(self, passengers):
+    #     pricelist_env = self.env['tt.reservation.visa.pricelist'].sudo()
+    #     to_psg_env = self.env['tt.reservation.visa.order.passengers'].sudo()
+    #     to_req_env = self.env['tt.reservation.visa.order.requirements'].sudo()
+    #     to_psg_list = []
+    #
+    #     for psg in passengers:
+    #         pricelist_id = int(psg['master_visa_Id'])
+    #         pricelist_obj = pricelist_env.browse(pricelist_id)
+    #         psg_vals = {
+    #             'passenger_id': psg['passenger_id'],
+    #             # 'passenger_type': psg['passenger_type'],
+    #             'pricelist_id': pricelist_id,
+    #             'passenger_type': psg['pax_type']
+    #         }
+    #         to_psg_obj = to_psg_env.create(psg_vals)
+    #
+    #         to_req_list = []
+    #         for req in pricelist_obj.requirement_ids:
+    #             req_vals = {
+    #                 'to_passenger_id': to_psg_obj.id,
+    #                 'requirement_id': req.id,
+    #             }
+    #             to_req_obj = to_req_env.create(req_vals)
+    #             to_req_list.append(to_req_obj.id)  # akan dipindah ke edit requirements
+    #
+    #         # jika ingin assign requirement_ids, edit disini
+    #         # jika cara ini digunakan dan memiliki banyak requirements, mungkin akan menyebabkan performance drop
+    #         # for req in psg['required']:
+    #         #     to_req_obj = to_req_env.browse(req['id'])
+    #         #     to_req_obj.update({
+    #         #         'to_passenger_id': psg.id,
+    #         #         'is_ori': req['is_ori'],
+    #         #         'is_copy': req['is_copy'],
+    #         #         'check_uid': req['check_uid'],
+    #         #         'check_date': req['check_date']
+    #         #     })
+    #         #     to_req_list.append(to_req_obj.id)
+    #
+    #         to_psg_obj.write({
+    #             'to_requirement_ids': [(6, 0, to_req_list)]
+    #         })
+    #
+    #         to_psg_list.append(to_psg_obj.id)
+    #     return to_psg_list
+
+    def _create_visa_order(self, passengers, passenger_ids):
         pricelist_env = self.env['tt.reservation.visa.pricelist'].sudo()
         to_psg_env = self.env['tt.reservation.visa.order.passengers'].sudo()
         to_req_env = self.env['tt.reservation.visa.order.requirements'].sudo()
         to_psg_list = []
 
-        for psg in passengers:
+        for idx, psg in enumerate(passengers):
             pricelist_id = int(psg['master_visa_Id'])
             pricelist_obj = pricelist_env.browse(pricelist_id)
             psg_vals = {
-                'passenger_id': psg['passenger_id'],
+                'passenger_id': passenger_ids[idx].id,
                 # 'passenger_type': psg['passenger_type'],
                 'pricelist_id': pricelist_id,
                 'passenger_type': psg['pax_type']

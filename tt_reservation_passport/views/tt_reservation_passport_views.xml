@@ -57,7 +57,7 @@
             <form>
                 <field name="state" invisible="1"/>
                 <header>
-                    <field name="state_passport" widget="statusbar" statusbar_visible="draft,confirm,validate,in_process,proceed,done"/> <!--statusbar_visible=""-->
+                    <field name="state_passport" widget="statusbar" statusbar_visible="validate,in_process,proceed,done"/> <!--statusbar_visible=""-->
                     <button string="Set to Draft" name="action_draft_passport" type="object" attrs="{'invisible': [('state_passport', '!=', 'cancel')]}" groups="tt_base.group_tt_tour_travel_manager"/>
                     <button string="Confirm to HO" name="action_confirm_passport" type="object" attrs="{'invisible': [('state_passport', '!=', 'draft')]}" groups="tt_base.group_tt_agent_user_operator"/>
                     <button string="Validate" name="action_validate_passport" type="object" attrs="{'invisible': [('state_passport', '!=', 'confirm')]}" groups="tt_base.group_tt_tour_travel_operator"/>
