@@ -25,3 +25,12 @@ class TbServiceCharge(models.Model):
     # @api.depends('pax_count', 'amount')
     # def _compute_total(self):
     #     self.total = self.pax_count * self.amount
+
+    def to_dict(self):
+        return {
+            'charge_code': self.charge_code,
+            'charge_type': self.charge_type,
+            'currency': self.currency_id.name,
+            'amount': self.amount,
+            'foreign_currency': self.foreign_currency_id.name
+        }

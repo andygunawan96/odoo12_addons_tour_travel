@@ -23,7 +23,8 @@ class TtReservationCustomer(models.Model):
         res = super(TtReservationCustomer, self).to_dict()
         res.update({
             'passport_number': self.passport_number and self.passport_number or '',
-            'passport_expdate': self.passport_expdate and self.passport_expdate or ''
+            'passport_expdate': self.passport_expdate and self.passport_expdate or '',
+            'sale_service_charges': self.get_service_charges()
         })
         return res
 
@@ -33,4 +34,10 @@ class TtReservationCustomer(models.Model):
             'passport_number': self.passport_number and self.passport_number or '',
             'passport_expdate': self.passport_expdate and self.passport_expdate or ''
         })
+        return res
+
+    def get_service_charges(self):
+        res = []
+        for rec in self.service_charge_ids:
+            res.append(rec.to_dict())
         return res

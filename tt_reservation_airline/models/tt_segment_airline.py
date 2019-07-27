@@ -67,7 +67,7 @@ class TtSegmentAirline(models.Model):
             'carrier_number': self.carrier_number,
             'provider': self.provider_id.code,
             'origin': self.origin_id.code,
-            'origin_terinal': self.origin_terminal,
+            'origin_terminal': self.origin_terminal,
             'destination': self.destination_id.code,
             'destination_terminal': self.destination_terminal,
             'departure_date': self.departure_date,
