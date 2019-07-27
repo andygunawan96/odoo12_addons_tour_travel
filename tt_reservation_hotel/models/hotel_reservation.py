@@ -19,7 +19,7 @@ class HotelReservation(models.Model):
 
     checkin_date = fields.Date('Check In Date', readonly=True, states={'draft': [('readonly', False)]})
     checkout_date = fields.Date('Check Out Date', readonly=True, states={'draft': [('readonly', False)]})
-    nights = fields.Integer('Total Nights', default=1)
+    nights = fields.Integer('Total Nights', default=1, readonly=True, states={'draft': [('readonly', False)]})
     room_count = fields.Integer('Room Qty', default=1, readonly=True, states={'draft': [('readonly', False)]})
 
     # Booking Progress
@@ -37,15 +37,20 @@ class HotelReservation(models.Model):
                               ''')
     # provider_booking_ids = fields.One2many('tt.tb.provider.hotel', 'booking_id', string='Provider Booking',
     #                                        readonly=True, states={'draft': [('readonly', False)]})
+    provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', default=lambda
+        x: x.env.ref('tt_reservation_hotel.tt_provider_type_hotel'))
 
     # Guests Information
+    passenger_ids = fields.Many2many('tt.customer', 'tt_reservation_hotel_guest_rel', 'booking_id',
+                                     'passenger_id',
+                                     string='List of Guest', readonly=True, states={'draft': [('readonly', False)]})
 
     # Hotel Information
     hotel_id = fields.Many2one('tt.hotel', 'Hotel Information', readonly=True, states={'draft': [('readonly', False)]})
     hotel_name = fields.Char('Hotel Name', readonly=True, states={'draft': [('readonly', False)]})
     hotel_address = fields.Char('Address', readonly=True, states={'draft': [('readonly', False)]})
     hotel_city = fields.Char('City', readonly=True, states={'draft': [('readonly', False)]})
-    hotel_city_id = fields.Many2one('res.city', 'City')
+    hotel_city_id = fields.Many2one('res.city', 'City', readonly=True, states={'draft': [('readonly', False)]})
     hotel_phone = fields.Char('Phone', readonly=True, states={'draft': [('readonly', False)]})
 
     # Provider Data & Booking Information
@@ -141,23 +146,28 @@ class HotelReservation(models.Model):
                 total += line.commission_amount * line.qty
             data.total_commission_amount = total
 
+    def _get_total_supplement(self):
+        return 0
+
+    def get_provider_list(self):
+        self.ensure_one()
+        provider_list = []
+        for rec in self.room_detail_ids:
+            if rec.provider_id.name not in provider_list:
+                provider_list.append(rec.provider_id.name)
+        return ','.join(provider_list)
+
+    def get_pnr_list(self):
+        self.ensure_one()
+        provider_list = []
+        for rec in self.room_detail_ids:
+            if rec.name not in provider_list:
+                provider_list.append(rec.name)
+            if rec.issued_name not in provider_list:
+                provider_list.append(rec.issued_name)
+        return ','.join(provider_list)
 
     def create_agent_ledger(self, vals):
-        # Create Untuk Agent
-        # partner = self.create_uid.partner_id.parent_id
-        # booker_agent_id = self.customer_id.sudo().agent_id.id
-        # user_agent_id = self.agent_id.sudo().parent_agent_id.id
-        # vals['agent_id'] = self.get_agent_for_ledger(partner, booker_agent_id, user_agent_id)
-        vals['agent_id'] = self.agent_id.id
-        new_aml = self.env['tt.ledger'].create(vals)
-        return new_aml
-
-    def create_sub_agent_ledger(self, vals):
-        # Create Untuk Agent
-        # partner = self.sub_agent_id
-        # booker_agent_id = self.customer_id.sudo().agent_id.id
-        # user_agent_id = self.agent_id.sudo().parent_agent_id.id
-        vals['agent_id'] = self.sub_agent_id.id
         new_aml = self.env['tt.ledger'].create(vals)
         return new_aml
 
@@ -177,24 +187,21 @@ class HotelReservation(models.Model):
             })
         return True
 
+    def create_commission_ledger(self):
+        # Create Commission
+        vals = self.env['tt.ledger'].prepare_vals('Commission : ' + self.name, self.name, self.issued_date, 'hotel',
+                                                  self.currency_id.id, self.total_commission_amount, 0)
+        vals = self.env['tt.ledger'].prepare_vals_for_resv(self, vals)
+        self.create_agent_ledger(vals)
+
     @api.multi
     def create_ledger(self):
         for rec in self:
-            vals = self.env['tt.ledger'].prepare_vals('Resv : '+ rec.name, rec.name, rec.issued_date, 'hotel', rec.currency_id.id, 0, rec.total)
-            vals['hotel_reservation_id'] = rec.id
-            new_aml = rec.create_agent_ledger(vals)
-            new_aml.action_done()
-            rec.ledger_id = new_aml
-            # Create Commission
-            vals = self.env['tt.ledger'].prepare_vals('Commission : ' + rec.name, rec.name, rec.issued_date, 'hotel',
-                                                      rec.currency_id.id, rec.total_commission_amount, 0)
-            commission_aml = rec.create_agent_ledger(vals)
-            commission_aml.action_done()
-            rec.commission_ledger_id = commission_aml
-            # if self.agent_id != self.sub_agent_id:
-            #     new_aml = rec.create_sub_agent_ledger(vals)
-            #     new_aml.action_done()
-            #     rec.sub_ledger_id = new_aml
+            rec.create_commission_ledger()
+
+            vals = self.env['tt.ledger'].prepare_vals('Reservation : '+ rec.name, rec.name, rec.issued_date, 'hotel', rec.currency_id.id, 0, rec.total)
+            vals = self.env['tt.ledger'].prepare_vals_for_resv(rec, vals)
+            rec.create_agent_ledger(vals)
 
     @api.multi
     def _refund_ledger(self):
@@ -211,9 +218,10 @@ class HotelReservation(models.Model):
     @api.one
     def action_confirm(self, kwargs=False):
         self.state = 'confirm'
-        self.confirm_date = fields.Datetime.now()
-        self.confirm_uid = kwargs and kwargs.get('user_id', self.env.user.id) or self.env.user.id
+        self.booked_date = fields.Datetime.now()
+        self.booked_uid = kwargs and kwargs.get('user_id', self.env.user.id) or self.env.user.id
         self.name = self.name == 'New' and self.env['ir.sequence'].next_by_code('tt.reservation.hotel') or self.name
+        self.provider_name = self.get_provider_list()
 
     @api.one
     def action_booked(self):
@@ -235,11 +243,12 @@ class HotelReservation(models.Model):
     def create_agent_invoice(self):
         return True
 
-    @api.one
     def action_issued_backend(self):
+        if not self.ensure_one():
+            raise UserError('Cannot Issued more than 1 Resv.')
         is_enough = self.action_issued()
-        if is_enough[0]['error_code'] != 0:
-            raise UserError(is_enough[0]['error_msg'])
+        if not is_enough:
+            raise UserError('Current Balance for Agent:' + self.agent_id.name + ' is ' + str(self.agent_id.actual_balance))
 
     def action_failed(self, msg=''):
         self.state='fail'
@@ -256,22 +265,29 @@ class HotelReservation(models.Model):
 
     @api.one
     def action_issued(self, kwargs=False):
+        if not self.ensure_one():
+            return False
         # 1. Ledger
-        is_enough = self.env['res.partner'].check_balance_limit(self.sub_agent_id.id, self.total)
-        if is_enough['error_code'] == 0:
+        is_enough = self.agent_id.check_balance_limit(self.total_nta)
+        if is_enough:
             # Jika cukup Potong Saldo
+            self.pnr = self.get_pnr_list()
             self.issued_date = fields.Datetime.now()
             self.issued_uid = kwargs and kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
             # 1. Create Ledger, Commission Ledger
             self.sudo().create_ledger()
-            self.sudo().create_vendor_ledger()
+            # self.sudo().create_vendor_ledger()
             # 2. Jika Hotel CMS apakah kamar yg dipesan auto validation / perlu operator
             # self.check_auto_approved()
             # TODO 3. Kirim E-Ticket
             self.create_agent_invoice()
             self.state = 'issued'
             self.calc_voucher_name()
-        return is_enough
+            return is_enough
+        else:
+            raise UserError('Balance in not enough to issued: ' + self.name + '(' + str(self.total) + ')' +
+                            ' Current Balance for Agent:' + self.agent_id.name + ' is ' +
+                            str(self.agent_id.balance))
 
     @api.one
     def action_done(self):
@@ -509,15 +525,6 @@ class HotelReservation(models.Model):
             'target': 'new',
             'context': ctx,
         }
-
-    @api.depends('supplementary_ids.qty', 'supplementary_ids.sale_price')
-    def _get_total_supplement(self):
-        for my in self:
-            total = 0
-            for suplement_id in my.supplementary_ids:
-                total += suplement_id.qty * suplement_id.sale_price
-            my.total_supplementary_price = total
-        return 0
 
     def check_booking_status(self):
         api_context = {

@@ -17,7 +17,7 @@ class AgentInvoice(models.Model,test_to_dict.ToDict):
     res_id_resv = fields.Integer(
         'Related Reservation ID', index=True, help='Id of the followed resource')
 
-    model_type = fields.Many2one('tt.provider.type', 'Reservation Type')
+    model_type_id = fields.Many2one('tt.provider.type', 'Reservation Type')
 
     invoice_id = fields.Many2one('tt.agent.invoice','Invoice', ondelete='cascade')
 
@@ -25,21 +25,20 @@ class AgentInvoice(models.Model,test_to_dict.ToDict):
 
     invoice_line_detail_ids = fields.One2many('tt.agent.invoice.line.detail', 'invoice_line_id', 'Invoice Line Detail')
 
-    desc = fields.Char('Description')
-
+    desc = fields.Text('Description')
 
     def create(self, vals_list):
         if 'name' not in vals_list:
             vals_list['name'] = self.env['ir.sequence'].next_by_code('agent.invoice.line')
 
-        new_invoice_line =  super(AgentInvoice, self).create(vals_list)
+        new_invoice_line = super(AgentInvoice, self).create(vals_list)
 
         new_invoice_line_obj = new_invoice_line.get_reservation_obj()
 
         if 'provider_type_id' in new_invoice_line_obj:
-            new_invoice_line.model_type = new_invoice_line_obj.provider_type_id.id
+            new_invoice_line.model_type_id = new_invoice_line_obj.provider_type_id.id
         elif 'provider_type' in new_invoice_line_obj:
-            new_invoice_line.model_type = new_invoice_line_obj.provider_type.id
+            new_invoice_line.model_type_id = new_invoice_line_obj.provider_type.id
 
         return new_invoice_line
 

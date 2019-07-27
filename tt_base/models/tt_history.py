@@ -15,7 +15,7 @@ class SkippedKeys(models.Model):
     def create(self, vals_list):
         new_record = super(SkippedKeys, self).create(vals_list)
         self._register_hook()
-        return  new_record
+        return new_record
 
     @api.model
     def write(self, vals):

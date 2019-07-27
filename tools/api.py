@@ -19,7 +19,7 @@ class Response:
     def to_dict(self):
         return self.__dict__
 
-    def get_no_error(self, response=''):
+    def get_no_error(self, response='Success'):
         self.__dict__.update({
             'error_code': 0,
             'response': response

@@ -158,8 +158,6 @@ class TtProviderAirline(models.Model):
                     scs['pax_count'] = 1
                     service_chg_obj.create(scs)
 
-
-
         # "sequence": 1,
         # "charge_code": "fare",
         # "charge_type": "FARE",

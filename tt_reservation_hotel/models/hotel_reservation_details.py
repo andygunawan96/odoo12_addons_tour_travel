@@ -28,7 +28,7 @@ class HotelReservationDetails(models.Model):
 
     name = fields.Char('Resv. Number', help="Vendor Reservation number / Vendor Booking Code")
     issued_name = fields.Char('Issued Number', help="Vendor Issued number / Vendor Voucher Code")
-    provider_id = fields.Many2one('res.partner', 'Provider')
+    provider_id = fields.Many2one('tt.provider', 'Provider', domain=lambda self: [("provider_type_id", "=", self.env.ref('tt_reservation_hotel.tt_provider_type_hotel').id )])
     prov_currency_id = fields.Many2one('res.currency', 'Currency', default=lambda self: self.env.user.company_id.currency_id)
     prov_sale_price = fields.Monetary('Provider Price', currency_field='prov_currency_id')
     sale_price = fields.Monetary('Sale Price')
@@ -143,6 +143,14 @@ class HotelReservation(models.Model):
     _inherit = 'tt.reservation.hotel'
 
     room_detail_ids = fields.One2many('tt.hotel.reservation.details', 'reservation_id', 'Rooms'
-                                      , readonly=True, states={'draft': [('readonly', False)]}, ondelete='cascade')
+                                      , readonly=True, states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]}, ondelete='cascade')
     supplementary_ids = fields.One2many('tt.hotel.reservation.supplementary', 'reservation_id', 'Supplement'
                                         , readonly=True, states={'draft': [('readonly', False)]}, ondelete='cascade')
+
+    @api.depends('supplementary_ids.qty', 'supplementary_ids.sale_price')
+    def _get_total_supplement(self):
+        for my in self:
+            total = 0
+            for suplement_id in my.supplementary_ids:
+                total += suplement_id.qty * suplement_id.sale_price
+            my.total_supplementary_price = total

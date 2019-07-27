@@ -5,6 +5,9 @@
         <field name="model">tt.agent</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <button name="get_current_agent_target" type="object" string="Calc Target"/>
+                </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="toggle_active" type="object" groups="base.group_user"
@@ -12,6 +15,23 @@
                             <field name="active" widget="boolean_button"
                                    options='{"terminology": "archive"}'/>
                         </button>
+                        <button type="object" name="action_show_agent_target_history" class="oe_stat_button" icon="fa-dollar">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value" widget="statinfo">
+                                    <field name="annual_revenue_target" nolabel="1"/>
+                                </span>
+                                <span class="o_stat_text">Target</span>
+                                <!-- <span class="o_stat_text">Revenue Target</span>-->
+                            </div>
+                        </button>
+<!--                        <button type="object" name="action_open_quants" class="oe_stat_button" icon="fa-building-o">-->
+<!--                            <div class="o_field_widget o_stat_info">-->
+<!--                                <span class="o_stat_value" widget="statinfo">-->
+<!--                                    <field name="annual_profit_target" widget="statinfo" nolabel="1" class="mr4"/>-->
+<!--                                </span>-->
+<!--                                <span class="o_stat_text">Profit Target</span>-->
+<!--                            </div>-->
+<!--                        </button>-->
                     </div>
                     <field name="logo" widget='image' class="oe_avatar" options='{"preview_image":"logo_thumb"}'/>
                     <div class="oe_title">
@@ -23,16 +43,16 @@
                     <group>
                         <group>
                             <field name="currency_id"/>
-                            <field name="actual_balance"/>
+<!--                            <field name="actual_balance"/>-->
                             <field name="balance"/>
-                            <field name="annual_revenue_target"/>
-                            <field name="annual_profit_target"/>
-                            <field name="credit_limit"/>
+<!--                            <field name="annual_revenue_target"/>-->
+<!--                            <field name="annual_profit_target"/>-->
+<!--                            <field name="credit_limit"/>-->
                         </group>
                         <group>
                             <field name="est_date"/>
-                            <field name="mou_start"/>
-                            <field name="mou_end"/>
+<!--                            <field name="mou_start"/>-->
+<!--                            <field name="mou_end"/>-->
                         </group>
                     </group>
 
@@ -70,10 +90,10 @@
                         </page>
                     </notebook>
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids" widget="mail_followers"/>
-                    <field name="message_ids" widget="mail_thread"/>
-                </div>
+<!--                <div class="oe_chatter">-->
+<!--                    <field name="message_follower_ids" widget="mail_followers"/>-->
+<!--                    <field name="message_ids" widget="mail_thread"/>-->
+<!--                </div>-->
             </form>
         </field>
     </record>
@@ -164,4 +184,53 @@
               sequence="2"
               action="tt_agent_action_view"/>
 
+    <record id="view_agent_target_form" model="ir.ui.view">
+        <field name="name">view.tt.agent.target.form.view</field>
+        <field name="model">tt.agent.target</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <header>
+
+                    </header>
+                    <div class="oe_button_box" name="button_box">
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name" placeholder="Name" required="True"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="agent_id"/>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                        </group>
+                        <group>
+                            <field name="annual_revenue_target"/>
+                            <field name="annual_profit_target"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_agent_target_tree" model="ir.ui.view">
+        <field name="name">tt.agent.tree.view</field>
+        <field name="model">tt.agent.target</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="agent_id"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="annual_revenue_target"/>
+                <field name="annual_profit_target"/>
+                <field name="currency_id" invisible="1"/>
+            </tree>
+        </field>
+    </record>
 </odoo>
