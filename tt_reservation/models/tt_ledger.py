@@ -28,8 +28,45 @@ class tt_ledger(models.Model):
             'target': 'current',
         }
 
-    def create(self, vals_list):
-        if 'res_model' in vals_list and 'res_id' in vals_list:
-            if 'provider_type_id' in self.env[vals_list['res_model']].browse(vals_list['res_id']):
-                vals_list['provider_type_id'] = self.env[vals_list['res_model']].browse(vals_list['res_id']).provider_type_id.id
-        super(tt_ledger, self).create(vals_list)
+    def prepare_vals_for_resv(self, resv_obj, vals):
+        vals.update({
+            'pnr': resv_obj.pnr,
+            'transport_type': resv_obj.provider_type_id.code in ['airline', 'train', 'cruise'] and resv_obj.provider_type_id.code or False,
+            'display_provider_name': resv_obj.provider_name,
+            'provider_type': resv_obj.provider_type_id.id,
+            'description': 'Ledger for ' + resv_obj.name,
+            'res_id': resv_obj.id,
+            'res_model': resv_obj._name,  #
+            'validate_uid': resv_obj.sudo().issued_uid.id,
+            'agent_id': resv_obj.agent_id.id,
+            'agent_type_id': resv_obj.agent_type_id.id
+        })
+        return vals
+
+    def reverse_ledger(self):
+        reverse_id = self.env['tt.ledger'].create([{
+            'name': 'Reverse:' + self.name,
+            'debit': self.credit,
+            'credit': self.debit,
+            'ref': self.ref,
+            'currency_id': self.currency_id.id,
+            'transaction_type': self.transaction_type,
+            'reverse_id': self.id,
+            'agent_id': self.agent_id.id,
+            'pnr': self.pnr,
+            'issued_uid': self.issued_uid.id,
+            'display_provider_name': self.display_provider_name,
+            'res_model': self.res_model,
+            'res_id': self.res_id,
+            'is_reversed': True,
+        }])
+        self.update({
+            'reverse_id': reverse_id.id,
+            'is_reversed': True,
+        })
+
+    @api.model
+    def create(self, vals):
+        if vals.get('res_model') and vals.get('res_id'):
+            vals['provider_type_id'] = self.env[vals['res_model']].browse(vals['res_id']).provider_type_id.id
+        return super(tt_ledger, self).create(vals)
