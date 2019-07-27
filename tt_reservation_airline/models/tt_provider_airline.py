@@ -91,28 +91,6 @@ class TtProviderAirline(models.Model):
             })
             rec.booking_id.action_check_provider_state(api_context)
 
-    def action_issued_provider_api(self, provider_id, api_context):
-        try:
-            # ## UPDATED by Samvi 2018/07/24
-            # ## Terdetect sebagai administrator jika sudo
-            # provider_obj = self.env['tt.tb.provider'].sudo().browse(provider_id)
-            provider_obj = self.env['tt.provider.airline'].browse(provider_id)
-            if not provider_obj:
-                return {
-                    'error_code': -1,
-                    'error_msg': '',
-                }
-            provider_obj.action_issued(api_context)
-            return {
-                'error_code': 0,
-                'error_msg': '',
-            }
-        except Exception as e:
-            return {
-                'error_code': -1,
-                'error_msg': str(e)
-            }
-
     @api.one
     def create_ticket_number(self, passenger_ids):
         # Variable name adalah first_name + last_name yang disambung semua tanpa spasi
@@ -145,8 +123,6 @@ class TtProviderAirline(models.Model):
     def create_service_charge(self, service_charge_vals):
         service_chg_obj = self.env['tt.service.charge']
         currency_obj = self.env['res.currency']
-
-        sc_values = []
 
         for scs in service_charge_vals:
             scs['pax_count'] = 0
@@ -195,7 +171,6 @@ class TtProviderAirline(models.Model):
         if not self.is_ledger_created:
             self.write({'is_ledger_created': True})
             self.env['tt.ledger'].action_create_ledger(self)
-            self.env.cr.commit()
 
     def action_create_ledger_api(self):
         try:

@@ -35,8 +35,6 @@ LEDGER_TYPE_TO_STR = {
     80: 'Group Booking',
 }
 
-
-
 LEDGER_TYPE_TO_INT = {
     'begbal': 0,
     'topup': 1,
@@ -128,9 +126,6 @@ class Ledger(models.Model):
     reverse_id = fields.Many2one('tt.ledger', 'Reverse')
     is_reversed = fields.Boolean('Already Reversed', default=False)
 
-    # TODO HAPUS STATE sementara cman bloker biar view tmpat lain g error
-    state = fields.Selection([])
-
     def calc_balance(self, vals):
         # Pertimbangkan Multi Currency Ledger
         balance = self.env['tt.agent'].browse(vals['agent_id']).balance
@@ -194,73 +189,59 @@ class Ledger(models.Model):
 
     # API START #####################################################################
     def create_ledger(self, provider_obj):
-        # ## UPDATED by Samvi 2018/07/24
-        # ## Terdetect 8888,,,,,,,,,sebagai administrator jika sudo
-
-        # ledger_env = self.env['tt.ledger']
         amount = 0
 
         for sc in provider_obj.cost_service_charge_ids:
-            if sc.charge_code.find('r.ac') < 0:
+            if sc.charge_type != 'RAC':
                 amount += sc.total
 
         booking_obj = provider_obj.booking_id
         ledger_values = self.prepare_vals('Order : ' + booking_obj.name, booking_obj.name, datetime.now(),
                                           'transport', booking_obj.currency_id.id, 0, amount)
 
-        ledger_values.update({
-            'res_model': booking_obj._name,
-            'res_id': booking_obj.id,
-            'issued_uid': booking_obj.issued_uid.id,
-            'agent_id': booking_obj.agent_id.id,
-            'pnr': provider_obj.pnr,
-            'description': 'Provider : {}'.format(provider_obj.provider),
-            'display_provider_name': provider_obj.provider
-        })
+        ledger_values = self.prepare_vals_for_resv(booking_obj,ledger_values)
+        # ledger_values.update({
+        #     'res_model': booking_obj._name,
+        #     'res_id': booking_obj.id,
+        #     'issued_uid': booking_obj.issued_uid.id,
+        #     'agent_id': booking_obj.agent_id.id,
+        #     'pnr': provider_obj.pnr,
+        #     'description': 'Provider : {}'.format(provider_obj.provider),
+        #     'display_provider_name': provider_obj.provider
+        # })
         self.create(ledger_values)
 
-        booking_obj.agent_id.balance -= amount
-        booking_obj.agent_id.actual_balance -= amount
-
     def create_commission_ledger(self, provider_obj):
-        # ## UPDATED by Samvi 2018/07/24
-        # ## Terdetect sebagai administrator jika sudo
-
-        # ledger_env = self.env['tt.ledger']
         booking_obj = provider_obj.booking_id
 
         agent_commission = {}
         for sc in provider_obj.cost_service_charge_ids:
             # Pada lionair ada r.ac positif
-            if 'r.ac' in sc.charge_code and sc.total < 0:
+            if 'rac' in sc.charge_code and sc.total < 0:
                 amount = abs(sc.total)
                 agent_id = sc['commision_agent_id'].id if sc['commision_agent_id'] else booking_obj.agent_id.id
                 if not agent_commission.get(agent_id, False):
                     agent_commission[agent_id] = 0
                 agent_commission[agent_id] += amount
 
-                booking_obj.agent_id.balance += amount
-                booking_obj.agent_id.actual_balance += amount
-
-        # ## UPDATED by Samvi 2018/08/14
-        # ## Update untuk komisi agent yang tercreate adalah komisi total
-
         for agent_id, amount in agent_commission.items():
             values = self.prepare_vals('Commission : ' + booking_obj.name, booking_obj.name, datetime.now(),
                                        'commission', booking_obj.currency_id.id, amount, 0)
-            values.update({
-                'res_model': booking_obj._name,
-                'res_id': booking_obj.id,
-                'issued_uid': booking_obj.issued_uid.id,
-                'agent_id': agent_id,
-                'pnr': provider_obj.pnr,
-                'description': 'Provider : {}'.format(provider_obj.provider),
-            })
+
+            values = self.prepare_vals_for_resv(booking_obj,values)
+            # values.update({
+            #     'res_model': booking_obj._name,
+            #     'res_id': booking_obj.id,
+            #     'issued_uid': booking_obj.issued_uid.id,
+            #     'agent_id': agent_id,
+            #     'pnr': provider_obj.pnr,
+            #     'description': 'Provider : {}'.format(provider_obj.provider),
+            # })
             self.create(values)
 
     def action_create_ledger(self, provider_obj):
-        self.create_ledger(provider_obj)
         self.create_commission_ledger(provider_obj)
+        self.create_ledger(provider_obj)
 
     # api_context : ['type', 'agent_id', 'amount', 'pnr', 'ref_name', 'order']
     def get_agent_ledger(self, start_date=False, end_date=False, limit=10, offset=1, api_context=None):
