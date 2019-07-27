@@ -19,7 +19,7 @@ class TbServiceCharge(models.Model):
     sequence = fields.Integer('Sequence')
     description = fields.Text('Description')
 
-    commision_agent_id = fields.Many2one('tt.agent', 'Agent ( Commission )', help='''Agent who get commision''')
+    commission_agent_id = fields.Many2one('tt.agent', 'Agent ( Commission )', help='''Agent who get commission''')
 
     # @api.one
     # @api.depends('pax_count', 'amount')

@@ -112,7 +112,7 @@ class HotelReservationDetails(models.Model):
                 date = fields.Datetime.from_string(my.date)
                 room_rate = my.room_info_id.get_price_by_date(1, date)[0]
                 my.sale_price = room_rate['room_rate']
-                my.commission_amount = room_rate['commision']
+                my.commission_amount = room_rate['commission']
 
 
 class HotelReservationSupplementary(models.Model):

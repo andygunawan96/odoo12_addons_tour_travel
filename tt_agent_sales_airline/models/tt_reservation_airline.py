@@ -77,7 +77,7 @@ class ReservationTrain(models.Model):
             if charge_code == 'r.oc':
                 return 'Admin fee'
             elif 'r.ac' in charge_code:
-                return 'Commision'
+                return 'commission'
             elif charge_code == 'disc':
                 return 'Discount'
             else:

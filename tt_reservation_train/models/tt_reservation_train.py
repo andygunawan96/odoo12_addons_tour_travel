@@ -1472,13 +1472,13 @@ class ReservationTrainApi(models.Model):
                 'foreign_amount': -7500,
                 'foreign_currency': 'IDR',
             }
-        response['service_charge_summary'][-1]['service_charges'] += self.do_compute_network_commision(defatul_dict_for_ac, 7500,0, api_context)
+        response['service_charge_summary'][-1]['service_charges'] += self.do_compute_network_commission(defatul_dict_for_ac, 7500,0, api_context)
 
         response['sale_service_charge_summary'] = copy.deepcopy(response['service_charge_summary'])
 
         return res
 
-    def do_compute_network_commision(self, default_dict, comm_amount, pax_count_factor, api_context):
+    def do_compute_network_commission(self, default_dict, comm_amount, pax_count_factor, api_context):
         uplines_obj = copy.deepcopy(self.param_uplines_obj)
         uplines = uplines_obj['uplines']
         #fixme fix upline later
@@ -1486,11 +1486,11 @@ class ReservationTrainApi(models.Model):
         # uplines = uplines_obj['uplines']
 
         if not uplines:
-            default_dict['commision_agent_id'] = self.env.user.agent_id.id
+            default_dict['commission_agent_id'] = self.env.user.agent_id.id
             return [default_dict]
 
         if 'citra' in uplines[0]['agent_type_id']['name'].lower():
-            default_dict['commision_agent_id'] = uplines[0]['id']
+            default_dict['commission_agent_id'] = uplines[0]['id']
             return [default_dict]
         elif 'japro' in uplines[0]['agent_type_id']['name'].lower():
             ac_0 = default_dict.copy()
@@ -1500,7 +1500,7 @@ class ReservationTrainApi(models.Model):
             ac_0.update({
                 'amount': ac_0['amount'] * 0.8,
                 'foreign_amount': ac_0['foreign_amount'] * 0.8,
-                'commision_agent_id': uplines[0]['id']
+                'commission_agent_id': uplines[0]['id']
             })
             # Upline #1 : HO
             if uplines[1]['id'] == uplines_obj['ho']['id']:
@@ -1509,7 +1509,7 @@ class ReservationTrainApi(models.Model):
                     'description': 'R.AC level #1',
                     'amount': -comm_amount * 0.2,
                     'foreign_amount': -comm_amount * 0.2,
-                    'commision_agent_id': uplines[1]['id']
+                    'commission_agent_id': uplines[1]['id']
                 })
                 return [ac_0, ac_1]
             else:
@@ -1519,7 +1519,7 @@ class ReservationTrainApi(models.Model):
                     'description': 'R.AC level #1',
                     'amount': -comm_amount * 0.17,
                     'foreign_amount': -comm_amount * 0.17,
-                    'commision_agent_id': uplines[1]['id']
+                    'commission_agent_id': uplines[1]['id']
                 })
                 ac_2 = default_dict.copy()
                 ac_2.update({
@@ -1527,7 +1527,7 @@ class ReservationTrainApi(models.Model):
                     'description': 'R.AC level #2',
                     'amount': -comm_amount * 0.03,
                     'foreign_amount': -comm_amount * 0.03,
-                    'commision_agent_id': uplines_obj['ho']['id']
+                    'commission_agent_id': uplines_obj['ho']['id']
                 })
                 return [ac_0, ac_1, ac_2]
         elif 'fipro' in uplines[0]['agent_type_id']['name'].lower():
@@ -1538,7 +1538,7 @@ class ReservationTrainApi(models.Model):
             ac_0.update({
                 'amount': ac_0['amount'] * 0.6,
                 'foreign_amount': ac_0['foreign_amount'] * 0.6,
-                'commision_agent_id': uplines[0]['id']
+                'commission_agent_id': uplines[0]['id']
             })
             # Upline #1 : HO
             if uplines[1]['id'] == uplines_obj['ho']['id']:
@@ -1547,7 +1547,7 @@ class ReservationTrainApi(models.Model):
                     'description': 'R.AC level #1',
                     'amount': -comm_amount * 0.4,
                     'foreign_amount': -comm_amount * 0.4,
-                    'commision_agent_id': uplines[1]['id']
+                    'commission_agent_id': uplines[1]['id']
                 })
                 return [ac_0, ac_1]
             else:
@@ -1557,7 +1557,7 @@ class ReservationTrainApi(models.Model):
                     'description': 'R.AC level #1',
                     'amount': -comm_amount * 0.35,
                     'foreign_amount': -comm_amount * 0.35,
-                    'commision_agent_id': uplines[1]['id']
+                    'commission_agent_id': uplines[1]['id']
                 })
                 ac_2 = default_dict.copy()
                 ac_2.update({
@@ -1565,7 +1565,7 @@ class ReservationTrainApi(models.Model):
                     'description': 'R.AC level #2',
                     'amount': -comm_amount * 0.05,
                     'foreign_amount': -comm_amount * 0.05,
-                    'commision_agent_id': uplines_obj['ho']['id']
+                    'commission_agent_id': uplines_obj['ho']['id']
                 })
                 return [ac_0, ac_1, ac_2]
         elif 'btbr' in uplines[0]['agent_type_id']['name'].lower():
@@ -1576,7 +1576,7 @@ class ReservationTrainApi(models.Model):
             ac_0.update({
                 'amount': -7000,
                 'foreign_amount': -7000,
-                'commision_agent_id': uplines[0]['id']
+                'commission_agent_id': uplines[0]['id']
             })
             # Upline #1 : HO
             if uplines[1]['id'] == uplines_obj['ho']['id']:
@@ -1585,7 +1585,7 @@ class ReservationTrainApi(models.Model):
                     'description': 'R.AC level #1',
                     'amount': -500,
                     'foreign_amount': -500,
-                    'commision_agent_id': uplines[1]['id']
+                    'commission_agent_id': uplines[1]['id']
                 })
                 return [ac_0, ac_1]
             else:
@@ -1595,7 +1595,7 @@ class ReservationTrainApi(models.Model):
                     'description': 'R.AC level #1',
                     'amount': -500,
                     'foreign_amount': -500,
-                    'commision_agent_id': uplines[1]['id']
+                    'commission_agent_id': uplines[1]['id']
                 })
                 return [ac_0, ac_1]
         elif 'btbo' in uplines[0]['agent_type_id']['name'].lower():
@@ -1605,7 +1605,7 @@ class ReservationTrainApi(models.Model):
             ac_0.update({
                 'amount': -7350,
                 'foreign_amount': -7350,
-                'commision_agent_id': uplines[0]['id']
+                'commission_agent_id': uplines[0]['id']
             })
             # Upline #1 : HO
             if len(uplines) < 2:
@@ -1614,7 +1614,7 @@ class ReservationTrainApi(models.Model):
                     'description': 'R.AC level #1',
                     'amount': -150,
                     'foreign_amount': -150,
-                    'commision_agent_id': uplines_obj['ho']['id']
+                    'commission_agent_id': uplines_obj['ho']['id']
                 })
                 return [ac_0, ac_1]
             if uplines[1]['id'] == uplines_obj['ho']['id']:
@@ -1623,7 +1623,7 @@ class ReservationTrainApi(models.Model):
                     'description': 'R.AC level #1',
                     'amount': -150,
                     'foreign_amount': -150,
-                    'commision_agent_id': uplines[1]['id']
+                    'commission_agent_id': uplines[1]['id']
                 })
                 return [ac_0, ac_1]
             else:
@@ -1631,5 +1631,5 @@ class ReservationTrainApi(models.Model):
                 return [default_dict]
         # elif 'btbr' == uplines[0]['agent_type_id']['name'].lower():
         else:
-            default_dict['commision_agent_id'] = uplines[0]['id']
+            default_dict['commission_agent_id'] = uplines[0]['id']
             return [default_dict]
