@@ -75,7 +75,8 @@
                         <!--<field name="history_ids"/>-->
                     </group>
 
-                    <group name="ledger"/>
+                    <group name="Ledger">
+                    </group>
                     <notebook colspan="3">
                         <page string="Addresses">
                             <field name="address_ids"/>
