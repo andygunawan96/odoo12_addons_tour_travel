@@ -70,9 +70,11 @@
                             <field name="charge_code"/>
                             <field name="charge_type"/>
                             <field name="pax_type"/>
+                            <field name="pax_count"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="amount"/>
-                            <field name="passenger_airline_id"/>
+                            <field name="total"/>
+                            <field name="passenger_airline_ids"/>
                         </tree>
                     </field>
                     <!--<group string="Total Information" class="oe_subtotal_footer oe_right" groups="tt_base.group_tt_tour_travel_operator">-->

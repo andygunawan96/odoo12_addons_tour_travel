@@ -232,34 +232,34 @@ class TtReservation(models.Model):
         fare_total = 0
         for rec in self.sale_service_charge_ids:
             if rec.charge_type == 'FARE':
-                fare_total += rec.amount
+                fare_total += rec.total
         self.total_fare = fare_total
 
     def _compute_total_tax(self):
         tax_total = 0
         for rec in self.sale_service_charge_ids:
             if rec.charge_type == 'TAX':
-                tax_total += rec.amount
+                tax_total += rec.total
         self.total_tax = tax_total
 
     def _compute_grand_total(self):
         grand_total = 0
         for rec in self.sale_service_charge_ids:
             if rec.charge_type != 'RAC':
-                grand_total += rec.amount
+                grand_total += rec.total
         self.total = grand_total
 
     def _compute_total_commission(self):
         commission_total = 0
         for rec in self.sale_service_charge_ids:
             if rec.charge_type == 'RAC':
-                commission_total += abs(rec.amount)
+                commission_total += abs(rec.total)
         self.total_commission = commission_total
 
     def _compute_total_nta(self):
         nta_total = 0
         for rec in self.sale_service_charge_ids:
-            nta_total += rec.amount
+            nta_total += rec.total
         self.total_nta = nta_total
 
     def to_dict(self):

@@ -26,6 +26,7 @@ TT_TRANSPORT
         'views/tt_journey_views.xml',
         'views/tt_segment_views.xml',
         'views/tt_leg_views.xml',
+        'views/tt_service_charge_views.xml'
 
     ],
     'demo': [],

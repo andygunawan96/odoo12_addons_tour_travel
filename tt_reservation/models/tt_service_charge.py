@@ -9,7 +9,9 @@ class TbServiceCharge(models.Model):
     pax_type = fields.Selection(variables.PAX_TYPE, string='Pax Type')
     currency_id = fields.Many2one('res.currency', required=True,
                                   default=lambda self: self.env.user.company_id.currency_id)
+    pax_count = fields.Integer('Pax Count', default=1)
     amount = fields.Monetary('Amount', currency_field='currency_id')
+    total = fields.Monetary('Total', currency_field='currency_id')
     foreign_currency_id = fields.Many2one('res.currency', 'Foreign Currency',
                                           default=lambda self: self.env.user.company_id.currency_id)
     foreign_amount = fields.Monetary('Foreign Amount', currency_field='foreign_currency_id')

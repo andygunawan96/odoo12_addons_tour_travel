@@ -148,15 +148,22 @@ class TtProviderAirline(models.Model):
 
         sc_values = []
 
-        for psg in self.ticket_ids:
-            for scs in service_charge_vals:
+        for scs in service_charge_vals:
+            scs['pax_count'] = 0
+            scs['passenger_airline_ids'] = []
+            scs['total'] = 0
+            scs['currency_id'] = currency_obj.get_id(scs.get('currency'))
+            scs['foreign_currency_id'] = currency_obj.get_id(scs.get('foreign_currency'))
+            scs['provider_airline_booking_id'] = self.id
+            for psg in self.ticket_ids:
                 if scs['pax_type'] == psg.pax_type:
-                    scs['currency_id'] = currency_obj.get_id(scs.get('currency'))
-                    scs['foreign_currency_id'] = currency_obj.get_id(scs.get('foreign_currency'))
-                    scs['provider_airline_booking_id'] = self.id
-                    scs['passenger_airline_id'] = psg.passenger_id.id
-                    scs['pax_count'] = 1
-                    service_chg_obj.create(scs)
+                    scs['passenger_airline_ids'].append(psg.passenger_id.id)
+                    scs['pax_count'] += 1
+                    scs['total'] += scs['amount']
+            scs.pop('currency')
+            scs.pop('foreign_currency')
+            scs['passenger_airline_ids'] = [(6,0,scs['passenger_airline_ids'])]
+            service_chg_obj.create(scs)
 
 
 
