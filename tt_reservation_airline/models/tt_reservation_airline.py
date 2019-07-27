@@ -1580,10 +1580,32 @@ class ReservationAirline(models.Model):
             return Response().get_error(str(e),500)
 
     ##ini potong ledger dan update final price
-    def payment_airline_api(self):
-        return True
+    def payment_airline_api(self,req,context):
+        print(json.dumps(req))
+        try:
+            order_number = req.get('order_number')
+            print(json.dumps(context))
+            if order_number:
+                book_obj = self.env['tt.reservation.airline'].search([('name','=',order_number)],limit=1)
+                if book_obj and book_obj.agent_id.id == context.get('co_agent_id',-1):
+                    #cek saldo
+                    balance_res = self.env['tt.agent'].check_balance_limit_api(context['co_agent_id'],book_obj.total_nta)
+                    if balance_res['error_code']!=0:
+                        return balance_res
 
-    def issued_booking_airline_api(self):
+
+
+                    return Response().get_no_error()
+                else:
+                    raise Exception('Booking not found')
+            else:
+                raise Exception('No Order Number provided')
+        except Exception as e:
+            _logger.info(str(e) + traceback.format_exc())
+            return Response().get_error(str(e),500)
+
+    def issued_booking_airline_api(self,req,context):
+        print(json.dumps(req))
         return True
 
     def validate_booking(self, api_context=None):
@@ -1797,8 +1819,8 @@ class ReservationAirline(models.Model):
         for service_charge in self.sale_service_charge_ids:
             service_charge.unlink()
 
-        sc_value = {}
         for provider in self.provider_booking_ids:
+            sc_value = {}
             for p_sc in provider.cost_service_charge_ids:
                 p_charge_code = p_sc.charge_code
                 p_charge_type = p_sc.charge_type
@@ -1826,27 +1848,27 @@ class ReservationAirline(models.Model):
                 sc_value[p_pax_type][c_type].update({
                     'charge_type': p_charge_type,
                     'charge_code': c_code,
+                    'pax_count': p_sc.pax_count,
+                    'total': p_sc.total,
                     'currency_id': p_sc.currency_id.id,
                     'foreign_currency_id': p_sc.foreign_currency_id.id,
                     'amount': sc_value[p_pax_type][c_type]['amount'] + p_sc.amount,
                     'foreign_amount': sc_value[p_pax_type][c_type]['foreign_amount'] + p_sc.foreign_amount,
                 })
 
-        print(sc_value)
-        values = []
-        for p_type,p_val in sc_value.items():
-            for c_type,c_val in p_val.items():
-                curr_dict = {}
-                curr_dict['pax_type'] = p_type
-                curr_dict['booking_airline_id'] = self.id
-                curr_dict['total'] = c_val['amount']
-                curr_dict.update(c_val)
-                values.append((0,0,curr_dict))
+            values = []
+            for p_type,p_val in sc_value.items():
+                for c_type,c_val in p_val.items():
+                    curr_dict = {}
+                    curr_dict['pax_type'] = p_type
+                    curr_dict['booking_airline_id'] = self.id
+                    curr_dict['description'] = provider.pnr
+                    curr_dict.update(c_val)
+                    values.append((0,0,curr_dict))
 
-        print(json.dumps(values))
-        self.write({
-            'sale_service_charge_ids': values
-        })
+            self.write({
+                'sale_service_charge_ids': values
+            })
 
 
 # class ReservationAirlineApi(models.Model):

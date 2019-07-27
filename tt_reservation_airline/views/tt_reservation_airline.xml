@@ -40,13 +40,16 @@
             </xpath>
             <xpath expr="//page[@name='anchor']" position="before">
                 <page string="Prices" name="prices">
+                    <button name="calculate_service_charge" type="object" string="calc"/>
                     <field name="sale_service_charge_ids">
                         <tree>
                             <field name="charge_code"/>
                             <field name="charge_type"/>
                             <field name="pax_type"/>
+                            <field name="pax_count"/>
                             <field name="amount"/>
                             <field name="total"/>
+                            <field name="description"/>
                             <field name="currency_id" invisible="1"/>
                         </tree>
                     </field>

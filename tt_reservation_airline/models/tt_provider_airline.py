@@ -261,6 +261,8 @@ class TtProviderAirline(models.Model):
             sc_value[p_pax_type][p_charge_type].update({
                 'charge_code': p_sc.charge_code,
                 'currency': p_sc.currency_id.name,
+                'pax_count': p_sc.pax_count,
+                'total': p_sc.total,
                 'foreign_currency': p_sc.foreign_currency_id.name,
                 'amount': sc_value[p_pax_type][p_charge_type]['amount'] + p_sc.amount,
                 'foreign_amount': sc_value[p_pax_type][p_charge_type]['foreign_amount'] + p_sc.foreign_amount,
