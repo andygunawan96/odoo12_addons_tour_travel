@@ -90,7 +90,7 @@
                         <page string="anchor" name="anchor" invisible="1"/>
                         <page string="Ledgers" name="ledger_page">
                             <field name="ledger_ids"
-                                   context="{'tree_view_ref': 'tt_accounting.tt_ledger_tree_view_page'}"/>
+                                   context="{'tree_view_ref': 'tt_accounting.tt_ledger_tree_view'}"/>
                         </page>
                     </notebook>
                     <footer>

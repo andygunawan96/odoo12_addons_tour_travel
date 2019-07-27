@@ -1,7 +1,8 @@
 from odoo import models, fields, api, _
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 from odoo.tools import image
-from ...tools import variables,util
+from ...tools import variables
 
 
 class TtCustomer(models.Model):

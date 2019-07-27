@@ -4,7 +4,7 @@
         <!-- Sequences for transport.booking -->
         <record id="seq_resv_hotel" model="ir.sequence">
             <field name="name">Hotel</field>
-            <field name="code">resv.hotel</field>
+            <field name="code">tt.reservation.hotel</field>
             <field name="prefix">RESV.%(y)s%(month)s%(day)s%(sec)s</field>
             <field name="padding">5</field>
             <field name="company_id" eval="False"/>

@@ -27,6 +27,7 @@
         'security/ir.model.access.csv',
 
         'views/tt_ledger_views.xml',
+        'views/tt_agent_views.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

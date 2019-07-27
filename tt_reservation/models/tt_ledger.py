@@ -1,4 +1,4 @@
-from odoo import models, fields
+from odoo import api, models, fields
 
 class tt_ledger(models.Model):
     _inherit = 'tt.ledger'
@@ -10,7 +10,11 @@ class tt_ledger(models.Model):
         'Related Reservation ID', index=True, help='Id of the followed resource')
 
     def open_reservation(self):
-        form_id = self.env[self.res_model].get_form_id()
+        try:
+            form_id = self.env[self.res_model].get_form_id()
+        except:
+            form_id = self.env['ir.ui.view'].search([('type', '=', 'form'), ('model', '=', self.res_model)], limit=1)
+            form_id = form_id[0] if form_id else False
 
         return {
             'type': 'ir.actions.act_window',

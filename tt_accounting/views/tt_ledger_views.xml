@@ -6,48 +6,41 @@
         <field name="arch" type="xml">
             <form create="false" edit="false">
                 <header>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,approved,issued"/>
-
-                    <button name="action_done" states="draft"
-                        groups="account.group_account_invoice,account.group_account_user"
-                        string="Post" type="object" class="oe_highlight"/>
-                    <button name="action_set_to_draft" states="done"
-                            groups="base.group_system"
-                        string="Set To Draft" type="object"
-                        icon="fa-exchange" class="oe_highlight"/>
+                    <!-- JNGAN di SYNC -->
+                    <!-- Trial Reverse -->
+                    <button string="Reverse Ledger" name="reverse_ledger" type="object" groups="tt_base.group_tt_tour_travel_manager" attrs="{'invisible':[('is_reversed','=',True)]}"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
                         <label for="Name" class="oe_edit_only" string="Name"/>
                         <h1>
-                            <field name="name" attrs="{'readonly':[('state','!=','draft')]}"/>
+                            <field name="name"/>
                         </h1>
                     </div>
                     <group>
                         <group>
                             <field name="agent_id"/>
                             <field name="agent_type_id"/>
-                            <!--<field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>-->
                             <field name="currency_id"/>
                         </group>
                         <group>
                             <field name="date"/>
-                            <field name="transaction_type" attrs="{'readonly':[('state','!=','draft')]}"/>
-                            <!--<field name="top_up_id" attrs="{'invisible':[('top_up_id','=',False)]}"/>-->
+                            <field name="transaction_type"/>
                             <field name="ref"/>
                         </group>
                     </group>
                     <separator string="Information"/>
                     <group>
                         <group>
-                            <field name="commission"/>
-                            <field name="debit" attrs="{'readonly':[('state','!=','draft')]}"/>
-                            <field name="credit" attrs="{'readonly':[('state','!=','draft')]}"/>
-                            <field name="balance" invisible="1"/>
+                            <field name="debit"/>
+                            <field name="credit"/>
+                            <!--<field name="balance"/>-->
                         </group>
                         <group name="transaction_references">
                             <field name="pnr"/>
                             <field name="display_provider_name"/>
+                            <field name="is_reversed"/>
+                            <field name="reverse_id"/>
                         </group>
                     </group>
                     <group>
@@ -58,6 +51,7 @@
         </field>
     </record>
 
+    <!-- Page ada Current Balance agent nya-->
     <record id="tt_ledger_tree_view_page" model="ir.ui.view">
         <field name="name">tt.ledger.tree.view.page</field>
         <field name="model">tt.ledger</field>
@@ -72,12 +66,10 @@
                 <field name="currency_id" invisible="1"/>
                 <field name="debit" sum="Total Debit"/>
                 <field name="credit" sum="Total Credit"/>
-                <field name="balance" invisible="1" sum="Total Balance"/>
-                <field name="state"/>
+                <field name="balance"/>
             </tree>
         </field>
     </record>
-
 
     <record id="tt_ledger_tree_view" model="ir.ui.view">
         <field name="name">tt.ledger.tree.view</field>
@@ -97,7 +89,6 @@
                 <field name="debit" sum="Total Debit"/>
                 <field name="credit" sum="Total Credit"/>
                 <field name="balance" invisible="1" sum="Total Balance"/>
-                <field name="state"/>
             </tree>
         </field>
     </record>

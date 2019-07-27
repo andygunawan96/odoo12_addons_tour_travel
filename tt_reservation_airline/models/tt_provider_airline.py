@@ -165,8 +165,6 @@ class TtProviderAirline(models.Model):
             scs['passenger_airline_ids'] = [(6,0,scs['passenger_airline_ids'])]
             service_chg_obj.create(scs)
 
-
-
         # "sequence": 1,
         # "charge_code": "fare",
         # "charge_type": "FARE",
