@@ -32,5 +32,6 @@ class TbServiceCharge(models.Model):
             'charge_type': self.charge_type,
             'currency': self.currency_id.name,
             'amount': self.amount,
-            'foreign_currency': self.foreign_currency_id.name
+            'foreign_currency': self.foreign_currency_id.name,
+            'foreign_amount': self.foreign_amount
         }

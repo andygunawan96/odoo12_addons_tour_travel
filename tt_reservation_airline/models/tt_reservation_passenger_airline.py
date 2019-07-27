@@ -37,7 +37,25 @@ class TtReservationCustomer(models.Model):
         return res
 
     def get_service_charges(self):
-        res = []
-        for rec in self.service_charge_ids:
-            res.append(rec.to_dict())
-        return res
+        sc_value = {}
+        for p_sc in self.service_charge_ids:
+            p_charge_type = p_sc.charge_type
+            pnr = p_sc.description
+            if not sc_value.get(pnr):
+                sc_value[pnr] = {}
+            if not sc_value[pnr].get(p_charge_type):
+                sc_value[pnr][p_charge_type] = {}
+                sc_value[pnr][p_charge_type].update({
+                    'amount': 0,
+                    'foreign_amount': 0,
+                })
+
+            sc_value[pnr][p_charge_type].update({
+                'charge_code': p_sc.charge_code,
+                'currency': p_sc.currency_id.name,
+                'foreign_currency': p_sc.foreign_currency_id.name,
+                'amount': sc_value[pnr][p_charge_type]['amount'] + p_sc.amount,
+                'foreign_amount': sc_value[pnr][p_charge_type]['foreign_amount'] + p_sc.foreign_amount,
+            })
+
+        return sc_value

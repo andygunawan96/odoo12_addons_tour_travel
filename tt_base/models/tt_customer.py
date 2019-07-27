@@ -74,22 +74,22 @@ class TtCustomer(models.Model):
     #                                  self.env.user.name))  # User that Changed the Value
     #     return super(TtCustomer, self).write(value)
 
-    # def to_dict(self):
-    #     res = {
-    #         'name': self.name,
-    #         'first_name': self.first_name,
-    #         'last_name': self.last_name and self.last_name or '',
-    #         'gender': self.gender,
-    #         'marital_status': self.marital_status and self.marital_status or '',
-    #         'birth_date': self.birth_date.strftime('%Y-%m-%d'),
-    #         'age': self.age,
-    #         'nationality_code': self.nationality_id.code and self.nationality_id.code or '',
-    #         'country_of_issued_id': self.country_of_issued_id.code and self.country_of_issued_id.code or '',
-    #         'identity_type': self.identity_type and self.identity_type or '',
-    #         'identity_number': self.identity_number and self.identity_number or '',
-    #     }
-    #
-    #     return res
+    def to_dict(self):
+        phone_list = []
+        for rec in self.phone_ids:
+            phone_list.append(rec.to_dict())
+        res = {
+            'name': self.name,
+            'first_name': self.first_name,
+            'last_name': self.last_name and self.last_name or '',
+            'gender': self.gender and self.gender or '',
+            'birth_date': self.birth_date.strftime('%Y-%m-%d') and self.birth_date.strftime('%Y-%m-%d') or '',
+            'nationality_code': self.nationality_id.code and self.nationality_id.code or '',
+            'phones': phone_list,
+            'email': self.email and self.email or ''
+        }
+
+        return res
 
     def copy_to_passenger(self):
         res = {

@@ -1492,6 +1492,13 @@ class ReservationAirline(models.Model):
                         'ticket_ids': ticket_list
                     })
 
+                    provider_obj.action_booked_api_airline(provider,context)
+                    book_status.append(1)
+                    pnr_list.append(provider['pnr'])
+                    curr_hold_date =datetime.datetime.strptime(provider['hold_date'],'%Y-%m-%d %H:%M:%S')
+                    if curr_hold_date < hold_date:
+                        hold_date = curr_hold_date
+
                     #update leg dan create service charge
                     for idx,journey in enumerate(provider_obj.journey_ids):
                         for idx1,segment in enumerate(journey.segment_ids):
@@ -1520,13 +1527,6 @@ class ReservationAirline(models.Model):
 
                                 for fare in param_segment['fares']:
                                     provider_obj.create_service_charge(fare['service_charges'])
-
-                    provider_obj.action_booked_api_airline(provider,context)
-                    book_status.append(1)
-                    pnr_list.append(provider['pnr'])
-                    curr_hold_date =datetime.datetime.strptime(provider['hold_date'],'%Y-%m-%d %H:%M:%S')
-                    if curr_hold_date < hold_date:
-                        hold_date = curr_hold_date
                 else:
                     book_status.append(0)
                     provider_obj.action_failed_booked_api_airline()
@@ -1566,6 +1566,11 @@ class ReservationAirline(models.Model):
                         'destination': book_obj.destination_id.code,
                         'sector_type': book_obj.sector_type,
                         'passengers': psg_list,
+                        'contact': {
+                            'name': book_obj.contact_name,
+                            'email': book_obj.contact_email,
+                            'phone': book_obj.contact_phone
+                        },
                         'provider_bookings': prov_list,
                         'provider_type': book_obj.provider_type_id.code
                     })
