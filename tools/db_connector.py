@@ -55,6 +55,10 @@ class BackendConnector(DbConnector):
         except Exception as e:
             _logger.error('Backend Connector Config Error, %s' % str(e))
 
+    def get_error_code_api(self):
+        res = self.execute('tt.error.api', 'get_error_code_api', [False])
+        return res
+
 
 class GatewayConnector(DbConnector):
     def __init__(self):
