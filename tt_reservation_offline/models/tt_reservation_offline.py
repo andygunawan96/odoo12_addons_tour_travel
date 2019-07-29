@@ -37,6 +37,7 @@ SECTOR_TYPE = [
 class IssuedOffline(models.Model):
     _inherit = ['tt.history', 'tt.reservation']
     _name = 'tt.reservation.offline'
+    _order = 'name desc'
 
     sub_agent_id = fields.Many2one('tt.agent', 'Sub-Agent', readonly=True, states={'draft': [('readonly', False)]},
                                    help='COR / POR', related='booker_id.agent_id')
@@ -259,7 +260,7 @@ class IssuedOffline(models.Model):
     @api.one
     def action_paid(self, kwargs={}):
         # cek saldo sub agent
-        is_enough = self.env['tt.ledger'].check_balance_limit(self.agent_id.id, self.total_sale_price)
+        is_enough = self.agent_id.check_balance_limit_api(self.agent_id.id, self.total_sale_price)
         # jika saldo mencukupi
         if is_enough['error_code'] == 0:
             self.validate_date = fields.Datetime.now()
@@ -378,22 +379,20 @@ class IssuedOffline(models.Model):
             ledger_type = self.get_ledger_type()
             vals = self.env['tt.ledger'].prepare_vals('Resv : ' + rec.name, rec.name, rec.validate_date,
                                                       ledger_type, rec.currency_id.id, 0, rec.total_sale_price)
-            # vals['pnr'] = rec.pnr
-            # vals['transport_type'] = rec.transport_type
-            # vals['display_provider_id'] = rec.display_provider_id
+            vals = self.env['tt.ledger'].prepare_vals_for_resv(self, vals)
 
-            vals.update({
-                'pnr': provider_obj.get_pnr_list(),
-                'transport_type': rec.provider_type_id.code in ['airline', 'train', 'cruise'] and rec.provider_type_id.code or False,
-                'display_provider_name': provider_obj.get_provider_list(),
-                'provider_type': rec.provider_type_id.id,
-                'description': 'Ledger',
-                'res_id': rec.id,
-                'res_model': rec._name,  #
-                'validate_uid': rec.sudo().confirm_uid.id,
-                'agent_id': rec.agent_id.id,
-                'agent_type_id': rec.agent_type_id.id
-            })
+            # vals.update({
+            #     'pnr': provider_obj.get_pnr_list(),
+            #     'transport_type': rec.provider_type_id.code in ['airline', 'train', 'cruise'] and rec.provider_type_id.code or False,
+            #     'display_provider_name': provider_obj.get_provider_list(),
+            #     'provider_type': rec.provider_type_id.id,
+            #     'description': 'Ledger',
+            #     'res_id': rec.id,
+            #     'res_model': rec._name,  #
+            #     'validate_uid': rec.sudo().confirm_uid.id,
+            #     'agent_id': rec.agent_id.id,
+            #     'agent_type_id': rec.agent_type_id.id
+            # })
 
             # new_aml = rec.create_agent_ledger(vals)
             new_aml = rec.env['tt.ledger'].create(vals)
@@ -404,21 +403,22 @@ class IssuedOffline(models.Model):
             if rec.agent_commission > 0:
                 vals1 = self.env['tt.ledger'].prepare_vals('Commission : ' + rec.name, rec.name, rec.validate_date,
                                                            'commission', rec.currency_id.id, rec.agent_commission, 0)
+                vals1 = self.env['tt.ledger'].prepare_vals_for_resv(self, vals1)
                 # vals1.update(vals_comm_temp)
-                vals1.update({
+                # vals1.update({
                     # 'agent_id': rec.sub_agent_id.parent_agent_id.id,
                     # 'agent_type_id': rec.sub_agent_id.parent_agent_id.agent_type_id.id,
-                    'agent_id': rec.agent_id.id,
-                    'agent_type_id': rec.agent_id.agent_type_id.id,
-                    'display_provider_name': provider_obj.get_provider_list(),
-                    'provider_type': rec.provider_type_id.id,
-                    'pnr': provider_obj.get_pnr_list(),
-                    'transport_type': rec.provider_type_id.code,
-                    'description': 'Agent Commission',
-                    'res_id': self.id,
-                    'res_model': rec._name,
-                    'validate_uid': rec.confirm_uid.id,
-                })
+                    # 'agent_id': rec.agent_id.id,
+                    # 'agent_type_id': rec.agent_id.agent_type_id.id,
+                    # 'display_provider_name': provider_obj.get_provider_list(),
+                    # 'provider_type': rec.provider_type_id.id,
+                    # 'pnr': provider_obj.get_pnr_list(),
+                    # 'transport_type': rec.provider_type_id.code,
+                    # 'description': 'Agent Commission',
+                    # 'res_id': self.id,
+                    # 'res_model': rec._name,
+                    # 'validate_uid': rec.confirm_uid.id,
+                # })
                 commission_aml = rec.env['tt.ledger'].create(vals1)
                 # commission_aml = rec.create_sub_agent_ledger(vals1)
                 # commission_aml.action_done()
@@ -431,19 +431,24 @@ class IssuedOffline(models.Model):
                                                            rec.validate_date, 'commission', rec.currency_id.id,
                                                            rec.parent_agent_commission, 0)
                 # vals1.update(vals_comm_temp)
+                vals1 = self.env['tt.ledger'].prepare_vals_for_resv(self, vals1)
                 vals1.update({
                     'agent_id': rec.agent_id.parent_agent_id.id,
                     'agent_type_id': rec.agent_id.parent_agent_id.agent_type_id.id,
-                    'rel_agent_name': rec.agent_id.name,
-                    'display_provider_name': provider_obj.get_provider_list(),
-                    'provider_type': rec.provider_type_id.id,
-                    'pnr': provider_obj.get_pnr_list(),
-                    'transport_type': rec.provider_type_id.code,
-                    'description': 'Parent Agent Commission',
-                    'res_id': self.id,
-                    'res_model': rec._name,
-                    'validate_uid': rec.confirm_uid.id,
                 })
+                # vals1.update({
+                #     'agent_id': rec.agent_id.parent_agent_id.id,
+                #     'agent_type_id': rec.agent_id.parent_agent_id.agent_type_id.id,
+                #     'rel_agent_name': rec.agent_id.name,
+                #     'display_provider_name': provider_obj.get_provider_list(),
+                #     'provider_type': rec.provider_type_id.id,
+                #     'pnr': provider_obj.get_pnr_list(),
+                #     'transport_type': rec.provider_type_id.code,
+                #     'description': 'Parent Agent Commission',
+                #     'res_id': self.id,
+                #     'res_model': rec._name,
+                #     'validate_uid': rec.confirm_uid.id,
+                # })
                 commission_aml = self.env['tt.ledger'].create(vals1)
 
     def create_ledger_ho_commission(self, provider_obj):
@@ -455,18 +460,19 @@ class IssuedOffline(models.Model):
                 # vals1.update(vals_temp)
                 ho_agent = self.env['tt.agent'].sudo().search([('parent_agent_id', '=', False),
                                                                ('agent_type_id', '=', 'HO')], limit=1)
+                vals1 = self.env['tt.ledger'].prepare_vals_for_resv(self, vals1)
                 vals1.update({
                     'agent_id': ho_agent.id,
                     'agent_type_id': ho_agent.agent_type_id.id,
-                    'rel_agent_name': rec.ho_agent.name,
-                    'display_provider_name': provider_obj.get_provider_list(),
-                    'provider_type': rec.provider_type_id.id,
-                    'pnr': provider_obj.get_pnr_list(),
-                    'transport_type': rec.provider_type_id.code,
-                    'description': 'HO Commisssion',
-                    'res_id': self.id,
-                    'res_model': rec._name,
-                    'validate_uid': rec.confirm_uid.id,
+                    # 'rel_agent_name': rec.ho_agent.name,
+                    # 'display_provider_name': provider_obj.get_provider_list(),
+                    # 'provider_type': rec.provider_type_id.id,
+                    # 'pnr': provider_obj.get_pnr_list(),
+                    # 'transport_type': rec.provider_type_id.code,
+                    # 'description': 'HO Commisssion',
+                    # 'res_id': self.id,
+                    # 'res_model': rec._name,
+                    # 'validate_uid': rec.confirm_uid.id,
                 })
                 commission_aml = self.env['tt.ledger'].create(vals1)
 
@@ -475,18 +481,19 @@ class IssuedOffline(models.Model):
             ledger_type = self.get_ledger_type()
             vals = self.env['tt.ledger'].prepare_vals('Resv : ' + rec.name + ' - REVERSE', rec.name, rec.validate_date,
                                                       ledger_type, rec.currency_id.id, rec.total_sale_price, 0)
-            vals.update({
-                'agent_id': rec.agent_id.id,
-                'agent_type_id': rec.agent_type_id.id,
-                'pnr': provider_obj.get_pnr_list(),
-                'transport_type': rec.provider_type_id.code in ['airline', 'train', 'cruise'] and rec.provider_type_id or False,
-                'display_provider_name': provider_obj.get_provider_list(),
-                'provider_type': rec.provider_type_id.id,
-                'description': 'Reverse Ledger',
-                'res_id': rec.id,
-                'res_model': rec._name,
-                'validate_uid': rec.sudo().confirm_uid.id,
-            })
+            vals = self.env['tt.ledger'].prepare_vals_for_resv(self, vals)
+            # vals.update({
+            #     'agent_id': rec.agent_id.id,
+            #     'agent_type_id': rec.agent_type_id.id,
+            #     'pnr': provider_obj.get_pnr_list(),
+            #     'transport_type': rec.provider_type_id.code in ['airline', 'train', 'cruise'] and rec.provider_type_id or False,
+            #     'display_provider_name': provider_obj.get_provider_list(),
+            #     'provider_type': rec.provider_type_id.id,
+            #     'description': 'Reverse Ledger',
+            #     'res_id': rec.id,
+            #     'res_model': rec._name,
+            #     'validate_uid': rec.sudo().confirm_uid.id,
+            # })
             new_aml = rec.env['tt.ledger'].create(vals)
             # new_aml.action_done()
             # rec.ledger_id = new_aml
@@ -497,19 +504,20 @@ class IssuedOffline(models.Model):
             if rec.agent_commission > 0:
                 vals1 = self.env['tt.ledger'].prepare_vals('Commission : ' + rec.name, rec.name, rec.validate_date,
                                                            'commission', rec.currency_id.id, 0, rec.agent_commission)
+                vals1 = self.env['tt.ledger'].prepare_vals_for_resv(self, vals1)
                 # vals1.update(vals_comm_temp)
-                vals1.update({
-                    'agent_id': rec.agent_id.id,
-                    'agent_type_id': rec.agent_id.agent_type_id.id,
-                    'display_provider_name': provider_obj.get_provider_list(),
-                    'pnr': provider_obj.get_pnr_list(),
-                    'provider_type': rec.provider_type_id.id,
-                    'transport_type': rec.provider_type_id.code,
-                    'description': 'Reverse Agent Commission',
-                    'res_id': self.id,
-                    'res_model': rec._name,
-                    'validate_uid': rec.confirm_uid.id,
-                })
+                # vals1.update({
+                #     'agent_id': rec.agent_id.id,
+                #     'agent_type_id': rec.agent_id.agent_type_id.id,
+                #     'display_provider_name': provider_obj.get_provider_list(),
+                #     'pnr': provider_obj.get_pnr_list(),
+                #     'provider_type': rec.provider_type_id.id,
+                #     'transport_type': rec.provider_type_id.code,
+                #     'description': 'Reverse Agent Commission',
+                #     'res_id': self.id,
+                #     'res_model': rec._name,
+                #     'validate_uid': rec.confirm_uid.id,
+                # })
                 commission_aml = rec.env['tt.ledger'].create(vals1)
                 # commission_aml.action_done()
                 # rec.commission_ledger_id = commission_aml
@@ -521,18 +529,20 @@ class IssuedOffline(models.Model):
                 vals1 = self.env['tt.ledger'].prepare_vals('Commission : ' + rec.name, 'PA: ' + rec.name,
                                                            rec.validate_date, 'commission', rec.currency_id.id, 0,
                                                            rec.parent_agent_commission)
+                vals1 = self.env['tt.ledger'].prepare_vals_for_resv(self, vals1)
                 # vals1.update(vals_comm_temp)
                 vals1.update({
                     'agent_id': rec.agent_id.parent_agent_id.id,
+                    'agent_type_id': rec.agent_id.parent_agent_id.agent_type_id.id,
                     'rel_agent_name': rec.agent_id.parent_agent_id.name,
-                    'display_provider_name': provider_obj.get_provider_list(),
-                    'pnr': provider_obj.get_pnr_list(),
-                    'provider_type': rec.provider_type_id.id,
-                    'transport_type': rec.provider_type_id.code,
-                    'description': 'Reverse Parent Agent Commission',
-                    'res_id': self.id,
-                    'res_model': rec._name,
-                    'validate_uid': rec.confirm_uid.id,
+                    # 'display_provider_name': provider_obj.get_provider_list(),
+                    # 'pnr': provider_obj.get_pnr_list(),
+                    # 'provider_type': rec.provider_type_id.id,
+                    # 'transport_type': rec.provider_type_id.code,
+                    # 'description': 'Reverse Parent Agent Commission',
+                    # 'res_id': self.id,
+                    # 'res_model': rec._name,
+                    # 'validate_uid': rec.confirm_uid.id,
                 })
                 commission_aml = self.env['tt.ledger'].create(vals1)
                 # commission_aml.action_done()
@@ -547,19 +557,21 @@ class IssuedOffline(models.Model):
 
                 ho_agent = self.env['tt.agent'].sudo().search([('agent_type_id', '=', 'HO'),
                                                                ('parent_agent_id', '=', False)], limit=1)
+
+                vals1 = self.env['tt.ledger'].prepare_vals_for_resv(self, vals1)
                 # vals1.update(vals_temp)
                 vals1.update({
                     'agent_id': ho_agent.id,
                     'agent_type_id': ho_agent.agent_type_id.id,
                     'rel_agent_name': rec.agent_id.name,
-                    'display_provider_name': provider_obj.get_provider_list(),
-                    'pnr': provider_obj.get_pnr_list(),
-                    'provider_type': rec.provider_type_id.id,
-                    'transport_type': rec.provider_type_id.code,
-                    'description': 'Reverse HO Commission',
-                    'res_id': self.id,
-                    'res_model': rec._name,
-                    'validate_uid': rec.confirm_uid.id,
+                    # 'display_provider_name': provider_obj.get_provider_list(),
+                    # 'pnr': provider_obj.get_pnr_list(),
+                    # 'provider_type': rec.provider_type_id.id,
+                    # 'transport_type': rec.provider_type_id.code,
+                    # 'description': 'Reverse HO Commission',
+                    # 'res_id': self.id,
+                    # 'res_model': rec._name,
+                    # 'validate_uid': rec.confirm_uid.id,
                 })
                 commission_aml = self.env['tt.ledger'].create(vals1)
                 commission_aml.action_done()
@@ -622,12 +634,16 @@ class IssuedOffline(models.Model):
     def get_ledger_type(self):
         if self.provider_type_id.code in ['airline', 'train', 'cruise']:
             vals = 'transport'
-        elif self.provider_type_id == 'hotel':
+        elif self.provider_type_id.code == 'hotel':
             vals = 'hotel'
-        elif self.provider_type_id == 'other':
+        elif self.provider_type_id.code == 'activity':
+            vals = 'activity'
+        elif self.provider_type_id.code == 'other':
             vals = 'other.min'
-        elif self.provider_type_id == 'rent_car':
+        elif self.provider_type_id.code == 'rent_car':
             vals = 'rent.car'
+        elif self.provider_type_id.code == 'merchandise':
+            vals = 'merchandise'
         else:
             vals = self.provider_type_id
         return vals
@@ -969,7 +985,7 @@ class IssuedOffline(models.Model):
     }
 
     param_context = {
-        'co_uid': 7
+        'co_uid': 6
     }
 
     def create_booking_reservation_offline(self):
@@ -993,13 +1009,17 @@ class IssuedOffline(models.Model):
             })
             booker_id = self._create_booker(context, booker)  # create booker
             passenger_ids = self._create_passenger(context, passenger)  # create passenger
-            contact_ids = self._create_contact(context, contact)
+            # contact_ids = self._create_contact(context, contact)
+            contact_id = self._create_contact(context, contact[0])
+            customer_parent_id = self._set_customer_parent(context, contact_id)
             booking_line_ids = self._create_line(lines, data_reservation_offline)  # create booking line
             iss_off_psg_ids = self._create_reservation_offline_order(passenger)
             header_val = {
                 'booker_id': booker_id,
                 'passenger_ids': [(6, 0, iss_off_psg_ids)],
-                'contact_ids': [(6, 0, contact_ids)],
+                # 'contact_ids': [(6, 0, contact_ids)],
+                'contact_id': contact_id,
+                'customer_parent_id': customer_parent_id,
                 'line_ids': [(6, 0, booking_line_ids)],
                 'provider_type_id': self.env['tt.provider.type'].sudo()
                                         .search([('code', '=', data_reservation_offline.get('type'))], limit=1).id,
@@ -1055,7 +1075,71 @@ class IssuedOffline(models.Model):
             })
             return booker_obj.id
 
-    def _create_contact(self, context, contact):  # odoo10 : hanya 1 contact | odoo12 : bisa lebih dari 1 contact
+    def _create_contact(self, context, contact):
+        contact_env = self.env['tt.customer'].sudo()
+        country_env = self.env['res.country'].sudo()
+        if contact['contact_id']:
+            contact['contact_id'] = int(contact['contact_id'])
+            contact_obj = contact_env.browse(contact['contact_id'])
+            if contact_obj:
+                contact_obj.update({
+                    'email': contact.get('email', contact_obj.email),
+                    # 'mobile': vals.get('mobile', contact_rec.phone_ids[0]),
+                })
+            return contact_obj.id
+        else:
+            country = country_env.search([('code', '=', contact.pop('nationality_code'))])  # diubah ke country_code
+            contact.update({
+                'commercial_agent_id': context['agent_id'],
+                'agent_id': context['agent_id'],
+                'nationality_id': country and country[0].id or False,
+                # 'passenger_type': 'ADT',
+                'email': contact.get('email', contact['email'])
+            })
+            contact_obj = contact_env.create(contact)
+            contact_obj.update({
+                'phone_ids': contact_obj.phone_ids.create({
+                    'phone_number': contact.get('mobile', contact['mobile']),
+                    'type': 'work'
+                }),
+            })
+            return contact_obj.id
+        # contact_list = []
+        # contact_count = 0
+        # for con in contact:
+        #     contact_count += 1
+        #     # cek jika sudah ada contact
+        #     if con['contact_id']:
+        #         con['contact_id'] = int(con['contact_id'])
+        #         contact_rec = contact_env.browse(con['contact_id'])
+        #         if contact_rec:
+        #             contact_rec.update({
+        #                 'email': con.get('email', contact_rec.email),
+        #                 # 'mobile': vals.get('mobile', contact_rec.phone_ids[0]),
+        #             })
+        #         # return contact_rec
+        #         contact_list.append(con['contact_id'])
+        #     # jika tidak ada, buat customer baru
+        #     else:
+        #         country = country_env.search([('code', '=', con.pop('nationality_code'))])  # diubah ke country_code
+        #         con.update({
+        #             'commercial_agent_id': context['agent_id'],
+        #             'agent_id': context['agent_id'],
+        #             'nationality_id': country and country[0].id or False,
+        #             # 'passenger_type': 'ADT',
+        #             'email': con.get('email', con['email'])
+        #         })
+        #         contact_obj = contact_env.create(con)
+        #         contact_obj.update({
+        #             'phone_ids': contact_obj.phone_ids.create({
+        #                 'phone_number': con.get('mobile', con['mobile']),
+        #                 'type': 'work'
+        #             }),
+        #         })
+        #         contact_list.append(contact_obj.id)
+        # return contact_list
+
+    def _create_contacts(self, context, contact):  # odoo10 : hanya 1 contact | odoo12 : bisa lebih dari 1 contact
         contact_env = self.env['tt.customer'].sudo()
         country_env = self.env['res.country'].sudo()
         contact_list = []
@@ -1092,6 +1176,34 @@ class IssuedOffline(models.Model):
                 })
                 contact_list.append(contact_obj.id)
         return contact_list
+
+    def _set_customer_parent(self, context, contact):
+        customer_parent_env = self.env['tt.customer.parent']
+        print('Agent ID : ' + str(context['agent_id']))
+        agent_obj = self.env['tt.agent'].search([('id', '=', context['agent_id'])])
+        # customer_parent_obj = customer_parent_env.sudo().search([('name', '=', context.agent_id.name + ' FPO')], limit=1)
+        walkin_obj = agent_obj.customer_parent_walkin_id
+        if walkin_obj:
+            walkin_obj.write({
+                'customer_ids': [(4, contact)]
+            })
+            return walkin_obj.id
+        else:
+            # create new Customer Parent FPO
+            walkin_obj = customer_parent_env.create(
+                {
+                    'parent_agent_id': context['agent_id'],
+                    'customer_parent_type_id': self.env.ref('tt_base.agent_type_fpo').id,
+                    'name': agent_obj.name + ' FPO'
+                }
+            )
+            agent_obj.sudo().write({
+                'customer_parent_walkin_id': walkin_obj.id
+            })
+            walkin_obj.write({
+                'customer_ids': [(4, contact)]
+            })
+            return walkin_obj.id
 
     def _create_passenger(self, context, passenger):
         passenger_list = []

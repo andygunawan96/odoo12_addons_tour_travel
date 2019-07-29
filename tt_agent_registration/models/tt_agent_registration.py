@@ -215,7 +215,7 @@ class AgentRegistration(models.Model):
                                                                     datetime.now(), 'commission', self.currency_id.id,
                                                                     parent_agent_comm, 0)
         parent_agent_comm_vals.update({
-            'agent_id': self.parent_agent_id.parent_agent_id.id,
+            'agent_id': self.parent_agent_id.id,
             'res_id': self.id,
             'res_model': self._name
         })
