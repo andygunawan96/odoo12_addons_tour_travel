@@ -200,15 +200,6 @@ class Ledger(models.Model):
                                           'transport', booking_obj.currency_id.id, 0, amount)
 
         ledger_values = self.prepare_vals_for_resv(booking_obj,ledger_values)
-        # ledger_values.update({
-        #     'res_model': booking_obj._name,
-        #     'res_id': booking_obj.id,
-        #     'issued_uid': booking_obj.issued_uid.id,
-        #     'agent_id': booking_obj.agent_id.id,
-        #     'pnr': provider_obj.pnr,
-        #     'description': 'Provider : {}'.format(provider_obj.provider),
-        #     'display_provider_name': provider_obj.provider
-        # })
         self.create(ledger_values)
 
     def create_commission_ledger(self, provider_obj):
@@ -229,14 +220,6 @@ class Ledger(models.Model):
                                        'commission', booking_obj.currency_id.id, amount, 0)
 
             values = self.prepare_vals_for_resv(booking_obj,values)
-            # values.update({
-            #     'res_model': booking_obj._name,
-            #     'res_id': booking_obj.id,
-            #     'issued_uid': booking_obj.issued_uid.id,
-            #     'agent_id': agent_id,
-            #     'pnr': provider_obj.pnr,
-            #     'description': 'Provider : {}'.format(provider_obj.provider),
-            # })
             self.create(values)
 
     def action_create_ledger(self, provider_obj):

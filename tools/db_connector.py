@@ -59,7 +59,6 @@ class BackendConnector(DbConnector):
         res = self.execute('tt.error.api', 'get_error_code_api', [False])
         return res
 
-
 class GatewayConnector(DbConnector):
     def __init__(self):
         DbConnector.__init__(self)
