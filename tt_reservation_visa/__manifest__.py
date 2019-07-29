@@ -32,6 +32,7 @@
         'views/tt_reservation_visa_views.xml',
         'views/tt_reservation_visa_order_passengers_views.xml',
         'views/tt_reservation_visa_pricelist_views.xml',
+        'views/tt_reservation_visa_service_charge_views.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

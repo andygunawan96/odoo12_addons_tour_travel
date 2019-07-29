@@ -74,6 +74,9 @@ class VisaOrderPassengers(models.Model):
     to_agent_date = fields.Datetime('Send to Agent Date', readonly=1)
     ready_date = fields.Datetime('Ready Date', readonly=1)
 
+    service_charge_ids = fields.Many2many('tt.service.charge', 'tt_reservation_visa_charge_rel', 'passenger_id',
+                                          'service_charge_id', 'Service Charges')
+
     # use_vendor = fields.Boolean('Use Vendor', readonly=1, related='passport_id.use_vendor')
     notes = fields.Text('Notes (Agent to Customer)')
     notes_HO = fields.Text('Notes (HO to Agent)')

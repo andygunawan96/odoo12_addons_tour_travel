@@ -210,7 +210,6 @@
                                     <field name="debit" sum="Total Debit"/>
                                     <field name="credit" sum="Total Credit"/>
                                     <field name="balance" invisible="1" sum="Total Balance"/>
-                                    <field name="state"/>
                                 </tree>
                             </field>
                         </page>

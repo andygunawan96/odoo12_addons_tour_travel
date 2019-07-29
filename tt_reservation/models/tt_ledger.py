@@ -68,5 +68,6 @@ class tt_ledger(models.Model):
     @api.model
     def create(self, vals):
         if vals.get('res_model') and vals.get('res_id'):
-            vals['provider_type_id'] = self.env[vals['res_model']].browse(vals['res_id']).provider_type_id.id
+            if 'provider_type_id' in vals:
+                vals['provider_type_id'] = self.env[vals['res_model']].browse(vals['res_id']).provider_type_id.id
         return super(tt_ledger, self).create(vals)
