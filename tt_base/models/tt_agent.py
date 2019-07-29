@@ -148,7 +148,7 @@ class TtAgent(models.Model):
                 'error_code': 3,
                 'error_msg': 'Agent/Sub-Agent Not found'
             }
-        if partner_obj.check_balance_limit(amount):
+        if not partner_obj.check_balance_limit(amount):
             return {
                 'error_code': 1,
                 'error_msg': 'Current Balance for Agent:' + partner_obj.name + ' is ' + str(partner_obj.actual_balance)

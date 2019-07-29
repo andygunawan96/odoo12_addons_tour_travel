@@ -177,3 +177,5 @@ access_tt_agent_target_for_tour_travel_operator,tt.agent.target.for.tour.travel.
 access_tt_agent_mou_for_public,tt.agent.mou.for.public,model_tt_agent_target,,1,0,0,0
 access_tt_agent_mou_for_agent_user_operator,tt.agent.mou.for.agent.user.operator,model_tt_agent_mou,group_tt_agent_user_operator,1,1,1,0
 access_tt_agent_mou_for_tour_travel_operator,tt.agent.mou.for.tour.travel.operator,model_tt_agent_mou,group_tt_tour_travel_operator,1,1,1,0
+
+access_tt_error_api_for_public,tt.error.api.for.public,model_tt_error_api,,1,1,1,1

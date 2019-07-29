@@ -66,6 +66,14 @@ class TtProviderAirline(models.Model):
                 'balance_due': provider_data['balance_due']
             })
 
+    def action_issued_api_airline(self,context):
+        for rec in self:
+            rec.write({
+                'state': 'issued',
+                'issued_date': datetime.now(),
+                'issued_uid': context['co_uid'],
+            })
+
     def action_failed_booked_api_airline(self):
         for rec in self:
             rec.write({
@@ -173,23 +181,6 @@ class TtProviderAirline(models.Model):
             self.write({'is_ledger_created': True})
             self.env['tt.ledger'].action_create_ledger(self)
 
-    def action_create_ledger_api(self):
-        try:
-            # ## UPDATED by Samvi 2018/07/24
-            # ## Terdetect sebagai administrator jika sudo
-            # provider_obj = self.env['tt.tb.provider'].sudo().browse(provider_id)
-
-            self.action_create_ledger()
-            return {
-                'error_code': 0,
-                'error_msg': ''
-            }
-        except Exception as e:
-            return {
-                'error_code': -1,
-                'error_msg': str(e)
-            }
-
     def to_dict(self):
         journey_list = []
         for rec in self.journey_ids:
@@ -201,6 +192,7 @@ class TtProviderAirline(models.Model):
             'pnr': self.pnr and self.pnr or '',
             'pnr2': self.pnr2 and self.pnr2 or '',
             'provider': self.provider_id.code,
+            'provider_id': self.id,
             'state': self.state,
             'state_description': variables.BOOKING_STATE_STR[self.state],
             'sequence': self.sequence,
