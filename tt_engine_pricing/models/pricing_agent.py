@@ -71,7 +71,7 @@ class PricingAgent(models.Model):
             'provider_ids': provider_ids,
             'basic_amount_type': self.basic_amount_type,
             'basic_amount': self.basic_amount,
-            'currency': self.currency_id and self.currency_id.code,
+            'currency': self.currency_id and self.currency_id.name,
             'fee_amount': self.fee_amount,
             'is_per_route': self.is_per_route,
             'is_per_segment': self.is_per_segment,

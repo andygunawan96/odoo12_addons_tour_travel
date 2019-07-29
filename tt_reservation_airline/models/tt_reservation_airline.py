@@ -1628,7 +1628,7 @@ class ReservationAirline(models.Model):
             'adult': searchRQ['adult'],
             'child': searchRQ['child'],
             'infant': searchRQ['infant'],
-            'agent_id': context_gateway['agent_id'],
+            'agent_id': context_gateway['co_agent_id'],
             'user_id': context_gateway['co_uid']
         }
 
