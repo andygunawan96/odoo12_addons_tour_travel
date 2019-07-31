@@ -72,6 +72,7 @@ class TtProviderAirline(models.Model):
                 'state': 'issued',
                 'issued_date': datetime.now(),
                 'issued_uid': context['co_uid'],
+                'sid_issued': context['signature']
             })
 
     def action_failed_booked_api_airline(self):
@@ -79,6 +80,13 @@ class TtProviderAirline(models.Model):
             rec.write({
                 'state': 'fail_booking'
             })
+
+    def action_failed_issued_api_airline(self):
+        for rec in self:
+            rec.write({
+                'state': 'fail_issue'
+            })
+
     def action_set_as_booked(self):
         self.write({
             'state': 'booked',
@@ -99,35 +107,30 @@ class TtProviderAirline(models.Model):
             })
             rec.booking_id.action_check_provider_state(api_context)
 
-    @api.one
-    def create_ticket_number(self, passenger_ids):
-        # Variable name adalah first_name + last_name yang disambung semua tanpa spasi
-        # Case nya bisa first_name = Budi Satria last_name Gunawan
-        # atau first_name = Budi last_name Satria Gunawan
-        passenger_list = []
-        for rec in self.booking_id.passenger_ids:
-            value = {
-                'id': rec.id,
-                'name': '{}{}'.format(''.join(rec.first_name.split(' ')).lower(), ''.join(rec.last_name.split(' ')).lower()),
-            }
-            passenger_list.append(value)
+    def create_ticket_api(self,passengers):
+        ticket_list = []
+        for psg in passengers:
+            psg_obj = self.booking_id.passenger_ids.filtered(lambda x: x.name.replace(' ', '').lower() ==
+                                                                ('%s%s' % (psg.get('first_name', ''),
+                                                                           psg.get('last_name', ''))).lower())
+            ticket_list.append((0, 0, {
+                'pax_type': psg.get('pax_type'),
+                'ticket_number': psg.get('ticket_number'),
+                'passenger_id': psg_obj.id
+            }))
+        self.write({
+            'ticket_ids': ticket_list
+        })
 
-        for psg_data in passenger_ids:
-            psg_data['name'] = '{}{}'.format(''.join(psg_data['first_name'].split(' ')).lower(), ''.join(psg_data['last_name'].split(' ')).lower())
-            for psg_list in passenger_list:
-                if not psg_list.get('ticket_number', False) and psg_list['name'] == psg_data['name']:
-                    psg_list['ticket_number'] = psg_data.pop('ticket_number')
-                    break
+    def update_ticket_api(self,passengers):##isi ticket number
+        for psg in passengers:
+            for ticket in self.ticket_ids:
+                if ('%s%s' % ('LINA ','DALTON')).replace(' ','').lower() == ticket.passenger_id.name.replace(' ','').lower():
+                    ticket.write({
+                        'ticket_number': psg.get('ticket_number','')
+                    })
+                    continue
 
-        self.ticket_ids.unlink()
-
-        [self.ticket_ids.create({
-            'passenger_id': rec['id'],
-            'provider_id': self.id,
-            'ticket_number': rec['ticket_number']
-        }) for rec in passenger_list]
-
-    @api.one
     def create_service_charge(self, service_charge_vals):
         service_chg_obj = self.env['tt.service.charge']
         currency_obj = self.env['res.currency']
@@ -161,6 +164,9 @@ class TtProviderAirline(models.Model):
         # "pax_type": "ADT",
         # "total": 14400000
 
+    def delete_service_charge(self):
+        for rec in self.cost_service_charge_ids:
+            rec.unlink()
     # @api.depends('cost_service_charge_ids')
     # def _compute_total(self):
     #     for rec in self:

@@ -266,6 +266,7 @@ class TtReservation(models.Model):
     def to_dict(self):
         res = {
             'order_number': self.name,
+            'book_id': self.id,
             'pnr': self.pnr,
             'state': self.state,
             'state_description': variables.BOOKING_STATE_STR[self.state],
@@ -279,3 +280,14 @@ class TtReservation(models.Model):
         }
 
         return res
+
+    def get_book_obj(self, res_model, book_id, order_number):
+        if book_id:
+            book_obj = self.env[res_model].browse(book_id)
+        elif order_number:
+            book_obj = self.env[res_model].search([('name', '=', order_number)], limit=1)
+
+        if book_obj:
+            return book_obj
+        else:
+            return False
