@@ -4,6 +4,7 @@ from odoo.exceptions import UserError
 import logging
 import traceback
 import copy
+import json
 from ...tools.api import Response
 
 _logger = logging.getLogger(__name__)
@@ -315,7 +316,7 @@ class TtVisa(models.Model):
             "passport_expdate": "",
             "passport_number": "",
             "passenger_id": "",
-            "master_visa_Id": "1",
+            "master_visa_Id": "3",
             "required": [
                 {
                     "boolean": True,
@@ -379,31 +380,49 @@ class TtVisa(models.Model):
     }
 
     def get_booking_visa_api(self, data):
-        for rec in self.search([('name', '=', data['order_number'])]):
+        for rec in self.search([('name', '=', self.name)]):  # data['order_number']
             passenger = []
-            contact = []
-            sale = {}
+            # contact = []
+            # sale = {}
             type = []
             for pax in rec.to_passenger_ids:
                 requirement = []
+                # sale[pax.passenger_id.first_name + ' ' + pax.passenger_id.last_name] = []
+                # for sale_price in passenger[len(passenger) - 1]['visa']['price']:
+                #     if sale_price != 'currency':
+                #         sale[pax.passenger_id.first_name + ' ' + pax.passenger_id.last_name].append({
+                #             'charge_code': sale_price,
+                #             'amount': passenger[len(passenger) - 1]['visa']['price'][sale_price],
+                #             'currency': passenger[len(passenger) - 1]['visa']['price']['currency']
+                #         })
+                sale_obj = self.env['tt.service.charge'].sudo().search([('visa_id', '=', self.name), ('passenger_visa_ids', '=', pax.id)])
+                sale = []
+                for ssc in sale_obj:
+                    sale.append({
+                        'charge_code': ssc['charge_code'],
+                        'amount': ssc['amount'],
+                        'currency': ssc['currency_id'].id
+                    })
                 for require in pax.to_requirement_ids:
                     requirement.append({
                         'name': require.requirement_id.name,
+                        # 'is_ori': require.is_ori,
+                        # 'is_copy': require.is_copy,
+                        # 'validate_HO': require.validate_HO,
                         # 'required': require.required,
                     })
                 passenger.append({
-                    'title': pax.passenger_id.title,
+                    # 'title': pax.passenger_id.title,
                     'first_name': pax.passenger_id.first_name,
                     'last_name': pax.passenger_id.last_name,
-                    'birth_date': pax.passenger_id.birth_date,
-                    'age': pax.passenger_id.age or '',
-                    'passport': pax.passenger_id.passport_number,
+                    'birth_date': str(pax.passenger_id.birth_date),
+                    # 'age': pax.passenger_id.age or '',
+                    'passport': pax.passenger_id.passport_number or '',
                     'visa': {
-                        'price': {
-                            'sale_price': pax.pricelist_id.sale_price,
-                            'commission': pax.pricelist_id.commission_price,
-                            'currency': pax.pricelist_id.currency_id.name
-                        },
+                        # 'sale_price': pax.pricelist_id.sale_price,
+                        # 'commission': pax.pricelist_id.commission_price,
+                        # 'currency': pax.pricelist_id.currency_id.name
+                        'price': sale,
                         'entry_type': dict(pax.pricelist_id._fields['entry_type'].selection).get(pax.pricelist_id.entry_type),
                         'visa_type': dict(pax.pricelist_id._fields['visa_type'].selection).get(pax.pricelist_id.visa_type),
                         'process': dict(pax.pricelist_id._fields['process_type'].selection).get(pax.pricelist_id.process_type),
@@ -418,40 +437,40 @@ class TtVisa(models.Model):
                     'visa_type': dict(pax.pricelist_id._fields['visa_type'].selection).get(pax.pricelist_id.visa_type),
                     'process': dict(pax.pricelist_id._fields['process_type'].selection).get(pax.pricelist_id.process_type)
                 })
-                sale[pax.passenger_id.first_name+' '+pax.passenger_id.last_name] = []
-                for sale_price in passenger[len(passenger)-1]['visa']['price']:
-                    if sale_price != 'currency':
-                        sale[pax.passenger_id.first_name+' '+pax.passenger_id.last_name].append({
-                            'charge_code': sale_price,
-                            'amount': passenger[len(passenger)-1]['visa']['price'][sale_price],
-                            'currency': passenger[len(passenger)-1]['visa']['price']['currency']
-                        })
-            for pax in rec.contact_ids:
-                contact.append({
-                    'title': pax.title,
-                    'name': pax.name,
-                    'phone_number': pax.phone_ids[0].phone_number if len(pax.phone_ids) > 0 else '',
-                })
+            # for pax in rec.contact_ids:
+            #     contact.append({
+            #         'title': pax.title,
+            #         'name': pax.name,
+            #         'phone_number': pax.phone_ids[0].phone_number if len(pax.phone_ids) > 0 else '',
+            #     })
             res = {
+                'contact': {
+                    'first_name': rec.contact_id.first_name,
+                    'last_name': rec.contact_id.last_name,
+                    'email': rec.contact_id.email,
+                    'phone_number': rec.contact_id.phone_ids[0].phone_number if len(rec.contact_id.phone_ids) > 0 else '',
+                },
                 'booker': {
-                    'title': rec.booker_id.title,
-                    'first_name': rec.booker_id.title,
-                    'last_name': rec.booker_id.title,
+                    # 'title': rec.booker_id.title,
+                    'first_name': rec.booker_id.first_name,
+                    'last_name': rec.booker_id.last_name,
+                    'email': rec.booker_id.email,
                     'phone_number': rec.booker_id.phone_ids[0].phone_number if len(rec.booker_id.phone_ids) > 0 else '',
                 },
                 'journey': {
                     'country': rec.country_id.name,
-                    'departure_date': rec.departure_date,
+                    'departure_date': str(rec.departure_date),
                     'name': rec.name,
                     'payment_status': rec.commercial_state
                 },
                 'passenger': passenger,
-                'contact': contact,
-                'sale_price': sale
+                # 'contact': contact,
+                # 'sale_price': sale
 
             }
         if not res:
             res = Response().get_error(str('Visa Booking not found'), 500)
+        print('Response : ' + str(json.dumps(res)))
         return Response().get_no_error(res)
 
     def create_booking_visa_api(self):  # , data, context, kwargs
@@ -747,15 +766,16 @@ class TtVisa(models.Model):
             # compare with ssc_list
             ssc_same = False
             for ssc_final in ssc_list_final:
-                if ssc['charge_code'] == ssc_final['charge_code']:
-                    if ssc['pax_type'] == ssc_final['pax_type']:
-                        ssc_same = True
-                        # update ssc_final
-                        ssc_final['pax_count'] = ssc_final['pax_count'] + 1,
-                        ssc_final['passenger_visa_ids'].append(ssc['passenger_visa_id'])
-                        ssc_final['total'] += ssc.get('amount')
-                        ssc_final['pax_count'] = ssc_final['pax_count'][0]
-                        break
+                if ssc['pricelist_id'] == ssc_final['pricelist_id']:
+                    if ssc['charge_code'] == ssc_final['charge_code']:
+                        if ssc['pax_type'] == ssc_final['pax_type']:
+                            ssc_same = True
+                            # update ssc_final
+                            ssc_final['pax_count'] = ssc_final['pax_count'] + 1,
+                            ssc_final['passenger_visa_ids'].append(ssc['passenger_visa_id'])
+                            ssc_final['total'] += ssc.get('amount')
+                            ssc_final['pax_count'] = ssc_final['pax_count'][0]
+                            break
             if ssc_same is False:
                 vals = {
                     'amount': ssc['amount'],
