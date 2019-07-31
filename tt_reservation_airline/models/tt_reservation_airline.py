@@ -432,7 +432,9 @@ class ReservationAirline(models.Model):
             if not provider_obj:
                 return ERR.get_error(1002)
             provider_obj.delete_service_charge()
-
+            provider_obj.write({
+                'balance_due': provider['balance_due']
+            })
             for journey in provider['journeys']:
                 for segment in journey['segments']:
                     for fare in segment['fares']:

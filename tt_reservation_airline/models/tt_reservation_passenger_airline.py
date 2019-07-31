@@ -7,7 +7,8 @@ class TtReservationCustomer(models.Model):
     _name = 'tt.reservation.passenger.airline'
     _inherit = 'tt.reservation.passenger'
 
-    service_charge_ids = fields.Many2many('tt.service.charge','tt_reservation_airline_charge_rel', 'passenger_id', 'service_charge_id', 'Service Charges')
+    cost_service_charge_ids = fields.Many2many('tt.service.charge','tt_reservation_airline_cost_charge_rel', 'passenger_id', 'service_charge_id', 'Cost Service Charges')
+    channel_service_charge_ids = fields.Many2many('tt.service.charge','tt_reservation_airline_channel_charge_rel', 'passenger_id', 'service_charge_id', 'Channel Service Charges')
     booking_id = fields.Many2one('tt.reservation.airline')
     passport_number = fields.Char(string='Passport Number')
     passport_expdate = fields.Datetime(string='Passport Exp Date')
