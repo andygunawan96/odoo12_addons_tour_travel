@@ -31,11 +31,10 @@ class VisaOrderRequirements(models.Model):
 
     @api.onchange('validate_HO')
     def _document_validate_by_HO(self):
-        pass
-        # for rec in self:
-        #     if rec.is_ori_HO or rec.is_copy_HO:
-        #         rec.check_uid_HO = self.env.user.id
-        #         rec.check_date_HO = datetime.now()
-        #     elif not rec.is_ori_HO or not rec.is_copy_HO:
-        #         rec.check_uid_HO = False
-        #         rec.check_date_HO = False
+        for rec in self:
+            if rec.validate_HO:
+                rec.check_uid_HO = self.env.user.id
+                rec.check_date_HO = datetime.now()
+            elif not rec.validate_HO:
+                rec.check_uid_HO = False
+                rec.check_date_HO = False

@@ -7,6 +7,7 @@ class TtReservation(models.Model):
 
     name = fields.Char('Order Number', index=True, default='New', readonly=True)
     pnr = fields.Char('PNR', readonly=True, states={'draft': [('readonly', False)]})
+    provider_name = fields.Char('List of Provider name')
 
     date = fields.Datetime('Booking Date', default=lambda self: fields.Datetime.now(), readonly=True, states={'draft': [('readonly', False)]})
     expired_date = fields.Datetime('Expired Date', readonly=True)  # fixme terpakai?
@@ -39,8 +40,8 @@ class TtReservation(models.Model):
 
     ledger_ids = fields.One2many('tt.ledger', 'res_id', 'Ledger')
 
-    departure_date = fields.Date('Journey Date', readonly=True, states={'draft': [('readonly', False)]})  # , required=True
-    return_date = fields.Date('Return Date', readonly=True, states={'draft': [('readonly', False)]})
+    departure_date = fields.Char('Journey Date', readonly=True, states={'draft': [('readonly', False)]})  # , required=True
+    return_date = fields.Char('Return Date', readonly=True, states={'draft': [('readonly', False)]})
 
     provider_type_id = fields.Many2one('tt.provider.type','Provider Type')
 
@@ -178,7 +179,7 @@ class TtReservation(models.Model):
 
         return contact_obj.create(vals)
 
-    def create_passenger_api(self,passengers,context,booker_id=False,contact_id=False):
+    def create_customer_api(self,passengers,context,booker_id=False,contact_id=False,extra_list=[]):
         country_obj = self.env['res.country'].sudo()
         passenger_obj = self.env['tt.customer'].sudo()
 
@@ -205,17 +206,16 @@ class TtReservation(models.Model):
 
             get_psg_id = util.get_without_empty(psg, 'passenger_id')
 
-            ##experimental
-            if psg.get('title') == 'MRS':
-                psg['marital_status'] = 'married'
-            ##
-
+            extra = {}
+            for key,value in psg.items():
+                if key in extra_list:
+                    extra[key] = value
             if get_psg_id or booker_contact_id > 0:
 
                 current_passenger = passenger_obj.browse(int(get_psg_id or booker_contact_id))
                 if current_passenger:
                     current_passenger.update(vals_for_update)
-                    res_ids.append(current_passenger.id)
+                    res_ids.append((current_passenger,extra))
                     continue
 
             util.pop_empty_key(psg)
@@ -225,7 +225,7 @@ class TtReservation(models.Model):
                 'customer_parent_ids': [(4, agent_obj.customer_parent_walkin_id.id)],
             })
             psg_obj = passenger_obj.create(psg)
-            res_ids.append(psg_obj.id)
+            res_ids.append((psg_obj,extra))
 
         return res_ids
 
@@ -274,12 +274,8 @@ class TtReservation(models.Model):
             'ADT': self.adult,
             'CHD': self.child,
             'INF': self.infant,
-            'departure_date': self.departure_date and self.departure_date.strftime('%Y-%m-%d') or '',
-            'return_date': self.return_date and self.return_date.strftime('%Y-%m-%d') or '',
-            'agent_id': self.agent_id.id,
-            'agent_type': self.agent_type_id.code,
-            'customer_parent': self.customer_parent_id.id and self.customer_parent_id.id or '',
-            'customer_parent_type': self.customer_parent_type_id.code and self.customer_parent_type_id.code or ''
+            'departure_date': self.departure_date and self.departure_date or '',
+            'return_date': self.return_date and self.return_date or '',
         }
 
         return res

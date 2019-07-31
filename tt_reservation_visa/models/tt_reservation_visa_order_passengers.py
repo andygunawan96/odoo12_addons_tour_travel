@@ -42,6 +42,14 @@ PASSENGER_TYPE = [
     ('INF', 'Infant')
 ]
 
+TITLE = [
+    ('MR', 'MR'),
+    ('MRS', 'MRS'),
+    ('MS', 'MS'),
+    ('MSTR', 'MSTR'),
+    ('MISS', 'MISS')
+]
+
 PROCESS_STATUS = [
     ('accepted', 'Accepted'),
     ('rejected', 'Rejected')
@@ -61,6 +69,7 @@ class VisaOrderPassengers(models.Model):
     passenger_id = fields.Many2one('tt.customer', 'Passenger', readonly=1)
     pricelist_id = fields.Many2one('tt.reservation.visa.pricelist', 'Visa Pricelist', readonly=1)
     passenger_type = fields.Selection(PASSENGER_TYPE, 'Pax Type', readonly=1)
+    title = fields.Selection(TITLE, 'Title', readonly=1)
     passenger_domicile = fields.Char('Domicile', related='passenger_id.domicile', readonly=1)
     process_status = fields.Selection(PROCESS_STATUS, string='Process Result',
                                       readonly=1)
@@ -73,6 +82,9 @@ class VisaOrderPassengers(models.Model):
     to_HO_date = fields.Datetime('Send to HO Date', readonly=1)
     to_agent_date = fields.Datetime('Send to Agent Date', readonly=1)
     ready_date = fields.Datetime('Ready Date', readonly=1)
+
+    service_charge_ids = fields.Many2many('tt.service.charge', 'tt_reservation_visa_charge_rel', 'passenger_id',
+                                          'service_charge_id', 'Service Charges')
 
     # use_vendor = fields.Boolean('Use Vendor', readonly=1, related='passport_id.use_vendor')
     notes = fields.Text('Notes (Agent to Customer)')

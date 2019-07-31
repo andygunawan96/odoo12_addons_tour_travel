@@ -66,6 +66,14 @@ class TtProviderAirline(models.Model):
                 'balance_due': provider_data['balance_due']
             })
 
+    def action_issued_api_airline(self,context):
+        for rec in self:
+            rec.write({
+                'state': 'issued',
+                'issued_date': datetime.now(),
+                'issued_uid': context['co_uid'],
+            })
+
     def action_failed_booked_api_airline(self):
         for rec in self:
             rec.write({
@@ -90,28 +98,6 @@ class TtProviderAirline(models.Model):
                 'issued_date': fields.Datetime.now(),
             })
             rec.booking_id.action_check_provider_state(api_context)
-
-    def action_issued_provider_api(self, provider_id, api_context):
-        try:
-            # ## UPDATED by Samvi 2018/07/24
-            # ## Terdetect sebagai administrator jika sudo
-            # provider_obj = self.env['tt.tb.provider'].sudo().browse(provider_id)
-            provider_obj = self.env['tt.provider.airline'].browse(provider_id)
-            if not provider_obj:
-                return {
-                    'error_code': -1,
-                    'error_msg': '',
-                }
-            provider_obj.action_issued(api_context)
-            return {
-                'error_code': 0,
-                'error_msg': '',
-            }
-        except Exception as e:
-            return {
-                'error_code': -1,
-                'error_msg': str(e)
-            }
 
     @api.one
     def create_ticket_number(self, passenger_ids):
@@ -147,9 +133,21 @@ class TtProviderAirline(models.Model):
         currency_obj = self.env['res.currency']
 
         for scs in service_charge_vals:
-            scs['currency_id'] = currency_obj.get_id(scs.pop('currency'))
-            scs['foreign_currency_id'] = currency_obj.get_id(scs.pop('foreign_currency'))
+            scs['pax_count'] = 0
+            scs['passenger_airline_ids'] = []
+            scs['total'] = 0
+            scs['currency_id'] = currency_obj.get_id(scs.get('currency'))
+            scs['foreign_currency_id'] = currency_obj.get_id(scs.get('foreign_currency'))
             scs['provider_airline_booking_id'] = self.id
+            for psg in self.ticket_ids:
+                if scs['pax_type'] == psg.pax_type:
+                    scs['passenger_airline_ids'].append(psg.passenger_id.id)
+                    scs['pax_count'] += 1
+                    scs['total'] += scs['amount']
+            scs.pop('currency')
+            scs.pop('foreign_currency')
+            scs['passenger_airline_ids'] = [(6,0,scs['passenger_airline_ids'])]
+            scs['description'] = self.pnr
             service_chg_obj.create(scs)
 
         # "sequence": 1,
@@ -182,33 +180,19 @@ class TtProviderAirline(models.Model):
         if not self.is_ledger_created:
             self.write({'is_ledger_created': True})
             self.env['tt.ledger'].action_create_ledger(self)
-            self.env.cr.commit()
-
-    def action_create_ledger_api(self):
-        try:
-            # ## UPDATED by Samvi 2018/07/24
-            # ## Terdetect sebagai administrator jika sudo
-            # provider_obj = self.env['tt.tb.provider'].sudo().browse(provider_id)
-
-            self.action_create_ledger()
-            return {
-                'error_code': 0,
-                'error_msg': ''
-            }
-        except Exception as e:
-            return {
-                'error_code': -1,
-                'error_msg': str(e)
-            }
 
     def to_dict(self):
         journey_list = []
         for rec in self.journey_ids:
             journey_list.append(rec.to_dict())
+        ticket_list = []
+        for rec in self.ticket_ids:
+            ticket_list.append(rec.to_dict())
         res = {
             'pnr': self.pnr and self.pnr or '',
             'pnr2': self.pnr2 and self.pnr2 or '',
             'provider': self.provider_id.code,
+            'provider_id': self.id,
             'state': self.state,
             'state_description': variables.BOOKING_STATE_STR[self.state],
             'sequence': self.sequence,
@@ -221,7 +205,33 @@ class TtProviderAirline(models.Model):
             'journeys': journey_list,
             'currency': self.currency_id.name,
             'hold_date': self.hold_date and self.hold_date or '',
-            'tickets': []
+            'tickets': ticket_list,
         }
 
         return res
+
+    # def get_cost_service_charges(self):
+    #     sc_value = {}
+    #     for p_sc in self.cost_service_charge_ids:
+    #         p_charge_type = p_sc.charge_type
+    #         p_pax_type = p_sc.pax_type
+    #         if p_charge_type == 'RAC' and p_sc.charge_code !=  'rac':
+    #             continue
+    #         if not sc_value.get(p_pax_type):
+    #             sc_value[p_pax_type] = {}
+    #         if not sc_value[p_pax_type].get(p_charge_type):
+    #             sc_value[p_pax_type][p_charge_type] = {}
+    #             sc_value[p_pax_type][p_charge_type].update({
+    #                 'amount': 0,
+    #                 'foreign_amount': 0
+    #             })
+    #         sc_value[p_pax_type][p_charge_type].update({
+    #             'charge_code': p_sc.charge_code,
+    #             'currency': p_sc.currency_id.name,
+    #             'pax_count': p_sc.pax_count,
+    #             'total': p_sc.total,
+    #             'foreign_currency': p_sc.foreign_currency_id.name,
+    #             'amount': sc_value[p_pax_type][p_charge_type]['amount'] + p_sc.amount,
+    #             'foreign_amount': sc_value[p_pax_type][p_charge_type]['foreign_amount'] + p_sc.foreign_amount,
+    #         })
+    #     return sc_value

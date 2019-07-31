@@ -35,7 +35,7 @@ class TtJourneyAirline(models.Model):
             'destination': self.destination_id.code,
             'departure_date': self.departure_date,
             'arrival_date': self.arrival_date,
-            'segment_ids': segment_list
+            'segments': segment_list
         }
 
         return res

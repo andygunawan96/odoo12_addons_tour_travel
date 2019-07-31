@@ -143,17 +143,18 @@
                         </group>
                         <group string="Booker Information">
                             <field name="booker_id"/>
+                            <field name="contact_id"/>
                         </group>
                     </group>
                     <notebook colspan="4">
-                        <page string="Contacts">
-                            <field name="contact_ids">
-                                <tree create="0">
-                                    <field name="name"/>
-                                    <field name="email"/>
-                                </tree>
-                            </field>
-                        </page>
+<!--                        <page string="Contacts">-->
+<!--                            <field name="contact_ids">-->
+<!--                                <tree create="0">-->
+<!--                                    <field name="name"/>-->
+<!--                                    <field name="email"/>-->
+<!--                                </tree>-->
+<!--                            </field>-->
+<!--                        </page>-->
                         <page string="Passengers">
                             <field name="to_passenger_ids">
                                 <tree create="0">
@@ -173,7 +174,7 @@
                         <page string="Prices" name="prices" >
                             <!--<field name="sale_service_charge_ids" readonly="1">-->
 <!--                            groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"-->
-                            <field name="sale_service_charge_ids">
+                            <field name="sale_service_charge_ids" context="{'form_view_ref': 'tt_reservation_visa.tt_service_charge_visa_inherit_form_view'}">
                                 <tree>
                                     <field name="charge_code"/>
                                     <field name="pax_type"/>
@@ -209,7 +210,6 @@
                                     <field name="debit" sum="Total Debit"/>
                                     <field name="credit" sum="Total Credit"/>
                                     <field name="balance" invisible="1" sum="Total Balance"/>
-                                    <field name="state"/>
                                 </tree>
                             </field>
                         </page>
@@ -249,7 +249,8 @@
         <field name="model">tt.reservation.visa</field>
         <field name="arch" type="xml">
             <tree create="true">
-                <button type="object" string="Create Booking Visa" name="create_booking_visa"/>
+                <button type="object" string="Create Booking Visa" name="create_booking_visa_api"/>
+                <button type="object" string="Get Booking Visa" name="get_booking_visa_api"/>
                 <field name="name"/>
                 <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>
                 <field name="agent_type_id" groups="tt_base.group_tt_tour_travel_operator"/>

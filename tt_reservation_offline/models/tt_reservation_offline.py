@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import logging
 import traceback
 import copy
+from ...tools.api import Response
 
 _logger = logging.getLogger(__name__)
 
@@ -715,274 +716,29 @@ class IssuedOffline(models.Model):
 
     ####################################################################################################
 
-    # API & Create
 
-    pass
-
-    # AIRLINE
-    # param_booker = {
-    #     "title": "MR",
-    #     "first_name": "ivan",
-    #     "last_name": "suryajaya",
-    #     "email": "sad@gmail.com",
-    #     "calling_code": "62",
-    #     "mobile": "82173712381",
-    #     "nationality_code": "ID",
-    #     "booker_id": ""
-    # }
-    #
-    # param_passenger = [
-    #     {
-    #         "pax_type": "ADT",
-    #         "first_name": "ivan",
-    #         "last_name": "suryajaya",
-    #         "title": "MR",
-    #         "birth_date": "2000-06-20",
-    #         "nationality_code": "ID",
-    #         "country_of_issued_code": "ID",
-    #         "passport_expdate": "2021-06-20",
-    #         "passport_number": "a12323",
-    #         "passenger_id": ""
-    #     }
-    # ]
-    #
-    # param_contact = [
-    #     {
-    #         "title": "MR",
-    #         "first_name": "ivan",
-    #         "last_name": "suryajaya",
-    #         "email": "asd@gmail.com",
-    #         "calling_code": "62",
-    #         "mobile": "82138281321",
-    #         "nationality_code": "ID",
-    #         "contact_id": ""
-    #     }
-    # ]
-    #
-    # param_data_reservation_offline = {
-    #     "type": "airline",
-    #     "total_sale_price": 10000,
-    #     "desc": "Testing",
-    #     "pnr": "a132123",
-    #     "social_media_id": "3",
-    #     "expired_date": "2019-07-11 05:05",
-    #     "line_ids": [
-    #         {
-    #             "origin": "SUB",
-    #             "destination": "SIN",
-    #             "provider": "Garuda Indonesia",
-    #             "departure": "2019-07-17 20:20",
-    #             "arrival": "2019-07-18 01:01",
-    #             "carrier_code": "GA",
-    #             "carrier_number": "X123",
-    #             "sub_class": "B",
-    #             "class_of_service": "eco"
-    #         }
-    #     ],
-    #     "provider": "skytors_issued_offline",
-    #     "sector_type": "domestic"
-    # }
-
-    pass
-
-    # TRAIN
-    # param_booker = {
-    #     "title": "MR",
-    #     "first_name": "ivan",
-    #     "last_name": "suryajaya",
-    #     "email": "ad2@gmail.com",
-    #     "calling_code": "62",
-    #     "mobile": "81237213812",
-    #     "nationality_code": "ID",
-    #     "booker_id": ""
-    # }
-    #
-    # param_contact = [
-    #     {
-    #         "title": "MR",
-    #         "first_name": "ivan",
-    #         "last_name": "suryajaya",
-    #         "email": "ad2@gmail.com",
-    #         "calling_code": "62",
-    #         "mobile": "81237213812",
-    #         "nationality_code": "ID",
-    #         "contact_id": ""
-    #     }
-    # ]
-    #
-    # param_passenger = [
-    #     {
-    #         "pax_type": "ADT",
-    #         "first_name": "pax",
-    #         "last_name": "satu",
-    #         "title": "MR",
-    #         "birth_date": "2000-06-20",
-    #         "nationality_code": "ID",
-    #         "country_of_issued_code": "",
-    #         "passport_expdate": "",
-    #         "passport_number": "",
-    #         "passenger_id": ""
-    #     }
-    # ]
-    #
-    # param_data_reservation_offline = {
-    #     "type": "train",
-    #     "total_sale_price": 10000,
-    #     "desc": "Testing",
-    #     "pnr": "asd123",
-    #     "social_media_id": "1",
-    #     "expired_date": "2019-07-08 05:50",
-    #     "line_ids": [
-    #         {
-    #             "origin": "BD",
-    #             "destination": "GMR",
-    #             "provider": "kai_outlet",
-    #             "departure": "2019-07-17 05:05",
-    #             "arrival": "2019-07-17 10:10",
-    #             "carrier_code": "ARGO PARAYANGAN",
-    #             "carrier_number": "5000",
-    #             "sub_class": "B",
-    #             "class_of_service": "eco"
-    #         }
-    #     ]
-    # }
-
-    pass
-
-    # HOTEL
-    # param_booker = {
-    #     "title": "MR",
-    #     "first_name": "ivan",
-    #     "last_name": "suryajaya",
-    #     "email": "ad2@gmail.com",
-    #     "calling_code": "62",
-    #     "mobile": "81237213812",
-    #     "nationality_code": "ID",
-    #     "booker_id": ""
-    # }
-    #
-    # param_contact = [
-    #     {
-    #         "title": "MR",
-    #         "first_name": "ivan",
-    #         "last_name": "suryajaya",
-    #         "email": "ad2@gmail.com",
-    #         "calling_code": "62",
-    #         "mobile": "81237213812",
-    #         "nationality_code": "ID",
-    #         "contact_id": ""
-    #     }
-    # ]
-    #
-    # param_passenger = [
-    #     {
-    #         "pax_type": "ADT",
-    #         "first_name": "pax",
-    #         "last_name": "satu",
-    #         "title": "MR",
-    #         "birth_date": "2000-06-20",
-    #         "nationality_code": "ID",
-    #         "country_of_issued_code": "",
-    #         "passport_expdate": "",
-    #         "passport_number": "",
-    #         "passenger_id": ""
-    #     }
-    # ]
-    #
-    # param_data_reservation_offline = {
-    #     "type": "hotel",
-    #     "total_sale_price": 10000,
-    #     "desc": "Testing",
-    #     "pnr": "asd123",
-    #     "social_media_id": "1",
-    #     "expired_date": "2019-07-08 05:50",
-    #     "line_ids": [
-    #         {
-    #             "name": "JW MARRIOT",
-    #             "room": "DELUXE",
-    #             "qty": "2",
-    #             "check_in": "2019-07-09 14:00",
-    #             "check_out": "2019-07-17 12:00",
-    #             "description": "ROOM TESTING"
-    #         }
-    #     ]
-    # }
-
-    pass
-
-    # ACTIVITY
-    param_booker = {
-        "title": "MR",
-        "first_name": "ivan",
-        "last_name": "suryajaya",
-        "email": "ad2@gmail.com",
-        "calling_code": "62",
-        "mobile": "81237213812",
-        "nationality_code": "ID",
-        "booker_id": ""
-    }
-
-    param_contact = [
-        {
-            "title": "MR",
-            "first_name": "ivan",
-            "last_name": "suryajaya",
-            "email": "ad2@gmail.com",
-            "calling_code": "62",
-            "mobile": "81237213812",
-            "nationality_code": "ID",
-            "contact_id": ""
-        }
-    ]
-
-    param_passenger = [
-        {
-            "pax_type": "ADT",
-            "first_name": "pax",
-            "last_name": "satu",
-            "title": "MR",
-            "birth_date": "2000-06-20",
-            "nationality_code": "ID",
-            "country_of_issued_code": "ID",
-            "passport_expdate": "2020-06-20",
-            "passport_number": "a402022",
-            "passenger_id": ""
-        }
-    ]
-
-    param_data_reservation_offline = {
-        "type": "activity",
-        "total_sale_price": 10000,
-        "desc": "Testing",
-        "pnr": "a123312",
-        "social_media_id": "1",
-        "expired_date": "2019-07-11 05:05",
-        "line_ids": [
-            {
-                "name": "USS",
-                "package": "Singapore",
-                "qty": "2",
-                "visit_date": "2019-07-26 20:00",
-                "description": "Testing 1"
+    def get_config_api(self):
+        try:
+            res = {
+                'sector_type': self._fields['sector_type'].selection,
+                'transaction_type': [{'code': rec.code, 'name': rec.name} for rec in
+                                     self.env['tt.provider.type'].search([])],
+                'carrier_id': [{'code': rec.code, 'name': rec.name, 'icao': rec.icao} for rec in
+                               self.env['tt.transport.carrier'].search([])],
+                'social_media_id': [{'name': rec.name} for rec in self.env['social.media.detail'].search([])],
             }
-        ]
-    }
+            res = Response().get_no_error(res)
+        except Exception as e:
+            res = Response().get_error(str(e), 500)
+        return res
 
-    param_context = {
-        'co_uid': 7
-    }
-
-    def create_booking_reservation_offline(self):
-        booker = copy.deepcopy(self.param_booker)
-        data_reservation_offline = copy.deepcopy(self.param_data_reservation_offline)
-        passenger = copy.deepcopy(self.param_passenger)
-        contact = copy.deepcopy(self.param_contact)
-        context = copy.deepcopy(self.param_context)
-        lines = data_reservation_offline['line_ids']
-
-        context.update({
-            'co_uid': self.env.user.id
-        })
+    def create_booking_reservation_offline_api(self, data, context, kwargs):
+        booker = data['booker']
+        data_reservation_offline = data['issued_offline_data']
+        passenger = data['passenger']
+        contact = data['contact']
+        context = context
+        lines = data['issued_offline_data']['line_ids']
 
         try:
             user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
@@ -1017,13 +773,15 @@ class IssuedOffline(models.Model):
                 })
             book_obj = self.create(header_val)
             book_obj.action_confirm(context)
+            response = {
+                'id': book_obj.name
+            }
+            res = Response().get_no_error(response)
         except Exception as e:
             self.env.cr.rollback()
             _logger.error(msg=str(e) + '\n' + traceback.format_exc())
-            return {
-                'error_code': 1,
-                'error_msg': str(e)
-            }
+            res = Response().get_error(str(e), 500)
+        return res
 
     def _create_booker(self, context, booker):
         country_env = self.env['res.country'].sudo()

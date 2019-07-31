@@ -7,7 +7,6 @@ class TbServiceCharge(models.Model):
     charge_code = fields.Char('Charge Code', default='fare', required=True)
     charge_type = fields.Char('Charge Type')  # FARE, INF, TAX, SSR, CHR
     pax_type = fields.Selection(variables.PAX_TYPE, string='Pax Type')
-
     currency_id = fields.Many2one('res.currency', required=True,
                                   default=lambda self: self.env.user.company_id.currency_id)
     pax_count = fields.Integer('Pax Count', default=1)
@@ -20,10 +19,19 @@ class TbServiceCharge(models.Model):
     sequence = fields.Integer('Sequence')
     description = fields.Text('Description')
 
-    # commision_agent_id = fields.Many2one('tt.agent', 'Agent ( Commission )', help='''Agent who get commision''')
+    commission_agent_id = fields.Many2one('tt.agent', 'Agent ( Commission )', help='''Agent who get commission''')
 
     # @api.one
     # @api.depends('pax_count', 'amount')
     # def _compute_total(self):
     #     self.total = self.pax_count * self.amount
 
+    def to_dict(self):
+        return {
+            'charge_code': self.charge_code,
+            'charge_type': self.charge_type,
+            'currency': self.currency_id.name,
+            'amount': self.amount,
+            'foreign_currency': self.foreign_currency_id.name,
+            'foreign_amount': self.foreign_amount
+        }

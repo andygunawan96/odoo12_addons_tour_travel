@@ -31,6 +31,7 @@
                         <group>
 <!--                            <field name="use_vendor"/>-->
                             <field name="visa_id"/>
+                            <field name="title"/>
                             <field name="booking_state"/>
                             <field name="passenger_id"/>
                             <field name="passenger_type"/>

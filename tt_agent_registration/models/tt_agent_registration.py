@@ -1,11 +1,12 @@
 from odoo import models, fields, api, _
-from datetime import datetime
+from datetime import datetime, timedelta
 from odoo.exceptions import UserError
 from ...tools.api import Response
 import base64
 import copy
 import logging
 import traceback
+from ...tools.api import Response
 
 _logger = logging.getLogger(__name__)
 
@@ -51,7 +52,7 @@ class AgentRegistration(models.Model):
     opening_balance = fields.Float('Opening Balance', readonly=True, states={'draft': [('readonly', False)],
                                                                              'confirm': [('readonly', False)]})
     total_fee = fields.Monetary('Total Fee', store=True, compute='compute_total_fee')
-    registration_date = fields.Date('Registration Date', required=True, readonly=True,
+    registration_date = fields.Datetime('Registration Date', required=True, readonly=True,
                                     states={'draft': [('readonly', False)]})
     expired_date = fields.Date('Expired Date', readonly=True, states={'draft': [('readonly', False)]})
 
@@ -471,44 +472,60 @@ class AgentRegistration(models.Model):
         'co_uid': 7
     }
 
-    def create_agent_registration_api(self):
-        company = copy.deepcopy(self.param_company)
-        pic = copy.deepcopy(self.param_pic)
-        address = copy.deepcopy(self.param_address)
-        other = copy.deepcopy(self.param_other)
-        context = copy.deepcopy(self.param_context)
-        regis_doc = copy.deepcopy(self.param_regis_doc)
-
-        context.update({
-            'co_uid': self.env.user.id
-        })
-
-        try:
-            agent_type = self.env['tt.agent.type'].sudo().search([('name', '=', other.get('agent_type'))], limit=1)
-            header = self.prepare_header(company, other, agent_type)
-            contact_ids = self.prepare_contact(pic)
-            address_ids = self.prepare_address(address)
-            header.update({
-                'contact_ids': [(6, 0, contact_ids)],
-                'address_ids': [(6, 0, address_ids)],
-                'registration_fee': agent_type.registration_fee,
-                'registration_date': datetime.now(),
-                'create_uid': self.env.user.id
-            })
-            create_obj = self.create(header)
-            create_obj.get_registration_fee()
-            create_obj.compute_total_fee()
-            if not create_obj.registration_num:
-                create_obj.registration_num = self.env['ir.sequence'].next_by_code('agent.registration')
-            create_obj.input_regis_document_data(regis_doc)
-            # masukkan attachment dokumen
-        except Exception as e:
-            self.env.cr.rollback()
-            _logger.error(msg=str(e) + '\n' + traceback.format_exc())
-            return {
-                'error_code': 1,
-                'error_msg': str(e)
+    def create_agent_registration_api(self, data, context, kwargs):
+        company = data['company']
+        pic = data['pic']
+        address = data['address']
+        other = data['other']
+        context = context
+        regis_doc = data['regis_doc']
+        registration_list = self.search([('name', '=', data['company']['name'])], order='registration_date desc', limit=1)
+        check = 0
+        for rec in registration_list:
+            response = {
+                'name': rec.name,
+                'discount': rec.discount,
+                'registration_number': rec.registration_num,
+                'registration_fee': int(rec.registration_fee),
+                'currency': rec.currency_id.name
             }
+            break
+        for rec in registration_list:
+            if datetime.now() >= rec.registration_date + timedelta(minutes=2):
+                check = 1
+        if check == 1:
+            try:
+                agent_type = self.env['tt.agent.type'].sudo().search([('name', '=', other.get('agent_type'))], limit=1)
+                header = self.prepare_header(company, other, agent_type)
+                contact_ids = self.prepare_contact(pic)
+                address_ids = self.prepare_address(address)
+                header.update({
+                    'contact_ids': [(6, 0, contact_ids)],
+                    'address_ids': [(6, 0, address_ids)],
+                    'registration_fee': agent_type.registration_fee,
+                    'registration_date': datetime.now(),
+                    'create_uid': self.env.user.id
+                })
+                create_obj = self.sudo().create(header)
+                create_obj.get_registration_fee()
+                create_obj.compute_total_fee()
+                if not create_obj.registration_num:
+                    create_obj.registration_num = self.env['ir.sequence'].next_by_code('agent.registration')
+                create_obj.input_regis_document_data(regis_doc)
+                # masukkan attachment dokumen
+                response = {
+                    'name': create_obj.name,
+                    'discount': create_obj.discount,
+                    'registration_number': create_obj.registration_num,
+                    'registration_fee': int(create_obj.registration_fee),
+                    'currency': create_obj.currency_id.name
+                }
+                res = Response().get_no_error(response)
+            except Exception as e:
+                res = Response().get_error(str(e), 500)
+        else:
+            res = Response().get_no_error(response)
+        return res
 
     def prepare_header(self, company, other, agent_type):
         header = {
@@ -526,9 +543,12 @@ class AgentRegistration(models.Model):
             for rec in self.env['tt.agent.type'].search([]):
                 agent_type.append({
                     'name': rec.name,
-                    'is_allow_regis': rec.is_allow_regis
+                    'is_allow_regis': rec.can_register_agent
                 })
-            response = agent_type
+            response = {
+                'agent_type': agent_type,
+                'company_type': COMPANY_TYPE
+            }
             res = Response().get_no_error(response)
         except Exception as e:
             res = Response().get_error(str(e), 500)
@@ -562,7 +582,7 @@ class AgentRegistration(models.Model):
         address_id = self.address_ids.create({
             'zip': address.get('zip'),
             'address': address.get('address'),
-            'city_id': address.get('city'),
+            'city_id': int(address.get('city')),
             'type': 'home'
         })
         address_list.append(address_id.id)
