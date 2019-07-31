@@ -42,6 +42,14 @@ PASSENGER_TYPE = [
     ('INF', 'Infant')
 ]
 
+TITLE = [
+    ('MR', 'MR'),
+    ('MRS', 'MRS'),
+    ('MS', 'MS'),
+    ('MSTR', 'MSTR'),
+    ('MISS', 'MISS')
+]
+
 PROCESS_STATUS = [
     ('accepted', 'Accepted'),
     ('rejected', 'Rejected')
@@ -61,6 +69,7 @@ class VisaOrderPassengers(models.Model):
     passenger_id = fields.Many2one('tt.customer', 'Passenger', readonly=1)
     pricelist_id = fields.Many2one('tt.reservation.visa.pricelist', 'Visa Pricelist', readonly=1)
     passenger_type = fields.Selection(PASSENGER_TYPE, 'Pax Type', readonly=1)
+    title = fields.Selection(TITLE, 'Title', readonly=1)
     passenger_domicile = fields.Char('Domicile', related='passenger_id.domicile', readonly=1)
     process_status = fields.Selection(PROCESS_STATUS, string='Process Result',
                                       readonly=1)
