@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_agent_form_view_inherit" model="ir.ui.view">
+        <field name="name">tt.agent.form.view.inherit</field>
+        <field name="model">tt.agent</field>
+        <field name="inherit_id" ref="tt_base.tt_agent_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                <button name="action_view_ledgers" type="object"
+                        class="oe_stat_button" icon="fa-money">
+                    <field name="ledger_ids" widget="statinfo" string="Ledger(s)"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

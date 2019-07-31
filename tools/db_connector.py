@@ -55,6 +55,10 @@ class BackendConnector(DbConnector):
         except Exception as e:
             _logger.error('Backend Connector Config Error, %s' % str(e))
 
+    def get_error_code_api(self):
+        res = self.execute('tt.error.api', 'get_error_code_api', [False])
+        return res
+
 
 class GatewayConnector(DbConnector):
     def __init__(self):
@@ -74,4 +78,12 @@ class GatewayConnector(DbConnector):
 
     def get_error_code_api(self):
         res = self.execute('tt.error.api', 'get_error_code_api', [False])
+        return res
+
+    def send_telegram_message(self, data, context):
+        res = self.execute('tt.telegram.account', 'action_send_message_api', [False, data, context])
+        return res
+
+    def telegram_notif_api(self, data, context):
+        res = self.execute('tt.error.api', 'telegram_notif_api', [False, data, context])
         return res

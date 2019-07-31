@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="tt_reservation_visa.tt_reservation_visa_view_form"/>
         <field name="arch" type="xml">
 
-            <field name="booker_id" position="after">
+            <field name="contact_id" position="after">
                 <field name="state_invoice"/>
             </field>
             <xpath expr="//button[@name='action_cancel_visa']" position="after">

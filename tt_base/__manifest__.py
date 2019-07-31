@@ -20,6 +20,7 @@ Key Features
         'data/skipped_history_data.xml',
         'data/customer_parent_type_rodex_data.xml',
         'data/tt.bank.csv',
+        'data/tt.error.api.csv',
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
 
@@ -51,7 +52,8 @@ Key Features
         'views/tt_destination_views.xml',
         'views/tt_skipped_keys_views.xml',
         'views/tt_customer_parent_views.xml',
-        'views/tt_routes_views.xml'
+        'views/tt_routes_views.xml',
+        'views/error_api_views.xml'
     ],
     'demo': [],
     'qweb': [],

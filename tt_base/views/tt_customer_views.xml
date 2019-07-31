@@ -35,7 +35,6 @@
                             <field name="marital_status"/>
                             <field name="religion"/>
                             <field name="birth_date"/>
-                            <field name="age"/>
                             <field name="passport_number"/>
                             <field name="passport_expdate"/>
                             <field name="user_id"/>

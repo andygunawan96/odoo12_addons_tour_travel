@@ -143,7 +143,7 @@ class PricingProviderLine(models.Model):
             'destination_codes': destination_codes,
             'destination_city_ids': destination_city_ids,
             'destination_country_codes': destination_country_codes,
-            'currency_code': self.currency_id and self.currency_id.code or '',
+            'currency_code': self.currency_id and self.currency_id.name or '',
             'fee_amount': self.fee_amount,
             'is_per_route': self.is_per_route,
             'is_per_segment': self.is_per_segment,

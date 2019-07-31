@@ -2,18 +2,19 @@ from odoo import models,api,fields
 import datetime
 from odoo import exceptions
 
+
 class Ledger(models.Model):
     _inherit = 'tt.ledger'
 
     agent_invoice_id = fields.Many2one('tt.agent.invoice','Agent Invoice ID')
 
-class AgentInvoice(models.Model):
 
+class AgentInvoice(models.Model):
     _name = 'tt.agent.invoice'
 
-    name = fields.Char('Name')
+    name = fields.Char('Name', default='New')
     total = fields.Monetary('Total', compute="_compute_total")
-    paid_amount = fields.Monetary('Paid Ammount', readonly=True)
+    paid_amount = fields.Monetary('Paid Amount', readonly=True)
     invoice_line_ids = fields.One2many('tt.agent.invoice.line','invoice_id','Invoice Line')
     contact_id = fields.Many2one('tt.customer', 'Booker / Contact')
     type = fields.Selection([
@@ -42,7 +43,9 @@ class AgentInvoice(models.Model):
              " * The 'Cancelled' status is used when user cancel invoice.")
 
     agent_id = fields.Many2one('tt.agent', string='Agent', required=True)
-    sub_agent_id = fields.Many2one('tt.agent', 'Customer', required=True)
+    customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer', readonly=True, states={'draft': [('readonly', False)]}, help='COR/POR Name')
+    customer_parent_type_id = fields.Many2one('tt.customer.parent.type', 'Customer Parent Type',
+                                              related='customer_parent_id.customer_parent_type_id')
 
     ledger_ids = fields.One2many('tt.ledger', 'agent_invoice_id', 'Ledger',
                                               readonly=True, states={'draft': [('readonly', False)]})
@@ -64,18 +67,16 @@ class AgentInvoice(models.Model):
     bill_uid = fields.Many2one('res.users', 'Billed by')
     bill_date = fields.Datetime('Billed Date')
 
-
     date_invoice = fields.Date(string='Invoice Date', default=fields.Date.context_today,
                                index=True, copy=False)
     date_due = fields.Date(string='Due Date', index=True, copy=False)
 
-    def create(self, vals_list):
-        vals_list.update({
-            'name': self.env['ir.sequence'].next_by_code('agent.invoice')
-        })
-        return super(AgentInvoice, self).create(vals_list)
-
-
+    def action_confirm(self):
+        if self.state == 'draft':
+            self.state = 'confirm'
+            self.confirmed_date = fields.Datetime.now()
+            self.confirmed_uid = self.env.user.id
+            self.name = self.name == 'New' and self.env['ir.sequence'].next_by_code('agent.invoice') or self.name
 
     def _compute_total(self):
         for inv in self:
@@ -110,8 +111,8 @@ class AgentInvoice(models.Model):
 
         #fixme ini mau di apain rulesnya
         #1. pakai external ID corpor
-        #2. kalau agent_id dan sub_agent_id nya berbeda
-        if self.agent_id.id == self.sub_agent_id.id:
+        #2. kalau agent_id dan customer_parent_type_id nya berbeda
+        if self.agent_id.id == self.customer_parent_type_id.id:
             return True
 
         ledger = self.env['tt.ledger'].sudo()
@@ -122,16 +123,12 @@ class AgentInvoice(models.Model):
         vals = ledger.prepare_vals('Agent Invoice : ' + self.name, self.name, datetime.datetime.now(), 'transport',
                                    self.currency_id.id, 0, amount)
         # vals['transport_booking_id'] = self.id
-        vals['agent_id'] = self.sub_agent_id.id
+        vals['agent_id'] = self.customer_parent_type_id.id
         vals['agent_invoice_id'] = self.id
 
         ledger.create(vals)
-        self.sub_agent_id.balance -= amount
-        self.sub_agent_id.actual_balance -= amount
-
-
-
-
+        self.customer_parent_type_id.balance -= amount
+        self.customer_parent_type_id.actual_balance -= amount
 
     def action_bill(self):
         # security : user_agent_supervisor

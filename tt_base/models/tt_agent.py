@@ -1,8 +1,9 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from PIL import Image
 from odoo.tools import image
 import logging, traceback
 from ...tools.api import Response
+from odoo.exceptions import AccessError, UserError
 
 
 _logger = logging.getLogger(__name__)
@@ -21,16 +22,18 @@ class TtAgent(models.Model):
     reference = fields.Many2one('tt.agent', 'Reference', help="Agent who Refers This Agent")
     balance = fields.Monetary(string="Balance",  required=False, )
     actual_balance = fields.Monetary(string="Actual Balance",  required=False, )
-    annual_revenue_target = fields.Monetary(string="Annual Revenue Target", required=False, )
-    annual_profit_target = fields.Monetary(string="Annual Profit Target", required=False, )
+    annual_revenue_target = fields.Monetary(string="Annual Revenue Target", default=0)
+    annual_profit_target = fields.Monetary(string="Annual Profit Target", default=0)
+    # target_ids = fields.One2many('tt.agent.target', 'agent_id', string='Target(s)')
     credit_limit = fields.Monetary(string="Credit Limit",  required=False, )
     npwp = fields.Char(string="NPWP", required=False, )
     est_date = fields.Datetime(string="Est. Date", required=False, )
-    mou_start = fields.Datetime(string="Mou. Start", required=False, )
-    mou_end = fields.Datetime(string="Mou. End", required=False, )
+    # mou_start = fields.Datetime(string="Mou. Start", required=False, )
+    # mou_end = fields.Datetime(string="Mou. End", required=False, )
+    # mou_ids = fields.One2many('tt.agent.mou', 'agent_id', string='MOU(s)')
     website = fields.Char(string="Website", required=False, )
     email = fields.Char(string="Email", required=False, )
-    currency_id = fields.Many2one('res.currency', string='Currency')
+    currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.user.company_id)
     va_mandiri = fields.Char(string="VA Mandiri", required=False, )
     va_bca = fields.Char(string="VA BCA", required=False, )
     address_ids = fields.One2many('address.detail', 'agent_id', string='Addresses')
@@ -39,9 +42,8 @@ class TtAgent(models.Model):
     customer_parent_ids = fields.One2many('tt.customer.parent', 'parent_agent_id', 'Customer Parent')
     customer_parent_walkin_id = fields.Many2one('tt.customer.parent','Walk In Parent')
     customer_ids = fields.One2many('tt.customer', 'agent_id', 'Customer')
-    # ledger_id = fields.One2many('tt.ledger', 'agent_id', 'Ledger', required=False, )  # tt_ledger
-    ledger_id = fields.Char('Ledger', required=False, )  # tt_ledger
-    parent_agent_id = fields.Many2one('tt.agent', string="Parent Agent", Help="Agent who became Parent of This Agent")
+
+    parent_agent_id = fields.Many2one('tt.agent', string="Parent Agent")
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type')
     history_ids = fields.Char(string="History", required=False, )  # tt_history
     user_ids = fields.One2many('res.users', 'agent_id', 'User')
@@ -50,6 +52,15 @@ class TtAgent(models.Model):
     tac = fields.Text('Terms and Conditions', readonly=True, states={'draft': [('readonly', False)],
                                                                      'confirm': [('readonly', False)]})
     active = fields.Boolean('Active', default='True')
+
+    # TODO VIN:tnyakan creator
+    # 1. Image ckup 1 ae (logo)
+    # 2. Credit limit buat agent di kasih ta? jika enggak actual balance di hapus ckup balance sja
+    # 3. VA_BCA + VA_mandiri dipisah skrg dimasukan ke payment method(field baru ditambahakan waktu instal module VA)
+    # 4. Annual Revenue + annual Profit Target di buat O2Many supaya kita bisa tau historical dari agent tersebut tiap taune
+    # 5. Agent Code => kode citra darmo misal RDX_0001, digunakan referal code or etc?
+    # 6. MOU start - Mou End = dibuat historical juga buat catat kerja sama kita pertimbangkan juga untuk masukan min/max MMF disini
+    # Cth: fungsi MOU remider untuk FIPRO dkk
 
     @api.depends('logo')
     def _get_logo_image(self):
@@ -124,3 +135,117 @@ class TtAgent(models.Model):
             _logger.error('%s, %s' % (str(e), traceback.format_exc()))
             res = Response().get_error(str(e), 500)
         return res
+
+    def check_balance_limit(self, amount):
+        if not self.ensure_one():
+            raise UserError('Can only check 1 agent each time got ' + str(len(self._ids)) + ' Records instead')
+        return self.balance >= amount
+
+    def check_balance_limit_api(self, agent_id, amount):
+        partner_obj = self.env['tt.agent'].browse(agent_id)
+        if not partner_obj:
+            return {
+                'error_code': 3,
+                'error_msg': 'Agent/Sub-Agent Not found'
+            }
+        if not partner_obj.check_balance_limit(amount):
+            return {
+                'error_code': 1,
+                'error_msg': 'Current Balance for Agent:' + partner_obj.name + ' is ' + str(partner_obj.actual_balance)
+            }
+        else:
+            return {
+                'error_code': 0,
+                'error_msg': "Balance / Credit limit enough"
+            }
+
+    def get_mmf_rule(self, agent_id):
+        # Cari di rule
+        rule = self.env['tt.monthly.fee.rule'].search([('agent_id', '=', agent_id.id),
+                                                    ('state', 'in', ['confirm', 'done']),
+                                                    ('start_date', '<=', fields.Date.today()),
+                                                    ('end_date', '>', fields.Date.today()),
+                                                    ('active', '=', True)], limit=1)
+        percentage = rule and rule.perc or agent_id.agent_type_id.roy_percentage
+        min_val = rule and rule.min_amount or agent_id.agent_type_id.min_value
+        max_val = rule and rule.max_amount or agent_id.agent_type_id.max_value
+        return percentage, min_val, max_val
+
+    def get_current_agent_target(self):
+        for rec in self:
+            last_target_id = self.env['tt.agent.target'].search([('agent_id', '=', rec.id)], limit=1)
+            rec.annual_revenue_target = last_target_id.annual_revenue_target
+            rec.annual_profit_target = last_target_id.annual_profit_target
+
+    def action_show_agent_target_history(self):
+        tree_view_id = self.env.ref('tt_base.view_agent_target_tree').id
+        form_view_id = self.env.ref('tt_base.view_agent_target_form').id
+        return {
+            'name': _('Target History'),
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'res_model': 'tt.agent.target',
+            'views': [(tree_view_id, 'tree'), (form_view_id, 'form')],
+            'domain': [('agent_id', '=', self.id)],
+            'context': {
+                'default_agent_id': self.id,
+                'default_currency_id': self.currency_id.id,
+            },
+        }
+
+
+class AgentTarget(models.Model):
+    _inherit = ['tt.history']
+    _name = 'tt.agent.target'
+    _order = 'start_date desc'
+    _description = 'Historical Target Agent per Satuan waktu (tahun/bulan)'
+
+    name = fields.Char('Target Name')
+    agent_id = fields.Many2one('tt.agent', 'Agent')
+    start_date = fields.Date('Start Date')
+    end_date = fields.Date('End Date')
+
+    annual_revenue_target = fields.Monetary("Annual Revenue Target")
+    annual_profit_target = fields.Monetary("Annual Profit Target")
+
+    currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.user.company_id)
+
+
+class AgentMOU(models.Model):
+    _inherit = ['tt.history']
+    _name = 'tt.agent.mou'
+    _description = 'Agent Memorandum of Understanding'
+    # Catet Perjanian kerja sama antara citra dengan agent contoh: Fipro target e brpa klo kurang dia mesti bayar
+
+    name = fields.Char('Target Name')
+    agent_id = fields.Many2one('tt.agent', 'Agent', domain=[('parent_id', '=', False)], required=True)
+
+    start_date = fields.Date('Start Date')
+    end_date = fields.Date('End Date')
+    min_amount = fields.Monetary('Min MMF', copy=False)
+    max_amount = fields.Monetary('Max MMF', copy=False)
+    perc = fields.Float('Percentage', copy=False)
+    currency_id = fields.Many2one('res.currency', string='Currency', readonly=True,
+                                  default=lambda self: self.env.user.company_id.currency_id)
+
+    state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirm'),
+                              ('inactive', 'In Active')],
+                             string='State', default='draft')
+    confirm_uid = fields.Many2one('res.users', 'Confirmed by')
+    confirm_date = fields.Datetime('Confirm Date')
+    active = fields.Boolean('Active', default=True)
+
+    def get_mmf_rule(self, agent_id, date=False):
+        if not date:
+            date = fields.Date.today()
+        # Cari di rule
+        rule = self.search([('agent_id', '=', agent_id.id), ('state', '=', 'confirm'),
+                            ('start_date', '<=', date), ('end_date', '>', date),
+                            ('active', '=', True)], limit=1)
+        # Todo: pertimbangkan tnya base rule untuk masing2x citra dimna?
+        # percentage = rule and rule.perc or agent_id.agent_type_id.roy_percentage
+        percentage = rule and rule.perc or 0
+        min_val = rule and rule.min_amount or 0
+        max_val = rule and rule.max_amount or 0
+        return percentage, min_val, max_val

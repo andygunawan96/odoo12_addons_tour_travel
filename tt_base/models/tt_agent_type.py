@@ -84,12 +84,12 @@ class CommissionRule(models.Model):
     percentage = fields.Float('Commission (%)', default=100)
     amount = fields.Float('Amount')
     amount_multiplier = fields.Selection([('code', 'Booking Code'), ('pppr', 'Per Person Per Pax')],
-                                         'Multiplier', help='Parent Agent Commision Type', default='code')
+                                         'Multiplier', help='Parent Agent commission Type', default='code')
     parent_agent_type = fields.Selection([('per', 'Percentage'), ('amo', 'Amount')], 'Parent Type',
-                                         help='Parent Agent Commision Type')
+                                         help='Parent Agent commission Type')
     parent_agent_amount = fields.Float('Parent Amount')
     ho_commission_type = fields.Selection([('per', 'Percentage'), ('amo', 'Amount')],
-                                          'HO Commission Type', help='Head Office Commision Type')
+                                          'HO Commission Type', help='Head Office commission Type')
     ho_amount = fields.Float('HO Amount')
     active = fields.Boolean('Active', default=True)
 

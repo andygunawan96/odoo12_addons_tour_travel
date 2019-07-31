@@ -382,7 +382,7 @@ class TtVisa(models.Model):
     }
 
     def get_booking_visa_api(self, data):
-        for rec in self.search([('name', '=', data['order_number'])]):
+        for rec in self.search([('name', '=', self.name)]):  # data['order_number']
             passenger = []
             # contact = []
             # sale = {}
@@ -479,6 +479,7 @@ class TtVisa(models.Model):
             }
         if not res:
             res = Response().get_error(str('Visa Booking not found'), 500)
+        print('Response : ' + str(json.dumps(res)))
         return Response().get_no_error(res)
 
     def create_booking_visa_api(self, data, context, kwargs):

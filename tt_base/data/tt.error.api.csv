@@ -1,0 +1,23 @@
+id,code,message,note,description,active,is_data
+tt_error_api_50,50,Error code message is not found,,,1,1
+tt_error_api_420,420,Method failure,,,1,1
+tt_error_api_500,500,Internal server error,,,1,1
+tt_error_api_1001,1001,Booking not found,,,1,1
+tt_error_api_1002,1002,Provider not found,,,1,1
+tt_error_api_1003,1003,Order number not found,,,1,1
+tt_error_api_1004,1004,Create booking error,,,1,1
+tt_error_api_1005,1005,Update booking error,,,1,1
+tt_error_api_1006,1006,No PNR booked/issued successfully,,,1,1
+tt_error_api_1007,1007,Not enough balance,,,1,1
+tt_error_api_1001,4001,Invalid action type,,,1,1
+tt_error_api_1002,4002,Error while validating your credential,,,1,1
+tt_error_api_1003,4003,Your session has been expired,,,1,1
+tt_error_api_1004,4004,Permission denied,,,1,1
+tt_error_api_1005,4005,Provider is unavailable,,,1,1
+tt_error_api_1006,4006,Price Changed,,,1,1
+tt_error_api_9901,9901,Notification,For Notif,,1,1
+tt_error_api_9902,9902,Warning,For Warning,,1,1
+tt_error_api_9903,9903,Error,For Error,,1,1
+tt_error_api_9904,9904,Balance,For Balance,,1,1
+tt_error_api_9905,9905,Booking,For Booking,,1,1
+tt_error_api_9906,9906,Issued,For Issued,,1,1

@@ -40,6 +40,11 @@ class PaymentTransaction(models.Model):
 
     #Todo:
     # 1. Pertimbangkan penggunaan monetary field untuk integer field (pertimbangkan multi currency juga)
+    # 2. Tambahkan confirm uid + confirm date dan validate uid + validate date
+    # 3. Reference => Catat nomor transfer atau detail2x laine
+    # 4. Nama diberikan waktu state draft (karena?) usul klo isa waktu state confirm
+    # 5. Ganti payment_uid dengan agent_id
+    # 6. Tambahkan Payment Acquirer metode pembayaran e
 
     def get_residual_amount(self,vals = {}):
         return vals.get('total_amount',self.total_amount) - \

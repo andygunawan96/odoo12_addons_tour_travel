@@ -98,6 +98,7 @@
                                 <field name="contact_id" required="1" context="{'default_commercial_agent_id': agent_id}" options="{'no_quick_create': True}"/>  <!--ganti jadi customer parent id-->
                                 <!--<field name="display_mobile" required="1"/>-->
                                 <field name="provider_type_id" domain="[('code', 'not in', ['tour','visa','passport'])]"/>
+                                <field name="provider_type_id_name" invisible="1"/>
                                 <field name="sector_type" attrs="{'invisible': [('provider_type_id', 'not in', 2)]}"/>
                                 <!--<field name="customer_id"/>-->
                                 <field name="cancel_message" states="cancel"
@@ -161,7 +162,7 @@
                             <group>
 <!--                                <field name="refund_id"  attrs="{'invisible': [('refund_id', '=', False)]}"/>-->
                                 <!--<field name="description"/>-->
-                                <field name="description" attrs="{'invisible': [('provider_type_id', 'in', [1,2]), ('state','=','draft')]}"/>
+                                <field name="description" attrs="{'invisible': [('provider_type_id_name', 'in', ['airline', 'train']), ('state','=','draft')]}"/>
                             </group>
                             <group string="Booking Value" groups="tt_base.group_tt_tour_travel_operator" states="paid,posted">
                                 <field name="resv_code"/>

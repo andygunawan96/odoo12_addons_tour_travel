@@ -149,7 +149,7 @@ access_tt_access_activity_for_tour_travel_operator,tt.access.activity.for.tour.t
 access_tt_access_activity_for_tour_travel_supervisor,tt.access.activity.for.tour.travel.supervisor,model_tt_access_activity,tt_base.group_tt_tour_travel_supervisor,1,0,1,0
 access_tt_access_activity_for_tour_travel_manager,tt.access.activity.for.tour.travel.manager,model_tt_access_activity,tt_base.group_tt_tour_travel_manager,1,1,1,0
 
-access_tt_proider_for_public,tt.provider.for.public,model_tt_provider,,1,0,0,0
+access_tt_provider_for_public,tt.provider.for.public,model_tt_provider,,1,0,0,0
 access_tt_provider_for_tour_travel_operator,tt.provider.for.tour.travel.operator,model_tt_provider,tt_base.group_tt_tour_travel_operator,1,0,0,0
 access_tt_provider_for_tour_travel_supervisor,tt.provider.for.tour.travel.supervisor,model_tt_provider,tt_base.group_tt_tour_travel_supervisor,1,0,1,0
 access_tt_provider_for_tour_travel_manager,tt.provider.for.tour.travel.manager,model_tt_provider,tt_base.group_tt_tour_travel_manager,1,1,1,0
@@ -169,3 +169,13 @@ access_tt_customer_parent_for_agent_management_manager,tt.customer.parent.for.ag
 
 access_tt_customer_parent_type_for_public,tt.customer.for.public,model_tt_customer_parent_type,,1,1,1,1
 access_tt_customer_parent_type_for_agent_management_manager,tt.customer.parent.type.for.agent.management.manager,model_tt_customer_parent_type,group_tt_agent_management_manager,1,1,1,1
+
+access_tt_agent_target_for_public,tt.agent.target.for.public,model_tt_agent_target,,1,0,0,0
+access_tt_agent_target_for_agent_user_operator,tt.agent.target.for.agent.user.operator,model_tt_agent_target,group_tt_agent_user_operator,1,1,1,0
+access_tt_agent_target_for_tour_travel_operator,tt.agent.target.for.tour.travel.operator,model_tt_agent_target,group_tt_tour_travel_operator,1,1,1,0
+
+access_tt_agent_mou_for_public,tt.agent.mou.for.public,model_tt_agent_target,,1,0,0,0
+access_tt_agent_mou_for_agent_user_operator,tt.agent.mou.for.agent.user.operator,model_tt_agent_mou,group_tt_agent_user_operator,1,1,1,0
+access_tt_agent_mou_for_tour_travel_operator,tt.agent.mou.for.tour.travel.operator,model_tt_agent_mou,group_tt_tour_travel_operator,1,1,1,0
+
+access_tt_error_api_for_public,tt.error.api.for.public,model_tt_error_api,,1,1,1,1

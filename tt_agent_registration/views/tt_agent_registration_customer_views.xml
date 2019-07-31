@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_agent_registration_customer_form_view" model="ir.ui.view">
+        <field name="name">tt.agent.registration.customer.form.view</field>
+        <field name="model">tt.agent.registration.customer</field>
+        <field name="arch" type="xml">
+            <form string="Agent Registration Customer">
+                <sheet>
+                    <div class="oe_title">
+                        <h3>
+                            <field name="first_name" placeholder="First Name"/>
+                            <span color="white">.</span>
+                            <field name="last_name" placeholder="Last Name"/>
+                        </h3>
+                    </div>
+                    <group>
+<!--                        <field name="agent_id" readonly="False"/>-->
+                        <field name="customer_id"/>
+                        <field name="gender"/>
+                        <field name="marital_status"/>
+                        <field name="religion"/>
+                        <field name="birth_date"/>
+                        <field name="email"/>
+                        <field name="phone"/>
+                        <field name="mobile"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_agent_registration_customer_tree_view" model="ir.ui.view">
+        <field name="name">tt.agent.registration.customer.tree.view</field>
+        <field name="model">tt.agent.registration.customer</field>
+        <field name="arch" type="xml">
+            <tree string="">
+                <field name="first_name"/>
+                <field name="last_name"/>
+                <field name="email"/>
+                <field name="birth_date"/>
+            </tree>
+        </field>
+    </record>
+</odoo>

@@ -3,8 +3,10 @@ import datetime
 from ...tools.api import Response
 import logging
 import traceback
+from ...tools.db_connector import GatewayConnector
 
 _logger = logging.getLogger(__name__)
+_gw_con = GatewayConnector()
 
 TRANSPORT_TYPE = [('airline', 'Airline'),
                   ('train', 'Train'),
@@ -212,6 +214,12 @@ class Routes(models.Model):
                     'city': '',
                 }
                 origin_obj = self.env['tt.destinations'].sudo().create(origin_values)
+                values = {
+                    'code': 9901,
+                    'title': 'New Destination Created',
+                    'message': 'Please complete destination detail for %s in %s' % (origin_obj.code, provider_obj.code)
+                }
+                _gw_con.telegram_notif_api(values, {})
                 origin_id = origin_obj.id
 
             destination_id = self.env['tt.destinations'].sudo().get_id(req_data['destination'], provider_obj)
@@ -224,6 +232,12 @@ class Routes(models.Model):
                     'city': '',
                 }
                 destination_obj = self.env['tt.destinations'].sudo().create(destination_values)
+                values = {
+                    'code': 9901,
+                    'title': 'New Destination Created',
+                    'message': 'Please complete destination detail for %s in %s' % (destination_obj.code, provider_obj.code)
+                }
+                _gw_con.telegram_notif_api(values, {})
                 destination_id = destination_obj.id
 
             carrier_id = self.env['tt.transport.carrier'].sudo().get_id(req_data['carrier_code'], provider_obj)
@@ -234,6 +248,12 @@ class Routes(models.Model):
                     'provider_type_id': provider_obj.id,
                 }
                 carrier_obj = self.env['tt.destinations'].sudo().create(carrier_values)
+                values = {
+                    'code': 9901,
+                    'title': 'New Carrier Created',
+                    'message': 'Please complete carrier detail for %s in %s' % (carrier_obj.code, provider_obj.code)
+                }
+                _gw_con.telegram_notif_api(values, {})
                 carrier_id = carrier_obj.id
 
             req_data.update({

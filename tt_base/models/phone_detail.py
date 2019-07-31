@@ -17,3 +17,9 @@ class PhoneDetail(models.Model):
     agent_id = fields.Many2one('tt.agent', string='Agent')
     customer_id = fields.Many2one('tt.customer', string='Customer')
     active = fields.Boolean('Active', default=True)
+
+    def to_dict(self):
+        return {
+            'type': self.type,
+            'phone_number': self.phone_number
+        }

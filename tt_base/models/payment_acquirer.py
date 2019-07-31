@@ -1,4 +1,5 @@
 from odoo import api, fields, models, _
+from random import randint
 
 TYPE = [
     ('cash', 'Cash'),

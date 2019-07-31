@@ -1,6 +1,6 @@
 import json
 from .api import Response
-from .db_connector import GatewayConnector as db_con
+from .db_connector import BackendConnector as db_con
 
 
 ERR_CODE = {}
