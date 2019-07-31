@@ -4,13 +4,6 @@ from ...tools.api import Response
 import logging,traceback
 import datetime
 import json
-import copy
-
-#controller
-#booking
-#update pnr
-#update tb seat
-#issued
 
 _logger = logging.getLogger(__name__)
 
@@ -79,13 +72,13 @@ class ReservationAirline(models.Model):
     def action_check_provider_state(self):
         pass##fixme later
 
-    def action_booked_api_airline(self,pnr_list,hold_date):
+    def action_booked_api_airline(self,context,pnr_list,hold_date):
         self.write({
             'name': self.env['ir.sequence'].next_by_code('reservation.airline'),
             'state': 'booked',
             'pnr': ', '.join(pnr_list),
             'hold_date': hold_date,
-            # 'booked_by':
+            'booked_uid': context['co_uid']
         })
 
     def action_issued_api_airline(self,context):
@@ -351,7 +344,7 @@ class ReservationAirline(models.Model):
             if all(rec == 'BOOKED' for rec in book_status):
                 #booked
                 book_obj.calculate_service_charge()
-                book_obj.action_booked_api_airline(pnr_list,hold_date)
+                book_obj.action_booked_api_airline(context,pnr_list,hold_date)
             elif all(rec == 'ISSUED' for rec in book_status):
                 book_obj.action_issued_api_airline(context)
             elif any(rec == 'FAILED_ISSUED' for rec in book_status):
@@ -433,6 +426,7 @@ class ReservationAirline(models.Model):
             return Response().get_error(str(e),500)
 
     def update_cost_service_charge_airline_api(self,req,context):
+        print('update cost\n' + json.dumps(req))
         for provider in req['provider_bookings']:
             provider_obj = self.env['tt.provider.airline'].browse(provider['provider_id'])
             if not provider_obj:
@@ -443,6 +437,7 @@ class ReservationAirline(models.Model):
                 for segment in journey['segments']:
                     for fare in segment['fares']:
                         provider_obj.create_service_charge(fare['service_charges'])
+        return ERR.get_no_error()
 
     def validate_booking(self, api_context=None):
         user_obj = self.env['res.users'].browse(api_context['co_uid'])
