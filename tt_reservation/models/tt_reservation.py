@@ -291,3 +291,5 @@ class TtReservation(models.Model):
             return book_obj
         else:
             return False
+
+    # def update_extra_service_charge(self):

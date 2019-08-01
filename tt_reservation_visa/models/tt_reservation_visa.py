@@ -398,17 +398,9 @@ class TtVisa(models.Model):
                 #             'amount': passenger[len(passenger) - 1]['visa']['price'][sale_price],
                 #             'currency': passenger[len(passenger) - 1]['visa']['price']['currency']
                 #         })
-                sale_obj = self.env['tt.service.charge'].sudo().search([('visa_id', '=', self.id), ('passenger_visa_ids', '=', pax.id)])
-                sale = []
-                # sale_obj = self.env['tt.service.charge'].sudo().search(
-                #     [('visa_id', '=', data['order_number']), ('passenger_visa_ids', '=', pax.id)])
-                # sale = {}
+                sale_obj = self.env['tt.service.charge'].sudo().search([('visa_id', '=', data['order_number']), ('passenger_visa_ids', '=', pax.id)])
+                sale = {}
                 for ssc in sale_obj:
-                    # sale.append({
-                    #     'charge_code': ssc['charge_code'],
-                    #     'amount': ssc['amount'],
-                    #     'currency': ssc['currency_id'].id
-                    # })
                     if ssc['charge_code'] == 'r.ac':
                         sale['RAC'] = {
                             'charge_code': 'rac',
@@ -491,21 +483,16 @@ class TtVisa(models.Model):
         print('Response : ' + str(json.dumps(res)))
         return Response().get_no_error(res)
 
-    def create_booking_visa_api(self):  # , data, context, kwargs
-        sell_visa = copy.deepcopy(self.param_sell_visa)  # data['sell_visa']
-        booker = copy.deepcopy(self.param_booker)  # data['booker']
-        contact = copy.deepcopy(self.param_contact)  # data['contact']
-        passengers = copy.deepcopy(self.param_passenger)  # data['passenger']
-        search = copy.deepcopy(self.param_search)  # data['search']
-        context = copy.deepcopy(self.param_context)  # context
-        kwargs = copy.deepcopy(self.param_kwargs)  # kwargs
-
-        context.update({
-            'co_uid': context['co_uid']
-        })
+    def create_booking_visa_api(self, data, context, kwargs):
+        sell_visa = data['sell_visa']
+        booker = data['booker']
+        contact = data['contact']
+        passengers = data['passenger']
+        search = data['search']
+        context = context
+        kwargs = kwargs
 
         try:
-            context = self._update_api_context(contact, context)  # update agent_id dan booker
             user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
             for contact_data in contact:
                 contact_data.update({
@@ -1353,9 +1340,9 @@ class TtVisa(models.Model):
                 if line.charge_code == 'r.oc':
                     rec.total_commission += line.total
                     print('Charge Code R.Oc ' + str(rec.total_commission))
-                if line.charge_code == 'r.ac':
+                if line.charge_code == 'rac':
                     rec.total_commission += line.total
-                    print('Charge Code R.Ac ' + str(rec.total_commission))
+                    print('Charge Code RAC ' + str(rec.total_commission))
 
             # rec.total_fare = fare
             rec.update({
