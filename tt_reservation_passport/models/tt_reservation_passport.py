@@ -294,53 +294,46 @@ class TtPassport(models.Model):
 
             vals = ledger.prepare_vals('Order ' + doc_type + ' : ' + rec.name, rec.name, rec.issued_date,
                                        'travel.doc', rec.currency_id.id, 0, total_order)
-            vals.update({
-                'res_id': rec.id,
-                'res_model': rec._name,
-                'agent_id': rec.agent_id.id,
-                'pnr': rec.pnr,
-                'provider_type_id': rec.provider_type_id.id,
-                'description': desc
-            })
-            # vals['transport_type'] = rec.transport_type
-            # vals['display_provider_name'] = rec.display_provider_name
+            vals = ledger.prepare_vals_for_resv(self, vals)
 
-            new_aml = ledger.sudo().create(vals)     
+            new_aml = ledger.create(vals)
 
     def _create_ho_ledger_passport(self):
         ledger = self.env['tt.ledger']
         for rec in self:
             doc_type = []
-            desc = ''
             for sc in rec.sale_service_charge_ids:
                 if sc.pricelist_id.passport_type not in doc_type:
                     doc_type.append(sc.pricelist_id.passport_type)
-                desc = sc.pricelist_id.display_name.upper() + ' ' + sc.pricelist_id.entry_type.upper()
 
             doc_type = ','.join(str(e) for e in doc_type)
 
             ho_profit = 0
             for pax in self.to_passenger_ids:
-                print('Cost Price : ' + str(pax.pricelist_id.cost_price))
-                print('NTA Price : ' + str(pax.pricelist_id.nta_price))
+                # print('Cost Price : ' + str(pax.pricelist_id.cost_price))
+                # print('NTA Price : ' + str(pax.pricelist_id.nta_price))
                 ho_profit += pax.pricelist_id.cost_price - pax.pricelist_id.nta_price
 
             vals = ledger.prepare_vals('Profit HO ' + doc_type + ' : ' + rec.name, rec.name, rec.issued_date,
                                        'commission', rec.currency_id.id, ho_profit, 0)
+            vals = ledger.prepare_vals_for_resv(self, vals)
+            vals.update({
+                'agent_id': self.env['tt.agent'].sudo().search([('agent_type_id.name', '=', 'HO')], limit=1).id
+            })
 
             # vals['transport_type'] = rec.transport_type
             # vals['display_provider_name'] = rec.display_provider_name
 
-            vals.update({
-                'res_id': rec.id,
-                'res_model': rec._name,
-                'agent_id': self.env['tt.agent'].sudo().search([('agent_type_id.name', '=', 'HO')], limit=1).id,
-                'pnr': rec.pnr,
-                'description': desc,
-                'provider_type_id': rec.provider_type_id.id
-            })
+            # vals.update({
+            #     'res_id': rec.id,
+            #     'res_model': rec._name,
+            #     'agent_id': self.env['tt.agent'].sudo().search([('agent_type_id.name', '=', 'HO')], limit=1).id,
+            #     'pnr': rec.pnr,
+            #     'description': desc,
+            #     'provider_type_id': rec.provider_type_id.id
+            # })
 
-            new_aml = ledger.sudo().create(vals)
+            new_aml = ledger.create(vals)
 
     def _create_commission_ledger_passport(self):
         # pass
@@ -348,30 +341,24 @@ class TtPassport(models.Model):
             ledger_obj = rec.env['tt.ledger']
             agent_commission, parent_commission, ho_commission = rec.sub_agent_id.agent_type_id.calc_commission(
                 rec.total_commission, 1)
-            print('Agent Comm : ' + str(agent_commission))
-            print('Parent Comm : ' + str(parent_commission))
-            print('HO Comm : ' + str(ho_commission))
+            # print('Agent Comm : ' + str(agent_commission))
+            # print('Parent Comm : ' + str(parent_commission))
+            # print('HO Comm : ' + str(ho_commission))
 
             if agent_commission > 0:
                 vals = ledger_obj.prepare_vals('Commission : ' + rec.name, rec.name, rec.issued_date, 'commission',
                                                rec.currency_id.id, agent_commission, 0)
-                vals.update({
-                    'agent_id': rec.sub_agent_id.id,
-                    'res_id': rec.id,
-                })
+                vals = ledger_obj.prepare_vals_for_resv(self, vals)
+
                 commission_aml = ledger_obj.create(vals)
-                # commission_aml.action_done()
-                # rec.commission_ledger_id = commission_aml.id
             if parent_commission > 0:
                 vals = ledger_obj.prepare_vals('Commission : ' + rec.name, 'PA: ' + rec.name, rec.issued_date,
                                                'commission',
                                                rec.currency_id.id, parent_commission, 0)
                 vals.update({
-                    'agent_id': rec.sub_agent_id.parent_agent_id.id,
-                    'res_id': rec.id,
+                    'agent_id': rec.agent_id.parent_agent_id.id,
                 })
                 commission_aml = ledger_obj.create(vals)
-                # commission_aml.action_done()
 
             if int(ho_commission) > 0:
                 vals = ledger_obj.prepare_vals('Commission : ' + rec.name, 'HO: ' + rec.name, rec.issued_date,
@@ -380,10 +367,8 @@ class TtPassport(models.Model):
                 vals.update({
                     'agent_id': rec.env['tt.agent'].sudo().search(
                         [('parent_agent_id', '=', False)], limit=1).id,
-                    'res_id': rec.id,
                 })
                 commission_aml = ledger_obj.create(vals)
-                # commission_aml.action_done()
 
     # ANTI / REVERSE LEDGER
 
@@ -403,14 +388,15 @@ class TtPassport(models.Model):
             vals = ledger.prepare_vals('Order ' + doc_type + ' : ' + rec.name, rec.name, rec.issued_date,
                                        'travel.doc',
                                        rec.currency_id.id, rec.total, 0)
-            vals['res_id'] = rec.id
-            vals['agent_id'] = rec.agent_id.id
-            vals['pnr'] = rec.pnr
-            # vals['transport_type'] = rec.transport_type
-            # vals['display_provider_name'] = rec.display_provider_name
-            vals['description'] = 'REVERSAL ' + desc
+            vals = ledger.prepare_vals_for_resv(self, vals)
+            vals.update({
+                'description': 'REVERSAL ' + desc,
+            })
 
             new_aml = ledger.sudo().create(vals)
+            new_aml.update({
+                'reversal_id': new_aml.id
+            })
 
     def _create_anti_ho_ledger_passport(self):
         ledger = self.env['tt.ledger']
@@ -432,20 +418,18 @@ class TtPassport(models.Model):
             vals = ledger.prepare_vals('Profit ' + doc_type + ' : ' + rec.name, rec.name, rec.issued_date,
                                        'commission',
                                        rec.currency_id.id, 0, ho_profit)
-
+            vals = ledger.prepare_vals_for_resv(self, vals)
             vals.update({
-                'res_id': rec.id,
                 'agent_id': self.env['tt.agent'].sudo().search([('parent_agent_id', '=', False)], limit=1).id,
-                'pnr': rec.pnr,
                 'description': 'REVERSAL ' + desc
             })
 
-            new_aml = ledger.sudo().create(vals)
-            # new_aml.action_done()
-            # rec.ledger_id = new_aml
+            new_aml = ledger.create(vals)
+            new_aml.update({
+                'reverse_id': new_aml.id,
+            })
 
     def _create_anti_commission_ledger_passport(self):
-        # pass
         for rec in self:
             ledger_obj = rec.env['tt.ledger']
             agent_commission, parent_commission, ho_commission = rec.sub_agent_id.agent_type_id.calc_commission(
@@ -453,35 +437,37 @@ class TtPassport(models.Model):
             if agent_commission > 0:
                 vals = ledger_obj.prepare_vals('Commission : ' + rec.name, rec.name, rec.issued_date, 'commission',
                                                rec.currency_id.id, 0, agent_commission)
-                vals.update({
-                    'agent_id': rec.sub_agent_id.id,
-                    'res_id': rec.id,
-                })
+                vals = ledger_obj.prepare_vals_for_resv(self, vals)
                 commission_aml = ledger_obj.create(vals)
-                # commission_aml.action_done()
-                # rec.commission_ledger_id = commission_aml.id
+                commission_aml.update({
+                    'reverse_id': commission_aml.id,
+                })
             if parent_commission > 0:
                 vals = ledger_obj.prepare_vals('Commission : ' + rec.name, 'PA: ' + rec.name, rec.issued_date,
                                                'commission',
                                                rec.currency_id.id, 0, parent_commission)
+                vals = ledger_obj.prepare_vals_for_resv(self, vals)
                 vals.update({
-                    'agent_id': rec.sub_agent_id.parent_agent_id.id,
-                    'res_id': rec.id,
+                    'agent_id': rec.agent_id.parent_agent_id.id,
                 })
                 commission_aml = ledger_obj.create(vals)
-                # commission_aml.action_done()
+                commission_aml.update({
+                    'reverse_id': commission_aml.id,
+                })
 
             if int(ho_commission) > 0:
                 vals = ledger_obj.prepare_vals('Commission : ' + rec.name, 'HO: ' + rec.name, rec.issued_date,
                                                'commission',
                                                rec.currency_id.id, 0, ho_commission)
+                vals = ledger_obj.prepare_vals_for_resv(self, vals)
                 vals.update({
                     'agent_id': rec.env['tt.agent'].sudo().search(
                         [('parent_agent_id', '=', False)], limit=1).id,
-                    'res_id': rec.id,
                 })
                 commission_aml = ledger_obj.create(vals)
-                # commission_aml.action_done()
+                commission_aml.update({
+                    'reverse_id': commission_aml.id,
+                })
 
     ######################################################################################################
     # CREATE

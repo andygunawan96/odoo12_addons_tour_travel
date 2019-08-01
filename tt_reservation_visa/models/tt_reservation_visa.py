@@ -319,8 +319,9 @@ class TtVisa(models.Model):
             "master_visa_Id": "3",
             "required": [
                 {
-                    "boolean": True,
-                    "id": 1
+                    "is_copy": True,
+                    "is_original": False,
+                    "id": 2
                 }
             ]
         },
@@ -338,8 +339,9 @@ class TtVisa(models.Model):
             "master_visa_Id": "1",
             "required": [
                 {
-                    "boolean": True,
-                    "id": 1
+                    "is_copy": True,
+                    "is_original": False,
+                    "id": 2
                 }
             ]
         },
@@ -357,8 +359,9 @@ class TtVisa(models.Model):
             "master_visa_Id": "2",
             "required": [
                 {
-                    "boolean": True,
-                    "id": 1
+                    "is_copy": True,
+                    "is_original": False,
+                    "id": 2
                 }
             ]
         }
@@ -395,14 +398,29 @@ class TtVisa(models.Model):
                 #             'amount': passenger[len(passenger) - 1]['visa']['price'][sale_price],
                 #             'currency': passenger[len(passenger) - 1]['visa']['price']['currency']
                 #         })
-                sale_obj = self.env['tt.service.charge'].sudo().search([('visa_id', '=', self.name), ('passenger_visa_ids', '=', pax.id)])
+                sale_obj = self.env['tt.service.charge'].sudo().search([('visa_id', '=', self.id), ('passenger_visa_ids', '=', pax.id)])
                 sale = []
+                # sale_obj = self.env['tt.service.charge'].sudo().search(
+                #     [('visa_id', '=', data['order_number']), ('passenger_visa_ids', '=', pax.id)])
+                # sale = {}
                 for ssc in sale_obj:
-                    sale.append({
-                        'charge_code': ssc['charge_code'],
-                        'amount': ssc['amount'],
-                        'currency': ssc['currency_id'].id
-                    })
+                    # sale.append({
+                    #     'charge_code': ssc['charge_code'],
+                    #     'amount': ssc['amount'],
+                    #     'currency': ssc['currency_id'].id
+                    # })
+                    if ssc['charge_code'] == 'r.ac':
+                        sale['RAC'] = {
+                            'charge_code': 'rac',
+                            'amount': ssc['amount'],
+                            'currency': ssc['currency_id'].name
+                        }
+                    else:
+                        sale[ssc['charge_code'].upper()] = {
+                            'charge_code': ssc['charge_code'],
+                            'amount': ssc['amount'],
+                            'currency': ssc['currency_id'].name
+                        }
                 for require in pax.to_requirement_ids:
                     requirement.append({
                         'name': require.requirement_id.name,
@@ -463,7 +481,7 @@ class TtVisa(models.Model):
                     'name': rec.name,
                     'payment_status': rec.commercial_state
                 },
-                'passenger': passenger,
+                'passengers': passenger,
                 # 'contact': contact,
                 # 'sale_price': sale
 
@@ -756,8 +774,8 @@ class TtVisa(models.Model):
             vals2.update({
                 'total': int(pricelist_obj.commission_price) * -1,
                 'amount': int(pricelist_obj.commission_price) * -1,
-                'charge_code': 'r.ac',
-                'charge_type': 'r.ac'
+                'charge_code': 'rac',
+                'charge_type': 'rac'
             })
             ssc_list.append(vals2)
         print(ssc_list)
@@ -932,6 +950,7 @@ class TtVisa(models.Model):
             pricelist_obj = pricelist_env.browse(pricelist_id)
             psg_vals = {
                 'passenger_id': passenger_ids[idx][0].id,
+                'title': psg['title'],
                 # 'passenger_type': psg['passenger_type'],
                 'pricelist_id': pricelist_id,
                 'passenger_type': psg['pax_type']
@@ -939,10 +958,20 @@ class TtVisa(models.Model):
             to_psg_obj = to_psg_env.create(psg_vals)
 
             to_req_list = []
-            for req in pricelist_obj.requirement_ids:
+            # for req in pricelist_obj.requirement_ids:
+            #     req_vals = {
+            #         'to_passenger_id': to_psg_obj.id,
+            #         'requirement_id': req.id,
+            #     }
+            #     to_req_obj = to_req_env.create(req_vals)
+            #     to_req_list.append(to_req_obj.id)  # akan dipindah ke edit requirements
+
+            for req in psg['required']:  # pricelist_obj.requirement_ids
                 req_vals = {
                     'to_passenger_id': to_psg_obj.id,
-                    'requirement_id': req.id,
+                    'requirement_id': req['id'],
+                    'is_ori': req['is_original'],
+                    'is_copy': req['is_copy']
                 }
                 to_req_obj = to_req_env.create(req_vals)
                 to_req_list.append(to_req_obj.id)  # akan dipindah ke edit requirements
@@ -1036,41 +1065,38 @@ class TtVisa(models.Model):
         ledger = self.env['tt.ledger']
         for rec in self:
             doc_type = []
-            desc = ''
             for sc in rec.sale_service_charge_ids:
-                # if rec.transport_type == 'passport':
-                #     if not sc.pricelist_id.apply_type in doc_type:
-                #         doc_type.append(sc.pricelist_id.apply_type)
-                #     desc = sc.pricelist_id.passport_type.upper() + ' ' + sc.pricelist_id.apply_type.upper()
-                # else:
                 if sc.pricelist_id.visa_type not in doc_type:
                     doc_type.append(sc.pricelist_id.visa_type)
-                desc = sc.pricelist_id.display_name.upper() + ' ' + sc.pricelist_id.entry_type.upper()
 
             doc_type = ','.join(str(e) for e in doc_type)
 
             ho_profit = 0
             for pax in self.to_passenger_ids:
-                print('Cost Price : ' + str(pax.pricelist_id.cost_price))
-                print('NTA Price : ' + str(pax.pricelist_id.nta_price))
+                # print('Cost Price : ' + str(pax.pricelist_id.cost_price))
+                # print('NTA Price : ' + str(pax.pricelist_id.nta_price))
                 ho_profit += pax.pricelist_id.cost_price - pax.pricelist_id.nta_price
 
             vals = ledger.prepare_vals('Profit HO ' + doc_type + ' : ' + rec.name, rec.name, rec.issued_date,
                                        'commission', rec.currency_id.id, ho_profit, 0)
+            vals = ledger.prepare_vals_for_resv(self, vals)
+            vals.update({
+                'agent_id': self.env['tt.agent'].sudo().search([('agent_type_id.name', '=', 'HO')], limit=1).id
+            })
 
             # vals['transport_type'] = rec.transport_type
             # vals['display_provider_name'] = rec.display_provider_name
-            print('id : ' + str(rec.id))
-            vals.update({
-                'res_id': rec.id,
-                'res_model': rec._name,
-                'agent_id': self.env['tt.agent'].sudo().search([('agent_type_id.name', '=', 'HO')], limit=1).id,
-                'pnr': rec.pnr,
-                'description': desc,
-                'provider_type_id': rec.provider_type_id.id
-            })
+            # print('id : ' + str(rec.id))
+            # vals.update({
+            #     'res_id': rec.id,
+            #     'res_model': rec._name,
+            #     'agent_id': self.env['tt.agent'].sudo().search([('agent_type_id.name', '=', 'HO')], limit=1).id,
+            #     'pnr': rec.pnr,
+            #     'description': desc,
+            #     'provider_type_id': rec.provider_type_id.id
+            # })
 
-            new_aml = ledger.sudo().create(vals)
+            new_aml = ledger.create(vals)
             # new_aml.action_done()
             # rec.ledger_id = new_aml
 
@@ -1102,18 +1128,19 @@ class TtVisa(models.Model):
 
             vals = ledger.prepare_vals('Order ' + doc_type + ' : ' + rec.name, rec.name, rec.issued_date,
                                        'travel.doc', rec.currency_id.id, 0, total_order)
-            vals.update({
-                'res_id': rec.id,
-                'res_model': rec._name,
-                'agent_id': rec.agent_id.id,
-                'pnr': rec.pnr,
-                'provider_type_id': rec.provider_type_id.id,
-                'description': desc
-            })
+            vals = ledger.prepare_vals_for_resv(self, vals)
+            # vals.update({
+            #     'res_id': rec.id,
+            #     'res_model': rec._name,
+            #     'agent_id': rec.agent_id.id,
+            #     'pnr': rec.pnr,
+            #     'provider_type_id': rec.provider_type_id.id,
+            #     'description': desc
+            # })
             # vals['transport_type'] = rec.transport_type
             # vals['display_provider_name'] = rec.display_provider_name
 
-            new_aml = ledger.sudo().create(vals)
+            new_aml = ledger.create(vals)
             # new_aml.action_done()
             # rec.ledger_id = new_aml
 
@@ -1124,17 +1151,21 @@ class TtVisa(models.Model):
             ledger_obj = rec.env['tt.ledger']
             agent_commission, parent_commission, ho_commission = rec.agent_id.agent_type_id.calc_commission(
                 rec.total_commission, 1)
-            print('Agent Comm : ' + str(agent_commission))
-            print('Parent Comm : ' + str(parent_commission))
-            print('HO Comm : ' + str(ho_commission))
+            # print('Agent Comm : ' + str(agent_commission))
+            # print('Parent Comm : ' + str(parent_commission))
+            # print('HO Comm : ' + str(ho_commission))
 
             if agent_commission > 0:
                 vals = ledger_obj.prepare_vals('Commission : ' + rec.name, rec.name, rec.issued_date, 'commission',
                                                rec.currency_id.id, agent_commission, 0)
+                vals = ledger_obj.prepare_vals_for_resv(self, vals)
                 vals.update({
-                    'agent_id': rec.agent_id.id,
-                    'res_id': rec.id,
+                    'description': 'Agent Commission'
                 })
+                # vals.update({
+                #     'agent_id': rec.agent_id.id,
+                #     'res_id': rec.id,
+                # })
                 commission_aml = ledger_obj.create(vals)
                 # commission_aml.action_done()
                 # rec.commission_ledger_id = commission_aml.id
@@ -1142,9 +1173,10 @@ class TtVisa(models.Model):
                 vals = ledger_obj.prepare_vals('Commission : ' + rec.name, 'PA: ' + rec.name, rec.issued_date,
                                                'commission',
                                                rec.currency_id.id, parent_commission, 0)
+                vals = ledger_obj.prepare_vals_for_resv(self, vals)
                 vals.update({
                     'agent_id': rec.agent_id.parent_agent_id.id,
-                    'res_id': rec.id,
+                    'description': 'Parent Agent Commission'
                 })
                 commission_aml = ledger_obj.create(vals)
                 # commission_aml.action_done()
@@ -1153,10 +1185,11 @@ class TtVisa(models.Model):
                 vals = ledger_obj.prepare_vals('Commission : ' + rec.name, 'HO: ' + rec.name, rec.issued_date,
                                                'commission',
                                                rec.currency_id.id, ho_commission, 0)
+                vals = ledger_obj.prepare_vals_for_resv(self, vals)
                 vals.update({
                     'agent_id': rec.env['tt.agent'].sudo().search(
                         [('parent_agent_id', '=', False)], limit=1).id,
-                    'res_id': rec.id,
+                    'description': 'HO Commission'
                 })
                 commission_aml = ledger_obj.create(vals)
                 # commission_aml.action_done()
@@ -1170,11 +1203,6 @@ class TtVisa(models.Model):
             doc_type = []
             desc = ''
             for sc in rec.sale_service_charge_ids:
-                # if rec.transport_type == 'passport':
-                #     if not sc.pricelist_id.apply_type in doc_type:
-                #         doc_type.append(sc.pricelist_id.apply_type)
-                #     desc = sc.pricelist_id.passport_type.upper() + ' ' + sc.pricelist_id.apply_type.upper()
-                # else:
                 if not sc.pricelist_id.visa_type in doc_type:
                     doc_type.append(sc.pricelist_id.visa_type)
                 desc = sc.pricelist_id.display_name.upper() + ' ' + sc.pricelist_id.entry_type.upper()
@@ -1184,20 +1212,19 @@ class TtVisa(models.Model):
             ho_profit = 0
             for pax in self.to_passenger_ids:
                 ho_profit += pax.pricelist_id.cost_price - pax.pricelist_id.nta_price
-                print('HO Profit : ' + str(ho_profit))
 
             vals = ledger.prepare_vals('Profit ' + doc_type + ' : ' + rec.name, rec.name, rec.issued_date,
-                                       'commission',
-                                       rec.currency_id.id, 0, ho_profit)
-
+                                       'commission', rec.currency_id.id, 0, ho_profit)
+            vals = ledger.prepare_vals_for_resv(self, vals)
             vals.update({
-                'res_id': rec.id,
                 'agent_id': self.env['tt.agent'].sudo().search([('parent_agent_id', '=', False)], limit=1).id,
-                'pnr': rec.pnr,
-                'description': 'REVERSAL ' + desc
+                'description': 'REVERSAL ' + desc,
             })
 
-            new_aml = ledger.sudo().create(vals)
+            new_aml = ledger.create(vals)
+            new_aml.update({
+                'reverse_id': new_aml.id,
+            })
             # new_aml.action_done()
             # rec.ledger_id = new_aml
 
@@ -1222,14 +1249,17 @@ class TtVisa(models.Model):
             vals = ledger.prepare_vals('Order ' + doc_type + ' : ' + rec.name, rec.name, rec.issued_date,
                                        'travel.doc',
                                        rec.currency_id.id, rec.total, 0)
-            vals['res_id'] = rec.id
-            vals['agent_id'] = rec.agent_id.id
-            vals['pnr'] = rec.pnr
+            vals = ledger.prepare_vals_for_resv(self, vals)
             # vals['transport_type'] = rec.transport_type
             # vals['display_provider_name'] = rec.display_provider_name
-            vals['description'] = 'REVERSAL ' + desc
+            vals.update({
+                'description': 'REVERSAL ' + desc,
+            })
 
-            new_aml = ledger.sudo().create(vals)
+            new_aml = ledger.create(vals)
+            new_aml.update({
+                'reverse_id': new_aml.id,
+            })
             # new_aml.action_done()
             # rec.ledger_id = new_aml
 
@@ -1242,22 +1272,29 @@ class TtVisa(models.Model):
             if agent_commission > 0:
                 vals = ledger_obj.prepare_vals('Commission : ' + rec.name, rec.name, rec.issued_date, 'commission',
                                                rec.currency_id.id, 0, agent_commission)
+                vals = ledger_obj.prepare_vals_for_resv(self, vals)
                 vals.update({
-                    'agent_id': rec.agent_id.id,
-                    'res_id': rec.id,
+                    'description': 'REVERSAL - Agent Commission',
                 })
                 commission_aml = ledger_obj.create(vals)
+                commission_aml.update({
+                    'reverse_id': commission_aml.id,
+                })
                 # commission_aml.action_done()
                 # rec.commission_ledger_id = commission_aml.id
             if parent_commission > 0:
                 vals = ledger_obj.prepare_vals('Commission : ' + rec.name, 'PA: ' + rec.name, rec.issued_date,
                                                'commission',
                                                rec.currency_id.id, 0, parent_commission)
+                vals = ledger_obj.prepare_vals_for_resv(self, vals)
                 vals.update({
                     'agent_id': rec.agent_id.parent_agent_id.id,
-                    'res_id': rec.id,
+                    'description': 'REVERSAL - Parent Agent Commission',
                 })
-                commission_aml = ledger_obj.create(vals)
+                commission_aml_parent = ledger_obj.create(vals)
+                commission_aml_parent.update({
+                    'reverse_id': commission_aml_parent.id,
+                })
                 # commission_aml.action_done()
 
             if int(ho_commission) > 0:
@@ -1267,9 +1304,13 @@ class TtVisa(models.Model):
                 vals.update({
                     'agent_id': rec.env['tt.agent'].sudo().search(
                         [('parent_agent_id', '=', False)], limit=1).id,
-                    'res_id': rec.id,
+                    'description': 'REVERSAL - HO Commission',
                 })
-                commission_aml = ledger_obj.create(vals)
+                commission_aml_ho = ledger_obj.create(vals)
+                commission_aml_ho.update({
+                    'reverse_id': commission_aml_ho.id,
+                })
+
                 # commission_aml.action_done()
 
     ######################################################################################################
@@ -1296,12 +1337,13 @@ class TtVisa(models.Model):
             rec.total_tax = 0
             rec.total_disc = 0
             rec.total_commission = 0
-            rec.total_fare = 0
+
+            fare = 0
 
             for line in rec.sale_service_charge_ids:
                 if line.charge_code == 'fare':
-                    rec.total_fare += line.total
-                    print('Charge Code Fare ' + str(rec.total_fare))
+                    fare += line.total
+                    print('Charge Code Fare ' + str(fare))
                 if line.charge_code == 'tax':
                     rec.total_tax += line.total
                     print('Charge Code Tax ' + str(rec.total_tax))
@@ -1315,5 +1357,9 @@ class TtVisa(models.Model):
                     rec.total_commission += line.total
                     print('Charge Code R.Ac ' + str(rec.total_commission))
 
+            # rec.total_fare = fare
+            rec.update({
+                'total_fare': fare
+            })
             rec.total = rec.total_fare + rec.total_tax + rec.total_disc
             rec.total_nta = rec.total - rec.total_commission

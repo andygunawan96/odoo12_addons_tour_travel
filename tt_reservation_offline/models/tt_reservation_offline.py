@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import logging
 import traceback
 import copy
+from ...tools.api import Response
 
 _logger = logging.getLogger(__name__)
 
@@ -988,13 +989,28 @@ class IssuedOffline(models.Model):
         'co_uid': 6
     }
 
-    def create_booking_reservation_offline(self):
-        booker = copy.deepcopy(self.param_booker)
-        data_reservation_offline = copy.deepcopy(self.param_data_reservation_offline)
-        passenger = copy.deepcopy(self.param_passenger)
-        contact = copy.deepcopy(self.param_contact)
-        context = copy.deepcopy(self.param_context)
-        lines = data_reservation_offline['line_ids']
+    def get_config_api(self):
+        try:
+            res = {
+                'sector_type': self._fields['sector_type'].selection,
+                'transaction_type': [{'code': rec.code, 'name': rec.name} for rec in
+                                     self.env['tt.provider.type'].search([])],
+                'carrier_id': [{'code': rec.code, 'name': rec.name, 'icao': rec.icao} for rec in
+                               self.env['tt.transport.carrier'].search([])],
+                'social_media_id': [{'name': rec.name} for rec in self.env['social.media.detail'].search([])],
+            }
+            res = Response().get_no_error(res)
+        except Exception as e:
+            res = Response().get_error(str(e), 500)
+        return res
+
+    def create_booking_reservation_offline(self):  # , data, context, kwargs
+        booker = copy.deepcopy(self.param_booker)  # data['booker']
+        data_reservation_offline = copy.deepcopy(self.param_data_reservation_offline)  # data['issued_offline_data']
+        passenger = copy.deepcopy(self.param_passenger)  # data['passenger']
+        contact = copy.deepcopy(self.param_contact)  # data['contact']
+        context = copy.deepcopy(self.param_context)  # context
+        lines = data_reservation_offline['line_ids']  # data['issued_offline_data']['line_ids']
 
         context.update({
             'co_uid': self.env.user.id
@@ -1037,13 +1053,15 @@ class IssuedOffline(models.Model):
                 })
             book_obj = self.create(header_val)
             book_obj.action_confirm(context)
+            response = {
+                'id': book_obj.name
+            }
+            res = Response().get_no_error(response)
         except Exception as e:
             self.env.cr.rollback()
             _logger.error(msg=str(e) + '\n' + traceback.format_exc())
-            return {
-                'error_code': 1,
-                'error_msg': str(e)
-            }
+            res = Response().get_error(str(e), 500)
+        return res
 
     def _create_booker(self, context, booker):
         country_env = self.env['res.country'].sudo()
