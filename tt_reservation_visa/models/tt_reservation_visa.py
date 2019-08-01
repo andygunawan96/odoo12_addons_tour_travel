@@ -321,7 +321,7 @@ class TtVisa(models.Model):
                 {
                     "is_copy": True,
                     "is_original": False,
-                    "id": 1
+                    "id": 2
                 }
             ]
         },
@@ -339,8 +339,9 @@ class TtVisa(models.Model):
             "master_visa_Id": "1",
             "required": [
                 {
-                    "boolean": True,
-                    "id": 1
+                    "is_copy": True,
+                    "is_original": False,
+                    "id": 2
                 }
             ]
         },
@@ -360,7 +361,7 @@ class TtVisa(models.Model):
                 {
                     "is_copy": True,
                     "is_original": False,
-                    "id": 1
+                    "id": 2
                 }
             ]
         }
@@ -1189,11 +1190,6 @@ class TtVisa(models.Model):
             doc_type = []
             desc = ''
             for sc in rec.sale_service_charge_ids:
-                # if rec.transport_type == 'passport':
-                #     if not sc.pricelist_id.apply_type in doc_type:
-                #         doc_type.append(sc.pricelist_id.apply_type)
-                #     desc = sc.pricelist_id.passport_type.upper() + ' ' + sc.pricelist_id.apply_type.upper()
-                # else:
                 if not sc.pricelist_id.visa_type in doc_type:
                     doc_type.append(sc.pricelist_id.visa_type)
                 desc = sc.pricelist_id.display_name.upper() + ' ' + sc.pricelist_id.entry_type.upper()
@@ -1203,7 +1199,6 @@ class TtVisa(models.Model):
             ho_profit = 0
             for pax in self.to_passenger_ids:
                 ho_profit += pax.pricelist_id.cost_price - pax.pricelist_id.nta_price
-                # print('HO Profit : ' + str(ho_profit))
 
             vals = ledger.prepare_vals('Profit ' + doc_type + ' : ' + rec.name, rec.name, rec.issued_date,
                                        'commission', rec.currency_id.id, 0, ho_profit)
@@ -1329,12 +1324,13 @@ class TtVisa(models.Model):
             rec.total_tax = 0
             rec.total_disc = 0
             rec.total_commission = 0
-            rec.total_fare = 0
+
+            fare = 0
 
             for line in rec.sale_service_charge_ids:
                 if line.charge_code == 'fare':
-                    rec.total_fare += line.total
-                    print('Charge Code Fare ' + str(rec.total_fare))
+                    fare += line.total
+                    print('Charge Code Fare ' + str(fare))
                 if line.charge_code == 'tax':
                     rec.total_tax += line.total
                     print('Charge Code Tax ' + str(rec.total_tax))
@@ -1348,5 +1344,9 @@ class TtVisa(models.Model):
                     rec.total_commission += line.total
                     print('Charge Code RAC ' + str(rec.total_commission))
 
+            # rec.total_fare = fare
+            rec.update({
+                'total_fare': fare
+            })
             rec.total = rec.total_fare + rec.total_tax + rec.total_disc
             rec.total_nta = rec.total - rec.total_commission
