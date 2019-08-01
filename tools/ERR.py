@@ -34,7 +34,7 @@ def get_message(_error_code, parameter='', additional_message=''):
     return message
 
 
-def get_error(_error_code, parameter='', additional_message=''):
+def get_error(_error_code=500, parameter='', additional_message=''):
     _data = _get_error_data(_error_code)
 
     message = _data['message']

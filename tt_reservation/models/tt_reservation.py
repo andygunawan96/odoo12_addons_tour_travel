@@ -1,6 +1,8 @@
 from odoo import api, fields, models, _
-from ...tools import variables,util
+from ...tools import variables,util,ERR
+import logging,traceback
 
+_logger = logging.getLogger(__name__)
 
 class TtReservation(models.Model):
     _name = 'tt.reservation'
@@ -281,15 +283,35 @@ class TtReservation(models.Model):
 
         return res
 
-    def get_book_obj(self, res_model, book_id, order_number):
+    def get_book_obj(self, book_id, order_number):
         if book_id:
-            book_obj = self.env[res_model].browse(book_id)
+            book_obj = self.browse(book_id)
         elif order_number:
-            book_obj = self.env[res_model].search([('name', '=', order_number)], limit=1)
+            book_obj = self.search([('name', '=', order_number)], limit=1)
 
         if book_obj:
             return book_obj
         else:
             return False
 
-    # def update_extra_service_charge(self):
+    def channel_pricing_api(self,req,context):
+        try:
+            book_obj = self.get_book_obj(req.get('book_id'),req.get('order_number'))
+            if book_obj:
+                for psg in req['passengers']:
+                    book_obj.passenger_ids[psg['sequence']].create_channel_pricing(psg['pricing'])
+            else:
+                return ERR.get_error(1001)
+        except Exception as e:
+            _logger.error(str(e) + traceback.format_exc())
+        return ERR.get_error(500)
+
+    def action_failed_book(self):
+        self.write({
+            'state': 'fail_booking'
+        })
+
+    def action_failed_issue(self):
+        self.write({
+            'state': 'fail_issue'
+        })

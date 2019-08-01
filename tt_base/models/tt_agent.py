@@ -2,7 +2,7 @@ from odoo import models, fields, api, _
 from PIL import Image
 from odoo.tools import image
 import logging, traceback
-from ...tools.api import Response
+from ...tools import ERR
 from odoo.exceptions import AccessError, UserError
 
 
@@ -130,10 +130,10 @@ class TtAgent(models.Model):
                     break
                 temp = temp.parent_agent_id
                 level += 1
-            res = Response().get_no_error(response)
+            res = ERR.get_no_error(response)
         except Exception as e:
             _logger.error('%s, %s' % (str(e), traceback.format_exc()))
-            res = Response().get_error(str(e), 500)
+            res = ERR.get_error()
         return res
 
     def check_balance_limit(self, amount):
@@ -144,20 +144,11 @@ class TtAgent(models.Model):
     def check_balance_limit_api(self, agent_id, amount):
         partner_obj = self.env['tt.agent'].browse(agent_id)
         if not partner_obj:
-            return {
-                'error_code': 3,
-                'error_msg': 'Agent/Sub-Agent Not found'
-            }
+            return ERR.get_error(1008)
         if not partner_obj.check_balance_limit(amount):
-            return {
-                'error_code': 1,
-                'error_msg': 'Current Balance for Agent:' + partner_obj.name + ' is ' + str(partner_obj.actual_balance)
-            }
+            return ERR.get_error(1007)
         else:
-            return {
-                'error_code': 0,
-                'error_msg': "Balance / Credit limit enough"
-            }
+            return ERR.get_no_error()
 
     def get_mmf_rule(self, agent_id):
         # Cari di rule

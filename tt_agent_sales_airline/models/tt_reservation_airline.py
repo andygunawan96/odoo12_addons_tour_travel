@@ -32,9 +32,6 @@ class ReservationTrain(models.Model):
         elif any(state != 'draft' for state in states):
             self.state_invoice = 'partial'
 
-
-
-
     def _get_invoice_names(self):
         name = ""
         for rec in self.invoice_line_ids:

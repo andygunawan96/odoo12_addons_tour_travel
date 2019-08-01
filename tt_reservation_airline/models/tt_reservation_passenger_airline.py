@@ -39,7 +39,7 @@ class TtReservationCustomer(models.Model):
 
     def get_service_charges(self):
         sc_value = {}
-        for p_sc in self.service_charge_ids:
+        for p_sc in self.cost_service_charge_ids:
             p_charge_type = p_sc.charge_type
             pnr = p_sc.description
             if not sc_value.get(pnr):

@@ -78,7 +78,8 @@ class ReservationAirline(models.Model):
             'state': 'booked',
             'pnr': ', '.join(pnr_list),
             'hold_date': hold_date,
-            'booked_uid': context['co_uid']
+            'booked_uid': context['co_uid'],
+            'booked_date': datetime.datetime.now()
         })
 
     def action_issued_api_airline(self,context):
@@ -236,7 +237,7 @@ class ReservationAirline(models.Model):
             values = self._prepare_booking_api(search_RQ,context)
             booker_obj = self.create_booker_api(booker,context)
             contact_obj = self.create_contact_api(contacts[0],booker_obj,context)
-            list_customer_obj = self.create_customer_api(passengers,context,booker_obj.id,contact_obj.id,['title'])
+            list_customer_obj = self.create_customer_api(passengers,context,booker_obj.id,contact_obj.id,['title','sequence'])
             list_passenger_id = self.create_passenger_api(list_customer_obj)
 
             values.update({
@@ -281,7 +282,7 @@ class ReservationAirline(models.Model):
 
             book_status = []
             pnr_list = []
-            hold_date = datetime.datetime(9999,12,31,23,59,59,999999)
+            hold_date = datetime.datetime(9999, 12, 31, 23, 59, 59, 999999)
 
             for provider in req['provider_bookings']:
                 provider_obj = self.env['tt.provider.airline'].browse(provider['provider_id'])
@@ -292,47 +293,15 @@ class ReservationAirline(models.Model):
                 if provider['status'] == 'BOOKED' and not provider.get('error_code'):
                     if provider_obj.state == 'booked':
                         continue
-
-                    ##generate leg data
-                    provider_type = self.env['tt.provider.type'].search([('code','=','airline')])[0]
-                    provider_obj.create_ticket_api(provider['passengers'])
-                    provider_obj.action_booked_api_airline(provider,context)
-                    pnr_list.append(provider['pnr'])
-                    curr_hold_date = datetime.datetime.strptime(provider['hold_date'],'%Y-%m-%d %H:%M:%S')
-                    if curr_hold_date < hold_date:
-                        hold_date = curr_hold_date
-
-                    #update leg dan create service charge
-                    for idx,journey in enumerate(provider_obj.journey_ids):
-                        for idx1,segment in enumerate(journey.segment_ids):
-                            param_segment = provider['journeys'][idx]['segments'][idx1]
-                            if segment.segment_code == param_segment['segment_code']:
-                                this_segment_legs = []
-                                for idx2,leg in enumerate(param_segment['legs']):
-                                    leg_org = self.env['tt.destinations'].get_id(leg['origin'],provider_type)
-                                    leg_dest = self.env['tt.destinations'].get_id(leg['destination'],provider_type)
-                                    leg_prov = self.env['tt.provider'].get_provider_id(leg['provider'],provider_type)
-                                    this_segment_legs.append((0,0,{
-                                        'sequence': idx2,
-                                        'leg_code': leg['leg_code'],
-                                        'origin_terminal': leg['origin_terminal'],
-                                        'destination_terminal': leg['destination_terminal'],
-                                        'origin_id': leg_org,
-                                        'destination_id': leg_dest,
-                                        'departure_date': leg['departure_date'],
-                                        'arrival_date': leg['arrival_date'],
-                                        'provider_id': leg_prov
-                                    }))
-
-                                    segment.write({
-                                        'leg_ids': this_segment_legs
-                                    })
-
-                                for fare in param_segment['fares']:
-                                    provider_obj.create_service_charge(fare['service_charges'])
+                    self.update_pnr_booked(provider_obj,provider,pnr_list,hold_date,context)
                 elif provider['status'] == 'ISSUED' and not provider.get('error_code'):
                     if provider_obj.state == 'issued':
                         continue
+                    if req.get('force_issued'):
+                        self.update_pnr_booked(provider_obj,provider,pnr_list,hold_date,context)
+                        book_obj.calculate_service_charge()
+                        book_obj.action_booked_api_airline(context, pnr_list, hold_date)
+
                     #action issued dan create ticket number
                     provider_obj.action_issued_api_airline(context)
                     provider_obj.update_ticket_api(provider['passengers'])
@@ -341,27 +310,36 @@ class ReservationAirline(models.Model):
                 elif provider['status'] == 'FAILED_ISSUE':
                     provider_obj.action_failed_issued_api_airline()
 
+            if req.get('force_issued'):
+                self.payment_airline_api({'book_id': req['book_id']},context)
+
             if all(rec == 'BOOKED' for rec in book_status):
                 #booked
                 book_obj.calculate_service_charge()
                 book_obj.action_booked_api_airline(context,pnr_list,hold_date)
             elif all(rec == 'ISSUED' for rec in book_status):
                 book_obj.action_issued_api_airline(context)
-            elif any(rec == 'FAILED_ISSUED' for rec in book_status):
+            elif any(rec == 'ISSUED' for rec in book_status):
                 #partial issued
-                book_obj.calculate_service_charge()
                 book_obj.action_partial_issued_api_airline()
-            elif any(rec == 'FAILED_BOOKED' for rec in book_status):
+            elif any(rec == 'BOOKED' for rec in book_status):
                 #partial booked
                 book_obj.calculate_service_charge()
                 book_obj.action_partial_booked_api_airline()
+            elif all(rec == 'FAILED_ISSUED' for rec in book_status):
+                #failed issue
+                book_obj.action_failed_issue()
+            elif all(rec == 'FAILED_BOOKED' for rec in book_status):
+                #failed book
+                book_obj.action_failed_book()
             else:
                 #entah status apa
                 _logger.error('Entah status apa')
                 return ERR.get_error(1006)
 
             return Response().get_no_error({
-                'order_number': book_obj.name
+                'order_number': book_obj.name,
+                'book_id': book_obj.id
             })
 
         except Exception as e:
@@ -371,7 +349,7 @@ class ReservationAirline(models.Model):
     def get_booking_airline_api(self,req, context):
         try:
             print("Get req\n" + json.dumps(context))
-            book_obj = self.get_book_obj(self._name,req.get('book_id'),req.get('order_number'))
+            book_obj = self.get_book_obj(req.get('book_id'),req.get('order_number'))
             if book_obj and book_obj.agent_id.id == context.get('co_agent_id',-1):
                 res = book_obj.to_dict()
                 psg_list = []
@@ -439,6 +417,9 @@ class ReservationAirline(models.Model):
                 for segment in journey['segments']:
                     for fare in segment['fares']:
                         provider_obj.create_service_charge(fare['service_charges'])
+
+        book_obj = self.get_book_obj(req.get('book_id'),req.get('order_number'))
+        book_obj.calculate_service_charge()
         return ERR.get_no_error()
 
     def validate_booking(self, api_context=None):
@@ -583,6 +564,45 @@ class ReservationAirline(models.Model):
 
         return res
 
+    def update_pnr_booked(self,provider_obj,provider,pnr_list,hold_date,context):
+
+        ##generate leg data
+        provider_type = self.env['tt.provider.type'].search([('code', '=', 'airline')])[0]
+        provider_obj.create_ticket_api(provider['passengers'])
+        provider_obj.action_booked_api_airline(provider, context)
+        pnr_list.append(provider['pnr'])
+        curr_hold_date = datetime.datetime.strptime(provider['hold_date'], '%Y-%m-%d %H:%M:%S')
+        if curr_hold_date < hold_date:
+            hold_date = curr_hold_date
+
+        # update leg dan create service charge
+        for idx, journey in enumerate(provider_obj.journey_ids):
+            for idx1, segment in enumerate(journey.segment_ids):
+                param_segment = provider['journeys'][idx]['segments'][idx1]
+                if segment.segment_code == param_segment['segment_code']:
+                    this_segment_legs = []
+                    for idx2, leg in enumerate(param_segment['legs']):
+                        leg_org = self.env['tt.destinations'].get_id(leg['origin'], provider_type)
+                        leg_dest = self.env['tt.destinations'].get_id(leg['destination'], provider_type)
+                        leg_prov = self.env['tt.provider'].get_provider_id(leg['provider'], provider_type)
+                        this_segment_legs.append((0, 0, {
+                            'sequence': idx2,
+                            'leg_code': leg['leg_code'],
+                            'origin_terminal': leg['origin_terminal'],
+                            'destination_terminal': leg['destination_terminal'],
+                            'origin_id': leg_org,
+                            'destination_id': leg_dest,
+                            'departure_date': leg['departure_date'],
+                            'arrival_date': leg['arrival_date'],
+                            'provider_id': leg_prov
+                        }))
+
+                        segment.write({
+                            'leg_ids': this_segment_legs
+                        })
+
+                    for fare in param_segment['fares']:
+                        provider_obj.create_service_charge(fare['service_charges'])
 
     #to generate sale service charge
     def calculate_service_charge(self):
