@@ -38,6 +38,7 @@ class TtReservationCustomer(models.Model):
     def create_channel_pricing(self,channel_prices):
         for rec in self.channel_service_charge_ids:
             rec.unlink()
+
         currency_obj = self.env['res.currency']
         for sc in channel_prices:
             sc['currency_id'] = currency_obj.search([('name','=',sc.pop('currency_code'))]).id
@@ -46,3 +47,39 @@ class TtReservationCustomer(models.Model):
             self.write({
                 'channel_service_charge_ids': [(0,0,sc)]
             })
+
+    def get_service_charges(self):
+        sc_value = {}
+        for p_sc in self.cost_service_charge_ids:
+            p_charge_type = p_sc.charge_type
+            pnr = p_sc.description
+            if not sc_value.get(pnr):
+                sc_value[pnr] = {}
+            if not sc_value[pnr].get(p_charge_type):
+                sc_value[pnr][p_charge_type] = {}
+                sc_value[pnr][p_charge_type].update({
+                    'amount': 0,
+                    'foreign_amount': 0,
+                })
+
+            sc_value[pnr][p_charge_type].update({
+                'charge_code': p_sc.charge_code,
+                'currency': p_sc.currency_id.name,
+                'foreign_currency': p_sc.foreign_currency_id.name,
+                'amount': sc_value[pnr][p_charge_type]['amount'] + p_sc.amount,
+                'foreign_amount': sc_value[pnr][p_charge_type]['foreign_amount'] + p_sc.foreign_amount,
+            })
+
+        return sc_value
+
+    def get_channel_service_charges(self):
+        total = 0
+        currency_code = 'IDR'
+        for rec in self.channel_service_charge_ids:
+            total+= rec.amount
+            currency_code = rec.currency_id.code
+
+        return {
+            'amount': total,
+            'currency_code': currency_code
+        }

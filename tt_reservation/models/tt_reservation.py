@@ -299,12 +299,13 @@ class TtReservation(models.Model):
             book_obj = self.get_book_obj(req.get('book_id'),req.get('order_number'))
             if book_obj:
                 for psg in req['passengers']:
-                    book_obj.passenger_ids[psg['sequence']].create_channel_pricing(psg['pricing'])
+                    book_obj.passenger_ids[psg['sequence']-1].create_channel_pricing(psg['pricing'])
             else:
                 return ERR.get_error(1001)
         except Exception as e:
             _logger.error(str(e) + traceback.format_exc())
-        return ERR.get_error(500)
+
+        return ERR.get_no_error()
 
     def action_failed_book(self):
         self.write({

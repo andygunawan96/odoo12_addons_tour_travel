@@ -13,13 +13,6 @@ class TtReservationCustomer(models.Model):
     passport_number = fields.Char(string='Passport Number')
     passport_expdate = fields.Datetime(string='Passport Exp Date')
 
-    def _compute_age(self):
-        for rec in self:
-            if rec.birth_date:
-                d1 = datetime.strptime(str(rec.birth_date), "%Y-%m-%d").date()
-                d2 = datetime.today()
-                rec.age = relativedelta(d2, d1).years
-
     def to_dict(self):
         res = super(TtReservationCustomer, self).to_dict()
         res.update({
@@ -27,6 +20,8 @@ class TtReservationCustomer(models.Model):
             'passport_expdate': self.passport_expdate and self.passport_expdate or '',
             'sale_service_charges': self.get_service_charges()
         })
+        if len(self.channel_service_charge_ids.ids)>0:
+            res['channel_service_charges'] = self.get_channel_service_charges()
         return res
 
     def copy_to_passenger(self):
@@ -37,26 +32,3 @@ class TtReservationCustomer(models.Model):
         })
         return res
 
-    def get_service_charges(self):
-        sc_value = {}
-        for p_sc in self.cost_service_charge_ids:
-            p_charge_type = p_sc.charge_type
-            pnr = p_sc.description
-            if not sc_value.get(pnr):
-                sc_value[pnr] = {}
-            if not sc_value[pnr].get(p_charge_type):
-                sc_value[pnr][p_charge_type] = {}
-                sc_value[pnr][p_charge_type].update({
-                    'amount': 0,
-                    'foreign_amount': 0,
-                })
-
-            sc_value[pnr][p_charge_type].update({
-                'charge_code': p_sc.charge_code,
-                'currency': p_sc.currency_id.name,
-                'foreign_currency': p_sc.foreign_currency_id.name,
-                'amount': sc_value[pnr][p_charge_type]['amount'] + p_sc.amount,
-                'foreign_amount': sc_value[pnr][p_charge_type]['foreign_amount'] + p_sc.foreign_amount,
-            })
-
-        return sc_value
