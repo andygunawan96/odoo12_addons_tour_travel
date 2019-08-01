@@ -29,6 +29,7 @@
         'views/tt_reservation_passport_menuheader.xml',
         'views/tt_reservation_passport_views.xml',
         'views/tt_reservation_passport_order_passengers_views.xml',
+        'views/tt_reservation_passport_service_charge_views.xml',
         'views/tt_reservation_passport_pricelist_views.xml',
     ],
     # only loaded in demonstration mode

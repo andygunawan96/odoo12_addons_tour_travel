@@ -53,7 +53,7 @@ class AgentRegistration(models.Model):
                                                                              'confirm': [('readonly', False)]})
     total_fee = fields.Monetary('Total Fee', store=True, compute='compute_total_fee')
     registration_date = fields.Datetime('Registration Date', required=True, readonly=True,
-                                    states={'draft': [('readonly', False)]})
+                                        states={'draft': [('readonly', False)]})
     expired_date = fields.Date('Expired Date', readonly=True, states={'draft': [('readonly', False)]})
 
     business_license = fields.Char('Business License')
@@ -68,6 +68,9 @@ class AgentRegistration(models.Model):
     # parent_agent_id = fields.Many2one('tt.agent', 'Parent Agent', readonly=True, store=True,
     #                                   compute='default_parent_agent_id')
     agent_level = fields.Integer('Agent Level', readonly=True)
+
+    issued_uid = fields.Many2one('res.users', 'Issued by', readonly=True)
+    issued_date = fields.Datetime('Issued Date', readonly=True)
 
     ledger_ids = fields.One2many('tt.ledger', 'res_id', 'Ledger', readonly=True,
                                  domain=[('res_model', '=', 'tt.agent.registration')])
@@ -200,55 +203,50 @@ class AgentRegistration(models.Model):
     def calc_commission(self):
         # Hitung dulu semua komisi, lalu masukkan ke dalam ledger
         agent_comm, parent_agent_comm, ho_comm = self.agent_type_id.calc_recruitment_commission(self.parent_agent_id.agent_type_id, self.total_fee)
+        ledger = self.env['tt.ledger']
 
-        agent_comm_vals = self.env['tt.ledger'].prepare_vals('Recruit Comm. : ' + self.name,
+        agent_comm_vals = ledger.prepare_vals('Recruit Comm. : ' + self.name,
                                                              'Recruit Comm. : ' + self.name, datetime.now(),
                                                              'commission', self.currency_id.id, agent_comm, 0)
-        agent_comm_vals.update({
-            'agent_id': self.parent_agent_id.id,
-            'res_id': self.id,
-            'res_model': self._name
-        })
+        agent_comm_vals = ledger.prepare_vals_for_agent_regis(self, agent_comm_vals)
         self.env['tt.ledger'].create(agent_comm_vals)
 
         parent_agent_comm_vals = self.env['tt.ledger'].prepare_vals('Recruit Comm. Parent: ' + self.name,
                                                                     'Recruit Comm. Parent: ' + self.name,
                                                                     datetime.now(), 'commission', self.currency_id.id,
                                                                     parent_agent_comm, 0)
+        parent_agent_comm_vals = ledger.prepare_vals_for_agent_regis(self, parent_agent_comm_vals)
         parent_agent_comm_vals.update({
-            'agent_id': self.parent_agent_id.id,
-            'res_id': self.id,
-            'res_model': self._name
+            'agent_id': self.parent_agent_id.id
         })
         self.env['tt.ledger'].create(parent_agent_comm_vals)
 
         ho_comm_vals = self.env['tt.ledger'].prepare_vals('Recruit Comm. HO: ' + self.name,
                                                           'Recruit Comm. HO: ' + self.name, datetime.now(),
                                                           'commission', self.currency_id.id, ho_comm, 0)
+        ho_comm_vals = ledger.prepare_vals_for_agent_regis(self, ho_comm_vals)
         ho_comm_vals.update({
-            'agent_id': self.env['tt.agent'].sudo().search([('agent_type_id.name', '=', 'HO')], limit=1).id,
-            'res_id': self.id,
-            'res_model': self._name
+            'agent_id': self.env['tt.agent'].sudo().search([('agent_type_id.name', '=', 'HO')], limit=1).id
         })
         self.env['tt.ledger'].create(ho_comm_vals)
 
     def create_opening_balance_ledger(self):
+        ledger = self.env['tt.ledger']
+
         vals_credit = self.env['tt.ledger'].prepare_vals('Opening Balance : ' + self.name,
                                                          'Opening Balance : ' + self.name, datetime.now(), 'commission',
                                                          self.currency_id.id, 0, self.opening_balance)
+        vals_credit = ledger.prepare_vals_for_agent_regis(self, vals_credit)
         vals_credit.update({
             'agent_id': self.parent_agent_id.id,
-            'res_id': self.id,
-            'res_model': self._name
         })
         self.env['tt.ledger'].create(vals_credit)
 
         vals_debit = self.env['tt.ledger'].prepare_vals('Opening Balance', 'Opening Balance', datetime.now(),
                                                         'commission', self.currency_id.id, self.opening_balance, 0)
+        vals_debit = ledger.prepare_vals_for_agent_regis(self, vals_debit)
         vals_debit.update({
-            'agent_id': self.partner_id.id,
-            'res_id': self.id,
-            'res_model': self._name
+            'agent_id': self.partner_id.id
         })
         self.env['tt.ledger'].create(vals_debit)
 
@@ -275,7 +273,7 @@ class AgentRegistration(models.Model):
         return partner_obj
 
     def create_customers_contact(self, agent_id):
-        contact_objs = []
+        customer_id = []
         for rec in self:
             for con in rec.agent_registration_customer_ids:
                 vals = {
@@ -284,19 +282,39 @@ class AgentRegistration(models.Model):
                     'agent_id': agent_id.id,
                     'email': con['email'],
                     'birth_date': con['birth_date'],
-                    'phone': con['phone'],
-                    'mobile': con['mobile'],
                     'gender': con['gender'],
                     'marital_status': con['marital_status'],
                     'religion': con['religion'],
                 }
-                customer_id = self.env['tt.customer'].create(vals)
-                # todo : create phone_ids untuk contact
-                contact_objs.append(customer_id.id)
-                con.update({
-                    'customer_id': customer_id.id
+                phone_dict = [
+                    {
+                        'phone_number': con['phone'],
+                        'type': 'home'
+                    },
+                    {
+                        'phone_number': con['mobile'],
+                        'type': 'work'
+                    }
+                ]
+                phone_list = []
+                contact_objs = self.env['tt.customer'].create(vals)
+                for phone in phone_dict:
+                    vals = {
+                        'phone_number': phone['phone_number'] or '0',
+                        'type': phone['type']
+                    }
+                    phone_obj = self.env['phone.detail'].create(vals)
+                    phone_id = phone_obj.id
+                    phone_list.append(phone_id)
+                contact_objs.update({
+                    'phone_ids': [(6, 0, phone_list)]
                 })
-        return contact_objs
+                # todo : create phone_ids untuk contact
+                customer_id.append(contact_objs.id)
+                con.update({
+                    'customer_id': contact_objs.id,
+                })
+        return customer_id
 
     # def create_customers_contact(self):
     #     contact_objs = []
@@ -336,8 +354,8 @@ class AgentRegistration(models.Model):
     #     return contact_objs
 
     def action_confirm(self):
-        # self.check_address()
-        # self.set_agent_address()
+        self.check_address()
+        self.set_agent_address()
         if not self.registration_num:
             self.registration_num = self.env['ir.sequence'].next_by_code('agent.registration')
         if not self.registration_document_ids:
@@ -520,20 +538,26 @@ class AgentRegistration(models.Model):
         for rec in registration_list:
             if datetime.now() >= rec.registration_date + timedelta(minutes=2):
                 check = 1
+
+        context.update({
+            'co_uid': self.env.user.id
+        })
+
         if check == 1:
             try:
                 agent_type = self.env['tt.agent.type'].sudo().search([('name', '=', other.get('agent_type'))], limit=1)
                 header = self.prepare_header(company, other, agent_type)
-                contact_ids = self.prepare_contact(pic)
+                # contact_ids = self.prepare_contact(pic)
+                agent_registration_customer_ids = self.prepare_customer(pic)
                 address_ids = self.prepare_address(address)
                 header.update({
-                    'contact_ids': [(6, 0, contact_ids)],
+                    'agent_registration_customer_ids': [(6, 0, agent_registration_customer_ids)],
                     'address_ids': [(6, 0, address_ids)],
                     'registration_fee': agent_type.registration_fee,
                     'registration_date': datetime.now(),
                     'create_uid': self.env.user.id
                 })
-                create_obj = self.sudo().create(header)
+                create_obj = self.create(header)
                 create_obj.get_registration_fee()
                 create_obj.compute_total_fee()
                 if not create_obj.registration_num:
@@ -549,6 +573,8 @@ class AgentRegistration(models.Model):
                 }
                 res = Response().get_no_error(response)
             except Exception as e:
+                self.env.cr.rollback()
+                _logger.error(msg=str(e) + '\n' + traceback.format_exc())
                 res = Response().get_error(str(e), 500)
         else:
             res = Response().get_no_error(response)
