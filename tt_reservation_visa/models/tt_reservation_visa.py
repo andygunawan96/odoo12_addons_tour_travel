@@ -383,7 +383,7 @@ class TtVisa(models.Model):
     }
 
     def get_booking_visa_api(self, data):
-        for rec in self.search([('name', '=', self.name)]):  # data['order_number']
+        for rec in self.search([('name', '=', data['order_number'])]):  # data['order_number']
             passenger = []
             # contact = []
             # sale = {}
@@ -952,16 +952,16 @@ class TtVisa(models.Model):
             #     }
             #     to_req_obj = to_req_env.create(req_vals)
             #     to_req_list.append(to_req_obj.id)  # akan dipindah ke edit requirements
-
-            for req in psg['required']:  # pricelist_obj.requirement_ids
-                req_vals = {
-                    'to_passenger_id': to_psg_obj.id,
-                    'requirement_id': req['id'],
-                    'is_ori': req['is_original'],
-                    'is_copy': req['is_copy']
-                }
-                to_req_obj = to_req_env.create(req_vals)
-                to_req_list.append(to_req_obj.id)  # akan dipindah ke edit requirements
+            if psg.get('required'):
+                for req in psg['required']:  # pricelist_obj.requirement_ids
+                    req_vals = {
+                        'to_passenger_id': to_psg_obj.id,
+                        'requirement_id': req['id'],
+                        'is_ori': req['is_original'],
+                        'is_copy': req['is_copy']
+                    }
+                    to_req_obj = to_req_env.create(req_vals)
+                    to_req_list.append(to_req_obj.id)  # akan dipindah ke edit requirements
 
             # jika ingin assign requirement_ids, edit disini
             # jika cara ini digunakan dan memiliki banyak requirements, mungkin akan menyebabkan performance drop
