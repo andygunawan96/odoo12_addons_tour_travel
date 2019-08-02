@@ -83,6 +83,11 @@ class TtReservation(models.Model):
     customer_parent_type_id = fields.Many2one('tt.customer.parent.type', 'Customer Type', related='customer_parent_id.customer_parent_type_id',
                                         store=True, readonly=True)
 
+    @api.model
+    def create(self, vals_list):
+        vals_list['name'] = self.env['ir.sequence'].next_by_code(self._name)
+        return super(TtReservation, self).create(vals_list)
+        
     def create_booker_api(self, vals, context):
         booker_obj = self.env['tt.customer'].sudo()
         get_booker_id = util.get_without_empty(vals,'booker_id')

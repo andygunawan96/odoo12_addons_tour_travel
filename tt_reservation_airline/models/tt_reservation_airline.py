@@ -74,7 +74,6 @@ class ReservationAirline(models.Model):
 
     def action_booked_api_airline(self,context,pnr_list,hold_date):
         self.write({
-            'name': self.env['ir.sequence'].next_by_code('reservation.airline'),
             'state': 'booked',
             'pnr': ', '.join(pnr_list),
             'hold_date': hold_date,

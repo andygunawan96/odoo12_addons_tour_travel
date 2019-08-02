@@ -4,7 +4,7 @@
         <!-- Sequences for transport.booking -->
         <record id="seq_reservation_airline" model="ir.sequence">
             <field name="name">Reservation Airline</field>
-            <field name="code">reservation.airline</field>
+            <field name="code">tt.reservation.airline</field>
             <field name="prefix">AL.%(y)s%(month)s%(day)s%(sec)s</field>
             <field name="padding">3</field>
             <field name="company_id" eval="False"/>

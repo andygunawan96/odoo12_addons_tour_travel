@@ -51,7 +51,6 @@ class ReservationTrain(models.Model):
         return tmp
 
     def action_create_invoice(self):
-
         invoice_id = self.env['tt.agent.invoice'].search([('contact_id','=',self.contact_id.id), ('state','=','draft')])
 
         if not invoice_id:
@@ -79,7 +78,6 @@ class ReservationTrain(models.Model):
                 return 'Discount'
             else:
                 return charge_code
-
 
         def get_pax_price():
             res = {
