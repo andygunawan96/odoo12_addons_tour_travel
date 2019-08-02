@@ -158,7 +158,7 @@
                         <page string="Passengers">
                             <field name="to_passenger_ids">
                                 <tree create="0">
-                                    <field name="passenger_id"/>
+                                    <field name="customer_id"/>
                                     <field name="passenger_type"/>
                                     <field name="pricelist_id"/>
                                     <field name="in_process_date"/>

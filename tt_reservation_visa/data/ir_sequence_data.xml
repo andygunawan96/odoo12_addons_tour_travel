@@ -3,8 +3,8 @@
     <data noupdate="0">
         <!-- Sequences for agent.registration -->
         <record id="seq_visa_number" model="ir.sequence">
-            <field name="name">Visa Number</field>
-            <field name="code">visa.number</field>
+            <field name="name">Reservation Visa</field>
+            <field name="code">tt.reservation.visa</field>
             <field name="prefix">VS.%(y)s%(month)s%(day)s</field>
             <field name="padding">5</field>
             <field name="company_id" eval="False"/>
