@@ -369,7 +369,7 @@ class ReservationAirline(models.Model):
                         'phone': book_obj.contact_phone
                     },
                     'provider_bookings': prov_list,
-                    'provider_type': book_obj.provider_type_id.code
+                    # 'provider_type': book_obj.provider_type_id.code
                 })
                 print("Get resp\n" + json.dumps(res))
                 return Response().get_no_error(res)

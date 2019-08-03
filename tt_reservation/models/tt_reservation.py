@@ -287,6 +287,7 @@ class TtReservation(models.Model):
             'INF': self.infant,
             'departure_date': self.departure_date and self.departure_date or '',
             'return_date': self.return_date and self.return_date or '',
+            'provider_type': self.provider_type_id.code
         }
 
         return res
@@ -305,8 +306,9 @@ class TtReservation(models.Model):
     ##butuh field passenger_ids
     def channel_pricing_api(self,req,context):
         try:
-            book_obj = self.get_book_obj(req.get('book_id'),req.get('order_number'))
-            if book_obj:
+            resv_obj = self.env['tt.reservation.%s' % (req['provider_type'])]
+            book_obj = resv_obj.get_book_obj(req.get('book_id'),req.get('order_number'))
+            if book_obj and book_obj.agent_id == context['co_uid']:
                 for psg in req['passengers']:
                     book_obj.passenger_ids[psg['sequence']-1].create_channel_pricing(psg['pricing'])
             else:
