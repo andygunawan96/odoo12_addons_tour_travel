@@ -26,11 +26,6 @@ STATE_VISA = [
     ('done', 'Done')
 ]
 
-JOURNEY_DIRECTION = [
-    ('OW', 'One Way'),
-    ('RT', 'Return')
-]
-
 
 class TtVisa(models.Model):
     _name = 'tt.reservation.visa'
@@ -388,7 +383,7 @@ class TtVisa(models.Model):
             # contact = []
             # sale = {}
             type = []
-            for pax in rec.to_passenger_ids:
+            for idx, pax in enumerate(rec.to_passenger_ids,1):
                 requirement = []
                 # sale[pax.passenger_id.first_name + ' ' + pax.passenger_id.last_name] = []
                 # for sale_price in passenger[len(passenger) - 1]['visa']['price']:
@@ -423,8 +418,9 @@ class TtVisa(models.Model):
                     })
                 passenger.append({
                     # 'title': pax.passenger_id.title,
-                    'first_name': pax.passenger_id.first_name,
-                    'last_name': pax.passenger_id.last_name,
+                    'title': pax.title,
+                    'first_name': pax.first_name,
+                    'last_name': pax.last_name,
                     'birth_date': str(pax.passenger_id.birth_date),
                     # 'age': pax.passenger_id.age or '',
                     'passport': pax.passenger_id.passport_number or '',
@@ -440,7 +436,8 @@ class TtVisa(models.Model):
                         'duration': pax.pricelist_id.duration,
                         'immigration_consulate': pax.pricelist_id.immigration_consulate,
                         'requirement': requirement
-                    }
+                    },
+                    'sequence': idx
                 })
                 type.append({
                     'entry_type': dict(pax.pricelist_id._fields['entry_type'].selection).get(pax.pricelist_id.entry_type),
@@ -809,123 +806,6 @@ class TtVisa(models.Model):
             ssc_ids.append(ssc_obj.id)
         return ssc_ids
 
-    # def _create_sale_service_charge(self, passengers, passenger_ids):
-    #     pricing_list = []
-    #     pricelist_list = []
-    #     pricelist_env = self.env['tt.reservation.visa.pricelist'].sudo()
-    #     pricing_env = self.env['tt.service.charge'].sudo()
-    #
-    #     for idx, psg in enumerate(passengers):
-    #         # check pricelist_id
-    #         pricelist_found = False
-    #         pricing_id = ''
-    #         commission_pricing_id = ''
-    #
-    #         for rec in pricelist_list:
-    #             if pricelist_list is not [] and psg['master_visa_Id'] in str(rec['pricelist_id']):
-    #                 pricelist_found = True
-    #                 pricing_id = rec['pricing_id']
-    #                 commission_pricing_id = rec['commission_pricing_id']
-    #
-    #         if not pricelist_found:
-    #             # create fare pricing
-    #             pricelist_id = int(psg['master_visa_Id'])
-    #             pricelist_obj = pricelist_env.browse(pricelist_id)
-    #             service_charge_summary = {
-    #                 'amount': pricelist_obj.sale_price,
-    #                 'charge_code': 'fare',
-    #                 'charge_type': 'fare',
-    #                 'passenger_visa_ids': passenger_ids[idx],
-    #                 'description': pricelist_obj.description,
-    #                 'pax_type': pricelist_obj.pax_type,
-    #                 'currency_id': pricelist_obj.currency_id.id,
-    #                 'pax_count': 1,
-    #                 'total': pricelist_obj.sale_price,
-    #                 'pricelist_id': pricelist_id
-    #             }
-    #             pricing_obj = pricing_env.create(service_charge_summary)
-    #             pricing_list.append(pricing_obj.id)
-    #
-    #             # create commission pricing
-    #             service_charge_summary2 = service_charge_summary.copy()
-    #             service_charge_summary2.update({
-    #                 'total': int(pricelist_obj.commission_price) * -1,
-    #                 'amount': int(pricelist_obj.commission_price) * -1,
-    #                 'charge_code': 'r.ac',
-    #                 'charge_type': 'r.ac'
-    #             })
-    #             commission_pricing_obj = pricing_obj.create(service_charge_summary2)
-    #
-    #             # create pricelist_ids
-    #             pricelist_dict = {
-    #                 'pricelist_id': pricelist_id,
-    #                 'pricing_id': pricing_obj.id,
-    #                 'commission_pricing_id': commission_pricing_obj.id,
-    #             }
-    #             pricelist_list.append(pricelist_dict)
-    #             pricing_list.append(commission_pricing_obj.id)
-    #         else:
-    #             prc_obj = pricing_env.browse(pricing_id)
-    #             comm_prc_obj = pricing_env.browse(commission_pricing_id)
-    #             prc_obj.update({
-    #                 'pax_count': int(prc_obj.pax_count) + 1,
-    #                 'total': int(prc_obj.total) + int(prc_obj.amount)
-    #             })
-    #             comm_prc_obj.update({
-    #                 'pax_count': int(comm_prc_obj.pax_count) + 1,
-    #                 'total': int(comm_prc_obj.total) - int(comm_prc_obj.amount)
-    #             })
-    #             # prc_obj['passenger_visa_ids'].update(passenger_ids[idx])
-    #             # comm_prc_obj['passenger_visa_ids'].update(passenger_ids[idx])
-    #
-    #     return pricing_list
-
-    # def _create_visa_order(self, passengers):
-    #     pricelist_env = self.env['tt.reservation.visa.pricelist'].sudo()
-    #     to_psg_env = self.env['tt.reservation.visa.order.passengers'].sudo()
-    #     to_req_env = self.env['tt.reservation.visa.order.requirements'].sudo()
-    #     to_psg_list = []
-    #
-    #     for psg in passengers:
-    #         pricelist_id = int(psg['master_visa_Id'])
-    #         pricelist_obj = pricelist_env.browse(pricelist_id)
-    #         psg_vals = {
-    #             'passenger_id': psg['passenger_id'],
-    #             # 'passenger_type': psg['passenger_type'],
-    #             'pricelist_id': pricelist_id,
-    #             'passenger_type': psg['pax_type']
-    #         }
-    #         to_psg_obj = to_psg_env.create(psg_vals)
-    #
-    #         to_req_list = []
-    #         for req in pricelist_obj.requirement_ids:
-    #             req_vals = {
-    #                 'to_passenger_id': to_psg_obj.id,
-    #                 'requirement_id': req.id,
-    #             }
-    #             to_req_obj = to_req_env.create(req_vals)
-    #             to_req_list.append(to_req_obj.id)  # akan dipindah ke edit requirements
-    #
-    #         # jika ingin assign requirement_ids, edit disini
-    #         # jika cara ini digunakan dan memiliki banyak requirements, mungkin akan menyebabkan performance drop
-    #         # for req in psg['required']:
-    #         #     to_req_obj = to_req_env.browse(req['id'])
-    #         #     to_req_obj.update({
-    #         #         'to_passenger_id': psg.id,
-    #         #         'is_ori': req['is_ori'],
-    #         #         'is_copy': req['is_copy'],
-    #         #         'check_uid': req['check_uid'],
-    #         #         'check_date': req['check_date']
-    #         #     })
-    #         #     to_req_list.append(to_req_obj.id)
-    #
-    #         to_psg_obj.write({
-    #             'to_requirement_ids': [(6, 0, to_req_list)]
-    #         })
-    #
-    #         to_psg_list.append(to_psg_obj.id)
-    #     return to_psg_list
-
     def _create_visa_order(self, passengers, passenger_ids):
         pricelist_env = self.env['tt.reservation.visa.pricelist'].sudo()
         to_psg_env = self.env['tt.reservation.visa.order.passengers'].sudo()
@@ -935,13 +815,15 @@ class TtVisa(models.Model):
         for idx, psg in enumerate(passengers):
             pricelist_id = int(psg['master_visa_Id'])
             pricelist_obj = pricelist_env.browse(pricelist_id)
-            psg_vals = {
-                'passenger_id': passenger_ids[idx][0].id,
+            psg_vals = passenger_ids[idx][0].copy_to_passenger()
+            psg_vals.update({
+                'name': psg_vals['first_name'] + ' ' + psg_vals['last_name'],
+                'customer_id': passenger_ids[idx][0].id,
                 'title': psg['title'],
                 # 'passenger_type': psg['passenger_type'],
                 'pricelist_id': pricelist_id,
                 'passenger_type': psg['pax_type']
-            }
+            })
             to_psg_obj = to_psg_env.create(psg_vals)
 
             to_req_list = []
@@ -1025,7 +907,7 @@ class TtVisa(models.Model):
 
         if self.name == 'New':
             vals.update({
-                'name': self.env['ir.sequence'].next_by_code('visa.number'),
+                'name': self.env['ir.sequence'].next_by_code(self._name),
                 # .with_context(ir_sequence_date=self.date[:10])
                 'state': 'partial_booked',
             })
@@ -1046,6 +928,7 @@ class TtVisa(models.Model):
         self._create_ledger_visa()
         self._create_ho_ledger_visa()
         self._create_commission_ledger_visa()
+        self._calc_grand_total()
         # self.create_agent_invoice_traveldoc()
 
     def _create_ho_ledger_visa(self):
@@ -1324,29 +1207,20 @@ class TtVisa(models.Model):
             rec.total_tax = 0
             rec.total_disc = 0
             rec.total_commission = 0
-
-            fare = 0
+            rec.total_fare = 0
 
             for line in rec.sale_service_charge_ids:
                 if line.charge_code == 'fare':
-                    fare += line.total
-                    print('Charge Code Fare ' + str(fare))
+                    rec.total_fare += line.total
                 if line.charge_code == 'tax':
                     rec.total_tax += line.total
-                    print('Charge Code Tax ' + str(rec.total_tax))
                 if line.charge_code == 'disc':
                     rec.total_disc += line.total
-                    print('Charge Code Disc ' + str(rec.total_disc))
                 if line.charge_code == 'r.oc':
                     rec.total_commission += line.total
-                    print('Charge Code R.Oc ' + str(rec.total_commission))
                 if line.charge_code == 'rac':
                     rec.total_commission += line.total
-                    print('Charge Code RAC ' + str(rec.total_commission))
 
-            # rec.total_fare = fare
-            rec.update({
-                'total_fare': fare
-            })
+            print('Total Fare : ' + str(rec.total_fare))
             rec.total = rec.total_fare + rec.total_tax + rec.total_disc
             rec.total_nta = rec.total - rec.total_commission

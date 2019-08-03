@@ -32,8 +32,20 @@
 <!--                            <field name="use_vendor"/>-->
                             <field name="visa_id"/>
                             <field name="title"/>
+                            <field name="first_name"/>
+                            <field name="gender"/>
+                        </group>
+                        <group>
+                            <field name="customer_id"/>
+                            <field name="name"/>
+                            <field name="last_name"/>
+                            <field name="birth_date"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
                             <field name="booking_state"/>
-                            <field name="passenger_id"/>
+<!--                            <field name="customer_id"/>-->
                             <field name="passenger_type"/>
                             <field name="passenger_domicile"/>
                             <field name="pricelist_id"/>
@@ -92,7 +104,7 @@
         <field name="model">tt.reservation.visa.order.passengers</field>
         <field name="arch" type="xml">
             <tree create="0">
-                <field name="passenger_id"/>
+                <field name="customer_id"/>
                 <field name="passenger_type"/>
                 <field name="pricelist_id"/>
                 <field name="in_process_date"/>

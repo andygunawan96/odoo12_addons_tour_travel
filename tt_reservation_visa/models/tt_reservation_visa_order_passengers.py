@@ -57,7 +57,7 @@ PROCESS_STATUS = [
 
 
 class VisaOrderPassengers(models.Model):
-    _inherit = ['mail.thread']
+    _inherit = ['mail.thread', 'tt.reservation.passenger']
     _name = 'tt.reservation.visa.order.passengers'
     _description = 'Tour & Travel - Visa Order Passengers'
 
@@ -85,6 +85,11 @@ class VisaOrderPassengers(models.Model):
 
     service_charge_ids = fields.Many2many('tt.service.charge', 'tt_reservation_visa_charge_rel', 'passenger_id',
                                           'service_charge_id', 'Service Charges')
+
+    cost_service_charge_ids = fields.Many2many('tt.service.charge', 'tt_reservation_visa_cost_charge_rel',
+                                               'passenger_id', 'service_charge_id', 'Cost Service Charges')
+    channel_service_charge_ids = fields.Many2many('tt.service.charge', 'tt_reservation_visa_channel_charge_rel',
+                                                  'passenger_id', 'service_charge_id', 'Channel Service Charges')
 
     # use_vendor = fields.Boolean('Use Vendor', readonly=1, related='passport_id.use_vendor')
     notes = fields.Text('Notes (Agent to Customer)')
@@ -245,7 +250,7 @@ class VisaOrderPassengers(models.Model):
             rec.message_post(body='Passenger documents TO HO')
             is_sent = True
             for psg in rec.visa_id.to_passenger_ids:
-                if not psg.state in ['to_HO']:
+                if psg.state not in ['to_HO']:
                     is_sent = False
             if is_sent:
                 rec.visa_id.action_delivered_visa()
@@ -303,9 +308,9 @@ class VisaOrderPassengers(models.Model):
                     'to_requirement_ids': [(4, data)]
                 })
 
-    def check_requirement(self, id):
+    def check_requirement(self, req_id):
         for rec in self:
             for to_req in rec.to_requirement_ids:
-                if to_req.requirement_id.id == id:
+                if to_req.requirement_id.id == req_id:
                     return True
             return False
