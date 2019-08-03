@@ -373,7 +373,8 @@ class TtVisa(models.Model):
     }
 
     param_context = {
-        'co_uid': 7
+        'co_uid': 7,
+        'agent_id': 3
     }
 
     param_kwargs = {
@@ -507,25 +508,25 @@ class TtVisa(models.Model):
 
         try:
             user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
-            for contact_data in contact:
-                contact_data.update({
-                    'agent_id': context['agent_id'],
-                    'commercial_agent_id': user_obj.agent_id.id,
-                    'booker_type': 'FPO',
-                })
-                if user_obj.agent_id.agent_type_id.id == 3:  # 3 : COR
-                    if user_obj.agent_id.parent_agent_id:
-                        contact_data.update({
-                            'commercial_agent_id': user_obj.agent_id.parent_agent_id.id,
-                            'booker_type': 'COR',
-                        })
-
-                if user_obj.agent_id.agent_type_id.id == 9:  # 9 : POR
-                    if user_obj.agent_id.parent_agent_id:
-                        contact_data.update({
-                            'commercial_agent_id': user_obj.agent_id.parent_agent_id.id,
-                            'booker_type': 'POR',
-                        })
+            # for contact_data in contact:
+            #     contact_data.update({
+            #         'agent_id': context['agent_id'],
+            #         'commercial_agent_id': user_obj.agent_id.id,
+            #         'booker_type': 'FPO',
+            #     })
+            #     if user_obj.agent_id.agent_type_id.id == 3:  # 3 : COR
+            #         if user_obj.agent_id.parent_agent_id:
+            #             contact_data.update({
+            #                 'commercial_agent_id': user_obj.agent_id.parent_agent_id.id,
+            #                 'booker_type': 'COR',
+            #             })
+            #
+            #     if user_obj.agent_id.agent_type_id.id == 9:  # 9 : POR
+            #         if user_obj.agent_id.parent_agent_id:
+            #             contact_data.update({
+            #                 'commercial_agent_id': user_obj.agent_id.parent_agent_id.id,
+            #                 'booker_type': 'POR',
+            #             })
 
             header_val = self._visa_header_normalization(search, sell_visa)
             booker_id = self.create_booker_api(booker, context)
