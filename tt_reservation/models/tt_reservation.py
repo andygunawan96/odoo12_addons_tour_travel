@@ -285,6 +285,11 @@ class TtReservation(models.Model):
             'ADT': self.adult,
             'CHD': self.child,
             'INF': self.infant,
+            'contact': {
+                'name': self.contact_name,
+                'email': self.contact_email,
+                'phone': self.contact_phone
+            },
             'departure_date': self.departure_date and self.departure_date or '',
             'return_date': self.return_date and self.return_date or '',
             'provider_type': self.provider_type_id.code

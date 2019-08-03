@@ -13,6 +13,7 @@
                     <group>
                         <field name="origin_id" string="Origin" options="{'no_create': True}"/>
                         <field name="destination_id" string="Destination" options="{'no_create': True}"/>
+                        <button name="get_booking_airline" string="get_booking" type="object"/>
                     </group>
                     <group>
                         <field name="sector_type"/>

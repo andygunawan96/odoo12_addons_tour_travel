@@ -345,6 +345,40 @@ class ReservationAirline(models.Model):
             _logger.error(str(e) + traceback.format_exc())
             return ERR.get_error(1005)
 
+    def get_booking_airline(self):
+        context= {
+            "uid": 6,
+            "user_name": "sam.api",
+            "user_login": "sam.api",
+            "agent_id": 5,
+            "agent_name": "Japro B",
+            "agent_type_id": 3,
+            "agent_type_name": "Agent JaPro",
+            "agent_type_code": "japro",
+            "api_role": "admin",
+            "host_ips": [],
+            "configs": {
+                "airline": {
+                    "provider_access": "all",
+                    "providers": {}
+                }
+            },
+            "co_uid": 6,
+            "co_user_name": "sam.api",
+            "co_user_login": "sam.api",
+            "co_agent_id": 5,
+            "co_agent_name": "Japro B",
+            "co_agent_type_id": 3,
+            "co_agent_type_name": "Agent JaPro",
+            "co_agent_type_code": "japro",
+            "sid": "0c1e20bd3030383f44e15ff2066c6f8d8a7fb9e6",
+            "signature": "ff8e8d1434004e669a19d1bd2ec57734",
+            "expired_date": "2019-08-03 02:18:20"
+        }
+        req = {
+            'order_number': self.name
+        }
+        self.get_booking_airline_api(req,context)
     def get_booking_airline_api(self,req, context):
         try:
             print("Get req\n" + json.dumps(context))
@@ -363,11 +397,6 @@ class ReservationAirline(models.Model):
                     'destination': book_obj.destination_id.code,
                     'sector_type': book_obj.sector_type,
                     'passengers': psg_list,
-                    'contact': {
-                        'name': book_obj.contact_name,
-                        'email': book_obj.contact_email,
-                        'phone': book_obj.contact_phone
-                    },
                     'provider_bookings': prov_list,
                     # 'provider_type': book_obj.provider_type_id.code
                 })
