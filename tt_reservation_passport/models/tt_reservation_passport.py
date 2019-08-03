@@ -79,9 +79,6 @@ class TtPassport(models.Model):
     ledger_ids = fields.One2many('tt.ledger', 'res_id', 'Ledger', readonly=True,
                                  domain=[('res_model', '=', 'tt.reservation.passport')])
 
-    sale_service_charge_ids = fields.One2many('tt.service.charge', 'passport_id', 'Service Charge',
-                                              readonly=True, states={'draft': [('readonly', False)]})
-
     done_date = fields.Datetime('Done Date', readonly=1)
     ready_date = fields.Datetime('Ready Date', readonly=1)
     recipient_name = fields.Char('Recipient Name')
@@ -216,11 +213,16 @@ class TtPassport(models.Model):
 
     def action_cancel_passport(self):
         # set semua state passenger ke cancel
+        if self.state_passport not in ['in_process', 'partial_proceed', 'proceed', 'delivered', 'ready', 'done']:
+            self._create_anti_ho_ledger_passport()
+            self._create_anti_ledger_passport()
+            self._create_anti_commission_ledger_passport()
         for rec in self.to_passenger_ids:
             rec.action_cancel()
         self.write({
             'state_passport': 'cancel',
         })
+        self.message_post(body='Order CANCELED')
 
     def action_ready_passport(self):
         self.write({
@@ -233,6 +235,29 @@ class TtPassport(models.Model):
             'state_passport': 'done',
             'done_date': datetime.now()
         })
+
+    def action_booked_passport(self, api_context=None):
+        if not api_context:  # Jika dari call from backend
+            api_context = {
+                'co_uid': self.env.user.id
+            }
+        vals = {}
+        if self.name == 'New':
+            vals.update({
+                'name': self.env['ir.sequence'].next_by_code(self._name),
+                # .with_context(ir_sequence_date=self.date[:10])
+                'state': 'partial_booked',
+            })
+
+        vals.update({
+            'state': 'booked',
+            'booked_uid': api_context and api_context['co_uid'],
+            # 'pnr': False,
+            'booked_date': datetime.now(),
+            # 'hold_date': False,
+            # 'expired_date': False,
+        })
+        self.write(vals)
 
     ######################################################################################################
     # LEDGER
@@ -253,7 +278,7 @@ class TtPassport(models.Model):
 
         if self.name == 'New':
             vals.update({
-                'name': self.env['ir.sequence'].next_by_code('passport.number'),
+                'name': self.env['ir.sequence'].next_by_code(self._name),
                 # .with_context(ir_sequence_date=self.date[:10])
                 'state': 'partial_booked',
             })
@@ -486,3 +511,27 @@ class TtPassport(models.Model):
         for rec in self:
             if rec.to_passenger_ids:
                 rec.immigration_consulate = rec.to_passenger_ids[0].pricelist_id.immigration_consulate
+
+    def _calc_grand_total(self):
+        for rec in self:
+            rec.total = 0
+            rec.total_tax = 0
+            rec.total_disc = 0
+            rec.total_commission = 0
+            rec.total_fare = 0
+
+            for line in rec.sale_service_charge_ids:
+                if line.charge_code == 'fare':
+                    rec.total_fare += line.total
+                if line.charge_code == 'tax':
+                    rec.total_tax += line.total
+                if line.charge_code == 'disc':
+                    rec.total_disc += line.total
+                if line.charge_code == 'r.oc':
+                    rec.total_commission += line.total
+                if line.charge_code == 'rac':
+                    rec.total_commission += line.total
+
+            print('Total Fare : ' + str(rec.total_fare))
+            rec.total = rec.total_fare + rec.total_tax + rec.total_disc
+            rec.total_nta = rec.total - rec.total_commission

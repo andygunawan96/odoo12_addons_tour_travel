@@ -305,13 +305,14 @@ class TtVisa(models.Model):
             "first_name": "pax",
             "last_name": "satu",
             "title": "MR",
+            "gender": "male",
             "birth_date": "2002-03-20",
             "nationality_code": "ID",
             "country_of_issued_code": "",
             "passport_expdate": "",
             "passport_number": "",
             "passenger_id": "",
-            "master_visa_Id": "3",
+            "master_visa_Id": "4",
             "required": [
                 {
                     "is_copy": True,
@@ -325,6 +326,7 @@ class TtVisa(models.Model):
             "first_name": "pax",
             "last_name": "dua",
             "title": "MR",
+            "gender": "female",
             "birth_date": "2004-05-08",
             "nationality_code": "ID",
             "country_of_issued_code": "",
@@ -345,6 +347,7 @@ class TtVisa(models.Model):
             "first_name": "pax",
             "last_name": "tiga",
             "title": "MR",
+            "gender": "male",
             "birth_date": "2017-05-08",
             "nationality_code": "ID",
             "country_of_issued_code": "",
@@ -378,7 +381,10 @@ class TtVisa(models.Model):
     }
 
     def get_booking_visa_api(self, data):
-        for rec in self.search([('name', '=', data['order_number'])]):  # data['order_number']
+        res = {}
+        for rec in self.search([('name', '=', self.name)]):  # data['order_number']
+            res_dict = self.to_dict()
+            print('Res Dict. : ' + str(res_dict))
             passenger = []
             # contact = []
             # sale = {}
@@ -421,9 +427,11 @@ class TtVisa(models.Model):
                     'title': pax.title,
                     'first_name': pax.first_name,
                     'last_name': pax.last_name,
-                    'birth_date': str(pax.passenger_id.birth_date),
+                    'birth_date': str(pax.birth_date),
+                    'gender': pax.gender,
                     # 'age': pax.passenger_id.age or '',
-                    'passport': pax.passenger_id.passport_number or '',
+                    'passport_number': pax.passport_number or '',
+                    'passport_expdate': pax.passport_expdate or '',
                     'visa': {
                         # 'sale_price': pax.pricelist_id.sale_price,
                         # 'commission': pax.pricelist_id.commission_price,
@@ -452,28 +460,36 @@ class TtVisa(models.Model):
             #     })
             res = {
                 'contact': {
-                    'first_name': rec.contact_id.first_name,
-                    'last_name': rec.contact_id.last_name,
-                    'email': rec.contact_id.email,
-                    'phone_number': rec.contact_id.phone_ids[0].phone_number if len(rec.contact_id.phone_ids) > 0 else '',
+                    'name': res_dict['contact']['name'],
+                    'email': res_dict['contact']['email'],
+                    'phone': res_dict['contact']['phone']
                 },
-                'booker': {
-                    # 'title': rec.booker_id.title,
-                    'first_name': rec.booker_id.first_name,
-                    'last_name': rec.booker_id.last_name,
-                    'email': rec.booker_id.email,
-                    'phone_number': rec.booker_id.phone_ids[0].phone_number if len(rec.booker_id.phone_ids) > 0 else '',
-                },
+                # {
+                #     'first_name': rec.contact_id.first_name,
+                #     'last_name': rec.contact_id.last_name,
+                #     'email': rec.contact_id.email,
+                #     'phone_number': rec.contact_id.phone_ids[0].phone_number if len(
+                #         rec.contact_id.phone_ids) > 0 else '',
+                # }
+                # 'booker': rec.booker_id.to_dict(),
+                # {
+                #     # 'title': rec.booker_id.title,
+                #     'first_name': rec.booker_id.first_name,
+                #     'last_name': rec.booker_id.last_name,
+                #     'email': rec.booker_id.email,
+                #     'phone_number': rec.booker_id.phone_ids[0].phone_number if len(rec.booker_id.phone_ids) > 0 else '',
+                # }
                 'journey': {
                     'country': rec.country_id.name,
-                    'departure_date': str(rec.departure_date),
-                    'name': rec.name,
-                    'payment_status': rec.commercial_state
+                    'departure_date': str(res_dict['departure_date']),
+                    'name': res_dict['order_number'],
+                    'payment_status': rec.commercial_state,
+                    'state': res_dict['state'],
+                    'state_visa': rec.state_visa
                 },
                 'passengers': passenger,
                 # 'contact': contact,
                 # 'sale_price': sale
-
             }
         if not res:
             res = Response().get_error(str('Visa Booking not found'), 500)
@@ -526,6 +542,9 @@ class TtVisa(models.Model):
                 'booker_id': booker_id.id,
                 # 'contact_ids': [(6, 0, contact_ids)],
                 'contact_id': contact_id.id,
+                'contact_name': contact_id.name,
+                'contact_email': contact_id.email,
+                'contact_phone': contact_id.phone_ids[0].phone_number,
                 'passenger_ids': [(6, 0, passenger_ids)],
                 'sale_service_charge_ids': [(6, 0, ssc_ids)],
                 'to_passenger_ids': [(6, 0, to_psg_ids)],
@@ -738,9 +757,12 @@ class TtVisa(models.Model):
         ssc_list = []
         ssc_list_final = []
         pricelist_env = self.env['tt.reservation.visa.pricelist'].sudo()
+        passenger_env = self.env['tt.reservation.visa.order.passengers']
         for idx, psg in enumerate(passenger):
+            ssc = []
             pricelist_id = int(psg['master_visa_Id'])
             pricelist_obj = pricelist_env.browse(pricelist_id)
+            passenger_obj = passenger_env.browse(passenger_ids[idx])
             vals = {
                 'amount': pricelist_obj.sale_price,
                 'charge_code': 'fare',
@@ -751,9 +773,13 @@ class TtVisa(models.Model):
                 'currency_id': pricelist_obj.currency_id.id,
                 'pax_count': 1,
                 'total': pricelist_obj.sale_price,
-                'pricelist_id': pricelist_id
+                'pricelist_id': pricelist_id,
+                'sequence': passenger_obj.sequence
             }
             ssc_list.append(vals)
+            # passenger_env.search([('id', '=', 'passenger_ids[idx])].limit=1).cost_service_charge_ids.create(ssc_list))
+            ssc_obj = passenger_obj.cost_service_charge_ids.create(vals)
+            ssc.append(ssc_obj.id)
             vals2 = vals.copy()
             vals2.update({
                 'total': int(pricelist_obj.commission_price) * -1,
@@ -762,7 +788,11 @@ class TtVisa(models.Model):
                 'charge_type': 'rac'
             })
             ssc_list.append(vals2)
-        print(ssc_list)
+            ssc_obj = passenger_obj.cost_service_charge_ids.create(vals)
+            ssc.append(ssc_obj.id)
+            passenger_obj.write({
+                'cost_service_charge_ids': [(6, 0, ssc)]
+            })
 
         for ssc in ssc_list:
             # compare with ssc_list
@@ -822,7 +852,8 @@ class TtVisa(models.Model):
                 'title': psg['title'],
                 # 'passenger_type': psg['passenger_type'],
                 'pricelist_id': pricelist_id,
-                'passenger_type': psg['pax_type']
+                'passenger_type': psg['pax_type'],
+                'sequence': int(idx+1)
             })
             to_psg_obj = to_psg_env.create(psg_vals)
 
@@ -834,7 +865,8 @@ class TtVisa(models.Model):
             #     }
             #     to_req_obj = to_req_env.create(req_vals)
             #     to_req_list.append(to_req_obj.id)  # akan dipindah ke edit requirements
-            if psg.get('required'):
+
+            if psg['required']:
                 for req in psg['required']:  # pricelist_obj.requirement_ids
                     req_vals = {
                         'to_passenger_id': to_psg_obj.id,
@@ -873,7 +905,7 @@ class TtVisa(models.Model):
         vals = {}
         if self.name == 'New':
             vals.update({
-                'name': self.env['ir.sequence'].next_by_code('visa.number'),
+                'name': self.env['ir.sequence'].next_by_code(self._name),
                 # .with_context(ir_sequence_date=self.date[:10])
                 'state': 'partial_booked',
             })
@@ -1015,7 +1047,6 @@ class TtVisa(models.Model):
             # rec.ledger_id = new_aml
 
     def _create_commission_ledger_visa(self):
-        self._calc_grand_total()
         # pass
         for rec in self:
             ledger_obj = rec.env['tt.ledger']
@@ -1193,6 +1224,34 @@ class TtVisa(models.Model):
     ######################################################################################################
     # OTHERS
     ######################################################################################################
+
+    param_channel_service_charge = {
+        "order_number": "VS.19080200037",
+        "passengers": [{
+            "sequence": 1,
+            "pricing": [{
+                "amount": 30000,
+                "currency_code": "IDR"
+            },
+            {
+                "amount": 10000,
+                "currency_code": "IDR"
+            },
+            {
+                "amount": -50000,
+                "currency_code": "IDR"
+            }]
+        }]
+    }
+
+    def calculate_channel_service_charge_visa(self):
+        channel = self.param_channel_service_charge
+        for psg in self.to_passenger_ids:
+            for psg_channel in psg['channel_cost_service_charge_ids']:
+                psg_channel.unlink()
+
+        for psg in channel['passengers']:
+            pass
 
     @api.multi
     @api.depends('to_passenger_ids')

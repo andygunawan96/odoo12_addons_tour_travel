@@ -49,6 +49,7 @@ PROCESS_STATUS = [
 
 
 class PassportOrderPassengers(models.Model):
+    _inherit = ['mail.thread', 'tt.reservation.passenger']
     _name = 'tt.reservation.passport.order.passengers'
     _description = 'Tour & Travel - Passport Order Passengers'
 
@@ -76,6 +77,11 @@ class PassportOrderPassengers(models.Model):
     service_charge_ids = fields.Many2many('tt.service.charge', 'tt_reservation_passport_charge_rel', 'passenger_id',
                                           'service_charge_id', 'Service Charges')
 
+    cost_service_charge_ids = fields.Many2many('tt.service.charge', 'tt_reservation_passport_cost_charge_rel',
+                                               'passenger_id', 'service_charge_id', 'Cost Service Charges')
+    channel_service_charge_ids = fields.Many2many('tt.service.charge', 'tt_reservation_passport_channel_charge_rel',
+                                                  'passenger_id', 'service_charge_id', 'Channel Service Charges')
+
     # use_vendor = fields.Boolean('Use Vendor', readonly=1, related='passport_id.use_vendor')
     notes = fields.Text('Notes (Agent to Customer)')
     notes_HO = fields.Text('Notes (HO to Agent)')
@@ -100,8 +106,8 @@ class PassportOrderPassengers(models.Model):
                                                 in_process2 = process by consulate/immigration
                                                 waiting = waiting interview or photo
                                                 proceed = Has Finished the requirements
-                                                accepted = Accepted by the Consulat
-                                                rejected = Rejected by the Consulat
+                                                accepted = Accepted by the Immigration
+                                                rejected = Rejected by the Immigration
                                                 ready = ready to pickup by customer
                                                 done = picked up by customer''')
 
