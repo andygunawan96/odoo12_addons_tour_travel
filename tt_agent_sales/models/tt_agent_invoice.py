@@ -16,7 +16,7 @@ class AgentInvoice(models.Model):
     total = fields.Monetary('Total', compute="_compute_total")
     paid_amount = fields.Monetary('Paid Amount', readonly=True)
     invoice_line_ids = fields.One2many('tt.agent.invoice.line','invoice_id','Invoice Line')
-    contact_id = fields.Many2one('tt.customer', 'Booker / Contact')
+    booker_id = fields.Many2one('tt.customer', 'Booker')
     type = fields.Selection([
         ('out_invoice', 'Customer Invoice'),
         ('in_invoice', 'Vendor Bill'),

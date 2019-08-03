@@ -84,7 +84,7 @@ class TtProviderAirline(models.Model):
     def action_failed_issued_api_airline(self):
         for rec in self:
             rec.write({
-                'state': 'fail_issue'
+                'state': 'fail_issued'
             })
 
     def action_set_as_booked(self):
@@ -113,6 +113,12 @@ class TtProviderAirline(models.Model):
             psg_obj = self.booking_id.passenger_ids.filtered(lambda x: x.name.replace(' ', '').lower() ==
                                                                 ('%s%s' % (psg.get('first_name', ''),
                                                                            psg.get('last_name', ''))).lower())
+
+            if not psg_obj:
+                psg_obj = self.booking_id.passenger_ids.filtered(lambda x: x.name.replace(' ', '').lower()*2 ==
+                                                                           ('%s%s' % (psg.get('first_name', ''),
+                                                                                      psg.get('last_name',
+                                                                                              ''))).lower())
             ticket_list.append((0, 0, {
                 'pax_type': psg.get('pax_type'),
                 'ticket_number': psg.get('ticket_number'),

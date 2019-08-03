@@ -29,21 +29,20 @@ AMOUNT_TYPE = [
     ]
 BOOKING_STATE = [
     ('draft', 'New'),
-    ('confirm', 'Confirmed'),
     ('cancel', 'Cancelled'),
     ('cancel2', 'Expired'),
     ('error', 'Connection Loss'), #diganti failed issue
-    ('fail_booking', 'Failed (Book)'),
+    ('fail_booked', 'Failed (Book)'),
     ('booked', 'Booked'),
     ('partial_booked', 'Partial Booked'),
     ('in_progress', 'In Progress'),
-    ('fail_issue', 'Failed (Issue)'),
+    ('fail_issued', 'Failed (Issue)'),
     ('partial_issued', 'Partial Issued'),
     ('issued', 'Issued'),
     ('done', 'Done'),
     ('fail_refunded', 'Failed (REFUNDED)'),
     ('refund', 'Refund'),
-    ('reroute', 'Reroute'), #diganti reissue
+    ('reissue', 'Reissue'), #diganti reissue
 ]
 
 BOOKING_STATE_STR = {
@@ -56,7 +55,7 @@ BOOKING_STATE_STR = {
     'booked': 'Booked',
     'partial_booked': 'Partial Booked',
     'in_progress': 'In Progress',
-    'fail_issue': 'Failed (Issue)',
+    'fail_issued': 'Failed (Issue)',
     'partial_issued': 'Partial Issued',
     'issued': 'Issued',
     'done': 'Done',

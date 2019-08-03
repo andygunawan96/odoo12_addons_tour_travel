@@ -11,6 +11,7 @@
                         <field name="name"/>
                         <field name="customer_parent_type_id"/>
                         <field name="parent_agent_id"/>
+                        <field name="actual_balance"/>
                         <field name="customer_ids" domain="[('agent_id', '=', parent_agent_id)]"/>
                     </group>
                 </sheet>

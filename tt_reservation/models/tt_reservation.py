@@ -85,9 +85,12 @@ class TtReservation(models.Model):
 
     @api.model
     def create(self, vals_list):
-        vals_list['name'] = self.env['ir.sequence'].next_by_code(self._name)
+        try:
+            vals_list['name'] = self.env['ir.sequence'].next_by_code(self._name)
+        except:
+            pass
         return super(TtReservation, self).create(vals_list)
-        
+
     def create_booker_api(self, vals, context):
         booker_obj = self.env['tt.customer'].sudo()
         get_booker_id = util.get_without_empty(vals,'booker_id')
@@ -299,6 +302,7 @@ class TtReservation(models.Model):
         else:
             return False
 
+    ##butuh field passenger_ids
     def channel_pricing_api(self,req,context):
         try:
             book_obj = self.get_book_obj(req.get('book_id'),req.get('order_number'))
@@ -319,5 +323,7 @@ class TtReservation(models.Model):
 
     def action_failed_issue(self):
         self.write({
-            'state': 'fail_issue'
+            'state': 'fail_issued'
         })
+
+    # def get_agent_reservation(self):

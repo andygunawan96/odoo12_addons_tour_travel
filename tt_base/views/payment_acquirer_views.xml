@@ -4,6 +4,7 @@
         <record id="payment_acquirer_form_view" model="ir.ui.view">
             <field name="name">payment.acquirer.form.view</field>
             <field name="model">payment.acquirer</field>
+
             <field name="arch" type="xml">
                 <form string="Provider">
                     <header>
@@ -11,6 +12,7 @@
                     </header>
                     <sheet>
                         <div class="oe_button_box" name="button_box">
+                            <button name="button_test_acquirer"  string="button_test_acquirer" type="object"/>
                             <button name="toggle_website_published"
                                     class="oe_stat_button"
                                     type="object" icon="fa-globe">

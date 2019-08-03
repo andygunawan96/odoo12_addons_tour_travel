@@ -68,8 +68,6 @@
                         <field name="email" placeholder="Agent's Email"/>
                         <field name="website"/>
                         <field name="npwp"/>
-                        <field name="va_mandiri"/>
-                        <field name="va_bca"/>
                         <field name="payment_acquirer_ids"/>
                         <field name="agent_bank_detail_ids"/>
                         <!--<field name="history_ids"/>-->

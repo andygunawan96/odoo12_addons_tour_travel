@@ -48,6 +48,7 @@ class TtReservationCustomer(models.Model):
                 'channel_service_charge_ids': [(0,0,sc)]
             })
 
+    #butuh field cost_service_charge_ids
     def get_service_charges(self):
         sc_value = {}
         for p_sc in self.cost_service_charge_ids:
@@ -72,6 +73,7 @@ class TtReservationCustomer(models.Model):
 
         return sc_value
 
+    #butuh field channel_service_charge_ids
     def get_channel_service_charges(self):
         total = 0
         currency_code = 'IDR'

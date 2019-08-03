@@ -17,7 +17,6 @@ class TtAgent(models.Model):
 
     name = fields.Char('Name', required=True, default='')
     logo = fields.Binary('Agent Logo', attachment=True)
-    logo_thumb = fields.Binary('Agent Logo Thumb', compute="_get_logo_image", store=True, attachment=True)
 
     reference = fields.Many2one('tt.agent', 'Reference', help="Agent who Refers This Agent")
     balance = fields.Monetary(string="Balance",  required=False, )
@@ -34,8 +33,6 @@ class TtAgent(models.Model):
     website = fields.Char(string="Website", required=False, )
     email = fields.Char(string="Email", required=False, )
     currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.user.company_id)
-    va_mandiri = fields.Char(string="VA Mandiri", required=False, )
-    va_bca = fields.Char(string="VA BCA", required=False, )
     address_ids = fields.One2many('address.detail', 'agent_id', string='Addresses')
     phone_ids = fields.One2many('phone.detail', 'agent_id', string='Phones')
     social_media_ids = fields.One2many('social.media.detail', 'agent_id', 'Social Media')
@@ -47,7 +44,7 @@ class TtAgent(models.Model):
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type')
     history_ids = fields.Char(string="History", required=False, )  # tt_history
     user_ids = fields.One2many('res.users', 'agent_id', 'User')
-    payment_acquirer_ids = fields.Char(string="Payment Acquirer", required=False, )  # payment_acquirer
+    payment_acquirer_ids = fields.One2many('payment.acquirer','agent_id',string="Payment Acquirer")  # payment_acquirer
     agent_bank_detail_ids = fields.One2many('agent.bank.detail', 'agent_id', 'Agent Bank')  # agent_bank_detail
     tac = fields.Text('Terms and Conditions', readonly=True, states={'draft': [('readonly', False)],
                                                                      'confirm': [('readonly', False)]})
@@ -61,14 +58,6 @@ class TtAgent(models.Model):
     # 5. Agent Code => kode citra darmo misal RDX_0001, digunakan referal code or etc?
     # 6. MOU start - Mou End = dibuat historical juga buat catat kerja sama kita pertimbangkan juga untuk masukan min/max MMF disini
     # Cth: fungsi MOU remider untuk FIPRO dkk
-
-    @api.depends('logo')
-    def _get_logo_image(self):
-        for record in self:
-            if record.logo:
-                record.logo_thumb = image.crop_image(record.logo, type='center', ratio=(4, 3), size=(200, 200))
-            else:
-                record.logo_thumb = False
 
     # @api.multi
     # def write(self, value):
@@ -94,8 +83,17 @@ class TtAgent(models.Model):
                 'name': agent_name + ' FPO'
             }
         )
+
+        self.env['payment.acquirer'].create({
+            'name': 'Cash',
+            'provider': 'manual',
+            'agent_id': new_agent.id,
+            'type': 'cash',
+            'website_published': True
+        })
+
         new_agent.write({
-            'customer_parent_walkin_id': walkin_obj.id
+            'customer_parent_walkin_id': walkin_obj.id,
         })
         return new_agent
 

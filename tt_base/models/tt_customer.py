@@ -26,7 +26,6 @@ class TtCustomer(models.Model):
     address_ids = fields.One2many('address.detail', 'customer_id', 'Address Detail')
     phone_ids = fields.One2many('phone.detail', 'customer_id', 'Phone Detail')
     social_media_ids = fields.One2many('social.media.detail', 'customer_id', 'Social Media Detail')
-    employment_ids = fields.One2many('res.employee', 'customer_id', 'Employee')
     email = fields.Char('Email')
     identity_type = fields.Selection(variables.IDENTITY_TYPE, 'Identity Type')
     identity_number = fields.Char('Identity Number')

@@ -15,7 +15,7 @@ class TtCustomerParent(models.Model):
 
     balance = fields.Monetary(string="Balance",  required=False, )
     actual_balance = fields.Monetary(string="Actual Balance",  required=False, )
-    credit_limit = fields.Monetary(string="Credit Limit",  required=False, )
+    credit_limit = fields.Monetary(string="Credit Limit", required=False, )
 
     email = fields.Char(string="Email", required=False, )
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.user.company_id, string='Currency')
