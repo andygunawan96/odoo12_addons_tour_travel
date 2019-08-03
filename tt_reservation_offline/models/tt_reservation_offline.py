@@ -187,7 +187,7 @@ class IssuedOffline(models.Model):
                         if self.total_sale_price != 0:
                             self.name = 'New'
                             if self.name == 'New':
-                                self.name = self.env['ir.sequence'].next_by_code('tt.reservation.offline')
+                                self.name = self.env['ir.sequence'].next_by_code(self._name)
                             else:
                                 self.name = self.name
                             self.state = 'confirm'
