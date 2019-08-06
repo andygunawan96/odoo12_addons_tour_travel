@@ -13,9 +13,9 @@ class TtCustomerParent(models.Model):
     customer_parent_type_id = fields.Many2one('tt.customer.parent.type', 'Customer Parent Type', required=True)
     parent_agent_id = fields.Many2one('tt.agent', 'Parent')
 
-    balance = fields.Monetary(string="Balance",  required=False, )
-    actual_balance = fields.Monetary(string="Actual Balance",  required=False, )
-    credit_limit = fields.Monetary(string="Credit Limit", required=False, )
+    balance = fields.Monetary(string="Balance" )
+    actual_balance = fields.Monetary(string="Actual Balance", readonly=True, compute="_compute_actual_balance")
+    credit_limit = fields.Monetary(string="Credit Limit")
 
     email = fields.Char(string="Email", required=False, )
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.user.company_id, string='Currency')
@@ -29,6 +29,10 @@ class TtCustomerParent(models.Model):
     tac = fields.Text('Terms and Conditions', readonly=True)
     active = fields.Boolean('Active', default='True')
 
+
+    def _compute_actual_balance(self):
+        for rec in self:
+            rec.actual_balance = rec.credit_limit - rec.balance
 
     #ledger history
     #booking History

@@ -37,6 +37,7 @@
                                 <group>
                                     <!--<field name="downline_ids"/>-->
                                     <field name="code"/>
+                                    <field name="seq_prefix"/>
                                     <field name="can_register_agent"/>
                                     <field name="can_be_registered"/>
                                     <field name="registration_upline_ids"/>

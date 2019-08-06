@@ -19,6 +19,8 @@
                             <field name="type"/>
                             <field name="country_id"/>
                             <field name="phone_number"/>
+                            <field name="calling_code"/>
+                            <field name="calling_number"/>
                             <!--<field name="agent_id"/>-->
                             <!--<field name="customer_id"/>-->
                         </group>

@@ -28,6 +28,18 @@ class TtAgentType(models.Model):
     commission_rule_ids = fields.One2many('tt.commission.rule', 'agent_type_id', 'Commission Rule(s)')
     recruitment_commission_ids = fields.One2many('tt.commission.rule', 'agent_type2_id',
                                                  'Recruitment Commission Rule(s)')
+    seq_prefix = fields.Char('Sequence Prefix', size=2, required=True)
+
+    @api.model
+    def create(self, vals_list):
+        new_agent_type = super(TtAgentType, self).create(vals_list)
+        self.env['ir.sequence'].create({
+            'name': new_agent_type.name,
+            'code': 'tt.agent.type.%s' % (new_agent_type.code),
+            'prefix': '%s.%(day)s%(sec)s' % (new_agent_type.seq_prefix),
+            'padding': 3
+        })
+        return new_agent_type
 
     # fixme : nanti akan diubah
     def calc_commission(self, amount, multiplier, carrier_id=False):

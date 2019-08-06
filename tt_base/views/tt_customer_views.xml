@@ -22,8 +22,11 @@
                         <div class="oe_title">
                             <h3>
                                 <field name="first_name" placeholder="First Name"/>
-                                <span color="white">.</span>
+                                <span color="white"> </span>
                                 <field name="last_name" placeholder="Last Name"/>
+                            </h3>
+                            <h3>
+                                <field name="seq_id"/>
                             </h3>
                         </div>
                         <group>

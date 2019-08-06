@@ -13,6 +13,8 @@ class PhoneDetail(models.Model):
 
     type = fields.Selection(TYPE, 'Phone Type', required=True, default='work')
     country_id = fields.Many2one('res.country', string='Country')
+    calling_code = fields.Char('Calling Code')
+    calling_number = fields.Char('Calling Number')
     phone_number = fields.Char('Phone Number', required=True)
     agent_id = fields.Many2one('tt.agent', string='Agent')
     customer_id = fields.Many2one('tt.customer', string='Customer')
@@ -21,5 +23,6 @@ class PhoneDetail(models.Model):
     def to_dict(self):
         return {
             'type': self.type,
-            'phone_number': self.phone_number
+            'calling_code': self.calling_code,
+            'calling_number': self.calling_number,
         }

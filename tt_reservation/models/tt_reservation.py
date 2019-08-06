@@ -1,6 +1,6 @@
-from odoo import api, fields, models, _
-from ...tools import variables,util,ERR
-import logging,traceback
+from odoo import api, fields, models
+from ...tools import variables, util, ERR
+import logging, traceback
 
 _logger = logging.getLogger(__name__)
 
@@ -93,27 +93,29 @@ class TtReservation(models.Model):
 
     def create_booker_api(self, vals, context):
         booker_obj = self.env['tt.customer'].sudo()
-        get_booker_id = util.get_without_empty(vals,'booker_id')
+        get_booker_seq_id = util.get_without_empty(vals,'booker_seq_id')
 
-        if get_booker_id:
-            booker_id = int(vals['booker_id'])
-            booker_rec = booker_obj.browse(booker_id)
+        if get_booker_seq_id:
+            booker_seq_id = vals['booker_seq_id']
+            booker_rec = booker_obj.search([('seq_id','=',booker_seq_id)])
             update_value = {}
             if booker_rec:
                 if vals.get('mobile'):
+                    number_entered  = False
+                    vals_phone_number = '+%s%s' % (vals.get('calling_code', ''), vals['mobile'])
                     for phone in booker_rec.phone_ids:
-                        vals_phone_number = '+%s%s' % (vals.get('calling_code',''),vals['mobile'])
                         if phone.phone_number == vals_phone_number:
-                            new_phone = [(1,phone.id,{
-                                'phone_number': vals_phone_number
-                            })]
-                        else:
-                            new_phone = [(0, 0, {
-                                'phone_number': vals_phone_number
-                            })]
+                            number_entered = True
+                            break
+
+                    if not number_entered:
+                        new_phone=[(0,0,{
+                            'calling_code': '+%s' % (vals.get('calling_code', '')),
+                            'calling_number': vals.get('mobile', ''),
+                            'phone_number': vals_phone_number
+                        })]
                         update_value['phone_ids'] = new_phone
                 update_value['email'] =vals.get('email', booker_rec.email)
-
                 booker_rec.update(update_value)
                 return booker_rec
 
@@ -126,12 +128,15 @@ class TtReservation(models.Model):
             'nationality_id': country and country[0].id or False,
             'email': vals.get('email'),
             'phone_ids': [(0,0,{
+                'calling_code': '%s' % (vals.get('calling_code','')),
+                'calling_number': vals.get('mobile',''),
                 'phone_number': '+%s%s' % (vals.get('calling_code',''),vals.get('mobile','')),
                 'country_id': country and country[0].id or False,
             })],
             'first_name': vals.get('first_name'),
             'last_name': vals.get('last_name'),
             'gender': vals.get('gender'),
+            'marital_status': 'married' if vals.get('title') == 'MRS' else '',
             'customer_parent_ids': [(4,agent_obj.customer_parent_walkin_id.id )],
         })
 
@@ -140,30 +145,32 @@ class TtReservation(models.Model):
 
     def create_contact_api(self, vals, booker, context):
         contact_obj = self.env['tt.customer'].sudo()
-        get_contact_id = util.get_without_empty(vals,'contact_id',False)
+        get_contact_seq_id = util.get_without_empty(vals,'contact_seq_id',False)
 
 
-        if get_contact_id or vals.get('is_also_booker'):
-            if get_contact_id:
-                contact_id = int(get_contact_id)
+        if get_contact_seq_id or vals.get('is_also_booker'):
+            if get_contact_seq_id:
+                contact_seq_id = int(get_contact_seq_id)
             else:
-                contact_id = booker.id
+                contact_seq_id = booker.seq_id
 
-            contact_rec = contact_obj.browse(contact_id)
+            contact_rec = contact_obj.search([('seq_id','=',contact_seq_id)])
             update_value = {}
 
             if contact_rec:
                 if vals.get('mobile'):
+                    number_entered = False
+                    vals_phone_number = '+%s%s' % (vals.get('calling_code', ''), vals['mobile'])
                     for phone in contact_rec.phone_ids:
-                        vals_phone_number = '+%s%s' % (vals.get('calling_code',''),vals['mobile'])
                         if phone.phone_number == vals_phone_number:
-                            new_phone = [(1,phone.id,{
-                                'phone_number': vals_phone_number
-                            })]
-                        else:
-                            new_phone = [(0, 0, {
-                                'phone_number': vals_phone_number
-                            })]
+                            number_entered = True
+                            break
+                    if not number_entered:
+                        new_phone = [(0, 0, {
+                            'calling_code': '%s' % (vals.get('calling_code', '')),
+                            'calling_number': vals.get('mobile', ''),
+                            'phone_number': vals_phone_number
+                        })]
                         update_value['phone_ids'] = new_phone
                 update_value['email'] =vals.get('email', contact_rec.email)
 
@@ -178,18 +185,21 @@ class TtReservation(models.Model):
             'nationality_id': country and country[0].id or False,
             'email': vals.get('email'),
             'phone_ids': [(0,0,{
+                'calling_code': '+%s' % (vals.get('calling_code', '')),
+                'calling_number': vals.get('mobile',''),
                 'phone_number': '+%s%s' % (vals.get('calling_code',''),vals.get('mobile','')),
                 'country_id': country and country[0].id or False,
             })],
             'first_name': vals.get('first_name'),
             'last_name': vals.get('last_name'),
+            'marital_status': 'married' if vals.get('title') == 'MRS' else '',
             'customer_parent_ids': [(4, agent_obj.customer_parent_walkin_id.id)],
             'gender': vals.get('gender')
         })
 
         return contact_obj.create(vals)
 
-    def create_customer_api(self,passengers,context,booker_id=False,contact_id=False,extra_list=[]):
+    def create_customer_api(self,passengers,context,booker_seq_id=False,contact_seq_id=False,extra_list=[]):
         country_obj = self.env['res.country'].sudo()
         passenger_obj = self.env['tt.customer'].sudo()
 
@@ -208,21 +218,21 @@ class TtReservation(models.Model):
                 key: psg[key]
             }) for key in update_list if psg.get(key)]
 
-            booker_contact_id = -1
+            booker_contact_seq_id = ''
             if psg.get('is_also_booker'):
-                booker_contact_id = booker_id
+                booker_contact_seq_id = booker_seq_id
             elif psg.get('is_also_contact'):
-                booker_contact_id = contact_id
+                booker_contact_seq_id = contact_seq_id
 
-            get_psg_id = util.get_without_empty(psg, 'passenger_id')
+            get_psg_seq_id = util.get_without_empty(psg, 'passenger_seq_id')
 
             extra = {}
             for key,value in psg.items():
                 if key in extra_list:
                     extra[key] = value
-            if get_psg_id or booker_contact_id > 0:
+            if (get_psg_seq_id or booker_contact_seq_id) != '':
 
-                current_passenger = passenger_obj.browse(int(get_psg_id or booker_contact_id))
+                current_passenger = passenger_obj.search([('seq_id','=',get_psg_seq_id or booker_contact_seq_id)])
                 if current_passenger:
                     current_passenger.update(vals_for_update)
                     res_ids.append((current_passenger,extra))
@@ -233,6 +243,7 @@ class TtReservation(models.Model):
             agent_obj = self.env['tt.agent'].sudo().browse(context['agent_id'])
             psg.update({
                 'customer_parent_ids': [(4, agent_obj.customer_parent_walkin_id.id)],
+                'marital_status': 'married' if psg.get('title') == 'MRS' else '',
             })
             psg_obj = passenger_obj.create(psg)
             res_ids.append((psg_obj,extra))
@@ -290,6 +301,7 @@ class TtReservation(models.Model):
                 'email': self.contact_email,
                 'phone': self.contact_phone
             },
+            'booker': self.booker_id.to_dict(),
             'departure_date': self.departure_date and self.departure_date or '',
             'return_date': self.return_date and self.return_date or '',
             'provider_type': self.provider_type_id.code
@@ -313,7 +325,7 @@ class TtReservation(models.Model):
         try:
             resv_obj = self.env['tt.reservation.%s' % (req['provider_type'])]
             book_obj = resv_obj.get_book_obj(req.get('book_id'),req.get('order_number'))
-            if book_obj and book_obj.agent_id == context['co_uid']:
+            if book_obj and book_obj.agent_id == context['co_agent_id']:
                 for psg in req['passengers']:
                     book_obj.passenger_ids[psg['sequence']-1].create_channel_pricing(psg['pricing'])
             else:

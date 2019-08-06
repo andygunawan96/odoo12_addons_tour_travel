@@ -68,9 +68,12 @@ class PaymentAcquirer(models.Model):
 
     def button_test_acquirer(self):
         self.get_payment_acquirer(15,1500,'billing',1000000)
-    def get_payment_acquirer(self, agent_id,booker_id, tr_type, amount):
+
+    ##fixmee amount di cache
+    def get_payment_acquirer_api(self, req,context):
         try:
-            agent_obj = self.env['tt.agent'].sudo().browse(agent_id)
+            print("payment acq req\n"+json.dumps(req))
+            agent_obj = self.env['tt.agent'].sudo().browse(context['agent_id'])
             if not agent_obj:
                 # Return Error jika agent_id tidak ditemukan
                 return False
@@ -78,26 +81,26 @@ class PaymentAcquirer(models.Model):
             # Ambil agent_id Parent nya (Citranya corpor tsb)
             # if agent_obj.agent_type_id.id in (self.env.ref('tt_base_rodex.agent_type_cor').id,
             #                                   self.env.ref('tt_base_rodex.agent_type_por').id):
-            if tr_type == 'top_up':
+            if req['transaction_type'] == 'top_up':
                 # Kalau top up Ambil agent_id HO
                 dom.append(('agent_id', 'in', self.env['tt.agent'].sudo().search([('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id )], limit=1) ))
-            elif tr_type == 'billing':
-                dom.append(('agent_id', '=', agent_id))
+            elif req['transaction_type'] == 'billing':
+                dom.append(('agent_id', '=', context['agent_id']))
 
             values = {}
             for acq in self.sudo().search(dom):
                 if not values.get(acq.type):
                     values[acq.type] = []
-                values[acq.type].append(acq.acquirer_format(amount))
-            values['credit_limit'] = self.generate_credit_limit(booker_id)
-            print(json.dumps(values))
-            return values
+                values[acq.type].append(acq.acquirer_format(req['amount']))
+            values['credit_limit'] = self.generate_credit_limit(req['booker_seq_id'])
+            print("payment acq resp\n"+ json.dumps(values))
+            return ERR.get_no_error(values)
         except Exception as e:
             _logger.error(str(e) + traceback.format_exc())
             return ERR.get_error()
 
-    def generate_credit_limit(self,booker_id):
-        booker_obj = self.env['tt.customer'].browse(booker_id)
+    def generate_credit_limit(self,booker_seq_id):
+        booker_obj = self.env['tt.customer'].search([('seq_id','=',booker_seq_id)])
         if not booker_obj:
             raise Exception('Booker not found')
         values = []
@@ -105,8 +108,10 @@ class PaymentAcquirer(models.Model):
             if rec.credit_limit != 0:
                 values.append({
                     'name': rec.name,
-                    'actual_balance': rec.actual_balance
+                    'actual_balance': rec.actual_balance,
+                    'credit_limit': rec.credit_limit
                 })
         return values
+
     def test_payment(self):
         raise UserWarning(self.get_payment_acquirer(1, 'billing', 12000))
