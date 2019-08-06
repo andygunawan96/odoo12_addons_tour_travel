@@ -38,6 +38,7 @@
                         <label for="name" class="oe_edit_only"/>
                         <h1>
                             <field name="name" placeholder="Agent's Name" required="True"/>
+                            <field name="seq_id"/>
                         </h1>
                     </div>
                     <group>

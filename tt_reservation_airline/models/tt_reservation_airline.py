@@ -236,7 +236,7 @@ class ReservationAirline(models.Model):
             values = self._prepare_booking_api(search_RQ,context)
             booker_obj = self.create_booker_api(booker,context)
             contact_obj = self.create_contact_api(contacts[0],booker_obj,context)
-            list_customer_obj = self.create_customer_api(passengers,context,booker_obj.id,contact_obj.id,['title','sequence'])
+            list_customer_obj = self.create_customer_api(passengers,context,booker_obj.seq_id,contact_obj.seq_id,['title','sequence'])
             list_passenger_id = self.create_passenger_api(list_customer_obj)
 
             values.update({
@@ -290,14 +290,17 @@ class ReservationAirline(models.Model):
                 book_status.append(provider['status'])
 
                 if provider['status'] == 'BOOKED' and not provider.get('error_code'):
+                    curr_hold_date = datetime.datetime.strptime(provider['hold_date'], '%Y-%m-%d %H:%M:%S')
+                    if curr_hold_date < hold_date:
+                        hold_date = curr_hold_date
                     if provider_obj.state == 'booked':
                         continue
-                    self.update_pnr_booked(provider_obj,provider,pnr_list,hold_date,context)
+                    self.update_pnr_booked(provider_obj,provider,pnr_list,context)
                 elif provider['status'] == 'ISSUED' and not provider.get('error_code'):
                     if provider_obj.state == 'issued':
                         continue
                     if req.get('force_issued'):
-                        self.update_pnr_booked(provider_obj,provider,pnr_list,hold_date,context)
+                        self.update_pnr_booked(provider_obj,provider,pnr_list,context)
                         book_obj.calculate_service_charge()
                         book_obj.action_booked_api_airline(context, pnr_list, hold_date)
 
@@ -317,6 +320,7 @@ class ReservationAirline(models.Model):
                 book_obj.calculate_service_charge()
                 book_obj.action_booked_api_airline(context,pnr_list,hold_date)
             elif all(rec == 'ISSUED' for rec in book_status):
+                #issued
                 book_obj.action_issued_api_airline(context)
             elif any(rec == 'ISSUED' for rec in book_status):
                 #partial issued
@@ -345,40 +349,6 @@ class ReservationAirline(models.Model):
             _logger.error(str(e) + traceback.format_exc())
             return ERR.get_error(1005)
 
-    def get_booking_airline(self):
-        context= {
-            "uid": 6,
-            "user_name": "sam.api",
-            "user_login": "sam.api",
-            "agent_id": 5,
-            "agent_name": "Japro B",
-            "agent_type_id": 3,
-            "agent_type_name": "Agent JaPro",
-            "agent_type_code": "japro",
-            "api_role": "admin",
-            "host_ips": [],
-            "configs": {
-                "airline": {
-                    "provider_access": "all",
-                    "providers": {}
-                }
-            },
-            "co_uid": 6,
-            "co_user_name": "sam.api",
-            "co_user_login": "sam.api",
-            "co_agent_id": 5,
-            "co_agent_name": "Japro B",
-            "co_agent_type_id": 3,
-            "co_agent_type_name": "Agent JaPro",
-            "co_agent_type_code": "japro",
-            "sid": "0c1e20bd3030383f44e15ff2066c6f8d8a7fb9e6",
-            "signature": "ff8e8d1434004e669a19d1bd2ec57734",
-            "expired_date": "2019-08-03 02:18:20"
-        }
-        req = {
-            'order_number': self.name
-        }
-        self.get_booking_airline_api(req,context)
     def get_booking_airline_api(self,req, context):
         try:
             print("Get req\n" + json.dumps(context))
@@ -513,7 +483,6 @@ class ReservationAirline(models.Model):
                     ###Create Journey
                     print(journey_type)
 
-
                     if len(journey_value) < 1:
                         continue
 
@@ -592,16 +561,13 @@ class ReservationAirline(models.Model):
 
         return res
 
-    def update_pnr_booked(self,provider_obj,provider,pnr_list,hold_date,context):
+    def update_pnr_booked(self,provider_obj,provider,pnr_list,context):
 
         ##generate leg data
         provider_type = self.env['tt.provider.type'].search([('code', '=', 'airline')])[0]
         provider_obj.create_ticket_api(provider['passengers'])
         provider_obj.action_booked_api_airline(provider, context)
         pnr_list.append(provider['pnr'])
-        curr_hold_date = datetime.datetime.strptime(provider['hold_date'], '%Y-%m-%d %H:%M:%S')
-        if curr_hold_date < hold_date:
-            hold_date = curr_hold_date
 
         # update leg dan create service charge
         for idx, journey in enumerate(provider_obj.journey_ids):

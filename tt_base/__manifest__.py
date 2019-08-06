@@ -21,6 +21,7 @@ Key Features
         'data/customer_parent_type_rodex_data.xml',
         'data/tt.bank.csv',
         'data/tt.error.api.csv',
+        'data/ir_sequence_data.xml',
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
 
