@@ -357,7 +357,7 @@ class AgentRegistration(models.Model):
         self.check_address()
         self.set_agent_address()
         if not self.registration_num:
-            self.registration_num = self.env['ir.sequence'].next_by_code('agent.registration')
+            self.registration_num = self.env['ir.sequence'].next_by_code(self._name)
         if not self.registration_document_ids:
             self.create_registration_documents()
         self.state = 'confirm'
@@ -561,7 +561,7 @@ class AgentRegistration(models.Model):
                 create_obj.get_registration_fee()
                 create_obj.compute_total_fee()
                 if not create_obj.registration_num:
-                    create_obj.registration_num = self.env['ir.sequence'].next_by_code('agent.registration')
+                    create_obj.registration_num = self.env['ir.sequence'].next_by_code(self._name)
                 create_obj.input_regis_document_data(regis_doc)
                 # masukkan attachment dokumen
                 response = {

@@ -28,7 +28,7 @@
         'security/tt_reservation_offline_security.xml',
         # 'views/views.xml',
         # 'views/templates.xml',
-        'data/issued_offline_data.xml',
+        'data/ir_sequence_data.xml',
         'views/issued_offline_views.xml',
     ],
     # only loaded in demonstration mode
