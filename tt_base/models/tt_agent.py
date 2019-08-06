@@ -18,6 +18,7 @@ class TtAgent(models.Model):
     name = fields.Char('Name', required=True, default='')
     logo = fields.Binary('Agent Logo', attachment=True)
 
+    seq_id = fields.Char('Sequence ID')
     reference = fields.Many2one('tt.agent', 'Reference', help="Agent who Refers This Agent")
     balance = fields.Monetary(string="Balance",  required=False, )
     actual_balance = fields.Monetary(string="Actual Balance",  required=False, )
@@ -94,6 +95,7 @@ class TtAgent(models.Model):
 
         new_agent.write({
             'customer_parent_walkin_id': walkin_obj.id,
+            'seq_id': self.env['ir.sequence'].next_by_code('tt.agent.type.%s' % (new_agent.agent_type_id.seq_prefix))
         })
         return new_agent
 

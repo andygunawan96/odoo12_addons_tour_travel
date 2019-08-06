@@ -131,7 +131,7 @@ class TtProviderAirline(models.Model):
     def update_ticket_api(self,passengers):##isi ticket number
         for psg in passengers:
             for ticket in self.ticket_ids:
-                if ('%s%s' % ('LINA ','DALTON')).replace(' ','').lower() == ticket.passenger_id.name.replace(' ','').lower():
+                if ('%s%s' % (psg['first_name'],psg['last_name'])).replace(' ','').lower() == ticket.passenger_id.name.replace(' ','').lower():
                     ticket.write({
                         'ticket_number': psg.get('ticket_number','')
                     })

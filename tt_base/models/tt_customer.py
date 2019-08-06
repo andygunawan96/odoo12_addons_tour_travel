@@ -2,8 +2,8 @@ from odoo import models, fields, api, _
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from odoo.tools import image
-from ...tools import variables,util
-
+from ...tools import variables,util,ERR
+import json
 
 class TtCustomer(models.Model):
     _inherit = 'tt.history'
@@ -11,6 +11,7 @@ class TtCustomer(models.Model):
     _rec_name = 'name'
     _description = 'Tour & Travel - Customer'
 
+    seq_id = fields.Char('ID')
     name = fields.Char(string='Name', compute='_compute_name', store=True)
     logo = fields.Binary('Agent Logo', attachment=True)
     logo_thumb = fields.Binary('Agent Logo Thumb', compute="_get_logo_image", store=True, attachment=True)
@@ -59,7 +60,9 @@ class TtCustomer(models.Model):
     @api.model
     def create(self, vals_list):
         util.pop_empty_key(vals_list)
+        vals_list['seq_id'] = self.env['ir.sequence'].next_by_code('tt.customer')
         return super(TtCustomer, self).create(vals_list)
+
     # @api.multi
     # def write(self, value):
     #     self_dict = self.read()
@@ -82,10 +85,12 @@ class TtCustomer(models.Model):
             'first_name': self.first_name,
             'last_name': self.last_name and self.last_name or '',
             'gender': self.gender and self.gender or '',
-            'birth_date': self.birth_date.strftime('%Y-%m-%d') and self.birth_date.strftime('%Y-%m-%d') or '',
+            'birth_date': self.birth_date and self.birth_date.strftime('%Y-%m-%d') or '',
             'nationality_code': self.nationality_id.code and self.nationality_id.code or '',
+            'marital_status': self.marital_status,
             'phones': phone_list,
-            'email': self.email and self.email or ''
+            'email': self.email and self.email or '',
+            'seq_id': self.seq_id
         }
 
         return res
@@ -104,3 +109,17 @@ class TtCustomer(models.Model):
             'customer_id': self.id,
         }
         return res
+
+
+    def get_customer_list_api(self,req,context):
+        try:
+            customer_list_obj = self.search([('agent_id','=',context['co_agent_id']),('name','ilike',req['name'])])
+            customer_list = []
+            for cust in customer_list_obj:
+                values = cust.to_dict()
+                values['seq_id'] = cust.seq_id
+                customer_list.append(values)
+            print(json.dumps(customer_list))
+            return ERR.get_no_error(customer_list)
+        except:
+            return ERR.get_error()
