@@ -131,11 +131,12 @@ class TtProviderAirline(models.Model):
     def update_ticket_api(self,passengers):##isi ticket number
         for psg in passengers:
             for ticket in self.ticket_ids:
-                if ('%s%s' % (psg['first_name'],psg['last_name'])).replace(' ','').lower() == ticket.passenger_id.name.replace(' ','').lower():
+                psg_name = ticket.passenger_id.name.replace(' ','').lower()
+                if ('%s%s' % (psg['first_name'], psg['last_name'])).replace(' ','').lower() in [psg_name, psg_name*2]:
                     ticket.write({
                         'ticket_number': psg.get('ticket_number','')
                     })
-                    continue
+                    break
 
     def create_service_charge(self, service_charge_vals):
         service_chg_obj = self.env['tt.service.charge']
