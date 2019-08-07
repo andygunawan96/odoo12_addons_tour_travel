@@ -132,7 +132,7 @@ class TtProviderAirline(models.Model):
         for psg in passengers:
             for ticket in self.ticket_ids:
                 psg_name = ticket.passenger_id.name.replace(' ','').lower()
-                if ('%s%s' % (psg['first_name'], psg['last_name'])).replace(' ', '').lower() in [psg_name,psg_name*2]:
+                if ('%s%s' % (psg['first_name'], psg['last_name'])).replace(' ','').lower() in [psg_name, psg_name*2]:
                     ticket.write({
                         'ticket_number': psg.get('ticket_number','')
                     })
