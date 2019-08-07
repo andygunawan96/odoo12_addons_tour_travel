@@ -54,7 +54,7 @@ class TtReservation(models.Model):
     ##fixme tambahkan compute field nanti
     # display_provider_name = fields.Char(string='Provider', compute='_action_display_provider', store=True)
     currency_id = fields.Many2one('res.currency', 'Currency', required=True,
-                                  default=lambda self: self.env.user.company_id.currency_id)
+                                  default=lambda self: self.env.user.company_id.currency_id.id)
 
 
     # total_fare = fields.Monetary(string='Total Fare', default=0, compute="_compute_total_booking", store=True)

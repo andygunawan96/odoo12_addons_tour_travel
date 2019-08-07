@@ -90,9 +90,6 @@ class IssuedOffline(models.Model):
     # total_supplementary_price = fields.Monetary('Total Supplementary', compute='_get_total_supplement')
     total_tax = fields.Monetary('Total Taxes')
 
-    company_id = fields.Many2one('res.company', 'Company', required=True, default=lambda self: self.env.user.company_id,
-                                 readonly=True)
-
     contact_id_backup = fields.Integer('Backup ID')
 
     # Ledger

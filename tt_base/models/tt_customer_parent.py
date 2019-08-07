@@ -18,7 +18,7 @@ class TtCustomerParent(models.Model):
     credit_limit = fields.Monetary(string="Credit Limit")
 
     email = fields.Char(string="Email", required=False, )
-    currency_id = fields.Many2one('res.currency', default=lambda self: self.env.user.company_id, string='Currency')
+    currency_id = fields.Many2one('res.currency', default=lambda self: self.env.user.company_id.currency_id.id, string='Currency')
     address_ids = fields.One2many('address.detail', 'agent_id', string='Addresses')
     phone_ids = fields.One2many('phone.detail', 'agent_id', string='Phones')
     social_media_ids = fields.One2many('social.media.detail', 'agent_id', 'Social Media')

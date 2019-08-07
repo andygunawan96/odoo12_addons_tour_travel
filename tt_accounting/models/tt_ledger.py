@@ -108,8 +108,6 @@ class Ledger(models.Model):
 
     currency_id = fields.Many2one('res.currency', readonly=True,
                                   default=lambda self: self.env.user.company_id.currency_id)
-    company_id = fields.Many2one('res.company', string='Company', required=True,
-                                 default=lambda self: self.env.user.company_id)
 
     ref = fields.Char('Reference', readonly=True, copy=False)
     agent_id = fields.Many2one('tt.agent', 'Agent', index=True, default=lambda self: self.env.user.agent_id)

@@ -200,7 +200,7 @@ class AgentTarget(models.Model):
     annual_revenue_target = fields.Monetary("Annual Revenue Target")
     annual_profit_target = fields.Monetary("Annual Profit Target")
 
-    currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.user.company_id)
+    currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.user.company_id.currency_id.id)
 
 
 class AgentMOU(models.Model):

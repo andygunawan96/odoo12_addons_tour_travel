@@ -109,7 +109,8 @@ class PaymentAcquirer(models.Model):
                 values.append({
                     'name': rec.name,
                     'actual_balance': rec.actual_balance,
-                    'credit_limit': rec.credit_limit
+                    'credit_limit': rec.credit_limit,
+                    'currency': rec.currency_id.name
                 })
         return values
 
