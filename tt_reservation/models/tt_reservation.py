@@ -260,7 +260,7 @@ class TtReservation(models.Model):
     def _compute_total_tax(self):
         tax_total = 0
         for rec in self.sale_service_charge_ids:
-            if rec.charge_type == 'TAX':
+            if rec.charge_type in ['ROC','TAX']:
                 tax_total += rec.total
         self.total_tax = tax_total
 

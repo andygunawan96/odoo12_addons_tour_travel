@@ -113,6 +113,7 @@ class TtCustomer(models.Model):
 
     def get_customer_list_api(self,req,context):
         try:
+            print("request teropong\n"+json.dumps((req))+json.dumps(context))
             customer_list_obj = self.search([('agent_id','=',context['co_agent_id']),('name','ilike',req['name'])])
             customer_list = []
             for cust in customer_list_obj:
