@@ -54,7 +54,8 @@ Key Features
         'views/tt_skipped_keys_views.xml',
         'views/tt_customer_parent_views.xml',
         'views/tt_routes_views.xml',
-        'views/error_api_views.xml'
+        'views/error_api_views.xml',
+        'views/tt_ssr_views.xml',
     ],
     'demo': [],
     'qweb': [],

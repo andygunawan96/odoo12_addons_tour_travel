@@ -324,15 +324,15 @@ class TtReservation(models.Model):
     def channel_pricing_api(self,req,context):
         try:
             resv_obj = self.env['tt.reservation.%s' % (req['provider_type'])]
-            book_obj = resv_obj.get_book_obj(req.get('book_id'),req.get('order_number'))
-            if book_obj and book_obj.agent_id == context['co_agent_id']:
+            book_obj = resv_obj.get_book_obj(req.get('book_id'), req.get('order_number'))
+            if book_obj and book_obj.agent_id.id == context['co_agent_id']:
                 for psg in req['passengers']:
                     book_obj.passenger_ids[psg['sequence']-1].create_channel_pricing(psg['pricing'])
             else:
                 return ERR.get_error(1001)
         except Exception as e:
             _logger.error(str(e) + traceback.format_exc())
-
+            return ERR.get_error(500, additional_message=str(e))
         return ERR.get_no_error()
 
     def action_failed_book(self):
