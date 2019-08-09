@@ -88,9 +88,13 @@ class ReservationAirline(models.Model):
             'issued_uid': context['co_uid'],
         })
 
-    def action_partial_booked_api_airline(self):
+    def action_partial_booked_api_airline(self,context,pnr_list,hold_date):
         self.write({
-            'state': 'partial_booked'
+            'state': 'partial_booked',
+            'booked_uid': context['co_uid'],
+            'booked_date': datetime.datetime.now(),
+            'hold_date': hold_date,
+            'pnr': pnr_list
         })
 
     def action_partial_issued_api_airline(self):
@@ -295,12 +299,12 @@ class ReservationAirline(models.Model):
                         hold_date = curr_hold_date
                     if provider_obj.state == 'booked':
                         continue
-                    self.update_pnr_booked(provider_obj,provider,pnr_list,context)
+                    self.update_pnr_booked(provider_obj,provider,context)
                 elif provider['status'] == 'ISSUED' and not provider.get('error_code'):
                     if provider_obj.state == 'issued':
                         continue
                     if req.get('force_issued'):
-                        self.update_pnr_booked(provider_obj,provider,pnr_list,context)
+                        self.update_pnr_booked(provider_obj,provider,context)
                         book_obj.calculate_service_charge()
                         book_obj.action_booked_api_airline(context, pnr_list, hold_date)
 
@@ -315,6 +319,10 @@ class ReservationAirline(models.Model):
             if req.get('force_issued'):
                 self.payment_airline_api({'book_id': req['book_id']},context)
 
+
+            for rec in book_obj.provider_booking_ids:
+                pnr_list.append(rec.pnr)
+
             if all(rec == 'BOOKED' for rec in book_status):
                 #booked
                 book_obj.calculate_service_charge()
@@ -328,7 +336,7 @@ class ReservationAirline(models.Model):
             elif any(rec == 'BOOKED' for rec in book_status):
                 #partial booked
                 book_obj.calculate_service_charge()
-                book_obj.action_partial_booked_api_airline()
+                book_obj.action_partial_booked_api_airline(context,pnr_list,hold_date)
             elif all(rec == 'FAILED_ISSUED' for rec in book_status):
                 #failed issue
                 book_obj.action_failed_issue()
@@ -561,13 +569,12 @@ class ReservationAirline(models.Model):
 
         return res
 
-    def update_pnr_booked(self,provider_obj,provider,pnr_list,context):
+    def update_pnr_booked(self,provider_obj,provider,context):
 
         ##generate leg data
         provider_type = self.env['tt.provider.type'].search([('code', '=', 'airline')])[0]
         provider_obj.create_ticket_api(provider['passengers'])
         provider_obj.action_booked_api_airline(provider, context)
-        pnr_list.append(provider['pnr'])
 
         # update leg dan create service charge
         for idx, journey in enumerate(provider_obj.journey_ids):
