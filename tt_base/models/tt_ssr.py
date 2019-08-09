@@ -25,6 +25,7 @@ class TtSSRList(models.Model):
     description = fields.Text('Description', default='')
     category_id = fields.Many2one('tt.ssr.category', 'Category')
     provider_id = fields.Many2one('tt.provider', required=True)
+    active = fields.Boolean('Active', default=True)
 
     def to_dict(self):
         res = {
