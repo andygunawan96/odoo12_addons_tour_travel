@@ -69,6 +69,20 @@
                   sequence="11"
                   action="tt_ssr_category_action_view"/>
 
+        <record id="tt_provider_ssr_list_view_form_inherit" model="ir.ui.view">
+            <field name="name">tt.provider.ssr.list.view.form.inherit</field>
+            <field name="model">tt.provider</field>
+            <field name="inherit_id" ref="tt_base.tt_provider_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="inside">
+                    <page string="SSR List">
+                        <separator string="SSR List"/>
+                        <field name="ssr_ids"/>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
         <record id="tt_ssr_list_form_view" model="ir.ui.view">
             <field name="name">tt.ssr.list.form.view</field>
             <field name="model">tt.ssr.list</field>
