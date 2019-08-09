@@ -112,6 +112,8 @@
                                 <field name="description"/>
                             </group>
                         </group>
+                        <separator string="SSR Lines"/>
+                        <field name="line_ids"/>
                     </sheet>
                 </form>
             </field>
