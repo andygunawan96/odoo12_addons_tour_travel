@@ -116,3 +116,5 @@ PAX_TYPE = [
     ('CHD', 'Child'),
     ('INF', 'Infant')
 ]
+
+PROVIDER_TYPE = []##akan di isi saat run oleh tt_provider_type.py

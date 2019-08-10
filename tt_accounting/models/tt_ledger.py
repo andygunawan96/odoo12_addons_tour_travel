@@ -5,93 +5,15 @@ from odoo.exceptions import UserError
 # from ...tools.telegram import TelegramInfoNotification
 from ...tools import test_to_dict
 
-LEDGER_TYPE_TO_STR = {
-    0: 'Opening Balance',
-    1: 'Top Up / Agent Payment',
-    2: 'Refund',
-    3: 'Commission',
-    4: 'Adjustment Plus',
-    5: 'Inbound Payment',
-    9: 'Others',
-    10: 'Other Plus',
-
-    20: 'Transport Booking',
-    21: 'Hotel Booking',
-    22: 'Tour Booking',
-    23: 'Activity Booking',
-    24: 'Travel Doc',
-    25: 'Outbound Payment',
-    26: 'Merchandise',
-    27: 'Rent Car',
-
-    40: 'Admin Fee',
-    41: 'Monthly Management Fee',
-    42: 'Adjustment Minus',
-    43: 'Refund Admin Fee',
-    44: 'Reissue',
-    45: 'Refund Failed Issue',
-
-    60: 'Others Minus',
-    80: 'Group Booking',
-}
-
-LEDGER_TYPE_TO_INT = {
-    'begbal': 0,
-    'topup': 1,
-    'refund': 2,
-    'commission': 3,
-    'adj.plus': 4,
-    'inbound': 5,
-    'others': 9,
-    'other.plus': 10,
-
-    'transport': 20,
-    'hotel': 21,
-    'tour': 22,
-    'activity': 23,
-    'travel.doc': 24,
-    'outboud': 25,
-    'merchandise': 26,
-    'rent.car': 27,
-
-    'admin.fee': 40,
-    'monthly.fee': 41,
-    'adj.minus': 42,
-    'refund.admin.fee': 43,
-    'reissue': 44,
-    'refund.failed.issue': 45,
-
-    'other.min': 60,
-    'group.booking': 80,
-}
-
 LEDGER_TYPE = [
     (0, 'Opening Balance'),
     (1, 'Top Up / Agent Payment'),
-    (2, 'Refund'),
+    (2, 'Order'),
     (3, 'Commission'),
-    (4, 'Adjustment Plus'),
-    (5, 'Inbound Payment'),
-    (9, 'Others'),
-    (10, 'Other Plus'),
-
-    (20, 'Transport Booking'),
-    (21, 'Hotel Booking'),
-    (22, 'Tour Booking'),
-    (23, 'Activity Booking'),
-    (24, 'Travel Doc'),
-    (25, 'Outbound Payment'),
-    (26, 'Merchandise'),
-
-    (40, 'Admin Fee'),
-    (41, 'Monthly Management Fee'),
-    (42, 'Adjustment Minus'),
-    (43, 'Refund Admin Fee'),
-    (44, 'Reissue'),
-    (45, 'Refund Failed Issue'),
-
-    (60, 'Others Minus'),
-    (80, 'Group Booking'),
+    (4, 'Refund'),
+    (5, 'Adjustment'),
+    (6, 'Admin fee'),
+    (99, 'Others')
 ]
 
 
@@ -137,7 +59,7 @@ class Ledger(models.Model):
                 'ref': ref,
                 'currency_id': currency_id,
                 'date': date,
-                'transaction_type': LEDGER_TYPE_TO_INT[ledger_type]
+                'transaction_type': ledger_type
             }
 
     def reverse_ledger(self):
@@ -158,10 +80,9 @@ class Ledger(models.Model):
         })
 
     @api.model
-    def create(self, vals):
-        vals['balance'] = self.calc_balance(vals)
-        ledger_obj = super(Ledger, self).create(vals)
-        ledger_obj.agent_id.balance = vals['balance']
+    def create(self, vals_list):
+        vals_list['balance'] = self.calc_balance(vals_list)
+        ledger_obj = super(Ledger, self).create(vals_list)
         return ledger_obj
 
     # @api.model_create_multi
@@ -195,7 +116,7 @@ class Ledger(models.Model):
 
         booking_obj = provider_obj.booking_id
         ledger_values = self.prepare_vals('Order : ' + booking_obj.name, booking_obj.name, datetime.now(),
-                                          'transport', booking_obj.currency_id.id, 0, amount)
+                                          2, booking_obj.currency_id.id, 0, amount)
 
         ledger_values = self.prepare_vals_for_resv(booking_obj,ledger_values)
         self.create(ledger_values)
@@ -215,7 +136,7 @@ class Ledger(models.Model):
 
         for agent_id, amount in agent_commission.items():
             values = self.prepare_vals('Commission : ' + booking_obj.name, booking_obj.name, datetime.now(),
-                                       'commission', booking_obj.currency_id.id, amount, 0)
+                                       3, booking_obj.currency_id.id, amount, 0)
 
             values = self.prepare_vals_for_resv(booking_obj,values)
             self.create(values)

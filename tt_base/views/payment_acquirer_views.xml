@@ -8,7 +8,7 @@
             <field name="arch" type="xml">
                 <form string="Provider">
                     <header>
-                        <button string="Test" name="test_payment" type="object"/>
+                        <button string="Test" name="button_test_acquirer" type="object"/>
                     </header>
                     <sheet>
                         <div class="oe_button_box" name="button_box">
@@ -24,7 +24,10 @@
                         </div>
                         <field name="image" widget="image" class="oe_avatar" options="{&quot;preview_image&quot;: &quot;image_medium&quot;}"/>
                         <div class="oe_title">
-                            <h1><field name="name" placeholder="Name"/></h1>
+                            <h1>
+                                <field name="name" placeholder="Name"/><br/>
+                                <field name="seq_id"/>
+                            </h1>
                         </div>
                         <div attrs="{'invisible': ['|', ('module_state', '=', 'installed'), ('module_id', '=', False)]}">
                             <button type="object" class="btn btn-primary" name="button_immediate_install" string="Install"/>

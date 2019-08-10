@@ -7,6 +7,7 @@
             <form>
                 <header>
                     <button name="get_current_agent_target" type="object" string="Calc Target"/>
+                    <button name="get_transaction" type="object" string="Get Transaction"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
@@ -37,7 +38,7 @@
                     <div class="oe_title">
                         <label for="name" class="oe_edit_only"/>
                         <h1>
-                            <field name="name" placeholder="Agent's Name" required="True"/>
+                            <field name="name" placeholder="Agent's Name" required="True"/><br/>
                             <field name="seq_id"/>
                         </h1>
                     </div>
@@ -118,7 +119,7 @@
                 <field name="name"/>
                 <field name="email"/>
                 <field name="est_date"/>
-                <field name="actual_balance"/>
+                <field name="balance"/>
                 <templates>
                     <t t-name="kanban-box">
                         <div class="oe_kanban_global_click o_kanban_record_has_image_fill o_hr_kanban_record">
@@ -141,7 +142,7 @@
                                             </h4>
                                         </strong>
                                         <span class="o_kanban_record_subtitle">Email: <field name="email"/></span>
-                                        <span class="o_kanban_record_subtitle">Balance: <field name="actual_balance"/></span>
+                                        <span class="o_kanban_record_subtitle">Balance: <field name="balance"/></span>
                                     </div>
                                 </div>
                                 <!--options="{'color_field': 'color'}"-->

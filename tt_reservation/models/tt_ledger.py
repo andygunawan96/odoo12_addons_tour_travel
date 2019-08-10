@@ -31,7 +31,6 @@ class tt_ledger(models.Model):
     def prepare_vals_for_resv(self, resv_obj, vals):
         vals.update({
             'pnr': resv_obj.pnr,
-            'transport_type': resv_obj.provider_type_id.code in ['airline', 'train', 'cruise'] and resv_obj.provider_type_id.code or False,
             'display_provider_name': resv_obj.provider_name,
             'provider_type': resv_obj.provider_type_id.id,
             'description': 'Ledger for ' + resv_obj.name,

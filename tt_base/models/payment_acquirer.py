@@ -17,6 +17,7 @@ TYPE = [
 class PaymentAcquirer(models.Model):
     _inherit = 'payment.acquirer'
 
+    seq_id = fields.Char('Sequence ID')
     type = fields.Selection(TYPE, 'Payment Type')
     provider_id = fields.Many2one('tt.provider', 'Provider')
     agent_id = fields.Many2one('tt.agent', 'Agent')
@@ -24,6 +25,10 @@ class PaymentAcquirer(models.Model):
     account_number = fields.Char('Account Number')
     account_name = fields.Char('Account Name')
 
+    @api.model
+    def create(self, vals_list):
+        vals_list['seq_id'] = self.env['ir.sequence'].next_by_code('pay.acq')
+        return super(PaymentAcquirer, self).create(vals_list)
     # FUNGSI
     def generate_unique_amount(self):
         random = randint(1, 999)
@@ -45,7 +50,7 @@ class PaymentAcquirer(models.Model):
         # NB:  MANDIRI /payment/tt_transfer/feedback?acq_id=28
         fee, uniq = self.compute_fee(amount)
         return {
-            'id': self.id,
+            'seq_id': self.seq_id,
             'name': self.name,
             'account_name': self.account_name or '-',
             'account_number': self.account_number or '',
@@ -67,7 +72,13 @@ class PaymentAcquirer(models.Model):
         }
 
     def button_test_acquirer(self):
-        self.get_payment_acquirer(15,1500,'billing',1000000)
+        self.get_payment_acquirer_api({
+            'transaction_type': 'billing',
+            'amount': 16000,
+            'booker_seq_id': 'CU.010101'
+        },{
+            'agent_id': 5
+        })
 
     ##fixmee amount di cache
     def get_payment_acquirer_api(self, req,context):
@@ -92,9 +103,12 @@ class PaymentAcquirer(models.Model):
                 if not values.get(acq.type):
                     values[acq.type] = []
                 values[acq.type].append(acq.acquirer_format(req['amount']))
-            values['credit_limit'] = self.generate_credit_limit(req['booker_seq_id'])
-            print("payment acq resp\n"+ json.dumps(values))
-            return ERR.get_no_error(values)
+            res = {}
+            res['non_member'] = values
+            res['member'] = {}
+            res['member']['credit_limit'] = self.generate_credit_limit(req['booker_seq_id'])
+            print("payment acq resp\n"+ json.dumps(res))
+            return ERR.get_no_error(res)
         except Exception as e:
             _logger.error(str(e) + traceback.format_exc())
             return ERR.get_error()
@@ -113,6 +127,3 @@ class PaymentAcquirer(models.Model):
                     'currency': rec.currency_id.name
                 })
         return values
-
-    def test_payment(self):
-        raise UserWarning(self.get_payment_acquirer(1, 'billing', 12000))

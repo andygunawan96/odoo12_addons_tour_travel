@@ -56,7 +56,7 @@
         <field name="name">tt.ledger.tree.view.page</field>
         <field name="model">tt.ledger</field>
         <field name="arch" type="xml">
-            <tree create="false">
+            <tree >
                 <field name="date"/>
                 <field name="ref"/>
                 <field name="name"/>

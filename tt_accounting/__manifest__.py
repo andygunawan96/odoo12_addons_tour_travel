@@ -19,7 +19,7 @@
     'category': 'Transaction',
     'version': '0.1',
 
-    # any module necessary for thOis one to work correctly
+    # any module necessary for this one to work correctly
     'depends': ['base', 'base_setup', 'tt_base'],
 
     # always loaded

@@ -1,10 +1,8 @@
 from odoo import models, fields, api, _
-from PIL import Image
-from odoo.tools import image
 import logging, traceback
-from ...tools import ERR
-from odoo.exceptions import AccessError, UserError
-
+from ...tools import ERR,variables
+from odoo.exceptions import UserError
+import json
 
 _logger = logging.getLogger(__name__)
 
@@ -20,8 +18,7 @@ class TtAgent(models.Model):
 
     seq_id = fields.Char('Sequence ID')
     reference = fields.Many2one('tt.agent', 'Reference', help="Agent who Refers This Agent")
-    balance = fields.Monetary(string="Balance",  required=False, )
-    actual_balance = fields.Monetary(string="Actual Balance",  required=False, )
+    balance = fields.Monetary(string="Balance",  compute="_compute_balance_agent" )
     annual_revenue_target = fields.Monetary(string="Annual Revenue Target", default=0)
     annual_profit_target = fields.Monetary(string="Annual Profit Target", default=0)
     # target_ids = fields.One2many('tt.agent.target', 'agent_id', string='Target(s)')
@@ -99,11 +96,13 @@ class TtAgent(models.Model):
         })
         return new_agent
 
-    def get_balance(self, agent_id):
-        agent_obj = self.env['tt.agent'].browse([agent_id])
-        if not agent_obj:
-            return 'Agent/Sub Agent not Found'
-        return agent_obj.balance
+    def _compute_balance_agent(self):
+        for rec in self:
+            if len(rec.ledger_ids)>0:
+                rec.balance = rec.ledger_ids[0].balance
+            else:
+                rec.balance = 0
+
 
     def get_data(self):
         res = {
@@ -185,6 +184,38 @@ class TtAgent(models.Model):
             },
         }
 
+    def get_transaction(self):
+        self.get_transaction_api({'minimum':0,'maximum':20},{'agent_id':self.id})
+
+    def get_transaction_api(self,req,context):
+        try:
+            agent_obj = self.browse(context['agent_id'])
+            if not agent_obj:
+                return ERR.get_error(1008)
+
+            res_list = []
+            for type in variables.PROVIDER_TYPE:
+                list_obj = self.env['tt.reservation.%s' % (type)].search([('agent_id','=',context['agent_id'])],
+                                                              offset=req['minimum'],
+                                                              limit=req['maximum']-req['minimum'])
+                for rec in list_obj:
+                    res_list.append({
+                        'order_number': rec.name,
+                        'booked_date': rec.booked_date and rec.booked_date.strftime('%d-%m-%Y %H:%M:%S') or '',
+                        'booked_uid': rec.booked_uid and rec.booked_uid.name or '',
+                        'provider_type': rec.provider_type_id and rec.provider_type_id.code or '',
+                        'hold_date': rec.hold_date and rec.hold_date.strftime('%d-%m-%Y %H:%M:%S') or '',
+                        'booker': rec.booker_id and rec.booker_id.to_dict() or '',
+                        'pnr': rec.pnr or '',
+                        'state_description': variables.BOOKING_STATE_STR[rec.state],
+                        'issued_date': rec.issued_date and rec.issued_date.strftime('%d-%m-%Y %H:%M:%S') or '',
+                        'issued_uid': rec.issued_uid and rec.issued_uid.name or ''
+                    })
+
+            print(json.dumps(res_list))
+        except Exception as e:
+            _logger.error(str(e))
+            return ERR.get_error(500)
 
 class AgentTarget(models.Model):
     _inherit = ['tt.history']
