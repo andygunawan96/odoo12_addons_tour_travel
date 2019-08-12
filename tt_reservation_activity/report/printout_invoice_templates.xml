@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="printout_activity_invoice_template">
+        <t t-call="report.html_container">
+            <t t-call="tt_report_common.external_layout">
+                <t t-set="o" t-value="doc.with_context({'lang':doc.agent_id.lang})"/>
+                <div class="page">
+                    <div class="row">
+                        <div class="col-xs-7">
+                            <span>Invoice Number</span><br/>
+                            <h4><strong t-field="doc.invoice_id.name"/></h4>
+                            <t t-if="doc.invoice_id.date_invoice">
+                                <br/><span>Date</span><br/>
+                                <h4><strong t-field="doc.invoice_id.date_invoice"/></h4>
+                            </t>
+                        </div>
+                        <div name="invoice_address" class="col-xs-5">
+                            <span>To:</span><br/>
+                            <address t-field="doc.sub_agent_id" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;], &quot;no_marker&quot;: True}"/>
+                            <span t-if="doc.sub_agent_id.vat">TIN: <span t-field="doc.sub_agent_id.vat"/></span>
+                        </div>
+                    </div><br/>
+                    <h4><strong>Purchasing Details</strong></h4>
+                    <table class="table table-bordered" style="table-layout: auto !important; margin-top:10px;">
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Product Type</th>
+                                <th>Description</th>
+                                <th class="text-right">Unit Price</th>
+                                <th class="text-right">Qty</th>
+                                <th class="text-right">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody class="invoice_tbody">
+                            <tr>
+                                <td>
+                                    <span>1.</span>
+                                </td>
+                                <td>
+                                    <span>Activity</span>
+                                </td>
+                                <td>
+                                    <span t-esc="doc.name + ' | ' + doc.issued_date"/><br/>
+                                    <span t-esc="'Issued by ' + doc.booked_uid.name"/><br/>
+                                    <span t-esc="'For booker: ' + doc.contact_id.first_name + ' ' + doc.contact_id.last_name"/><br/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-esc="doc.total" t-esc-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                                </td>
+                                <td class="text-right"><span>1</span></td>
+                                <td class="text-right">
+                                    <span t-esc="doc.total" t-esc-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                                </td>
+                            </tr>
+                            <!--<tr style="border: 1px solid white;">-->
+                                <!--<td style="border:none !important;"> </td>-->
+                                <!--<td style="border:none !important;"> </td>-->
+                                <!--<td style="border:none !important;"> </td>-->
+                                <!--<td colspan="2" style="text-align: right;"><strong>Sub Total</strong></td>-->
+                                <!--<td class="text-right">-->
+                                    <!--<span t-field="doc.nta_amount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>-->
+                                <!--</td>-->
+                            <!--</tr>-->
+                            <tr style="border: 1px solid white;">
+                                <td style="border:none !important;"> </td>
+                                <td style="border:none !important;"> </td>
+                                <td style="border:none !important;"> </td>
+                                <td colspan="2" style="text-align: right;"><strong>Grand Total</strong></td>
+                                <td class="text-right">
+                                    <span t-field="doc.total" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                                </td>
+                            </tr>
+                            <tr style="border: 1px solid white;">
+                                <td style="border:none !important;"> </td>
+                                <td style="border:none !important;"> </td>
+                                <td style="border:none !important;"> </td>
+                                <td colspan="2" style="text-align: right;"><strong>Commission</strong></td>
+                                <td class="text-right">
+                                    <span t-field="doc.sum_comisi" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <t t-call="tt_transport_printout.rodex_invoice_signature_part2_document"/>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <template id="rodex_invoice_signature_part2_document">
+        <div class="row" style="position: absolute; z-index:2; top:1050px; font-size:10px; width: 100%;">
+            <div class="col-xs-4 text-center">
+                <p style="color: white;">Computerized no signature required</p>
+                <p class="rodex-invoice-signature-line" style="margin-bottom: 2px;"/>
+                <p>Representative Signature</p>
+            </div>
+            <div class="col-xs-4 text-center">
+
+            </div>
+            <div class="col-xs-4 text-center">
+                <p>Computerized no signature required</p>
+                <p class="rodex-invoice-signature-line" style="margin-bottom: 2px;"/>
+                <p>Authorized Signature</p>
+            </div>
+        </div>
+    </template>
+</odoo>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Top Menu -->
+        <!-- Activity -->
+        <menuitem id="top_reservations_activity"
+                  parent="tt_reservation.main_reservations"
+                  name="Activity"
+                  sequence="20"
+                  groups="base.group_user"/>
+
+        <menuitem id="menu_reservations_activity"
+                  parent="tt_reservation_activity.top_reservations_activity"
+                  name="Booking"
+                  sequence="1"/>
+
+        <!--Menu Tour-->
+        <menuitem id="top_tour_travel_activity"
+              parent="tt_base.main_tour_travel"
+              name="Activity"
+              sequence="2"
+              groups="base.group_user"/>
+
+        <menuitem id="menu_tour_travel_activity_master"
+                  name="Master"
+                  parent="tt_reservation_activity.top_tour_travel_activity"
+                  sequence="1"/>
+    </data>
+</odoo>

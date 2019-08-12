@@ -1,0 +1,328 @@
+<odoo>
+    <record id="tt_reservation_activity_view_filter" model="ir.ui.view">
+        <field name="name">tt.reservation.activity.view.filter</field>
+        <field name="model">tt.reservation.activity</field>
+        <field name="arch" type="xml">
+            <search string="Search Activity Booking">
+                <field name="name"/>
+                <field name="pnr"/>
+                <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                <field name="customer_parent_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                <field name="contact_id"/>
+                <group>
+                    <filter string="All" name="all"/>
+                    <filter string="Issued" name="issued" domain="[('state','=','issued')]"/>
+                    <filter string="Failed/Expired" name="failed_expired" domain="['|', ('state','=','failed'),('state','=','expired')]"/>
+                    <filter string="Approved/Done" name="approved_done" domain="['|', ('state','=','approved'),('state','=','done')]"/>
+                    <filter string="Cancelled/Rejected/Refunded" name="cancelled" domain="['|', ('state','=','cancelled'),('state','=','rejected'),('state','=','refunded')]"/>
+                </group>
+                <separator/>
+                <filter name="today" string="Today" domain="[('date','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>
+                <filter name="yesterday" string="Yesterday"
+                        domain="[
+                                ('date', '&lt;', (context_today()).strftime('%Y-%m-%d')),
+                                ('date', '&gt;=', (context_today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d'))
+                        ]"/>
+                <filter name="week" string="This Week"
+                        domain="[
+                                '&amp;',
+                                ('date', '>=', (context_today() + relativedelta(weeks=-1,days=1,weekday=0)).strftime('%Y-%m-%d')),
+                                ('date', '&lt;=', (context_today() + relativedelta(weekday=6)).strftime('%Y-%m-%d')),
+                            ]"/>
+                <filter string="This Month" name="thismonth" domain="[('date','&gt;=',time.strftime('%%Y-%%m-01'))]"/>
+                <filter string="This Year" name="thisyear" domain="[('date','&gt;=',time.strftime('%%Y-01-01'))]"/>
+
+                <group expand="0" string="Group By">
+                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <filter name="group_by_agent_type_id" string="Agent Type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <filter name="group_by_customer_parent_id" string="Customer Parent" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                    <filter name="group_by_customer_parent_type_id" string="Customer Parent Type" domain="[]" context="{'group_by':'customer_parent_type_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                    <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tt_reservation_activity_view_form">
+        <field name="name">tt.reservation.activity.view.form</field>
+        <field name="model">tt.reservation.activity</field>
+        <field name="arch" type="xml">
+            <form create="false">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="reserved,waiting,done"/>
+                    <!--<button string="Cancel Booking" name="action_cancelled" type="object" attrs="{'invisible': [('state', '!=', 'booked')]}" groups="tt_base.group_tt_agent_user_operator"/>-->
+                    <!--<button string="Confirm To HO" name="action_confirm_to_ho" type="object" attrs="{'invisible': [('state', '!=', 'issued')]}" groups="tt_base.group_tt_agent_user_operator"/>-->
+                    <!--<button string="Reject" name="action_rejected" type="object" attrs="{'invisible': [('state', '!=', 'approved')]}" groups="tt_base.group_tt_tour_travel_operator"/>-->
+                    <!--<button string="Process" name="action_process" type="object" attrs="{'invisible': [('state', '!=', 'confirmed')]}" groups="tt_base.group_tt_reservation_activity_travel_operator"/>-->
+                    <button string="Issued" name="action_issued" type="object" attrs="{'invisible': [('state', 'not in', ['reserved'])]}"/>
+                    <!--<button string="Get Vouchers" name="get_vouchers_button" type="object" attrs="{'invisible': [('state', 'not in', ['approved'])]}"/>-->
+                    <button string="Sync Status Booking" name="cron_update_status_booking" type="object"/>
+                    <button string="Reverse Ledger" name="action_cancelled" type="object" attrs="{'invisible': [('state', 'in', ['cancelled', 'done'])]}" groups="tt_base.group_tt_tour_travel_supervisor"/>
+                    <button string="Force Update Booking" name="force_update_booking" type="object" groups="base.group_no_one"/>
+                    <button string="Generate Ledger PNR" name="generate_ledger_pnr" type="object" groups="base.group_no_one"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box">
+                        <button name="get_vouchers_button"
+                                string="Get Vouchers"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-print"
+                                attrs="{'invisible': ['|', ('state', '!=', 'approved'), ('provider_name', '=', 'klook')]}"/>
+                        <button name="action_activity_print_invoice"
+                                string="Print Invoice"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-print"/>
+                        <button name="resend_voucher_button"
+                                string="Resend Voucher"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-print"
+                                attrs="{'invisible': ['|', '&amp;', ('state', '!=', 'approved'), ('state', '!=', 'done'), ('provider_name', '!=', 'klook')]}"/>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="activity_id" string="Activity Name" readonly="1"/>
+                            <field name="activity_product" readonly="1"/>
+                            <field name="visit_date" readonly="1"/>
+                            <field name="booking_option" readonly="1"/>
+                            <field name="information" readonly="1"/>
+                            <field name="provider_name" readonly="1"/>
+                            <field name="booking_uuid" readonly="1" groups="base.group_system"/>
+                            <field name="sid_booked" readonly="1" groups="base.group_system"/>
+                            <field name="senior" readonly="1"/>
+                            <field name="adult" readonly="1"/>
+                            <field name="child" readonly="1"/>
+                            <field name="infant" readonly="1"/>
+                            <!--<field name="user_id" readonly="1"/>-->
+                        </group>
+                        <group>
+                            <field name="pnr" readonly="1"/>
+                            <field name="voucher_url" readonly="1" attrs="{'invisible': [('provider_name', '!=', 'klook')]}"/>
+                            <field name="agent_id" readonly="1"/>
+                            <field name="customer_parent_id" readonly="1"/>
+                            <field name="contact_id" readonly="1"/>
+                            <field name="display_mobile"/>
+                            <label for="issued_date" string="Issued By"/>
+                            <div>
+                                <field name="issued_date" class="oe_inline" readonly="1"/> /
+                                <field name="booked_uid" class="oe_inline" readonly="1"/>
+                            </div>
+                            <!--<field name="hold_date" readonly="1"/>-->
+                            <field name="acceptance_date" readonly="1" attrs="{'invisible': [('acceptance_date', '=', False)]}"/>
+                            <field name="rejected_date" readonly="1" attrs="{'invisible': [('rejected_date', '=', False)]}"/>
+                            <field name="expired_date" readonly="1" attrs="{'invisible': [('expired_date', '=', False)]}"/>
+                            <!--<field name="vendor_ledger_id" readonly="1" groups="tt_base.group_tt_tour_travel_operator"/>-->
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Participants">
+                            <field name="line_ids" readonly="1">
+                                <tree>
+                                    <field name="passenger_id" string="Name"/>
+                                    <field name="pax_type"/>
+                                    <field name="pax_mobile"/>
+                                    <field name="api_data" string="Option Request"/>
+                                </tree>
+                                <form>
+                                    <group>
+                                        <group>
+                                            <field name="passenger_id" string="Name"/>
+                                            <field name="pax_type"/>
+                                            <field name="pax_mobile"/>
+                                            <field name="api_data" string="Option Request"/>
+                                        </group>
+                                        <group>
+                                            <field name="reservation_activity_id" string="Order Number"/>
+                                            <field name="state"/>
+                                        </group>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                        <page string="Prices">
+                            <field name="sale_service_charge_ids" readonly="1">
+                                <tree>
+                                    <field name="charge_code"/>
+                                    <field name="pax_type"/>
+                                    <field name="pax_count"/>
+                                    <field name="currency_id"/>
+                                    <field name="amount"/>
+                                    <field name="total"/>
+                                    <field name="description" groups="tt_base.group_tt_tour_travel_operator"/>
+                                </tree>
+                                <form>
+                                    <group>
+                                        <group>
+                                            <field name="pax_type"/>
+                                            <field name="pax_count"/>
+                                            <field name="charge_code"/>
+                                            <field name="charge_type"/>
+                                            <field name="currency_id" invisible="1"/>
+                                            <field name="amount"/>
+                                            <field name="total"/>
+                                        </group>
+                                        <group>
+                                            <field name="activity_id"/>
+                                            <field name="description"/>
+                                            <field name="foreign_amount" groups="tt_base.group_tt_tour_travel_operator" string="Base Price From Vendor"/>
+                                            <field name="foreign_currency_id" invisible="1"/>
+                                        </group>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                        <page string="Ledger" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator">
+                            <field name="ledger_id" readonly="1"/>
+                        </page>
+                        <page string="Invoices" name="invoices">
+                            <field name="invoice_ids" readonly="1">
+
+                            </field>
+                        </page>
+                    </notebook>
+                    <group>
+                        <group string="Total Information" class="oe_subtotal_footer oe_right" attrs="{'invisible': [('total', '=', 0)]}">
+                            <field name="total_fare" class="oe_subtotal_footer_separator" attrs="{'invisible': [('total_fare', '=', 0)]}"/>
+                            <field name="total_tax" class="oe_subtotal_footer_separator" attrs="{'invisible': [('total_tax', '=', 0)]}"/>
+                            <field name="total_discount" class="oe_subtotal_footer_separator" attrs="{'invisible': [('total_discount', '=', 0)]}"/>
+                            <field name="total" class="oe_subtotal_footer_separator" attrs="{'invisible': [('total', '=', 0)]}"/>
+                            <field name="total_commission" class="oe_subtotal_footer_separator" attrs="{'invisible': [('total_commission', '=', 0)]}"/>
+                            <field name="total_nta" class="oe_subtotal_footer_separator" attrs="{'invisible': [('total_nta', '=', 0)]}"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tt_reservation_activity_view_tree" >
+        <field name="name">tt.reservation.activity.view.tree</field>
+        <field name="model">tt.reservation.activity</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="pnr"/>
+                <field name="visit_date"/>
+<!--                <field name="vendor_ledger_id" groups="tt_base.group_tt_tour_travel_operator"/>-->
+                <field name="activity_id"/>
+                <field name="contact_id"/>
+                <field name="agent_id"/>
+                <field name="agent_type_id"/>
+                <field name="customer_parent_id"/>
+                <field name="customer_parent_type_id"/>
+                <field name="issued_date"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_reservation_activity_view_action_all">
+        <field name="name">Activity Booking ALL</field>
+        <field name="res_model">tt.reservation.activity</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_activity.tt_reservation_activity_view_form',
+            'tree_view_ref': 'tt_reservation_activity.tt_reservation_activity_view_tree',
+            'search_default_all': 1
+            }
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_reservation_activity_view_action_issued">
+        <field name="name">Activity Booking Issued</field>
+        <field name="res_model">tt.reservation.activity</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_activity.tt_reservation_activity_view_form',
+            'tree_view_ref': 'tt_reservation_activity.tt_reservation_activity_view_tree',
+            'search_default_issued': 1
+            }
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_reservation_activity_view_action_failed_expired">
+        <field name="name">Activity Booking Failed Expired</field>
+        <field name="res_model">tt.reservation.activity</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_activity.tt_reservation_activity_view_form',
+            'tree_view_ref': 'tt_reservation_activity.tt_reservation_activity_view_tree',
+            'search_default_failed_expired': 1
+            }
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_reservation_activity_view_action_approved_done">
+        <field name="name">Activity Booking Approved Done</field>
+        <field name="res_model">tt.reservation.activity</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_activity.tt_reservation_activity_view_form',
+            'tree_view_ref': 'tt_reservation_activity.tt_reservation_activity_view_tree',
+            'search_default_approved_done': 1
+            }
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_reservation_activity_view_action_cancelled">
+        <field name="name">Activity Booking Cancelled Rejected Refunded</field>
+        <field name="res_model">tt.reservation.activity</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_activity.tt_reservation_activity_view_form',
+            'tree_view_ref': 'tt_reservation_activity.tt_reservation_activity_view_tree',
+            'search_default_cancelled': 1
+            }
+        </field>
+    </record>
+
+    <menuitem id="submenu_reservation_activity_all" parent="tt_reservation_activity.menu_reservations_activity"
+              name="ALL" action="tt_reservation_activity.tt_reservation_activity_view_action_all" sequence="1"/>
+
+    <menuitem id="submenu_reservation_activity_issued" parent="tt_reservation_activity.menu_reservations_activity"
+              name="Issued" action="tt_reservation_activity.tt_reservation_activity_view_action_issued" sequence="2"/>
+
+    <menuitem id="submenu_reservation_activity_failed_expired" parent="tt_reservation_activity.menu_reservations_activity"
+              name="Failed/Expired" action="tt_reservation_activity.tt_reservation_activity_view_action_failed_expired" sequence="3"/>
+
+    <menuitem id="submenu_reservation_activity_approved_done" parent="tt_reservation_activity.menu_reservations_activity"
+              name="Approved/Done" action="tt_reservation_activity.tt_reservation_activity_view_action_approved_done" sequence="4"/>
+
+    <menuitem id="submenu_reservation_activity_cancelled" parent="tt_reservation_activity.menu_reservations_activity"
+              name="Cancelled/Rejected/Refunded" action="tt_reservation_activity.tt_reservation_activity_view_action_cancelled" sequence="5"/>
+
+    <record model="ir.ui.view" id="tt_agent_invoice_form_inh">
+        <field name="name">tt_agent_invoice_form_view_inh</field>
+        <field name="model">tt.agent.invoice</field>
+        <field name="inherit_id" ref="tt_agent_sales.tt_agent_invoice_form_view"/>
+        <field name="arch" type="xml">
+            <field name="customer_parent_id" position="after">
+                <field name="activity_transaction_id" attrs="{'invisible': [('activity_transaction_id', '=', False)]}"/>
+            </field>
+        </field>
+    </record>
+</odoo>

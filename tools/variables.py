@@ -40,6 +40,7 @@ BOOKING_STATE = [
     ('partial_issued', 'Partial Issued'),
     ('issued', 'Issued'),
     ('done', 'Done'),
+    ('rejected', 'Rejected'),
     ('fail_refunded', 'Failed (REFUNDED)'),
     ('refund', 'Refund'),
     ('reissue', 'Reissue'), #diganti reissue
