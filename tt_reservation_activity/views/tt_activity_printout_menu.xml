@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <report
+            string="Invoice"
+            id="activity_print_invoice"
+            model="tt.reservation.activity"
+            report_type="qweb-pdf"
+            name="tt_reservation_activity.printout_activity_invoice"
+            file="tt_reservation_activity.printout_activity_invoice"
+            paperformat="tt_report_common.paperformat_A4"
+            menu = "False"
+        />
+</odoo>

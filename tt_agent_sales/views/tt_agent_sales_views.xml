@@ -26,7 +26,7 @@
                         <group>
                             <field name="date_invoice"/>
                             <field name="date_due"/>
-                            <field name="contact_id"/>
+                            <field name="booker_id"/>
                         </group>
                         <group>
                             <field name="agent_id"/>
