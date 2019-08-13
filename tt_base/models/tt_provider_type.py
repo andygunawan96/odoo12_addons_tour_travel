@@ -1,5 +1,7 @@
 from odoo import models, fields, api
 from ...tools import variables
+
+
 class ProviderType(models.Model):
     _name = 'tt.provider.type'
 

@@ -107,6 +107,7 @@
                                 <field name="code"/>
                                 <field name="category_id"/>
                                 <field name="provider_id"/>
+                                <field name="provider_type_id"/>
                             </group>
                             <group>
                                 <field name="description"/>
@@ -128,6 +129,7 @@
                     <field name="code"/>
                     <field name="category_id"/>
                     <field name="provider_id"/>
+                    <field name="provider_type_id"/>
                     <field name="active"/>
                 </tree>
             </field>

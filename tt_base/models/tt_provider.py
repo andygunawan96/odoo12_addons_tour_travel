@@ -28,6 +28,7 @@ class TtProvider(models.Model):
         provider_obj = self.search([('code','=',code),('provider_type_id','=',provider_type.id)])
         return provider_obj.id
 
+
 class TtProviderCode(models.Model):
     _name = 'tt.provider.code'
 
