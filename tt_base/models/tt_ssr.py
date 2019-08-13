@@ -66,8 +66,9 @@ class TtSSRList(models.Model):
                 'provider_type_id': provider_type_obj.id
             })
 
-            self.sudo().create(req_data)
-            res = Response().get_no_error()
+            _obj = self.sudo().create(req_data)
+            response = _obj.get_ssr_data()
+            res = Response().get_no_error(response)
         except Exception as e:
             _logger.error('Error Create SSR API, %s, %s' % (str(e), traceback.format_exc()))
             res = Response().get_error(str(e), 500)
