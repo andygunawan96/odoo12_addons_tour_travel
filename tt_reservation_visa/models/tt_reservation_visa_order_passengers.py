@@ -217,7 +217,7 @@ class VisaOrderPassengers(models.Model):
             })
             rec.message_post(body='Passenger PROCEED')
             is_proceed = True
-            for psg in rec.visa_id.to_passenger_ids:
+            for psg in rec.visa_id.passenger_ids:
                 if psg.state not in ['proceed', 'cancel']:
                     is_proceed = False
             # jika ada sebagian state passenger yang belum proceed -> partial proceed
@@ -252,7 +252,7 @@ class VisaOrderPassengers(models.Model):
             })
             rec.message_post(body='Passenger documents TO HO')
             is_sent = True
-            for psg in rec.visa_id.to_passenger_ids:
+            for psg in rec.visa_id.passenger_ids:
                 if psg.state not in ['to_HO']:
                     is_sent = False
             if is_sent:
@@ -266,7 +266,7 @@ class VisaOrderPassengers(models.Model):
             })
             rec.message_post(body='Passenger documents TO Agent')
             is_sent = True
-            for psg in rec.visa_id.to_passenger_ids:
+            for psg in rec.visa_id.passenger_ids:
                 if psg.state not in ['to_agent']:
                     is_sent = False
             if is_sent:
@@ -288,7 +288,7 @@ class VisaOrderPassengers(models.Model):
             })
             rec.message_post(body='Passenger DONE')
             is_done = True
-            for psg in rec.visa_id.to_passenger_ids:
+            for psg in rec.visa_id.passenger_ids:
                 if psg.state not in ['done', 'cancel']:
                     is_done = False
             if is_done:

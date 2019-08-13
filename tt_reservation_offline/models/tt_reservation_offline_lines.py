@@ -32,6 +32,11 @@ CLASS_OF_SERVICE = [
     ('bus', 'Bussiness')
 ]
 
+MEAL_TYPE = [
+    ('room_only', 'Room Only'),
+    ('with_breakfast', 'With Breakfast')
+]
+
 
 class IssuedOfflineLines(models.Model):
     _name = 'tt.reservation.offline.lines'
@@ -58,8 +63,8 @@ class IssuedOfflineLines(models.Model):
 
     carrier_id = fields.Many2one('tt.transport.carrier', 'Carrier', readonly=True,
                                  states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
-    provider = fields.Char('Provider', readonly=True, required=True, states={'draft': [('readonly', False)],
-                                                                             'confirm': [('readonly', False)]})
+    provider = fields.Char('Provider', readonly=True, required=False, states={'draft': [('required', False)],
+                                                                              'confirm': [('readonly', False)]})
 
     carrier_code = fields.Char('Carrier Code', help='or Flight Code', index=True)
     carrier_number = fields.Char('Carrier Number', help='or Flight Number', index=True)
@@ -73,11 +78,13 @@ class IssuedOfflineLines(models.Model):
                                                               'confirm': [('readonly', False)]})
     check_out = fields.Date('Check Out', readonly=True, states={'draft': [('readonly', False)],
                                                                 'confirm': [('readonly', False)]})
-    obj_name = fields.Char('Name', related='provider', store=True)
+    obj_name = fields.Char('Name', readonly=True, states={'draft': [('readonly', False)],
+                                                          'confirm': [('readonly', False)]})
     obj_subname = fields.Char('Room/Package', readonly=True, states={'draft': [('readonly', False)],
                                                                      'confirm': [('readonly', False)]})
 
     description = fields.Text('Description')
+    meal_type = fields.Selection(MEAL_TYPE, 'Meal Type')
 
     is_ledger_created = fields.Boolean('Ledger Created', default=False, readonly=True,
                                        states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
@@ -87,11 +94,13 @@ class IssuedOfflineLines(models.Model):
 
     @api.onchange('transaction_type', 'booking_id.provider_type_id')
     def onchange_domain(self):
-        print('Provider Type ID : ' + str(self.booking_id.provider_type_id))
+        print('Provider Type ID : ' + str(self.booking_id.provider_type_id_name))
         booking_type = self.booking_id.provider_type_id.code
 
         return {'domain': {
-            'carrier_id': [('provider_type_id', '=', self.booking_id.provider_type_id.id)]
+            'carrier_id': [('provider_type_id', '=', self.booking_id.provider_type_id.id)],
+            'origin_id': [('provider_type_id', '=', self.booking_id.provider_type_id.id)],
+            'destination_id': [('provider_type_id', '=', self.booking_id.provider_type_id.id)]
         }}
 
     @api.onchange('carrier_id')
@@ -134,3 +143,62 @@ class IssuedOfflineLines(models.Model):
         for rec in provider_uniq:
             provider_to_str += rec + ' '
         return provider_to_str
+
+    def get_passengers_list(self):
+        passengers = ''
+        psg_count = 1
+        for rec in self.booking_id.passenger_ids:
+            passengers += str(psg_count) + '. ' + rec.passenger_id.name + ' \n'
+        return passengers
+
+    def get_meal_type(self):
+        if self.meal_type:
+            return dict(self._fields['meal_type'].selection).get(self.meal_type)
+
+    def get_all_line_airline_train_description(self):
+        vals = ''
+        for rec in self.booking_id.line_ids:
+            vals += rec.origin_id.name + ' - ' + rec.destination_id.name + ' \n' + str(rec.departure_date) + ' ' + \
+                    str(rec.return_date) + ' \n' + rec.carrier_id.name + ' ' + rec.carrier_code + ' ' + \
+                    rec.carrier_number + ' \n'
+        return vals
+
+    def get_line_hotel_description(self, line):
+        vals = ''
+        vals += 'Hotel : ' + line.obj_name + '\n' + 'Room : ' + line.obj_subname + ' (' + line.get_meal_type() + ') ' \
+                + str(line.obj_qty) + 'x\n' + 'Date : ' + str(line.check_in) + ' - ' + str(line.check_out) + '\n' + \
+                'Passengers : \n' + str(self.get_passengers_list()) + 'Description : ' + line.description
+        return vals
+
+    def get_all_line_hotel_description(self):
+        vals = ''
+        for line in self.booking_id.line_ids:
+            vals += 'Hotel : ' + line.obj_name + '\n' + 'Room : ' + line.obj_subname + ' (' + line.get_meal_type() + \
+                    ') ' + str(line.obj_qty) + 'x\n' + 'Date : ' + str(line.check_in) + ' - ' + str(line.check_out) + \
+                    '\n' + 'Passengers : \n' + str(self.get_passengers_list()) + 'Description : ' + line.description
+        return vals
+
+    def get_line_activity_description(self, line):
+        vals = ''
+        vals += 'Activity : ' + line.obj_name + '\n' + 'Package : ' + line.obj_subname + \
+                ' ' + str(line.obj_qty) + 'x\n' + 'Date : ' + str(line.check_in) + '\n' \
+                + 'Passengers : \n' + str(self.get_passengers_list()) + 'Description : ' + (line.description or '')
+        return vals
+
+    def get_all_line_activity_description(self):
+        vals = ''
+        for line in self.booking_id.line_ids:
+            vals += 'Activity : ' + line.obj_name + '\n' + 'Package : ' + line.obj_subname + \
+                    ' ' + str(line.obj_qty) + 'x\n' + 'Date : ' + str(line.check_in) + '\n' \
+                    + 'Passengers : \n' + str(self.get_passengers_list()) + 'Description : ' + (line.description or '')
+        return vals
+
+    def get_line_description(self):
+        vals = ''
+        if self.booking_id.provider_type_id_name == 'airline' or self.booking_id.provider_type_id_name == 'train':
+            vals = self.get_all_line_airline_train_description()
+        elif self.booking_id.provider_type_id_name == 'hotel' or self.booking_id.provider_type_id_name == 'cruise':
+            vals = 'Description : ' + self.booking_id.description
+        elif self.booking_id.provider_type_id_name == 'activity':
+            vals = self.get_all_line_activity_description()
+        return vals

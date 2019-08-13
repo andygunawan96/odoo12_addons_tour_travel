@@ -66,7 +66,7 @@
                     <button string="In Process" name="action_in_process_visa" type="object" attrs="{'invisible': [('state_visa', 'not in', ['validate','vendor_process'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
                     <button string="Process to Consulate" name="action_in_process_consulate_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'payment')]}" groups="tt_base.group_tt_tour_travel_operator"/>
                     <button string="Cancel All" name="action_cancel_visa" type="object" attrs="{'invisible': [('state_visa', 'in', ['cancel'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <button string="Calc. Channel Prices" name="calculate_channel_service_charge_visa" type="object"/>
+                    <button string="Calc. Channel Prices" name="calc_channel_service_charge_visa" type="object"/>
 <!--                    <button string="Confirm" name="action_confirm" type="object" attrs="{'invisible': [('state_visa', '!=', 'draft')]}" groups="tt_base.group_tt_agent_user_manager"/>-->
 <!--                    <button string="Validate" name="action_validate" type="object" attrs="{'invisible': [('state_visa', '!=', 'confirm')]}" groups="tt_base.group_tt_agent_user_manager"/>-->
 <!--                    <button string="Processing" name="action_processing" type="object" attrs="{'invisible': [('state_visa', '!=', 'validate')]}" groups="tt_base.group_tt_agent_user_manager"/>-->
@@ -160,7 +160,7 @@
 <!--                            </field>-->
 <!--                        </page>-->
                         <page string="Passengers">
-                            <field name="to_passenger_ids">
+                            <field name="passenger_ids">
                                 <tree create="0">
                                     <field name="customer_id"/>
                                     <field name="passenger_type"/>
