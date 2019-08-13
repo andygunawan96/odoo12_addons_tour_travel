@@ -4,12 +4,11 @@ class AgentInvoiceLineDetail(models.Model):
     _name = "tt.agent.invoice.line.detail"
     _rec_name = 'desc'
     desc = fields.Text('Description')
-    price_unit = fields.Float('Price')
-    discount = fields.Float('Discount')
+    price_unit = fields.Monetary('Price')
     quantity = fields.Integer('Quantity')
-    discount_amount = fields.Float('Disc. Amount')
-    price_subtotal = fields.Integer('Amount', compute = "_compute_amount_total")
+    price_subtotal = fields.Monetary('Amount', compute = "_compute_amount_total")
     invoice_line_id = fields.Many2one('tt.agent.invoice.line', 'Invoice Line')
+    currency_id = fields.Many2one('res.currency','Currency',related='invoice_line_id.currency_id')
 
     @api.multi
     def _compute_amount_total(self):

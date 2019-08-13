@@ -202,7 +202,12 @@ class TtAgent(models.Model):
 
             res_list = []
             for type in types:
-                list_obj = self.env['tt.reservation.%s' % (type)].search([('agent_id','=',context['co_agent_id'])],
+                if util.get_without_empty(req,'order_or_pnr'):
+                    list_obj = self.env['tt.reservation.%s' % (type)].search(['|',('name','=',req['order_or_pnr']),
+                                                                              ('pnr', '=', req['order_or_pnr']),
+                                                                              ('agent_id','=',context['co_agent_id'])])
+                else:
+                    list_obj = self.env['tt.reservation.%s' % (type)].search([('agent_id','=',context['co_agent_id'])],
                                                               offset=req['minimum'],
                                                               limit=req['maximum']-req['minimum'])
                 for rec in list_obj:
@@ -210,7 +215,11 @@ class TtAgent(models.Model):
                         'order_number': rec.name,
                         'booked_date': rec.booked_date and rec.booked_date.strftime('%d-%m-%Y %H:%M:%S') or '',
                         'booked_uid': rec.booked_uid and rec.booked_uid.name or '',
-                        'provider_type': rec.provider_type_id and rec.provider_type_id.code or '',
+                        'provider': {
+                            'provider_type': rec.provider_type_id and rec.provider_type_id.code or '',
+                            'airline_carrier_codes': list(set([seg.carrier_code for seg in rec.segment_ids]))
+                            if hasattr(rec,'segment_ids') else [],
+                        },
                         'hold_date': rec.hold_date and rec.hold_date.strftime('%d-%m-%Y %H:%M:%S') or '',
                         'booker': rec.booker_id and rec.booker_id.to_dict() or '',
                         'pnr': rec.pnr or '',

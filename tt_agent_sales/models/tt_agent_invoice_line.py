@@ -23,6 +23,8 @@ class AgentInvoice(models.Model,test_to_dict.ToDict):
 
     state = fields.Selection([],'State',related="invoice_id.state", readonly=True)
 
+    currency_id = fields.Many2one('res.currency', 'Currency', related='invoice_id.currency_id')
+
     invoice_line_detail_ids = fields.One2many('tt.agent.invoice.line.detail', 'invoice_line_id', 'Invoice Line Detail')
 
     desc = fields.Text('Description')

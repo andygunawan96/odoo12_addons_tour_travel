@@ -71,12 +71,16 @@ class AgentInvoice(models.Model):
                                index=True, copy=False)
     date_due = fields.Date(string='Due Date', index=True, copy=False)
 
-    def action_confirm(self):
+    @api.model
+    def create(self, vals_list):
+        vals_list['name'] = self.env['ir_sequence'].next_by_code('agent.invoice')
+        return super(AgentInvoice, self).create(vals_list)
+
+    def action_confirm_agent_invoice(self):
         if self.state == 'draft':
             self.state = 'confirm'
             self.confirmed_date = fields.Datetime.now()
             self.confirmed_uid = self.env.user.id
-            self.name = self.name == 'New' and self.env['ir.sequence'].next_by_code('agent.invoice') or self.name
 
     def _compute_total(self):
         for inv in self:

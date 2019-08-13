@@ -28,9 +28,7 @@
                             <tree>
                                 <field name="desc"/>
                                 <field name="price_unit"/>
-                                <field name="discount"/>
                                 <field name="quantity"/>
-                                <field name="discount_amount"/>
                                 <field name="price_subtotal"/>
                             </tree>
                         </field>

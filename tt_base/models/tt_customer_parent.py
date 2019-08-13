@@ -17,6 +17,7 @@ class TtCustomerParent(models.Model):
     actual_balance = fields.Monetary(string="Actual Balance", readonly=True, compute="_compute_actual_balance")
     credit_limit = fields.Monetary(string="Credit Limit")
 
+    seq_id = fields.Char('Sequence ID')
     email = fields.Char(string="Email", required=False, )
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.user.company_id.currency_id.id, string='Currency')
     address_ids = fields.One2many('address.detail', 'agent_id', string='Addresses')
@@ -28,7 +29,6 @@ class TtCustomerParent(models.Model):
     agent_bank_detail_ids = fields.One2many('agent.bank.detail', 'agent_id', 'Agent Bank')  # agent_bank_detail
     tac = fields.Text('Terms and Conditions', readonly=True)
     active = fields.Boolean('Active', default='True')
-
 
     def _compute_actual_balance(self):
         for rec in self:

@@ -5,66 +5,35 @@
             <field name="code">ho</field>
             <!--<field name="fee_schema_id" ref="tt_agent_accounting_rodex.fee_schema_ho"/>-->
             <field name="active">True</field>
+            <field name="seq_prefix">HO</field>
         </record>
         <record id="agent_type_citra" model="tt.agent.type">
             <field name="name">Agent Citra</field>
             <field name="code">citra</field>
             <!--<field name="fee_schema_id" ref="tt_agent_accounting_rodex.fee_schema_citra"/>-->
             <field name="active">True</field>
+            <field name="seq_prefix">CR</field>
         </record>
         <record id="agent_type_japro" model="tt.agent.type">
             <field name="name">Agent JaPro</field>
             <field name="code">japro</field>
             <!--<field name="fee_schema_id" ref="tt_agent_accounting_rodex.fee_schema_japro"/>-->
             <field name="active">True</field>
-        </record>
-        <record id="agent_type_fipro" model="tt.agent.type">
-            <field name="name">Agent FiPro</field>
-            <field name="code">fipro</field>
-            <!--<field name="fee_schema_id" ref="tt_agent_accounting_rodex.fee_schema_fipro"/>-->
-            <field name="active">True</field>
-        </record>
-        <record id="agent_type_btba" model="tt.agent.type">
-            <field name="name">Agent BTBA</field>
-            <field name="code">btba</field>
-            <!--<field name="fee_schema_id" ref="tt_agent_accounting_rodex.fee_schema_btba"/>-->
-            <field name="active">True</field>
+            <field name="seq_prefix">JP</field>
         </record>
         <record id="agent_type_btbo" model="tt.agent.type">
             <field name="name">Agent BTBO</field>
             <field name="code">btbo</field>
             <!--<field name="fee_schema_id" ref="tt_agent_accounting_rodex.fee_schema_btbo"/>-->
             <field name="active">True</field>
+            <field name="seq_prefix">BO</field>
         </record>
         <record id="agent_type_btbr" model="tt.agent.type">
             <field name="name">Agent BTBR</field>
             <field name="code">btbr</field>
             <!--<field name="fee_schema_id" ref="tt_agent_accounting_rodex.fee_schema_btbr"/>-->
             <field name="active">True</field>
+            <field name="seq_prefix">BR</field>
         </record>
-        <!--<record id="customer_type_individu" model="tt.agent.type">-->
-            <!--<field name="name">Customer Individual</field>-->
-            <!--&lt;!&ndash;<field name="fee_schema_id" ref="tt_agent_accounting_rodex.fee_schema_individu"/>&ndash;&gt;-->
-            <!--<field name="active">True</field>-->
-        <!--</record>-->
-        <record id="agent_type_others" model="tt.agent.type">
-            <field name="name">Customer Others</field>
-            <field name="code">others</field>
-            <!--<field name="fee_schema_id" ref="tt_agent_accounting_rodex.fee_schema_others"/>-->
-            <field name="active">True</field>
-        </record>
-        <record id="agent_type_branch" model="tt.agent.type">
-            <field name="name">Branch/Outlet</field>
-            <field name="code">branch</field>
-            <field name="active">True</field>
-        </record>
-        <!--<record id="agent_type_it" model="tt.agent.type">-->
-            <!--<field name="name">IT</field>-->
-            <!--<field name="active">True</field>-->
-        <!--</record>-->
-        <!--<record id="agent_type_vendor" model="tt.agent.type">-->
-            <!--<field name="name">Vendor</field>-->
-            <!--<field name="active">True</field>-->
-        <!--</record>-->
     </data>
 </odoo>
