@@ -30,9 +30,10 @@
         # 'views/templates.xml',
         'data/ir_sequence_data.xml',
         'views/issued_offline_views.xml',
+        'report/paperformat_A4.xml',
+        'report/printout_menu.xml',
+        'report/printout_invoice_template.xml',
     ],
     # only loaded in demonstration mode
-    'demo': [
-        'demo/demo.xml',
-    ],
+    'demo': [],
 }
