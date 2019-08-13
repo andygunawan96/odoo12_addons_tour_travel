@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="tt_provider_activity_bemyguest" model="tt.provider">
+            <field name="name">BeMyGuest</field>
+            <field name="code">bemyguest</field>
+            <field name="active" eval="True"/>
+            <field name="provider_type_id" ref="tt_provider_type_activity"/>
+        </record>
+        <record id="tt_provider_activity_klook" model="tt.provider">
+            <field name="name">Klook</field>
+            <field name="code">klook</field>
+            <field name="active" eval="True"/>
+            <field name="provider_type_id" ref="tt_provider_type_activity"/>
+        </record>
+        <record id="tt_provider_activity_globaltix" model="tt.provider">
+            <field name="name">Globaltix</field>
+            <field name="code">globaltix</field>
+            <field name="active" eval="True"/>
+            <field name="provider_type_id" ref="tt_provider_type_activity"/>
+        </record>
+    </data>
+</odoo>
