@@ -4,7 +4,8 @@ import json
 from odoo.http import request
 from datetime import datetime
 
-class ApiConnector_Activity():
+
+class ApiConnectorActivity:
 
     token_permanent = ''
     user_cookie = ''
@@ -14,7 +15,7 @@ class ApiConnector_Activity():
 
     #  PROD
     def __init__(self, environment='prod'):
-        self.credetial = {
+        self.credential = {
             "user": tools.config.get('api_user'),
             "password": tools.config.get('api_password'),
             "api_key": tools.config.get('api_key_activity'),
@@ -24,24 +25,21 @@ class ApiConnector_Activity():
         self.environment = environment
 
     def send_request(self, action, post=None, cookie=None, timeout=60):
-        url = '{}/activity/booking'.format(self.credetial['url_api'])
-        if action in ['signin', 'get_destinations']:
-            url = '{}/activity/session'.format(self.credetial['url_api'])
-
+        url = '{}/booking/activity'.format(self.credential['url_api'])
         headers = {
             "Accept": "application/json,text/html,application/xml",
             "Content-Type": "application/json",
             'cookie': cookie,
             'action': action
         }
-        return util.send_request_json(url, post=post, headers=headers, timeout=timeout)
+        return util.send_request(url, data=post, headers=headers, timeout=timeout)
 
     def signin(self, co_uid=None):
         try:
-            self.credetial['co_uid'] = request.session.uid
+            self.credential['co_uid'] = request.session.uid
         except:
-            self.credetial['co_uid'] = co_uid
-        req_post = self.credetial.copy()
+            self.credential['co_uid'] = co_uid
+        req_post = self.credential.copy()
         # req_post.pop('url_sess')
         # req_post.pop('url_book')
         res = self.send_request('signin', req_post)
@@ -56,7 +54,7 @@ class ApiConnector_Activity():
             err = 3010
             res = {
                 'error_code': err,
-                'error_msg': ERR.GetError(err),
+                'error_msg': ERR.get_error(err),
                 'response': ''
             }
         return res
@@ -100,7 +98,7 @@ class ApiConnector_Activity():
             err = 3013
             res = {
                 'error_code': err,
-                'error_msg': ERR.GetError(err)['error_msg'],
+                'error_msg': ERR.get_error(err)['error_msg'],
             }
         return res
 
@@ -122,7 +120,7 @@ class ApiConnector_Activity():
             err = 3013
             res = {
                 'error_code': err,
-                'error_msg': ERR.GetError(err)['error_msg'],
+                'error_msg': ERR.get_error(err)['error_msg'],
             }
         return res
 
@@ -173,7 +171,7 @@ class ApiConnector_Activity():
             err = 3011
             res = {
                 'error_code': err,
-                'error_msg': ERR.GetError(err)['error_msg'],
+                'error_msg': ERR.get_error(err)['error_msg'],
                 'response': 'REQUEST : {}'.format(json.dumps(req))
             }
         if res['error_code'] != 0:

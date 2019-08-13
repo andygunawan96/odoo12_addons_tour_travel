@@ -1,6 +1,6 @@
 from odoo import api, fields, models
 from odoo.http import request
-from .ApiConnector_Activity import ApiConnector_Activity
+from .ApiConnector_Activity import ApiConnectorActivity
 import logging, traceback
 import json
 import base64
@@ -57,5 +57,6 @@ class MasterActivity(models.Model):
     image_ids = fields.One2many('tt.activity.master.images', 'activity_id', 'Images Path')
     provider = fields.Char(string='Provider')
     active = fields.Boolean('Active', default=True)
+
 
 
