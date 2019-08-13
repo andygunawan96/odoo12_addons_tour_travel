@@ -102,6 +102,24 @@ class TtSSRList(models.Model):
             res = Response().get_error(str(e), 500)
         return res
 
+    def get_ssr_api_by_code(self, provider, provider_type):
+        try:
+            provider_type_obj = self.env['tt.provider.type'].sudo().search([('provider_type', '=', provider_type)], limit=1)
+            provider_obj = self.env['tt.provider'].sudo().search([('provider', '=', provider)], limit=1)
+            if not provider_type_obj:
+                raise Exception('Provider Type not found, %s' % provider_type)
+            if not provider_obj:
+                raise Exception('Provider not found, %s' % provider)
+
+            _objs = self.sudo().search([('provider_id', '=', provider_obj.id), ('provider_type_id', '=', provider_type_obj.id), ('active', '=', 1)])
+            response = {}
+            [response.update({rec.code: rec.get_ssr_data()}) for rec in _objs]
+            res = Response().get_no_error(response)
+        except Exception as e:
+            _logger.error('Error Get SSR API, %s, %s' % (str(e), traceback.format_exc()))
+            res = Response().get_error(str(e), 500)
+        return res
+
 
 class TtSSRListLine(models.Model):
     _name = 'tt.ssr.list.line'
