@@ -72,7 +72,8 @@ class TtProviderAirline(models.Model):
                 'state': 'issued',
                 'issued_date': datetime.now(),
                 'issued_uid': context['co_uid'],
-                'sid_issued': context['signature']
+                'sid_issued': context['signature'],
+                'balance_due': 0
             })
 
     def action_failed_booked_api_airline(self):

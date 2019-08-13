@@ -1,6 +1,6 @@
 from odoo import models, fields, api, _
 import logging, traceback
-from ...tools import ERR,variables
+from ...tools import ERR,variables,util
 from odoo.exceptions import UserError
 import json
 
@@ -193,9 +193,16 @@ class TtAgent(models.Model):
             if not agent_obj:
                 return ERR.get_error(1008)
 
+            req_provider = util.get_without_empty(req,'provider_type')
+
+            if req_provider and req_provider in variables.PROVIDER_TYPE:
+                types = req['provider_type']
+            else:
+                types = variables.PROVIDER_TYPE
+
             res_list = []
-            for type in variables.PROVIDER_TYPE:
-                list_obj = self.env['tt.reservation.%s' % (type)].search([('agent_id','=',context['agent_id'])],
+            for type in types:
+                list_obj = self.env['tt.reservation.%s' % (type)].search([('agent_id','=',context['co_agent_id'])],
                                                               offset=req['minimum'],
                                                               limit=req['maximum']-req['minimum'])
                 for rec in list_obj:
@@ -212,7 +219,10 @@ class TtAgent(models.Model):
                         'issued_uid': rec.issued_uid and rec.issued_uid.name or ''
                     })
 
+            sorted(res_list, key=lambda i: i['hold_date'])
+
             print(json.dumps(res_list))
+            return ERR.get_no_error(res_list)
         except Exception as e:
             _logger.error(str(e))
             return ERR.get_error(500)

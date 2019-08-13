@@ -32,7 +32,7 @@ class tt_ledger(models.Model):
         vals.update({
             'pnr': resv_obj.pnr,
             'display_provider_name': resv_obj.provider_name,
-            'provider_type': resv_obj.provider_type_id.id,
+            'provider_type_id': resv_obj.provider_type_id.id,
             'description': 'Ledger for ' + resv_obj.name,
             'res_id': resv_obj.id,
             'res_model': resv_obj._name,  #

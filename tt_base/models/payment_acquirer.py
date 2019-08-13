@@ -2,7 +2,7 @@ from odoo import api, fields, models, _
 from random import randint
 import json
 import traceback,logging
-from ...tools import ERR
+from ...tools import ERR,util
 
 _logger = logging.getLogger(__name__)
 
@@ -87,7 +87,13 @@ class PaymentAcquirer(models.Model):
             agent_obj = self.env['tt.agent'].sudo().browse(context['agent_id'])
             if not agent_obj:
                 # Return Error jika agent_id tidak ditemukan
-                return False
+                return ERR.get_error(1008)
+
+            if util.get_without_empty(req,'order_number'):
+                amount = self.env['tt.reservation.%s' % req['provider_type']].search([('name','=',req['order_number'])],limit=1).total
+            else:
+                amount = req['amount']
+
             dom = [('website_published', '=', True), ('company_id', '=', self.env.user.company_id.id)]
             # Ambil agent_id Parent nya (Citranya corpor tsb)
             # if agent_obj.agent_type_id.id in (self.env.ref('tt_base_rodex.agent_type_cor').id,
@@ -102,7 +108,7 @@ class PaymentAcquirer(models.Model):
             for acq in self.sudo().search(dom):
                 if not values.get(acq.type):
                     values[acq.type] = []
-                values[acq.type].append(acq.acquirer_format(req['amount']))
+                values[acq.type].append(acq.acquirer_format(amount))
             res = {}
             res['non_member'] = values
             res['member'] = {}

@@ -72,6 +72,7 @@ class ReservationAirline(models.Model):
     def action_check_provider_state(self):
         pass##fixme later
 
+
     def action_booked_api_airline(self,context,pnr_list,hold_date):
         self.write({
             'state': 'booked',
@@ -82,10 +83,13 @@ class ReservationAirline(models.Model):
         })
 
     def action_issued_api_airline(self,context):
+        self.action_issued_airline(context['co_uid'])
+
+    def action_issued_airline(self,co_uid):
         self.write({
             'state': 'issued',
             'issued_date': datetime.datetime.now(),
-            'issued_uid': context['co_uid'],
+            'issued_uid': co_uid,
         })
 
     def action_partial_booked_api_airline(self,context,pnr_list,hold_date):
@@ -598,9 +602,11 @@ class ReservationAirline(models.Model):
                             'provider_id': leg_prov
                         }))
 
-                        segment.write({
-                            'leg_ids': this_segment_legs
-                        })
+                    segment.write({
+                        'leg_ids': this_segment_legs,
+                        'cabin_class': param_segment.get('cabin_class',''),
+                        'class_of_service': param_segment.get('class_of_service','')
+                    })
 
                     for fare in param_segment['fares']:
                         provider_obj.create_service_charge(fare['service_charges'])
