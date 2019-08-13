@@ -80,7 +80,7 @@
                         <button string="Post" class="oe_highlight" name="action_done" states="paid" type="object" groups="tt_base.group_tt_ticketing_manager,account.group_account_invoice"/>
                         <button string="Cancel" name="action_cancel" type="object" states="confirm,sent,paid" groups="tt_base.group_tt_ticketing_operator,account.group_account_invoice"/>
                         <button string="Cancel" name="action_cancel" type="object" states="draft"/>
-                        <button string="Print Invoice" name="action_print_agent_invoice" type="object" states="paid,posted"/>
+                        <button string="Print Invoice" name="print_invoice" type="object" states="paid,posted"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,confirm,sent,paid,posted"/>
                     </header>
                     <sheet>
@@ -177,10 +177,11 @@
                             </group>
                         </group>
                         <notebook>
-                            <page string="Line(s)">  <!--Airlines, Train, Hotel, Activity-->
+                            <page string="Line(s)" attrs="{'invisible': [('provider_type_id_name', 'not in', ['airline','train','hotel','activity'])]}">  <!--Airlines, Train, Hotel, Activity-->
                                 <field name="line_ids">
                                     <tree>
                                         <field name="booking_id" invisible="1"/>
+                                        <field name="transaction_name" invisible="1"/>
                                         <field name="pnr"/>
                                         <field name="obj_name"/>
                                         <!--<field name="obj_subname"/>-->
@@ -210,10 +211,11 @@
                                             </group>
                                             <group>
                                                 <field name="carrier_id"/>
-                                                <field name="provider"/>
+                                                <field name="provider_id" attrs="{'required' :[('state','in',['confirm'])]}"/>
                                             </group>
                                             <group>
                                                 <field name="pnr"/>
+                                                <field name="obj_qty"/>
                                             </group>
                                             <group>
                                                 <field name="carrier_code"/>
@@ -228,15 +230,16 @@
                                             <!--Hotel / Themes Park-->
                                             <group>
                                                 <field name="pnr"/>
-                                                <field name="provider"/>
+                                                <field name="provider_id" attrs="{'required' :[('state','in',['confirm'])]}"/>
                                                 <field name="obj_name"/>
                                                 <field name="obj_subname"/>
                                             </group>
                                             <group>
                                                 <field name="check_in"/>
-                                                <field name="check_out" attrs="{'invisible': [('transaction_type', 'not in', ['hotel'])]}"/>
+                                                <field name="check_out" attrs="{'invisible': [('transaction_name', 'not in', ['hotel'])]}"/>
                                                 <field name="obj_qty"/>
                                                 <field name="description"/>
+                                                <field name="meal_type" attrs="{'invisible': [('transaction_name', 'not in', ['hotel'])]}"/>
                                             </group>
                                         </group>
 <!--                                        <group attrs="{'invisible': [('transaction_type', 'not in', ['travel_doc',])]}">-->

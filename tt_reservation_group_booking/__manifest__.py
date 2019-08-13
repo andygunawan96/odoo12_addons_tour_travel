@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "tt_reservation_offline",
+    'name': "tt_reservation_group_booking",
 
     'summary': """
         Short (1 phrase/line) summary of the module's purpose, used as
@@ -20,20 +20,16 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'tt_base', 'tt_accounting', 'tt_agent_sales', 'tt_reservation'],
+    'depends': ['base'],
 
     # always loaded
     'data': [
-        'security/ir.model.access.csv',
-        'security/tt_reservation_offline_security.xml',
-        # 'views/views.xml',
-        # 'views/templates.xml',
-        'data/ir_sequence_data.xml',
-        'views/issued_offline_views.xml',
-        'report/paperformat_A4.xml',
-        'report/printout_menu.xml',
-        'report/printout_invoice_template.xml',
+        # 'security/ir.model.access.csv',
+        'views/views.xml',
+        'views/templates.xml',
     ],
     # only loaded in demonstration mode
-    'demo': [],
+    'demo': [
+        'demo/demo.xml',
+    ],
 }

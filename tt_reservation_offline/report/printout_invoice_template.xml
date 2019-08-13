@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="external_layout">
+        <t t-if="not o and doc">
+            <t t-set="o" t-value="doc"/>
+        </t>
+        <t t-if="o and 'company_id' in o">
+            <t t-set="company" t-value="o.company_id"/>
+        </t>
+        <t t-if="not o or not 'company_id' in o">
+            <t t-set="company" t-value="res_company"/>
+        </t>
+
+        <t call="tt_reservation_offline.external_layout_header"/>
+        <t raw="0"/>
+    </template>
+
+    <template id="external_layout_header">
+        <div class="header">
+            <div class="row">
+                <div class="col-xs-2">
+                    <img t-if="company.logo" t-att-src="'data:image/png;base64,%s' % company.logo" style="max-height: 85px;"/>
+                </div>
+                <div class="col-xs-10">
+                    <ul class="list-inline" style="margin-bottom:2px; font-size:12px;">
+                        <li style="vertical-align: bottom;">
+                            <br/>
+                            <strong><span t-esc="company.name"/></strong>
+                            <br/>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </template>ail
+
+    <!--RODEX AIRLINE INVOICE-->
+    <template id="printout_invoice_template">
+        <t t-call="web.html_container">
+            <div class="page">
+                <t call="tt_reservation_offline.external_layout">
+                    <h2>This is Printout Report</h2>
+                    <t raw="0"/>
+                </t>
+            </div>
+            <div class="footer">
+                <div class="row text-center" style="border-top: 1px solid black;">
+                    <div class="col col-3 offset-9 text-right">
+                        <ul class="list-inline mt-2">
+                            <li class="list-inline-item">Page:</li>
+                            <li class="list-inline-item">
+                                <span class="page"/>
+                            </li>
+                            <li class="list-inline-item">/</li>
+                            <li class="list-inline-item">
+                                <span class="topage"/>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="printout_invoice">
+        <t t-set="data_report_header_spacing" t-value="20"/>
+        <t t-set="data_report_margin_top" t-value="22"/>
+        <t t-call="tt_reservation_offline.printout_invoice_template">
+            <t t-foreach="docs" t-as="doc">
+                <span t-esc="doc['name']"/><br/>
+                <span t-esc="doc['total']"/><br/><br/>
+            </t>
+        </t>
+    </template>
+</odoo>

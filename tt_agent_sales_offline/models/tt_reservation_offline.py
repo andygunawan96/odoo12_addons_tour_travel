@@ -1,4 +1,4 @@
-from odoo import models, fields, api, _
+from odoo import models, fields, api
 
 
 class ReservationOffline(models.Model):
@@ -39,7 +39,7 @@ class ReservationOffline(models.Model):
 
     def action_create_invoice(self):
         invoice_id = self.env['tt.agent.invoice'].search(
-            [('contact_id', '=', self.contact_id.id), ('state', '=', 'draft')])
+            [('booker_id', '=', self.contact_id.id), ('state', '=', 'draft')])
 
         if not invoice_id:
             invoice_id = self.env['tt.agent.invoice'].create({
@@ -52,7 +52,7 @@ class ReservationOffline(models.Model):
             'res_model_resv': self._name,
             'res_id_resv': self.id,
             'invoice_id': invoice_id.id,
-            'desc': 'Testing Offline Invoice'
+            'desc': self.line_ids.get_line_description()
         })
 
         invoice_line_id = inv_line_obj.id
@@ -66,21 +66,32 @@ class ReservationOffline(models.Model):
                 'CHD': 0,
                 'INF': 0,
             }
-            for svrc in self.cost_service_charge_ids:
-                if 'r.ac' not in svrc.charge_code:
-                    res[svrc.pax_type] += svrc.amount
+            for srvc in self.sale_service_charge_ids:
+                if 'r.ac' not in srvc.charge_code:
+                    res[srvc.pax_type] += srvc.amount
             return res
 
         pax_price = get_pax_price()
 
-        for psg in self.passenger_ids:
-            desc_text = psg.passenger_id.first_name + ' ' + psg.passenger_id.last_name + ', ' + psg.pax_type
-
-            inv_line_obj.write({
-                'invoice_line_detail_ids': [(0,0,{
-                    'desc': desc_text,
-                    'price_unit': pax_price[psg.pax_type],
-                    'quantity': 1,
-                    'invoice_line_id': invoice_line_id,
-                })]
-            })
+        if self.provider_type_id_name == 'hotel':
+            for line in self.line_ids:
+                desc_text = line.get_line_hotel_description(line)
+                inv_line_obj.write({
+                    'invoice_line_detail_ids': [(0, 0, {
+                        'desc': desc_text,
+                        'price_unit': pax_price['ADT'],
+                        'quantity': 1,
+                        'invoice_line_id': invoice_line_id,
+                    })]
+                })
+        else:
+            for psg in self.passenger_ids:
+                desc_text = psg.passenger_id.name
+                inv_line_obj.write({
+                    'invoice_line_detail_ids': [(0, 0, {
+                        'desc': desc_text,
+                        'price_unit': pax_price[psg.pax_type],
+                        'quantity': 1,
+                        'invoice_line_id': invoice_line_id,
+                    })]
+                })

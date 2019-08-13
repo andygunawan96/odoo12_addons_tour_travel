@@ -1,5 +1,26 @@
 import base64
+from .api import Response
+from datetime import datetime, timedelta
+import logging
+import copy
+import requests
 
+_logger = logging.getLogger(__name__)
+TIMEOUT = 30
+CACHE_TIME = 300
+
+
+def _default_headers(data=None):
+    data = data and data or {}
+    res = {
+        'Connection': 'keep-alive',
+        'Upgrade-Insecure-Requests': '1',
+        'User-Agent': 'python-requests/2.18.4',
+        'Accept': '*/*',
+        'Accept-Encoding': 'gzip, deflate',
+    }
+    res.update(data)
+    return res
 
 def encode_authorization(_id, _username, _password):
     credential = '%s:%s:%s' % (_id, _username, _password)
@@ -51,3 +72,45 @@ def get_without_empty(dict,key,else_param=False):
         if value not in [0,'']:
             return value
     return else_param
+
+
+def send_request(url, data=None, headers=None, method=None, cookie=None, timeout=TIMEOUT):
+    ses = requests.Session()
+    cookie and [ses.cookies.set(key, val) for key, val in cookie.iteritems()]
+
+    data = data and data or {}
+    headers = headers and headers or _default_headers()
+    if not method:
+        method = data and 'POST' or 'GET'
+    response = None
+    try:
+        if method == 'GET':
+            addons = ''
+            if data and type(data) == dict:
+                temp = ['%s=%s' % (key, val) for key, val in data.items()]
+                if url[-1] != '/':
+                    addons += '/'
+                if url.find('?') < 0:
+                    addons += '?'
+                addons = '%s%s' % (addons, '&'.join(temp))
+            url = '%s%s' % (url, addons)
+            response = ses.get(url=url, headers=headers, timeout=timeout)
+        elif method == 'POST' and type(data) == dict:
+            response = ses.post(url=url, headers=headers, json=data, timeout=timeout)
+        else:
+            response = ses.post(url=url, headers=headers, data=data, timeout=timeout)
+        response.raise_for_status()
+        values = {'error_code': 0}
+    except Exception as e:
+        values = {
+            'error_code': 500,
+            'error_msg': str(e),
+        }
+    values.update({
+        'http_code': getattr(response, 'status_code', ''),
+        'response': getattr(response, 'text', ''),
+        'url': url,
+        'cookies': response.cookies.get_dict() if getattr(response, 'cookies', '') else ''
+    })
+    res = Response(values).to_dict()
+    return res
