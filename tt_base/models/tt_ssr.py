@@ -46,6 +46,7 @@ class TtSSRListLine(models.Model):
 
     name = fields.Char('Name', required=True)
     code = fields.Char('Code', required=True)
+    description = fields.Text('Description', default='')
     value = fields.Char('Value', default='')
     ssr_id = fields.Many2one('tt.ssr.list', 'SSR', readonly=1)
     active = fields.Boolean('Active', default=True)
