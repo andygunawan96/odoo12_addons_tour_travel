@@ -36,7 +36,7 @@ class TtAgentType(models.Model):
         self.env['ir.sequence'].create({
             'name': new_agent_type.name,
             'code': 'tt.agent.type.%s' % (new_agent_type.code),
-            'prefix': '%s.%(day)s%(sec)s' % (new_agent_type.seq_prefix),
+            'prefix': '{}.%(day)s%(sec)s'.format(new_agent_type.seq_prefix),
             'padding': 3
         })
         return new_agent_type
