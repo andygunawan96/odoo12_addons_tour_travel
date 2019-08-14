@@ -2,9 +2,11 @@ from odoo import api, fields, models, _
 from ...tools.api import Response
 import logging
 import traceback
+from ...tools.db_connector import GatewayConnector
 
 
 _logger = logging.getLogger(__name__)
+_gw_con = GatewayConnector()
 
 
 class TtSSRCategory(models.Model):
@@ -70,6 +72,12 @@ class TtSSRList(models.Model):
             })
 
             _obj = self.sudo().create(req_data)
+            values = {
+                'code': 9901,
+                'title': 'New SSR Created',
+                'message': 'Please complete ssr detail for %s in %s (%s)' % (_obj.code, _obj.provider_id.code, _obj.provider_type_id.code)
+            }
+            _gw_con.telegram_notif_api(values, {})
             response = _obj.get_ssr_data()
             res = Response().get_no_error(response)
         except Exception as e:
