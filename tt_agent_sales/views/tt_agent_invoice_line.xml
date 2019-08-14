@@ -12,15 +12,14 @@
                 </header>
                 <sheet>
                     <div class="oe_title">
-                        <label for="name">Invoice</label>
                         <h1>
                             <field name="name" nolabel='1' placeholder="Name" readonly="True"/>
                         </h1>
                     </div>
                     <group>
-                        <field name="invoice_id" invisible="1"/>
-                            <field name="res_model_resv" invisible="1"/>
-                            <field name="res_id_resv" invisible="1"/>
+                        <field name="invoice_id"/>
+                        <field name="res_model_resv" invisible="1"/>
+                        <field name="res_id_resv" invisible="1"/>
                         <field name="desc"/>
                     </group>
                     <group>

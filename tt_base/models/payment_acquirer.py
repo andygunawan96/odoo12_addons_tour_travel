@@ -130,6 +130,7 @@ class PaymentAcquirer(models.Model):
                     'name': rec.name,
                     'actual_balance': rec.actual_balance,
                     'credit_limit': rec.credit_limit,
-                    'currency': rec.currency_id.name
+                    'currency': rec.currency_id.name,
+                    'seq_id': rec.seq_id
                 })
         return values

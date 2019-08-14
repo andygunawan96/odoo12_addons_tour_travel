@@ -100,6 +100,6 @@ class ReservationTrain(models.Model):
     #
     #     return res
 
-    def action_issued_airline(self,co_uid):
-        super(ReservationTrain, self).action_issued_airline(co_uid)
+    def action_issued_airline(self,co_uid,customer_parent_id):
+        super(ReservationTrain, self).action_issued_airline(co_uid,customer_parent_id)
         self.action_create_invoice()

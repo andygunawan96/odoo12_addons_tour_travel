@@ -34,5 +34,10 @@ class TtCustomerParent(models.Model):
         for rec in self:
             rec.actual_balance = rec.credit_limit - rec.balance
 
+    @api.model
+    def create(self,vals_list):
+        vals_list['seq_id'] = self.env['ir_sequence'].next_by_code('')
+        super(TtCustomerParent, self).create(vals_list)
+
     #ledger history
     #booking History

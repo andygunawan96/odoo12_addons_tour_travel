@@ -82,14 +82,15 @@ class ReservationAirline(models.Model):
             'booked_date': datetime.datetime.now()
         })
 
-    def action_issued_api_airline(self,context):
-        self.action_issued_airline(context['co_uid'])
+    def action_issued_api_airline(self,context,customer_parent_id):
+        self.action_issued_airline(context['co_uid'],customer_parent_id)
 
-    def action_issued_airline(self,co_uid):
+    def action_issued_airline(self,co_uid,customer_parent_id):
         self.write({
             'state': 'issued',
             'issued_date': datetime.datetime.now(),
             'issued_uid': co_uid,
+            'customer_parent_id': customer_parent_id
         })
 
     def action_partial_booked_api_airline(self,context,pnr_list,hold_date):
@@ -315,9 +316,9 @@ class ReservationAirline(models.Model):
                     #action issued dan create ticket number
                     provider_obj.action_issued_api_airline(context)
                     provider_obj.update_ticket_api(provider['passengers'])
-                elif provider['status'] == 'FAILED_BOOKED':
+                elif provider['status'] == 'FAIL_BOOKED':
                     provider_obj.action_failed_booked_api_airline()
-                elif provider['status'] == 'FAILED_ISSUE':
+                elif provider['status'] == 'FAIL_ISSUED':
                     provider_obj.action_failed_issued_api_airline()
 
             if req.get('force_issued'):
@@ -333,7 +334,11 @@ class ReservationAirline(models.Model):
                 book_obj.action_booked_api_airline(context,pnr_list,hold_date)
             elif all(rec == 'ISSUED' for rec in book_status):
                 #issued
-                book_obj.action_issued_api_airline(context)
+                if req.get('member'):
+                    customer_parent_id = self.env['tt.customer.parent'].search([('seq_id','=',req['seq_id'])])
+                else:
+                    customer_parent_id = book_obj.agent_id.customer_parent_walkin_id.id
+                book_obj.action_issued_api_airline(context,customer_parent_id)
             elif any(rec == 'ISSUED' for rec in book_status):
                 #partial issued
                 book_obj.action_partial_issued_api_airline()
@@ -341,10 +346,10 @@ class ReservationAirline(models.Model):
                 #partial booked
                 book_obj.calculate_service_charge()
                 book_obj.action_partial_booked_api_airline(context,pnr_list,hold_date)
-            elif all(rec == 'FAILED_ISSUED' for rec in book_status):
+            elif all(rec == 'FAIL_ISSUED' for rec in book_status):
                 #failed issue
                 book_obj.action_failed_issue()
-            elif all(rec == 'FAILED_BOOKED' for rec in book_status):
+            elif all(rec == 'FAIL_BOOKED' for rec in book_status):
                 #failed book
                 book_obj.action_failed_book()
             else:
@@ -397,6 +402,8 @@ class ReservationAirline(models.Model):
             book_obj = self.env['tt.reservation.airline'].browse(req.get('book_id'))
             if book_obj and book_obj.agent_id.id == context.get('co_agent_id',-1):
                 #cek balance due book di sini, mungkin suatu saat yang akan datang
+                if book_obj.state == 'issued':
+                    return ERR.get_error(1009)
 
                 #cek saldo
                 balance_res = self.env['tt.agent'].check_balance_limit_api(context['co_agent_id'],book_obj.total_nta)
@@ -604,8 +611,8 @@ class ReservationAirline(models.Model):
 
                     segment.write({
                         'leg_ids': this_segment_legs,
-                        'cabin_class': param_segment.get('cabin_class',''),
-                        'class_of_service': param_segment.get('class_of_service','')
+                        'cabin_class': param_segment.get('fares')[0].get('cabin_class',''),
+                        'class_of_service': param_segment.get('fares')[0].get('class_of_service','')
                     })
 
                     for fare in param_segment['fares']:

@@ -10,6 +10,7 @@ tt_error_api_1005,1005,Update booking error,,,1,1
 tt_error_api_1006,1006,No PNR booked/issued successfully,,,1,1
 tt_error_api_1007,1007,Not enough balance,,,1,1
 tt_error_api_1008,1008,Agent not found,,,1,1
+tt_error_api_1009,1009,Transaction has been paid,,,1,1
 tt_error_api_4001,4001,Invalid action type,,,1,1
 tt_error_api_4002,4002,Error while validating your credential,,,1,1
 tt_error_api_4003,4003,Your session has been expired,,,1,1

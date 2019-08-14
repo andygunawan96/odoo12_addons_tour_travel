@@ -73,7 +73,7 @@ class AgentInvoice(models.Model):
 
     @api.model
     def create(self, vals_list):
-        vals_list['name'] = self.env['ir_sequence'].next_by_code('agent.invoice')
+        vals_list['name'] = self.env['ir.sequence'].next_by_code('agent.invoice')
         return super(AgentInvoice, self).create(vals_list)
 
     def action_confirm_agent_invoice(self):
