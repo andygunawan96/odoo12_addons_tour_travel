@@ -201,7 +201,7 @@ class Routes(models.Model):
 
             # July 24 - SAM
             if self.is_similar_route(req_data, provider_obj.id):
-                _logger.info('Create Route API, Data is Similar')
+                _logger.info('Create Route API, Data is Similar, %s' % req_data)
                 return Response().get_error('', 500)
 
             origin_id = self.env['tt.destinations'].sudo().get_id(req_data['origin'], provider_obj)
