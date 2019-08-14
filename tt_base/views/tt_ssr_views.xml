@@ -183,6 +183,7 @@
                         </div>
                         <group>
                             <group>
+                                <field name="sequence"/>
                                 <field name="code"/>
                                 <field name="value"/>
                                 <field name="ssr_id"/>
@@ -201,6 +202,7 @@
             <field name="model">tt.ssr.list.line</field>
             <field name="arch" type="xml">
                 <tree string="SSR List Line">
+                    <field name="sequence" widget="handle"/>
                     <field name="name"/>
                     <field name="code"/>
                     <field name="value"/>

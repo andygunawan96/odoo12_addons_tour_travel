@@ -196,10 +196,12 @@ class Routes(models.Model):
 
             if _obj:
                 # raise Exception('Data already exist')
+                _logger.info('Create Route API, Data already exist, %s' % req_data)
                 response = _obj.get_route_data()
                 return Response().get_no_error(response)
 
             # July 24 - SAM
+            # Untuk melakukan pengecekkan apakah request data yang dikirimkan adalah bagian dari leg
             if self.is_similar_route(req_data, provider_obj.id):
                 _logger.info('Create Route API, Data is Similar, %s' % req_data)
                 return Response().get_error('', 500)
