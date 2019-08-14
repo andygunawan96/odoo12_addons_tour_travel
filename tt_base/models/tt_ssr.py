@@ -52,8 +52,8 @@ class TtSSRList(models.Model):
 
     def create_ssr_api(self, req_data, provider, provider_type):
         try:
-            provider_type_obj = self.env['tt.provider.type'].sudo().search([('provider_type', '=', provider_type)], limit=1)
-            provider_obj = self.env['tt.provider'].sudo().search([('provider', '=', provider)], limit=1)
+            provider_type_obj = self.env['tt.provider.type'].sudo().search([('code', '=', provider_type)], limit=1)
+            provider_obj = self.env['tt.provider'].sudo().search([('code', '=', provider)], limit=1)
             if not provider_type_obj:
                 raise Exception('Provider Type not found, %s' % provider_type)
             if not provider_obj:
@@ -99,8 +99,8 @@ class TtSSRList(models.Model):
 
     def get_ssr_api(self, provider, provider_type):
         try:
-            provider_type_obj = self.env['tt.provider.type'].sudo().search([('provider_type', '=', provider_type)], limit=1)
-            provider_obj = self.env['tt.provider'].sudo().search([('provider', '=', provider)], limit=1)
+            provider_type_obj = self.env['tt.provider.type'].sudo().search([('code', '=', provider_type)], limit=1)
+            provider_obj = self.env['tt.provider'].sudo().search([('code', '=', provider)], limit=1)
             if not provider_type_obj:
                 raise Exception('Provider Type not found, %s' % provider_type)
             if not provider_obj:
@@ -116,8 +116,8 @@ class TtSSRList(models.Model):
 
     def get_ssr_api_by_code(self, provider, provider_type):
         try:
-            provider_type_obj = self.env['tt.provider.type'].sudo().search([('provider_type', '=', provider_type)], limit=1)
-            provider_obj = self.env['tt.provider'].sudo().search([('provider', '=', provider)], limit=1)
+            provider_type_obj = self.env['tt.provider.type'].sudo().search([('code', '=', provider_type)], limit=1)
+            provider_obj = self.env['tt.provider'].sudo().search([('code', '=', provider)], limit=1)
             if not provider_type_obj:
                 raise Exception('Provider Type not found, %s' % provider_type)
             if not provider_obj:
@@ -137,6 +137,7 @@ class TtSSRListLine(models.Model):
     _name = 'tt.ssr.list.line'
 
     name = fields.Char('Name', required=True)
+    sequence = fields.Integer(default=50, readonly=1)
     code = fields.Char('Code', required=True)
     description = fields.Text('Description', default='')
     value = fields.Char('Value', default='')
