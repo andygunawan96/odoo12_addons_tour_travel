@@ -59,7 +59,10 @@ class TtSSRList(models.Model):
 
             _obj = self.sudo().search([('code', '=', req_data['code']), ('provider_id', '=', provider_obj.id), ('provider_type_id', '=', provider_type_obj.id)])
             if _obj:
-                raise Exception('Data is Similar, %s' % req_data['code'])
+                # raise Exception('Data is Similar, %s' % req_data['code'])
+                _logger.info('Data is similar, %s' % req_data)
+                response = _obj.get_ssr_data()
+                return Response().get_no_error(response)
 
             req_data.update({
                 'provider_id': provider_obj.id,
