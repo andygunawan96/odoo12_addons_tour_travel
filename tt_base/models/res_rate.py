@@ -2,7 +2,7 @@ from odoo import models, fields, api
 
 
 class ResRate(models.Model):
-    _name = 'res.rate'
+    _name = 'tt.provider.rate'
     _rec_name = 'currency_id'
     _description = 'Tour & Travel - Rate'
 

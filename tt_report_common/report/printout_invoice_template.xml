@@ -67,7 +67,7 @@
                         <strong style="font-size:16px;"><span t-field="doc.agent_id.name"/></strong>
                         <br/>
                         <div>
-                            <t t-if="doc.agent_id">
+                            <t t-if="doc.agent_id.address_ids">
                                 <t t-set="add_obj" t-value="doc.agent_id.address_ids[0]"/>
                                 <span t-field="add_obj.address"/>
                                 <!--<span t-if="add_obj.street2" t-field="add_obj.street2"/>-->
@@ -87,7 +87,7 @@
                                 </t>
                             </t>
                             <t t-else="">
-                                <t t-set="add_obj" t-value="doc.agent_id.address_ids[0]"/>
+
                             </t>
                         </div>
                     </li>
@@ -105,7 +105,7 @@
 
             <div class="col-4" style="margin-bottom:2px; font-size:14px;">
                 <div>
-                    <ul class="list-inline">
+                    <ul class="list-inline" style="float:right; margin-bottom:0;">
                         <t t-if="doc_model == 'tt.agent.invoice' ">
                             <li><b>Date: </b><span t-field="doc.date_invoice" t-options ='{"format": "dd/MM/yyyy"}'/></li>
                         </t>
@@ -115,6 +115,7 @@
                         <t t-else="">
                             <li><b>Date: </b><span>-</span></li>
                         </t>
+                        <li><h4><strong><span t-field="doc.name"/></strong></h4></li>
                     </ul>
                 </div>
             </div>
@@ -122,90 +123,88 @@
         <!-- Border Judul-->
         <div style="width: 100%; border-bottom: 1px solid black; margin:0;"/>
         <!-- Base Info Booker dkk -->
-        <div class="row" style="margin-top:5px;">
-            <div class="col-12">
-                <h3><strong><span t-field="doc.name"/></strong></h3>
-            </div>
-        </div>
-        <div class="row" style="margin: 1px;">
-            <div class="col-6">
-                <table>
-                    <tr valign="top">
-                        <td style="width: 30px;"><strong>To</strong></td>
-                        <td style="width: 10px;"><strong>:</strong></td>
-                        <td>
-                            <t t-set="o_addr" t-value="doc.booker_id"/>
-                            <t t-call="tt_report_common.address_layout"/>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-            <div class="col-6">
-                <table>
-                    <tr>
-                        <td style="width: 150px;"><strong>Booker</strong></td>
-                        <td style="width: 20px;"><strong>:</strong></td>
-                        <td>
-                            <t t-if="doc.booker_id">
-                                <i>
-                                    <span t-field="doc.booker_id.first_name"/>
-                                    <span/>
-                                    <span t-field="doc.booker_id.last_name"/>
-                                </i>
-                            </t>
-                            <t t-if="not doc.booker_id">
-                                <i style="color: white;">...</i>
-                            </t>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><strong>Operator</strong></td>
-                        <td><strong>:</strong></td>
-                        <td>
-                            <t t-if="doc.create_uid">
-                                <i>
-                                    <span t-field="doc.create_uid.name"/>
-                                </i>
-                            </t>
-                            <t t-if="not doc.create_uid">
-                                <i style="color: white;">...</i>
-                            </t>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><strong>Due Date</strong></td>
-                        <td><strong>:</strong></td>
-                        <td>
-                            <t  t-if="doc.expired_date">
-                                <i t-field="doc.expired_date" t-options ='{"format": "dd/MM/yyyy"}'/>
-                            </t>
-                            <t t-if="not doc.expired_date">
-                                <i style="color: white;">...</i>
-                            </t>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><strong>Status</strong></td>
-                        <td><strong>:</strong></td>
-                        <td>
-                            <i t-field="doc.state"/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><strong>Notes</strong></td>
-                        <td><strong>:</strong></td>
-                        <td>
-                            <t t-if="doc.description">
-                                <i><span t-field="doc.description"/></i>
-                            </t>
-                            <t t-if="not doc.description">
-                                <i><span>-</span></i>
-                            </t>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        </div>
+        <table style="margin: 1px;">
+            <tr>
+                <td style="width:50px;">To</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px; vertical-align: top;" rowspan="5">
+                    <t t-set="o_addr" t-value="doc.booker_id"/>
+                    <t t-call="tt_report_common.address_layout"/>
+                </td>
+                <td style="width:100px;"/>
+                <td style="width:150px;">Booker</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px;">
+                    <t t-if="doc.booker_id">
+                        <i>
+                            <span t-field="doc.booker_id.first_name"/>
+                            <span/>
+                            <span t-field="doc.booker_id.last_name"/>
+                        </i>
+                    </t>
+                    <t t-if="not doc.booker_id">
+                        <i style="color: white;">...</i>
+                    </t>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:50px;"/>
+                <td style="width:10px;"/>
+                <td style="width:100px;"/>
+                <td style="width:150px;">Operator</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px;">
+                    <t t-if="doc.create_uid">
+                        <i>
+                            <span t-field="doc.create_uid.name"/>
+                        </i>
+                    </t>
+                    <t t-if="not doc.create_uid">
+                        <i style="color: white;">...</i>
+                    </t>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:50px;"/>
+                <td style="width:10px;"/>
+                <td style="width:100px;"/>
+                <td style="width:150px;">Due Date</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px;">
+                    <t  t-if="doc.expired_date">
+                        <i t-field="doc.expired_date" t-options ='{"format": "dd/MM/yyyy"}'/>
+                    </t>
+                    <t t-if="not doc.expired_date">
+                        <i style="color: white;">...</i>
+                    </t>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:50px;"/>
+                <td style="width:10px;"/>
+                <td style="width:100px;"/>
+                <td style="width:150px;">Status</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px;">
+                    <i t-field="doc.state"/>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:50px;"/>
+                <td style="width:10px;"/>
+                <td style="width:100px;"/>
+                <td style="width:150px;">Notes</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px;">
+                    <t t-if="'description' in doc.fields_get()">
+                        <i><span t-field="doc.description"/></i>
+                    </t>
+                    <t t-else="">
+                        <i><span>-</span></i>
+                    </t>
+                </td>
+            </tr>
+        </table>
     </template>
 
     <template id="external_layout_footer">
@@ -369,9 +368,9 @@
     <template id="reservation_airline_content_view">
         <!-- Main Params -->
         <div class="row mt32">
-            <h3>Itinerary Details</h3>
+            <h2>Itinerary Details</h2>
             <t t-foreach="doc.provider_booking_ids" t-as="provider_itin_id">
-                <table class="table table-condensed" style="border-right: 1px lightgray solid">
+                <table class="table table-sm" style="text-align:center;">
                     <thead>
                         <tr>
                             <th>PNR</th>
@@ -384,36 +383,32 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <t t-set="doc.segment_ids.filtered(lambda x:x.journey_id.id == provider_itin_id.id) " t-value="segment_ids"/>
-                        <t t-foreach="segment_ids" t-as="provider_segment_id">
+                        <t t-foreach="doc.segment_ids.filtered(lambda x:x.pnr == provider_itin_id.pnr)" t-as="provider_segment_id">
                             <tr>
                                 <td><span t-field="provider_segment_id.pnr"/></td>
                                 <td><span t-field="provider_segment_id.origin_id.name"/></td>
                                 <td><span t-field="provider_segment_id.destination_id.name"/></td>
                                 <td><span t-field="provider_segment_id.carrier_id.name"/></td>
-                                <td>
-                                    <span t-field="provider_segment_id.carrier_code"/>
-                                    <span/>
-                                    <span t-field="provider_segment_id.carrier_name"/>
-                                </td>
+                                <td><span t-field="provider_segment_id.name"/></td>
                                 <td><span t-field="provider_segment_id.departure_date" t-options ='{"format": "dd/MM/yyyy HH:mm:ss"}'/></td>
                                 <td><span t-field="provider_segment_id.arrival_date" t-options ='{"format": "dd/MM/yyyy HH:mm:ss"}'/></td>
                             </tr>
                         </t>
                     </tbody>
                 </table>
-                <h4>Passenger Details</h4>
-                <table class="table table-condensed" style="border-right: 1px lightgray solid">
+                <h5>Passenger Details</h5>
+                <table class="table table-sm" style="text-align:center;">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Pax Type</th>
-                            <th>Seat</th>
-                            <th>Baggage</th>
+                            <th width="200px">Ticket Number</th>
+                            <th width="400px">Name</th>
+                            <th width="100px">Pax Type</th>
+                            <th width="300px">Baggage</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr t-foreach="provider_itin_id.ticket_ids" t-as="psg_rec">
+                            <td><span t-field="psg_rec.ticket_number"/></td>
                             <td>
                                 <span t-field="psg_rec.passenger_id.title"/>
                                 <span/>
@@ -421,9 +416,8 @@
                                 <span/>
                                 <span t-field="psg_rec.passenger_id.last_name"/>
                             </td>
-                            <td><span t-field="psg_rec.passenger_id.pax_type"/></td>
-                            <td>-</td>
-                            <td>-</td>
+                            <td><span t-field="psg_rec.pax_type"/></td>
+                            <td>No Additional Baggage</td>
                         </tr>
                     </tbody>
                 </table>

@@ -56,7 +56,11 @@ class AgentInvoice(models.Model,test_to_dict.ToDict):
         return self.env[self.res_model_resv].browse(self.res_id_resv)
 
     def open_reservation(self):
-        form_id = self.env[self.res_model_resv].get_form_id()
+        try:
+            form_id = self.env[self.res_model_resv].get_form_id()
+        except:
+            form_id = self.env['ir.ui.view'].search([('type', '=', 'form'), ('model', '=', self.res_model_resv)], limit=1)
+            form_id = form_id[0] if form_id else False
 
         return {
             'type': 'ir.actions.act_window',

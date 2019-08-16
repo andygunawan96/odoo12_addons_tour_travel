@@ -36,12 +36,11 @@ class ResCity(models.Model):
     image_url = fields.Char('City Icon', help='resolution in 200x200')
 
     def get_provider_code(self, city_id, provider_id):
-        a = self.env['provider.code'].sudo().search([('city_id', '=', city_id), ('provider_id', '=', provider_id)], limit=1)
+        a = self.env['tt.provider.code'].sudo().search([('city_id', '=', city_id), ('provider_id', '=', provider_id)], limit=1)
         return a.code
 
     def get_city_country_provider_code(self, city_id, provider_code):
-        provider_id = self.env['res.partner'].sudo().search([('provider_code', '=', provider_code)], limit=1).id
-        # provider_id = self.env['tt.master.vendor'].sudo().search([('provider', '=', provider_code)]).id
+        provider_id = self.env['tt.provider'].sudo().search([('code', '=', provider_code)], limit=1).id
         a = self.get_provider_code(city_id, provider_id)
         country_id = self.browse(city_id).country_id.id
         b = self.env['res.country'].get_provider_code(country_id, provider_id)
@@ -51,11 +50,11 @@ class ResCity(models.Model):
         city_id = self.search([('name', '=', city_name)], limit=1)
         if not city_id:
             city_id = self.create({'name': city_name, 'state_id': state_id,})
-        provider_code_id = self.env['provider.code'].search([('city_id', '=', city_id.id), ('provider_id', '=', provider_id)], limit= 1)
+        provider_code_id = self.env['tt.provider.code'].search([('city_id', '=', city_id.id), ('provider_id', '=', provider_id)], limit= 1)
         if provider_code_id:
             provider_code_id.code = provider_uid
         else:
-            self.env['provider.code'].create({
+            self.env['tt.provider.code'].create({
                 'code': provider_uid,
                 'provider_id': provider_id,
                 'city_id': city_id.id,
@@ -69,7 +68,7 @@ class ResCountry(models.Model):
     provider_city_ids = fields.One2many('provider.code', 'country_id', 'Provider External Code')
 
     def get_provider_code(self, country_id, provider_id):
-        a = self.env['provider.code'].search([('country_id', '=', country_id), ('provider_id', '=', provider_id)], limit= 1)
+        a = self.env['tt.provider.code'].search([('country_id', '=', country_id), ('provider_id', '=', provider_id)], limit= 1)
         return a.code
 
     def update_provider_data(self, country_name, provider_uid, provider_id, continent_id=False):
@@ -79,11 +78,11 @@ class ResCountry(models.Model):
             country_id = self.create({'name': country_name,})
         if country_id.id == 101:
             pass
-        provider_code_id = self.env['provider.code'].search([('country_id', '=', country_id.id), ('provider_id', '=', provider_id)], limit= 1)
+        provider_code_id = self.env['tt.provider.code'].search([('country_id', '=', country_id.id), ('provider_id', '=', provider_id)], limit= 1)
         if provider_code_id:
             provider_code_id.code = provider_uid
         else:
-            self.env['provider.code'].create({
+            self.env['tt.provider.code'].create({
                 'code': provider_uid,
                 'provider_id': provider_id,
                 'country_id': country_id.id,
@@ -117,7 +116,7 @@ class CountryState(models.Model):
     code = fields.Char(string='State Code', required=False)
 
     def get_provider_code(self, state_id, provider_id):
-        a = self.env['provider.code'].sudo().search([('state_id', '=', state_id.id), ('provider_id', '=', provider_id)], limit=1)
+        a = self.env['tt.provider.code'].sudo().search([('state_id', '=', state_id.id), ('provider_id', '=', provider_id)], limit=1)
         return a.code
 
     def get_city_country_provider_code(self, state_id, provider_code):
@@ -136,11 +135,11 @@ class CountryState(models.Model):
                 # state_id = self.create({'name': state_name, 'country_id': country_id, 'code': str(provider_id) + '_' + str(country_id) + '_' + state_name[:2] + state_name[-2:],})
             except:
                 state_id = self.create({'name': state_name, 'country_id': country_id,})
-        provider_code_id = self.env['provider.code'].search([('state_id', '=', state_id.id), ('provider_id', '=', provider_id)], limit= 1)
+        provider_code_id = self.env['tt.provider.code'].search([('state_id', '=', state_id.id), ('provider_id', '=', provider_id)], limit= 1)
         if provider_code_id:
             provider_code_id.code = provider_uid
         else:
-            self.env['provider.code'].create({
+            self.env['tt.provider.code'].create({
                 'code': provider_uid,
                 'provider_id': provider_id,
                 'state_id': state_id.id,
@@ -154,7 +153,7 @@ class Hotel(models.Model):
     provider_hotel_ids = fields.One2many('provider.code', 'hotel_id', 'Provider External Code')
 
     def get_provider_code(self, hotel_id, provider_id):
-        a = self.env['provider.code'].search([('hotel_id', '=', hotel_id), ('provider_id', '=', provider_id)], limit= 1)
+        a = self.env['tt.provider.code'].search([('hotel_id', '=', hotel_id), ('provider_id', '=', provider_id)], limit= 1)
         return a.code
 
 
@@ -164,7 +163,7 @@ class HotelFacility(models.Model):
     provider_ids = fields.One2many('provider.code', 'facility_id', 'Provider External Code')
 
     def get_provider_code(self, facility_id, provider_id):
-        a = self.env['provider.code'].search([('facility_id', '=', facility_id), ('provider_id', '=', provider_id)], limit= 1)
+        a = self.env['tt.provider.code'].search([('facility_id', '=', facility_id), ('provider_id', '=', provider_id)], limit= 1)
         return a.code
 
 
@@ -174,5 +173,5 @@ class HotelType(models.Model):
     provider_ids = fields.One2many('provider.code', 'type_id', 'Provider External Code')
 
     def get_provider_code(self, type_id, provider_id):
-        a = self.env['provider.code'].search([('type_id', '=', type_id), ('provider_id', '=', provider_id)], limit= 1)
+        a = self.env['tt.provider.code'].search([('type_id', '=', type_id), ('provider_id', '=', provider_id)], limit= 1)
         return a.code

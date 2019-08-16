@@ -23,18 +23,18 @@ class HotelReservation(models.Model):
     room_count = fields.Integer('Room Qty', default=1, readonly=True, states={'draft': [('readonly', False)]})
 
     # Booking Progress
-    state = fields.Selection([('draft', 'Draft'), ('confirm', 'Hold Booking'), ('issued', 'Issue'),
-                              ('wait', 'Waiting Vendor Validation'), ('refund', 'Refund'), ('fail', 'Failed'),
-                              ('cancel', 'Canceled'), ('done', 'Done')], default='draft', help='''
-                                  Draft: Draft Reservation; 
-                                  Confirm: Hold Reservation; 
-                                  Issued: Resv. already paid, Vendor Already confirm the booking; 
-                                  Wait: Resv. already paid, Waiting vendor validate booking;
-                                  Refund: Refund Ledger (State: Issued= Cancellation Policy, Wait=No CP, Failed=No CP);
-                                  Failed: Resv. Failed to Vendor;
-                                  Canceled: Resv. Canceled by agent;
-                                  Done: Resv. Issued, Person already;
-                              ''')
+    # state = fields.Selection([('draft', 'Draft'), ('confirm', 'Hold Booking'), ('issued', 'Issue'),
+    #                           ('wait', 'Waiting Vendor Validation'), ('refund', 'Refund'), ('fail', 'Failed'),
+    #                           ('cancel', 'Canceled'), ('done', 'Done')], default='draft', help='''
+    #                               Draft: Draft Reservation;
+    #                               Confirm: Hold Reservation;
+    #                               Issued: Resv. already paid, Vendor Already confirm the booking;
+    #                               Wait: Resv. already paid, Waiting vendor validate booking;
+    #                               Refund: Refund Ledger (State: Issued= Cancellation Policy, Wait=No CP, Failed=No CP);
+    #                               Failed: Resv. Failed to Vendor;
+    #                               Canceled: Resv. Canceled by agent;
+    #                               Done: Resv. Issued, Person already;
+    #                           ''')
     # provider_booking_ids = fields.One2many('tt.tb.provider.hotel', 'booking_id', string='Provider Booking',
     #                                        readonly=True, states={'draft': [('readonly', False)]})
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', default=lambda
@@ -56,6 +56,7 @@ class HotelReservation(models.Model):
     # Provider Data & Booking Information
     provider_data = fields.Text('Provider Data', help='Catat Data penting dari provider')
     special_req = fields.Text('Special Request')
+    description = fields.Text('Description')
 
     # Invoice & Payment
     sale_service_charge_ids = fields.One2many('tt.service.charge', 'resv_hotel_id', 'Service Charges', ondelete='cascade',
@@ -132,11 +133,15 @@ class HotelReservation(models.Model):
 
     @api.multi
     def do_print_voucher(self):
-        data = {
-            'hotel_reservation_id': self.id,
-            'form': self.read()
-        }
-        return self.env["report"].get_action(self, "tt_hotel.report_hotelreservation_ticket", data)
+        if not self.agent_id.logo:
+            raise UserError(_("Your agent have to set their logo."))
+
+        datas = {'ids': self.env.context.get('active_ids', [])}
+        # res = self.read(['price_list', 'qty1', 'qty2', 'qty3', 'qty4', 'qty5'])
+        res = self.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        return self.env.ref('tt_report_common.action_report_printout_invoice').report_action([], data=datas)
 
     # @api.depends('room_detail_ids.commission_amount', 'room_detail_ids.qty')
     def _compute_total_commission_amount(self):
@@ -161,9 +166,9 @@ class HotelReservation(models.Model):
         self.ensure_one()
         provider_list = []
         for rec in self.room_detail_ids:
-            if rec.name not in provider_list:
+            if rec.name and rec.name not in provider_list:
                 provider_list.append(rec.name)
-            if rec.issued_name not in provider_list:
+            if rec.issued_name and rec.issued_name not in provider_list:
                 provider_list.append(rec.issued_name)
         return ','.join(provider_list)
 
@@ -251,9 +256,9 @@ class HotelReservation(models.Model):
             raise UserError('Current Balance for Agent:' + self.agent_id.name + ' is ' + str(self.agent_id.actual_balance))
 
     def action_failed(self, msg=''):
-        self.state='fail'
-        self.fail_message= msg
-        return True
+        self.state = 'fail_issued'
+        self.error_msg = msg
+        return 'Resv:' + self.name + ' is set to Failed'
 
     @api.one
     def action_set_to_issued(self, kwargs=False):
@@ -261,7 +266,7 @@ class HotelReservation(models.Model):
 
     @api.one
     def action_set_to_failed(self, kwargs=False):
-        self.state = 'fail'
+        self.state = 'fail_issued'
 
     @api.one
     def action_issued(self, kwargs=False):
@@ -283,15 +288,33 @@ class HotelReservation(models.Model):
             self.create_agent_invoice()
             self.state = 'issued'
             self.calc_voucher_name()
-            return is_enough
-        else:
+        return is_enough
+
+    def action_issued_backend(self, kwargs=False):
+        a = self.action_issued()
+        if not a:
             raise UserError('Balance in not enough to issued: ' + self.name + '(' + str(self.total) + ')' +
                             ' Current Balance for Agent:' + self.agent_id.name + ' is ' +
                             str(self.agent_id.balance))
+        else:
+            raise UserError('Order has been issued')
+
 
     @api.one
-    def action_done(self):
-        self.state = 'done'
+    def action_done(self, issued_response={}):
+        state = 'done'
+        for room_detail in self.room_detail_ids:
+            if issued_response.get(room_detail.provider_id.code):
+                provider = issued_response[room_detail.provider_id.code]
+                room_detail.name = provider['booking_code']
+                room_detail.issued_name = provider['issued_code']
+                # room_detail.state = provider['status']
+            else:
+                if not room_detail.issued_name:
+                    state = 'partial_issued'
+        self.state = state
+        if state == 'done':
+            self.action_create_invoice()
 
     def _prepare_invoice(self):
         a = {

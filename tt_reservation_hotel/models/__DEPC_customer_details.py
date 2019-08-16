@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 class CustomerDetails(models.Model):
     _inherit = 'tt.customer.details'
 
-    hotel_reservation_id = fields.Many2one('tt.hotel.reservation', 'Hotel Book ID')
+    hotel_reservation_id = fields.Many2one('tt.reservation.hotel', 'Hotel Book ID')
 
     booking_hotel_count = fields.Integer('Booking Count', compute='_booking_hotel_count', readonly=True)
 
@@ -13,7 +13,7 @@ class CustomerDetails(models.Model):
     def create(self, values):
         hotel_id = values.get('hotel_reservation_id')
         if hotel_id:
-            hotel_book_id = self.env['tt.hotel.reservation'].search([('id', '=', hotel_id)])
+            hotel_book_id = self.env['tt.reservation.hotel'].search([('id', '=', hotel_id)])
             agent_id = hotel_book_id.agent_id.id
             values['agent_id'] = agent_id
         return super(CustomerDetails, self).create(values)
