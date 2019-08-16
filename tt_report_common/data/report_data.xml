@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <report
+            string="Invoice"
+            id="action_report_printout_invoice"
+            model="tt.report.common"
+            report_type="qweb-html"
+            name="tt_report_common.printout_invoice"
+            file="tt_report_common.printout_invoice"
+            paperformat="tt_report_common.paperformat_A4"
+        />
+    </data>
+</odoo>
