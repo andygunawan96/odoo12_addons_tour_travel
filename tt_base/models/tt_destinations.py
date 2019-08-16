@@ -24,7 +24,7 @@ class Destinations(models.Model):
     code = fields.Char('Code', help="Can be filled with IATA code", required=True)
     display_name = fields.Char('Display Name',store=True)
     country_id = fields.Many2one('res.country', 'Country')
-    city = fields.Char('City', required=True)
+    city = fields.Char('City', required=True, default='')
     icao = fields.Char('ICAO', help="for airline : 4-letter ICAO code")
     latitude = fields.Float('Latitude Degree', digits=(3,7))
     longitude = fields.Float('Longitude Degree', digits=(3,7))
