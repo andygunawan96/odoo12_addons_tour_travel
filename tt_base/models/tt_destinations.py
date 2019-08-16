@@ -39,13 +39,13 @@ class Destinations(models.Model):
     @api.model
     def create(self, vals_list):
         vals_list.update({
-            'display_name': '%s - %s ( %s )' % (vals_list['city'], vals_list['name'], vals_list['code'])
+            'display_name': '%s - %s ( %s )' % (vals_list.get('city', ''), vals_list['name'], vals_list['code'])
         })
         return super(Destinations, self).create(vals_list)
 
     def write(self, vals):
         vals.update({
-            'display_name': '%s - %s ( %s )' % (vals.get('city',self.city), vals.get('name',self.name),vals.get('code',self.code))
+            'display_name': '%s - %s ( %s )' % (vals.get('city', self.city), vals.get('name',self.name),vals.get('code', self.code))
         })
         super(Destinations, self).write(vals)
 
