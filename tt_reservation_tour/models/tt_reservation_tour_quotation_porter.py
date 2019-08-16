@@ -3,6 +3,7 @@ from odoo import api, fields, models, _
 
 class TourQuotationPorter(models.Model):
     _name = 'tt.reservation.tour.quotation.porter'
+    _description = 'Rodex Model'
 
     # tour_quotation_id = fields.Char('Tour Package Quotation')
     tour_quotation_id = fields.Many2one('tt.reservation.tour.package.quotation', 'Tour Quotation')

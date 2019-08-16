@@ -3,6 +3,7 @@ from odoo import api, fields, models, _
 
 class TtProvider(models.Model):
     _name = 'tt.provider'
+    _description = 'Rodex Model'
 
     name = fields.Char('Name', required=True)
     alias = fields.Char(string='Alias')

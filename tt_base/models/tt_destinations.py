@@ -18,6 +18,7 @@ class Destinations(models.Model):
     _name = 'tt.destinations'
     _rec_name = 'display_name'
     _order = 'display_name'
+    _description = 'Rodex Model'
 
     name = fields.Char('Name', required=True)
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', required=True)

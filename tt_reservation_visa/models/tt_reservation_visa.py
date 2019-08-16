@@ -31,6 +31,7 @@ class TtVisa(models.Model):
     _name = 'tt.reservation.visa'
     _inherit = ['tt.reservation', 'tt.history']
     _order = 'issued_date desc'
+    _description = 'Rodex Model'
 
     provider_type_id = fields.Many2one('tt.provider.type', required=True, readonly=True,
                                        states={'draft': [('readonly', False)]}, string='Transaction Type',

@@ -5,6 +5,7 @@ import logging, traceback
 
 class TransportBookActivityLine(models.Model):
     _name = 'tt.reservation.activity.line'
+    _description = 'Rodex Model'
 
     reservation_activity_id = fields.Many2one('tt.reservation.activity', 'Activity Booking')
     passenger_id = fields.Many2one('tt.customer', 'Passenger')
@@ -23,6 +24,7 @@ class TransportBookActivityLine(models.Model):
 
 class TransportBookActivityPrice(models.Model):
     _name = 'tt.activity.booking.price'
+    _description = 'Rodex Model'
 
     reservation_activity_id = fields.Many2one('tt.reservation.activity', 'Activity Booking')
     charge_code = fields.Char('Charge Code')

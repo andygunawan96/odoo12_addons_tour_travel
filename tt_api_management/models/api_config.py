@@ -4,6 +4,7 @@ from ...tools import variables
 
 class ApiConfig(models.Model):
     _name = 'tt.api.config'
+    _description = 'Rodex Model'
 
     provider_type_id = fields.Many2one(comodel_name='tt.provider.type', string='Provider Type', required=True)
     active = fields.Boolean(string='Active', default=True)

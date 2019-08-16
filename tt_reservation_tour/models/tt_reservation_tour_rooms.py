@@ -8,6 +8,7 @@ BED_TYPE = [
 
 class TourRooms(models.Model):
     _name = 'tt.reservation.tour.rooms'
+    _description = 'Rodex Model'
 
     name = fields.Char('Name', required=True, default='Standard')
     bed_type = fields.Selection(BED_TYPE, 'Bed Type', default='double', required=True)

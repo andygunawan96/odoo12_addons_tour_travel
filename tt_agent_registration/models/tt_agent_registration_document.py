@@ -8,6 +8,7 @@ STATE = [
 
 class AgentRegistrationDocument(models.Model):
     _name = 'tt.agent.registration.document'
+    _description = 'Rodex Model'
 
     registration_document_id = fields.Many2one('tt.agent.registration', 'Agent Registration')
     opening_document_id = fields.Many2one('tt.agent.registration', 'Open Document')

@@ -9,6 +9,7 @@ EXTRA_TYPE = [
 
 class TourQuotationExtra(models.Model):
     _name = 'tt.reservation.tour.quotation.extra'
+    _description = 'Rodex Model'
 
     # tour_quotation_id = fields.Char('Tour Quotation')
     tour_quotation_id = fields.Many2one('tt.reservation.tour.package.quotation', 'Tour Quotation')

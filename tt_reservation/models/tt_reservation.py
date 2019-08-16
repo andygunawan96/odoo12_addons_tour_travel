@@ -6,6 +6,7 @@ _logger = logging.getLogger(__name__)
 
 class TtReservation(models.Model):
     _name = 'tt.reservation'
+    _description = 'Rodex Model'
 
     name = fields.Char('Order Number', index=True, default='New', readonly=True)
     pnr = fields.Char('PNR', readonly=True, states={'draft': [('readonly', False)]})

@@ -29,6 +29,7 @@ PROCESS_TYPE = [
 class VisaPricelist(models.Model):
     _inherit = ['tt.history']
     _name = 'tt.reservation.visa.pricelist'
+    _description = 'Rodex Model'
 
     name = fields.Char('Name', required=True, default='New')
     description = fields.Char('Description')

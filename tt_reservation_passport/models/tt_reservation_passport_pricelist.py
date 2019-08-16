@@ -23,6 +23,7 @@ PROCESS_TYPE = [
 class PassportPricelist(models.Model):
     _inherit = ['tt.history']
     _name = 'tt.reservation.passport.pricelist'
+    _description = 'Rodex Model'
 
     name = fields.Char('Name', required=True, default='New')
     description = fields.Char('Description')

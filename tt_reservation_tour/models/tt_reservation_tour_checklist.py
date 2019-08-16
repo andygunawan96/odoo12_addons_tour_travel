@@ -3,6 +3,7 @@ from odoo import api, fields, models, _
 
 class TourChecklist(models.Model):
     _name = 'tt.reservation.tour.checklist'
+    _description = 'Rodex Model'
 
     item = fields.Char('Item')
     description = fields.Char('Description')

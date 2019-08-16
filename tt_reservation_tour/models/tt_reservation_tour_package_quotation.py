@@ -16,6 +16,7 @@ PAX_TYPE = [
 
 class TourPackageQuotation(models.Model):
     _name = 'tt.reservation.tour.package.quotation'
+    _description = 'Rodex Model'
 
     state = fields.Selection(STATE, 'State', default='draft')
 

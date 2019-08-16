@@ -11,6 +11,7 @@ _gw_con = GatewayConnector()
 
 class TtSSRCategory(models.Model):
     _name = 'tt.ssr.category'
+    _description = 'Rodex Model'
 
     name = fields.Char('Name', required=True)
     code = fields.Char('Code', required=True)

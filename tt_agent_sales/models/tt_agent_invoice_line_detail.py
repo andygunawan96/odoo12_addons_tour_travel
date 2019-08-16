@@ -3,6 +3,8 @@ from odoo import api,models,fields
 class AgentInvoiceLineDetail(models.Model):
     _name = "tt.agent.invoice.line.detail"
     _rec_name = 'desc'
+    _description = 'Rodex Model'
+
     desc = fields.Text('Description')
     price_unit = fields.Monetary('Price')
     quantity = fields.Integer('Quantity')

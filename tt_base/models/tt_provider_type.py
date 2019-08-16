@@ -4,6 +4,7 @@ from ...tools import variables
 
 class ProviderType(models.Model):
     _name = 'tt.provider.type'
+    _description = 'Rodex Model'
 
     name = fields.Char(string='Name', required=True)
     code = fields.Char(string='Code', required=True)

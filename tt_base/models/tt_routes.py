@@ -18,6 +18,7 @@ TRANSPORT_TYPE = [('airline', 'Airline'),
 
 class Routes(models.Model):
     _name = 'tt.routes'
+    _description = 'Rodex Model'
 
     name = fields.Char('Name', help="Usage for flight number, train name", required=True)
     # route_number = fields.Char('Route Number', required=True)

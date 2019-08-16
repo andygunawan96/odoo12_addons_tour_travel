@@ -27,6 +27,7 @@ STATE_PASSPORT = [
 class TtPassport(models.Model):
     _name = 'tt.reservation.passport'
     _inherit = ['tt.reservation', 'tt.history']
+    _description = 'Rodex Model'
 
     provider_type_id = fields.Many2one('tt.provider.type', required=True, readonly=True,
                                        states={'draft': [('readonly', False)]}, string='Transaction Type',

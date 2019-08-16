@@ -28,6 +28,7 @@ STATE = [
 
 class AgentRegistration(models.Model):
     _name = 'tt.agent.registration'
+    _description = 'Rodex Model'
     _order = 'registration_num desc'
 
     name = fields.Char('Name', required=True, default='')

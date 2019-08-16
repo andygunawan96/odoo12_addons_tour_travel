@@ -5,6 +5,7 @@ _logger = logging.getLogger(__name__)
 
 class ActivityCategory(models.Model):
     _name = 'tt.activity.category'
+    _description = 'Rodex Model'
 
     name = fields.Char('Name')
     # uuid = fields.Char('Uuid')
@@ -17,6 +18,7 @@ class ActivityCategory(models.Model):
 
 class ActivityCategoryLines(models.Model):
     _name = 'tt.activity.category.lines'
+    _description = 'Rodex Model'
 
     category_id = fields.Many2one('tt.activity.category', 'Category ID')
     uuid = fields.Char('Uuid')

@@ -3,6 +3,7 @@ from odoo import api, fields, models, _
 
 class ProviderOffline(models.Model):
     _name = 'tt.tb.provider.offline'
+    _description = 'Rodex Model'
 
     _rec_name = 'pnr'
     # _order = 'sequence'

@@ -16,6 +16,7 @@ PAYMENT_TYPE = [
 
 class AgentRegistrationPayment(models.Model):
     _name = 'tt.agent.registration.payment'
+    _description = 'Rodex Model'
 
     state = fields.Selection(STATE, 'State', default='draft')
     agent_registration_id = fields.Many2one('tt.agent.registration', 'Request')

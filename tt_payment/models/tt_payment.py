@@ -5,7 +5,8 @@ import datetime
 class PaymentTransaction(models.Model):
     _name = 'tt.payment'
     _rec_name = 'display_name_1'
-    
+    _description = 'Rodex Model'
+
     name = fields.Char('Name', default='New', help='Sequence number set on Confirm state example:PAY.XXX')
     # pay_amount = fields.Monetary('Payment amount', ) # yang bisa dipakai membayar
     # unique_amount = fields.Monetary('Unique Number', help='For validating direct transfer') # dimasukkan ke payment

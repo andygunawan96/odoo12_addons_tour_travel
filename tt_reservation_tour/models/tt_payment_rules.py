@@ -5,6 +5,7 @@ from addons import decimal_precision as dp
 class PaymentRules(models.Model):
     _name = 'tt.payment.rules'
     _order = 'due_date'
+    _description = 'Rodex Model'
 
     name = fields.Char('Name', required=True, default='Payment')
     description = fields.Char('Description')

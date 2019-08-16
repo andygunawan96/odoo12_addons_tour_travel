@@ -9,6 +9,7 @@ PAX_TYPE = [
 
 class TourBookingPrice(models.Model):
     _name = 'tt.reservation.tour.price'
+    _description = 'Rodex Model'
 
     # name = fields.Char()
     tour_id = fields.Many2one('tt.reservation.tour', 'Tour Booking')

@@ -15,6 +15,7 @@ BED_TYPE = [
 
 class TourBookingLine(models.Model):
     _name = 'tt.reservation.tour.line'
+    _description = 'Rodex Model'
 
     tour_id = fields.Many2one('tt.reservation.tour', 'Tour Booking')
 

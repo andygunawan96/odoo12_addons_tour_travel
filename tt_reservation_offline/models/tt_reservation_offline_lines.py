@@ -40,6 +40,7 @@ MEAL_TYPE = [
 
 class IssuedOfflineLines(models.Model):
     _name = 'tt.reservation.offline.lines'
+    _description = 'Rodex Model'
 
     pnr = fields.Char('PNR', readonly=True, states={'confirm': [('readonly', False)]})
 

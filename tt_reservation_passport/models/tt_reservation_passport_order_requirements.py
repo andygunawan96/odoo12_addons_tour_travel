@@ -4,6 +4,7 @@ from datetime import datetime
 
 class PassportOrderRequirements(models.Model):
     _name = 'tt.reservation.passport.order.requirements'
+    _description = 'Rodex Model'
 
     requirement_id = fields.Many2one('tt.reservation.passport.requirements', 'Requirement', readonly=1)
     to_passenger_id = fields.Many2one('tt.reservation.passport.order.passengers', 'Passenger', readonly=1)

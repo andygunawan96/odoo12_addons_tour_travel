@@ -9,6 +9,7 @@ _logger = logging.getLogger(__name__)
 
 class PricingAgent(models.Model):
     _name = 'tt.pricing.agent'
+    _description = 'Rodex Model'
 
     name = fields.Char('Name', readonly=1)
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', required=True)

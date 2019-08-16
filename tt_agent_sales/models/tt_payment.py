@@ -3,6 +3,7 @@ from odoo import exceptions
 
 class TtPaymentInvoiceRel(models.Model):
     _name = 'tt.payment.invoice.rel'
+    _description = 'Rodex Model'
 
     invoice_id = fields.Many2one('tt.agent.invoice', 'Invoice')
     payment_id = fields.Many2one('tt.payment', 'Payment', required=True, domain=[('residual_amount','>',0),('state','=','validated')])

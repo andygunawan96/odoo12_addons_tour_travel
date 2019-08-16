@@ -3,6 +3,7 @@ from odoo.exceptions import UserError
 
 class TtBillingStatement(models.Model):
     _name = 'tt.billing.statement'
+    _description = 'Rodex Model'
 
     name = fields.Char('Number', required=True, readonly=True, default='New')
     date = fields.Date('Date', index=True, default=fields.Date.context_today, required=True, readonly=True,

@@ -14,6 +14,7 @@ SESSION_NT = session.Session()
 
 class ActivitySyncProducts(models.TransientModel):
     _name = "activity.sync.product.wizard"
+    _description = 'Rodex Model'
 
     provider_name = fields.Char(string="Provider")
     add_parameter_int = fields.Integer('Additional Parameter (Int)')
@@ -22,6 +23,7 @@ class ActivitySyncProducts(models.TransientModel):
 
 class MasterActivity(models.Model):
     _name = 'tt.master.activity'
+    _description = 'Rodex Model'
 
     uuid = fields.Char('Uuid')
     name = fields.Char('Activity Name')

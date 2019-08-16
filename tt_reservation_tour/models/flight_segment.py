@@ -15,6 +15,7 @@ CLASS_OF_SERVICE = [
 
 class FlightSegment(models.Model):
     _name = 'flight.segment'
+    _description = 'Rodex Model'
 
     journey_type = fields.Selection(JOURNEY_TYPE, 'Journey Type', default='DP')
 

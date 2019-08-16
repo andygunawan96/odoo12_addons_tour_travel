@@ -42,6 +42,7 @@ class ActivityPricesInh(models.Model):
 
 class ActivityResendVoucher(models.TransientModel):
     _name = "activity.voucher.wizard"
+    _description = 'Rodex Model'
 
     def get_default_email(self):
         context = self.env.context
@@ -82,6 +83,7 @@ class ActivityBooking(models.Model):
     _inherit = ['tt.reservation']
     _name = 'tt.reservation.activity'
     _order = 'id DESC'
+    _description = 'Rodex Model'
 
     booking_uuid = fields.Char('Booking UUID')
 

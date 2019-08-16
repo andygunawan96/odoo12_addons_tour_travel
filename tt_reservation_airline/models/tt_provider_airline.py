@@ -7,6 +7,7 @@ class TtProviderAirline(models.Model):
     _name = 'tt.provider.airline'
     _rec_name = 'pnr'
     _order = 'departure_date'
+    _description = 'Rodex Model'
 
     pnr = fields.Char('PNR')
     pnr2 = fields.Char('PNR2')

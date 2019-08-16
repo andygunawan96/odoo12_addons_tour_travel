@@ -6,6 +6,7 @@ import traceback
 
 class PricingProvider(models.Model):
     _name = 'tt.pricing.provider'
+    _description = 'Rodex Model'
 
     name = fields.Char('Name', readonly=1)
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', required=True)

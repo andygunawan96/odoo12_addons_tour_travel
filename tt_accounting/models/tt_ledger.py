@@ -20,6 +20,7 @@ LEDGER_TYPE = [
 class Ledger(models.Model):
     _name = 'tt.ledger'
     _order = 'id DESC'
+    _description = 'Rodex Model'
     # _order = 'date, id'
 
     name = fields.Char('Name', copy=False)

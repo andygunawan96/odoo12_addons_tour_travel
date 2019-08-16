@@ -18,6 +18,7 @@ STATE = [
 
 class IssuedOfflinePassenger(models.Model):
     _name = 'tt.reservation.offline.passenger'
+    _description = 'Rodex Model'
 
     booking_id = fields.Many2one('tt.reservation.offline', 'Issued Offline')
     passenger_id = fields.Many2one('tt.customer', 'Passengers', readonly=True,

@@ -4,6 +4,7 @@ import html
 
 class SkippedKeys(models.Model):
     _name = 'tt.skipped.keys'
+    _description = 'Rodex Model'
 
     model_name = fields.Char('Model Name')
     field_name = fields.Char('Field Name')

@@ -18,6 +18,7 @@ PAYMENT_METHOD = [
 class TourBooking(models.Model):
     _inherit = ['tt.reservation']
     _name = 'tt.reservation.tour'
+    _description = 'Rodex Model'
 
     tour_id = fields.Many2one('tt.reservation.tour.pricelist', 'Tour ID')
     # tour_id = fields.Char('Tour ID')

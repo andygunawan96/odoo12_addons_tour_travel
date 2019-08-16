@@ -10,6 +10,7 @@ SESSION_NT = session.Session()
 
 class MasterBookingOption(models.Model):
     _name = 'tt.activity.booking.option'
+    _description = 'Rodex Model'
 
     uuid = fields.Char('Uuid')
     name = fields.Char('Name')
@@ -25,6 +26,7 @@ class MasterBookingOption(models.Model):
 
 class BookingOptionLine(models.Model):
     _name = 'tt.activity.booking.option.line'
+    _description = 'Rodex Model'
 
     booking_option_id = fields.Many2one('tt.activity.booking.option', 'Booking Option', ondelete="cascade")
     label = fields.Char('Label')
@@ -35,6 +37,7 @@ class BookingOptionLine(models.Model):
 
 class MasterTimeslot(models.Model):
     _name = 'tt.activity.master.timeslot'
+    _description = 'Rodex Model'
 
     product_type_id = fields.Many2one('tt.master.activity.lines', 'Product Type', ondelete="cascade")
     uuid = fields.Char('Uuid')
@@ -44,6 +47,7 @@ class MasterTimeslot(models.Model):
 
 class MasterLocations(models.Model):
     _name = 'tt.activity.master.locations'
+    _description = 'Rodex Model'
 
     city_id = fields.Many2one('res.city', 'City')
     city_name = fields.Char('City Name', related='city_id.name', store=True)
@@ -55,6 +59,7 @@ class MasterLocations(models.Model):
 
 class MasterImages(models.Model):
     _name = 'tt.activity.master.images'
+    _description = 'Rodex Model'
 
     activity_id = fields.Many2one('tt.master.activity', 'Activity ID', ondelete="cascade")
     photos_url = fields.Char('Main Url')

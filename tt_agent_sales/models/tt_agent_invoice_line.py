@@ -6,6 +6,7 @@ class AgentInvoice(models.Model,test_to_dict.ToDict):
 
     _name = 'tt.agent.invoice.line'
     _rec_name = 'name'
+    _description = 'Rodex Model'
 
     name = fields.Char('Name')
     name_inv = fields.Char('Name',related="invoice_id.name")

@@ -4,6 +4,7 @@ from ...tools import variables
 
 class ApiProvider(models.Model):
     _name = 'tt.api.provider'
+    _description = 'Rodex Model'
 
     config_id = fields.Many2one(comodel_name='tt.api.config', string='Config')
     provider_id = fields.Many2one(comodel_name='tt.provider', string='Provider', required=1)
