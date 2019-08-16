@@ -36,7 +36,7 @@ class TtCustomerParent(models.Model):
 
     @api.model
     def create(self,vals_list):
-        vals_list['seq_id'] = self.env['ir_sequence'].next_by_code('')
+        vals_list['seq_id'] = self.env['ir.sequence'].next_by_code('')
         super(TtCustomerParent, self).create(vals_list)
 
     #ledger history

@@ -79,7 +79,7 @@ class TtProviderAirline(models.Model):
     def action_failed_booked_api_airline(self):
         for rec in self:
             rec.write({
-                'state': 'fail_booking'
+                'state': 'fail_booked'
             })
 
     def action_failed_issued_api_airline(self):
