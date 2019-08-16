@@ -250,7 +250,7 @@ class Routes(models.Model):
                     'code': req_data['carrier_code'],
                     'provider_type_id': provider_obj.id,
                 }
-                carrier_obj = self.env['tt.destinations'].sudo().create(carrier_values)
+                carrier_obj = self.env['tt.transport.carrier'].sudo().create(carrier_values)
                 values = {
                     'code': 9901,
                     'title': 'New Carrier Created',
