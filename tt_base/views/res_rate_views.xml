@@ -2,9 +2,9 @@
 <odoo>
     <data>
 
-        <record id="res_rate_form_view" model="ir.ui.view">
-            <field name="name">res.rate.form.view</field>
-            <field name="model">res.rate</field>
+        <record id="tt_provider_rate_form_view" model="ir.ui.view">
+            <field name="name">tt.provider.rate.form.view</field>
+            <field name="model">tt.provider.rate</field>
             <field name="arch" type="xml">
                 <form string="Res Rate Form">
                     <sheet>
@@ -33,9 +33,9 @@
             </field>
         </record>
 
-        <record id="res_rate_tree_view" model="ir.ui.view">
-            <field name="name">res.rate.tree.view</field>
-            <field name="model">res.rate</field>
+        <record id="tt_provider_rate_tree_view" model="ir.ui.view">
+            <field name="name">tt.provider.rate.tree.view</field>
+            <field name="model">tt.provider.rate</field>
             <field name="arch" type="xml">
                 <tree string="Res Rate Tree">
                     <field name="provider_id"/>
@@ -47,10 +47,10 @@
             </field>
         </record>
 
-        <record id="res_rate_action_view" model="ir.actions.act_window">
-            <field name="name">Rate</field>
+        <record id="tt_provider_rate_action_view" model="ir.actions.act_window">
+            <field name="name">Provider Rate</field>
             <field name="view_type">form</field>
-            <field name="res_model">res.rate</field>
+            <field name="res_model">tt.provider.rate</field>
             <field name="view_mode">tree,form</field>
             <field name="help" type="html">
               <p class="oe_view_nocontent_create">
@@ -61,8 +61,8 @@
             </field>
             <field name="context">
                 {
-                    'form_view_ref': 'tt_base.res_rate_form_view',
-                    'tree_view_ref': 'tt_base.res_rate_tree_view'
+                    'form_view_ref': 'tt_base.tt_provider_rate_form_view',
+                    'tree_view_ref': 'tt_base.tt_provider_rate_tree_view'
                 }
             </field>
         </record>
@@ -70,14 +70,14 @@
         <!--<menuitem id="menu_action_rate_form"-->
                   <!--parent="tt_base.sub_menu_tour_travel_configuration"-->
                   <!--groups="base.group_user"-->
-                  <!--name="Rate" sequence="4" action="res_rate_action"/>-->
+                  <!--name="Rate" sequence="4" action="tt_provider_rate_action"/>-->
 
         <menuitem id="sub_menu_item_tour_travel_rate"
                   parent="tt_base.menu_tour_travel_configuration_currency"
                   groups="base.group_user"
                   name="Rate"
                   sequence="2"
-                  action="res_rate_action_view"/>
+                  action="tt_provider_rate_action_view"/>
 
     </data>
 </odoo>

@@ -105,16 +105,16 @@ access_customer_bank_detail_for_agent_user_operator,customer.bank.detail.for.age
 access_customer_bank_detail_for_agent_user_supervisor,customer.bank.detail.for.agent.user.supervisor,model_customer_bank_detail,tt_base.group_tt_agent_user_supervisor,1,0,1,0
 access_customer_bank_detail_for_agent_user_manager,customer.bank.detail.for.agent.user.manager,model_customer_bank_detail,tt_base.group_tt_agent_user_manager,1,1,1,0
 
-access_res_rate_for_public,res.rate.for.public,model_res_rate,,1,0,0,0
-access_res_rate_for_account_invoice,res.rate.for.account.invoice,model_res_rate,account.group_account_invoice,1,0,1,0
-access_res_rate_for_account_manager,res.rate.for.account.manager,model_res_rate,account.group_account_manager,1,1,1,0
+access_tt_provider_rate_for_public,tt.provider.rate.for.public,model_tt_provider_rate,,1,0,0,0
+access_tt_provider_rate_for_account_invoice,tt.provider.rate.for.account.invoice,model_tt_provider_rate,account.group_account_invoice,1,0,1,0
+access_tt_provider_rate_for_account_manager,tt.provider.rate.for.account.manager,model_tt_provider_rate,account.group_account_manager,1,1,1,0
 
 access_res_currency_for_public,res.currency.for.public,model_res_currency,,1,0,0,0
 access_res_currency_for_tour_travel_operator,res.currency.for.tour.travel.operator,model_res_currency,tt_base.group_tt_tour_travel_operator,1,0,1,0
 access_res_currency_for_tour_travel_supervisor,res.currency.for.tour.travel.supervisor,model_res_currency,tt_base.group_tt_tour_travel_supervisor,1,0,1,0
 access_res_currency_for_tour_travel_manager,res.currency.for.tour.travel.manager,model_res_currency,tt_base.group_tt_tour_travel_manager,1,1,1,0
 
-access_tt_vendor_ledger_for_public,tt.vendor.ledger.for.public,model_tt_vendor_ledger,,1,0,0,0
+access_tt_provider_ledger_for_public,tt.vendor.ledger.for.public,model_tt_provider_ledger,,1,0,0,0
 
 access_address_detail_for_public,address.detail.for.public,model_address_detail,,1,0,0,0
 access_address_detail_for_tour_travel_operator,address.detail.for.tour.travel.operator,model_address_detail,tt_base.group_tt_tour_travel_operator,1,0,0,0
@@ -194,3 +194,15 @@ access_tt_agent_mou_for_agent_user_operator,tt.agent.mou.for.agent.user.operator
 access_tt_agent_mou_for_tour_travel_operator,tt.agent.mou.for.tour.travel.operator,model_tt_agent_mou,group_tt_tour_travel_operator,1,1,1,0
 
 access_tt_error_api_for_public,tt.error.api.for.public,model_tt_error_api,,1,1,1,1
+
+access_tt_provider_destination_for_public,tt.provider.destination.for.public,model_tt_provider_destination,,1,0,0,0
+access_tt_provider_destination_for_tour_travel_operator,tt.provider.destination.for.tour_travel_operator,model_tt_provider_destination,group_tt_tour_travel_operator,1,1,1,0
+
+access_tt_provider_destination_city_for_public,tt.provider.destination.city.for.public,model_tt_provider_destination_city,,1,0,0,0
+access_tt_provider_destination_city_for_tour_travel_operator,tt.provider.destination.city.for.tour_travel_operator,model_tt_provider_destination_city,group_tt_tour_travel_operator,1,1,1,0
+
+access_tt_provider_code_for_public,tt.provider.code.for.public,model_tt_provider_code,,1,0,0,0
+access_tt_provider_code_for_tour_travel_operator,tt.provider.code.for.tour_travel_operator,model_tt_provider_code,group_tt_tour_travel_operator,1,1,1,0
+
+access_tt_provider_currency_for_public,tt.provider.currency.for.public,model_tt_provider_currency,,1,0,0,0
+access_tt_provider_currency_for_tour_travel_operator,tt.provider.currency.for.tour_travel_operator,model_tt_provider_currency,group_tt_tour_travel_operator,1,1,1,0

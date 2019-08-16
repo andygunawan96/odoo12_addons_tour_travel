@@ -681,3 +681,11 @@ class ReservationAirline(models.Model):
                 'sale_service_charge_ids': values
             })
 
+    @api.multi
+    def print_eticket(self):
+        datas = {'ids': self.env.context.get('active_ids', [])}
+        # res = self.read(['price_list', 'qty1', 'qty2', 'qty3', 'qty4', 'qty5'])
+        res = self.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        return self.env.ref('tt_report_common.action_report_printout_invoice').report_action([], data=datas)

@@ -30,7 +30,7 @@ class HotelInformation(models.Model):
                         for rec in data:
                             hotel_id = self.env['tt.hotel'].search([('name', '=', rec.get('name') or '')], limit=1)
                             if not hotel_id:
-                                hpc_id = self.env['provider.code'].search([('code', '=', str(rec['destination']) ), ('city_id', '!=', False)], limit=1)
+                                hpc_id = self.env['tt.provider.code'].search([('code', '=', str(rec['destination']) ), ('city_id', '!=', False)], limit=1)
                                 vals = {
                                     'street': rec.get('address',''),
                                     # 'address': rec['code'], #'Provider Code: 1f3493'
@@ -53,7 +53,7 @@ class HotelInformation(models.Model):
                                 hotel_id = self.env['tt.hotel'].create(vals)
 
                                 hotel_id.tac += ', ' + filename + str(number-1) + extension
-                                self.env['provider.code'].create({
+                                self.env['tt.provider.code'].create({
                                     'hotel_id': hotel_id.id,
                                     'code': rec['code'],
                                     'name': rec.get('name') or '',
@@ -61,7 +61,7 @@ class HotelInformation(models.Model):
                                 })
 
                                 if rec.get('hotel_type'):
-                                    code_id = self.env['provider.code'].search([('code', '=', rec['hotel_type']),
+                                    code_id = self.env['tt.provider.code'].search([('code', '=', rec['hotel_type']),
                                                                                 ('type_id', '!=', False),
                                                                                 ('provider_id', '=', provider_id)], limit=1)
                                     hotel_id.hotel_type_id = code_id and code_id[0].type_id.id or ''
@@ -81,7 +81,7 @@ class HotelInformation(models.Model):
                                 if rec.get('facilities'):
                                     temp_str = ''
                                     for fac in rec['facilities']:
-                                        fac_id = self.env['provider.code'].search([('code','=',fac),('facility_id','!=',False),
+                                        fac_id = self.env['tt.provider.code'].search([('code','=',fac),('facility_id','!=',False),
                                                                             ('provider_id','=',provider_id)], limit=1)
                                         if fac_id:
                                             hotel_id.facility_ids = [(4, fac_id[0].facility_id.id)]
@@ -94,7 +94,7 @@ class HotelInformation(models.Model):
 
                                 provider_code = self.env['tt.hotel'].get_provider_code(hotel_id.id, provider_id)
                                 if provider_code and provider_code != rec['code'] or 1 == 1:
-                                    self.env['provider.code'].create({
+                                    self.env['tt.provider.code'].create({
                                         'hotel_id': hotel_id.id,
                                         'code': rec['code'],
                                         'name': rec.get('name') or '',
@@ -106,7 +106,7 @@ class HotelInformation(models.Model):
                         for rec in data:
                             country_id = self.env['res.country'].search(['|', ('name','ilike',rec['name']), ('code','=',rec['code'])], limit=1)
                             if country_id:
-                                self.env['provider.code'].create({
+                                self.env['tt.provider.code'].create({
                                     'country_id': country_id.id,
                                     'name': rec['name'],
                                     'code': rec['code'],
@@ -120,7 +120,7 @@ class HotelInformation(models.Model):
                             if not city_id:
                                 city_id = self.env['res.city'].search([('name', 'ilike', rec['name'])], limit=1)
                             if city_id:
-                                self.env['provider.code'].create({
+                                self.env['tt.provider.code'].create({
                                     'city_id': city_id.id,
                                     'name': rec['name'],
                                     'code': rec['code'],
@@ -130,7 +130,7 @@ class HotelInformation(models.Model):
                     # Facilities
                     elif filename == 'facilities-':
                         for rec in data:
-                            code_id = self.env['provider.code'].search([('code','=',rec['code']),('facility_id','!=',False),
+                            code_id = self.env['tt.provider.code'].search([('code','=',rec['code']),('facility_id','!=',False),
                                                                             ('provider_id','=',provider_id)], limit=1)
                             if code_id:
                                 code_id[0].update({'name': rec['name']})
@@ -142,7 +142,7 @@ class HotelInformation(models.Model):
                                         'description': rec['name'],
                                         'facility_type_id': 1,
                                     })
-                                self.env['provider.code'].create({
+                                self.env['tt.provider.code'].create({
                                     'name': rec['name'],
                                     'facility_id': facility_id.id,
                                     'code': rec['code'],
@@ -152,7 +152,7 @@ class HotelInformation(models.Model):
                     # Hotel Type
                     elif filename == 'hoteltypes-':
                         for rec in data:
-                            code_id = self.env['provider.code'].search(
+                            code_id = self.env['tt.provider.code'].search(
                                 [('code', '=', rec['code']), ('type_id', '!=', False), ('provider_id', '=', provider_id)], limit=1)
                             if code_id:
                                 code_id[0].update({'name': rec['name']})
@@ -163,7 +163,7 @@ class HotelInformation(models.Model):
                                         'name': rec['name'],
                                         'description': rec['name'],
                                     })
-                                self.env['provider.code'].create({
+                                self.env['tt.provider.code'].create({
                                     'name': rec['name'],
                                     'type_id': type_id.id,
                                     'code': rec['code'],
@@ -292,7 +292,7 @@ class HotelInformation(models.Model):
                             'provider_id': provider_id[0].id,
                         }
                     if vals:
-                        self.env['provider.code'].create(vals)
+                        self.env['tt.provider.code'].create(vals)
                         self.env.cr.commit()
         return True
 
@@ -304,7 +304,7 @@ class HotelInformation(models.Model):
 
         provider_id = self.env['res.partner'].search(
             [('is_master_vendor', '=', True), ('provider_code', '=', 'quantum')], limit=1)
-        for rec in self.env['provider.code'].search([('city_id', '!=', False),('provider_id', '=', provider_id.id),('id', '>=', 500659)]):
+        for rec in self.env['tt.provider.code'].search([('city_id', '!=', False),('provider_id', '=', provider_id.id),('id', '>=', 500659)]):
             search_req = {
                 'provider': 'quantum',
                 'type': 'city',
@@ -342,7 +342,7 @@ class HotelInformation(models.Model):
                             'city_id': city_id and city_id[0].id or False
                         }
                         hotel_id = self.env['tt.hotel'].create(value)
-                        self.env['provider.code'].create({
+                        self.env['tt.provider.code'].create({
                             'name': hotel_id.name,
                             'hotel_id': hotel_id.id,
                             'code': obj.get('code'),
@@ -396,7 +396,7 @@ class HotelInformation(models.Model):
                         'city_id': city_id and city_id[0].id or False
                     }
                     hotel_id = self.env['tt.hotel'].create(value)
-                    self.env['provider.code'].create({
+                    self.env['tt.provider.code'].create({
                         'name': hotel_id.name,
                         'hotel_id': hotel_id.id,
                         'code': obj.get('code'),
@@ -421,7 +421,7 @@ class HotelInformation(models.Model):
             'codes': 2,
         }
         provider_id = self.env['res.partner'].search([('provider_code', '=', 'ctrip')], limit=1)
-        for prov_city in self.env['provider.code'].search([('city_id', '!=', False), ('provider_id', '=', provider_id[0].id)]):
+        for prov_city in self.env['tt.provider.code'].search([('city_id', '!=', False), ('provider_id', '=', provider_id[0].id)]):
             search_req['codes'] = prov_city.code
             while repeat:
                 res = API_CN_HOTEL.get_record_by_api(search_req, api_context)
@@ -435,7 +435,7 @@ class HotelInformation(models.Model):
                             city_id = prov_city.city_id.id
                             geo_info = obj.get('GeoInfo') and obj['GeoInfo'].get('Coordinates') and obj['GeoInfo']['Coordinates'] or False
                             if geo_info:
-                                geo_info = filter(lambda x: x['Provider'] == 'Google', geo_info)[0] or geo_info[0]
+                                geo_info = list(filter(lambda x: x['Provider'] == 'Google', geo_info))[0] or geo_info[0]
                             value = {
                                 'name': obj.get('HotelName') or '',
                                 'rating': obj.get('StarRating') or 1,
@@ -456,7 +456,7 @@ class HotelInformation(models.Model):
                                 'tac': obj.get('ImportantNotices') and self.rec_to_tac(obj.get('ImportantNotices')) or '',
                             }
                             hotel_id = self.env['tt.hotel'].create(value)
-                            self.env['provider.code'].create({
+                            self.env['tt.provider.code'].create({
                                 'name': hotel_id.name,
                                 'hotel_id': hotel_id.id,
                                 'code': obj.get('HotelID'),
@@ -496,7 +496,7 @@ class HotelInformation(models.Model):
                                                          ('code', '=', country['code'])], limit=1)
             if country_id:
                 vals.update({'country_id': country_id and country_id[0].id or False})
-            self.env['provider.code'].create(vals)
+            self.env['tt.provider.code'].create(vals)
             self.env.cr.commit()
 
             for city in country['cities']:
@@ -513,11 +513,11 @@ class HotelInformation(models.Model):
                         'city_id': city_id[0].id,
                         'country_code': country['code']
                     })
-                self.env['provider.code'].create(vals)
+                self.env['tt.provider.code'].create(vals)
                 self.env.cr.commit()
 
         # if not city_ids:
-        #     temp_data = self.env['provider.code'].search([('provider_id', '=', provider_id[0].id), ('city_id', '!=', False)])
+        #     temp_data = self.env['tt.provider.code'].search([('provider_id', '=', provider_id[0].id), ('city_id', '!=', False)])
         #     for rec in temp_data:
         #         country_code_obj = rec.city_id.country_id and rec.city_id.country_id.provider_city_ids.filtered(lambda x: x.provider_id.id == provider_id[0].id) or False
         #         city_ids.append({
@@ -536,7 +536,7 @@ class HotelInformation(models.Model):
         #         }
         #         res = API_CN_HOTEL.get_record_by_api(search_req, api_context)
         #         for hotel_rec in res['response']:
-        #             temp_data = self.env['provider.code'].search(
+        #             temp_data = self.env['tt.provider.code'].search(
         #                 [('provider_id', '=', provider_id[0].id), ('code', '=', hotel_rec['code']), ('hotel_id', '!=', False)])
         #             # Rec already exist
         #             if temp_data:
@@ -569,7 +569,7 @@ class HotelInformation(models.Model):
         #                     'hotel_image': hotel['hotel_image'],
         #                 })
         #                 # Create Provider Code
-        #                 self.env['provider.code'].sudo().create({
+        #                 self.env['tt.provider.code'].sudo().create({
         #                     'code': hotel['code'],
         #                     'provider_id': provider_id[0].id,
         #                     'hotel_id': hotel_id.id
@@ -580,6 +580,6 @@ class HotelInformation(models.Model):
     def remove_itank(self):
         provider_id = self.env['res.partner'].search(
             [('is_master_vendor', '=', True), ('provider_code', '=', 'itank')], limit=1)
-        recs = self.env['provider.code'].search([('provider_id', '=', provider_id[0].id)])
+        recs = self.env['tt.provider.code'].search([('provider_id', '=', provider_id[0].id)])
         for rec in recs:
             rec.sudo().unlink()

@@ -22,6 +22,7 @@ Key Features
         'data/tt.bank.csv',
         'data/tt.error.api.csv',
         'data/ir_sequence_data.xml',
+        'data/res.social.media.type.csv',
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
 

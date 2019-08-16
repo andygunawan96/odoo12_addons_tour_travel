@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="view_store_default_pricelist" model="ir.ui.view">
+            <field name="name">Store Default Pricelist</field>
+            <field name="model">test.search.wizard</field>
+            <field name="arch" type="xml">
+            <form string="Report Options">
+                <header>
+                    <button name="search_hotel" string="Line" type="object" class="oe_highlight"/>
+
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="rate_id"/>
+                            <field name="hotel_id"/>
+                            <field name="room_info_id"/>
+                            <field name="nights"/>
+                            <field name="guest"/>
+                        </group>
+                    </group>
+                    <!--<field name="line_ids">-->
+                        <!--<tree>-->
+                            <!--<field name="name"/>-->
+                            <!--<field name="sale_price"/>-->
+                            <!--<field name="qty"/>-->
+                            <!--<field name="special_request"/>-->
+                        <!--</tree>-->
+                    <!--</field>-->
+                </sheet>
+                <footer>
+                    <button name="search_hotel" string="Set Pricelist" type="object" default_focus="1" class="oe_highlight"/>
+                    or
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+            </field>
+        </record>
+        <record id="action_store_default_pricelist" model="ir.actions.act_window">
+            <field name="name">Set Default Pricelist</field>
+            <field name="res_model">test.search.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_store_default_pricelist"/>
+            <field name="target">new</field>
+        </record>
+    </data>
+</openerp>

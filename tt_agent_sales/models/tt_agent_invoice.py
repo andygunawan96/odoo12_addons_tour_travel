@@ -1,6 +1,7 @@
-from odoo import models,api,fields
+from odoo import models, api, fields, _
 import datetime
 from odoo import exceptions
+from odoo.exceptions import UserError
 
 
 class Ledger(models.Model):
@@ -69,7 +70,8 @@ class AgentInvoice(models.Model):
 
     date_invoice = fields.Date(string='Invoice Date', default=fields.Date.context_today,
                                index=True, copy=False)
-    date_due = fields.Date(string='Due Date', index=True, copy=False)
+    expired_date = fields.Date(string='Due Date', index=True, copy=False)
+    description = fields.Text('Description')
 
     @api.model
     def create(self, vals_list):
@@ -144,3 +146,14 @@ class AgentInvoice(models.Model):
         self.bill_uid = self.env.user.id
         self.bill_date = fields.Datetime.now()
         self.create_ledger()
+
+    def print_invoice(self):
+        if not self.agent_id.logo:
+            raise UserError(_("Your agent have to set their logo."))
+
+        datas = {'ids': self.env.context.get('active_ids', [])}
+        # res = self.read(['price_list', 'qty1', 'qty2', 'qty3', 'qty4', 'qty5'])
+        res = self.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        return self.env.ref('tt_report_common.action_report_printout_invoice').report_action([], data=datas)

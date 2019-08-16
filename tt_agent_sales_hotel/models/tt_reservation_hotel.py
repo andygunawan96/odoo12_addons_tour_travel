@@ -34,18 +34,21 @@ class ReservationHotel(models.Model):
     def get_segment_description(self):
         tmp = ''
         for rec in self.room_detail_ids:
-            tmp += 'Hotel : %s;\n Room  : %s %s(%s),\n' % (self.hotel_name, rec.room_name, rec.room_type, rec.meal_type if rec.meal_type else 'Room Only')
-            tmp += 'Date  : %s - %s\n ' % (str(self.checkin_date)[:10], str(self.checkout_date)[:10])
-            if rec.special_request:
-                tmp += 'Special Request: ' + rec.special_request + '\n'
+            tmp += 'Hotel : %s\nRoom : %s %s(%s),\n' % (self.hotel_name, rec.room_name, rec.room_type, rec.meal_type if rec.meal_type else 'Room Only')
+            tmp += 'Date  : %s - %s\n' % (str(self.checkin_date)[:10], str(self.checkout_date)[:10])
+            tmp += 'Guest :\n'
+            for idx, guest in enumerate(self.passenger_ids):
+                tmp += str(idx+1) + '. ' + guest.name + '\n'
+            spc = rec.special_request or '-'
+            tmp += 'Special Request: ' + spc + '\n'
         return tmp
 
     def action_create_invoice(self):
-        invoice_id = self.env['tt.agent.invoice'].search([('contact_id','=',self.contact_id.id), ('state','=','draft')])
+        invoice_id = self.env['tt.agent.invoice'].search([('booker_id','=',self.contact_id.id), ('state','=','draft')])
         if not invoice_id:
             invoice_id = self.env['tt.agent.invoice'].create({
                 'agent_id': self.agent_id.id,
-                'contact_id': self.contact_id.id,
+                'booker_id': self.contact_id.id,
                 'customer_parent_id': self.customer_parent_id.id,
             })
 
@@ -57,12 +60,11 @@ class ReservationHotel(models.Model):
         })
 
         for room_obj in self.room_detail_ids:
-            for rec in room_obj.room_date_ids:
-                meal = room_obj.meal_type or 'Room Only'
-                self.env['tt.agent.invoice.line.detail'].create({
-                    'desc': room_obj.room_name + ' (' + meal + ') ' + str(rec.date)[:10],
-                    'invoice_line_id': inv_line_obj.id,
-                    'price_unit': rec.sale_price,
-                    'discount': 0,
-                    'quantity': 1,
-                })
+            meal = room_obj.meal_type or 'Room Only'
+            self.env['tt.agent.invoice.line.detail'].create({
+                'desc': room_obj.room_name + ' (' + meal + ') ',
+                'invoice_line_id': inv_line_obj.id,
+                'price_unit': room_obj.sale_price,
+                'discount': 0,
+                'quantity': 1,
+            })

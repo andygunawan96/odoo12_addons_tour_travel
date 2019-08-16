@@ -168,7 +168,7 @@
                     <button string="Calc detail name" groups="base.group_no_one" name="calc_resv_det_name" type="object"/>
 
                     <!--<field name="state" widget="statusbar" statusbar_visible="draft,confirm,issued,done" clickable='1' groups="tt_base.group_no_one"/>-->
-                    <field name="state" widget="statusbar" statusbar_visible="draft,issued,done"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,issued"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
@@ -185,10 +185,11 @@
                     <group>
                         <group>
                             <field name="agent_id" readonly="1"/>
+                            <field name="booker_id"/>
                             <field name="customer_parent_id"/>
                             <!--<field name="sub_agent_id"/>-->
-                            <field name="pnr"/>
-                            <field name="provider_name" groups="tt_base.group_tt_tour_travel_operator"/>
+                            <!--<field name="pnr"/>-->
+                            <!--<field name="provider_name" groups="tt_base.group_tt_tour_travel_operator"/>-->
                         </group>
                         <group>
                             <label for="booked_uid" string="Confirm by" attrs="{'invisible': [('booked_uid', '=', False)]}"/>
@@ -292,7 +293,7 @@
                             <field name="sale_service_charge_ids">
                                 <tree editable="bottom">
                                     <field name="charge_code"/>
-                                    <!--<field name="pax_type"/>-->
+                                    <field name="charge_type"/>
                                     <field name="foreign_currency_id" groups="tt_base.group_tt_tour_travel_operator"/>
                                     <field name="foreign_amount"/>
                                     <field name="amount"/>
