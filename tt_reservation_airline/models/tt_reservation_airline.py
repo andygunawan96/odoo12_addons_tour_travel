@@ -590,13 +590,13 @@ class ReservationAirline(models.Model):
 
         # August 16, 2019 - SAM
         # Mengubah mekanisme update booking backend
-        segment_dict = provider['segment_dict']
+        # segment_dict = provider['segment_dict']
 
         # update leg dan create service charge
         for idx, journey in enumerate(provider_obj.journey_ids):
             for idx1, segment in enumerate(journey.segment_ids):
-                # param_segment = provider['journeys'][idx]['segments'][idx1]
-                param_segment = segment_dict[segment.segment_code]
+                param_segment = provider['journeys'][idx]['segments'][idx1]
+                # param_segment = segment_dict[segment.segment_code]
                 if segment.segment_code == param_segment['segment_code']:
                     this_segment_legs = []
                     for idx2, leg in enumerate(param_segment['legs']):

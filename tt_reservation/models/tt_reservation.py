@@ -338,7 +338,7 @@ class TtReservation(models.Model):
 
     def action_failed_book(self):
         self.write({
-            'state': 'fail_booking'
+            'state': 'fail_booked'
         })
 
     def action_failed_issue(self):

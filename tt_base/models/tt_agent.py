@@ -39,7 +39,7 @@ class TtAgent(models.Model):
     customer_ids = fields.One2many('tt.customer', 'agent_id', 'Customer')
 
     parent_agent_id = fields.Many2one('tt.agent', string="Parent Agent")
-    agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type')
+    agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', required=True)
     history_ids = fields.Char(string="History", required=False, )  # tt_history
     user_ids = fields.One2many('res.users', 'agent_id', 'User')
     payment_acquirer_ids = fields.One2many('payment.acquirer','agent_id',string="Payment Acquirer")  # payment_acquirer
@@ -92,7 +92,7 @@ class TtAgent(models.Model):
 
         new_agent.write({
             'customer_parent_walkin_id': walkin_obj.id,
-            'seq_id': self.env['ir.sequence'].next_by_code('tt.agent.type.%s' % (new_agent.agent_type_id.seq_prefix))
+            'seq_id': self.env['ir.sequence'].next_by_code('tt.agent.type.%s' % (new_agent.agent_type_id.code))
         })
         return new_agent
 
