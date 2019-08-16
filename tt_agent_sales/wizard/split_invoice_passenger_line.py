@@ -3,13 +3,14 @@ from odoo import api, fields, models, _
 
 class DynamicSelection(models.Model):
     _name = "tt.dynamic.selection"
+    _description = 'Rodex Model'
 
     name = fields.Integer('value',required=True)
 
 
 class SplitInvoiceLine(models.Model):
     _name = "tt.split.invoice.line"
-
+    _description = 'Rodex Model'
 
     # passenger_id = fields.Many2one('tt.customer','Passenger')
     invoice_line_detail_id = fields.Many2one('tt.agent.invoice.line.detail', 'Invoice Line')

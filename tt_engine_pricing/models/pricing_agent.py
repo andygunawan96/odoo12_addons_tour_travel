@@ -86,6 +86,7 @@ class PricingAgent(models.Model):
 
 class PricingAgentLine(models.Model):
     _name = 'tt.pricing.agent.line'
+    _description = 'Rodex Model'
 
     name = fields.Char('Name')
     sequence = fields.Integer('Sequence')

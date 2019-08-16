@@ -3,6 +3,7 @@ from odoo import models, api
 
 class PrintoutInvoice(models.AbstractModel):
     _name = 'report.tt_report_common.printout_invoice'
+    _description = 'Rodex Model'
 
     """Abstract Model for report template.
         for `_name` model, please use `report.` as prefix then add `module_name.report_name`.

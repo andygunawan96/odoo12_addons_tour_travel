@@ -2,7 +2,7 @@ from odoo import api, fields, models, _
 
 class AgentInvoice(models.TransientModel):
     _name = "tt.agent.invoice.wizard"
-    _description = ""
+    _description = 'Rodex Model'
 
     invoice_id1 = fields.Many2one('tt.agent.invoice','Source Invoice', readonly="1")
     invoice_id2 = fields.Many2one('tt.agent.invoice','Target Invoice')

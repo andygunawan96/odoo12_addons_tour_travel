@@ -86,6 +86,7 @@ class PricingProvider(models.Model):
 class PricingProviderLine(models.Model):
     _name = 'tt.pricing.provider.line'
     _order = 'sequence'
+    _description = 'Rodex Model'
 
     name = fields.Char('Name', requried=True)
     sequence = fields.Integer('Sequence', default=50, required=True)

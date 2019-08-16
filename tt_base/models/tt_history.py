@@ -44,6 +44,7 @@ class SkippedKeys(models.Model):
 class TtHistory(models.Model):
     _name = 'tt.history'
     _inherit = ['mail.thread']
+    _description = 'Rodex Model'
 
     @api.multi
     def write(self, value):

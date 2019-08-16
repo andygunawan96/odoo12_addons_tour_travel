@@ -4,7 +4,7 @@ from odoo import api, fields, models, _
 
 class SplitInvoice(models.Model):
     _name = "tt.split.invoice.wizard"
-    _description = ""
+    _description = 'Rodex Model'
 
     # invoice_id1 = fields.Many2one('tt.agent.invoice','Source Invoice', readonly="1")
     # invoice_id2 = fields.Many2one('tt.agent.invoice','Target Invoice')
