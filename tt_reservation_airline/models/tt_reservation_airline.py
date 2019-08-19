@@ -235,7 +235,7 @@ class ReservationAirline(models.Model):
 
     def create_booking_airline_api(self, req, context):
         # req = copy.deepcopy(self.param_global)
-        print("Create\n" + json.dumps(req))
+        _logger.info("Create\n" + json.dumps(req))
         search_RQ = req['searchRQ']
         booker = req['booker']
         contacts = req['contacts']
@@ -282,7 +282,7 @@ class ReservationAirline(models.Model):
         ### dapatkan PNR dan ubah ke booked
         ### kemudian update service charges
         # req['booking_commit_provider'][-1]['status'] = 'FAILED'
-        print("Update\n" + json.dumps(req))
+        _logger.info("Update\n" + json.dumps(req))
         # req = self.param_update_pnr
         try:
             book_obj = self.env['tt.reservation.airline'].browse(req['book_id'])
@@ -369,7 +369,7 @@ class ReservationAirline(models.Model):
 
     def get_booking_airline_api(self,req, context):
         try:
-            print("Get req\n" + json.dumps(context))
+            _logger.info("Get req\n" + json.dumps(context))
             book_obj = self.get_book_obj(req.get('book_id'),req.get('order_number'))
             if book_obj and book_obj.agent_id.id == context.get('co_agent_id',-1):
                 res = book_obj.to_dict()
@@ -388,7 +388,7 @@ class ReservationAirline(models.Model):
                     'provider_bookings': prov_list,
                     # 'provider_type': book_obj.provider_type_id.code
                 })
-                print("Get resp\n" + json.dumps(res))
+                _logger.info("Get resp\n" + json.dumps(res))
                 return Response().get_no_error(res)
             else:
                 return ERR.get_error(1001)
@@ -398,7 +398,7 @@ class ReservationAirline(models.Model):
 
     ##ini potong ledger
     def payment_airline_api(self,req,context):
-        print("Payment\n" + json.dumps(req))
+        _logger.info("Payment\n" + json.dumps(req))
         try:
             book_obj = self.env['tt.reservation.airline'].browse(req.get('book_id'))
             if book_obj and book_obj.agent_id.id == context.get('co_agent_id',-1):
@@ -422,7 +422,7 @@ class ReservationAirline(models.Model):
             return Response().get_error(str(e),500)
 
     def update_cost_service_charge_airline_api(self,req,context):
-        print('update cost\n' + json.dumps(req))
+        _logger.info('update cost\n' + json.dumps(req))
         for provider in req['provider_bookings']:
             provider_obj = self.env['tt.provider.airline'].browse(provider['provider_id'])
             if not provider_obj:
@@ -451,11 +451,11 @@ class ReservationAirline(models.Model):
         dest_obj = self.env['tt.destinations']
         provider_type_id = self.env.ref('tt_reservation_airline.tt_provider_type_airline')
         booking_tmp = {
-            'direction': searchRQ['direction'],
-            'departure_date': searchRQ['departure_date'],
-            'return_date': searchRQ['return_date'],
-            'origin_id': dest_obj.get_id(searchRQ['origin'], provider_type_id),
-            'destination_id': dest_obj.get_id(searchRQ['destination'], provider_type_id),
+            'direction': searchRQ.get('direction'),
+            'departure_date': searchRQ['journey_list'][0]['departure_date'],
+            'return_date': searchRQ['journey_list'][-1]['departure_date'],
+            'origin_id': dest_obj.get_id(searchRQ['journey_list'][0]['origin'], provider_type_id),
+            'destination_id': dest_obj.get_id(searchRQ['journey_list'][-1]['destination'], provider_type_id),
             'provider_type_id': provider_type_id.id,
             'adult': searchRQ['adult'],
             'child': searchRQ['child'],
@@ -493,15 +493,15 @@ class ReservationAirline(models.Model):
 
         for provider_name, provider_value in providers.items():
             provider_id = provider_obj.get_provider_id(provider_name,_destination_type)
-            print(provider_name)
+            _logger.info(provider_name)
             for sequence, pnr in provider_value.items():
-                print(sequence)
+                _logger.info(sequence)
                 journey_sequence = 0
                 this_pnr_journey = []
 
                 for journey_type, journey_value in pnr['journey_codes'].items():
                     ###Create Journey
-                    print(journey_type)
+                    _logger.info(journey_type)
 
                     if len(journey_value) < 1:
                         continue
@@ -548,7 +548,7 @@ class ReservationAirline(models.Model):
                     }))
 
                 JRN_len = len(this_pnr_journey)
-                print("JRNlen : %s" % (JRN_len))
+                _logger.info("JRNlen : %s" % (JRN_len))
                 if JRN_len > 1:
                     provider_direction = 'RT'
                     provider_origin = this_pnr_journey[0][2]['origin_id']
