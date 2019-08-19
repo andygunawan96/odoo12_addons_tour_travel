@@ -32,6 +32,12 @@ CLASS_OF_SERVICE = [
     ('bus', 'Bussiness')
 ]
 
+CLASS_OF_SERVICE_TRAIN = [
+    ('eko', 'Ekonomi'),
+    ('bus', 'Bisnis'),
+    ('eks', 'Eksekutif')
+]
+
 MEAL_TYPE = [
     ('room_only', 'Room Only'),
     ('with_breakfast', 'With Breakfast')

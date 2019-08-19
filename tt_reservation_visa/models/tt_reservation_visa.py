@@ -982,7 +982,7 @@ class TtVisa(models.Model):
                 ho_profit += pax.pricelist_id.cost_price - pax.pricelist_id.nta_price
 
             vals = ledger.prepare_vals('Profit HO ' + doc_type + ' : ' + rec.name, rec.name, rec.issued_date,
-                                       'commission', rec.currency_id.id, ho_profit, 0)
+                                       3, rec.currency_id.id, ho_profit, 0)
             vals = ledger.prepare_vals_for_resv(self, vals)
             vals.update({
                 'agent_id': self.env['tt.agent'].sudo().search([('agent_type_id.name', '=', 'HO')], limit=1).id
@@ -1031,7 +1031,7 @@ class TtVisa(models.Model):
             print('Total : ' + str(total_order))
 
             vals = ledger.prepare_vals('Order ' + doc_type + ' : ' + rec.name, rec.name, rec.issued_date,
-                                       'travel.doc', rec.currency_id.id, 0, total_order)
+                                       2, rec.currency_id.id, 0, total_order)
             vals = ledger.prepare_vals_for_resv(self, vals)
             # vals.update({
             #     'res_id': rec.id,
@@ -1059,7 +1059,7 @@ class TtVisa(models.Model):
             # print('HO Comm : ' + str(ho_commission))
 
             if agent_commission > 0:
-                vals = ledger_obj.prepare_vals('Commission : ' + rec.name, rec.name, rec.issued_date, 'commission',
+                vals = ledger_obj.prepare_vals('Commission : ' + rec.name, rec.name, rec.issued_date, 3,
                                                rec.currency_id.id, agent_commission, 0)
                 vals = ledger_obj.prepare_vals_for_resv(self, vals)
                 vals.update({
@@ -1074,8 +1074,7 @@ class TtVisa(models.Model):
                 # rec.commission_ledger_id = commission_aml.id
             if parent_commission > 0:
                 vals = ledger_obj.prepare_vals('Commission : ' + rec.name, 'PA: ' + rec.name, rec.issued_date,
-                                               'commission',
-                                               rec.currency_id.id, parent_commission, 0)
+                                               3, rec.currency_id.id, parent_commission, 0)
                 vals = ledger_obj.prepare_vals_for_resv(self, vals)
                 vals.update({
                     'agent_id': rec.agent_id.parent_agent_id.id,
@@ -1086,8 +1085,7 @@ class TtVisa(models.Model):
 
             if int(ho_commission) > 0:
                 vals = ledger_obj.prepare_vals('Commission : ' + rec.name, 'HO: ' + rec.name, rec.issued_date,
-                                               'commission',
-                                               rec.currency_id.id, ho_commission, 0)
+                                               3, rec.currency_id.id, ho_commission, 0)
                 vals = ledger_obj.prepare_vals_for_resv(self, vals)
                 vals.update({
                     'agent_id': rec.env['tt.agent'].sudo().search(
@@ -1117,7 +1115,7 @@ class TtVisa(models.Model):
                 ho_profit += pax.pricelist_id.cost_price - pax.pricelist_id.nta_price
 
             vals = ledger.prepare_vals('Profit ' + doc_type + ' : ' + rec.name, rec.name, rec.issued_date,
-                                       'commission', rec.currency_id.id, 0, ho_profit)
+                                       3, rec.currency_id.id, 0, ho_profit)
             vals = ledger.prepare_vals_for_resv(self, vals)
             vals.update({
                 'agent_id': self.env['tt.agent'].sudo().search([('parent_agent_id', '=', False)], limit=1).id,
@@ -1150,8 +1148,7 @@ class TtVisa(models.Model):
             doc_type = ','.join(str(e) for e in doc_type)
 
             vals = ledger.prepare_vals('Order ' + doc_type + ' : ' + rec.name, rec.name, rec.issued_date,
-                                       'travel.doc',
-                                       rec.currency_id.id, rec.total, 0)
+                                       2, rec.currency_id.id, rec.total, 0)
             vals = ledger.prepare_vals_for_resv(self, vals)
             # vals['transport_type'] = rec.transport_type
             # vals['display_provider_name'] = rec.display_provider_name
@@ -1187,8 +1184,7 @@ class TtVisa(models.Model):
                 # rec.commission_ledger_id = commission_aml.id
             if parent_commission > 0:
                 vals = ledger_obj.prepare_vals('Commission : ' + rec.name, 'PA: ' + rec.name, rec.issued_date,
-                                               'commission',
-                                               rec.currency_id.id, 0, parent_commission)
+                                               3, rec.currency_id.id, 0, parent_commission)
                 vals = ledger_obj.prepare_vals_for_resv(self, vals)
                 vals.update({
                     'agent_id': rec.agent_id.parent_agent_id.id,
@@ -1202,8 +1198,7 @@ class TtVisa(models.Model):
 
             if int(ho_commission) > 0:
                 vals = ledger_obj.prepare_vals('Commission : ' + rec.name, 'HO: ' + rec.name, rec.issued_date,
-                                               'commission',
-                                               rec.currency_id.id, 0, ho_commission)
+                                               3, rec.currency_id.id, 0, ho_commission)
                 vals.update({
                     'agent_id': rec.env['tt.agent'].sudo().search(
                         [('parent_agent_id', '=', False)], limit=1).id,

@@ -23,7 +23,7 @@ class Destinations(models.Model):
     name = fields.Char('Name', required=True)
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', required=True)
     code = fields.Char('Code', help="Can be filled with IATA code", required=True)
-    display_name = fields.Char('Display Name')
+    display_name = fields.Char('Display Name', store=True)
     country_id = fields.Many2one('res.country', 'Country')
     city = fields.Char('City', required=True, default='')
     icao = fields.Char('ICAO', help="for airline : 4-letter ICAO code")

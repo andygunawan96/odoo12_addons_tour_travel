@@ -81,6 +81,7 @@
                         <button string="Cancel" name="action_cancel" type="object" states="confirm,sent,paid" groups="tt_base.group_tt_ticketing_operator,account.group_account_invoice"/>
                         <button string="Cancel" name="action_cancel" type="object" states="draft"/>
                         <button string="Print Invoice" name="print_invoice" type="object" states="paid,posted"/>
+                        <button string="Print Invoice Ticket" name="print_invoice_ticket" type="object" states="paid,posted"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,confirm,sent,paid,posted"/>
                     </header>
                     <sheet>
@@ -96,7 +97,7 @@
                                 <field name="customer_parent_id" readonly="0" required="1" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                                 <!--<field name="customer_parent_type_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>-->
                                 <field name="contact_id" required="1" context="{'default_commercial_agent_id': agent_id}" options="{'no_quick_create': True}"/>  <!--ganti jadi customer parent id-->
-                                <!--<field name="display_mobile" required="1"/>-->
+                                <field name="booker_id" required="0"/>
                                 <field name="provider_type_id" domain="[('code', 'not in', ['tour','visa','passport'])]"/>
                                 <field name="provider_type_id_name" invisible="1"/>
                                 <field name="sector_type" attrs="{'invisible': [('provider_type_id', 'not in', 2)]}"/>
@@ -140,10 +141,10 @@
                                     <field name="sent_date" readonly="1" class="oe_inline"/> -
                                     <field name="sent_uid" readonly="1" class="oe_inline"/>
                                 </div>
-                                <label for="validate_uid" string="Validate by"/>
+                                <label for="issued_uid" string="Validate by"/>
                                 <div>
-                                    <field name="validate_date" class="oe_inline"/> -
-                                    <field name="validate_uid" class="oe_inline"/>
+                                    <field name="issued_date" class="oe_inline"/> -
+                                    <field name="issued_uid" class="oe_inline"/>
                                 </div>
                                 <label for="done_uid" string="Done"/>
                                 <div>
@@ -178,98 +179,15 @@
                         </group>
                         <notebook>
                             <page string="Line(s)" attrs="{'invisible': [('provider_type_id_name', 'not in', ['airline','train','hotel','activity'])]}">  <!--Airlines, Train, Hotel, Activity-->
-                                <field name="line_ids">
-                                    <tree>
-                                        <field name="booking_id" invisible="1"/>
-                                        <field name="transaction_name" invisible="1"/>
-                                        <field name="pnr"/>
-                                        <field name="obj_name"/>
-                                        <!--<field name="obj_subname"/>-->
-                                        <field name="obj_qty"/>
-                                        <field name="origin_id"/>
-<!--                                        <field name="departure_date"/>-->
-                                        <field name="destination_id"/>
-                                        <field name="return_date"/>
-                                        <field name="state" invisible="1"/>
-                                    </tree>
-                                    <form>
-                                        <header>
-                                            <field name="state" widget="statusbar" statusbar_visible="draft,confirm,paid,posted"/>
-                                        </header>
-                                        <field name="booking_id" invisible="1"/>
-                                        <field name="transaction_type" invisible="1"/>
-                                        <field name="transaction_name" invisible="1"/>
-                                        <group attrs="{'invisible': [('transaction_name', 'not in', ['airline','train'])]}">  <!--'airline','train'-->
-                                            <!--Airline / Train-->
-                                            <group>
-                                                <field name="origin_id"/>
-                                                <field name="destination_id"/>
-                                            </group>
-                                            <group>
-                                                <field name="departure_date"/>
-                                                <field name="return_date"/>
-                                            </group>
-                                            <group>
-                                                <field name="carrier_id"/>
-                                                <field name="provider_id" attrs="{'required' :[('state','in',['confirm'])]}"/>
-                                            </group>
-                                            <group>
-                                                <field name="pnr"/>
-                                                <field name="obj_qty"/>
-                                            </group>
-                                            <group>
-                                                <field name="carrier_code"/>
-                                                <field name="carrier_number"/>
-                                            </group>
-                                            <group>
-                                                <field name="class_of_service"/>
-                                                <field name="subclass"/>
-                                            </group>
-                                        </group>
-                                        <group attrs="{'invisible': [('transaction_name', 'not in', ['hotel','activity'])]}">  <!--'hotel','activity'-->
-                                            <!--Hotel / Themes Park-->
-                                            <group>
-                                                <field name="pnr"/>
-                                                <field name="provider_id" attrs="{'required' :[('state','in',['confirm'])]}"/>
-                                                <field name="obj_name"/>
-                                                <field name="obj_subname"/>
-                                            </group>
-                                            <group>
-                                                <field name="check_in"/>
-                                                <field name="check_out" attrs="{'invisible': [('transaction_name', 'not in', ['hotel'])]}"/>
-                                                <field name="obj_qty"/>
-                                                <field name="description"/>
-                                                <field name="meal_type" attrs="{'invisible': [('transaction_name', 'not in', ['hotel'])]}"/>
-                                            </group>
-                                        </group>
-<!--                                        <group attrs="{'invisible': [('transaction_type', 'not in', ['travel_doc',])]}">-->
-<!--                                            &lt;!&ndash;Visa / Passport&ndash;&gt;-->
-<!--                                            <group>-->
-<!--                                                <field name="doc_type"/>-->
-<!--                                                <field name="country_id"/>-->
-<!--                                                <field name="city"/>-->
-<!--                                                <field name="obj_qty"/>-->
-<!--                                                <field name="process_type"/>-->
-<!--                                            </group>-->
-<!--                                            <group attrs="{'invisible': [('doc_type', '!=', 'visa')]}">-->
-<!--                                                <field name="pax_type"/>-->
-<!--                                                <field name="visa_type"/>-->
-<!--                                                <field name="entry_type"/>-->
-<!--                                            </group>-->
-<!--                                            <group attrs="{'invisible': [('doc_type', '!=', 'pass')]}">-->
-<!--                                                <field name="passport_type"/>-->
-<!--                                                <field name="apply_type"/>-->
-<!--                                                &lt;!&ndash;<field name="check_in"/>&ndash;&gt;-->
-<!--                                            </group>-->
-<!--                                        </group>-->
-                                    </form>
-                                </field>
+                                <field name="line_ids"/>
                             </page>
                             <page string="Passenger(s)">
                                 <field name="passenger_ids">  <!--context="{'default_agent_id': sub_agent_id}"-->
                                     <tree editable="bottom">
                                         <field name="booking_id" invisible="1"/>
+                                        <field name="transaction_name" invisible="1"/>
                                         <field name="ticket_number"/>
+                                        <field name="seat"/>  <!--attrs="{'invisible': [('transaction_name', 'not in', ['airline','train'])]}"-->
                                         <field name="agent_id" readonly="1"/>
                                         <field name="passenger_id" string="Name" context="{'default_commercial_agent_id': agent_id}"/>
                                         <field name="pax_type"/>
@@ -361,8 +279,8 @@
             <field name="search_view_id" ref="issued_offline_view_search"/>
             <field name="context">
                 {
-                    'form_view_ref': 'issued_offline_view_form',
-                    'tree_view_ref': 'issued_offline_view_tree',
+                    'form_view_ref': 'tt_reservation_offline.issued_offline_view_form',
+                    'tree_view_ref': 'tt_reservation_offline.issued_offline_view_tree',
                     'search_default_all':1
                 }
             </field>
@@ -376,8 +294,8 @@
             <field name="search_view_id" ref="issued_offline_view_search"/>
             <field name="context">
                 {
-                    'form_view_ref': 'issued_offline_view_form',
-                    'tree_view_ref': 'issued_offline_view_tree',
+                    'form_view_ref': 'tt_reservation_offline.issued_offline_view_form',
+                    'tree_view_ref': 'tt_reservation_offline.issued_offline_view_tree',
                     'search_default_confirm':1
                 }
             </field>
@@ -391,8 +309,8 @@
             <field name="search_view_id" ref="issued_offline_view_search"/>
             <field name="context">
                 {
-                    'form_view_ref': 'issued_offline_view_form',
-                    'tree_view_ref': 'issued_offline_view_tree',
+                    'form_view_ref': 'tt_reservation_offline.issued_offline_view_form',
+                    'tree_view_ref': 'tt_reservation_offline.issued_offline_view_tree',
                     'search_default_paid':1
                 }
             </field>
@@ -406,8 +324,8 @@
             <field name="search_view_id" ref="issued_offline_view_search"/>
             <field name="context">
                 {
-                    'form_view_ref': 'issued_offline_view_form',
-                    'tree_view_ref': 'issued_offline_view_tree',
+                    'form_view_ref': 'tt_reservation_offline.issued_offline_view_form',
+                    'tree_view_ref': 'tt_reservation_offline.issued_offline_view_tree',
                     'search_default_done':1
                 }
             </field>
@@ -421,8 +339,8 @@
             <field name="search_view_id" ref="issued_offline_view_search"/>
             <field name="context">
                 {
-                    'form_view_ref': 'issued_offline_view_form',
-                    'tree_view_ref': 'issued_offline_view_tree',
+                    'form_view_ref': 'tt_reservation_offline.issued_offline_view_form',
+                    'tree_view_ref': 'tt_reservation_offline.issued_offline_view_tree',
                     'search_default_canceled_expired_refund':1
                 }
             </field>
