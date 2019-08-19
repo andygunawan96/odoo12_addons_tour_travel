@@ -32,6 +32,12 @@ CLASS_OF_SERVICE = [
     ('bus', 'Bussiness')
 ]
 
+CLASS_OF_SERVICE_TRAIN = [
+    ('eko', 'Ekonomi'),
+    ('bus', 'Bisnis'),
+    ('eks', 'Eksekutif')
+]
+
 MEAL_TYPE = [
     ('room_only', 'Room Only'),
     ('with_breakfast', 'With Breakfast')
@@ -40,6 +46,7 @@ MEAL_TYPE = [
 
 class IssuedOfflineLines(models.Model):
     _name = 'tt.reservation.offline.lines'
+    _description = 'Rodex Model'
 
     pnr = fields.Char('PNR', readonly=True, states={'confirm': [('readonly', False)]})
 

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="tt_reservation_offline_view_form" model="ir.ui.view">
+            <field name="name">tt.reservation.offline.lines.view.form</field>
+            <field name="model">tt.reservation.offline.lines</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,confirm,paid,posted"/>
+                    </header>
+                    <field name="booking_id" invisible="1"/>
+                    <field name="transaction_type" invisible="1"/>
+                    <field name="transaction_name" invisible="1"/>
+                    <group attrs="{'invisible': [('transaction_name', 'not in', ['airline','train'])]}">  <!--'airline','train'-->
+                        <!--Airline / Train-->
+                        <group>
+                            <field name="origin_id"/>
+                            <field name="destination_id"/>
+                        </group>
+                        <group>
+                            <field name="departure_date"/>
+                            <field name="return_date"/>
+                        </group>
+                        <group>
+                            <field name="carrier_id"/>
+                            <field name="provider_id" attrs="{'required' :[('state','in',['confirm'])]}"/>
+                        </group>
+                        <group>
+                            <field name="pnr"/>
+                            <field name="obj_qty"/>
+                        </group>
+                        <group>
+                            <field name="carrier_code"/>
+                            <field name="carrier_number"/>
+                        </group>
+                        <group>
+                            <field name="class_of_service"/>
+                            <field name="subclass"/>
+                        </group>
+                    </group>
+                    <group attrs="{'invisible': [('transaction_name', 'not in', ['hotel','activity'])]}">  <!--'hotel','activity'-->
+                        <!--Hotel / Themes Park-->
+                        <group>
+                            <field name="pnr"/>
+                            <field name="provider_id" attrs="{'required' :[('state','in',['confirm'])]}"/>
+                            <field name="obj_name"/>
+                            <field name="obj_subname"/>
+                        </group>
+                        <group>
+                            <field name="check_in"/>
+                            <field name="check_out" attrs="{'invisible': [('transaction_name', 'not in', ['hotel'])]}"/>
+                            <field name="obj_qty"/>
+                            <field name="description"/>
+                            <field name="meal_type" attrs="{'invisible': [('transaction_name', 'not in', ['hotel'])]}"/>
+                        </group>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <record id="tt_reservation_offline_view_tree" model="ir.ui.view">
+            <field name="name">tt.reservation.offline.lines.view.tree</field>
+            <field name="model">tt.reservation.offline.lines</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="booking_id" invisible="1"/>
+                    <field name="transaction_name" invisible="1"/>
+                    <field name="pnr"/>
+                    <field name="obj_name"/>
+                    <!--<field name="obj_subname"/>-->
+                    <field name="obj_qty"/>
+                    <field name="origin_id"/>
+<!--                        <field name="departure_date"/>-->
+                    <field name="destination_id"/>
+                    <field name="return_date"/>
+                    <field name="state" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+    </data>
+</odoo>

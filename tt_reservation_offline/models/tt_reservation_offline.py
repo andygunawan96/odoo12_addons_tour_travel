@@ -39,6 +39,7 @@ class IssuedOffline(models.Model):
     _inherit = ['tt.history', 'tt.reservation']
     _name = 'tt.reservation.offline'
     _order = 'name desc'
+    _description = 'Rodex Model'
 
     sub_agent_id = fields.Many2one('tt.agent', 'Sub-Agent', readonly=True, states={'draft': [('readonly', False)]},
                                    help='COR / POR', related='booker_id.agent_id')
