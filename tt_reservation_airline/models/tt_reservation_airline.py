@@ -451,11 +451,11 @@ class ReservationAirline(models.Model):
         dest_obj = self.env['tt.destinations']
         provider_type_id = self.env.ref('tt_reservation_airline.tt_provider_type_airline')
         booking_tmp = {
-            'direction': searchRQ['direction'],
-            'departure_date': searchRQ['departure_date'],
+            'direction': searchRQ.get('direction'),
+            'departure_date': searchRQ['journey_list'][0]['departure_date'],
             'return_date': searchRQ['return_date'],
-            'origin_id': dest_obj.get_id(searchRQ['origin'], provider_type_id),
-            'destination_id': dest_obj.get_id(searchRQ['destination'], provider_type_id),
+            'origin_id': dest_obj.get_id(searchRQ['journey_list'][0]['origin'], provider_type_id),
+            'destination_id': dest_obj.get_id(searchRQ['journey_list'][-1]['destination'], provider_type_id),
             'provider_type_id': provider_type_id.id,
             'adult': searchRQ['adult'],
             'child': searchRQ['child'],
