@@ -453,7 +453,7 @@ class ReservationAirline(models.Model):
         booking_tmp = {
             'direction': searchRQ.get('direction'),
             'departure_date': searchRQ['journey_list'][0]['departure_date'],
-            'return_date': searchRQ['return_date'],
+            'return_date': searchRQ['journey_list'][-1]['departure_date'],
             'origin_id': dest_obj.get_id(searchRQ['journey_list'][0]['origin'], provider_type_id),
             'destination_id': dest_obj.get_id(searchRQ['journey_list'][-1]['destination'], provider_type_id),
             'provider_type_id': provider_type_id.id,
