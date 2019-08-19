@@ -14,7 +14,7 @@ class TtAgent(models.Model):
     _description = 'Tour & Travel - Agent'
 
     name = fields.Char('Name', required=True, default='')
-    logo = fields.Binary('Agent Logo', attachment=True)
+    logo = fields.Binary('Agent Logo')  # , attachment=True
 
     seq_id = fields.Char('Sequence ID')
     reference = fields.Many2one('tt.agent', 'Reference', help="Agent who Refers This Agent")
