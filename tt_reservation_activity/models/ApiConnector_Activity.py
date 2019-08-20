@@ -25,11 +25,15 @@ class ApiConnectorActivity:
         self.environment = environment
 
     def send_request(self, action, post=None, cookie=None, timeout=60):
-        url = '{}/booking/activity'.format(self.credential['url_api'])
+        if action == 'signin':
+            url = '{}/session'.format(self.credential['url_api'])
+        else:
+            url = '{}/booking/activity'.format(self.credential['url_api'])
+
         headers = {
             "Accept": "application/json,text/html,application/xml",
             "Content-Type": "application/json",
-            'cookie': cookie,
+            'signature': cookie,
             'action': action
         }
         return util.send_request(url, data=post, headers=headers, timeout=timeout)
@@ -50,7 +54,7 @@ class ApiConnectorActivity:
                 res['cookie'] = cookie
             else:
                 res['error_code'] = res['http_code']
-        except Exception:
+        except Exception as e:
             err = 3010
             res = {
                 'error_code': err,
@@ -67,13 +71,13 @@ class ApiConnectorActivity:
 
         res = self.send_request('update_booking', req_post, cookie, timeout=60 * 10)
         try:
-            if res['http_code'] == 0:
+            if res['http_code'] in [0, 200]:
                 res = json.loads(res['response'])['result']
             else:
                 res['error_code'] = res['http_code']
                 res['error_msg'] = 'Connection to provider: {}'.format('activity')
 
-        except Exception:
+        except Exception as e:
             res = {
                 'error_code': 500,
                 'error_msg': 'Error while send update booking request'
@@ -86,15 +90,15 @@ class ApiConnectorActivity:
             cookie = self.signin().get('cookie', False)
             counter += 1
 
-        res = self.send_request('get_vouchers', req_post, cookie, timeout=60 * 10)
+        res = self.send_request('get_vouchers_provider', req_post, cookie, timeout=60 * 10)
         try:
-            if res['http_code'] == 0:
+            if res['http_code'] in [0, 200]:
                 res = json.loads(res['response'])['result']
             else:
                 res['error_code'] = res['http_code']
                 res['error_msg'] = 'Connection to provider: {}'.format('activity')
 
-        except Exception:
+        except Exception as e:
             err = 3013
             res = {
                 'error_code': err,
@@ -110,13 +114,13 @@ class ApiConnectorActivity:
 
         res = self.send_request('get_vouchers', req_post, cookie, timeout=60 * 10)
         try:
-            if res['http_code'] == 0:
+            if res['http_code'] in [0, 200]:
                 res = json.loads(res['response'])['result']
             else:
                 res['error_code'] = res['http_code']
                 res['error_msg'] = 'Connection to provider: {}'.format('activity')
 
-        except Exception:
+        except Exception as e:
             err = 3013
             res = {
                 'error_code': err,
@@ -138,15 +142,15 @@ class ApiConnectorActivity:
             'pnr': req.get('pnr', ''),
         }
 
-        res = self.send_request('get_booking', req_post, cookie, timeout=60 * 10)
+        res = self.send_request('get_booking_provider', req_post, cookie, timeout=60 * 10)
         try:
-            if res['http_code'] == 0:
+            if res['http_code'] in [0, 200]:
                 res = json.loads(res['response'])['result']
             else:
                 res['error_code'] = res['http_code']
                 res['error_msg'] = 'Connection to provider: {}'.format('activity')
 
-        except Exception:
+        except Exception as e:
             res = {
                 'error_code': 500,
                 'error_msg': 'Error while send get booking request'
@@ -162,12 +166,12 @@ class ApiConnectorActivity:
 
         res = self.send_request('send_product_analytics', req, cookie, timeout=60 * 10)
         try:
-            if res['http_code'] == 0:
+            if res['http_code'] in [0, 200]:
                 res = json.loads(res['response'])['result']
             else:
                 res['error_code'] = res['http_code']
                 res['error_msg'] = 'Connection to provider: {}'.format('activity')
-        except Exception:
+        except Exception as e:
             err = 3011
             res = {
                 'error_code': err,
@@ -194,15 +198,15 @@ class ApiConnectorActivity:
             'provider': req.get('provider', ''),
         }
 
-        res = self.send_request('get_pricing', req_post, cookie, timeout=60 * 10)
+        res = self.send_request('get_pricing_provider', req_post, cookie, timeout=60 * 10)
         try:
-            if res['http_code'] == 0:
+            if res['http_code'] in [0, 200]:
                 res = json.loads(res['response'])['result']
             else:
                 res['error_code'] = res['http_code']
                 res['error_msg'] = 'Connection to provider: {}'.format('activity')
 
-        except Exception:
+        except Exception as e:
             res = {
                 'error_code': 500,
                 'error_msg': 'Error while send get booking request'
@@ -218,16 +222,137 @@ class ApiConnectorActivity:
 
         res = self.send_request('resend_voucher', req, cookie, timeout=60 * 10)
         try:
-            if res['http_code'] == 0:
+            if res['http_code'] in [0, 200]:
                 res = json.loads(res['response'])['result']
             else:
                 res['error_code'] = res['http_code']
                 res['error_msg'] = 'Connection to provider: {}'.format('activity')
 
-        except Exception:
+        except Exception as e:
             res = {
                 'error_code': 500,
                 'error_msg': 'Error while send get booking request'
             }
+
+        return res
+
+    def search(self, req, cookie):
+        res = self.send_request('search_provider', req, cookie, timeout=60*10)
+
+        try:
+            if res['http_code'] in [0, 200]:
+                res = json.loads(res['response'])['result']
+            else:
+                res['error_code'] = res['http_code']
+                res['error_msg'] = 'Connection to provider: {}'.format('activity')
+
+        except Exception as e:
+            err = 3011
+            res = {
+                'error_code': err,
+                'error_msg': ERR.get_error(err)['error_msg'],
+                'response': 'REQUEST : {}'.format(json.dumps(req))
+            }
+        if res['error_code'] != 0:
+            res['error_msg'] = res['error_msg'] and res['error_msg'] or 'Search send_request ERROR (Provider : {})'.format('activity')
+
+        return res
+
+    def get_countries(self, req, cookie):
+        res = self.send_request('get_countries', req, cookie, timeout=60*10)
+
+        try:
+            if res['http_code'] in [0, 200]:
+                res = json.loads(res['response'])['result']
+            else:
+                res['error_code'] = res['http_code']
+                res['error_msg'] = 'Connection to provider: {}'.format('activity')
+
+        except Exception as e:
+            err = 3011
+            res = {
+                'error_code': err,
+                'error_msg': ERR.get_error(err)['error_msg'],
+                'response': 'REQUEST : {}'.format(json.dumps(req))
+            }
+        if res['error_code'] != 0:
+            res['error_msg'] = res['error_msg'] and res['error_msg'] or 'Search send_request ERROR (Provider : {})'.format('activity')
+
+        return res
+
+    def get_config(self, req, cookie):
+        res = self.send_request('get_config_provider', req, cookie, timeout=60*10)
+        try:
+            if res['http_code'] in [0, 200]:
+                res = json.loads(res['response'])['result']
+            else:
+                res['error_code'] = res['http_code']
+                res['error_msg'] = 'Connection to provider: {}'.format('activity')
+
+        except Exception as e:
+            err = 3011
+            res = {
+                'error_code': err,
+                'error_msg': ERR.get_error(err)['error_msg'],
+                'response': 'REQUEST : get config'
+            }
+        if res['error_code'] != 0:
+            res['error_msg'] = res['error_msg'] and res['error_msg'] or 'Search send_request ERROR (Provider : {})'.format('activity')
+
+        return res
+
+    def get_details(self, req, cookie):
+        res = self.send_request('get_details_provider', req, cookie, timeout=60*10)
+        try:
+            if res['http_code'] in [0, 200]:
+                res = json.loads(res['response'])['result']
+            else:
+                res['error_code'] = res['http_code']
+                res['error_msg'] = 'Connection to provider: {}'.format('activity')
+        except Exception as e:
+            err = 3011
+            res = {
+                'error_code': err,
+                'error_msg': ERR.get_error(err)['error_msg'],
+                'response': 'REQUEST : {}'.format(json.dumps(req))
+            }
+        if res['error_code'] != 0:
+            res['error_msg'] = res['error_msg'] and res['error_msg'] or 'Search send_request ERROR (Provider : {})'.format('activity')
+
+        return res
+
+    def file_upload(self, data, cookie):
+        res = self.send_request('file_upload_provider', data, cookie, timeout=60*10)
+        try:
+            if res['http_code'] in [0, 200]:
+                res = json.loads(res['response'])['result']
+            else:
+                res['error_code'] = res['http_code']
+                res['error_msg'] = 'Connection to provider: {}'.format('activity')
+        except Exception as e:
+            err = 3013
+            res = {
+                'error_code': err,
+                'error_msg': ERR.get_error(err)['error_msg'],
+            }
+        return res
+
+    def get_availability(self, req, cookie):
+        res = self.send_request('get_availability_provider', req, cookie, timeout=60*10)
+        try:
+            if res['http_code'] in [0, 200]:
+                res = res['response']['result']
+            else:
+                res['error_code'] = res['http_code']
+                res['error_msg'] = 'Connection to provider: {}'.format('activity')
+        except Exception as e:
+            err = 3011
+            res = {
+                'error_code': err,
+                'error_msg': ERR.get_error(err)['error_msg'],
+                'response': 'REQUEST : {}'.format(json.dumps(req))
+            }
+        if res['error_code'] != 0:
+            res['error_msg'] = res['error_msg'] and res['error_msg'] or 'Search send_request ERROR (Provider : {})'.format('activity')
 
         return res

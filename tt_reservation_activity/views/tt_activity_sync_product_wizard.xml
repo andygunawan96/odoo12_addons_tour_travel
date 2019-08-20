@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+		<record id="activity_sync_product_wizard" model="ir.ui.view">
+			<field name="name">Activity Sync Product Wizard</field>
+			<field name="model">activity.sync.product.wizard</field>
+			<field name="arch" type="xml">
+				<form string="Message">
+					<group>
+						<group>
+							<field name="provider_id"/>
+							<field name="provider_code" invisible="1"/>
+						</group>
+						<group>
+							<field name="add_parameter" attrs="{'invisible': [('provider_code', 'not in', ['klook'])]}"/>
+						</group>
+					</group>
+					<footer>
+						<button string="Sync Products" name="sync_product" type="object" class="btn-primary" />
+						<button string="Configure Products" name="config_product" type="object" class="btn-primary" />
+						<button string="Cancel" class="btn-default" special="cancel" />
+					</footer>
+				</form>
+			</field>
+		</record>
+
+		<record id="action_activity_sync_product_wizard" model="ir.actions.act_window">
+			<field name="name">Activity Sync Products</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">activity.sync.product.wizard</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="activity_sync_product_wizard"/>
+			<field name="target">new</field>
+		</record>
+
+		<menuitem
+				id="sub_menu_activity_sync_product"
+				name="Sync Products"
+				parent="tt_reservation_activity.menu_tour_travel_activity_config"
+				action="action_activity_sync_product_wizard"
+				sequence="1"
+				groups="tt_base.group_tt_tour_travel_operator"
+		/>
+
+	</data>
+</odoo>
