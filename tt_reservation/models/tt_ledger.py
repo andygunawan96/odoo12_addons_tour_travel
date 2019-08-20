@@ -35,10 +35,9 @@ class tt_ledger(models.Model):
             'provider_type_id': resv_obj.provider_type_id.id,
             'description': 'Ledger for ' + resv_obj.name,
             'res_id': resv_obj.id,
-            'res_model': resv_obj._name,  #
+            'res_model': resv_obj._name,
             'issued_uid': resv_obj.sudo().issued_uid.id,
-            'agent_id': resv_obj.agent_id.id,
-            'agent_type_id': resv_obj.agent_type_id.id
+            'agent_id': vals.get('agent_id') or resv_obj.agent_id.id,
         })
         return vals
 

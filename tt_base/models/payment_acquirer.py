@@ -84,7 +84,8 @@ class PaymentAcquirer(models.Model):
     def get_payment_acquirer_api(self, req,context):
         try:
             print("payment acq req\n"+json.dumps(req))
-            agent_obj = self.env['tt.agent'].sudo().browse(context['agent_id'])
+
+            agent_obj = self.env['tt.agent'].sudo().browse(context['co_agent_id'])
             if not agent_obj:
                 # Return Error jika agent_id tidak ditemukan
                 return ERR.get_error(1008)
@@ -92,7 +93,7 @@ class PaymentAcquirer(models.Model):
             if util.get_without_empty(req,'order_number'):
                 amount = self.env['tt.reservation.%s' % req['provider_type']].search([('name','=',req['order_number'])],limit=1).total
             else:
-                amount = req['amount']
+                amount = req.get('amount')
 
             dom = [('website_published', '=', True), ('company_id', '=', self.env.user.company_id.id)]
             # Ambil agent_id Parent nya (Citranya corpor tsb)
@@ -100,7 +101,8 @@ class PaymentAcquirer(models.Model):
             #                                   self.env.ref('tt_base_rodex.agent_type_por').id):
             if req['transaction_type'] == 'top_up':
                 # Kalau top up Ambil agent_id HO
-                dom.append(('agent_id', 'in', self.env['tt.agent'].sudo().search([('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id )], limit=1) ))
+                dom.append(('agent_id', '=', self.env['tt.agent'].sudo().search([('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id )], limit=1).id))
+                amount = self.env['tt.top.up'].sudo().search([('name','=',req['top_up_name'])]).total
             elif req['transaction_type'] == 'billing':
                 dom.append(('agent_id', '=', context['agent_id']))
 
@@ -112,7 +114,7 @@ class PaymentAcquirer(models.Model):
             res = {}
             res['non_member'] = values
             res['member'] = {}
-            res['member']['credit_limit'] = self.generate_credit_limit(req['booker_seq_id'])
+            res['member']['credit_limit'] = self.generate_credit_limit(req['booker_seq_id']) if util.get_without_empty(req,'booker_seq_id') else []
             print("payment acq resp\n"+ json.dumps(res))
             return ERR.get_no_error(res)
         except Exception as e:

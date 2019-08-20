@@ -16,6 +16,7 @@
                         <field name="foreign_amount"/>
                         <field name="sequence"/>
                         <field name="description"/>
+                        <field name="commission_agent_id"/>
                     </group>
                 </sheet>
             </form>

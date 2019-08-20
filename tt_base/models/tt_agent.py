@@ -192,11 +192,11 @@ class TtAgent(models.Model):
         }
 
     def get_transaction(self):
-        self.get_transaction_api({'minimum':0,'maximum':20},{'agent_id':self.id})
+        self.get_transaction_api({'minimum':0,'maximum':20},{'co_agent_id':self.id})
 
     def get_transaction_api(self,req,context):
         try:
-            agent_obj = self.browse(context['agent_id'])
+            agent_obj = self.browse(context['co_agent_id'])
             if not agent_obj:
                 return ERR.get_error(1008)
 

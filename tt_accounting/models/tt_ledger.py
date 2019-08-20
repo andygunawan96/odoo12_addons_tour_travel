@@ -62,7 +62,7 @@ class Ledger(models.Model):
                 'ref': ref,
                 'currency_id': currency_id,
                 'date': date,
-                'transaction_type': ledger_type
+                'transaction_type': ledger_type,
             }
 
     def reverse_ledger(self):
@@ -140,7 +140,9 @@ class Ledger(models.Model):
         for agent_id, amount in agent_commission.items():
             values = self.prepare_vals('Commission : ' + booking_obj.name, booking_obj.name, datetime.now(),
                                        3, booking_obj.currency_id.id, amount, 0)
-
+            values.update({
+                'agent_id': agent_id,
+            })
             values = self.prepare_vals_for_resv(booking_obj,values)
             self.create(values)
 

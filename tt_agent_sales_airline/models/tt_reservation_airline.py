@@ -40,11 +40,9 @@ class ReservationTrain(models.Model):
     def get_segment_description(self):
         tmp = ''
         # vals = []
-        for rec in self.segment_ids:
+        for rec in self.journey_ids:
             tmp += '%s(%s) - %s(%s),' % (rec.origin_id.city, rec.origin_id.code, rec.destination_id.city, rec.destination_id.code)
             tmp += '%s - %s\n ' % (rec.departure_date[:16], rec.arrival_date[:16])
-            # tmp += rec.carrier_id and rec.carrier_id.name + ' ' or ''
-            tmp += rec.carrier_id and rec.carrier_id.name + '\n' or '\n'
         return tmp
 
     def action_create_invoice(self):

@@ -6,9 +6,24 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="name"/>
+                <field name="payment_acquirer_id"/>
+                <field name="date"/>
+                <field name="due_date"/>
+                <field name="agent_id"/>
+                <field name="total"/>
                 <field name="state"/>
                 <button name="validate" type="object" string="validate"/>
             </tree>
+        </field>
+    </record>
+
+        <record id="tt_top_up_view_search" model="ir.ui.view">
+        <field name="name">tt.top.up.view.search</field>
+        <field name="model">tt.top.up</field>
+        <field name="arch" type="xml">
+            <search>
+                <filter string="Request" name='request' domain="[('state', '=', 'request')]"/>
+            </search>
         </field>
     </record>
 
@@ -17,6 +32,11 @@
         <field name="res_model">tt.top.up</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
+        <field name="context">
+            {
+                "search_default_request":1
+            }
+        </field>
     </record>
 
     <menuitem id="top_top_up"
