@@ -90,12 +90,11 @@ class TtCustomer(models.Model):
             'gender': self.gender and self.gender or '',
             'birth_date': self.birth_date and self.birth_date.strftime('%Y-%m-%d') or '',
             'nationality_code': self.nationality_id.code and self.nationality_id.code or '',
-            'marital_status': self.marital_status,
+            'marital_status': self.marital_status and self.marital_status or '',
             'phones': phone_list,
             'email': self.email and self.email or '',
             'seq_id': self.seq_id
         }
-
         return res
 
     def copy_to_passenger(self):
