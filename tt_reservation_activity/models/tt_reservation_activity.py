@@ -79,7 +79,7 @@ class ActivityResendVoucher(models.TransientModel):
             raise UserError(_('Resend Voucher Failed!'))
 
 
-class ActivityBooking(models.Model):
+class ReservationActivity(models.Model):
     _inherit = ['tt.reservation']
     _name = 'tt.reservation.activity'
     _order = 'id DESC'
@@ -113,6 +113,7 @@ class ActivityBooking(models.Model):
     information = fields.Text('Additional Information')
     file_upload = fields.Text('File Upload')
     voucher_url = fields.Text('Voucher URL')
+    provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type',default=lambda self: self.env.ref('tt_reservation_activity.tt_provider_type_activity'))
 
     def _calc_grand_total(self):
         for rec in self:
@@ -487,18 +488,6 @@ class ActivityBooking(models.Model):
                     for temp4 in temp3:
                         temp4.sudo().unlink()
 
-                    self.vendor_ledger_id = self.env['tt.vendor.ledger'].sudo().create({
-                        'debit': 0,
-                        'credit': temp2,
-                        'vendor_id': self.env['res.partner'].search([('provider_code', '=', self.provider_name)],
-                                                                    limit=1).id,
-                        'description': self.name,
-                        'name': self.env['res.partner'].search([('provider_code', '=', self.provider_name)],
-                                                               limit=1).name,
-                    })
-                    self.send_notif_current_balance(self.sudo().vendor_ledger_id.curr_balance, self.state,
-                                                    self.pnr)
-
     def action_approved(self):
         self.write({
             'state': 'approved',
@@ -761,7 +750,9 @@ class ActivityBooking(models.Model):
             for rec in booking_obj.ledger_id:
                 if rec.transaction_type == 3:
                     ledger_type = 'commission'
-                if rec.transaction_type == 23:
+                elif rec.transaction_type == 23:
+                    ledger_type = 'activity'
+                else:
                     ledger_type = 'activity'
                 vals = self.env['tt.ledger'].prepare_vals(rec.name, rec.ref, str(fields.Datetime.now()),
                                                           ledger_type, rec.currency_id.id, rec.credit, rec.debit)
@@ -1086,15 +1077,6 @@ class ActivityBooking(models.Model):
                 temp3 = self.env['tt.vendor.ledger'].search([('description', '=', booking_obj.name)])
                 for temp4 in temp3:
                     temp4.sudo().unlink()
-
-                booking_obj.vendor_ledger_id = self.env['tt.vendor.ledger'].sudo().create({
-                    'debit': 0,
-                    'credit': temp2,
-                    'vendor_id': self.env['res.partner'].search([('provider_code', '=', booking_obj.provider_name)], limit=1).id,
-                    'description': booking_obj.name,
-                    'name': self.env['res.partner'].search([('provider_code', '=', booking_obj.provider_name)], limit=1).name,
-                })
-                self.send_notif_current_balance(booking_obj.sudo().vendor_ledger_id.curr_balance, booking_obj.state, booking_obj.pnr)
 
             return {
                 'error_code': 0,
