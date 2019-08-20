@@ -13,6 +13,7 @@ class Ledger(models.Model):
 class AgentInvoice(models.Model):
     _name = 'tt.agent.invoice'
     _description = 'Rodex Model'
+
     name = fields.Char('Name', default='New')
     total = fields.Monetary('Total', compute="_compute_total")
     paid_amount = fields.Monetary('Paid Amount', readonly=True)

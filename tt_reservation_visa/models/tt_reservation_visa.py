@@ -30,7 +30,7 @@ STATE_VISA = [
 class TtVisa(models.Model):
     _name = 'tt.reservation.visa'
     _inherit = ['tt.reservation', 'tt.history']
-    _order = 'issued_date desc'
+    _order = 'name desc'
     _description = 'Rodex Model'
 
     provider_type_id = fields.Many2one('tt.provider.type', required=True, readonly=True,
@@ -313,7 +313,7 @@ class TtVisa(models.Model):
             "passport_expdate": "",
             "passport_number": "",
             "passenger_id": "",
-            "master_visa_Id": "3",
+            "master_visa_Id": "1",
             "required": [
                 {
                     "is_copy": True,
@@ -344,7 +344,7 @@ class TtVisa(models.Model):
             ]
         },
         {
-            "pax_type": "CHD",
+            "pax_type": "ADT",
             "first_name": "pax",
             "last_name": "tiga",
             "title": "MR",
@@ -355,7 +355,7 @@ class TtVisa(models.Model):
             "passport_expdate": "",
             "passport_number": "",
             "passenger_id": "",
-            "master_visa_Id": "2",
+            "master_visa_Id": "1",
             "required": [
                 {
                     "is_copy": True,
@@ -374,7 +374,7 @@ class TtVisa(models.Model):
     }
 
     param_context = {
-        'co_uid': 7,
+        'co_uid': 2,
         'agent_id': 3
     }
 
@@ -498,14 +498,14 @@ class TtVisa(models.Model):
         print('Response : ' + str(json.dumps(res)))
         return Response().get_no_error(res)
 
-    def create_booking_visa_api(self, data):  # , context, kwargs
-        sell_visa = copy.deepcopy(self.param_sell_visa)  # data['sell_visa']
-        booker = copy.deepcopy(self.param_booker)  # data['booker']
-        contact = copy.deepcopy(self.param_contact)  # data['contact']
-        passengers = copy.deepcopy(self.param_passenger)  # data['passenger']
-        search = copy.deepcopy(self.param_search) # data['search']
-        context = copy.deepcopy(self.param_context)  # context
-        kwargs = copy.deepcopy(self.param_kwargs)  # kwargs
+    def create_booking_visa_api(self, data, context, kwargs):
+        sell_visa = data['sell_visa']  # copy.deepcopy(self.param_sell_visa)
+        booker = data['booker']  # copy.deepcopy(self.param_booker)
+        contact = data['contact']  # copy.deepcopy(self.param_contact)
+        passengers = data['passenger']  # copy.deepcopy(self.param_passenger)
+        search = data['search'] # copy.deepcopy(self.param_search)
+        context = context  # copy.deepcopy(self.param_context)
+        kwargs = kwargs  # copy.deepcopy(self.param_kwargs)
 
         try:
             user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
@@ -982,7 +982,7 @@ class TtVisa(models.Model):
                 ho_profit += pax.pricelist_id.cost_price - pax.pricelist_id.nta_price
 
             vals = ledger.prepare_vals('Profit HO ' + doc_type + ' : ' + rec.name, rec.name, rec.issued_date,
-                                       'commission', rec.currency_id.id, ho_profit, 0)
+                                       3, rec.currency_id.id, ho_profit, 0)
             vals = ledger.prepare_vals_for_resv(self, vals)
             vals.update({
                 'agent_id': self.env['tt.agent'].sudo().search([('agent_type_id.name', '=', 'HO')], limit=1).id
@@ -1031,7 +1031,7 @@ class TtVisa(models.Model):
             print('Total : ' + str(total_order))
 
             vals = ledger.prepare_vals('Order ' + doc_type + ' : ' + rec.name, rec.name, rec.issued_date,
-                                       'travel.doc', rec.currency_id.id, 0, total_order)
+                                       2, rec.currency_id.id, 0, total_order)
             vals = ledger.prepare_vals_for_resv(self, vals)
             # vals.update({
             #     'res_id': rec.id,
@@ -1059,7 +1059,7 @@ class TtVisa(models.Model):
             # print('HO Comm : ' + str(ho_commission))
 
             if agent_commission > 0:
-                vals = ledger_obj.prepare_vals('Commission : ' + rec.name, rec.name, rec.issued_date, 'commission',
+                vals = ledger_obj.prepare_vals('Commission : ' + rec.name, rec.name, rec.issued_date, 3,
                                                rec.currency_id.id, agent_commission, 0)
                 vals = ledger_obj.prepare_vals_for_resv(self, vals)
                 vals.update({
@@ -1074,8 +1074,7 @@ class TtVisa(models.Model):
                 # rec.commission_ledger_id = commission_aml.id
             if parent_commission > 0:
                 vals = ledger_obj.prepare_vals('Commission : ' + rec.name, 'PA: ' + rec.name, rec.issued_date,
-                                               'commission',
-                                               rec.currency_id.id, parent_commission, 0)
+                                               3, rec.currency_id.id, parent_commission, 0)
                 vals = ledger_obj.prepare_vals_for_resv(self, vals)
                 vals.update({
                     'agent_id': rec.agent_id.parent_agent_id.id,
@@ -1086,8 +1085,7 @@ class TtVisa(models.Model):
 
             if int(ho_commission) > 0:
                 vals = ledger_obj.prepare_vals('Commission : ' + rec.name, 'HO: ' + rec.name, rec.issued_date,
-                                               'commission',
-                                               rec.currency_id.id, ho_commission, 0)
+                                               3, rec.currency_id.id, ho_commission, 0)
                 vals = ledger_obj.prepare_vals_for_resv(self, vals)
                 vals.update({
                     'agent_id': rec.env['tt.agent'].sudo().search(
@@ -1117,7 +1115,7 @@ class TtVisa(models.Model):
                 ho_profit += pax.pricelist_id.cost_price - pax.pricelist_id.nta_price
 
             vals = ledger.prepare_vals('Profit ' + doc_type + ' : ' + rec.name, rec.name, rec.issued_date,
-                                       'commission', rec.currency_id.id, 0, ho_profit)
+                                       3, rec.currency_id.id, 0, ho_profit)
             vals = ledger.prepare_vals_for_resv(self, vals)
             vals.update({
                 'agent_id': self.env['tt.agent'].sudo().search([('parent_agent_id', '=', False)], limit=1).id,
@@ -1150,8 +1148,7 @@ class TtVisa(models.Model):
             doc_type = ','.join(str(e) for e in doc_type)
 
             vals = ledger.prepare_vals('Order ' + doc_type + ' : ' + rec.name, rec.name, rec.issued_date,
-                                       'travel.doc',
-                                       rec.currency_id.id, rec.total, 0)
+                                       2, rec.currency_id.id, rec.total, 0)
             vals = ledger.prepare_vals_for_resv(self, vals)
             # vals['transport_type'] = rec.transport_type
             # vals['display_provider_name'] = rec.display_provider_name
@@ -1187,8 +1184,7 @@ class TtVisa(models.Model):
                 # rec.commission_ledger_id = commission_aml.id
             if parent_commission > 0:
                 vals = ledger_obj.prepare_vals('Commission : ' + rec.name, 'PA: ' + rec.name, rec.issued_date,
-                                               'commission',
-                                               rec.currency_id.id, 0, parent_commission)
+                                               3, rec.currency_id.id, 0, parent_commission)
                 vals = ledger_obj.prepare_vals_for_resv(self, vals)
                 vals.update({
                     'agent_id': rec.agent_id.parent_agent_id.id,
@@ -1202,8 +1198,7 @@ class TtVisa(models.Model):
 
             if int(ho_commission) > 0:
                 vals = ledger_obj.prepare_vals('Commission : ' + rec.name, 'HO: ' + rec.name, rec.issued_date,
-                                               'commission',
-                                               rec.currency_id.id, 0, ho_commission)
+                                               3, rec.currency_id.id, 0, ho_commission)
                 vals.update({
                     'agent_id': rec.env['tt.agent'].sudo().search(
                         [('parent_agent_id', '=', False)], limit=1).id,
@@ -1217,11 +1212,24 @@ class TtVisa(models.Model):
                 # commission_aml.action_done()
 
     ######################################################################################################
-    # INVOICE
+    # PRINTOUT
     ######################################################################################################
 
-    def create_agent_invoice(self):
-        pass
+    def do_print_out_visa_ho(self):
+        self.ensure_one()
+        data = {
+            'ids': self.ids,
+            'model': self._name,
+        }
+        return self.env.ref('tt_reservation_visa.action_report_printout_tt_visa_ho').report_action(self, data=data)
+
+    def do_print_out_visa_cust(self):
+        self.ensure_one()
+        data = {
+            'ids': self.ids,
+            'model': self._name,
+        }
+        return self.env.ref('tt_reservation_visa.action_report_printout_tt_visa_cust').report_action(self, data=data)
 
     ######################################################################################################
     # OTHERS
