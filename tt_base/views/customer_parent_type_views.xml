@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="tt_customer_parent_type_form_view" model="ir.ui.view">
+            <field name="name">tt.customer.parent.type.form.view</field>
+            <field name="model">tt.customer.parent.type</field>
+            <field name="arch" type="xml">
+                <form string="Customer Parent">
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="toggle_active" type="object" groups="base.group_user"
+                                    class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button"
+                                       options='{"terminology": "archive"}'/>
+                            </button>
+                        </div>
+                        <div class="oe_title"></div>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="tt_customer_parent_type_tree_view" model="ir.ui.view">
+            <field name="name">tt.customer.parent.type.tree.view</field>
+            <field name="model">tt.customer.parent.type</field>
+            <field name="arch" type="xml">
+                <tree string="Customer Parent">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="tt_customer_parent_type_action_view" model="ir.actions.act_window">
+            <field name="name">Customer Bank</field>
+            <field name="view_type">form</field>
+            <field name="res_model">tt.customer.parent.type</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                <!-- Add Text Here -->
+              </p><p>
+                <!-- More details about what a user can do with this object will be OK -->
+              </p>
+            </field>
+            <field name="context">
+                {
+                    'form_view_ref': 'tt_base.tt_customer_parent_type_form_view',
+                    'tree_view_ref': 'tt_base.tt_customer_parent_type_tree_view'
+                }
+            </field>
+        </record>
+    </data>
+</odoo>

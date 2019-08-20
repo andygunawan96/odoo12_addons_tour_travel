@@ -141,7 +141,7 @@ class HotelReservation(models.Model):
         res = self.read()
         res = res and res[0] or {}
         datas['form'] = res
-        return self.env.ref('tt_report_common.action_report_printout_invoice').report_action([], data=datas)
+        return self.env.ref('tt_report_common.action_report_printout_reservation_hotel').report_action([], data=datas)
 
     # @api.depends('room_detail_ids.commission_amount', 'room_detail_ids.qty')
     def _compute_total_commission_amount(self):

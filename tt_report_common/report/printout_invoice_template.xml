@@ -17,11 +17,11 @@
                     </t>
                 </div>
 
-                <t t-if="o_addr.agent_id.address_ids">
+                <t t-if="o_addr.address_ids">
                     <div>
                         <div>
                             <!--<i t-if="not options.get('no_marker')" class='fa fa-map-marker'/> -->
-                            <t t-set="add_obj" t-value="o_addr.agent_id.address_ids[0]"/>
+                            <t t-set="add_obj" t-value="o_addr.address_ids[0]"/>
                             <span t-esc="add_obj.address"/>
                             <!--<t t-if="o_addr.street2">-->
                             <!--, <span t-esc="o_addr.street2"/>-->
@@ -208,6 +208,32 @@
     </template>
 
     <template id="external_layout_footer">
+        <div class="row">
+            <!--No Rekening-->
+            <div class="col-7">
+                <t t-if="doc.agent_id.payment_acquirer_ids">
+                    Transfer pada rekening berikut:
+                    <ul>
+                        <t t-set="limit" t-value="3"/>
+                        <t t-set="current" t-value="0"/>
+                        <t t-foreach="doc.agent_id.payment_acquirer_ids" t-as="payment_id">
+                            <t t-if="payment_id.account_number and payment_id.account_name and current &lt; limit">
+                                <li><span t-field="payment_id.bank_id.name"/> (IDR) <span t-field="payment_id.account_number"/> A/N <span t-field="payment_id.account_name"/></li>
+                                <t t-set="current" t-value="current + 1"/>
+                            </t>
+                        </t>
+                    </ul>
+                </t>
+            </div>
+            <div class="col-1"/>
+            <!--Signature-->
+            <div class="col-4 text-center" style="font-size:10px;">
+                <p style="color: white;">.</p>
+                <p style="color: white;">.</p>
+                <p style="color: white;">.</p>
+                <p style="border-top: 1px solid black">Representative Signature</p>
+            </div>
+        </div>
         <div class="footer">
             <div class="row text-center" style="border-top: 1px solid black;">
                 <div class="col col-3 offset-9 text-right">
@@ -232,24 +258,44 @@
             <table class="table table-condensed mt32">
                 <thead>
                     <tr>
-                        <th>Service Type</th>
-                        <th>Name</th>
+                        <th>Ref. Number</th>
+                        <th>Pax(s)</th><!-- Remark untuk tipe 1 -->
                         <th>Description</th>
-                        <th class="text-right">Qty</th>
                         <th class="text-right">Amount</th>
+                        <th class="text-right">Tax</th>
                         <th class="text-center">Disc</th>
                         <th class="text-right">Total</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr t-foreach="doc.invoice_line_ids" t-as="line">
-                        <td><span t-field="line.model_type_id.name"/></td>
-                        <td><span t-field="line.name"/></td>
-                        <td><span t-field="line.desc"/></td>
-                        <td class="text-right">1</td>
-                        <td class="text-right"><span t-field="line.total" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/></td>
-                        <td class="text-center"><span t-esc="0" t-esc-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/></td>
-                        <td class="text-right"><span t-field="line.total" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/></td>
+<!--                    <tr t-foreach="doc.invoice_line_ids" t-as="line">-->
+<!--                        <td><span t-field="line.name"/></td>-->
+<!--                        <td><span t-field="line.desc"/></td>-->
+<!--                        <td class="text-right"><span t-field="line.total" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/></td>-->
+<!--                        <td class="text-center"><span t-esc="0" t-esc-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/></td>-->
+<!--                        <td class="text-center"><span t-esc="0" t-esc-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/></td>-->
+<!--                        <td class="text-right"><span t-field="line.total" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/></td>-->
+<!--                    </tr>-->
+                    <tr t-foreach="inv_lines[doc.id].keys()" t-as="line_idx">
+                        <t t-set="line" t-value="inv_lines[doc.id][line_idx]"/>
+                        <t t-set="col_len" t-value="len(line['descs'])"/>
+                        <td t-att-colspan="col_len"><span t-esc="line_idx"/></td>
+                        <td t-att-colspan="col_len">
+                            <ul style="padding-left:1px;">
+                                <t t-foreach="line['paxs']" t-as="pax">
+                                    <li><span t-field="pax.first_name"/> <span t-field="pax.last_name"/></li>
+                                </t>
+                            </ul>
+                        </td>
+                        <td>
+                            <t t-foreach="line['descs']" t-as="desc">
+                                <span t-esc="desc"/>
+                            </t>
+                        </td>
+                        <td class="text-right" t-att-colspan="col_len"><span t-esc="line['total']" t-esc-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                        <td class="text-right" t-att-colspan="col_len"><span t-esc="0" t-esc-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                        <td class="text-right" t-att-colspan="col_len"><span t-esc="0" t-esc-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                        <td class="text-right" t-att-colspan="col_len"><span t-esc="line['total']" t-esc-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
                     </tr>
                 </tbody>
             </table>
@@ -267,12 +313,6 @@
                     </tr>
                     <tr>
                         <td><strong>Tax</strong></td>
-                        <td class="text-right">
-                            <span t-esc="0" t-esc-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><strong>Service Charge</strong></td>
                         <td class="text-right">
                             <span t-esc="0" t-esc-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
                         </td>
