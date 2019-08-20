@@ -1,7 +1,6 @@
 from odoo import api, fields, models, _
 
 
-
 class SplitInvoice(models.Model):
     _name = "tt.split.invoice.wizard"
     _description = 'Rodex Model'
