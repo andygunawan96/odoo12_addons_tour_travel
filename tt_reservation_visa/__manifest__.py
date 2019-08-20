@@ -20,7 +20,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'tt_base', 'tt_traveldoc', 'tt_reservation'],
+    'depends': ['base', 'tt_base', 'tt_traveldoc', 'tt_reservation', 'tt_report_common'],
 
     # always loaded
     'data': [
@@ -34,7 +34,7 @@
         'views/tt_reservation_visa_pricelist_views.xml',
         'views/tt_reservation_visa_service_charge_views.xml',
         'report/printout_menu.xml',
-        # 'report/printout_visa_ho_template.xml',
+        'report/printout_visa_ho_template.xml',
         'report/printout_visa_customer_template.xml'
     ],
     # only loaded in demonstration mode
