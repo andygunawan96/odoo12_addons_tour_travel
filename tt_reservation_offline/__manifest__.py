@@ -30,9 +30,11 @@
         # 'views/templates.xml',
         'data/ir_sequence_data.xml',
         'views/issued_offline_views.xml',
+        'views/tt_reservation_offline_lines_views.xml',
         'report/paperformat_A4.xml',
         'report/printout_menu.xml',
         'report/printout_invoice_template.xml',
+        'report/printout_invoice_ticket_template.xml',
     ],
     # only loaded in demonstration mode
     'demo': [],

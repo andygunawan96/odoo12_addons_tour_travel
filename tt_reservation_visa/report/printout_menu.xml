@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <report
+            string="Visa HO"
+            id="action_report_printout_tt_visa_ho"
+            model="tt.reservation_visa"
+            report_type="qweb-html"
+            name="tt_reservation_visa.printout_visa_ho"
+            file="tt_reservation_visa.printout_visa_ho"
+            paperformat="tt_report_common.paperformat_A4"
+            menu = "False"
+        />
+
+        <report
+            string="Visa Customer"
+            id="action_report_printout_tt_visa_cust"
+            model="tt.reservation_visa"
+            report_type="qweb-html"
+            name="tt_reservation_visa.printout_visa_cust"
+            file="tt_reservation_visa.printout_visa_cust"
+            paperformat="tt_report_common.paperformat_A4"
+            menu = "False"
+        />
+
+    </data>
+</odoo>
