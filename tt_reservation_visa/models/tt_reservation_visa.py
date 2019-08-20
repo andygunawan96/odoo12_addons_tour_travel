@@ -30,7 +30,7 @@ STATE_VISA = [
 class TtVisa(models.Model):
     _name = 'tt.reservation.visa'
     _inherit = ['tt.reservation', 'tt.history']
-    _order = 'issued_date desc'
+    _order = 'name desc'
     _description = 'Rodex Model'
 
     provider_type_id = fields.Many2one('tt.provider.type', required=True, readonly=True,
@@ -313,7 +313,7 @@ class TtVisa(models.Model):
             "passport_expdate": "",
             "passport_number": "",
             "passenger_id": "",
-            "master_visa_Id": "3",
+            "master_visa_Id": "1",
             "required": [
                 {
                     "is_copy": True,
@@ -344,7 +344,7 @@ class TtVisa(models.Model):
             ]
         },
         {
-            "pax_type": "CHD",
+            "pax_type": "ADT",
             "first_name": "pax",
             "last_name": "tiga",
             "title": "MR",
@@ -355,7 +355,7 @@ class TtVisa(models.Model):
             "passport_expdate": "",
             "passport_number": "",
             "passenger_id": "",
-            "master_visa_Id": "2",
+            "master_visa_Id": "1",
             "required": [
                 {
                     "is_copy": True,
@@ -374,7 +374,7 @@ class TtVisa(models.Model):
     }
 
     param_context = {
-        'co_uid': 7,
+        'co_uid': 2,
         'agent_id': 3
     }
 
@@ -498,14 +498,14 @@ class TtVisa(models.Model):
         print('Response : ' + str(json.dumps(res)))
         return Response().get_no_error(res)
 
-    def create_booking_visa_api(self, data):  # , context, kwargs
-        sell_visa = copy.deepcopy(self.param_sell_visa)  # data['sell_visa']
-        booker = copy.deepcopy(self.param_booker)  # data['booker']
-        contact = copy.deepcopy(self.param_contact)  # data['contact']
-        passengers = copy.deepcopy(self.param_passenger)  # data['passenger']
-        search = copy.deepcopy(self.param_search) # data['search']
-        context = copy.deepcopy(self.param_context)  # context
-        kwargs = copy.deepcopy(self.param_kwargs)  # kwargs
+    def create_booking_visa_api(self, data, context, kwargs):
+        sell_visa = data['sell_visa']  # copy.deepcopy(self.param_sell_visa)
+        booker = data['booker']  # copy.deepcopy(self.param_booker)
+        contact = data['contact']  # copy.deepcopy(self.param_contact)
+        passengers = data['passenger']  # copy.deepcopy(self.param_passenger)
+        search = data['search'] # copy.deepcopy(self.param_search)
+        context = context  # copy.deepcopy(self.param_context)
+        kwargs = kwargs  # copy.deepcopy(self.param_kwargs)
 
         try:
             user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
@@ -1212,11 +1212,24 @@ class TtVisa(models.Model):
                 # commission_aml.action_done()
 
     ######################################################################################################
-    # INVOICE
+    # PRINTOUT
     ######################################################################################################
 
-    def create_agent_invoice(self):
-        pass
+    def do_print_out_visa_ho(self):
+        self.ensure_one()
+        data = {
+            'ids': self.ids,
+            'model': self._name,
+        }
+        return self.env.ref('tt_reservation_visa.action_report_printout_tt_visa_ho').report_action(self, data=data)
+
+    def do_print_out_visa_cust(self):
+        self.ensure_one()
+        data = {
+            'ids': self.ids,
+            'model': self._name,
+        }
+        return self.env.ref('tt_reservation_visa.action_report_printout_tt_visa_cust').report_action(self, data=data)
 
     ######################################################################################################
     # OTHERS

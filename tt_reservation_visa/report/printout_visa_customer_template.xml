@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="printout_visa_cust_template">
+        <t t-foreach="docs" t-as="o">
+            <t t-foreach="o.passenger_ids" t-as="p">
+                <t t-call="web.html_container">
+                    <div class="header" style="font-family: Times New Roman, Georgia, Serif; font-size: 16px;">
+                        <div class="oe_structure"/>
+                        <div class="row mb16">
+                            <div class="col-2">
+                                <img t-if="o.agent_id.logo" t-att-src="'data:image/png;base64,%s' % o.agent_id.logo" style="max-height: 85px;"/>
+                            </div>
+                            <div class="col-8 text-center" style="padding:0; margin-top: 22px;">
+                                <h2>RECEIPT OF VISA HANDLING</h2>
+                            </div>
+                            <div class="col-2" style="padding:0; font-size: 12px; margin-top: 22px;">
+                                <!--<span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d-%m-%Y %H:%M')"/>-->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="article">
+                        <div class="row">
+                            <div class="col-7">
+                                <div class="col-4" style="padding: 0px;">
+                                    <span>No.</span><br/>
+                                    <span>Date</span><br/>
+                                    <span>Customer Type</span>
+                                </div>
+                                <div class="col-1" style="padding: 0px;">
+                                    <span>:</span><br/>
+                                    <span>:</span><br/>
+                                    <span>:</span>
+                                </div>
+                                <div class="col-7" style="padding: 0px;">
+                                    <span t-field="p.booking_id.name"/><br/>
+                                    <span t-field="p.booking_id.date" t-field-options="{&quot;format&quot;: &quot;dd-MM-yyyy&quot;}"/><br/>
+                                    <span t-field="p.booking_id.agent_id.agent_type_id.name"/>
+                                    <span style="color: white;">..</span>/<span/><span style="color: white;">..</span>
+                                    <span t-field="p.booking_id.agent_id.name"/>
+                                </div>
+                            </div>
+                            <div class="col-5"/>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="printout_visa_cust">
+        <t t-set="data_report_margin_top" t-value="5"/>
+        <t t-set="data_report_header_spacing" t-value="9"/>
+        <t t-set="data_report_dpi" t-value="110"/>
+        <t t-call="tt_reservation_visa.printout_visa_cust_template"/>
+    </template>
+</odoo>
