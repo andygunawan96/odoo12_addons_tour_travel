@@ -4,6 +4,9 @@ from dateutil.relativedelta import relativedelta
 from odoo.tools import image
 from ...tools import variables,util,ERR
 import json
+import logging
+
+_logger = logging.getLogger(__name__)
 
 class TtCustomer(models.Model):
     _inherit = 'tt.history'
@@ -119,7 +122,7 @@ class TtCustomer(models.Model):
             for cust in customer_list_obj:
                 values = cust.to_dict()
                 customer_list.append(values)
-            print(json.dumps(customer_list))
+            _logger.info(json.dumps(customer_list))
             return ERR.get_no_error(customer_list)
         except:
             return ERR.get_error()
