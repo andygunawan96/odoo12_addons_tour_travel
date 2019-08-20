@@ -118,7 +118,6 @@ class TtCustomer(models.Model):
             customer_list = []
             for cust in customer_list_obj:
                 values = cust.to_dict()
-                values['seq_id'] = cust.seq_id
                 customer_list.append(values)
             print(json.dumps(customer_list))
             return ERR.get_no_error(customer_list)

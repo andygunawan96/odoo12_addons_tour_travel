@@ -3,7 +3,6 @@ from random import randint
 from datetime import datetime
 class TopUpAmount(models.Model):
     _name = 'tt.top.up.amount'
-    _rec_name = 'amount'
 
     name = fields.Char('Description')
     currency_id = fields.Many2one("res.currency", default=lambda self: self.env.user.company_id.currency_id,
@@ -104,3 +103,4 @@ class TtTopUp(models.Model):
         self.write({
             'state':'valid'
         })
+
