@@ -181,6 +181,7 @@
                                         <group>
                                             <field name="sku_id"/>
                                             <field name="title"/>
+                                            <field name="add_information"/>
                                         </group>
                                         <group>
                                             <field name="minPax"/>

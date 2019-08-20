@@ -15,7 +15,6 @@
                   name="Booking"
                   sequence="1"/>
 
-        <!--Menu Tour-->
         <menuitem id="top_tour_travel_activity"
               parent="tt_base.main_tour_travel"
               name="Activity"
@@ -26,5 +25,10 @@
                   name="Master"
                   parent="tt_reservation_activity.top_tour_travel_activity"
                   sequence="1"/>
+
+        <menuitem id="menu_tour_travel_activity_config"
+                  name="Configuration"
+                  parent="tt_reservation_activity.top_tour_travel_activity"
+                  sequence="2"/>
     </data>
 </odoo>
