@@ -121,11 +121,11 @@ class TtReservation(models.Model):
                 return booker_rec
 
         country = self.env['res.country'].sudo().search([('code', '=', vals.pop('nationality_code'))])
-        agent_obj = self.env['tt.agent'].sudo().browse(context['agent_id'])
+        agent_obj = self.env['tt.agent'].sudo().browse(context['co_agent_id'])
 
 
         vals.update({
-            'agent_id': context['agent_id'],
+            'agent_id': context['co_agent_id'],
             'nationality_id': country and country[0].id or False,
             'email': vals.get('email'),
             'phone_ids': [(0,0,{
@@ -179,10 +179,10 @@ class TtReservation(models.Model):
                 return contact_rec
 
         country = self.env['res.country'].sudo().search([('code', '=', vals.pop('nationality_code'))])
-        agent_obj = self.env['tt.agent'].sudo().browse(context['agent_id'])
+        agent_obj = self.env['tt.agent'].sudo().browse(context['co_agent_id'])
 
         vals.update({
-            'agent_id': context['agent_id'],
+            'agent_id': context['co_agent_id'],
             'nationality_id': country and country[0].id or False,
             'email': vals.get('email'),
             'phone_ids': [(0,0,{
@@ -240,8 +240,8 @@ class TtReservation(models.Model):
                     continue
 
             util.pop_empty_key(psg)
-            psg['agent_id'] = context['agent_id']
-            agent_obj = self.env['tt.agent'].sudo().browse(context['agent_id'])
+            psg['agent_id'] = context['co_agent_id']
+            agent_obj = self.env['tt.agent'].sudo().browse(context['co_agent_id'])
             psg.update({
                 'customer_parent_ids': [(4, agent_obj.customer_parent_walkin_id.id)],
                 'marital_status': 'married' if psg.get('title') == 'MRS' else '',

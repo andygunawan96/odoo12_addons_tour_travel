@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_top_up_tree_view_page" model="ir.ui.view">
+        <field name="name">tt.top.up.tree.view.page</field>
+        <field name="model">tt.top.up</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="state"/>
+                <button name="validate" type="object" string="validate"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_top_up_action" model="ir.actions.act_window">
+        <field name="name">Top Up</field>
+        <field name="res_model">tt.top.up</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="top_top_up"
+              parent="tt_base.main_transaction"
+              name="Top Up"
+              web_icon="hr,static/description/icon.png"
+              sequence="5"
+              groups="base.group_user"
+              action="tt_top_up_action"/>
+
+
+</odoo>

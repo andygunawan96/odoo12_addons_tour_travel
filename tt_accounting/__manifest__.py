@@ -25,9 +25,10 @@
     # always loaded
     'data': [
         'security/ir.model.access.csv',
-
+        'data/ir_sequence_data.xml'
         'views/tt_ledger_views.xml',
         'views/tt_agent_views.xml',
+        'views/tt_top_up_views.xml'
     ],
     # only loaded in demonstration mode
     'demo': [

@@ -117,11 +117,11 @@
     <menuitem id="menu_rodex_billing_billing_statement"
               parent="tt_payment.top_billing"
               name="Billing"
-              sequence="2"/>
+              sequence="10"/>
     <menuitem id="sub_menu_rodex_billing_billing_statement"
               parent="tt_rodex_billing.menu_rodex_billing_billing_statement"
               action="tt_billing_statement_action"
               name="Billing Statement"
-              sequence="1"/>
+              sequence="10"/>
 
 </odoo>

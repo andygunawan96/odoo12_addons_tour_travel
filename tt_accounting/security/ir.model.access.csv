@@ -1,2 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_tt_ledger,access_tt_accounting.tt_ledger,model_tt_ledger,,1,1,1,1
+access_tt_top_up,access_tt_accounting.tt_top_up,model_tt_top_up,,1,1,1,1
+access_tt_top_up_amount,access_tt_accounting.tt_top_up_amount,model_tt_top_up_amount,,1,1,1,1
