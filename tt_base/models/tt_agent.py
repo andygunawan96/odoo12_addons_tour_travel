@@ -103,6 +103,13 @@ class TtAgent(models.Model):
             else:
                 rec.balance = 0
 
+    def get_balance_agent_api(self,context):
+        agent_obj = self.browse(context['co_agent_id'])
+        return ERR.get_no_error({
+            'balance': agent_obj.balance,
+            'credit_limit': 0,
+            'currency_code': agent_obj.currency_id.name
+        })
 
     def get_data(self):
         res = {
