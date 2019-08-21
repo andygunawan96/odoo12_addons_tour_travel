@@ -151,18 +151,27 @@
                 <td style="width:150px;">Operator</td>
                 <td style="width:10px;">:</td>
                 <td style="width:400px;">
-                    <t t-if="doc.hasattr('issued_uid')">
-                        <i>
-                            <span t-field="doc.issued_uid.name"/>
-                        </i>
+                    <t t-if="doc_model == 'tt.agent.invoice'">
+                        <t t-if="doc.confirmed_uid">
+                            <i>
+                                <span t-field="doc.confirmed_uid.name"/>
+                            </i>
+                        </t>
                     </t>
-                    <t t-if="not doc.issued_uid and doc.booked_uid">
-                        <i>
-                            <span t-field="doc.booked_uid.name"/>
-                        </i>
-                    </t>
-                    <t t-if="not doc.issued_uid and not doc.booked_uid">
-                        <i style="color: white;">...</i>
+                    <t t-else="">
+                        <t t-if="doc.issued_uid">
+                            <i>
+                                <span t-field="doc.issued_uid.name"/>
+                            </i>
+                        </t>
+                        <t t-if="not doc.issued_uid and doc.booked_uid">
+                            <i>
+                                <span t-field="doc.booked_uid.name"/>
+                            </i>
+                        </t>
+                        <t t-if="not doc.issued_uid and not doc.booked_uid">
+                            <i style="color: white;">...</i>
+                        </t>
                     </t>
                 </td>
             </tr>
