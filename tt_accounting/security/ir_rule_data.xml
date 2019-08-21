@@ -1,0 +1,14 @@
+<odoo>
+    <record id="tt_ledger_for_agent" model="ir.rule">
+        <field name="name">Ledger For Agent</field>
+        <field name="model_id" ref="model_tt_ledger"/>
+        <field name="domain_force">[('agent_id','=',user.agent_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user_operator'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
+    </record>
+    <record id="tt_top_up_for_agent" model="ir.rule">
+        <field name="name">Top Up For Agent</field>
+        <field name="model_id" ref="model_tt_top_up"/>
+        <field name="domain_force">[('agent_id','=',user.agent_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user_operator'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
+    </record>
+</odoo>
