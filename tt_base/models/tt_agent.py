@@ -196,6 +196,7 @@ class TtAgent(models.Model):
 
     def get_transaction_api(self,req,context):
         try:
+            _logger.info('Get Resv Req:\n'+json.dumps(req))
             agent_obj = self.browse(context['co_agent_id'])
             if not agent_obj:
                 return ERR.get_error(1008)
@@ -237,7 +238,7 @@ class TtAgent(models.Model):
 
             sorted(res_list, key=lambda i: i['hold_date'])
 
-            print(json.dumps(res_list))
+            _logger.info('Get Transaction Resp:\n'+json.dumps(res_list))
             return ERR.get_no_error(res_list)
         except Exception as e:
             _logger.error(str(e))
