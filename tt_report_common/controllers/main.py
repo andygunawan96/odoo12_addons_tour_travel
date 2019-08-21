@@ -21,7 +21,7 @@ class Main(http.Controller):
                 pdf = request.env.ref('tt_report_common.action_report_printout_invoice')
 
             if print_type.lower() == 'pdf':
-                pdf, _ = pdf.sudo().render_qweb_pdf([model_id], data=data)
+                pdf, _ = pdf.sudo().render_qweb_pdf(model_id, data=data)
                 pdfhttpheaders = [('Content-Type', 'application/pdf'), ('Content-Length', len(pdf))]
                 # Fungsi untuk buat PDF jadi ke download + filename
                 # Jika tidak ingin download maka akan tampil di web browser
