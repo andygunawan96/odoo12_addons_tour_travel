@@ -212,7 +212,7 @@ class TtAgent(models.Model):
                 if util.get_without_empty(req,'order_or_pnr'):
                     list_obj = self.env['tt.reservation.%s' % (type)].search(['|',('name','=',req['order_or_pnr']),
                                                                               ('pnr', '=', req['order_or_pnr']),
-                                                                              ('agent_id','=',context['co_agent_id'])])
+                                                                              ('agent_id.name','=',context['co_agent_id'])])
                 else:
                     list_obj = self.env['tt.reservation.%s' % (type)].search([('agent_id','=',context['co_agent_id'])],
                                                               offset=req['minimum'],
