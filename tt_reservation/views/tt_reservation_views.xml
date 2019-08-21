@@ -6,22 +6,22 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button string="Set to Draft" name="action_set_as_draft" type="object"/>
-                    <button string="Set to Booked" name="action_set_as_booked" type="object"/>
-                    <button string="Set to Issued" name="action_set_as_issued" type="object"/>
-                    <button string="Set Booking State" name="action_check_provider_state" type="object"/>
-                    <button string="Cancel" name="action_cancel" states="booked,issued" type="object"/>
+                    <button string="Set to Draft" name="action_set_as_draft" groups="tt_base.group_tt_tour_travel_operator" type="object"/>
+                    <button string="Set to Booked" name="action_set_as_booked" groups="tt_base.group_tt_tour_travel_operator" type="object"/>
+                    <button string="Set to Issued" name="action_set_as_issued" groups="tt_base.group_tt_tour_travel_operator" type="object"/>
+                    <button string="Set Booking State" name="action_check_provider_state" groups="tt_base.group_tt_tour_travel_operator" type="object"/>
+                    <button string="Cancel" name="action_cancel" states="booked,issued" groups="tt_base.group_tt_tour_travel_operator" type="object"/>
 
-                    <button string="Issued" name="action_issued_from_button" type="object"
-                            states="booked,fail_booking,fail_issue"
-                            help="Issued process to API and Vendor"/>
-                    <button string="Force Issued" name="action_force_issued" type="object" states="booked,fail_booking,fail_issue"
-                            help='Change booking state to issued, assumption : booking has been issued on vendor API reservation system, but not on skytors'/>
+<!--                    <button string="Issued" name="action_issued_from_button" type="object"-->
+<!--                            states="booked,fail_booking,fail_issue"-->
+<!--                            help="Issued process to API and Vendor"/>-->
+<!--                    <button string="Force Issued" name="action_force_issued" type="object" states="booked,fail_booking,fail_issue"-->
+<!--                            help='Change booking state to issued, assumption : booking has been issued on vendor API reservation system, but not on skytors'/>-->
 
-                    <button string="Reissue" name="action_reroute" states="issued" type="object"/>
-                    <button string="Refund" name="create_refund" states="issued" type="object"/>
+<!--                    <button string="Reissue" name="action_reroute" states="issued" type="object"/>-->
+<!--                    <button string="Refund" name="create_refund" states="issued" type="object"/>-->
 
-                    <button string="Sync Date" name="action_sync_date" states="booked" type="object"/>
+<!--                    <button string="Sync Date" name="action_sync_date" states="booked" type="object"/>-->
 
 
                     <field name="state" widget="statusbar" statusbar_visible="draft,booked,issued"/>
