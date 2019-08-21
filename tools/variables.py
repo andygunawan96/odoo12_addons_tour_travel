@@ -52,7 +52,7 @@ BOOKING_STATE_STR = {
     'cancel': 'Cancelled',
     'cancel2': 'Expired',
     'error': 'Connection Loss', #diganti failed issue
-    'fail_booking': 'Failed (Book)',
+    'fail_booked': 'Failed (Book)',
     'booked': 'Booked',
     'partial_booked': 'Partial Booked',
     'in_progress': 'In Progress',

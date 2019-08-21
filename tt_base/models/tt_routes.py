@@ -172,7 +172,9 @@ class Routes(models.Model):
             if not _obj:
                 raise Exception('Data not Found')
 
-            _obj.write(req_data)
+            if not self.is_similar_data(req_data, provider_obj.id):
+                _obj.write(req_data)
+
             response = _obj.get_route_data()
             return Response().get_no_error(response)
         except Exception as e:
@@ -287,6 +289,21 @@ class Routes(models.Model):
         if data['origin'] in origin_list and data['destination'] in destination_list:
             return True
         return False
+
+    def is_similar_data(self, data, provider_id):
+        _obj = self.sudo().search([('carrier_code', '=', data['carrier_code']),
+                                   ('carrier_number', '=', data['carrier_number']),
+                                   ('origin', '=', data['origin']),
+                                   ('destination', '=', data['destination']),
+                                   ('origin_terminal', '=', data['origin_terminal']),
+                                   ('destination_terminal', '=', data['destination_terminal']),
+                                   ('departure_time', '=', data['departure_time']),
+                                   ('arrival_time', '=', data['arrival_time']),
+                                   ('provider_type_id', '=', provider_id)])
+
+        if not _obj:
+            return False
+        return True
 
     def merge_route(self):
         _obj = self.sudo().search([('carrier_code', '=', self.carrier_code),
