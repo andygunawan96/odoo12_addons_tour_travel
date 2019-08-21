@@ -28,7 +28,7 @@ class PrintoutInvoice(models.AbstractModel):
 
     @api.model
     def _get_report_values(self, docids, data=None):
-        # Print dari BackEnd bisa digunakan untuk Resv maupung invoice
+        # Print dari BackEnd bisa digunakan untuk Resv maupun invoice
         if not data.get('context'):
             internal_model_id = docids.pop(0)
             data['context'] = {}

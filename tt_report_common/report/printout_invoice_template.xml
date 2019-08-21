@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <template id="external_layout">
-        <t t-call="tt_report_common.external_layout_header"/>
-        <t t-raw="0"/>
-        <t t-call="tt_report_common.external_layout_footer"/>
+        <div class="container">
+            <t t-call="tt_report_common.external_layout_header"/>
+            <t t-raw="0"/>
+            <t t-if="doc_model == 'tt.agent.invoice'">
+                <t t-call="tt_report_common.price_and_sign"/>
+            </t>
+            <t t-call="tt_report_common.external_layout_footer"/>
+        </div>
     </template>
 
     <template id="address_layout">
@@ -56,70 +61,62 @@
         </template>
 
     <template id="external_layout_header">
-        <br/>
-        <div class="header row" style="margin-bottom:0;">
-            <div class="col-2">
-                <img t-if="doc.agent_id.logo" t-attf-src="data:image/png;base64,#{doc.agent_id.logo}" style="max-width: 110px; max-height: 85px;"/>
-            </div>
-            <div class="col-6" style="margin-bottom:2px; font-size:14px;">
-                <ul class="list-inline" style="margin-bottom:2px;">
-                    <li style="vertical-align: bottom;">
-                        <strong style="font-size:16px;"><span t-field="doc.agent_id.name"/></strong>
-                        <br/>
-                        <div>
-                            <t t-if="doc.agent_id.address_ids">
-                                <t t-set="add_obj" t-value="doc.agent_id.address_ids[0]"/>
-                                <span t-field="add_obj.address"/>
-                                <!--<span t-if="add_obj.street2" t-field="add_obj.street2"/>-->
+        <table width="100%">
+            <tr>
+                <td width="20%"><img t-if="doc.agent_id.logo" t-attf-src="data:image/png;base64,#{doc.agent_id.logo}" style="max-width: 110px; max-height: 85px;"/></td>
+                <td width="50%" style="font-size:16px;">
+                    <strong style="font-size:16px;"><span t-field="doc.agent_id.name"/></strong>
+                    <br/>
+                    <div style="margin-bottom:2px;">
+                        <t t-if="doc.agent_id.address_ids">
+                            <t t-set="add_obj" t-value="doc.agent_id.address_ids[0]"/>
+                            <span t-field="add_obj.address"/>
+                            <!--<span t-if="add_obj.street2" t-field="add_obj.street2"/>-->
 
-                                <t t-if="'city_id' not in add_obj.fields_get()">
-                                    '
-                                    <span t-field="add_obj.city_id.name"/>
-                                </t>
-
-                                <t t-if="add_obj.state_id">
-                                    ,
-                                    <span t-field="add_obj.state_id.name"/>
-                                </t>
-                                <t t-if="add_obj.country_id">
-                                    ,
-                                    <span t-field="add_obj.country_id.name"/>
-                                </t>
+                            <t t-if="'city_id' not in add_obj.fields_get()">
+                                '
+                                <span t-field="add_obj.city_id.name"/>
                             </t>
-                            <t t-else="">
 
+                            <t t-if="add_obj.state_id">
+                                ,
+                                <span t-field="add_obj.state_id.name"/>
                             </t>
-                        </div>
-                    </li>
-                </ul>
-                <div>
-                    <t t-if="doc.agent_id.phone_ids">Phone: <span t-field="doc.agent_id.phone_ids[0].phone_number"/>; </t>
-
-                    <t t-if="doc.agent_id.email">&amp;bull;</t>
-                    <t t-if="doc.agent_id.email">Email: <span t-field="doc.agent_id.email"/>; </t>
-
-                    <t t-if="doc.agent_id.website">&amp;bull;</t>
-                    <t t-if="doc.agent_id.website">Website: <span t-field="doc.agent_id.website"/>; </t>
-                </div>
-            </div>
-
-            <div class="col-4" style="margin-bottom:2px; font-size:14px;">
-                <div>
-                    <ul class="list-inline" style="float:right; margin-bottom:0;">
-                        <t t-if="doc_model == 'tt.agent.invoice' ">
-                            <li><b>Date: </b><span t-field="doc.date_invoice" t-options ='{"format": "dd/MM/yyyy"}'/></li>
-                        </t>
-                        <t t-elif="'tt.reservation' in doc_model">
-                            <li><b>Date: </b><span t-field="doc.date" t-options ='{"format": "dd/MM/yyyy"}'/></li>
+                            <t t-if="add_obj.country_id">
+                                ,
+                                <span t-field="add_obj.country_id.name"/>
+                            </t>
                         </t>
                         <t t-else="">
-                            <li><b>Date: </b><span>-</span></li>
+
                         </t>
-                        <li><h4><strong><span t-field="doc.name"/></strong></h4></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
+                    </div>
+                    <div>
+                        <t t-if="doc.agent_id.phone_ids">Phone: <span t-field="doc.agent_id.phone_ids[0].phone_number"/>; </t>
+
+                        <t t-if="doc.agent_id.email">&amp;bull;</t>
+                        <t t-if="doc.agent_id.email">Email: <span t-field="doc.agent_id.email"/>; </t>
+
+                        <t t-if="doc.agent_id.website">&amp;bull;</t>
+                        <t t-if="doc.agent_id.website">Website: <span t-field="doc.agent_id.website"/>; </t>
+                    </div>
+                </td>
+                <td width="30%" style="font-size:16px;">
+                    <div class="list-inline" style="float:right; margin-bottom:0;">
+                        <t t-if="doc_model == 'tt.agent.invoice' ">
+                            <b>Date: </b><span t-field="doc.date_invoice" t-options ='{"format": "dd/MM/yyyy"}'/>
+                        </t>
+                        <t t-elif="'tt.reservation' in doc_model">
+                            <b>Date: </b><span t-field="doc.date" t-options ='{"format": "dd/MM/yyyy"}'/>
+                        </t>
+                        <t t-else="">
+                            <b>Date: </b><span>-</span>
+                        </t>
+                        <h4><strong><span t-field="doc.name"/></strong></h4>
+                    </div>
+                </td>
+            </tr>
+        </table>
         <!-- Border Judul-->
         <div style="width: 100%; border-bottom: 1px solid black; margin:0;"/>
         <!-- Base Info Booker dkk -->
@@ -154,12 +151,17 @@
                 <td style="width:150px;">Operator</td>
                 <td style="width:10px;">:</td>
                 <td style="width:400px;">
-                    <t t-if="doc.create_uid">
+                    <t t-if="doc.hasattr('issued_uid')">
                         <i>
-                            <span t-field="doc.create_uid.name"/>
+                            <span t-field="doc.issued_uid.name"/>
                         </i>
                     </t>
-                    <t t-if="not doc.create_uid">
+                    <t t-if="not doc.issued_uid and doc.booked_uid">
+                        <i>
+                            <span t-field="doc.booked_uid.name"/>
+                        </i>
+                    </t>
+                    <t t-if="not doc.issued_uid and not doc.booked_uid">
                         <i style="color: white;">...</i>
                     </t>
                 </td>
@@ -174,7 +176,10 @@
                     <t  t-if="doc.expired_date">
                         <i t-field="doc.expired_date" t-options ='{"format": "dd/MM/yyyy"}'/>
                     </t>
-                    <t t-if="not doc.expired_date">
+                    <t  t-if="not doc.expired_date and doc.hold_date">
+                        <i t-field="doc.hold_date" t-options ='{"format": "dd/MM/yyyy"}'/>
+                    </t>
+                    <t t-if="not doc.expired_date and not doc.hold_date">
                         <i style="color: white;">...</i>
                     </t>
                 </td>
@@ -208,6 +213,16 @@
     </template>
 
     <template id="external_layout_footer">
+        <div class="footer">
+            <div class="row text-center" style="border-top: 1px solid black;">
+                <div class="col col-3 offset-9 text-right">
+                    Page:<span class="page"/>/<span class="topage"/>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="price_and_sign">
         <div class="row">
             <!--No Rekening-->
             <div class="col-7">
@@ -234,22 +249,32 @@
                 <p style="border-top: 1px solid black">Representative Signature</p>
             </div>
         </div>
-        <div class="footer">
-            <div class="row text-center" style="border-top: 1px solid black;">
-                <div class="col col-3 offset-9 text-right">
-                    <ul class="list-inline mt-2">
-                        <li class="list-inline-item">Page:</li>
-                        <li class="list-inline-item">
-                            <span class="page"/>
-                        </li>
-                        <li class="list-inline-item">/</li>
-                        <li class="list-inline-item">
-                            <span class="topage"/>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
+        <table>
+            <tr>
+                <td width="60%">
+                    <t t-if="doc.agent_id.payment_acquirer_ids">
+                        Transfer pada rekening berikut:
+                        <ul>
+                            <t t-set="limit" t-value="3"/>
+                            <t t-set="current" t-value="0"/>
+                            <t t-foreach="doc.agent_id.payment_acquirer_ids" t-as="payment_id">
+                                <t t-if="payment_id.account_number and payment_id.account_name and current &lt; limit">
+                                    <li><span t-field="payment_id.bank_id.name"/> (IDR) <span t-field="payment_id.account_number"/> A/N <span t-field="payment_id.account_name"/></li>
+                                    <t t-set="current" t-value="current + 1"/>
+                                </t>
+                            </t>
+                        </ul>
+                    </t>
+                </td>
+                <td width="5%"/>
+                <td width="35%" class="text-center" style="font-size:10px;">
+                    <p style="color: white;">.</p>
+                    <p style="color: white;">.</p>
+                    <p style="color: white;">.</p>
+                    <p style="border-top: 1px solid black">Representative Signature</p>
+                </td>
+            </tr>
+        </table>
     </template>
 
     <template id="agent_invoice_content_view">
