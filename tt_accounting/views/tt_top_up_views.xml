@@ -7,7 +7,7 @@
             <form string="Partners Travel Customer" create="false">
                 <header>
 
-                    <button name="action_validate" states="confirm"
+                    <button name="action_validate" states="request"
                             groups="tt_base.group_tt_tour_travel_operator"
                             string="Validate" type="object" class="oe_highlight"/>
 
