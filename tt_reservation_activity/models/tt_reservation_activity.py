@@ -1370,10 +1370,6 @@ class ReservationActivity(models.Model):
             # create header & Update customer_parent_id
             book_obj = self.sudo().create(header_val)
 
-            # kwargs.update({
-            #     'visit_date': search_request['visit_date'],
-            # })
-
             for psg in passengers:
                 vals = {
                     'reservation_activity_id': book_obj.id,
@@ -1381,19 +1377,8 @@ class ReservationActivity(models.Model):
                     'pax_type': psg['pax_type'],
                     'pax_mobile': psg.get('mobile'),
                     'api_data': psg.get('api_data'),
-                    # 'pricelist_id': book_obj.activity_id.id
                 }
                 self.env['tt.reservation.activity.line'].sudo().create(vals)
-
-            # for rec in service_charge_summary:
-            #     rec.update({
-            #         'reservation_activity_id': book_obj.id,
-            #         'activity_id': rec['pricelist_id'],
-            #         'currency_id': self.env['res.currency'].search([('name', '=', rec['currency'])]).id
-            #     })
-            #     rec.pop('pricelist_id')
-            #     rec.pop('currency')
-            #     self.env['tt.reservation.activity.price'].sudo().create(rec)
 
             book_obj.customer_parent_id = contact_data['agent_id']
 
