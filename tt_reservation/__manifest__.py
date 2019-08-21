@@ -16,6 +16,7 @@
     'depends': ['base', 'tt_base', 'tt_accounting'],
     'data': [
         'security/ir.model.access.csv',
+        'security/ir_rule_data.xml',
 
         'views/tt_reservation_views.xml',
         'views/tt_ledger.xml',
