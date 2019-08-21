@@ -38,6 +38,7 @@ Key Features
         'views/res_bank_views.xml',
         'views/agent_bank_detail_views.xml',
         'views/customer_bank_detail_views.xml',
+        'views/customer_parent_type_views.xml',
         'views/tt_provider_views.xml',
         'views/tt_provider_type_views.xml',
         'views/transport_carrier_views.xml',
