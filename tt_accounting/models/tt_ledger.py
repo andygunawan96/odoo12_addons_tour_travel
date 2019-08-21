@@ -4,7 +4,7 @@ from dateutil.relativedelta import relativedelta
 from odoo.exceptions import UserError
 # from ...tools.telegram import TelegramInfoNotification
 from ...tools import test_to_dict
-import logging,json
+import logging,json,traceback
 
 LEDGER_TYPE = [
     (0, 'Opening Balance'),
@@ -127,27 +127,31 @@ class Ledger(models.Model):
         self.create(ledger_values)
 
     def create_commission_ledger(self, provider_obj):
-        booking_obj = provider_obj.booking_id
+        try:
+            booking_obj = provider_obj.booking_id
 
-        agent_commission = {}
-        for sc in provider_obj.cost_service_charge_ids:
-            # Pada lionair ada r.ac positif
-            if 'rac' in sc.charge_code and sc.total < 0:
-                amount = abs(sc.total)
-                agent_id = sc['commission_agent_id'].id if sc['commission_agent_id'] else booking_obj.agent_id.id
-                if not agent_commission.get(agent_id, False):
-                    agent_commission[agent_id] = 0
-                agent_commission[agent_id] += amount
+            agent_commission = {}
+            for sc in provider_obj.cost_service_charge_ids:
+                # Pada lionair ada r.ac positif
+                if 'rac' in sc.charge_code and sc.total < 0:
+                    amount = abs(sc.total)
+                    agent_id = sc['commission_agent_id'].id if sc['commission_agent_id'] else booking_obj.agent_id.id
+                    if not agent_commission.get(agent_id, False):
+                        agent_commission[agent_id] = 0
+                    agent_commission[agent_id] += amount
 
-        for agent_id, amount in agent_commission.items():
-            values = self.prepare_vals('Commission : ' + booking_obj.name, booking_obj.name, datetime.now(),
-                                       3, booking_obj.currency_id.id, amount, 0)
-            values.update({
-                'agent_id': agent_id,
-            })
-            values = self.prepare_vals_for_resv(booking_obj,values)
-            _logger.info('Create Ledger Comission\n')
-            self.create(values)
+            for agent_id, amount in agent_commission.items():
+                values = self.prepare_vals('Commission : ' + booking_obj.name, booking_obj.name, datetime.now(),
+                                           3, booking_obj.currency_id.id, amount, 0)
+                values.update({
+                    'agent_id': agent_id,
+                })
+                values = self.prepare_vals_for_resv(booking_obj,values)
+                _logger.info('Create Ledger Comission\n')
+                self.create(values)
+        except Exception as e:
+            _logger.error(str(e)+traceback.format_exc())
+            raise ('error ledger comission')
 
     def action_create_ledger(self, provider_obj):
         self.create_commission_ledger(provider_obj)
