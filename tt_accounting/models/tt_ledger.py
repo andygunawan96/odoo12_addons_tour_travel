@@ -124,7 +124,6 @@ class Ledger(models.Model):
                                           2, booking_obj.currency_id.id, 0, amount)
 
         ledger_values = self.prepare_vals_for_resv(booking_obj,ledger_values)
-        _logger.info('Create Ledger Order\n' + json.dumps(ledger_values))
         self.create(ledger_values)
 
     def create_commission_ledger(self, provider_obj):
@@ -147,7 +146,7 @@ class Ledger(models.Model):
                 'agent_id': agent_id,
             })
             values = self.prepare_vals_for_resv(booking_obj,values)
-            _logger.info('Create Ledger Comission\n'+json.dumps(values))
+            _logger.info('Create Ledger Comission\n')
             self.create(values)
 
     def action_create_ledger(self, provider_obj):
