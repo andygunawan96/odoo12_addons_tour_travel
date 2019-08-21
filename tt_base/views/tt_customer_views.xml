@@ -36,6 +36,7 @@
                             <field name="nickname"/>
                             <field name="gender"/>
                             <field name="marital_status"/>
+                            <field name="nationality_id"/>
                             <field name="religion"/>
                             <field name="birth_date"/>
                             <field name="passport_number"/>

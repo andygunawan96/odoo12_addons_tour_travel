@@ -1,5 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <record model="ir.ui.view" id="tt_top_up_view_form" >
+        <field name="name">tt.top.up.view.form</field>
+        <field name="model">tt.top.up</field>
+        <field name="arch" type="xml">
+            <form string="Partners Travel Customer" create="false">
+                <header>
+
+                    <button name="action_validate" states="confirm"
+                            groups="tt_base.group_tt_tour_travel_operator"
+                            string="Validate" type="object" class="oe_highlight"/>
+
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,validate,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="agent_id"/>
+                            <field name="date"/>
+                            <field name="due_date"/>
+                        </group>
+                        <group>
+                            <label for="validate_uid" string="Approve By"/>
+                            <div>
+                                <field name="validate_uid" readonly="1" class="oe_inline"/> -
+                                <field name="validate_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <field name="ledger_id"/>
+                            <field name="payment_acquirer_id"/>
+                        </group>
+                    </group>
+                    <separator string="Payment"/>
+                    <group>
+                        <group>
+                            <field name="currency_id" groups="base.group_multi_currency"/>
+
+                            <field name="amount_id"/>
+                            <field name="amount_count"/>
+                            <field name="unique_amount" attrs="{'readonly': [('state', '!=', 'confirm')]}"/>
+                            <field name="total"/>
+                            <field name="fees"/>
+                            <field name="total_with_fees"/>
+                        </group>
+                    </group>
+<!--                    <notebook colspan="4">-->
+<!--                        <page name='notes' string="Notes">-->
+<!--                            <field name="notes" placeholder="Notes..."/>-->
+<!--                        </page>-->
+<!--                    </notebook>-->
+                </sheet>
+<!--                <div class="oe_chatter">-->
+<!--                    <field name="message_follower_ids" widget="mail_followers"/>-->
+<!--                    <field name="message_ids" widget="mail_thread"/>-->
+<!--                </div>-->
+            </form>
+        </field>
+    </record>
+
     <record id="tt_top_up_tree_view_page" model="ir.ui.view">
         <field name="name">tt.top.up.tree.view.page</field>
         <field name="model">tt.top.up</field>

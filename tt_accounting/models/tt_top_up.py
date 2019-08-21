@@ -83,6 +83,9 @@ class TtTopUp(models.Model):
     total_with_fees = fields.Monetary('Total + fees', compute='_compute_amount', store=False)
     ledger_id = fields.Many2one('tt.ledger', string='Ledger', readonly=True, copy=False)
     payment_acquirer_id = fields.Many2one('payment.acquirer','Payment Type')
+    validate_uid = fields.Many2one('res.users','Validate UID')
+    validate_date = fields.Datetime('Validate Date')
+
 
     @api.model
     def create(self, vals_list):
@@ -119,7 +122,7 @@ class TtTopUp(models.Model):
         random = randint(1, 333)
         return random
 
-    def validate(self):
+    def action_validate(self):
         print("validate")
         if self.state != 'request':
             raise UserWarning('Can only validate request state Top Up.')
@@ -127,9 +130,11 @@ class TtTopUp(models.Model):
         ledger_obj = self.env['tt.ledger']
         vals = ledger_obj.prepare_vals(self.name,self.name,datetime.now(),1,self.currency_id.id,self.total)
         vals['agent_id'] = self.agent_id.id
-        ledger_obj.create(vals)
+        new_aml = ledger_obj.create(vals)
         self.write({
-            'state':'valid'
+            'state':'valid',
+            'ledger_id': new_aml.id,
+            'validate_uid': self.env.user.id
         })
 
     # {
