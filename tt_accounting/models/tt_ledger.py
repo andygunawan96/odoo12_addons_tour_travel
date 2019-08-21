@@ -4,6 +4,7 @@ from dateutil.relativedelta import relativedelta
 from odoo.exceptions import UserError
 # from ...tools.telegram import TelegramInfoNotification
 from ...tools import test_to_dict
+import logging,json
 
 LEDGER_TYPE = [
     (0, 'Opening Balance'),
@@ -16,6 +17,7 @@ LEDGER_TYPE = [
     (99, 'Others')
 ]
 
+_logger = logging.getLogger(__name__)
 
 class Ledger(models.Model):
     _name = 'tt.ledger'
@@ -122,6 +124,7 @@ class Ledger(models.Model):
                                           2, booking_obj.currency_id.id, 0, amount)
 
         ledger_values = self.prepare_vals_for_resv(booking_obj,ledger_values)
+        _logger.info('Create Ledger Order\n' + json.dumps(ledger_values))
         self.create(ledger_values)
 
     def create_commission_ledger(self, provider_obj):
@@ -144,6 +147,7 @@ class Ledger(models.Model):
                 'agent_id': agent_id,
             })
             values = self.prepare_vals_for_resv(booking_obj,values)
+            _logger.info('Create Ledger Comission\n'+json.dumps(values))
             self.create(values)
 
     def action_create_ledger(self, provider_obj):
