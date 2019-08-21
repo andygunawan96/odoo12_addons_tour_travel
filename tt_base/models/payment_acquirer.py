@@ -83,7 +83,7 @@ class PaymentAcquirer(models.Model):
     ##fixmee amount di cache
     def get_payment_acquirer_api(self, req,context):
         try:
-            print("payment acq req\n"+json.dumps(req))
+            _logger.info("payment acq req\n"+json.dumps(req))
 
             agent_obj = self.env['tt.agent'].sudo().browse(context['co_agent_id'])
             if not agent_obj:
@@ -115,7 +115,7 @@ class PaymentAcquirer(models.Model):
             res['non_member'] = values
             res['member'] = {}
             res['member']['credit_limit'] = self.generate_credit_limit(req['booker_seq_id']) if util.get_without_empty(req,'booker_seq_id') else []
-            print("payment acq resp\n"+ json.dumps(res))
+            _logger.info("payment acq resp\n"+ json.dumps(res))
             return ERR.get_no_error(res)
         except Exception as e:
             _logger.error(str(e) + traceback.format_exc())

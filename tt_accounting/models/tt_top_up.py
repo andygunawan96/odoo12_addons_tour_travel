@@ -134,7 +134,8 @@ class TtTopUp(models.Model):
         self.write({
             'state':'valid',
             'ledger_id': new_aml.id,
-            'validate_uid': self.env.user.id
+            'validate_uid': self.env.user.id,
+            'validate_date': datetime.now()
         })
 
     # {
