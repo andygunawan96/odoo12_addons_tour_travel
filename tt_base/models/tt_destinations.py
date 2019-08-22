@@ -45,9 +45,9 @@ class Destinations(models.Model):
         return super(Destinations, self).create(vals_list)
 
     def write(self, vals):
-        for rec in self:
-            vals.update({
-                'display_name': '%s - %s ( %s )' % (vals.get('city', rec.city), vals.get('name',rec.name),vals.get('code', rec.code))
+        for idx,rec in enumerate(self):
+            vals[idx].update({
+                'display_name': '%s - %s ( %s )' % (vals[idx].get('city', rec.city), vals[idx].get('name',rec.name),vals[idx].get('code', rec.code))
             })
             super(Destinations, self).write(vals)
 
