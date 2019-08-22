@@ -22,7 +22,6 @@
                     <group>
                         <field name="origin_id" string="Origin" options="{'no_create': True}"/>
                         <field name="destination_id" string="Destination" options="{'no_create': True}"/>
-                        <button name="get_booking_airline" string="get_booking" type="object"/>
                     </group>
                     <group>
                         <field name="sector_type"/>
@@ -50,7 +49,7 @@
             </xpath>
             <xpath expr="//page[@name='anchor']" position="before">
                 <page string="Prices" name="prices">
-                    <button name="calculate_service_charge" type="object" string="calc"/>
+<!--                    <button name="calculate_service_charge" type="object" string="calc"/>-->
                     <field name="sale_service_charge_ids">
                         <tree>
                             <field name="charge_code"/>
