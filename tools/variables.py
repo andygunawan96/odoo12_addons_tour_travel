@@ -17,6 +17,13 @@ ROLE_TYPE = [
     ("operator", "Operator"),
 ]
 
+DEVICE_TYPE = [
+    ("general", "General"),
+    ("website", "Website"),
+    ("android", "Android"),
+    ("ios", "Ios"),
+]
+
 ACCESS_TYPE = [
     ("all", "ALL"),
     ("allow", "Allowed"),
