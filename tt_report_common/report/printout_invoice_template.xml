@@ -497,15 +497,18 @@
                 </table>
             </t>
         </div>
+    </template>
+
+    <template id="reservation_airline_footer_view">
         <div class="">
-                <h4 class="sub-table">Important Notes</h4>
-                <div class="space">
-                    <p>- Mohon tiba di Bandara selambat - lambatnya 90 menit sebelum keberangkatan untuk domestik atau 2 jam untuk internasional</p>
-                </div>
-                <div class="space">
-                    <p class="space">- Penumpang / pemegang tiket ini tunduk kepada syarat dan ketentuan penerbangan yang ditetapkan oleh Maskapai</p>
-                </div>
+            <h4 class="sub-table">Important Notes</h4>
+            <div class="space">
+                <p>- Mohon tiba di Bandara selambat - lambatnya 90 menit sebelum keberangkatan untuk domestik atau 2 jam untuk internasional</p>
             </div>
+            <div class="space">
+                <p class="space">- Penumpang / pemegang tiket ini tunduk kepada syarat dan ketentuan penerbangan yang ditetapkan oleh Maskapai</p>
+            </div>
+        </div>
     </template>
 
     <template id="reservation_train_content_view">
@@ -527,6 +530,7 @@
                         </t>
                         <t t-elif="doc_model == 'tt.reservation.airline'">
                             <t t-call="tt_report_common.reservation_airline_content_view"/>
+                            <t t-call="tt_report_common.reservation_airline_footer_view"/>
                         </t>
                         <t t-elif="doc_model == 'tt.reservation.train'">
                             <t t-call="tt_report_common.reservation_train_content_view"/>

@@ -5,14 +5,17 @@ from odoo.http import request
 # Default odoo bisa render report via URL cman ada kendala karena yg render mesti login
 # Opsi ini dibuat untuk by pass login e odoo (kurang secure)
 class Main(http.Controller):
-    @http.route('/rodextrip/report/<string:print_type>/<string:model_name>/<string:order_number>', methods=['GET'], csrf=False, type='http', auth="public", website=True)
-    def print_id(self, print_type, model_name, order_number):
+    @http.route(['/rodextrip/report/<string:print_type>/<string:model_name>/<string:order_number>',
+        '/rodextrip/report/<string:print_type>/<string:model_name>/<string:order_number>/<int:report_mode>'], methods=['GET'], csrf=False, type='http', auth="public", website=True)
+    def print_id(self, print_type, model_name, order_number, report_mode=False):
         model_id = request.env[model_name].search([('name', '=ilike', order_number)], limit=1).ids
         data = {'context': {'active_model': model_name, 'active_ids': model_id}}
         model_obj = request.env[model_name].browse(model_id)
         if model_id and model_obj:
-            if model_name == 'tt.reservation.airline':
+            if model_name == 'tt.reservation.airline' and not report_mode:
                 pdf = request.env.ref('tt_report_common.action_report_printout_reservation_airline')
+            elif model_name == 'tt.reservation.airline' and report_mode == 1:
+                pdf = request.env.ref('tt_report_common.action_printout_itinerary_airline')
             elif model_name == 'tt.reservation.hotel':
                 pdf = request.env.ref('tt_report_common.action_report_printout_reservation_hotel')
             elif model_name == 'tt.reservation.train':

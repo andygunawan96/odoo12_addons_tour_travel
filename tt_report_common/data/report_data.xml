@@ -29,6 +29,15 @@
             paperformat="tt_report_common.paperformat_A4"
         />
         <report
+            string="Airlines Itinerary Form"
+            id="action_printout_itinerary_airline"
+            model="tt.reservation.airline"
+            report_type="qweb-html"
+            name="tt_report_common.printout_itinerary"
+            file="tt_report_common.printout_itinerary"
+            paperformat="tt_report_common.paperformat_A4"
+        />
+        <report
             string="Train KAI Ticket"
             id="action_report_printout_reservation_train"
             model="tt.reservation.train"
