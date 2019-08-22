@@ -45,10 +45,12 @@ class Destinations(models.Model):
         return super(Destinations, self).create(vals_list)
 
     def write(self, vals):
-        vals.update({
-            'display_name': '%s - %s ( %s )' % (vals.get('city', self.city), vals.get('name',self.name),vals.get('code', self.code))
-        })
-        super(Destinations, self).write(vals)
+        for rec in self:
+            vals.update({
+                'display_name': '%s - %s ( %s )' % (vals.get('city', rec.city), vals.get('name',rec.name),vals.get('code', rec.code))
+            })
+            super(Destinations, self).write(vals)
+
 
     def get_id(self, code, provider_type):
         res = self.sudo().search([('code','=',code),('provider_type_id', '=', provider_type.id)])
