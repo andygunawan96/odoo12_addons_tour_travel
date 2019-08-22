@@ -37,7 +37,7 @@
                                 <field name="businessHoursFrom" class="oe_inline"/> -
                                 <field name="businessHoursTo" class="oe_inline"/>
                             </div>
-                            <label for="minPax" string="Adult Limit"/>
+                            <label for="minPax" string="Passenger Limit"/>
                             <div>
                                 <field name="minPax" class="oe_inline"/> -
                                 <field name="maxPax" class="oe_inline"/>
@@ -71,6 +71,12 @@
                     <field name="image_ids">
                         <tree>
                             <field name="photos_path"/>
+                        </tree>
+                    </field>
+                    <separator string="Product Videos"/>
+                    <field name="video_ids">
+                        <tree>
+                            <field name="video_url"/>
                         </tree>
                     </field>
                     <separator string="Product Types"/>
