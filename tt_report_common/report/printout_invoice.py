@@ -1,4 +1,5 @@
-from odoo import models, api
+from odoo import models, fields, api
+import datetime
 
 
 class PrintoutInvoice(models.AbstractModel):
@@ -30,6 +31,31 @@ class PrintoutInvoice(models.AbstractModel):
     def _get_report_values(self, docids, data=None):
         # Print dari BackEnd bisa digunakan untuk Resv maupun invoice
         if not data.get('context'):
+            data['context'] = {
+                'active_model': 'tt.reservation.airline',
+                'active_ids': docids
+            }
+        values = {}
+        for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            values[rec.id] = []
+            for rec2 in rec.invoice_line_ids:
+                resv_obj = self.env[rec2.res_model_resv].browse(rec2.res_id_resv)
+                values[rec.id] = self.calc_segments(resv_obj, resv_obj.passenger_ids)
+        return {
+            'doc_ids': data['context']['active_ids'],
+            'doc_model': data['context']['active_model'],
+            'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
+            'inv_lines': values,
+        }
+
+
+class PrintoutIteneraryForm(models.AbstractModel):
+    _name = 'report.tt_report_common.printout_itinerary'
+    _description = 'Rodex Model'
+
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        if not data.get('context'):
             internal_model_id = docids.pop(0)
             data['context'] = {}
             if internal_model_id == 1:
@@ -49,12 +75,21 @@ class PrintoutInvoice(models.AbstractModel):
         values = {}
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
-            for rec2 in rec.invoice_line_ids:
-                resv_obj = self.env[rec2.res_model_resv].browse(rec2.res_id_resv)
-                values[rec.id] = self.calc_segments(resv_obj, resv_obj.passenger_ids)
+            for rec3 in rec.passenger_ids:
+                a = {'fare': 0, 'tax': 0, 'name': rec3.name, 'pax_type': 'ADT'}
+                for rec2 in rec3.cost_service_charge_ids:
+                    if rec2.charge_code == 'tax':
+                        a['tax'] += rec2.amount
+                    elif rec2.charge_type == 'RAC':
+                        pass
+                    else:
+                        a['fare'] += rec2.amount
+                    a['pax_type'] = rec2.pax_type
+                values[rec.id].append(a)
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
-            'inv_lines': values,
+            'price_lines': values,
+            'date_now': fields.Date.today()
         }

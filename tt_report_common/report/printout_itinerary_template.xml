@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="itinerary_price_detail">
+        <h4>Price Details</h4>
+        <table width="100%">
+            <thead style="border-bottom: 1px solid black; font-size:18px;">
+                <td><b>Name</b></td>
+                <td><b>Pax Type</b></td>
+                <td><b>Base Fare</b></td>
+                <td><b>Tax</b></td>
+                <td><b>Total Per Pax</b></td>
+            </thead>
+            <t t-foreach="price_lines[doc.id]" t-as="price">
+                <tr style="border-bottom: 1px solid lightgray">
+                    <td style="border-right: 1px solid lightgray"><t t-esc="price['name']"/></td>
+                    <td style="border-right: 1px solid lightgray"><t t-esc="price['pax_type']"/></td>
+                    <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['fare']" t-esc-option="widget:monetary; currency_id:doc.currency_id"/></td>
+                    <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['tax']" t-esc-option="widget:monetary; currency_id:doc.currency_id"/></td>
+                    <td style="text-align:right;"><t t-esc="float(price['fare']) + float(price['tax'])" t-esc-option="widget:monetary; currency_id:doc.currency_id"/></td>
+                </tr>
+            </t>
+        </table>
+    </template>
+
+    <template id="itinerary_signature">
+        <div class="row">
+            I, the undersigned, declare that the reservations I have made is correspond to my true IDs and I made this statement consciously without any
+            pressure from anyone.
+        </div>
+        <table width="100%">
+            <tr>
+                <td width="80%"/>
+                <td width="20%" style="text-align:center">
+                    Surabaya, <t t-esc="date_now"/><br/>
+                    <p>Buyer</p>
+                    <p style="color: white;">.</p>
+                    <p style="color: white;">.</p>
+                    <p style="color: white;">.</p>
+                    <p>(............................)</p>
+                    <p style="border-top: 1px solid black">Representative Signature</p>
+                </td>
+            </tr>
+        </table>
+    </template>
+
+    <template id="printout_itinerary">
+        <t t-set="data_report_header_spacing" t-value="20"/>
+        <t t-set="data_report_margin_top" t-value="22"/>
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <div class="page">
+                    <t t-call="tt_report_common.external_layout">
+                        <t t-call="tt_report_common.reservation_airline_content_view"/>
+                        <t t-call="tt_report_common.itinerary_price_detail"/>
+                        <br/>
+                        <t t-call="tt_report_common.itinerary_signature"/>
+                    </t>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>
