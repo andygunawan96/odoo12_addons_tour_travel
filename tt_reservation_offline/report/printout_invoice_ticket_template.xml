@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <template id="report_rodex_e_tickettrain_logo">
+        <div class="bg_watermark"  style="position: absolute; z-index:1; top:170px; text-align: center">
+            <img src="/tt_reservation_offline/static/images/kai/logo_kai_transparan.png"
+                 style="max-height: 180px;"/>
+        </div>
+    </template>
+
     <template id="printout_ticket_train_template">
 <!--        <t t-call="tt_reservation_offline.report_rodex_e_tickettrain_logo"/>-->
         <t t-set="line_index" t-value="0"/>
         <t t-foreach="line_length" t-as="length">
             <div class="article">
+                <t t-call="tt_reservation_offline.report_rodex_e_tickettrain_logo"/>
                 <div class="row" style="border-top: 1px black solid; border-bottom: 1px black solid;">
                     <div class="col-2">
                         <img src="/tt_reservation_offline/static/images/kai/logo_tors_small.png" style="max-height: 110px; margin-top: 9px;"/>
@@ -108,19 +116,30 @@
                                 <span t-esc="passenger_amount['infant']"/><span style="color: white;">.</span><span/>BAYI<span/>
                             </div>
                         </div>
-
-                        <table class="table table-borderless" style="border: none;margin-bottom:20px">
-                            <thead class="border-black">
-                                <td>Nomor Tiket</td>
-                                <td>Nama Penumpang</td>
-                                <td>Kategori</td>
-                                <td>Seat</td>
-                            </thead>
-                            <tbody t-foreach="o.passenger_ids" t-as="psg" style="margin-top:-20px">
-                                <tr>
-                                    <td><span t-field="psg.ticket_number"/></td>
-                                    <td><span t-field="psg.passenger_id.first_name"/><span style="color: white;">.</span><span t-field="psg.passenger_id.last_name"/></td>
-                                    <td>
+                        <div class="row" style="border-top: 1px solid black; border-bottom: 1px solid #CCCCCC; padding-bottom: 7px">
+                            <div class="col-3">
+                                <span>Nomor Tiket</span>
+                            </div>
+                            <div class="col-4">
+                                <span>Nama Penumpang</span>
+                            </div>
+                            <div class="col-2">
+                                <span>Kategori</span>
+                            </div>
+                            <div class="col-3">
+                                <span>Seat</span>
+                            </div>
+                        </div>
+                        <t t-if="o.passenger_ids">
+                            <t t-foreach="o.passenger_ids" t-as="psg">
+                                <div class="row">
+                                    <div class="col-3">
+                                        <span t-field="psg.ticket_number"/>
+                                    </div>
+                                    <div class="col-4">
+                                        <span t-field="psg.passenger_id.first_name"/><span style="color: white;">.</span><span t-field="psg.passenger_id.last_name"/>
+                                    </div>
+                                    <div class="col-2">
                                         <t t-if="psg.pax_type == 'ADT'">
                                             <span>Dewasa</span>
                                         </t>
@@ -130,20 +149,48 @@
                                         <t t-if="psg.pax_type == 'INF'">
                                             <span>Bayi</span>
                                         </t>
-                                    </td>
-                                    <td>
+                                    </div>
+                                    <div class="col-3">
                                         <span t-esc="line_ids[line_index]['class_of_service']"/>-<span t-esc="line_ids[line_index]['subclass']"/>/<span t-field="psg.seat"/>
-                                    </td>
-                                </tr>
-                            </tbody>
-                            <t t-foreach="o.passenger_ids.filtered(lambda line: line.pax_type == 'INF')" t-as="psg">
-                                <tr>
-                                    <td><span t-field="psg.passenger_id.first_name"/><span style="color: white;">.</span><span t-field="psg.passenger_id.last_name"/></td>
-                                    <td><span>Bayi</span></td>
-                                    <td><span>-</span></td>
-                                </tr>
+                                    </div>
+                                </div>
                             </t>
-                        </table>
+                        </t>
+<!--                        <table class="table table-borderless" style="border: none;margin-bottom:20px">-->
+<!--                            <thead class="border-black">-->
+<!--                                <td>Nomor Tiket</td>-->
+<!--                                <td>Nama Penumpang</td>-->
+<!--                                <td>Kategori</td>-->
+<!--                                <td>Seat</td>-->
+<!--                            </thead>-->
+<!--                            <tbody t-foreach="o.passenger_ids" t-as="psg" style="margin-top:-20px">-->
+<!--                                <tr>-->
+<!--                                    <td><span t-field="psg.ticket_number"/></td>-->
+<!--                                    <td><span t-field="psg.passenger_id.first_name"/><span style="color: white;">.</span><span t-field="psg.passenger_id.last_name"/></td>-->
+<!--                                    <td>-->
+<!--                                        <t t-if="psg.pax_type == 'ADT'">-->
+<!--                                            <span>Dewasa</span>-->
+<!--                                        </t>-->
+<!--                                        <t t-if="psg.pax_type == 'CHD'">-->
+<!--                                            <span>Anak</span>-->
+<!--                                        </t>-->
+<!--                                        <t t-if="psg.pax_type == 'INF'">-->
+<!--                                            <span>Bayi</span>-->
+<!--                                        </t>-->
+<!--                                    </td>-->
+<!--                                    <td>-->
+<!--                                        <span t-esc="line_ids[line_index]['class_of_service']"/>-<span t-esc="line_ids[line_index]['subclass']"/>/<span t-field="psg.seat"/>-->
+<!--                                    </td>-->
+<!--                                </tr>-->
+<!--                            </tbody>-->
+<!--                            <t t-foreach="o.passenger_ids.filtered(lambda line: line.pax_type == 'INF')" t-as="psg">-->
+<!--                                <tr>-->
+<!--                                    <td><span t-field="psg.passenger_id.first_name"/><span style="color: white;">.</span><span t-field="psg.passenger_id.last_name"/></td>-->
+<!--                                    <td><span>Bayi</span></td>-->
+<!--                                    <td><span>-</span></td>-->
+<!--                                </tr>-->
+<!--                            </t>-->
+<!--                        </table>-->
                     </div>
                     <div class="col-3 col-offset-1 text-right">
                         <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('QR', line_ids[line_index]['pnr'], 180, 180)" style="width:200px;height:200px"/>

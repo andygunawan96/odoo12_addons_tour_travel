@@ -80,11 +80,12 @@ class VisaOrderPassengers(models.Model):
     in_process_date = fields.Datetime('In Process Date', readonly=1)
     payment_date = fields.Datetime('Payment Date', readonly=1)
     payment_uid = fields.Many2one('res.users', 'Payment By', readonly=1)
-    call_date = fields.Datetime('Call Date', help='Call to interview (visa) or take a photo (passport)')
+    call_date = fields.Date('Call Date', help='Call to interview (visa) or take a photo (passport)')
     out_process_date = fields.Datetime('Out Process Date', readonly=1)
     to_HO_date = fields.Datetime('Send to HO Date', readonly=1)
     to_agent_date = fields.Datetime('Send to Agent Date', readonly=1)
     ready_date = fields.Datetime('Ready Date', readonly=1)
+    expired_date = fields.Date('Expired Date', readonly=1)
 
     service_charge_ids = fields.Many2many('tt.service.charge', 'tt_reservation_visa_charge_rel', 'passenger_id',
                                           'service_charge_id', 'Service Charges')
@@ -110,7 +111,7 @@ class VisaOrderPassengers(models.Model):
                                                 waiting = Documents ready at HO
                                                 done = Documents given to customer''')
 
-    state = fields.Selection(STATE, default='validate', help='''draft = requested
+    state = fields.Selection(STATE, default='draft', help='''draft = requested
                                                 confirm = HO accepted
                                                 validate = if all required documents submitted and documents in progress
                                                 cancel = request cancelled
@@ -145,6 +146,9 @@ class VisaOrderPassengers(models.Model):
             rec.write({
                 'state': 'validate'
             })
+            for req in self.to_requirement_ids:
+                if req.validate_HO is False:
+                    raise UserError(_('You have to Validate All Passengers Documents.'))
             rec.message_post(body='Passenger VALIDATED')
 
     def action_re_validate(self):

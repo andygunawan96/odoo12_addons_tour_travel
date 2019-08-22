@@ -44,15 +44,15 @@ class TtVisa(models.Model):
     duration = fields.Char('Duration', readonly=True, states={'draft': [('readonly', False)]})
     total_cost_price = fields.Monetary('Total Cost Price', default=0, readonly=True)
 
-    state_visa = fields.Selection(STATE_VISA, 'State', default='confirm',
+    state_visa = fields.Selection(STATE_VISA, 'State', default='draft',
                                   help='''draft = requested
                                         confirm = HO accepted
                                         validate = if all required documents submitted and documents in progress
                                         cancel = request cancelled
                                         to_vendor = Documents sent to Vendor
                                         vendor_process = Documents proceed by Vendor
-                                        in_process = before payment
-                                        payment = payment
+                                        in_process = process to consulate/immigration
+                                        payment = payment to embassy
                                         partial proceed = partial proceed by consulate/immigration
                                         proceed = proceed by consulate/immigration
                                         delivered = Documents sent to agent
@@ -86,6 +86,7 @@ class TtVisa(models.Model):
 
     done_date = fields.Datetime('Done Date', readonly=1)
     ready_date = fields.Datetime('Ready Date', readonly=1)
+
     recipient_name = fields.Char('Recipient Name')
     recipient_address = fields.Char('Recipient Address')
     recipient_phone = fields.Char('Recipient Phone')
@@ -167,7 +168,15 @@ class TtVisa(models.Model):
         for rec in self.passenger_ids:
             if rec.state in ['validate', 'cancel']:
                 rec.action_in_process()
+        context = {
+            'co_uid': self.env.user.id
+        }
+        self.action_booked_visa(context)
+        self.action_issued_visa(context)
         self.message_post(body='Order IN PROCESS')
+
+    def action_pay_now_visa(self):
+        pass
 
     # kirim data dan dokumen ke vendor
     def action_to_vendor_visa(self):
@@ -233,9 +242,10 @@ class TtVisa(models.Model):
         # cek state visa.
         # jika state : in_process, partial_proceed, proceed, delivered, ready, done, create reverse ledger
         if self.state_visa not in ['in_process', 'partial_proceed', 'proceed', 'delivered', 'ready', 'done']:
-            self._create_anti_ho_ledger_visa()
-            self._create_anti_ledger_visa()
-            self._create_anti_commission_ledger_visa()
+            if self.sale_service_charge_ids:
+                self._create_anti_ho_ledger_visa()
+                self._create_anti_ledger_visa()
+                self._create_anti_commission_ledger_visa()
         # set semua state passenger ke cancel
         for rec in self.passenger_ids:
             rec.action_cancel()
@@ -243,8 +253,8 @@ class TtVisa(models.Model):
         # for rec2 in self.agent_invoice_ids:
         #     rec2.action_cancel()
         # unlink semua vendor
-        # for rec3 in self.vendor_ids:
-        #     rec3.sudo().unlink()
+        for rec3 in self.vendor_ids:
+            rec3.sudo().unlink()
         self.write({
             'state_visa': 'cancel',
         })
@@ -375,7 +385,7 @@ class TtVisa(models.Model):
 
     param_context = {
         'co_uid': 2,
-        'agent_id': 3
+        'co_agent_id': 3
     }
 
     param_kwargs = {
@@ -503,31 +513,12 @@ class TtVisa(models.Model):
         booker = data['booker']  # copy.deepcopy(self.param_booker)
         contact = data['contact']  # copy.deepcopy(self.param_contact)
         passengers = data['passenger']  # copy.deepcopy(self.param_passenger)
-        search = data['search'] # copy.deepcopy(self.param_search)
+        search = data['search']  # copy.deepcopy(self.param_search)
         context = context  # copy.deepcopy(self.param_context)
         kwargs = kwargs  # copy.deepcopy(self.param_kwargs)
 
         try:
             user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
-            # for contact_data in contact:
-            #     contact_data.update({
-            #         'agent_id': context['agent_id'],
-            #         'commercial_agent_id': user_obj.agent_id.id,
-            #         'booker_type': 'FPO',
-            #     })
-            #     if user_obj.agent_id.agent_type_id.id == 3:  # 3 : COR
-            #         if user_obj.agent_id.parent_agent_id:
-            #             contact_data.update({
-            #                 'commercial_agent_id': user_obj.agent_id.parent_agent_id.id,
-            #                 'booker_type': 'COR',
-            #             })
-            #
-            #     if user_obj.agent_id.agent_type_id.id == 9:  # 9 : POR
-            #         if user_obj.agent_id.parent_agent_id:
-            #             contact_data.update({
-            #                 'commercial_agent_id': user_obj.agent_id.parent_agent_id.id,
-            #                 'booker_type': 'POR',
-            #             })
 
             header_val = self._visa_header_normalization(search, sell_visa)
             booker_id = self.create_booker_api(booker, context)
@@ -554,15 +545,15 @@ class TtVisa(models.Model):
                 'child': sell_visa['pax']['child'],
                 'infant': sell_visa['pax']['infant'],
                 'state': 'booked',
-                'agent_id': context['agent_id'],
+                'agent_id': context['co_agent_id'],
                 'user_id': context['co_uid'],
             })
 
             book_obj = self.sudo().create(header_val)
             book_obj.agent_id = self.env.user.agent_id  # kedepannya mungkin dihapus | contact['agent_id']
 
-            book_obj.action_booked_visa(context)  # ubah state ke booked sekaligus
-            book_obj.action_issued_visa(context)
+            # book_obj.action_booked_visa(context)
+            # book_obj.action_issued_visa(context)
             response = {
                 'id': book_obj.name
             }
@@ -658,8 +649,8 @@ class TtVisa(models.Model):
         else:
             country = country_env.search([('code', '=', booker.pop('nationality_code'))])
             booker.update({
-                'commercial_agent_id': context['agent_id'],
-                'agent_id': context['agent_id'],
+                'commercial_agent_id': context['co_agent_id'],
+                'agent_id': context['co_agent_id'],
                 'nationality_id': country and country[0].id or False,
                 'email': booker.get('email', booker['email']),
                 'mobile': booker.get('mobile', booker['mobile']),
@@ -695,8 +686,8 @@ class TtVisa(models.Model):
             else:
                 country = country_env.search([('code', '=', con.pop('nationality_code'))])  # diubah ke country_code
                 con.update({
-                    'commercial_agent_id': context['agent_id'],
-                    'agent_id': context['agent_id'],
+                    'commercial_agent_id': context['co_agent_id'],
+                    'agent_id': context['co_agent_id'],
                     'nationality_id': country and country[0].id or False,
                     # 'passenger_type': 'ADT',
                     'email': con.get('email', con['email'])
@@ -746,7 +737,7 @@ class TtVisa(models.Model):
 
                 psg.update({
                     'passenger_id': False,
-                    'agent_id': context['agent_id']
+                    'agent_id': context['co_agent_id']
                 })
                 psg_res = passenger_env.create(psg)
                 psg.update({
@@ -855,6 +846,8 @@ class TtVisa(models.Model):
                 # 'passenger_type': psg['passenger_type'],
                 'pricelist_id': pricelist_id,
                 'passenger_type': psg['pax_type'],
+                # Pada state request, pax akan diberi expired date dg durasi tergantung dari paket visa yang diambil
+                'expired_date': fields.Date.today() + timedelta(days=pricelist_obj.duration),
                 'sequence': int(idx+1)
             })
             to_psg_obj = to_psg_env.create(psg_vals)
@@ -923,7 +916,7 @@ class TtVisa(models.Model):
         self.write(vals)
 
     ######################################################################################################
-    # LEDGER | create ledger akan dipindah ke tt_accounting
+    # LEDGER
     ######################################################################################################
 
     @api.one
@@ -1230,6 +1223,20 @@ class TtVisa(models.Model):
             'model': self._name,
         }
         return self.env.ref('tt_reservation_visa.action_report_printout_tt_visa_cust').report_action(self, data=data)
+
+    ######################################################################################################
+    # CRON
+    ######################################################################################################
+
+    def cron_check_visa_pax_expired_date(self):
+        visa_draft = self.search([('state_visa', '=', 'draft')])
+        for rec in visa_draft:
+            expired = False
+            for psg in rec.passenger_ids:
+                if psg.expired_date <= fields.Date.today():
+                    expired = True
+            if expired:
+                rec.action_cancel_visa()
 
     ######################################################################################################
     # OTHERS
