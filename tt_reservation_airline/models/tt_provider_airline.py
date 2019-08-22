@@ -114,13 +114,13 @@ class TtProviderAirline(models.Model):
         for psg in passengers:
             psg_obj = self.booking_id.passenger_ids.filtered(lambda x: x.name.replace(' ', '').lower() ==
                                                                 ('%s%s' % (psg.get('first_name', ''),
-                                                                           psg.get('last_name', ''))).lower())
+                                                                           psg.get('last_name', ''))).lower().replace(' ',''))
 
             if not psg_obj:
                 psg_obj = self.booking_id.passenger_ids.filtered(lambda x: x.name.replace(' ', '').lower()*2 ==
                                                                            ('%s%s' % (psg.get('first_name', ''),
                                                                                       psg.get('last_name',
-                                                                                              ''))).lower())
+                                                                                              ''))).lower().replace(' ',''))
             ticket_list.append((0, 0, {
                 'pax_type': psg.get('pax_type'),
                 'ticket_number': psg.get('ticket_number'),
