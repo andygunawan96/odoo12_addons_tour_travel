@@ -111,7 +111,9 @@ class TtProviderAirline(models.Model):
 
     def create_ticket_api(self,passengers):
         ticket_list = []
-        for idx,psg in enumerate(passengers):
+        ticket_found = []
+        ticket_not_found = []
+        for psg in passengers:
             psg_obj = self.booking_id.passenger_ids.filtered(lambda x: x.name.replace(' ', '').lower() ==
                                                                 ('%s%s' % (psg.get('first_name', ''),
                                                                            psg.get('last_name', ''))).lower().replace(' ',''))
@@ -121,24 +123,52 @@ class TtProviderAirline(models.Model):
                                                                            ('%s%s' % (psg.get('first_name', ''),
                                                                                       psg.get('last_name',
                                                                                               ''))).lower().replace(' ',''))
+            if psg_obj:
+                ticket_list.append((0, 0, {
+                    'pax_type': psg.get('pax_type'),
+                    'ticket_number': psg.get('ticket_number'),
+                    'passenger_id': psg_obj.id
+                }))
+                ticket_found.append(psg_obj.id)
+            else:
+                ticket_not_found.append(psg)
+
+        psg_with_no_ticket = self.booking_id.passenger_ids.filtered(lambda x: x.id not in ticket_found)
+        for idx, psg in enumerate(ticket_not_found):
             ticket_list.append((0, 0, {
                 'pax_type': psg.get('pax_type'),
                 'ticket_number': psg.get('ticket_number'),
-                'passenger_id': psg_obj and psg_obj.id or self.booking_id.passenger_ids[idx].id
+                'passenger_id': psg_with_no_ticket[idx].id
             }))
+
         self.write({
             'ticket_ids': ticket_list
         })
 
+
+
     def update_ticket_api(self,passengers):##isi ticket number
+        ticket_not_found = []
         for psg in passengers:
+            ticket_found = False
             for ticket in self.ticket_ids:
                 psg_name = ticket.passenger_id.name.replace(' ','').lower()
                 if ('%s%s' % (psg['first_name'], psg['last_name'])).replace(' ','').lower() in [psg_name, psg_name*2]:
                     ticket.write({
                         'ticket_number': psg.get('ticket_number','')
                     })
+                    ticket_found = True
                     break
+            if not ticket_found:
+                ticket_not_found.append(psg)
+
+        for psg in ticket_not_found:
+            self.write({
+                'ticket_ids': [(0,0,{
+                    'ticket_number': psg.get('ticket_number'),
+                    'pax_type': psg.get('pax_type'),
+                })]
+            })
 
     def create_service_charge(self, service_charge_vals):
         service_chg_obj = self.env['tt.service.charge']
