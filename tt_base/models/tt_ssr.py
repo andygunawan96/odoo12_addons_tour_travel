@@ -33,6 +33,7 @@ class TtSSRList(models.Model):
     name = fields.Char('Name', required=True)
     code = fields.Char('Code', required=True)
     description = fields.Text('Description', default='')
+    rules = fields.Text('Rules', default='')
     notes = fields.Text('Notes', default='')
     category_id = fields.Many2one('tt.ssr.category', 'Category')
     provider_id = fields.Many2one('tt.provider', required=True)
@@ -46,6 +47,7 @@ class TtSSRList(models.Model):
             'name': self.name,
             'code': self.code,
             'description': self.description and self.description or '',
+            'rules': self.rules and self.rules or '',
             'notes': self.notes and self.notes or '',
             'category_id': self.category_id and self.category_id.to_dict() or {},
             'provider_id': self.provider_id and self.provider_id.to_dict() or {},
@@ -95,6 +97,7 @@ class TtSSRList(models.Model):
             'name': self.name,
             'code': self.code,
             'description': self.description and self.description or '',
+            'rules': self.rules and self.rules or '',
             'notes': self.notes and self.notes or '',
             'category_name': self.category_id and self.category_id.name or '',
             'category_code': self.category_id and self.category_id.code or '',
@@ -146,6 +149,7 @@ class TtSSRListLine(models.Model):
     sequence = fields.Integer(default=50, readonly=1)
     code = fields.Char('Code', required=True)
     description = fields.Text('Description', default='')
+    rules = fields.Text('Rules', default='')
     notes = fields.Text('Notes', default='')
     value = fields.Char('Value', default='')
     ssr_id = fields.Many2one('tt.ssr.list', 'SSR', readonly=1)
@@ -157,6 +161,7 @@ class TtSSRListLine(models.Model):
             'code': self.code,
             'value': self.value,
             'description': self.description,
+            'rules': self.rules,
             'notes': self.notes,
         }
         return res
