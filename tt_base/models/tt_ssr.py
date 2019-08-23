@@ -27,6 +27,14 @@ class TtSSRCategory(models.Model):
         }
         return res
 
+    def get_data(self):
+        res = {
+            'name': self.name,
+            'code': self.code,
+            'key': self.key,
+        }
+        return res
+
 
 class TtSSRList(models.Model):
     _name = 'tt.ssr.list'
@@ -101,8 +109,7 @@ class TtSSRList(models.Model):
             'description': self.description and self.description or '',
             'rules': self.rules and self.rules or '',
             'notes': self.notes and self.notes or '',
-            'category_name': self.category_id and self.category_id.name or '',
-            'category_code': self.category_id and self.category_id.code or '',
+            'category_id': self.category_id and self.category_id.get_data() or '',
             'lines': lines,
         }
         return res
