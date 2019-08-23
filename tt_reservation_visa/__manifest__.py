@@ -27,6 +27,7 @@
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
         'data/ir_sequence_data.xml',
+        'data/ir_cron_data.xml',
         'data/tt_provider_type_data.xml',
         'views/tt_reservation_visa_menuheader.xml',
         'views/tt_reservation_visa_views.xml',

@@ -57,12 +57,14 @@
                     <br/>
                     <br/>
                     <br/>
+                    <br/>
                     (<span t-field="p.first_name"/>
                     <span/>
                     <span t-field="p.last_name"/>)
                 </div>
                 <div class="col-6 text-center">
                     <span><strong>Recipient</strong></span>
+                    <br/>
                     <br/>
                     <br/>
                     <br/>
