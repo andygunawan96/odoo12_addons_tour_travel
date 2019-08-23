@@ -136,8 +136,8 @@ class Destinations(models.Model):
             country_obj = country_dict.get(country_code)
             if not country_obj:
                 country_dict[country_code] = rec.country_id.get_country_data()
-                country_dict['destinations'] = []
                 country_obj = country_dict[country_code]
+                country_obj['destinations'] = []
             country_obj['destinations'].append(rec.get_destination_data())
 
         res = [vals for vals in country_dict.values()]
