@@ -88,6 +88,7 @@ class MasterActivity(models.Model):
 
     line_ids = fields.One2many('tt.master.activity.lines', 'activity_id', 'Product Types')
     image_ids = fields.One2many('tt.activity.master.images', 'activity_id', 'Images Path')
+    video_ids = fields.One2many('tt.activity.master.videos', 'activity_id', 'Video Path')
     provider_id = fields.Many2one('tt.provider', 'Provider')
     provider_code = fields.Char('Provider Code')
     active = fields.Boolean('Active', default=True)
@@ -243,7 +244,7 @@ class MasterActivity(models.Model):
                                     state_id = self.env['res.country.state'].update_provider_data(state['name'], state['uuid'], vendor_id, country_id)
                                 if state.get('cities'):
                                     for city in state['cities']:
-                                        self.env['res.country.city'].update_provider_data(city['name'], city['uuid'], vendor_id, state_id)
+                                        self.env['res.city'].update_provider_data(city['name'], city['uuid'], vendor_id, state_id)
                 if provider == 'bemyguest':
                     type_lib = {
                         'categories': 'category',
@@ -351,6 +352,7 @@ class MasterActivity(models.Model):
                 provider_id = self.env['tt.provider'].sudo().search([('code', '=', rec['product']['provider'])], limit=1)
                 provider_id = provider_id[0]
                 product_obj = self.env['tt.master.activity'].search([('uuid', '=', rec['product']['uuid']), ('provider_id', '=', provider_id.id), '|', ('active', '=', False), ('active', '=', True)], limit=1)
+                product_obj = product_obj[0]
                 temp = []
                 temp3 = self.env['tt.provider'].search([('code', '=', provider)], limit=1)
                 temp3 = temp3[0]
@@ -414,7 +416,7 @@ class MasterActivity(models.Model):
                             'state_id': False,
                         })
                         self.env.cr.commit()
-                        city_id = self.env['res.country.city'].sudo().search([('name', '=', rec['product']['cities'][0])], limit=1)
+                        city_id = self.env['res.city'].sudo().search([('name', '=', rec['product']['cities'][0])], limit=1)
                         new_loc.city_id = city_id
                         temp2.append(new_loc.id)
                 else:
@@ -426,7 +428,7 @@ class MasterActivity(models.Model):
                             'state_id': False,
                         })
                         self.env.cr.commit()
-                        city_id = self.env['res.country.city'].sudo().search([('name', '=', rec['product']['cities'][idx])], limit=1)
+                        city_id = self.env['res.city'].sudo().search([('name', '=', rec['product']['cities'][idx])], limit=1)
                         new_loc.city_id = city_id
                         temp2.append(new_loc.id)
 
@@ -438,7 +440,7 @@ class MasterActivity(models.Model):
                             types_temp.append(tip.id)
 
                 if product_obj:
-                    product_obj[0].update({
+                    product_obj.update({
                         'name': rec['product']['title'],
                         'type_ids': [(6, 0, types_temp)],
                         'category_ids': [(6, 0, temp)],
@@ -524,6 +526,17 @@ class MasterActivity(models.Model):
                     self.env['tt.activity.master.images'].sudo().create(data_values)
                     self.env.cr.commit()
 
+                videos = self.env['tt.activity.master.videos'].search([('activity_id', '=', product_obj.id)])
+                videos.sudo().unlink()
+                if rec['product'].get('videos'):
+                    for vid in rec['product']['videos']:
+                        data_values = {
+                            'activity_id': product_obj.id,
+                            'video_url': vid,
+                        }
+                        self.env['tt.activity.master.videos'].sudo().create(data_values)
+                        self.env.cr.commit()
+
                 def_name = 'sync_type_products_%s' % provider
                 if hasattr(self, def_name):
                     getattr(self.env['tt.master.activity'], def_name)(rec, product_obj.id, provider)
@@ -558,25 +571,8 @@ class MasterActivity(models.Model):
                     'durationHours': rec['type_details']['data']['durationHours'],
                     'durationMinutes': rec['type_details']['data']['durationMinutes'],
                     'isNonRefundable': rec['type_details']['data']['isNonRefundable'],
-                    'minPax': rec['type_details']['data']['minPax'],
-                    'maxPax': rec['type_details']['data']['maxPax'],
-                    'minAdultAge': rec['type_details']['data']['minAdultAge'],
-                    'maxAdultAge': rec['type_details']['data']['maxAdultAge'],
-                    'allowChildren': rec['type_details']['data']['allowChildren'],
-                    'minChildren': rec['type_details']['data']['minChildren'],
-                    'maxChildren': rec['type_details']['data']['maxChildren'],
-                    'minChildAge': rec['type_details']['data']['minChildAge'],
-                    'maxChildAge': rec['type_details']['data']['maxChildAge'],
-                    'allowSeniors': rec['type_details']['data']['allowSeniors'],
-                    'minSeniors': rec['type_details']['data']['minSeniors'],
-                    'maxSeniors': rec['type_details']['data']['maxSeniors'],
-                    'minSeniorAge': rec['type_details']['data']['minSeniorAge'],
-                    'maxSeniorAge': rec['type_details']['data']['maxSeniorAge'],
-                    'allowInfant': rec['type_details']['data']['allowInfant'],
-                    'minInfantAge': rec['type_details']['data']['minInfantAge'],
-                    'maxInfantAge': rec['type_details']['data']['maxInfantAge'],
-                    'minGroup': rec['type_details']['data']['minGroup'],
-                    'maxGroup': rec['type_details']['data']['maxGroup'],
+                    'minPax': rec['type_details']['data']['minGroup'],
+                    'maxPax': rec['type_details']['data']['maxGroup'],
                     'voucherUse': rec['type_details']['data']['voucherUse'],
                     'voucherRedemptionAddress': rec['type_details']['data']['voucherRedemptionAddress'],
                     'voucherRequiresPrinting': rec['type_details']['data']['voucherRequiresPrinting'],
@@ -593,6 +589,58 @@ class MasterActivity(models.Model):
                 }
                 activity_obj = self.env['tt.master.activity.lines'].sudo().create(vals)
                 self.env.cr.commit()
+
+                sku_vals = {
+                    'activity_line_id': activity_obj.id,
+                    'sku_id': 'ADT',
+                    'title': 'Adult',
+                    'minPax': rec['type_details']['data']['minPax'],
+                    'maxPax': rec['type_details']['data']['maxPax'],
+                    'minAge': rec['type_details']['data']['minAdultAge'],
+                    'maxAge': rec['type_details']['data']['maxAdultAge'],
+                }
+                sku_obj = self.env['tt.master.activity.sku'].sudo().create(sku_vals)
+                self.env.cr.commit()
+
+                if rec['type_details']['data']['allowChildren']:
+                    sku_vals = {
+                        'activity_line_id': activity_obj.id,
+                        'sku_id': 'CHD',
+                        'title': 'Child',
+                        'minPax': rec['type_details']['data']['minChildren'],
+                        'maxPax': rec['type_details']['data']['maxChildren'],
+                        'minAge': rec['type_details']['data']['minChildAge'],
+                        'maxAge': rec['type_details']['data']['maxChildAge'],
+                    }
+                    sku_obj = self.env['tt.master.activity.sku'].sudo().create(sku_vals)
+                    self.env.cr.commit()
+
+                if rec['type_details']['data']['allowSeniors']:
+                    sku_vals = {
+                        'activity_line_id': activity_obj.id,
+                        'sku_id': 'YCD',
+                        'title': 'Senior',
+                        'minPax': rec['type_details']['data']['minSeniors'],
+                        'maxPax': rec['type_details']['data']['maxSeniors'],
+                        'minAge': rec['type_details']['data']['minSeniorAge'],
+                        'maxAge': rec['type_details']['data']['maxSeniorAge'],
+                    }
+                    sku_obj = self.env['tt.master.activity.sku'].sudo().create(sku_vals)
+                    self.env.cr.commit()
+
+                if rec['type_details']['data']['allowInfant']:
+                    sku_vals = {
+                        'activity_line_id': activity_obj.id,
+                        'sku_id': 'INF',
+                        'title': 'Infant',
+                        'minPax': 0,
+                        'maxPax': 5,
+                        'minAge': rec['type_details']['data']['minInfantAge'],
+                        'maxAge': rec['type_details']['data']['maxInfantAge'],
+                    }
+                    sku_obj = self.env['tt.master.activity.sku'].sudo().create(sku_vals)
+                    self.env.cr.commit()
+
                 if rec['type_details']['data']['timeslots']:
                     for time in rec['type_details']['data']['timeslots']:
                         value = {
@@ -690,8 +738,8 @@ class MasterActivity(models.Model):
                 'durationHours': 0,
                 'durationMinutes': 0,
                 'isNonRefundable': rec2['cancellationPolicySettings'] and rec2['cancellationPolicySettings']['isActive'] or True,
-                'minPax': is_adult and 1 or 0,
-                'maxPax': is_adult and 10 or 0,
+                'minPax': rec2['minimumPax'] or 1,
+                'maxPax': rec2['maximumPax'] or 30,
                 'minAdultAge': 13,
                 'maxAdultAge': 65,
                 'allowChildren': is_child,
@@ -707,8 +755,6 @@ class MasterActivity(models.Model):
                 'allowInfant': True,
                 'minInfantAge': 0,
                 'maxInfantAge': 3,
-                'minGroup': rec2['minimumPax'] or 1,
-                'maxGroup': rec2['maximumPax'] or 30,
                 'voucherUse': rec2['termsAndConditions'],
                 'voucherRedemptionAddress': '',
                 'voucherRequiresPrinting': False,
@@ -727,6 +773,57 @@ class MasterActivity(models.Model):
             activity_obj = self.env['tt.master.activity.lines'].sudo().create(vals)
             self.env.cr.commit()
 
+            if is_adult:
+                sku_vals = {
+                    'activity_line_id': activity_obj.id,
+                    'sku_id': 'ADT',
+                    'title': 'Adult',
+                    'minPax': 1,
+                    'maxPax': 10,
+                    'minAge': 13,
+                    'maxAge': 65,
+                }
+                sku_obj = self.env['tt.master.activity.sku'].sudo().create(sku_vals)
+                self.env.cr.commit()
+
+            if is_child:
+                sku_vals = {
+                    'activity_line_id': activity_obj.id,
+                    'sku_id': 'CHD',
+                    'title': 'Child',
+                    'minPax': 0,
+                    'maxPax': 10,
+                    'minAge': 4,
+                    'maxAge': 12,
+                }
+                sku_obj = self.env['tt.master.activity.sku'].sudo().create(sku_vals)
+                self.env.cr.commit()
+
+            if is_senior:
+                sku_vals = {
+                    'activity_line_id': activity_obj.id,
+                    'sku_id': 'YCD',
+                    'title': 'Senior',
+                    'minPax': 0,
+                    'maxPax': 10,
+                    'minAge': 66,
+                    'maxAge': 120,
+                }
+                sku_obj = self.env['tt.master.activity.sku'].sudo().create(sku_vals)
+                self.env.cr.commit()
+
+            sku_vals = {
+                'activity_line_id': activity_obj.id,
+                'sku_id': 'INF',
+                'title': 'Infant',
+                'minPax': 0,
+                'maxPax': 5,
+                'minAge': 0,
+                'maxAge': 3,
+            }
+            sku_obj = self.env['tt.master.activity.sku'].sudo().create(sku_vals)
+            self.env.cr.commit()
+
             option_ids = []
             for book in rec2['questions']:
                 type_lib = {
@@ -742,7 +839,6 @@ class MasterActivity(models.Model):
                     'formatRegex': '',
                     'inputType': type_lib[book['type']['name']],
                     'price': 0,
-                    # 'type': book['question'] in ['Please state your date of visit', ' Please state your date of visit'] and 'perBooking' or 'perPax',#TODO
                     'type': 'perBooking',
                 }
                 temp2 = self.env['tt.activity.booking.option'].sudo().create(value2)
@@ -873,8 +969,6 @@ class MasterActivity(models.Model):
                 'durationHours': duration_hour,
                 'durationMinutes': duration_min,
                 'isNonRefundable': refundable,
-                'minGroup': rec2.get('product_min_pax') and rec2['product_min_pax'] or 1,
-                'maxGroup': rec2.get('product_max_pax') and rec2['product_max_pax'] or 30,
                 'voucherUse': voucher_use,
                 'voucherRedemptionAddress': '',
                 'voucherRequiresPrinting': False,
@@ -888,8 +982,8 @@ class MasterActivity(models.Model):
                 'instantConfirmation': confirm,
                 'advanceBookingDays': 0,
                 'minimumSellingPrice': 0,
-                'minPax': 0,
-                'maxPax': 999,
+                'minPax': rec2.get('product_min_pax') and rec2['product_min_pax'] or 1,
+                'maxPax': rec2.get('product_max_pax') and rec2['product_max_pax'] or 999,
             }
             if sku_ids:
                 vals.update({

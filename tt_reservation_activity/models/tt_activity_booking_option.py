@@ -66,3 +66,11 @@ class MasterImages(models.Model):
     photos_path = fields.Char('Images Path')
     # type = fields.Selection([('thumbnail', 'Thumbnail'), ('fullSize', 'Full Size')])
 
+
+class MasterVideos(models.Model):
+    _name = 'tt.activity.master.videos'
+    _description = 'Rodex Model'
+
+    activity_id = fields.Many2one('tt.master.activity', 'Activity ID', ondelete="cascade")
+    video_url = fields.Char('Video Url')
+
