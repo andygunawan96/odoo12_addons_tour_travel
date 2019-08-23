@@ -87,11 +87,6 @@ class Destinations(models.Model):
         res = {
             'name': self.name,
             'code': self.code,
-            'country_id': {
-                'name': self.country_id.name and self.country_id.name or '',
-                'code': self.country_id.code and self.country_id.code or '',
-                'phone_code': self.country_id.phone_code and self.country_id.phone_code or '',
-            },
             'city': self.city and self.city or '',
             'timezone_hour': self.timezone_hour and self.timezone_hour or 0,
         }
@@ -111,7 +106,7 @@ class Destinations(models.Model):
             if not res.get(country_code):
                 res[country_code] = []
             data = rec.get_destination_data()
-            data.pop('country_id')
+            # data.pop('country_id')
             res[country_code].append(data)
         return res
 
@@ -127,13 +122,37 @@ class Destinations(models.Model):
             res.update({code: rec.get_destination_data()})
         return res
 
+    def get_destination_list_by_country(self, _provider_type):
+        provider_obj = self.env['tt.provider.type'].sudo().search([('code', '=', _provider_type)], limit=1)
+        if not provider_obj:
+            raise Exception('Provider type not found, %s' % _provider_type)
+
+        _obj = self.sudo().search([('provider_type_id', '=', provider_obj.id), ('active', '=', True)])
+        country_dict = {}
+        for rec in _obj:
+            country_code = rec.country_id.code
+            if not country_code:
+                continue
+            country_obj = country_dict.get(country_code)
+            if not country_obj:
+                country_dict[country_code] = rec.country_id.get_country_data()
+                country_dict['destinations'] = []
+                country_obj = country_dict[country_code]
+            country_obj['destinations'].append(rec.get_destination_data())
+
+        res = [vals for vals in country_dict.values()]
+        return res
+
     def get_destination_list_api(self, data, context):
         try:
-            filter_by = data.get('filter_by', '')
-            if filter_by == 'code':
-                response = self.get_destination_list_by_code(data['provider_type'])
-            else:
-                response = self.get_destination_list_by_country_code(data['provider_type'])
+            # August 23, 2019 - SAM
+            # Update response untuk get destination list
+            # filter_by = data.get('filter_by', '')
+            # if filter_by == 'code':
+            #     response = self.get_destination_list_by_code(data['provider_type'])
+            # else:
+            #     response = self.get_destination_list_by_country_code(data['provider_type'])
+            response = self.get_destination_list_by_country(data['provider_type'])
             res = Response().get_no_error(response)
         except Exception as e:
             _logger.error('Error Get Destination List API, %s, %s' % (str(e), traceback.format_exc()))
