@@ -20,6 +20,7 @@ class ApiManagement(models.Model):
     api_key = fields.Char(string='API Key')
     active = fields.Boolean(string='Active', default=True)
     api_role = fields.Selection(selection=variables.ROLE_TYPE, required=True, default='operator')
+    device_type = fields.Selection(selection=variables.DEVICE_TYPE, default='general')
     user_id = fields.Many2one(comodel_name='res.users', string='User')
 
     def to_dict(self):
@@ -31,12 +32,16 @@ class ApiManagement(models.Model):
             },
             'api_key': self.api_key and self.api_key or '',
             'api_role': self.api_role,
+            'device_type': self.device_type,
         }
         return res
 
     def get_credential(self):
         res = {} if not self.user_id else self.user_id.get_credential()
-        res['api_role'] = self.api_role
+        res.update({
+            'api_role': self.api_role,
+            'device_type': self.device_type,
+        })
         return res
 
     @api.model
