@@ -15,12 +15,14 @@ class TtSSRCategory(models.Model):
 
     name = fields.Char('Name', required=True)
     code = fields.Char('Code', required=True)
+    key = fields.Char('Key', required=True, help='Key pada response dari API ke User API')
     active = fields.Boolean('Active', default=True)
 
     def to_dict(self):
         res = {
             'name': self.name,
             'code': self.code,
+            'key': self.key,
             'active': self.active,
         }
         return res
