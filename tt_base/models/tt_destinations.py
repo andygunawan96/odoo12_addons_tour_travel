@@ -3,7 +3,7 @@ import pytz
 import traceback
 from ...tools.api import Response
 import logging
-
+import copy
 
 _logger = logging.getLogger(__name__)
 
@@ -23,7 +23,7 @@ class Destinations(models.Model):
     name = fields.Char('Name', required=True)
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', required=True)
     code = fields.Char('Code', help="Can be filled with IATA code", required=True)
-    display_name = fields.Char('Display Name',compute="_compute_display_name_rodex")
+    display_name = fields.Char('Display Name',compute="_compute_display_name_rodex",store=True)
     country_id = fields.Many2one('res.country', 'Country')
     city = fields.Char('City', required=True, default='')
     icao = fields.Char('ICAO', help="for airline : 4-letter ICAO code")
@@ -38,24 +38,10 @@ class Destinations(models.Model):
     active = fields.Boolean('Active', default=True)
 
     @api.multi
+    @api.depends('city','name','code')
     def _compute_display_name_rodex(self):
         for rec in self:
             rec.display_name = '%s - %s (%s)' % (rec.city or '', rec.name or '', rec.code or '')
-
-    # @api.model
-    # def create(self, vals_list):
-    #     vals_list.update({
-    #         'display_name': '%s - %s ( %s )' % (vals_list.get('city', ''), vals_list['name'], vals_list['code'])
-    #     })
-    #     return super(Destinations, self).create(vals_list)
-    #
-    # @api.multi
-    # def write(self, vals):
-    #     for rec in self:
-    #         vals.update({
-    #             'display_name': '%s - %s ( %s )' % (vals.get('city', rec.city), vals.get('name',rec.name),vals.get('code', rec.code))
-    #         })
-    #     super(Destinations, self).write(vals)
 
 
     def get_id(self, code, provider_type):

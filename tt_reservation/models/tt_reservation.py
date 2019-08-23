@@ -103,7 +103,7 @@ class TtReservation(models.Model):
             if booker_rec:
                 if vals.get('mobile'):
                     number_entered  = False
-                    vals_phone_number = '+%s%s' % (vals.get('calling_code', ''), vals['mobile'])
+                    vals_phone_number = '%s%s' % (vals.get('calling_code', ''), vals['mobile'])
                     for phone in booker_rec.phone_ids:
                         if phone.phone_number == vals_phone_number:
                             number_entered = True
@@ -111,7 +111,7 @@ class TtReservation(models.Model):
 
                     if not number_entered:
                         new_phone=[(0,0,{
-                            'calling_code': '+%s' % (vals.get('calling_code', '')),
+                            'calling_code': vals.get('calling_code', ''),
                             'calling_number': vals.get('mobile', ''),
                             'phone_number': vals_phone_number
                         })]
@@ -129,9 +129,9 @@ class TtReservation(models.Model):
             'nationality_id': country and country[0].id or False,
             'email': vals.get('email'),
             'phone_ids': [(0,0,{
-                'calling_code': '%s' % (vals.get('calling_code','')),
+                'calling_code': vals.get('calling_code',''),
                 'calling_number': vals.get('mobile',''),
-                'phone_number': '+%s%s' % (vals.get('calling_code',''),vals.get('mobile','')),
+                'phone_number': '%s%s' % (vals.get('calling_code',''),vals.get('mobile','')),
                 'country_id': country and country[0].id or False,
             })],
             'first_name': vals.get('first_name'),
@@ -161,14 +161,14 @@ class TtReservation(models.Model):
             if contact_rec:
                 if vals.get('mobile'):
                     number_entered = False
-                    vals_phone_number = '+%s%s' % (vals.get('calling_code', ''), vals['mobile'])
+                    vals_phone_number = '%s%s' % (vals.get('calling_code', ''), vals['mobile'])
                     for phone in contact_rec.phone_ids:
                         if phone.phone_number == vals_phone_number:
                             number_entered = True
                             break
                     if not number_entered:
                         new_phone = [(0, 0, {
-                            'calling_code': '%s' % (vals.get('calling_code', '')),
+                            'calling_code': vals.get('calling_code', ''),
                             'calling_number': vals.get('mobile', ''),
                             'phone_number': vals_phone_number
                         })]
@@ -186,9 +186,9 @@ class TtReservation(models.Model):
             'nationality_id': country and country[0].id or False,
             'email': vals.get('email'),
             'phone_ids': [(0,0,{
-                'calling_code': '+%s' % (vals.get('calling_code', '')),
+                'calling_code': vals.get('calling_code', ''),
                 'calling_number': vals.get('mobile',''),
-                'phone_number': '+%s%s' % (vals.get('calling_code',''),vals.get('mobile','')),
+                'phone_number': '%s%s' % (vals.get('calling_code',''),vals.get('mobile','')),
                 'country_id': country and country[0].id or False,
             })],
             'first_name': vals.get('first_name'),

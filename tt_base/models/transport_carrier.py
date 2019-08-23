@@ -39,22 +39,6 @@ class TransportCarrier(models.Model):
         res = self.sudo().search([('code', '=', code), ('provider_type_id', '=', provider_type.id)])
         return res and res[0].id or False
 
-    def get_carrier_info(self, code):
-        res = self.sudo().search([('code','=',code)], limit=1)
-        if res:
-            return {
-                'name': res[0].name,
-                'code': res[0].code,
-                'display_name': res[0].display_name,
-                'logo': res[0].logo,
-            }
-        return {
-                'name': code,
-                'code': code,
-                'display_name': code,
-                'logo': False,
-            }
-
     def to_dict(self):
         return {
             'name': self.name,

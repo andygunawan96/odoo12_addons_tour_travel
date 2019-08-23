@@ -111,7 +111,7 @@ class TtProviderAirline(models.Model):
 
     def create_ticket_api(self,passengers):
         ticket_list = []
-        for psg in passengers:
+        for idx,psg in enumerate(passengers):
             psg_obj = self.booking_id.passenger_ids.filtered(lambda x: x.name.replace(' ', '').lower() ==
                                                                 ('%s%s' % (psg.get('first_name', ''),
                                                                            psg.get('last_name', ''))).lower().replace(' ',''))
@@ -124,7 +124,7 @@ class TtProviderAirline(models.Model):
             ticket_list.append((0, 0, {
                 'pax_type': psg.get('pax_type'),
                 'ticket_number': psg.get('ticket_number'),
-                'passenger_id': psg_obj.id
+                'passenger_id': psg_obj and psg_obj.id or self.booking_id.passenger_ids[idx].id
             }))
         self.write({
             'ticket_ids': ticket_list
