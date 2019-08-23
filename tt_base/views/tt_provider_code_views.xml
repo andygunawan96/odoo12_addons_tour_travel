@@ -1,0 +1,88 @@
+<odoo>
+<!--    <record id="res_country_booking_form_views" model="ir.ui.view" >-->
+<!--        <field name="name">res.country.form.view</field>-->
+<!--        <field name="model">res.country</field>-->
+<!--        <field name="inherit_id" ref="base.view_country_form"/>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <field name="code" position="after">-->
+<!--                <field name="provider_city_ids">-->
+<!--                    <tree editable="bottom">-->
+<!--                        <field name="code"/>-->
+<!--                        <field name="name"/>-->
+<!--                        <field name="provider_id"/>-->
+<!--                    </tree>-->
+<!--                </field>-->
+<!--            </field>-->
+<!--        </field>-->
+<!--    </record>-->
+
+<!--    <record id="res_country_state_booking_form_views" model="ir.ui.view" >-->
+<!--        <field name="name">res.country.state.form.view</field>-->
+<!--        <field name="model">res.country.state</field>-->
+<!--        <field name="inherit_id" ref="tt_base.res_country_state_view_form_rodex"/>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <field name="city_ids" position="before">-->
+<!--                <field name="provider_state_ids">-->
+<!--                    <tree editable="bottom">-->
+<!--                        <field name="code"/>-->
+<!--                        <field name="name"/>-->
+<!--                        <field name="provider_id"/>-->
+<!--                    </tree>-->
+<!--                </field>-->
+<!--            </field>-->
+<!--        </field>-->
+<!--    </record>-->
+
+    <record model="ir.ui.view" id="tt_provider_code_search_view" >
+        <field name="name">tt.provider.code.search.view</field>
+        <field name="model">tt.provider.code</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="city_id"/>
+                <field name="state_id"/>
+                <field name="country_id"/>
+                <field name="code"/>
+                <field name="provider_id"/>
+                <group>
+                    <filter name="group_no_city" string="No City" domain="[('city_id','=',False)]"/>
+                    <filter name="group_no_state" string="No State" domain="[(`'state_id','=',False)]"/>
+                    <filter name="group_no_country" string="No Country" domain="[('country_id','=',False)]"/>
+                </group>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter name="group_city_id" string="City" domain="[]" context="{'group_by':'city_id'}"/>
+                    <filter name="group_state_id" string="State" domain="[]" context="{'group_by':'state_id'}"/>
+                    <filter name="group_country_id" string="Country" domain="[]" context="{'group_by':'country_id'}"/>
+                    <filter name="group_provider_id" string="Provider" domain="[]" context="{'group_by':'provider_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tt_provider_code_tree_view" >
+        <field name="name">tt.provider.code.tree.view</field>
+        <field name="model">tt.provider.code</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="country_id"/>
+                <field name="city_id"/>
+                <field name="code"/>
+                <field name="provider_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_provider_code_action_view">
+        <field name="name">Provider Code</field>
+        <field name="res_model">tt.provider.code</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="sub_menu_tour_travel_provider_code"
+                  parent="tt_base.menu_tour_travel_provider"
+                  groups="base.group_user"
+                  name="Provider Code"
+                  sequence="3"
+                  action="tt_provider_code_action_view"/>
+</odoo>
