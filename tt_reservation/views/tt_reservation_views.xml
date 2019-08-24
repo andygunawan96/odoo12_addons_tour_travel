@@ -41,6 +41,7 @@
                             <field name="agent_id"/>
                             <field name="customer_parent_id"/>
                             <field name="provider_type_id"/>
+                            <field name="provider_name"/>
                         </group>
                         <group>
                             <field name="date"/>

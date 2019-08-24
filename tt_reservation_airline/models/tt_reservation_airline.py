@@ -35,6 +35,8 @@ class ReservationAirline(models.Model):
 
     provider_type_id = fields.Many2one('tt.provider.type','Provider Type',
                                     default= lambda self: self.env.ref('tt_reservation_airline.tt_provider_type_airline'))
+    carrier_name = fields.Char('List of Carriers')
+
 
     def get_form_id(self):
         return self.env.ref("tt_reservation_airline.tt_reservation_airline_form_views")
