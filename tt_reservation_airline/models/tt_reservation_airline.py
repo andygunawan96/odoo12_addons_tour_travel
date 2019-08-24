@@ -263,14 +263,19 @@ class ReservationAirline(models.Model):
             })
 
             book_obj = self.create(values)
-
-            provider_ids = book_obj._create_provider_api(journeys,context)
+            provider_ids,name_ids = book_obj._create_provider_api(journeys,context)
             response_provider_ids = []
             for provider in provider_ids:
                 response_provider_ids.append({
                     'id': provider.id,
                     'code': provider.provider_id.code,
                 })
+
+            book_obj.write({
+                'provider_name': ','.join(name_ids['provider']),
+                'carrier_name': ','.join(name_ids['carrier'])
+            })
+
             response = {
                 'book_id': book_obj.id,
                 'provider_ids': response_provider_ids
@@ -278,6 +283,10 @@ class ReservationAirline(models.Model):
             return Response().get_no_error(response)
         except Exception as e:
             _logger.error(str(e) + traceback.format_exc())
+            try:
+                book_obj.notes += str(e)+traceback.format_exc()+'\n'
+            except:
+                _logger.error('Creating Notes Error')
             return ERR.get_error(1004)
 
     def update_pnr_provider_airline_api(self, req, context):
@@ -367,6 +376,10 @@ class ReservationAirline(models.Model):
 
         except Exception as e:
             _logger.error(str(e) + traceback.format_exc())
+            try:
+                book_obj.notes += str(e)+traceback.format_exc()+'\n'
+            except:
+                _logger.error('Creating Notes Error')
             return ERR.get_error(1005)
 
     def get_booking_airline_api(self,req, context):
@@ -423,6 +436,10 @@ class ReservationAirline(models.Model):
                 return ERR.get_error(1001)
         except Exception as e:
             _logger.info(str(e) + traceback.format_exc())
+            try:
+                book_obj.notes += str(e)+traceback.format_exc()+'\n'
+            except:
+                _logger.error('Creating Notes Error')
             return Response().get_error(str(e),500)
 
     def update_cost_service_charge_airline_api(self,req,context):
@@ -494,9 +511,10 @@ class ReservationAirline(models.Model):
 
         #lis of providers ID
         res = []
-
+        name = {'provider':[],'carrier':[]}
         for provider_name, provider_value in providers.items():
             provider_id = provider_obj.get_provider_id(provider_name,_destination_type)
+            name['provider'].append(provider_name)
             _logger.info(provider_name)
             for sequence, pnr in provider_value.items():
                 _logger.info(sequence)
@@ -518,6 +536,8 @@ class ReservationAirline(models.Model):
                         carrier_id = carrier_obj.get_id(segment['carrier_code'],_destination_type)
                         org_id = dest_obj.get_id(segment['origin'],_destination_type)
                         dest_id = dest_obj.get_id(segment['destination'],_destination_type)
+
+                        name['carrier'].append(segment['carrier_code'])
 
                         this_journey_seg_sequence += 1
                         this_journey_seg.append((0,0,{
@@ -582,8 +602,9 @@ class ReservationAirline(models.Model):
                 }
 
                 res.append(provider_airline_obj.create(values))
-
-        return res
+        name['provider'] = list(set(name['provider']))
+        name['carrier'] = list(set(name['carrier']))
+        return res,name
 
     def update_pnr_booked(self,provider_obj,provider,context):
 

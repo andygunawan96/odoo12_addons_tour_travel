@@ -13,6 +13,9 @@
                             string="Print E-Ticket" type="object" icon="fa-print"/>
                 </div>
             </xpath>
+            <field name="provider_name" position="after">
+                <field name="carrier_name"/>
+            </field>
             <field name="adult" position="after">
                 <field name="child"/>
             </field>
@@ -50,6 +53,7 @@
             <xpath expr="//page[@name='anchor']" position="before">
                 <page string="Prices" name="prices">
 <!--                    <button name="calculate_service_charge" type="object" string="calc"/>-->
+<!--                    <button name="test_error" type="object" string="test_error"/>-->
                     <field name="sale_service_charge_ids">
                         <tree>
                             <field name="charge_code"/>
@@ -105,15 +109,21 @@
         <field name="name">tt.reservation.airline.tree.view</field>
         <field name="model">tt.reservation.airline</field>
         <field name="arch" type="xml">
-
             <tree>
                 <field name="name"/>
                 <field name="agent_id"/>
+                <field name="agent_type_id"/>
                 <field name="customer_parent_id"/>
+                <field name="customer_parent_type_id"/>
+                <field name="booker_id"/>
+                <field name="provider_name" groups="tt_base.group_tt_tour_travel_operator"/>
+                <field name="carrier_name"/>
                 <field name="pnr"/>
+                <field name="booked_uid"/>
                 <field name="date"/>
-                <field name="expired_date"/>
                 <field name="hold_date"/>
+                <field name="issued_uid"/>
+                <field name="issued_date"/>
                 <field name="state"/>
             </tree>
         </field>

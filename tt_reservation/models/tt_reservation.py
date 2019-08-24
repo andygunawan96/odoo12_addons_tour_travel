@@ -10,7 +10,7 @@ class TtReservation(models.Model):
 
     name = fields.Char('Order Number', index=True, default='New', readonly=True)
     pnr = fields.Char('PNR', readonly=True, states={'draft': [('readonly', False)]})
-    provider_name = fields.Char('List of Provider name')
+    provider_name = fields.Char('List of Provider')
 
     date = fields.Datetime('Booking Date', default=lambda self: fields.Datetime.now(), readonly=True, states={'draft': [('readonly', False)]})
     expired_date = fields.Datetime('Expired Date', readonly=True)  # fixme terpakai?
@@ -50,7 +50,7 @@ class TtReservation(models.Model):
 
     adjustment_ids = fields.Char('Adjustment')  # One2Many -> tt.adjustment
     error_msg = fields.Char('Error Message')
-    notes = fields.Char('Notes')
+    notes = fields.Text('Notes for IT',default='')
 
     ##fixme tambahkan compute field nanti
     # display_provider_name = fields.Char(string='Provider', compute='_action_display_provider', store=True)

@@ -45,7 +45,7 @@
                 <field name="provider_id"/>
                 <group>
                     <filter name="group_no_city" string="No City" domain="[('city_id','=',False)]"/>
-                    <filter name="group_no_state" string="No State" domain="[(`'state_id','=',False)]"/>
+                    <filter name="group_no_state" string="No State" domain="[('state_id','=',False)]"/>
                     <filter name="group_no_country" string="No Country" domain="[('country_id','=',False)]"/>
                 </group>
                 <separator/>

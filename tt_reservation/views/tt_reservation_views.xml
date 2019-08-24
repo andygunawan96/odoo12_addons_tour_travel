@@ -105,6 +105,9 @@
                             <field name="total_commission" class="oe_subtotal_footer_separator"/>
                             <field name="total_nta" class="oe_subtotal_footer_separator"/>
                         </group>
+                        <group>
+                            <field name="notes" groups="tt_base.group_tt_tour_travel_operator"/>
+                        </group>
                     </footer>
                 </sheet>
             </form>
