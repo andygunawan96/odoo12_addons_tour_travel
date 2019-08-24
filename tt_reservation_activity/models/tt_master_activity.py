@@ -100,10 +100,10 @@ class MasterActivity(models.Model):
 
     def reprice_currency(self, provider, from_currency, base_amount, to_currency='IDR'):
         from_currency_id = self.env['res.currency'].sudo().search([('name', '=', from_currency)], limit=1)
-        from_currency_id = from_currency_id[0]
+        from_currency_id = from_currency_id and from_currency_id[0] or False
         provider_id = self.env['tt.provider'].sudo().search([('code', '=', provider)], limit=1)
         provider_id = provider_id[0]
-        multiplier = self.env['tt.provider.currency'].sudo().search([('provider_id', '=', provider_id.id), ('date', '<=', str(datetime.now())), ('state', '=', 'confirm'), ('orig_currency_id', '=', from_currency_id.id)], limit=1)
+        multiplier = self.env['tt.provider.rate'].sudo().search([('provider_id', '=', provider_id.id), ('date', '<=', datetime.now()), ('currency_id', '=', from_currency_id.id)], limit=1)
         computed_amount = base_amount * multiplier[0].sell_rate
         return computed_amount
 
@@ -350,9 +350,9 @@ class MasterActivity(models.Model):
         if file:
             for rec in file['product_detail']:
                 provider_id = self.env['tt.provider'].sudo().search([('code', '=', rec['product']['provider'])], limit=1)
-                provider_id = provider_id[0]
+                provider_id = provider_id and provider_id[0] or False
                 product_obj = self.env['tt.master.activity'].search([('uuid', '=', rec['product']['uuid']), ('provider_id', '=', provider_id.id), '|', ('active', '=', False), ('active', '=', True)], limit=1)
-                product_obj = product_obj[0]
+                product_obj = product_obj and product_obj[0] or False
                 temp = []
                 temp3 = self.env['tt.provider'].search([('code', '=', provider)], limit=1)
                 temp3 = temp3[0]
@@ -1132,24 +1132,17 @@ class MasterActivity(models.Model):
         return cities
 
     def search_by_api(self, req):
-        query = '%' + req['query'] + '%'
-        country = '%' + req['country'] + '%'
-        city = '%' + req['city'] + '%'
-        sort_lib = {
-            'name_asc': 'themes.name ASC',
-            'name_desc': 'themes.name DESC',
-            'price_asc': 'themes."basePrice" ASC',
-            'price_desc': 'themes."basePrice" DESC',
-        }
-        sort = sort_lib[req['sort']]
+        query = req.get('query') and '%' + req['query'] + '%' or ''
+        country = req.get('country') and req['country'] or ''
+        city = req.get('city') and req['city'] or ''
+
         type_id = req['type_id'] != '0' and self.env['tt.activity.category'].sudo().search([('id', '=', req['type_id']), ('type', '=', 'type')]).id or ''
         # sub_category = sub_category != '0' and sub_category or ''
         category = req['sub_category'] and (req['sub_category'] != '0' and req['sub_category'] or (req['category'] != '0' and req['category'] or '')) or ''
-        limit = req['limit']
-        offset = req['offset']
         provider = req.get('provider', 'all')
         provider_id = self.env['tt.provider'].sudo().search([('code', '=', provider)], limit=1)
-        provider_id = provider_id[0]
+        provider_id = provider_id and provider_id[0] or False
+        provider_code = provider_id and provider_id[0].code or ''
 
         sql_query = 'select themes.* from tt_master_activity themes left join tt_activity_location_rel locrel on locrel.product_id = themes.id left join tt_activity_master_locations loc on loc.id = locrel.location_id '
 
@@ -1159,7 +1152,12 @@ class MasterActivity(models.Model):
         if type_id:
             sql_query += 'left join tt_activity_type_rel typerel on typerel.activity_id = themes.id '
 
-        sql_query += "where themes.name ilike '" + query + "'" + ' and themes."basePrice" > 0 '
+        sql_query += "where "
+
+        if query:
+            sql_query += "themes.name ilike '" + query + "' "
+        else:
+            sql_query += "themes.active = True "
 
         if type_id:
             sql_query += 'and typerel.type_id = ' + type_id + ' '
@@ -1167,13 +1165,19 @@ class MasterActivity(models.Model):
         if category:
             sql_query += 'and catrel.category_id = "' + category + '" '
 
-        sql_query += "and (loc.country_name ilike '" + country + "' and loc.city_name ilike '" + city + "') "
+        if req.get('country') and not req.get('city'):
+            sql_query += "and (loc.country_id = " + country + ") "
+
+        if req.get('city'):
+            sql_query += "and (loc.country_id = " + country + " and loc.city_id = " + city + ") "
 
         if provider in ['globaltix', 'bemyguest', 'klook']:
-            sql_query += "and themes.provider_id = '" + provider_id.id + "' "
+            if provider_id:
+                sql_query += "and themes.provider_id = '" + provider_id.id + "' "
 
-        sql_query += 'and themes.active = True group by themes.id order by ' + sort + ' '
-        sql_query += 'limit ' + str(limit) + ' offset ' + str(offset * limit)
+        if query:
+            sql_query += 'and themes.active = True '
+        sql_query += 'group by themes.id '
 
         self.env.cr.execute(sql_query)
 
@@ -1181,34 +1185,34 @@ class MasterActivity(models.Model):
         result_list = []
 
         for result in result_id_list:
-            res_provider = self.env['tt.provider'].browse(result['provider_id'])
+            res_provider = result.get('provider_id') and self.env['tt.provider'].browse(result['provider_id']) or None
             result = {
-                'additionalInfo': result['additionalInfo'] and result['additionalInfo'] or '',
-                'airportPickup': result['airportPickup'] and result['airportPickup'] or False,
+                'additionalInfo': result.get('additionalInfo') and result['additionalInfo'] or '',
+                'airportPickup': result.get('airportPickup') and result['airportPickup'] or False,
                 'basePrice': result['basePrice'],
-                'businessHoursFrom': result['businessHoursFrom'] and result['businessHoursFrom'] or '',
-                'businessHoursTo': result['businessHoursTo'] and result['businessHoursTo'] or '',
+                'businessHoursFrom': result.get('businessHoursFrom') and result['businessHoursFrom'] or '',
+                'businessHoursTo': result.get('businessHoursTo') and result['businessHoursTo'] or '',
                 'currency_id': result['currency_id'],
-                'description': result['description'] and result['description'] or '',
-                'highlights': result['highlights'] and result['highlights'] or '',
-                'hotelPickup': result['hotelPickup'] and result['hotelPickup'] or False,
+                'description': result.get('description') and result['description'] or '',
+                'highlights': result.get('highlights') and result['highlights'] or '',
+                'hotelPickup': result.get('hotelPickup') and result['hotelPickup'] or False,
                 'id': result['id'],
-                'itinerary': result['itinerary'] and result['itinerary'] or '',
-                'latitude': result['latitude'] and result['latitude'] or 0.0,
-                'longitude': result['longitude'] and result['longitude'] or 0.0,
+                'itinerary': result.get('itinerary') and result['itinerary'] or '',
+                'latitude': result.get('latitude') and result['latitude'] or 0.0,
+                'longitude': result.get('longitude') and result['longitude'] or 0.0,
                 'maxPax': result['maxPax'] or 0,
                 'minPax': result['minPax'] or 0,
                 'name': result['name'],
-                'priceExcludes': result['priceExcludes'] and result['priceExcludes'] or '',
-                'priceIncludes': result['priceIncludes'] and result['priceIncludes'] or '',
-                'provider_id': result['provider_id'] and result['provider_id'] or '',
+                'priceExcludes': result.get('priceExcludes') and result['priceExcludes'] or '',
+                'priceIncludes': result.get('priceIncludes') and result['priceIncludes'] or '',
+                'provider_id': result.get('provider_id') and result['provider_id'] or '',
                 'provider': res_provider and res_provider.code or '',
-                'reviewAverageScore': result['reviewAverageScore'] and result['reviewAverageScore'] or 0.0,
-                'reviewCount': result['reviewCount'] and result['reviewCount'] or 0,
-                'safety': result['safety'] and result['safety'] or '',
-                'type_id': result['type_id'] and result['type_id'] or 0,
+                'reviewAverageScore': result.get('reviewAverageScore') and result['reviewAverageScore'] or 0.0,
+                'reviewCount': result.get('reviewCount') and result['reviewCount'] or 0,
+                'safety': result.get('safety') and result['safety'] or '',
+                'type_id': result.get('type_id') and result['type_id'] or 0,
                 'uuid': result['uuid'],
-                'warnings': result['warnings'] and result['warnings'] or '',
+                'warnings': result.get('warnings') and result['warnings'] or '',
             }
 
             additionalInfo = (result['additionalInfo'].replace('<p>', '\n').replace('</p>', ''))[1:]
@@ -1280,11 +1284,15 @@ class MasterActivity(models.Model):
             from_currency = self.env['res.currency'].browse(result['currency_id'])
 
             try:
-                temp = self.reprice_currency(provider, from_currency.name, result['basePrice'])
+                if result.get('provider'):
+                    temp = self.reprice_currency(result['provider'], from_currency.name, result['basePrice'])
+                else:
+                    temp = self.env['res.currency']._compute(from_currency, self.env.user.company_id.currency_id,
+                                                             result['basePrice'])
             except Exception as e:
                 temp = self.env['res.currency']._compute(from_currency, self.env.user.company_id.currency_id,
                                                          result['basePrice'])
-                _logger.info('Cannot convert to vendor price: ' + e)
+                _logger.info('Cannot convert to vendor price: ' + str(e))
 
             converted_price = temp + 10000
 
