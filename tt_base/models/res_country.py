@@ -33,9 +33,14 @@ class Country(models.Model, test_to_dict.ToDict):
             res.update({code: rec.get_country_data()})
         return res
 
+    def get_country_list(self):
+        _obj = self.sudo().search([('active', '=', True)])
+        res = [rec.get_country_data() for rec in _obj]
+        return res
+
     def get_country_list_api(self, data, context):
         try:
-            response = self.get_country_data_by_code()
+            response = self.get_country_list()
             res = Response().get_no_error(response)
         except Exception as e:
             _logger.error('Error Get Country Data API, %s, %s' % (str(e), traceback.format_exc()))
