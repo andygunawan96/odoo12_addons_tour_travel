@@ -14,11 +14,11 @@ class AgentInvoice(models.Model):
     _name = 'tt.agent.invoice'
     _description = 'Rodex Model'
 
-    name = fields.Char('Name', default='New')
+    name = fields.Char('Name', default='New', readonly=True)
     total = fields.Monetary('Total', compute="_compute_total")
     paid_amount = fields.Monetary('Paid Amount', readonly=True)
-    invoice_line_ids = fields.One2many('tt.agent.invoice.line','invoice_id','Invoice Line')
-    booker_id = fields.Many2one('tt.customer', 'Booker')
+    invoice_line_ids = fields.One2many('tt.agent.invoice.line','invoice_id','Invoice Line', readonly=True)
+    booker_id = fields.Many2one('tt.customer', 'Booker',readonly=True)
     type = fields.Selection([
         ('out_invoice', 'Customer Invoice'),
         ('in_invoice', 'Vendor Bill'),
@@ -35,7 +35,7 @@ class AgentInvoice(models.Model):
         ('bill2', 'Bill (by system)'),
         ('paid', 'Paid'),
         ('cancel', 'Cancelled')
-    ], string='Status', index=True, readonly=False, default='draft',
+    ], string='Status', index=True, readonly=True, default='draft',
         track_visibility='onchange', copy=False,
         help=" * The 'Draft' status is used when a user is encoding a new and unconfirmed Invoice.\n"
              " * The 'Confirm' status is used when user creates invoice, an invoice number is generated.\n"
@@ -44,7 +44,7 @@ class AgentInvoice(models.Model):
              " * The 'Paid' status is set when the payment total .\n"
              " * The 'Cancelled' status is used when user cancel invoice.")
 
-    agent_id = fields.Many2one('tt.agent', string='Agent', required=True)
+    agent_id = fields.Many2one('tt.agent', string='Agent', required=True, readonly=True)
     customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer', readonly=True, states={'draft': [('readonly', False)]}, help='COR/POR Name')
     customer_parent_type_id = fields.Many2one('tt.customer.parent.type', 'Customer Parent Type',
                                               related='customer_parent_id.customer_parent_type_id')
@@ -63,16 +63,16 @@ class AgentInvoice(models.Model):
 
     payment_ids = fields.One2many('tt.payment.invoice.rel', 'invoice_id', 'Payments',states={'paid': [('readonly', True)]})
 
-    confirmed_uid = fields.Many2one('res.users', 'Confirmed by')
-    confirmed_date = fields.Datetime('Confirmed Date')
+    confirmed_uid = fields.Many2one('res.users', 'Confirmed by', readonly=True)
+    confirmed_date = fields.Datetime('Confirmed Date', readonly=True)
 
-    bill_uid = fields.Many2one('res.users', 'Billed by')
-    bill_date = fields.Datetime('Billed Date')
+    bill_uid = fields.Many2one('res.users', 'Billed by', readonly=True)
+    bill_date = fields.Datetime('Billed Date', readonly=True)
 
     date_invoice = fields.Date(string='Invoice Date', default=fields.Date.context_today,
-                               index=True, copy=False)
-    expired_date = fields.Date(string='Due Date', index=True, copy=False)
-    description = fields.Text('Description')
+                               index=True, copy=False, readonly=True)
+    expired_date = fields.Date(string='Due Date', index=True, copy=False,readonly=True)
+    description = fields.Text('Description',readonly=True)
 
     @api.model
     def create(self, vals_list):

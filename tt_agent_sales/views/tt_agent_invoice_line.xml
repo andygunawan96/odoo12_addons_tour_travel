@@ -13,7 +13,7 @@
                 <sheet>
                     <div class="oe_title">
                         <h1>
-                            <field name="name" nolabel='1' placeholder="Name" readonly="True"/>
+                            <field name="name" nolabel='1' placeholder="Name"/>
                         </h1>
                     </div>
                     <group>
