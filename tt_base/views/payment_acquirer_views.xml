@@ -115,7 +115,7 @@
 
         <menuitem id="sub_menu_tour_travel_payment_acquirer"
                   parent="tt_base.top_menu_accounting"
-                  groups="base.group_user"
+                  groups="tt_base.group_tt_tour_travel_operator"
                   name="Payment Acquirer"
                   sequence="10"
                   action="payment_acquirer_action_view"/>

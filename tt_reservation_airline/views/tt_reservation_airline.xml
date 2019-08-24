@@ -109,7 +109,7 @@
         <field name="name">tt.reservation.airline.tree.view</field>
         <field name="model">tt.reservation.airline</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree create="false">
                 <field name="name"/>
                 <field name="agent_id"/>
                 <field name="agent_type_id"/>

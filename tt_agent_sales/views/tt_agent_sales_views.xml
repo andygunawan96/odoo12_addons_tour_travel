@@ -78,7 +78,7 @@
         <field name="name">tt.agent.invoice.tree.view</field>
         <field name="model">tt.agent.invoice</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree create="false" edit="false">
                 <field name="name"/>
                 <field name="state"/>
             </tree>

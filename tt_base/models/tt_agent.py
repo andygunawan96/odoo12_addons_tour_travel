@@ -241,8 +241,8 @@ class TtAgent(models.Model):
             _logger.info('Get Transaction Resp:\n'+json.dumps(res_list))
             return ERR.get_no_error(res_list)
         except Exception as e:
-            _logger.error(str(e))
-            return ERR.get_error(500)
+            _logger.error(str(e)+traceback.format_exc())
+            return ERR.get_error(1012)
 
 class AgentTarget(models.Model):
     _inherit = ['tt.history']

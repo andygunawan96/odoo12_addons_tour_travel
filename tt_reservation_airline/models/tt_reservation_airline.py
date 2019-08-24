@@ -35,7 +35,7 @@ class ReservationAirline(models.Model):
 
     provider_type_id = fields.Many2one('tt.provider.type','Provider Type',
                                     default= lambda self: self.env.ref('tt_reservation_airline.tt_provider_type_airline'))
-    carrier_name = fields.Char('List of Carriers')
+    carrier_name = fields.Char('List of Carriers',readonly=True)
 
 
     def get_form_id(self):
@@ -431,7 +431,7 @@ class ReservationAirline(models.Model):
                 for provider in book_obj.provider_booking_ids:
                     provider.action_create_ledger()
 
-                return Response().get_no_error()
+                return ERR.get_no_error()
             else:
                 return ERR.get_error(1001)
         except Exception as e:
@@ -440,7 +440,7 @@ class ReservationAirline(models.Model):
                 book_obj.notes += str(e)+traceback.format_exc()+'\n'
             except:
                 _logger.error('Creating Notes Error')
-            return Response().get_error(str(e),500)
+            return ERR.get_error(1011)
 
     def update_cost_service_charge_airline_api(self,req,context):
         _logger.info('update cost\n' + json.dumps(req))
