@@ -17,12 +17,17 @@
                     <group>
                         <group>
                             <field name="provider_type_id"/>
-                            <field name="provider_id"/>
+                            <!--<field name="provider_id"/>-->
                         </group>
                         <group>
-                            <field name="pricing_type"/>
+                            <!--<field name="pricing_type"/>-->
+                            <field name="is_sale"/>
+                            <field name="is_commission"/>
+                            <field name="is_provider_commission"/>
                         </group>
                     </group>
+                    <separator string="Providers"/>
+                    <field name="provider_ids"/>
                     <separator string="Carriers"/>
                     <field name="carrier_ids"/>
                     <separator string="Details"/>
@@ -39,8 +44,11 @@
         <tree>
             <field name="name"/>
             <field name="provider_type_id"/>
-            <field name="provider_id"/>
-            <field name="pricing_type"/>
+            <field name="display_providers"/>
+            <field name="display_carriers"/>
+            <field name="is_sale"/>
+            <field name="is_commission"/>
+            <field name="is_provider_commission"/>
             <field name="active"/>
         </tree>
         </field>
@@ -52,8 +60,9 @@
         <field name="arch" type="xml">
         <search>
             <field name="name"/>
-            <field name="provider_id"/>
             <field name="provider_type_id"/>
+            <field name="display_providers"/>
+            <field name="display_carriers"/>
             <filter name="inactive" string="Archived" domain="[('active','=',False)]"/>
         </search>
         </field>
@@ -133,10 +142,6 @@
                     <separator string="Details"/>
                     <group>
                         <group>
-                            <field name="fee_amount"/>
-                            <field name="is_per_route"/>
-                            <field name="is_per_segment"/>
-                            <field name="is_per_pax"/>
                             <field name="basic_amount_type"/>
                             <field name="basic_amount"/>
                             <field name="tax_amount_type"/>
@@ -153,6 +158,17 @@
                             <field name="upper_amount"/>
                         </group>
                     </group>
+                    <group>
+                        <group>
+                            <field name="fee_amount"/>
+                            <field name="is_per_route"/>
+                            <field name="is_per_segment"/>
+                            <field name="is_per_pax"/>
+                        </group>
+                        <group>
+                            <field name="provider_commission_amount"/>
+                        </group>
+                    </group>
                 </sheet>
             </form>
         </field>
@@ -167,10 +183,14 @@
             <field name="name"/>
             <field name="date_from"/>
             <field name="date_to"/>
-            <field name="fee_amount"/>
-            <field name="is_per_route"/>
-            <field name="is_per_segment"/>
-            <field name="is_per_pax"/>
+            <field name="origin_type"/>
+            <field name="display_origins"/>
+            <field name="display_origin_cities"/>
+            <field name="display_origin_countries"/>
+            <field name="destination_type"/>
+            <field name="display_destinations"/>
+            <field name="display_destination_cities"/>
+            <field name="display_destination_countries"/>
             <field name="basic_amount_type"/>
             <field name="basic_amount"/>
             <field name="tax_amount_type"/>
@@ -183,6 +203,11 @@
             <field name="upper_margin"/>
             <field name="upper_amount_type"/>
             <field name="upper_amount"/>
+            <field name="fee_amount"/>
+            <field name="is_per_route"/>
+            <field name="is_per_segment"/>
+            <field name="is_per_pax"/>
+            <field name="provider_commission_amount"/>
             <field name="active"/>
         </tree>
         </field>
