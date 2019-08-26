@@ -10,14 +10,14 @@ class PricingProvider(models.Model):
 
     name = fields.Char('Name', readonly=1)
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', required=True)
-    provider_id = fields.Many2one('tt.provider', 'Provider', required=True)
+    provider_id = fields.Many2one('tt.provider', 'Provider')
     provider_ids = fields.Many2many('tt.provider', 'pricing_provider_rel', 'pricing_id', 'provider_id', 'Providers')
     display_providers = fields.Char('Display Providers', compute='_compute_display_providers', store=True, readonly=1)
     pricing_type = fields.Selection([
         ('sale', 'Sale'),
         ('commission', 'Commission'),
         ('provider', 'provider'),
-    ], 'Pricing Type', required=True)
+    ], 'Pricing Type')
     carrier_ids = fields.Many2many('tt.transport.carrier', 'tt_pricing_provider_carrier_rel', 'pricing_id', 'carrier_id', string='Carriers')
     display_carriers = fields.Char('Display Carriers', compute='_compute_display_carriers', store=True, readonly=1)
     line_ids = fields.One2many('tt.pricing.provider.line', 'pricing_id', 'Configs')
@@ -42,7 +42,8 @@ class PricingProvider(models.Model):
 
     def get_name(self):
         # Perlu diupdate lagi, sementara menggunakan ini
-        res = '%s (%s) - %s' % (self.provider_id.code.title(), self.pricing_type.title(), ','.join([rec.code for rec in self.carrier_ids]))
+        res = ''
+        # res = '%s (%s) - %s' % (self.provider_id.code.title(), self.pricing_type.title(), ','.join([rec.code for rec in self.carrier_ids]))
         return res
 
     @api.model
@@ -53,8 +54,8 @@ class PricingProvider(models.Model):
 
     def write(self, values):
         res = super(PricingProvider, self).write(values)
-        if not values.get('name'):
-            self.write({'name': self.get_name()})
+        # if not values.get('name'):
+        #     self.write({'name': self.get_name()})
         return res
 
     def get_pricing_data(self):
@@ -63,8 +64,8 @@ class PricingProvider(models.Model):
         carrier_codes = [rec.code for rec in self.carrier_ids]
         providers = [rec.code for rec in self.provider_ids]
         res = {
-            'provider_type': self.provider_type_id and self.provider_type_id.code,
-            'provider': self.provider_id and self.provider_id.code,
+            'provider_type': self.provider_type_id and self.provider_type_id.code or '',
+            # 'provider': self.provider_id and self.provider_id.code,
             'providers': providers,
             'pricing_type': self.pricing_type,
             'carrier_codes': carrier_codes,

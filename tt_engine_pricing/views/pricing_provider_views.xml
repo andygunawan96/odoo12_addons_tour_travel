@@ -17,10 +17,10 @@
                     <group>
                         <group>
                             <field name="provider_type_id"/>
-                            <field name="provider_id"/>
+                            <!--<field name="provider_id"/>-->
                         </group>
                         <group>
-                            <field name="pricing_type"/>
+                            <!--<field name="pricing_type"/>-->
                             <field name="is_sale"/>
                             <field name="is_commission"/>
                             <field name="is_provider_commission"/>
@@ -183,11 +183,13 @@
             <field name="name"/>
             <field name="date_from"/>
             <field name="date_to"/>
+            <field name="origin_type"/>
             <field name="display_origins"/>
-            <field name="display_destinations"/>
             <field name="display_origin_cities"/>
-            <field name="display_destination_cities"/>
             <field name="display_origin_countries"/>
+            <field name="destination_type"/>
+            <field name="display_destinations"/>
+            <field name="display_destination_cities"/>
             <field name="display_destination_countries"/>
             <field name="basic_amount_type"/>
             <field name="basic_amount"/>
