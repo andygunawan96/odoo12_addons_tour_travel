@@ -24,7 +24,7 @@ class PricingProvider(models.Model):
     active = fields.Boolean('Active', default=True)
     is_sale = fields.Boolean('Is Sale', default=False)
     is_commission = fields.Boolean('Is Commission', default=False)
-    is_provider = fields.Boolean('Is Provider Commission', default=False)
+    is_provider_commission = fields.Boolean('Is Provider Commission', default=False)
 
     @api.multi
     @api.depends('provider_ids')
@@ -61,11 +61,16 @@ class PricingProvider(models.Model):
         line_ids = [rec.get_pricing_data() for rec in self.line_ids if rec.active]
         # line_ids = sorted(line_ids, key=lambda i: i['sequence'])
         carrier_codes = [rec.code for rec in self.carrier_ids]
+        providers = [rec.code for rec in self.provider_ids]
         res = {
             'provider_type': self.provider_type_id and self.provider_type_id.code,
             'provider': self.provider_id and self.provider_id.code,
+            'providers': providers,
             'pricing_type': self.pricing_type,
             'carrier_codes': carrier_codes,
+            'is_sale': self.is_sale,
+            'is_commission': self.is_commission,
+            'is_provider_commission': self.is_provider_commission,
             'line_ids': line_ids,
         }
         return res
@@ -84,18 +89,33 @@ class PricingProvider(models.Model):
                     continue
                 temp = rec.get_pricing_data()
                 carrier_codes = temp.pop('carrier_codes')
-                provider = rec.provider_id.code
-                pricing_type = rec.pricing_type
+                providers = temp.pop('providers')
+                is_sale = temp.get('is_sale')
+                is_commission = temp.get('is_commission')
+                is_provider_commission = temp.get('is_provider_commission')
 
-                if not response.get(provider):
-                    response[provider] = {}
+                # provider = rec.provider_id.code
+                # pricing_type = rec.pricing_type
 
-                for carrier_code in carrier_codes:
-                    if not response[provider].get(carrier_code):
-                        response[provider][carrier_code] = {}
-                    response[provider][carrier_code].update({
-                        pricing_type: temp
-                    })
+                for provider in providers:
+                    if not response.get(provider):
+                        response[provider] = {}
+
+                    for carrier_code in carrier_codes:
+                        if not response[provider].get(carrier_code):
+                            response[provider][carrier_code] = {}
+                        if is_sale:
+                            response[provider][carrier_code].update({
+                                'sale': temp
+                            })
+                        if is_commission:
+                            response[provider][carrier_code].update({
+                                'commission': temp
+                            })
+                        if is_provider_commission:
+                            response[provider][carrier_code].update({
+                                'provider': temp
+                            })
             res = Response().get_no_error(response)
         except Exception as e:
             err_msg = '%s, %s' % (str(e), traceback.format_exc())
@@ -232,5 +252,6 @@ class PricingProviderLine(models.Model):
             'upper_margin': self.upper_margin,
             'upper_amount_type': self.upper_amount_type,
             'upper_amount': self.upper_amount,
+            'provider_commission_amount': self.provider_commission_amount,
         }
         return res

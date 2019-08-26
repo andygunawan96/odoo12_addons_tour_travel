@@ -23,7 +23,7 @@
                             <field name="pricing_type"/>
                             <field name="is_sale"/>
                             <field name="is_commission"/>
-                            <field name="is_provider"/>
+                            <field name="is_provider_commission"/>
                         </group>
                     </group>
                     <separator string="Providers"/>
@@ -48,7 +48,7 @@
             <field name="display_carriers"/>
             <field name="is_sale"/>
             <field name="is_commission"/>
-            <field name="is_provider"/>
+            <field name="is_provider_commission"/>
             <field name="active"/>
         </tree>
         </field>
