@@ -11,14 +11,34 @@ class PricingProvider(models.Model):
     name = fields.Char('Name', readonly=1)
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', required=True)
     provider_id = fields.Many2one('tt.provider', 'Provider', required=True)
+    provider_ids = fields.Many2many('tt.provider', 'pricing_provider_rel', 'pricing_id', 'provider_id', 'Providers')
+    display_providers = fields.Char('Display Providers', compute='_compute_display_providers', store=True, readonly=1)
     pricing_type = fields.Selection([
         ('sale', 'Sale'),
         ('commission', 'Commission'),
         ('provider', 'provider'),
     ], 'Pricing Type', required=True)
     carrier_ids = fields.Many2many('tt.transport.carrier', 'tt_pricing_provider_carrier_rel', 'pricing_id', 'carrier_id', string='Carriers')
+    display_carriers = fields.Char('Display Carriers', compute='_compute_display_carriers', store=True, readonly=1)
     line_ids = fields.One2many('tt.pricing.provider.line', 'pricing_id', 'Configs')
     active = fields.Boolean('Active', default=True)
+    is_sale = fields.Boolean('Is Sale', default=False)
+    is_commission = fields.Boolean('Is Commission', default=False)
+    is_provider = fields.Boolean('Is Provider Commission', default=False)
+
+    @api.multi
+    @api.depends('provider_ids')
+    def _compute_display_providers(self):
+        for rec in self:
+            res = [data.code for data in rec.provider_ids]
+            rec.display_providers = ','.join(res)
+
+    @api.multi
+    @api.depends('carrier_ids')
+    def _compute_display_carriers(self):
+        for rec in self:
+            res = [data.code for data in rec.carrier_ids]
+            rec.display_carriers = ','.join(res)
 
     def get_name(self):
         # Perlu diupdate lagi, sementara menggunakan ini
@@ -96,17 +116,24 @@ class PricingProviderLine(models.Model):
     origin_type = fields.Selection(variables.ACCESS_TYPE, 'Origin Type', required=True, default='all')
     origin_ids = fields.Many2many('tt.destinations', 'tt_pricing_provider_line_origin_rel', 'pricing_line_id', 'origin_id',
                                   string='Origins')
+    display_origins = fields.Char('Display Origins', compute='_compute_display_origins', store=True, readonly=1)
     origin_city_ids = fields.Many2many('res.city', 'tt_pricing_provider_line_origin_city_rel', 'pricing_line_id', 'city_id',
                                        string='Origin Cities')
+    display_origin_cities = fields.Char('Display Origin Cities', compute='_compute_display_origin_cities', store=True, readonly=1)
     origin_country_ids = fields.Many2many('res.country', 'tt_pricing_provider_line_origin_country_rel', 'pricing_line_id', 'country_id',
                                           string='Origin Countries')
+    display_origin_countries = fields.Char('Display Origin Countries', compute='_compute_display_origin_countries', store=True, readonly=1)
     destination_type = fields.Selection(variables.ACCESS_TYPE, 'Destination Type', required=True, default='all')
     destination_ids = fields.Many2many('tt.destinations', 'tt_pricing_provider_line_destination_rel', 'pricing_line_id', 'destination_id',
                                        string='Destinations')
+    display_destinations = fields.Char('Display Destinations', compute='_compute_display_destinations', store=True, readonly=1)
     destination_city_ids = fields.Many2many('res.city', 'tt_pricing_provider_line_destination_city_rel', 'pricing_line_id', 'city_id',
                                             string='Destination Cities')
+    display_destination_cities = fields.Char('Display Destination Cities', compute='_compute_display_destination_cities', store=True, readonly=1)
+
     destination_country_ids = fields.Many2many('res.country', 'tt_pricing_provider_line_destination_country_rel', 'pricing_line_id', 'country_id',
                                                string='Destination Countries')
+    display_destination_countries = fields.Char('Display Destination Countries', compute='_compute_display_destination_countries', store=True, readonly=1)
     currency_id = fields.Many2one('res.currency', 'Currency', required=True)
     fee_amount = fields.Monetary('Fee Amount', default=0)
     is_per_route = fields.Boolean('Is Per Route', default=False)
@@ -121,10 +148,53 @@ class PricingProviderLine(models.Model):
     lower_margin = fields.Monetary('Lower Margin', default=0)
     lower_amount_type = fields.Selection(variables.AMOUNT_TYPE, 'Lower Amount Type', default='amount')
     lower_amount = fields.Monetary('Lower Amount', default=0)
-    upper_margin = fields.Float('Equal Upper Margin', default=0)
+    upper_margin = fields.Monetary('Equal Upper Margin', default=0)
     upper_amount_type = fields.Selection(variables.AMOUNT_TYPE, 'Upper Amount Type', default='percentage')
     upper_amount = fields.Float('Upper Ammount', default=0)
     active = fields.Boolean('Active', default=True)
+    provider_commission_amount = fields.Float('Provider Commission Amount', default=0)
+
+    @api.multi
+    @api.depends('origin_ids')
+    def _compute_display_origins(self):
+        for rec in self:
+            res = [data.code for data in rec.origin_ids]
+            rec.display_origins = ','.join(res)
+
+    @api.multi
+    @api.depends('destination_ids')
+    def _compute_display_destinations(self):
+        for rec in self:
+            res = [data.code for data in rec.destination_ids]
+            rec.display_destinations = ','.join(res)
+
+    @api.multi
+    @api.depends('origin_city_ids')
+    def _compute_display_origin_cities(self):
+        for rec in self:
+            res = [data.code for data in rec.origin_city_ids]
+            rec.display_origin_cities = ','.join(res)
+
+    @api.multi
+    @api.depends('destination_city_ids')
+    def _compute_display_destination_cities(self):
+        for rec in self:
+            res = [data.code for data in rec.destination_city_ids]
+            rec.display_destination_cities = ','.join(res)
+
+    @api.multi
+    @api.depends('origin_country_ids')
+    def _compute_display_origin_countries(self):
+        for rec in self:
+            res = [data.code for data in rec.origin_country_ids]
+            rec.display_origin_countries = ','.join(res)
+
+    @api.multi
+    @api.depends('destination_country_ids')
+    def _compute_display_destination_countries(self):
+        for rec in self:
+            res = [data.code for data in rec.destination_country_ids]
+            rec.display_destination_countries = ','.join(res)
 
     def get_pricing_data(self):
         origin_codes = [rec.code for rec in self.origin_ids]
