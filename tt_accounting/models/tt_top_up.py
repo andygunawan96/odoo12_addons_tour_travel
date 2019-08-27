@@ -5,6 +5,8 @@ from ...tools import ERR
 import logging,traceback
 
 _logger = logging.getLogger(__name__)
+
+
 class TopUpAmount(models.Model):
     _name = 'tt.top.up.amount'
 
@@ -53,14 +55,13 @@ class TtTopUp(models.Model):
     _order = 'id desc'
     _description = 'Rodex Model'
 
-
     name = fields.Char('Document Number', required='True', readonly=True, states={'draft': [('readonly', False)]},
                        index=True, default=lambda self: 'New')
     date = fields.Datetime('Date', readonly=True, states={'draft': [('readonly', False)]}, default=fields.Datetime.now)
     due_date = fields.Datetime('Due Date', readonly=True)
     agent_id = fields.Many2one('tt.agent', string="Agent", required=True, readonly=False,
                                default=lambda self: self.env.user.agent_id)
-    state = fields.Selection([('draft', 'Draft'), ('open', 'Open'),('confirm', 'Confirm'), ('request', 'Request'), ('valid', 'Validated'), ('done', 'Done'), ('cancel', 'Cancelled')],
+    state = fields.Selection([('draft', 'Draft'), ('open', 'Open'), ('confirm', 'Request'), ('valid', 'Validated'), ('done', 'Done'), ('cancel', 'Cancelled')],
                              string='State', default='draft',
                              help='''
                              Open, after submit and choose payment method
