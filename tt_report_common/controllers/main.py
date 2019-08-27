@@ -16,6 +16,11 @@ class Main(http.Controller):
                 pdf = request.env.ref('tt_report_common.action_report_printout_reservation_airline')
             elif model_name == 'tt.reservation.airline' and report_mode == 1:
                 pdf = request.env.ref('tt_report_common.action_printout_itinerary_airline')
+            elif model_name == 'tt.reservation.airline' and report_mode == 2:
+                line_ids = request.env['tt.agent.invoice.line'].search([('id', 'in', model_obj.invoice_line_ids.ids)]).ids
+                model_id = [rec.invoice_id.id for rec in line_ids]
+                model_obj = request.env['tt.agent.invoice'].browse(model_id)
+                pdf = request.env.ref('tt_report_common.action_report_printout_invoice')
             elif model_name == 'tt.reservation.hotel':
                 pdf = request.env.ref('tt_report_common.action_report_printout_reservation_hotel')
             elif model_name == 'tt.reservation.train':

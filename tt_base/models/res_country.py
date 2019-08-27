@@ -7,12 +7,23 @@ import logging, traceback
 _logger = logging.getLogger(__name__)
 
 
+class DestinationAlias(models.Model):
+    _name = 'tt.destination.alias'
+    _description = "Destination Alias Name"
+
+    name = fields.Char('Name', required=True)
+    city_id = fields.Many2one('res.city', 'City')
+    country_id = fields.Many2one('res.country', 'Country')
+
+
 class Country(models.Model, test_to_dict.ToDict):
     _inherit = 'res.country'
     _description = 'Tour & Travel - Res Country'
 
     phone_detail_ids = fields.One2many('phone.detail', 'country_id', string='Phone')
     city_ids = fields.One2many('res.city', 'country_id', string='Cities')
+    other_name_ids = fields.One2many('tt.destination.alias', 'country_id', 'Dest. Alias',
+                                     help='Destination Alias or Other Name')
     address_detail_ids = fields.One2many('address.detail', 'country_id', string='Addresses')
     provide_code_ids = fields.One2many('tt.provider.code', 'country_id', string='Provide Code')
     active = fields.Boolean('Active', default=True)
@@ -69,7 +80,11 @@ class CountryCity(models.Model,test_to_dict.ToDict):
     provide_code_ids = fields.One2many('tt.provider.code', 'city_id', string='Provide Code')
     active = fields.Boolean('Active', default=True)
 
+    other_name_ids = fields.One2many('tt.destination.alias', 'city_id', 'Dest. Alias', help='Destination Alias or Other Name')
     address_detail_ids = fields.One2many('address.detail', 'city_id', string='Addresses')
+
+    latitude = fields.Float('Latitude Degree', digits=(3, 7))
+    longitude = fields.Float('Longitude Degree', digits=(3, 7))
 
 
 class CountryDistrict(models.Model):
