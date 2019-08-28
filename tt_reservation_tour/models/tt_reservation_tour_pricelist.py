@@ -16,6 +16,26 @@ class Survey(models.Model):
     tour_id = fields.Many2one('tt.reservation.tour.pricelist', 'Tour')
 
 
+class TourItineraryItem(models.Model):
+    _name = 'tt.reservation.tour.itinerary.item'
+
+    name = fields.Char('Title')
+    description = fields.Text('Description')
+    timeslot = fields.Char('Timeslot')
+    image = fields.Char('Image URL')
+    itinerary_id = fields.Many2one('tt.reservation.tour.itinerary', 'Tour Itinerary')
+
+
+class TourItinerary(models.Model):
+    _name = 'tt.reservation.tour.itinerary'
+
+    name = fields.Char('Title')
+    day = fields.Integer('Day')
+    date = fields.Date('Date')
+    tour_pricelist_id = fields.Many2one('tt.reservation.tour.pricelist', 'Tour')
+    item_ids = fields.One2many('tt.reservation.tour.itinerary.item', 'itinerary_id', 'Items')
+
+
 class TourPricelist(models.Model):
     _inherit = ['tt.history']
     _name = 'tt.reservation.tour.pricelist'
@@ -130,7 +150,6 @@ class TourPricelist(models.Model):
     # tour_checklist_ids = fields.Char('Tour Checklist')
     tour_checklist_ids = fields.One2many('tt.reservation.tour.checklist', 'tour_pricelist_id', string="Tour Checklist")
 
-    itinerary = fields.Html('Itinerary')
     requirements = fields.Html('Remarks')
     images = fields.One2many('tt.reservation.tour.images', 'pricelist_id', 'Images')
     # images = fields.Many2many('ir.attachment', 'tour_images_rel',
@@ -147,6 +166,7 @@ class TourPricelist(models.Model):
     quotation_ids = fields.One2many('tt.reservation.tour.package.quotation', 'tour_pricelist_id', 'Tour Quotation(s)')
 
     country_name = fields.Char('Country Name')
+    itinerary_ids = fields.One2many('tt.reservation.tour.itinerary', 'tour_pricelist_id', 'Itinerary')
 
     @api.onchange('payment_rules_ids')
     def _calc_dp(self):
@@ -520,6 +540,26 @@ class TourPricelist(models.Model):
             old_vals = vals
         return list_obj
 
+    def get_itineraries(self, id):
+        list_obj = []
+        for itinerary in self.env['tt.reservation.tour.pricelist'].sudo().browse(int(id)).itinerary_ids:
+            it_items = []
+            for item in itinerary.item_ids:
+                it_items.append({
+                    'name': item.name,
+                    'description': item.description,
+                    'timeslot': item.timeslot,
+                    'image': item.image,
+                })
+            vals = {
+                'name': itinerary.name,
+                'day': itinerary.day,
+                'date': itinerary.date,
+                'items': it_items,
+            }
+            list_obj.append(vals)
+        return list_obj
+
     def get_tour_details_api(self, data, context, **kwargs):
         try:
             search_request = {
@@ -623,8 +663,8 @@ class TourPricelist(models.Model):
                     'start_period_f': rec['start_period'] and datetime.strptime(str(rec['start_period']), '%Y-%m-%d').strftime('%B') or '',
                     'end_period_f': rec['end_period'] and datetime.strptime(str(rec['end_period']), '%Y-%m-%d').strftime('%B') or '',
                     'country_names': country_names,
-                    # 'flight':
                     'flight_segment_ids': self.get_flight_segment(search_request['id']),
+                    'itinerary_ids': self.get_itineraries(search_request['id']),
                     'hotel_names': hotel_names,
                     'duration': rec.get('duration') and rec['duration'] or 0,
                     'images_obj': images,
