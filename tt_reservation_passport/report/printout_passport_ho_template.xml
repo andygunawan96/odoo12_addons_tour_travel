@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="printout_visa_footer">
+    <template id="printout_passport_footer">
         <div class="footer">
             <div class="row text-center" style="border-top: 1px solid black; font-size:10px">
                 <div class="col-2"/>
@@ -31,8 +31,8 @@
         </div>
     </template>
 
-    <template id="printout_visa_notes_signature_ho">
-        <div style="position: absolute; z-index:1; top:2090px;">
+    <template id="printout_visa_notes_signature_cust">
+        <div style="top:50px;">  <!--position: absolute; z-index:1; -->
             <div class="row" style="font-family: Times New Roman, Georgia, Serif; font-size: 16px;">
                 <p><strong><span>Notes: </span></strong>
                     <t t-if="p.notes">
@@ -41,12 +41,13 @@
                 </p>
             </div>
             <div class="row mt8" style="font-family: Times New Roman, Georgia, Serif; font-size: 16px;">
-                <span class="bold">Terms and Conditions</span>
+                <strong><span>Terms and Conditions</span></strong>
                 <br/>
-                <span style="color: white;">..</span><span>1. Visa handling process is done in weekdays.</span><br/>
-                <span style="color: white;">..</span><span>2. No refund of any kind when the visa application is rejected</span><br/>
-                <span style="color: white;">..</span><span>3. Time estimated given can change according to the immigration's policies. Time difference's may occur and</span><br/>
-                <span style="color: white;">......</span><span>will not be responsible as it will be the consulate full authorities.</span><br/>
+                <span style="color: white;">..</span><span>1. Passport handling process is done in weekdays.</span><br/>
+                <span style="color: white;">..</span><span>2. Time estimated given can change according to the immigrations and policies. Time differences may occur and<br/></span>
+                <span style="color: white;">......</span><span>will not be responsible as it will be the immigrations full authorities.</span><br/>
+                <span style="color: white;">..</span><span>3. If the applicant wants to apply new passport, but the applicant is found to have previous passport. All the risk<br/></span>
+                <span style="color: white;">......</span><span>will be bore by the applicant</span><br/>
                 <span style="color: white;">..</span><span>4. When needed, consulate will ask for additional documents, the applicant must full fill the in quiries.</span>
             </div>
             <div class="row mt16" style="font-family: Times New Roman, Georgia, Serif; font-size: 16px;">
@@ -83,7 +84,7 @@
         </div>
     </template>
 
-    <template id="printout_visa_ho_template">
+    <template id="printout_passport_ho_template">
         <t t-foreach="docs" t-as="o">
             <t t-foreach="o.passenger_ids" t-as="p">
                 <t t-call="web.html_container">
@@ -95,7 +96,7 @@
                                 <img class="logo-img" src="/web/binary/company_logo" style="max-height: 85px; max-width: 140px; margin-top: 22px;"/>
                             </div>
                             <div class="col-8 text-center" style="padding:0; margin-top: 22px;">
-                                <h2>RECEIPT OF VISA HANDLING</h2>
+                                <h2>RECEIPT OF PASSPORT HANDLING</h2>
                             </div>
                             <div class="col-2" style="padding:0; font-size: 12px; margin-top: 22px;">
                                 <!--<span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d-%m-%Y %H:%M')"/>-->
@@ -115,18 +116,18 @@
                                         <span>:</span>
                                     </div>
                                     <div class="col-7" style="padding: 0px;">
-                                        <span t-field="p.visa_id.name"/><br/>
-                                        <span t-field="p.visa_id.date" t-field-options="{&quot;format&quot;: &quot;dd-MM-yyyy&quot;}"/><br/>
-                                        <span t-field="p.visa_id.agent_id.agent_type_id.name"/>
+                                        <span t-field="p.passport_id.name"/><br/>
+                                        <span t-field="p.passport_id.date" t-field-options="{&quot;format&quot;: &quot;dd-MM-yyyy&quot;}"/><br/>
+                                        <span t-field="p.passport_id.agent_id.agent_type_id.name"/>
                                         <span style="color: white;">..</span>/<span/><span style="color: white;">..</span>
-                                        <span t-field="p.visa_id.agent_id.name"/>
+                                        <span t-field="p.passport_id.agent_id.name"/>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-5"/>
                         </div>
-                        <div id="applicant_details_title" style="margin-left: 1px; width: 300px;">
-                            <strong><span>Applicant Details</span></strong>
+                        <div id="applicant_details_title" class="row mt16" style="margin-left: 1px;">
+                            <span><strong>Applicant Details</strong></span>
                         </div>
                         <div id="applicant_details" class="row mt4">
                             <div class="col-7">
@@ -135,9 +136,8 @@
                                         <span>Name</span><br/>
                                         <span>Date of birth</span><br/>
                                         <span>Domicile</span><br/>
-                                        <span>Visa Type</span><br/>
-                                        <span>Country of destination</span><br/>
-                                        <span>Visa Handling Process</span><br/>
+                                        <span>Passport Type</span><br/>
+                                        <span>Handling Process</span><br/>
                                         <span>Estimated time</span>
                                     </div>
                                     <!--<div class="col-xs-1" style="width: 2%; padding: 0px;">-->
@@ -156,8 +156,7 @@
                                         <span t-field="p.last_name"/><br/>
                                         <span t-field="p.passenger_id.birth_date" t-field-options="{&quot;format&quot;: &quot;dd-MM-yyyy&quot;}"/><br/>
                                         <span t-field="p.passenger_domicile"/><br/>
-                                        <span t-field="p.pricelist_id.visa_type"/> <span t-field="p.pricelist_id.entry_type"/><br/>
-                                        <span t-field="p.pricelist_id.country_id.name"/><br/>
+                                        <span t-field="p.pricelist_id.passport_type"/>
                                         <span t-field="p.pricelist_id.process_type"/><br/>
                                         <span t-field="p.pricelist_id.duration"/><span style="color: white;">...</span><span>day(s)</span><span style="color: white;">...</span><span>____/____/_____</span>
                                     </div>
@@ -189,20 +188,20 @@
                                         </t>
                                         <span t-field="p.passenger_id.passport_expdate" t-field-options="{&quot;format&quot;: &quot;dd-MM-yyyy&quot;}"/><br/>
                                         <span/><br/>
-                                        <span t-field="p.visa_id.departure_date" t-field-options="{&quot;format&quot;: &quot;dd-MM-yyyy&quot;}"/>
+                                        <span t-field="p.passport_id.departure_date" t-field-options="{&quot;format&quot;: &quot;dd-MM-yyyy&quot;}"/>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="row" style="border-bottom: 1px solid black; margin-top:25px">
+                        <div class="row" style="border-bottom: 1px solid black;">
                             <div class="col-6">
-                                <strong><span>Document Type</span></strong>
+                                <span>Document Type</span>
                             </div>
                             <div class="col-3">
-                                <strong><span>Original</span></strong>
+                                <span>Original</span>
                             </div>
                             <div class="col-3">
-                                <strong><span>Copy</span></strong>
+                                <span>Copy</span>
                             </div>
                         </div>
                         <t t-if="p.to_requirement_ids">
@@ -213,21 +212,21 @@
                                     </div>
                                     <div class="col-3">
                                         <t t-if="req.is_ori">
-                                            <img t-att-src="'/tt_reservation_visa/static/src/images/checked-checkbox.png'"
+                                            <img t-att-src="'/tt_reservation_passport/static/src/images/checked-checkbox.png'"
                                                  style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>
                                         </t>
                                         <t t-if="not req.is_ori">
-                                            <img t-att-src="'/tt_reservation_visa/static/src/images/unchecked-checkbox.png'"
+                                            <img t-att-src="'/tt_reservation_passport/static/src/images/unchecked-checkbox.png'"
                                                  style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>
                                         </t>
                                     </div>
                                     <div class="col-3">
                                         <t t-if="req.is_copy">
-                                            <img t-att-src="'/tt_reservation_visa/static/src/images/checked-checkbox.png'"
+                                            <img t-att-src="'/tt_reservation_passport/static/src/images/checked-checkbox.png'"
                                                  style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>
                                         </t>
                                         <t t-if="not req.is_copy">
-                                            <img t-att-src="'/tt_reservation_visa/static/src/images/unchecked-checkbox.png'"
+                                            <img t-att-src="'/tt_reservation_passport/static/src/images/unchecked-checkbox.png'"
                                                  style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>
                                         </t>
                                     </div>
@@ -235,164 +234,18 @@
                             </t>
                         </t>
                         <br/>
-                        <div id="questions" class="row">
-                            <div class="col-12">
-                                <table class="table table-condensed mt16" style="border: 1px solid black;">
-                                    <thead>
-                                        <th style="border: 1px solid black; width:90%;"><strong>Please answer all the questions below as a guideline to help us processing your document.</strong></th>
-                                        <th style="border: 1px solid black; width:5%;"><strong>Yes</strong></th>
-                                        <th style="border: 1px solid black; width:5%;"><strong>No</strong></th>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td style="border: 1px solid black;">
-                                                1. Have you ever applied for a visa to this country?
-                                            </td>
-                                            <td style="border: 1px solid black;">
-
-                                            </td>
-                                            <td style="border: 1px solid black;">
-
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="border: 1px solid black;">
-                                                2. Have you ever been rejected when applying for a visa to any countries? If yes, please
-                                                explain it in the extra information column below.
-                                            </td>
-                                            <td style="border: 1px solid black;">
-
-                                            </td>
-                                            <td style="border: 1px solid black;">
-
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="border: 1px solid black;">
-                                                3. Are you aware that if your visa get rejected, it is outside of the travel agent responsibility ?
-                                            </td>
-                                            <td style="border: 1px solid black;">
-
-                                            </td>
-                                            <td style="border: 1px solid black;">
-
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="border: 1px solid black;">
-                                                4. Have you read all of our terms and conditions thoroughly ?
-                                            </td>
-                                            <td style="border: 1px solid black;">
-
-                                            </td>
-                                            <td style="border: 1px solid black;">
-
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="border: 1px solid black;">
-                                                5. Are you a First Traveler?
-                                            </td>
-                                            <td style="border: 1px solid black;">
-
-                                            </td>
-                                            <td style="border: 1px solid black;">
-
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="border: 1px solid black;">
-                                                6. Do your family ever get rejected by the embassy when applying for a visa ? If yes, please
-                                                elaborate the reason in the extra information column below.
-                                            </td>
-                                            <td style="border: 1px solid black;">
-
-                                            </td>
-                                            <td style="border: 1px solid black;">
-
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="border: 1px solid black;">
-                                                7. Do you have the standard amount of Rp.50.000.000,- / Pax in your account? If no, please write a
-                                                statement that you insist on applying your document in the extra information column below.
-                                            </td>
-                                            <td style="border: 1px solid black;">
-
-                                            </td>
-                                            <td style="border: 1px solid black;">
-
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="border: 1px solid black;">
-                                                8. Do you have any family members or relatives who currently live at the country you want to visit ?
-                                                If yes, please write it in the extra information column below.
-                                            </td>
-                                            <td style="border: 1px solid black;">
-
-                                            </td>
-                                            <td style="border: 1px solid black;">
-
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="border: 1px solid black;">
-                                                9. Are you aware that even having an Electronic Visa, you can still get rejected during immigration in the
-                                                country of destination ?
-                                            </td>
-                                            <td style="border: 1px solid black;">
-
-                                            </td>
-                                            <td style="border: 1px solid black;">
-
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="border: 1px solid black;">
-                                                10. Did you give any false information or forged documents when you apply for a visa to the country your want to visit right now?
-                                                If yes, explain it in the extra information column below.
-                                            </td>
-                                            <td style="border: 1px solid black;">
-
-                                            </td>
-                                            <td style="border: 1px solid black;">
-
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <p style="page-break-after:always;">   </p>
-                        <div id="name_country" class="row">
-                            <div class="col-6">
-                                Name: <span t-field="p.first_name"/> <span t-field="p.last_name"/>
-                            </div>
-                            <div class="col-6">
-                                Country of Destination: <span t-field="p.pricelist_id.country_id.name"/>
-                            </div>
-                        </div>
-                        <br/>
-                        <div id="description" class="row">
-                            <div class="col-12">
-                                Please write all sorts of information about you that might help us in processing your document !
-                                <div style="border: 1px solid black; width:100%; height: 450px;"> </div>
-                            </div>
-                        </div>
-                        Are you sure all of your statements above are right and can be accounted for ?
-                        <t t-call="tt_reservation_visa.printout_visa_notes_signature_ho"/>
+                        <t t-call="tt_reservation_passport.printout_visa_notes_signature_cust"/>
                     </div>
                 </t>
-                <t t-call="tt_reservation_visa.printout_visa_footer"/>
+                <t t-call="tt_reservation_passport.printout_passport_footer"/>
             </t>
         </t>
     </template>
 
-    <template id="printout_visa_ho">
+    <template id="printout_passport_ho">
         <t t-set="data_report_margin_top" t-value="5"/>
         <t t-set="data_report_header_spacing" t-value="9"/>
         <t t-set="data_report_dpi" t-value="110"/>
-        <t t-call="tt_reservation_visa.printout_visa_ho_template"/>
+        <t t-call="tt_reservation_passport.printout_passport_ho_template"/>
     </template>
 </odoo>

@@ -8,6 +8,7 @@ class PassportOrderRequirements(models.Model):
 
     requirement_id = fields.Many2one('tt.reservation.passport.requirements', 'Requirement', readonly=1)
     to_passenger_id = fields.Many2one('tt.reservation.passport.order.passengers', 'Passenger', readonly=1)
+    passenger_state = fields.Selection('Passenger State', related='to_passenger_id.state')
     is_ori = fields.Boolean('Original', default=False)
     is_copy = fields.Boolean('Copy', default=False)
     check_uid = fields.Many2one('res.users', 'Check By')

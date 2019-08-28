@@ -36,7 +36,8 @@ class TtPassport(models.Model):
 
     description = fields.Char('Description', readonly=True, states={'draft': [('readonly', False)]})
     country_id = fields.Many2one('res.country', 'Country', ondelete="cascade", readonly=True,
-                                 states={'draft': [('readonly', False)]})
+                                 states={'draft': [('readonly', False)]},
+                                 default=lambda self: self.default_country_id())
     duration = fields.Char('Duration', readonly=True, states={'draft': [('readonly', False)]})
     total_cost_price = fields.Monetary('Total Cost Price', default=0, readonly=True)
 
@@ -64,8 +65,8 @@ class TtPassport(models.Model):
     receipt_number = fields.Char('Reference Number')
     vendor_ids = fields.One2many('tt.reservation.passport.vendor.lines', 'passport_id', 'Expenses')
 
-    to_passenger_ids = fields.One2many('tt.reservation.passport.order.passengers', 'passport_id',
-                                       'Travel Document Order Passengers')
+    passenger_ids = fields.One2many('tt.reservation.passport.order.passengers', 'passport_id',
+                                    'Travel Document Order Passengers')
     commercial_state = fields.Char('Payment Status', readonly=1, compute='_compute_commercial_state')
     confirmed_date = fields.Datetime('Confirmed Date', readonly=1)
     confirmed_uid = fields.Many2one('res.users', 'Confirmed By', readonly=1)
@@ -99,6 +100,10 @@ class TtPassport(models.Model):
     # STATE
     ######################################################################################################
 
+    # Jika pax belum menentukan tujuan negara, default country di isi singapore
+    def default_country_id(self):
+        return self.env['res.country'].search([('name', '=', 'Singapore')], limit=1).id
+
     @api.multi
     def _compute_commercial_state(self):
         for rec in self:
@@ -113,13 +118,13 @@ class TtPassport(models.Model):
             'state': 'issued'
         })
         # saat mengubah state ke draft, akan mengubah semua state passenger ke draft
-        for rec in self.to_passenger_ids:
+        for rec in self.passenger_ids:
             rec.action_draft()
         self.message_post(body='Order DRAFT')
 
     def action_confirm_passport(self):
         is_confirmed = True
-        for rec in self.to_passenger_ids:
+        for rec in self.passenger_ids:
             if rec.state not in ['confirm', 'cancel', 'validate']:
                 is_confirmed = False
 
@@ -132,10 +137,11 @@ class TtPassport(models.Model):
             'confirmed_date': datetime.now(),
             'confirmed_uid': self.env.user.id
         })
+        self.message_post(body='Order CONFIRMED')
 
     def action_validate_passport(self):
         is_validated = True
-        for rec in self.to_passenger_ids:
+        for rec in self.passenger_ids:
             if rec.state not in ['validate', 'cancel']:
                 is_validated = False
 
@@ -148,16 +154,25 @@ class TtPassport(models.Model):
             'validate_date': datetime.now(),
             'validate_uid': self.env.user.id
         })
+        self.message_post(body='Order VALIDATED')
 
     def action_in_process_passport(self):
         self.write({
             'state_passport': 'in_process',
             'in_process_date': datetime.now()
         })
-        for rec in self.to_passenger_ids:
+        for rec in self.passenger_ids:
             if rec.state in ['validate', 'cancel']:
                 rec.action_in_process()
+        context = {
+            'co_uid': self.env.user.id
+        }
+        self.action_booked_passport(context)
+        self.action_issued_passport(context)
         self.message_post(body='Order IN PROCESS')
+
+    def action_pay_now_passport(self):
+        pass
 
     # very low chance untuk pake vendor
     def action_to_vendor_passport(self):
@@ -183,7 +198,7 @@ class TtPassport(models.Model):
 
     def action_in_process_immigration_passport(self):
         is_payment = True
-        for rec in self.to_passenger_ids:
+        for rec in self.passenger_ids:
             if rec.state not in ['confirm_payment']:
                 is_payment = False
 
@@ -195,6 +210,9 @@ class TtPassport(models.Model):
             'state_passport': 'in_process',
             'in_process_date': datetime.now()
         })
+        self.message_post(body='Order IN PROCESS TO IMMIGRATION')
+        for rec in self.passenger_ids:
+            rec.action_in_process2()
 
     def action_partial_proceed_passport(self):
         self.write({
@@ -206,23 +224,28 @@ class TtPassport(models.Model):
         self.write({
             'state_passport': 'proceed'
         })
+        self.message_post(body='Order PROCEED')
 
     def action_delivered_passport(self):
         self.write({
             'state_passport': 'delivered'
         })
+        self.message_post(body='Order DELIVERED')
 
     def action_cancel_passport(self):
         # set semua state passenger ke cancel
         if self.state_passport not in ['in_process', 'partial_proceed', 'proceed', 'delivered', 'ready', 'done']:
-            self._create_anti_ho_ledger_passport()
-            self._create_anti_ledger_passport()
-            self._create_anti_commission_ledger_passport()
-        for rec in self.to_passenger_ids:
+            if self.sale_service_charge_ids:
+                self._create_anti_ho_ledger_passport()
+                self._create_anti_ledger_passport()
+                self._create_anti_commission_ledger_passport()
+        for rec in self.passenger_ids:
             rec.action_cancel()
         self.write({
             'state_passport': 'cancel',
         })
+        for rec3 in self.vendor_ids:
+            rec3.sudo().unlink()
         self.message_post(body='Order CANCELED')
 
     def action_ready_passport(self):
@@ -230,12 +253,14 @@ class TtPassport(models.Model):
             'state_passport': 'ready',
             'ready_date': datetime.now()
         })
+        self.message_post(body='Order READY')
 
     def action_done_passport(self):
         self.write({
             'state_passport': 'done',
             'done_date': datetime.now()
         })
+        self.message_post(body='Order DONE')
 
     def action_booked_passport(self, api_context=None):
         if not api_context:  # Jika dari call from backend
@@ -245,18 +270,13 @@ class TtPassport(models.Model):
         vals = {}
         if self.name == 'New':
             vals.update({
-                'name': self.env['ir.sequence'].next_by_code(self._name),
-                # .with_context(ir_sequence_date=self.date[:10])
                 'state': 'partial_booked',
             })
 
         vals.update({
             'state': 'booked',
             'booked_uid': api_context and api_context['co_uid'],
-            # 'pnr': False,
             'booked_date': datetime.now(),
-            # 'hold_date': False,
-            # 'expired_date': False,
         })
         self.write(vals)
 
@@ -279,12 +299,8 @@ class TtPassport(models.Model):
 
         if self.name == 'New':
             vals.update({
-                'name': self.env['ir.sequence'].next_by_code(self._name),
-                # .with_context(ir_sequence_date=self.date[:10])
                 'state': 'partial_booked',
             })
-
-        # self._validate_issue(api_context=api_context)
 
         vals.update({
             'state': 'issued',
@@ -299,6 +315,8 @@ class TtPassport(models.Model):
         self._compute_commercial_state()
         self._create_ledger_passport()
         self._create_ho_ledger_passport()
+        # self._create_commission_ledger_passport()
+        # self._calc_grand_total()
 
     def _create_ledger_passport(self):
         ledger = self.env['tt.ledger']
@@ -316,10 +334,8 @@ class TtPassport(models.Model):
 
             doc_type = ','.join(str(e) for e in doc_type)
 
-            print('Total : ' + str(total_order))
-
-            vals = ledger.prepare_vals('Order ' + doc_type + ' : ' + rec.name, rec.name, rec.issued_date,
-                                       'travel.doc', rec.currency_id.id, 0, total_order)
+            vals = ledger.prepare_vals('Order ' + doc_type + ' : ' + rec.name, rec.name, rec.issued_date, 2,
+                                       rec.currency_id.id, 0, total_order)
             vals = ledger.prepare_vals_for_resv(self, vals)
 
             new_aml = ledger.create(vals)
@@ -335,29 +351,15 @@ class TtPassport(models.Model):
             doc_type = ','.join(str(e) for e in doc_type)
 
             ho_profit = 0
-            for pax in self.to_passenger_ids:
-                # print('Cost Price : ' + str(pax.pricelist_id.cost_price))
-                # print('NTA Price : ' + str(pax.pricelist_id.nta_price))
+            for pax in self.passenger_ids:
                 ho_profit += pax.pricelist_id.cost_price - pax.pricelist_id.nta_price
 
-            vals = ledger.prepare_vals('Profit HO ' + doc_type + ' : ' + rec.name, rec.name, rec.issued_date,
-                                       'commission', rec.currency_id.id, ho_profit, 0)
+            vals = ledger.prepare_vals('Profit HO ' + doc_type + ' : ' + rec.name, rec.name, rec.issued_date, 3,
+                                       rec.currency_id.id, ho_profit, 0)
             vals = ledger.prepare_vals_for_resv(self, vals)
             vals.update({
                 'agent_id': self.env['tt.agent'].sudo().search([('agent_type_id.name', '=', 'HO')], limit=1).id
             })
-
-            # vals['transport_type'] = rec.transport_type
-            # vals['display_provider_name'] = rec.display_provider_name
-
-            # vals.update({
-            #     'res_id': rec.id,
-            #     'res_model': rec._name,
-            #     'agent_id': self.env['tt.agent'].sudo().search([('agent_type_id.name', '=', 'HO')], limit=1).id,
-            #     'pnr': rec.pnr,
-            #     'description': desc,
-            #     'provider_type_id': rec.provider_type_id.id
-            # })
 
             new_aml = ledger.create(vals)
 
@@ -367,20 +369,16 @@ class TtPassport(models.Model):
             ledger_obj = rec.env['tt.ledger']
             agent_commission, parent_commission, ho_commission = rec.sub_agent_id.agent_type_id.calc_commission(
                 rec.total_commission, 1)
-            # print('Agent Comm : ' + str(agent_commission))
-            # print('Parent Comm : ' + str(parent_commission))
-            # print('HO Comm : ' + str(ho_commission))
 
             if agent_commission > 0:
-                vals = ledger_obj.prepare_vals('Commission : ' + rec.name, rec.name, rec.issued_date, 'commission',
+                vals = ledger_obj.prepare_vals('Commission : ' + rec.name, rec.name, rec.issued_date, 3,
                                                rec.currency_id.id, agent_commission, 0)
                 vals = ledger_obj.prepare_vals_for_resv(self, vals)
 
                 commission_aml = ledger_obj.create(vals)
             if parent_commission > 0:
                 vals = ledger_obj.prepare_vals('Commission : ' + rec.name, 'PA: ' + rec.name, rec.issued_date,
-                                               'commission',
-                                               rec.currency_id.id, parent_commission, 0)
+                                               3, rec.currency_id.id, parent_commission, 0)
                 vals.update({
                     'agent_id': rec.agent_id.parent_agent_id.id,
                 })
@@ -388,8 +386,7 @@ class TtPassport(models.Model):
 
             if int(ho_commission) > 0:
                 vals = ledger_obj.prepare_vals('Commission : ' + rec.name, 'HO: ' + rec.name, rec.issued_date,
-                                               'commission',
-                                               rec.currency_id.id, ho_commission, 0)
+                                               3, rec.currency_id.id, ho_commission, 0)
                 vals.update({
                     'agent_id': rec.env['tt.agent'].sudo().search(
                         [('parent_agent_id', '=', False)], limit=1).id,
@@ -412,8 +409,7 @@ class TtPassport(models.Model):
             doc_type = ','.join(str(e) for e in doc_type)
 
             vals = ledger.prepare_vals('Order ' + doc_type + ' : ' + rec.name, rec.name, rec.issued_date,
-                                       'travel.doc',
-                                       rec.currency_id.id, rec.total, 0)
+                                       2, rec.currency_id.id, rec.total, 0)
             vals = ledger.prepare_vals_for_resv(self, vals)
             vals.update({
                 'description': 'REVERSAL ' + desc,
@@ -437,13 +433,12 @@ class TtPassport(models.Model):
             doc_type = ','.join(str(e) for e in doc_type)
 
             ho_profit = 0
-            for pax in self.to_passenger_ids:
+            for pax in self.passenger_ids:
                 ho_profit += pax.pricelist_id.cost_price - pax.pricelist_id.nta_price
                 print('HO Profit : ' + str(ho_profit))
 
             vals = ledger.prepare_vals('Profit ' + doc_type + ' : ' + rec.name, rec.name, rec.issued_date,
-                                       'commission',
-                                       rec.currency_id.id, 0, ho_profit)
+                                       3, rec.currency_id.id, 0, ho_profit)
             vals = ledger.prepare_vals_for_resv(self, vals)
             vals.update({
                 'agent_id': self.env['tt.agent'].sudo().search([('parent_agent_id', '=', False)], limit=1).id,
@@ -461,7 +456,7 @@ class TtPassport(models.Model):
             agent_commission, parent_commission, ho_commission = rec.sub_agent_id.agent_type_id.calc_commission(
                 rec.total_commission, 1)
             if agent_commission > 0:
-                vals = ledger_obj.prepare_vals('Commission : ' + rec.name, rec.name, rec.issued_date, 'commission',
+                vals = ledger_obj.prepare_vals('Commission : ' + rec.name, rec.name, rec.issued_date, 3,
                                                rec.currency_id.id, 0, agent_commission)
                 vals = ledger_obj.prepare_vals_for_resv(self, vals)
                 commission_aml = ledger_obj.create(vals)
@@ -469,8 +464,7 @@ class TtPassport(models.Model):
                     'reverse_id': commission_aml.id,
                 })
             if parent_commission > 0:
-                vals = ledger_obj.prepare_vals('Commission : ' + rec.name, 'PA: ' + rec.name, rec.issued_date,
-                                               'commission',
+                vals = ledger_obj.prepare_vals('Commission : ' + rec.name, 'PA: ' + rec.name, rec.issued_date, 3,
                                                rec.currency_id.id, 0, parent_commission)
                 vals = ledger_obj.prepare_vals_for_resv(self, vals)
                 vals.update({
@@ -483,8 +477,7 @@ class TtPassport(models.Model):
 
             if int(ho_commission) > 0:
                 vals = ledger_obj.prepare_vals('Commission : ' + rec.name, 'HO: ' + rec.name, rec.issued_date,
-                                               'commission',
-                                               rec.currency_id.id, 0, ho_commission)
+                                               3, rec.currency_id.id, 0, ho_commission)
                 vals = ledger_obj.prepare_vals_for_resv(self, vals)
                 vals.update({
                     'agent_id': rec.env['tt.agent'].sudo().search(
@@ -496,22 +489,125 @@ class TtPassport(models.Model):
                 })
 
     ######################################################################################################
+    # PRINTOUT
+    ######################################################################################################
+
+    def do_print_out_passport_ho(self):
+        self.ensure_one()
+        data = {
+            'ids': self.ids,
+            'model': self._name,
+        }
+        return self.env.ref('tt_reservation_passport.action_report_printout_passport_ho').report_action(self, data=data)
+
+    def do_print_out_passport_cust(self):
+        self.ensure_one()
+        data = {
+            'ids': self.ids,
+            'model': self._name,
+        }
+        return self.env.ref('tt_reservation_passport.action_report_printout_passport_cust').report_action(self, data=data)
+
+    ######################################################################################################
     # CREATE
     ######################################################################################################
 
     def create_booking(self):
         pass
 
+    def create_sale_service_charge_value(self, passenger, passenger_ids):
+        ssc_list = []
+        ssc_list_final = []
+        pricelist_env = self.env['tt.reservation.visa.pricelist'].sudo()
+        passenger_env = self.env['tt.reservation.visa.order.passengers']
+        for idx, psg in enumerate(passenger):
+            ssc = []
+            pricelist_id = int(psg['master_visa_Id'])
+            pricelist_obj = pricelist_env.browse(pricelist_id)
+            passenger_obj = passenger_env.browse(passenger_ids[idx])
+            vals = {
+                'amount': pricelist_obj.sale_price,
+                'charge_code': 'fare',
+                'charge_type': 'fare',
+                'passenger_visa_id': passenger_ids[idx],
+                'description': pricelist_obj.description,
+                'pax_type': pricelist_obj.pax_type,
+                'currency_id': pricelist_obj.currency_id.id,
+                'pax_count': 1,
+                'total': pricelist_obj.sale_price,
+                'pricelist_id': pricelist_id,
+                'sequence': passenger_obj.sequence
+            }
+            ssc_list.append(vals)
+            # passenger_env.search([('id', '=', 'passenger_ids[idx])].limit=1).cost_service_charge_ids.create(ssc_list))
+            ssc_obj = passenger_obj.cost_service_charge_ids.create(vals)
+            ssc.append(ssc_obj.id)
+            vals2 = vals.copy()
+            vals2.update({
+                'total': int(pricelist_obj.commission_price) * -1,
+                'amount': int(pricelist_obj.commission_price) * -1,
+                'charge_code': 'rac',
+                'charge_type': 'rac'
+            })
+            ssc_list.append(vals2)
+            ssc_obj2 = passenger_obj.cost_service_charge_ids.create(vals2)
+            ssc.append(ssc_obj2.id)
+            passenger_obj.write({
+                'cost_service_charge_ids': [(6, 0, ssc)]
+            })
+
+        for ssc in ssc_list:
+            # compare with ssc_list
+            ssc_same = False
+            for ssc_final in ssc_list_final:
+                if ssc['pricelist_id'] == ssc_final['pricelist_id']:
+                    if ssc['charge_code'] == ssc_final['charge_code']:
+                        if ssc['pax_type'] == ssc_final['pax_type']:
+                            ssc_same = True
+                            # update ssc_final
+                            ssc_final['pax_count'] = ssc_final['pax_count'] + 1,
+                            ssc_final['passenger_visa_ids'].append(ssc['passenger_visa_id'])
+                            ssc_final['total'] += ssc.get('amount')
+                            ssc_final['pax_count'] = ssc_final['pax_count'][0]
+                            break
+            if ssc_same is False:
+                vals = {
+                    'amount': ssc['amount'],
+                    'charge_code': ssc['charge_code'],
+                    'charge_type': ssc['charge_type'],
+                    'passenger_visa_ids': [],
+                    'description': ssc['description'],
+                    'pax_type': ssc['pax_type'],
+                    'currency_id': ssc['currency_id'],
+                    'pax_count': 1,
+                    'total': ssc['total'],
+                    'pricelist_id': ssc['pricelist_id']
+                }
+                vals['passenger_visa_ids'].append(ssc['passenger_visa_id'])
+                ssc_list_final.append(vals)
+        print('Final : ' + str(ssc_list_final))
+        return ssc_list_final
+
+    def _create_sale_service_charge(self, ssc_vals):
+        service_chg_obj = self.env['tt.service.charge']
+        ssc_ids = []
+        for ssc in ssc_vals:
+            ssc['passenger_visa_ids'] = [(6, 0, ssc['passenger_visa_ids'])]
+            ssc_obj = service_chg_obj.create(ssc)
+            print(ssc_obj.read())
+            ssc_ids.append(ssc_obj.id)
+        return ssc_ids
+
     ######################################################################################################
     # OTHERS
     ######################################################################################################
 
     @api.multi
-    @api.depends('to_passenger_ids')
+    @api.depends('passenger_ids')
     def _compute_immigration_consulate(self):
         for rec in self:
-            if rec.to_passenger_ids:
-                rec.immigration_consulate = rec.to_passenger_ids[0].pricelist_id.immigration_consulate
+            if rec.passenger_ids:
+                rec.immigration_consulate = rec.passenger_ids[0].pricelist_id.immigration_consulate
 
     def _calc_grand_total(self):
         for rec in self:

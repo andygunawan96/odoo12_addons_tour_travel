@@ -107,7 +107,8 @@ class IssuedOfflineLines(models.Model):
         return {'domain': {
             'carrier_id': [('provider_type_id', '=', self.booking_id.provider_type_id.id)],
             'origin_id': [('provider_type_id', '=', self.booking_id.provider_type_id.id)],
-            'destination_id': [('provider_type_id', '=', self.booking_id.provider_type_id.id)]
+            'destination_id': [('provider_type_id', '=', self.booking_id.provider_type_id.id)],
+            'provider_id': [('provider_type_id', '=', self.booking_id.provider_type_id.id)]
         }}
 
     @api.onchange('carrier_id')

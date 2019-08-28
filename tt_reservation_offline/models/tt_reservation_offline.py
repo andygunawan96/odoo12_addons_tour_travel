@@ -58,11 +58,13 @@ class IssuedOffline(models.Model):
     sector_type = fields.Selection(SECTOR_TYPE, 'Sector', readonly=True, states={'draft': [('readonly', False)]})
 
     # 171121 CANDY: add field pnr, commission 80%, nta, nta 80%
-    agent_commission = fields.Monetary('Agent Commission', readonly=True, compute='_get_agent_commission')
+    agent_commission = fields.Monetary('Agent Commission', readonly=True,  # , compute='_get_agent_commission')
+                                       states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
     parent_agent_commission = fields.Monetary('Parent Agent Commission', readonly=True, compute='_get_agent_commission')
-    ho_commission = fields.Monetary('HO Commission', readonly=True, compute='_get_agent_commission')
+    ho_commission = fields.Monetary('HO Commission', readonly=True,   # , compute='_get_agent_commission'
+                                    states={'confirm': [('readonly', False)], 'confirm': [('readonly', False)]})
     nta_price = fields.Monetary('NTA Price', readonly=True, compute='_get_nta_price')
-    agent_nta_price = fields.Monetary('Agent NTA Price', readonly=True, compute='_get_agent_commission')
+    agent_nta_price = fields.Monetary('Agent Price', readonly=True, compute='_get_agent_price')
 
     vendor = fields.Char('Vendor Provider', readonly=True, states={'confirm': [('readonly', False)]})
     master_vendor_id = fields.Char('Master Vendor', readonly=True, states={'confirm': [('readonly', False)]})
@@ -121,7 +123,7 @@ class IssuedOffline(models.Model):
     incentive_amount = fields.Monetary('Insentif')
     vendor_amount = fields.Float('Vendor Amount', readonly=True,
                                  states={'paid': [('readonly', False), ('required', True)]})
-    ho_final_amount = fields.Float('HO Amount')
+    ho_final_amount = fields.Float('HO Amount', readonly=True)
     ho_final_ledger_id = fields.Many2one('tt.ledger')
 
     social_media_id = fields.Many2one('social.media.detail', 'Order From(Media)', readonly=True,
@@ -267,28 +269,29 @@ class IssuedOffline(models.Model):
             # set state = paid
             self.state = 'paid'
             self.vendor_amount = self.nta_price
+            self.compute_final_ho()
         return is_enough
 
     def check_pnr_empty(self):
-        empty = True
+        empty = False
         for rec in self.line_ids:
-            if rec.pnr is not False:
-                empty = False
+            if rec.pnr is False:
+                empty = True
         return empty
 
     def check_provider_empty(self):
-        empty = True
+        empty = False
         for rec in self.line_ids:
-            if rec.provider_id is not False:
-                empty = False
+            if rec.provider_id is False:
+                empty = True
         return empty
 
     @api.one
     def action_sent(self):
-        if self.provider_type_id_name is 'airline' or self.provider_type_id_name is 'train' or \
-                self.provider_type_id_name is 'hotel' or self.provider_type_id_name is 'activity':
+        if self.provider_type_id_name == 'airline' or self.provider_type_id_name == 'train' or \
+                self.provider_type_id_name == 'hotel' or self.provider_type_id_name == 'activity':
             if not self.check_provider_empty():
-                if self.provider_type_id_name is 'airline' or self.provider_type_id_name is 'train':
+                if self.provider_type_id_name == 'airline' or self.provider_type_id_name == 'train':
                     if self.check_pnr_empty():
                         raise UserError(_('PNR(s) can\'t be Empty'))
             else:
@@ -340,16 +343,19 @@ class IssuedOffline(models.Model):
     # LEDGER & PRICES
 
     def create_ledger_offline(self):
-        # fixme : comment dulu. tunggu tt_ledger
         provider_obj = self.env['tt.reservation.offline.lines'].search([('booking_id', '=', self.id)])
         # booking_obj = self.browse(self.id)
 
         try:
             # print(provider_obj)
+            pricing_obj = self.env['tt.pricing.agent'].search([('agent_type_id', '=', self.agent_type_id.id),
+                                                              ('provider_type_id', '=', self.provider_type_id.id)],
+                                                              limit=1)
+            commission_list = pricing_obj.get_commission(self.agent_commission, self.agent_id, self.provider_type_id)
             self.sudo().create_service_charge()
             self.sudo().create_ledger(provider_obj)
-            self.sudo().create_ledger_agent_commission(provider_obj)
-            self.sudo().create_ledger_parent_agent_commission(provider_obj)
+            self.sudo().create_ledger_commission(provider_obj)
+            # self.sudo().create_ledger_parent_agent_commission(provider_obj)
             self.sudo().create_ledger_ho_commission(provider_obj)
             # provider_obj.action_create_ledger()
         except Exception as e:
@@ -376,6 +382,151 @@ class IssuedOffline(models.Model):
                 'error_msg': str(e) + '\nCreate ledger / service charge failed.'
             }
 
+    def create_service_charge(self):
+        # unlink dulu
+        for ssc in self.sale_service_charge_ids:
+            ssc.sudo().unlink()
+        service_chg_obj = self.env['tt.service.charge']
+        res = self.generate_service_charge_summary()
+        for val in res:
+            for val_srvc in val['service_charges']:
+                val_srvc.update({
+                    'booking_offline_id': self.id,
+                    # 'description': self.provider
+                })
+                # val['booking_id'] = self.id
+                if val_srvc['amount'] > 0:
+                    service_chg_obj.create(val_srvc)
+
+    def generate_service_charge_summary(self):
+        srvc_list = []
+        if self.provider_type_id_name == 'airline' or self.provider_type_id_name == 'train':
+            total_passengers = len(self.passenger_ids)
+            for psg in self.passenger_ids:
+                srvc_list.append(self.get_service_charge_summary_airline_train(psg, total_passengers))
+        elif self.provider_type_id_name == 'hotel':
+            total_line = 0
+            for line in self.line_ids:
+                total_line += 1
+            for line in self.line_ids:
+                srvc_list.append(self.get_service_charge_summary_hotel(total_line))
+        return srvc_list
+
+    def get_service_charge_summary_airline_train(self, psg, total_passengers):
+        vals_list = []
+        for rec in self:
+            pricing_obj = rec.env['tt.pricing.agent'].search([('agent_type_id', '=', rec.agent_type_id.id),
+                                                              ('provider_type_id', '=', rec.provider_type_id.id)],
+                                                             limit=1)
+
+            # FARE
+            vals = {
+                'charge_type': 'FARE',
+                'charge_code': 'fare',
+                'pax_count': 1,
+                'pax_type': psg.pax_type,
+                'amount': rec.nta_price / total_passengers,
+                'currency': rec.currency_id,
+            }
+            vals_list.append(vals)
+
+            # RAC
+            commission_list = pricing_obj.get_commission(rec.agent_commission, self.agent_id, self.provider_type_id)
+            for comm in commission_list:
+                comm.update({
+                    'charge_type': 'RAC',
+                    'charge_code': comm['code'],
+                    'currency': rec.currency_id,
+                    'pax_type': psg.pax_type,
+                    'pax_count': 1
+                })
+                vals_list.append(comm)
+
+        res = {
+            'service_charges': vals_list
+        }
+        return res
+
+    def get_service_charge_summary_hotel(self, total_line):
+        vals_list = []
+        for rec in self:
+            pricing_obj = rec.env['tt.pricing.agent'].search([('agent_type_id', '=', rec.agent_type_id.id),
+                                                              ('provider_type_id', '=', rec.provider_type_id.id)],
+                                                             limit=1)
+
+            # FARE
+            vals = {
+                'charge_type': 'FARE',
+                'charge_code': 'fare',
+                'pax_count': 1,
+                'pax_type': 'ADT',
+                'amount': rec.nta_price / total_line,
+                'currency': rec.currency_id,
+            }
+            vals_list.append(vals)
+
+            commission_list = pricing_obj.get_commission(rec.agent_commission)
+            for comm in commission_list:
+                comm.update({
+                    'charge_type': 'RAC',
+                    'charge_code': comm['code'],
+                    'currency': rec.currency_id,
+                    'pax_type': 'ADT',
+                    'pax_count': 1
+                })
+                vals_list.append(comm)
+
+        res = {
+            'service_charges': vals_list
+        }
+        return res
+
+    def get_service_charge_summary_activity(self):
+        pass
+
+    def get_service_charge_summary(self):
+        response = {
+            'pax_type': 'ADT',
+            'service_charges': [
+                {
+                    'charge_code': 'fare',
+                    'pax_type': 'ADT',
+                    'pax_count': 1,
+                    'amount': self.nta_price,
+                    'currency': self.currency_id
+                },
+                {
+                    'charge_code': 'r.ac',
+                    'pax_type': 'ADT',
+                    'pax_count': 1,
+                    'amount': self.agent_commission,
+                    'currency': self.currency_id
+                },
+                {
+                    'charge_code': 'r.ac1',
+                    'pax_type': 'ADT',
+                    'pax_count': 1,
+                    'amount': self.parent_agent_commission,
+                    'currency': self.currency_id
+                },
+                {
+                    'charge_code': 'r.ac2',
+                    'pax_type': 'ADT',
+                    'pax_count': 1,
+                    'amount': self.ho_commission,
+                    'currency': self.currency_id
+                },
+                {
+                    'charge_code': 'r.oc',
+                    'pax_type': 'ADT',
+                    'pax_count': 1,
+                    'amount': 0,
+                    'currency': self.currency_id
+                },
+            ]
+        }
+        return response
+
     def create_ledger(self, provider_obj):
         for rec in self:
             # Agent Ledger
@@ -395,6 +546,63 @@ class IssuedOffline(models.Model):
                 'issued_uid': self.env.user.id,
             })
             new_aml = rec.env['tt.ledger'].create(vals)
+
+    def create_ledger_commission(self, provider_obj):
+        for rec in self:
+            pnr = ''
+            if self.provider_type_id_name == 'airline' or self.provider_type_id_name == 'train':
+                pnr = self.get_pnr_list()
+
+            pricing_vals = self.env['tt.pricing.agent'].get_commission(self.agent_commission, self.agent_id, self.provider_type_id)
+
+            for vals in pricing_vals:
+                agent_type_obj = self.env['tt.agent.type'].search([('id', '=', vals['agent_type_id'])], limit=1)
+                if int(vals['amount']) > 0:
+                    if vals['code'] == 'rac':
+                        vals1 = self.env['tt.ledger'].prepare_vals('Commission : ' + rec.name, rec.name,
+                                                                   rec.validate_date, 3, rec.currency_id.id,
+                                                                   vals['amount'], 0)
+                        vals1 = self.env['tt.ledger'].prepare_vals_for_resv(self, vals1)
+                        vals1.update({
+                            'agent_id': rec.agent_id.id,
+                            'agent_type_id': rec.agent_id.agent_type_id.id,
+                            'pnr': pnr,
+                            'provider_type_id': self.provider_type_id,
+                            'display_provider_name': self.get_display_provider_name(),
+                            'issued_uid': self.env.user.id,
+                        })
+                        commission_aml = rec.env['tt.ledger'].create(vals1)
+                    elif agent_type_obj.code == 'ho':
+                        vals1 = self.env['tt.ledger'].prepare_vals('Commission : ' + rec.name, 'HO: ' + rec.name,
+                                                                   rec.validate_date, 3, rec.currency_id.id,
+                                                                   vals['amount'], 0)
+                        ho_agent = self.env['tt.agent'].sudo().search([('parent_agent_id', '=', False),
+                                                                       ('agent_type_id', '=', 'HO')], limit=1)
+                        vals1 = self.env['tt.ledger'].prepare_vals_for_resv(self, vals1)
+                        vals1.update({
+                            'agent_id': ho_agent.id,
+                            'agent_type_id': ho_agent.agent_type_id.id,
+                            'pnr': pnr,
+                            'provider_type_id': self.provider_type_id,
+                            'issued_uid': self.env.user.id,
+                            'display_provider_name': self.get_display_provider_name()
+                        })
+                        commission_aml = self.env['tt.ledger'].create(vals1)
+                    else:
+                        vals1 = self.env['tt.ledger'].prepare_vals('Commission : ' + rec.name, 'PA: ' + rec.name,
+                                                                   rec.validate_date, 3, rec.currency_id.id,
+                                                                   vals['amount'], 0)
+                        # vals1.update(vals_comm_temp)
+                        vals1 = self.env['tt.ledger'].prepare_vals_for_resv(self, vals1)
+                        vals1.update({
+                            'agent_id': rec.agent_id.parent_agent_id.id,
+                            'agent_type_id': rec.agent_id.parent_agent_id.agent_type_id.id,
+                            'pnr': pnr,
+                            'provider_type_id': self.provider_type_id,
+                            'display_provider_name': self.get_display_provider_name(),
+                            'issued_uid': self.env.user.id,
+                        })
+                        commission_aml = self.env['tt.ledger'].create(vals1)
 
     def create_ledger_agent_commission(self, provider_obj):
         # Create Commission
@@ -444,7 +652,7 @@ class IssuedOffline(models.Model):
                 pnr = self.get_pnr_list()
 
             if rec.ho_commission > 0:
-                vals1 = self.env['tt.ledger'].prepare_vals('Commission : ' + rec.name + ' - REVERSE', 'HO: ' + rec.name,
+                vals1 = self.env['tt.ledger'].prepare_vals('Commission : ' + rec.name, 'HO: ' + rec.name,
                                                            rec.validate_date, 3, rec.currency_id.id,
                                                            rec.ho_commission, 0)
                 # vals1.update(vals_temp)
@@ -459,7 +667,7 @@ class IssuedOffline(models.Model):
                     'issued_uid': self.env.user.id,
                     'display_provider_name': self.get_display_provider_name()
                 })
-                commission_aml = self.env['tt.ledger'].create(vals1)
+                self.env['tt.ledger'].create(vals1)
 
     def create_reverse_ledger(self, provider_obj):
         for rec in self:
@@ -549,165 +757,6 @@ class IssuedOffline(models.Model):
                     'display_provider_name': self.get_display_provider_name()
                 })
                 commission_aml = self.env['tt.ledger'].create(vals1)
-                commission_aml.action_done()
-
-    def create_service_charge(self):
-        service_chg_obj = self.env['tt.service.charge']
-        res = self.generate_service_charge_summary()
-        for val in res:
-            for val_srvc in val['service_charges']:
-                val_srvc.update({
-                    'booking_offline_id': self.id,
-                    # 'description': self.provider
-                })
-                print(val_srvc['amount'])
-                # val['booking_id'] = self.id
-                if val_srvc['amount'] > 0:
-                    service_chg_obj.create(val_srvc)
-
-    def generate_service_charge_summary(self):
-        srvc_list = []
-        if self.provider_type_id_name == 'airline' or self.provider_type_id_name == 'train':
-            total_passengers = len(self.passenger_ids)
-            for psg in self.passenger_ids:
-                srvc_list.append(self.get_service_charge_summary_airline_train(psg, total_passengers))
-        elif self.provider_type_id_name == 'hotel':
-            total_line = 0
-            for line in self.line_ids:
-                total_line += 1
-            for line in self.line_ids:
-                srvc_list.append(self.get_service_charge_summary_hotel(total_line))
-        return srvc_list
-
-    def get_service_charge_summary_airline_train(self, psg, total_passengers):
-        res = {
-            'service_charges': [
-                {
-                    'charge_code': 'fare',
-                    'pax_type': psg.pax_type,
-                    'pax_count': 1,
-                    'amount': self.nta_price / total_passengers,
-                    'currency': self.currency_id
-                },
-                {
-                    'charge_code': 'rac',
-                    'pax_type': psg.pax_type,
-                    'pax_count': 1,
-                    'amount': self.agent_commission,
-                    'currency': self.currency_id
-                },
-                {
-                    'charge_code': 'rac1',
-                    'pax_type': psg.pax_type,
-                    'pax_count': 1,
-                    'amount': self.parent_agent_commission,
-                    'currency': self.currency_id
-                },
-                {
-                    'charge_code': 'rac2',
-                    'pax_type': psg.pax_type,
-                    'pax_count': 1,
-                    'amount': self.ho_commission,
-                    'currency': self.currency_id
-                },
-                {
-                    'charge_code': 'roc',
-                    'pax_type': psg.pax_type,
-                    'pax_count': 1,
-                    'amount': 0,
-                    'currency': self.currency_id
-                },
-            ]
-        }
-        return res
-
-    def get_service_charge_summary_hotel(self, total_line):
-        res = {
-            'service_charges': [
-                {
-                    'charge_code': 'fare',
-                    'pax_type': 'ADT',
-                    'pax_count': 1,
-                    'amount': self.nta_price / total_line,
-                    'currency': self.currency_id
-                },
-                {
-                    'charge_code': 'rac',
-                    'pax_type': 'ADT',
-                    'pax_count': 1,
-                    'amount': self.agent_commission,
-                    'currency': self.currency_id
-                },
-                {
-                    'charge_code': 'rac1',
-                    'pax_type': 'ADT',
-                    'pax_count': 1,
-                    'amount': self.parent_agent_commission,
-                    'currency': self.currency_id
-                },
-                {
-                    'charge_code': 'rac2',
-                    'pax_type': 'ADT',
-                    'pax_count': 1,
-                    'amount': self.ho_commission,
-                    'currency': self.currency_id
-                },
-                {
-                    'charge_code': 'roc',
-                    'pax_type': 'ADT',
-                    'pax_count': 1,
-                    'amount': 0,
-                    'currency': self.currency_id
-                },
-            ]
-        }
-        return res
-
-    def get_service_charge_summary_activity(self):
-        pass
-
-    def get_service_charge_summary(self):
-        response = {
-            'pax_type': 'ADT',
-            'service_charges': [
-                {
-                    'charge_code': 'fare',
-                    'pax_type': 'ADT',
-                    'pax_count': 1,
-                    'amount': self.nta_price,
-                    'currency': self.currency_id
-                },
-                {
-                    'charge_code': 'r.ac',
-                    'pax_type': 'ADT',
-                    'pax_count': 1,
-                    'amount': self.agent_commission,
-                    'currency': self.currency_id
-                },
-                {
-                    'charge_code': 'r.ac1',
-                    'pax_type': 'ADT',
-                    'pax_count': 1,
-                    'amount': self.parent_agent_commission,
-                    'currency': self.currency_id
-                },
-                {
-                    'charge_code': 'r.ac2',
-                    'pax_type': 'ADT',
-                    'pax_count': 1,
-                    'amount': self.ho_commission,
-                    'currency': self.currency_id
-                },
-                {
-                    'charge_code': 'r.oc',
-                    'pax_type': 'ADT',
-                    'pax_count': 1,
-                    'amount': 0,
-                    'currency': self.currency_id
-                },
-            ]
-        }
-        return response
 
     def get_ledger_type(self):
         if self.provider_type_id.code in ['airline', 'train', 'cruise']:
@@ -742,12 +791,17 @@ class IssuedOffline(models.Model):
             #     rec.total_commission_amount, rec.segment * rec.person)
             # rec.agent_nta_price = rec.total_sale_price - rec.agent_commission
 
-    @api.onchange('total_commission_amount')
-    @api.depends('total_commission_amount', 'total_sale_price')
+    @api.onchange('agent_commission', 'ho_commission')
+    @api.depends('agent_commission', 'ho_commission', 'total_sale_price')
     def _get_nta_price(self):
-        print('Sale Price : ' + str(self.total_sale_price))
         for rec in self:
-            rec.nta_price = rec.total_sale_price - rec.total_commission_amount  # - rec.incentive_amount
+            rec.nta_price = rec.total_sale_price - rec.agent_commission - rec.ho_commission  # - rec.incentive_amount
+
+    @api.onchange('agent_commission')
+    @api.depends('agent_commission', 'total_sale_price')
+    def _get_agent_price(self):
+        for rec in self:
+            rec.agent_nta_price = rec.total_sale_price - rec.agent_commission
 
     @api.multi
     def get_segment_length(self):
@@ -789,7 +843,8 @@ class IssuedOffline(models.Model):
                     provider_list.append(rec.carrier_id.name)
             providers = ''
             for rec in provider_list:
-                providers += rec
+                if rec:
+                    providers += rec
             return providers
         elif self.provider_type_id_name == 'hotel' or self.provider_type_id_name == 'activity':
             for rec in self.line_ids:
@@ -804,15 +859,6 @@ class IssuedOffline(models.Model):
             return providers
         else:
             return ''
-
-    # Set provider berdasarkan carrier id
-    # @api.onchange('carrier_id')
-    # def set_provider(self):
-    #     for rec in self:
-    #         if rec.carrier_id:
-    #             rec.provider = rec.carrier_id.name
-    #         else:
-    #             rec.provider = ''
 
     # Hitung harga final / Agent NTA Price
     @api.onchange('vendor_amount', 'nta_price')

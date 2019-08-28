@@ -124,8 +124,6 @@ class TtVisa(models.Model):
 
     def action_confirm_visa(self):
         is_confirmed = True
-        # cek semua state passanger.
-        # jika ada state passenger yang masih diluar confirm, cancel atau validate, batalkan action confirm
         for rec in self.passenger_ids:
             if rec.state not in ['confirm', 'cancel', 'validate']:
                 is_confirmed = False
@@ -143,8 +141,6 @@ class TtVisa(models.Model):
 
     def action_validate_visa(self):
         is_validated = True
-        # cek semua state passanger.
-        # jika ada state passenger yang masih diluar cancel atau validate, batalkan action validate
         for rec in self.passenger_ids:
             if rec.state not in ['validate', 'cancel']:
                 is_validated = False
@@ -225,9 +221,6 @@ class TtVisa(models.Model):
         self.message_post(body='Order PARTIAL PROCEED')
 
     def action_delivered_visa(self):
-        # if not self.vendor_ids:
-        #     raise UserError(_('You have to Fill Expenses.'))
-        # if self.statxisa_vendor()
         self.write({
             'state_visa': 'delivered'
         })
@@ -237,6 +230,7 @@ class TtVisa(models.Model):
         self.write({
             'state_visa': 'proceed'
         })
+        self.message_post(body='Order PROCEED')
 
     def action_cancel_visa(self):
         # cek state visa.
@@ -271,6 +265,7 @@ class TtVisa(models.Model):
             'state_visa': 'done',
             'done_date': datetime.now()
         })
+        self.message_post(body='Order DONE')
 
     ######################################################################################################
     # CREATE
@@ -900,18 +895,13 @@ class TtVisa(models.Model):
         vals = {}
         if self.name == 'New':
             vals.update({
-                # 'name': self.env['ir.sequence'].next_by_code(self._name),
-                # .with_context(ir_sequence_date=self.date[:10])
                 'state': 'partial_booked',
             })
 
         vals.update({
             'state': 'booked',
             'booked_uid': api_context and api_context['co_uid'],
-            # 'pnr': False,
             'booked_date': datetime.now(),
-            # 'hold_date': False,
-            # 'expired_date': False,
         })
         self.write(vals)
 
@@ -934,12 +924,8 @@ class TtVisa(models.Model):
 
         if self.name == 'New':
             vals.update({
-                # 'name': self.env['ir.sequence'].next_by_code(self._name),
-                # .with_context(ir_sequence_date=self.date[:10])
                 'state': 'partial_booked',
             })
-
-        # self._validate_issue(api_context=api_context)
 
         vals.update({
             'state': 'issued',
@@ -956,7 +942,6 @@ class TtVisa(models.Model):
         self._create_ho_ledger_visa()
         self._create_commission_ledger_visa()
         self._calc_grand_total()
-        # self.create_agent_invoice_traveldoc()
 
     def _create_ho_ledger_visa(self):
         ledger = self.env['tt.ledger']
@@ -970,8 +955,6 @@ class TtVisa(models.Model):
 
             ho_profit = 0
             for pax in self.passenger_ids:
-                # print('Cost Price : ' + str(pax.pricelist_id.cost_price))
-                # print('NTA Price : ' + str(pax.pricelist_id.nta_price))
                 ho_profit += pax.pricelist_id.cost_price - pax.pricelist_id.nta_price
 
             vals = ledger.prepare_vals('Profit HO ' + doc_type + ' : ' + rec.name, rec.name, rec.issued_date,
@@ -981,21 +964,7 @@ class TtVisa(models.Model):
                 'agent_id': self.env['tt.agent'].sudo().search([('agent_type_id.name', '=', 'HO')], limit=1).id
             })
 
-            # vals['transport_type'] = rec.transport_type
-            # vals['display_provider_name'] = rec.display_provider_name
-            # print('id : ' + str(rec.id))
-            # vals.update({
-            #     'res_id': rec.id,
-            #     'res_model': rec._name,
-            #     'agent_id': self.env['tt.agent'].sudo().search([('agent_type_id.name', '=', 'HO')], limit=1).id,
-            #     'pnr': rec.pnr,
-            #     'description': desc,
-            #     'provider_type_id': rec.provider_type_id.id
-            # })
-
             new_aml = ledger.create(vals)
-            # new_aml.action_done()
-            # rec.ledger_id = new_aml
 
     def _create_ledger_visa(self):
         # pass
@@ -1007,39 +976,19 @@ class TtVisa(models.Model):
             desc = ''
 
             for sc in rec.sale_service_charge_ids:
-                # if rec.transport_type == 'passport':
-                #     if not sc.pricelist_id.apply_type in doc_type:
-                #         doc_type.append(sc.pricelist_id.apply_type)
-                #     desc = sc.pricelist_id.passport_type.upper() + ' ' + sc.pricelist_id.apply_type.upper()
-                # else:
                 if sc.pricelist_id.visa_type not in doc_type:
                     doc_type.append(sc.pricelist_id.visa_type)
                 if sc.charge_code == 'fare':
                     total_order += sc.total
-                print('Total fare : ' + str(sc.total))
                 desc = sc.pricelist_id.display_name.upper() + ' ' + sc.pricelist_id.entry_type.upper()
 
             doc_type = ','.join(str(e) for e in doc_type)
 
-            print('Total : ' + str(total_order))
-
             vals = ledger.prepare_vals('Order ' + doc_type + ' : ' + rec.name, rec.name, rec.issued_date,
                                        2, rec.currency_id.id, 0, total_order)
             vals = ledger.prepare_vals_for_resv(self, vals)
-            # vals.update({
-            #     'res_id': rec.id,
-            #     'res_model': rec._name,
-            #     'agent_id': rec.agent_id.id,
-            #     'pnr': rec.pnr,
-            #     'provider_type_id': rec.provider_type_id.id,
-            #     'description': desc
-            # })
-            # vals['transport_type'] = rec.transport_type
-            # vals['display_provider_name'] = rec.display_provider_name
 
             new_aml = ledger.create(vals)
-            # new_aml.action_done()
-            # rec.ledger_id = new_aml
 
     def _create_commission_ledger_visa(self):
         # pass
@@ -1268,6 +1217,17 @@ class TtVisa(models.Model):
             'provider_type': 'visa'
         })
         self.channel_pricing_api(req, self.param_context)
+        csc_list = []
+        for psg in self.passenger_ids:
+            for channel in psg.channel_service_charge_ids:
+                channel.write({
+                    'total': channel.amount * channel.pax_count,
+                    'pax_type': psg.passenger_type,
+                    'description': 'Repricing'
+                })
+                self.write({  # hasil sementara : isi di prices di replace semuanya
+                    'sale_service_charge_ids': [(4, channel.id)]
+                })
 
     @api.multi
     @api.depends('passenger_ids')

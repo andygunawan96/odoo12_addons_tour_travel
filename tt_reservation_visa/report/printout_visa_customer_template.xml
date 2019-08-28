@@ -2,19 +2,20 @@
 <odoo>
     <template id="printout_visa_footer">
         <div class="footer">
-            <div class="row text-center" style="border-top: 1px solid black;">
+            <div class="row text-center" style="border-top: 1px solid black; font-size:10px">
                 <div class="col-2"/>
-                <div class="col-7" style="text-align:center">
-                    Phone :
+                <div class="col-8" style="text-align:center">
                     <t t-if="o.agent_id.phone_ids">
-                        <span t-field="o.agent_id.phone_ids[0].phone_number"/>
+                       &#160; &#160; Phone : <span t-field="o.agent_id.phone_ids[0].phone_number"/> &#160;
                     </t>
-                    • Email :
                     <t t-if="o.agent_id.email">
-                        <span t-field="o.agent_id.email"/>
+                        &#160; • &#160; &#160; Email : <span t-field="o.agent_id.email"/> &#160;
+                    </t>
+                    <t t-if="o.agent_id.website">
+                        &#160; • &#160; &#160; Website : <span t-field="o.agent_id.website"/> &#160;
                     </t>
                 </div>
-                <div class="col-3 text-right">
+                <div class="col-2 text-right">
                     <ul class="list-inline mt-2">
                         <li class="list-inline-item">Page:</li>
                         <li class="list-inline-item">
@@ -87,7 +88,8 @@
                         <div class="oe_structure"/>
                         <div id="header" class="row" style="">
                             <div class="col-2">
-                                <img t-if="o.agent_id.logo" t-att-src="'data:image/png;base64,%s' % o.agent_id.logo" style="max-height: 85px;"/>
+                                <!--<img t-if="o.agent_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(o.agent_id.logo)" style="max-height: 85px;"/>-->
+                                <img class="logo-img" src="/web/binary/company_logo" style="max-height: 85px; max-width: 140px; margin-top: 22px;"/>
                             </div>
                             <div class="col-8 text-center" style="padding:0; margin-top: 22px;">
                                 <h2>RECEIPT OF VISA HANDLING</h2>
@@ -120,8 +122,8 @@
                             </div>
                             <div class="col-5"/>
                         </div>
-                        <div id="applicant_details_title" class="row mt16" style="margin-left: 1px;">
-                            <span><strong>Applicant Details</strong></span>
+                        <div id="applicant_details_title" style="margin-left: 1px; width: 300px;">
+                            <strong><span>Applicant Details</span></strong>
                         </div>
                         <div id="applicant_details" class="row mt4">
                             <div class="col-7">
@@ -189,42 +191,46 @@
                                 </div>
                             </div>
                         </div>
-                        <table id="documents" class="table table-condensed mt16">
-                            <thead>
-                                <th><strong>Document type</strong></th>
-                                <th><strong>Original</strong></th>
-                                <th><strong>Copy</strong></th>
-                            </thead>
-                            <tbody>
-                                <t t-foreach="p.to_requirement_ids" t-as="req">
-                                    <t t-if="req.is_ori or req.is_copy">
-                                        <tr>
-                                            <td><span t-field="req.requirement_id.name"/></td>
-                                            <td>
-                                                <t t-if="req.is_ori">
-                                                    <img src="https://png.icons8.com/metro/26/000000/checked-checkbox.png"
-                                                         style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>
-                                                </t>
-                                                <t t-if="not req.is_ori">
-                                                    <img src="https://png.icons8.com/metro/26/000000/unchecked-checkbox.png"
-                                                         style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>
-                                                </t>
-                                            </td>
-                                            <td>
-                                                <t t-if="req.is_copy">
-                                                    <img src="https://png.icons8.com/metro/26/000000/checked-checkbox.png"
-                                                         style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>
-                                                </t>
-                                                <t t-if="not req.is_copy">
-                                                    <img src="https://png.icons8.com/metro/26/000000/unchecked-checkbox.png"
-                                                         style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>
-                                                </t>
-                                            </td>
-                                        </tr>
-                                    </t>
-                                </t>
-                            </tbody>
-                        </table>
+                        <div class="row" style="border-bottom: 1px solid black; margin-top:25px">
+                            <div class="col-6">
+                                <strong><span>Document Type</span></strong>
+                            </div>
+                            <div class="col-3">
+                                <strong><span>Original</span></strong>
+                            </div>
+                            <div class="col-3">
+                                <strong><span>Copy</span></strong>
+                            </div>
+                        </div>
+                        <t t-if="p.to_requirement_ids">
+                            <t t-foreach="p.to_requirement_ids" t-as="req">
+                                <div class="row" style="border-top: 1px solid #CCCCCC; ">
+                                    <div class="col-6">
+                                        <span t-field="req.requirement_id.name"/>
+                                    </div>
+                                    <div class="col-3">
+                                        <t t-if="req.is_ori">
+                                            <img t-att-src="'/tt_reservation_visa/static/src/images/checked-checkbox.png'"
+                                                 style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>
+                                        </t>
+                                        <t t-if="not req.is_ori">
+                                            <img t-att-src="'/tt_reservation_visa/static/src/images/unchecked-checkbox.png'"
+                                                 style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>
+                                        </t>
+                                    </div>
+                                    <div class="col-3">
+                                        <t t-if="req.is_copy">
+                                            <img t-att-src="'/tt_reservation_visa/static/src/images/checked-checkbox.png'"
+                                                 style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>
+                                        </t>
+                                        <t t-if="not req.is_copy">
+                                            <img t-att-src="'/tt_reservation_visa/static/src/images/unchecked-checkbox.png'"
+                                                 style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>
+                                        </t>
+                                    </div>
+                                </div>
+                            </t>
+                        </t>
                         <br/>
                         <div id="questions" class="row">
                             <div class="col-12">
