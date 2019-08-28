@@ -133,7 +133,7 @@ class Ledger(models.Model):
             agent_commission = {}
             for sc in provider_obj.cost_service_charge_ids:
                 # Pada lionair ada r.ac positif
-                if 'rac' in sc.charge_code:
+                if 'RAC' in sc.charge_type:
                     amount = abs(sc.total)
                     agent_id = sc['commission_agent_id'].id if sc['commission_agent_id'] else booking_obj.agent_id.id
                     if not agent_commission.get(agent_id, False):

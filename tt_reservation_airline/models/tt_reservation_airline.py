@@ -419,13 +419,13 @@ class ReservationAirline(models.Model):
             if book_obj and book_obj.agent_id.id == context.get('co_agent_id',-1):
                 #cek balance due book di sini, mungkin suatu saat yang akan datang
                 if book_obj.state == 'issued':
-                    _logger.error('Transaction Has been paid.'+ traceback.format_exc())
+                    _logger.error('Transaction Has been paid.')
                     return ERR.get_error(1009)
 
                 #cek saldo
                 balance_res = self.env['tt.agent'].check_balance_limit_api(context['co_agent_id'],book_obj.total_nta)
                 if balance_res['error_code']!=0:
-                    _logger.error('Balance not enough' + traceback.format_exc())
+                    _logger.error('Balance not enough')
                     return ERR.get_error(1007)
 
                 for provider in book_obj.provider_booking_ids:

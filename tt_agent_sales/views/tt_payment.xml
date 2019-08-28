@@ -9,7 +9,7 @@
                     <group>
                         <field name="invoice_id" readonly="1"/>
                         <field name="payment_id"/>
-                        <field name="residual_amount"/>
+                        <field name="available_amount"/>
                         <field name="pay_amount"/>
                     </group>
                 </sheet>
@@ -37,7 +37,7 @@
         <field name="arch" type="xml">
             <tree editable="bottom">
                 <field name="payment_id"/>
-                <field name="residual_amount"/>
+                <field name="available_amount"/>
                 <field name="pay_amount"/>
                 <field name="currency_id" invisible="1"/>
             </tree>

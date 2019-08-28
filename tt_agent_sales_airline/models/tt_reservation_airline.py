@@ -52,7 +52,8 @@ class ReservationTrain(models.Model):
             invoice_id = self.env['tt.agent.invoice'].create({
                 'booker_id': self.booker_id.id,
                 'agent_id': self.agent_id.id,
-                # 'sub_agent_id': self.sub_agent_id.id
+                'customer_parent_id': self.customer_parent_id.id,
+                'customer_parent_type_id': self.customer_parent_type_id.id
             })
 
         inv_line_obj = self.env['tt.agent.invoice.line'].create({

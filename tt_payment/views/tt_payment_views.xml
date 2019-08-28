@@ -37,7 +37,7 @@
                             <field name="total_amount"/>
                             <field name="fee"/>
                             <field name="used_amount"/>
-                            <field name="residual_amount"/>
+                            <field name="available_amount"/>
                             <field name="currency_id" invisible="1"/>
                         </group>
                         <group string="Amount">

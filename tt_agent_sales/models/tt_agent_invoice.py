@@ -15,8 +15,8 @@ class AgentInvoice(models.Model):
     _description = 'Rodex Model'
 
     name = fields.Char('Name', default='New', readonly=True)
-    total = fields.Monetary('Total', compute="_compute_total")
-    paid_amount = fields.Monetary('Paid Amount', readonly=True)
+    total = fields.Monetary('Total', compute="_compute_total",store=True)
+    paid_amount = fields.Monetary('Paid Amount', compute="_compute_paid_amount",store=True)
     invoice_line_ids = fields.One2many('tt.agent.invoice.line','invoice_id','Invoice Line', readonly=True)
     booker_id = fields.Many2one('tt.customer', 'Booker',readonly=True)
     type = fields.Selection([
@@ -78,6 +78,18 @@ class AgentInvoice(models.Model):
     def create(self, vals_list):
         vals_list['name'] = self.env['ir.sequence'].next_by_code('agent.invoice')
         return super(AgentInvoice, self).create(vals_list)
+    
+    def write(self, vals):
+        super(AgentInvoice, self).write(vals)
+        if 'payment_ids' in vals:
+            if self.check_paid_status():
+                self.state = 'paid'
+
+    def set_as_confirm(self):
+        self.state = "confirm"
+
+    def set_as_paid(self):
+        self.state = "paid"
 
     def action_confirm_agent_invoice(self):
         if self.state == 'draft':
@@ -85,6 +97,13 @@ class AgentInvoice(models.Model):
             self.confirmed_date = fields.Datetime.now()
             self.confirmed_uid = self.env.user.id
 
+    def check_paid_status(self):
+        if self.paid_amount >= self.total:
+            return True
+        return False
+
+    @api.multi
+    @api.depends('invoice_line_ids.total')
     def _compute_total(self):
         for inv in self:
             total = 0
@@ -92,14 +111,22 @@ class AgentInvoice(models.Model):
                 total += rec.total
             inv.total = total
 
-    def calculate_paid_amount(self):
-        paid = 0
-        for rec in self.payment_ids:
-            paid += rec.pay_amount
-        self.paid_amount = paid
-        if self.paid_amount >= self.total:
-            self.state = 'paid'
-            self.billing_statement_id.check_status()
+    @api.multi
+    @api.depends('payment_ids.pay_amount')
+    def _compute_paid_amount(self):
+        for inv in self:
+            paid_amount = 0
+            paid_amount = sum(rec.pay_amount for rec in inv.payment_ids if rec.create_date)
+            inv.paid_amount = paid_amount
+
+    # def calculate_paid_amount(self):
+    #     paid = 0
+    #     for rec in self.payment_ids:
+    #         paid += rec.pay_amount
+    #     self.paid_amount = paid
+    #     if self.paid_amount >= self.total:
+    #         self.state = 'paid'
+    #         self.billing_statement_id.check_status()
 
     def set_to_confirm(self):
         self.state = 'confirm'
