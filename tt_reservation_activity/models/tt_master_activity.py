@@ -1078,59 +1078,67 @@ class MasterActivity(models.Model):
                 })
 
     def get_config_by_api(self):
-        result_objs = self.env['tt.activity.category'].sudo().search([])
-        categories = result_objs.filtered(lambda x: x.type == 'category' and not x.parent_id)
-        sub_categories = {}
-        categories_list = []
-        for rec in categories:
-            categories_list.append({
-                'name': rec.name,
-                'id': rec.id,
-            })
-            child_list = []
-            for child in rec.child_ids:
-                child_list.append({
-                    'name': child.name,
-                    'id': child.id,
+        try:
+            result_objs = self.env['tt.activity.category'].sudo().search([])
+            categories = result_objs.filtered(lambda x: x.type == 'category' and not x.parent_id)
+            sub_categories = {}
+            categories_list = []
+            for rec in categories:
+                categories_list.append({
+                    'name': rec.name,
+                    'id': rec.id,
                 })
-            sub_categories[rec.name] = child_list
-        types = result_objs.filtered(lambda x: x.type == 'type')
-        types_list = []
-        for type in types:
-            types_list.append({
-                'name': type.name,
-                'id': type.id,
-            })
+                child_list = []
+                for child in rec.child_ids:
+                    child_list.append({
+                        'name': child.name,
+                        'id': child.id,
+                    })
+                sub_categories[rec.name] = child_list
+            types = result_objs.filtered(lambda x: x.type == 'type')
+            types_list = []
+            for type in types:
+                types_list.append({
+                    'name': type.name,
+                    'id': type.id,
+                })
 
-        countries_list = []
-        country_objs = self.env['res.country'].sudo().search([('provider_city_ids', '!=', False)])
-        for country in country_objs:
-            # for rec in country.provider_city_ids:
-            #     if rec.provider_id.id == vendor_id:
-            city = self.get_cities_by_api(country.id)
-            countries_list.append({
-                'name': country.name,
-                'id': country.id,
-                'city': city
-            })
+            countries_list = []
+            country_objs = self.env['res.country'].sudo().search([('provider_city_ids', '!=', False)])
+            for country in country_objs:
+                # for rec in country.provider_city_ids:
+                #     if rec.provider_id.id == vendor_id:
+                city = self.get_cities_by_api(country.id)
+                countries_list.append({
+                    'name': country.name,
+                    'id': country.id,
+                    'city': city
+                })
 
-        values = {
-            'categories': categories_list,
-            'sub_categories': sub_categories,
-            'types': types_list,
-            'countries': countries_list,
-        }
-        return values
+            values = {
+                'categories': categories_list,
+                'sub_categories': sub_categories,
+                'types': types_list,
+                'countries': countries_list,
+            }
+            return ERR.get_no_error(values)
+        except Exception as e:
+            _logger.info('Activity Get Config Error')
+            return ERR.get_error(500)
 
     def get_cities_by_api(self, id):
-        result_objs = self.env['res.city'].sudo().search([('country_id', '=', int(id))])
-        cities = []
-        for rec in result_objs:
-            cities.append({
-                'name': rec.name,
-                'id': rec.id,
-            })
-        return cities
+        try:
+            result_objs = self.env['res.city'].sudo().search([('country_id', '=', int(id))])
+            cities = []
+            for rec in result_objs:
+                cities.append({
+                    'name': rec.name,
+                    'id': rec.id,
+                })
+            return ERR.get_no_error(cities)
+        except Exception as e:
+            _logger.info('Activity Get Cities Error')
+            return ERR.get_error(500)
 
     def search_by_api(self, req):
         try:
