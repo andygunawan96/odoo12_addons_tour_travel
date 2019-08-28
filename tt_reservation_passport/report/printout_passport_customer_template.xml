@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="printout_passport_footer">
+        <div class="footer">
+            <div class="row text-center" style="border-top: 1px solid black; font-size:10px">
+                <div class="col-2"/>
+                <div class="col-8" style="text-align:center">
+                    <t t-if="o.agent_id.phone_ids">
+                       &#160; &#160; Phone : <span t-field="o.agent_id.phone_ids[0].phone_number"/> &#160;
+                    </t>
+                    <t t-if="o.agent_id.email">
+                        &#160; • &#160; &#160; Email : <span t-field="o.agent_id.email"/> &#160;
+                    </t>
+                    <t t-if="o.agent_id.website">
+                        &#160; • &#160; &#160; Website : <span t-field="o.agent_id.website"/> &#160;
+                    </t>
+                </div>
+                <div class="col-2 text-right">
+                    <ul class="list-inline mt-2">
+                        <li class="list-inline-item">Page:</li>
+                        <li class="list-inline-item">
+                            <span class="page"/>
+                        </li>
+                        <li class="list-inline-item">/</li>
+                        <li class="list-inline-item">
+                            <span class="topage"/>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="printout_visa_notes_signature_cust">
+        <div style="top:50px;">  <!--position: absolute; z-index:1; -->
+            <div class="row" style="font-family: Times New Roman, Georgia, Serif; font-size: 16px;">
+                <p><strong><span>Notes: </span></strong>
+                    <t t-if="p.notes">
+                        <span t-field="p.notes"/>
+                    </t>
+                </p>
+            </div>
+            <div class="row mt8" style="font-family: Times New Roman, Georgia, Serif; font-size: 16px;">
+                <strong><span>Terms and Conditions</span></strong>
+                <br/>
+                <span style="color: white;">..</span><span>1. Passport handling process is done in weekdays.</span><br/>
+                <span style="color: white;">..</span><span>2. Time estimated given can change according to the immigrations and policies. Time differences may occur and<br/></span>
+                <span style="color: white;">......</span><span>will not be responsible as it will be the immigrations full authorities.</span><br/>
+                <span style="color: white;">..</span><span>3. If the applicant wants to apply new passport, but the applicant is found to have previous passport. All the risk<br/></span>
+                <span style="color: white;">......</span><span>will be bore by the applicant</span><br/>
+                <span style="color: white;">..</span><span>4. When needed, consulate will ask for additional documents, the applicant must full fill the in quiries.</span>
+            </div>
+            <div class="row mt16" style="font-family: Times New Roman, Georgia, Serif; font-size: 16px;">
+                <p>With this statement, I have given my documents for visa handling and correspond to my true ID's and agree with terms and conditions stated above.</p>
+            </div>
+            <div class="row mt16" style="font-family: Times New Roman, Georgia, Serif; font-size: 16px;">
+                <div class="col-6 text-center">
+                    <span><strong>Applicant</strong></span>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    (<span t-field="p.first_name"/>
+                    <span/>
+                    <span t-field="p.last_name"/>)
+                </div>
+                <div class="col-6 text-center">
+                    <span><strong>Recipient</strong></span>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <t t-if="o.confirmed_uid.name">
+                        (<span t-field="o.confirmed_uid.name"/>)
+                    </t>
+                    <t t-if="not o.confirmed_uid.name">
+                        (<span style="color: white;">_____________</span>)
+                    </t>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="printout_passport_cust_template">
+        <t t-foreach="docs" t-as="o">
+            <t t-foreach="o.passenger_ids" t-as="p">
+                <t t-call="web.html_container">
+                    <div class="article" style="font-family: Times New Roman, Georgia, Serif; font-size: 16px;">
+                        <div class="oe_structure"/>
+                        <div id="header" class="row" style="">
+                            <div class="col-2">
+                                <!--<img t-if="o.agent_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(o.agent_id.logo)" style="max-height: 85px;"/>-->
+                                <img class="logo-img" src="/web/binary/company_logo" style="max-height: 85px; max-width: 140px; margin-top: 22px;"/>
+                            </div>
+                            <div class="col-8 text-center" style="padding:0; margin-top: 22px;">
+                                <h2>RECEIPT OF PASSPORT HANDLING</h2>
+                            </div>
+                            <div class="col-2" style="padding:0; font-size: 12px; margin-top: 22px;">
+                                <!--<span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d-%m-%Y %H:%M')"/>-->
+                            </div>
+                        </div><br/>
+                        <div id="order_number" class="row">
+                            <div class="col-7">
+                                <div class="row">
+                                    <div class="col-4" style="padding: 0px;">
+                                        <span>No.</span><br/>
+                                        <span>Date</span><br/>
+                                        <span>Customer Type</span>
+                                    </div>
+                                    <div class="col-1" style="padding: 0px;">
+                                        <span>:</span><br/>
+                                        <span>:</span><br/>
+                                        <span>:</span>
+                                    </div>
+                                    <div class="col-7" style="padding: 0px;">
+                                        <span t-field="p.passport_id.name"/><br/>
+                                        <span t-field="p.passport_id.date" t-field-options="{&quot;format&quot;: &quot;dd-MM-yyyy&quot;}"/><br/>
+                                        <span t-field="p.passport_id.agent_id.agent_type_id.name"/>
+                                        <span style="color: white;">..</span>/<span/><span style="color: white;">..</span>
+                                        <span t-field="p.passport_id.agent_id.name"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-5"/>
+                        </div>
+                        <div id="applicant_details_title" class="row mt16" style="margin-left: 1px;">
+                            <span><strong>Applicant Details</strong></span>
+                        </div>
+                        <div id="applicant_details" class="row mt4">
+                            <div class="col-7">
+                                <div class="row">
+                                    <div class="col-4" style="padding: 0px;">
+                                        <span>Name</span><br/>
+                                        <span>Date of birth</span><br/>
+                                        <span>Domicile</span><br/>
+                                        <span>Passport Type</span><br/>
+                                        <span>Handling Process</span><br/>
+                                        <span>Estimated time</span>
+                                    </div>
+                                    <!--<div class="col-xs-1" style="width: 2%; padding: 0px;">-->
+                                    <div class="col-1" style="padding: 0px;">
+                                        <span>:</span><br/>
+                                        <span>:</span><br/>
+                                        <span>:</span><br/>
+                                        <span>:</span><br/>
+                                        <span>:</span><br/>
+                                        <span>:</span><br/>
+                                        <span>:</span>
+                                    </div>
+                                    <div class="col-7" style="padding: 0px;">
+                                        <span t-field="p.first_name"/>
+                                        <span/>
+                                        <span t-field="p.last_name"/><br/>
+                                        <span t-field="p.passenger_id.birth_date" t-field-options="{&quot;format&quot;: &quot;dd-MM-yyyy&quot;}"/><br/>
+                                        <span t-field="p.passenger_domicile"/><br/>
+                                        <span t-field="p.pricelist_id.passport_type"/>
+                                        <span t-field="p.pricelist_id.process_type"/><br/>
+                                        <span t-field="p.pricelist_id.duration"/><span style="color: white;">...</span><span>day(s)</span><span style="color: white;">...</span><span>____/____/_____</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-5">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <span>Passport number</span><br/>
+                                        <span>Phone</span><br/>
+                                        <span>Expired</span><br/>
+                                        <span/><br/>
+                                        <span>Departure Plan</span><br/>
+                                    </div>
+                                    <div class="col-1" style="width: 2%">
+                                        <span>:</span><br/>
+                                        <span>:</span><br/>
+                                        <span>:</span><br/>
+                                        <span/><br/>
+                                        <span>:</span>
+                                    </div>
+                                    <div class="col-5">
+                                        <span t-field="p.passenger_id.passport_number"/><br/>
+                                        <t t-if="p.passenger_id.phone_ids">
+                                            <span t-field="p.passenger_id.phone_ids[0].phone_number"/><br/>
+                                        </t>
+                                        <t t-else="">
+                                            <br/>
+                                        </t>
+                                        <span t-field="p.passenger_id.passport_expdate" t-field-options="{&quot;format&quot;: &quot;dd-MM-yyyy&quot;}"/><br/>
+                                        <span/><br/>
+                                        <span t-field="p.passport_id.departure_date" t-field-options="{&quot;format&quot;: &quot;dd-MM-yyyy&quot;}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" style="border-bottom: 1px solid black;">
+                            <div class="col-6">
+                                <span>Document Type</span>
+                            </div>
+                            <div class="col-3">
+                                <span>Original</span>
+                            </div>
+                            <div class="col-3">
+                                <span>Copy</span>
+                            </div>
+                        </div>
+                        <t t-if="p.to_requirement_ids">
+                            <t t-foreach="p.to_requirement_ids" t-as="req">
+                                <div class="row" style="border-top: 1px solid #CCCCCC; ">
+                                    <div class="col-6">
+                                        <span t-field="req.requirement_id.name"/>
+                                    </div>
+                                    <div class="col-3">
+                                        <t t-if="req.is_ori">
+                                            <img t-att-src="'/tt_reservation_passport/static/src/images/checked-checkbox.png'"
+                                                 style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>
+                                        </t>
+                                        <t t-if="not req.is_ori">
+                                            <img t-att-src="'/tt_reservation_passport/static/src/images/unchecked-checkbox.png'"
+                                                 style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>
+                                        </t>
+                                    </div>
+                                    <div class="col-3">
+                                        <t t-if="req.is_copy">
+                                            <img t-att-src="'/tt_reservation_passport/static/src/images/checked-checkbox.png'"
+                                                 style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>
+                                        </t>
+                                        <t t-if="not req.is_copy">
+                                            <img t-att-src="'/tt_reservation_passport/static/src/images/unchecked-checkbox.png'"
+                                                 style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>
+                                        </t>
+                                    </div>
+                                </div>
+                            </t>
+                        </t>
+                        <br/>
+                        <t t-call="tt_reservation_passport.printout_visa_notes_signature_cust"/>
+                    </div>
+                </t>
+                <t t-call="tt_reservation_passport.printout_passport_footer"/>
+            </t>
+        </t>
+    </template>
+
+    <template id="printout_passport_cust">
+        <t t-set="data_report_margin_top" t-value="5"/>
+        <t t-set="data_report_header_spacing" t-value="9"/>
+        <t t-set="data_report_dpi" t-value="110"/>
+        <t t-call="tt_reservation_passport.printout_passport_cust_template"/>
+    </template>
+</odoo>

@@ -60,26 +60,17 @@ class ReservationOffline(models.Model):
         # get charge code name
 
         # get prices
-        def get_pax_price():
-            res = {
-                'ADT': 0,
-                'CHD': 0,
-                'INF': 0,
-            }
-            for srvc in self.sale_service_charge_ids:
-                if 'r.ac' not in srvc.charge_code:
-                    res[srvc.pax_type] += srvc.amount
-            return res
-
-        pax_price = get_pax_price()
 
         if self.provider_type_id_name == 'hotel':
+            qty = 0
+            for line in self.line_ids:
+                qty += line.qty
             for line in self.line_ids:
                 desc_text = line.get_line_hotel_description(line)
                 inv_line_obj.write({
                     'invoice_line_detail_ids': [(0, 0, {
                         'desc': desc_text,
-                        'price_unit': pax_price['ADT'],
+                        'price_unit': self.total_sale_price / qty,
                         'quantity': 1,
                         'invoice_line_id': invoice_line_id,
                     })]
@@ -87,10 +78,15 @@ class ReservationOffline(models.Model):
         else:
             for psg in self.passenger_ids:
                 desc_text = psg.passenger_id.name
+                price_unit = 0
+                for srvc in self.sale_service_charge_ids:
+                    if srvc.charge_type != 'RAC':
+                        price_unit += srvc.amount
+
                 inv_line_obj.write({
                     'invoice_line_detail_ids': [(0, 0, {
                         'desc': desc_text,
-                        'price_unit': pax_price[psg.pax_type],
+                        'price_unit': price_unit / len(self.passenger_ids),
                         'quantity': 1,
                         'invoice_line_id': invoice_line_id,
                     })]

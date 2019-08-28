@@ -53,26 +53,26 @@ class PassportOrderPassengers(models.Model):
     _name = 'tt.reservation.passport.order.passengers'
     _description = 'Tour & Travel - Passport Order Passengers'
 
-    name = fields.Char('Name', related='passenger_id.first_name', readonly=1)
+    name = fields.Char('Name', related='passenger_id.first_name', readonly=0)  # readonly=1
     to_requirement_ids = fields.One2many('tt.reservation.passport.order.requirements', 'to_passenger_id', 'Requirements',
                                          readonly=0, states={'ready': [('readonly', True)],
-                                                             'done': [('readonly', True)]})
-    passport_id = fields.Many2one('tt.reservation.passport', 'Passport', readonly=1)
-    passenger_id = fields.Many2one('tt.customer', 'Passenger', readonly=1)
-    pricelist_id = fields.Many2one('tt.reservation.passport.pricelist', 'Passport Pricelist', readonly=1)
-    passenger_type = fields.Selection(PASSENGER_TYPE, 'Pax Type', readonly=1)
-    passenger_domicile = fields.Char('Domicile', related='passenger_id.domicile', readonly=1)
+                                                             'done': [('readonly', True)]})  # readonly=0
+    passport_id = fields.Many2one('tt.reservation.passport', 'Passport', readonly=0)  # readonly=1
+    passenger_id = fields.Many2one('tt.customer', 'Passenger', readonly=0)  # readonly=1
+    pricelist_id = fields.Many2one('tt.reservation.passport.pricelist', 'Passport Pricelist', readonly=0)  # readonly=1
+    passenger_type = fields.Selection(PASSENGER_TYPE, 'Pax Type', readonly=0)  # readonly=1
+    passenger_domicile = fields.Char('Domicile', related='passenger_id.domicile', readonly=0)  # readonly=1
     process_status = fields.Selection(PROCESS_STATUS, string='Process Result',
-                                      readonly=1)
+                                      readonly=0)  # readonly=1
 
-    in_process_date = fields.Datetime('In Process Date', readonly=1)
-    payment_date = fields.Datetime('Payment Date', readonly=1)
-    payment_uid = fields.Many2one('res.users', 'Payment By', readonly=1)
+    in_process_date = fields.Datetime('In Process Date', readonly=0)  # readonly=1
+    payment_date = fields.Datetime('Payment Date', readonly=0)  # readonly=1
+    payment_uid = fields.Many2one('res.users', 'Payment By', readonly=0)  # readonly=1
     call_date = fields.Datetime('Call Date', help='Call to interview (visa) or take a photo (passport)')
-    out_process_date = fields.Datetime('Out Process Date', readonly=1)
-    to_HO_date = fields.Datetime('Send to HO Date', readonly=1)
-    to_agent_date = fields.Datetime('Send to Agent Date', readonly=1)
-    ready_date = fields.Datetime('Ready Date', readonly=1)
+    out_process_date = fields.Datetime('Out Process Date', readonly=0)  # readonly=1
+    to_HO_date = fields.Datetime('Send to HO Date', readonly=0)  # readonly=1
+    to_agent_date = fields.Datetime('Send to Agent Date', readonly=0)  # readonly=1
+    ready_date = fields.Datetime('Ready Date', readonly=0)  # readonly=1
 
     service_charge_ids = fields.Many2many('tt.service.charge', 'tt_reservation_passport_charge_rel', 'passenger_id',
                                           'service_charge_id', 'Service Charges')
@@ -86,7 +86,7 @@ class PassportOrderPassengers(models.Model):
     notes = fields.Text('Notes (Agent to Customer)')
     notes_HO = fields.Text('Notes (HO to Agent)')
 
-    booking_state = fields.Selection(BOOKING_STATE, default='draft', string='Order State', readonly=1,
+    booking_state = fields.Selection(BOOKING_STATE, default='draft', string='Order State', readonly=0,
                                      related='passport_id.state_passport', help='''draft = requested
                                                 confirm = HO accepted
                                                 validate = if all required documents submitted and documents in progress
@@ -96,7 +96,7 @@ class PassportOrderPassengers(models.Model):
                                                 in_process = Documents proceed at Consulat or Imigration
                                                 to_HO = documents sent to HO
                                                 waiting = Documents ready at HO
-                                                done = Documents given to customer''')
+                                                done = Documents given to customer''')  # readonly=1
 
     state = fields.Selection(STATE, default='draft', help='''draft = requested
                                                 confirm = HO accepted
@@ -204,7 +204,7 @@ class PassportOrderPassengers(models.Model):
             })
             rec.message_post(body='Passenger PROCEED')
             is_proceed = True
-            for psg in rec.visa_id.to_passenger_ids:
+            for psg in rec.visa_id.passenger_ids:
                 if psg.state not in ['proceed', 'cancel']:
                     is_proceed = False
             # jika ada sebagian state passenger yang belum proceed -> partial proceed
@@ -238,7 +238,7 @@ class PassportOrderPassengers(models.Model):
                 'to_HO_date': datetime.now()
             })
             is_sent = True
-            for psg in rec.passport_id.to_passenger_ids:
+            for psg in rec.passport_id.passenger_ids:
                 if not psg.state in ['to_HO']:
                     is_sent = False
             if is_sent:
@@ -253,7 +253,7 @@ class PassportOrderPassengers(models.Model):
             })
             rec.message_post(body='Passenger documents TO Agent')
             is_sent = True
-            for psg in rec.passport_id.to_passenger_ids:
+            for psg in rec.passport_id.passenger_ids:
                 if psg.state not in ['to_agent']:
                     is_sent = False
             if is_sent:
@@ -275,7 +275,7 @@ class PassportOrderPassengers(models.Model):
             })
             rec.message_post(body='Passenger DONE')
             is_done = True
-            for psg in rec.passport_id.to_passenger_ids:
+            for psg in rec.passport_id.passenger_ids:
                 if psg.state not in ['done', 'cancel']:
                     is_done = False
             if is_done:

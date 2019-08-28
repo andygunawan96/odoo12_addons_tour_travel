@@ -160,20 +160,12 @@
                         <group string="Booker Information">
                             <field name="booker_id"/>
                             <field name="contact_id"/>
-                            <field name="contact_name" readonly="1"/>
-                            <field name="contact_email" readonly="1"/>
-                            <field name="contact_phone" readonly="1"/>
+                            <field name="contact_name" readonly="0"/>  <!--readonly="1"-->
+                            <field name="contact_email" readonly="0"/>  <!--readonly="1"-->
+                            <field name="contact_phone" readonly="0"/>  <!--readonly="1"-->
                         </group>
                     </group>
                     <notebook colspan="4">
-<!--                        <page string="Contacts">-->
-<!--                            <field name="contact_ids">-->
-<!--                                <tree create="0">-->
-<!--                                    <field name="name"/>-->
-<!--                                    <field name="email"/>-->
-<!--                                </tree>-->
-<!--                            </field>-->
-<!--                        </page>-->
                         <page string="Passengers">
                             <field name="passenger_ids">
                                 <tree create="0">

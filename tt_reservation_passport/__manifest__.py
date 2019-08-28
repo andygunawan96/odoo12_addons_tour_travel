@@ -20,7 +20,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'tt_base', 'tt_traveldoc', 'tt_reservation'],
+    'depends': ['base', 'tt_base', 'tt_engine_pricing', 'tt_traveldoc', 'tt_reservation'],
 
     # always loaded
     'data': [
@@ -31,6 +31,9 @@
         'views/tt_reservation_passport_order_passengers_views.xml',
         'views/tt_reservation_passport_service_charge_views.xml',
         'views/tt_reservation_passport_pricelist_views.xml',
+        'report/printout_menu.xml',
+        'report/printout_passport_customer_template.xml',
+        'report/printout_passport_ho_template.xml',
     ],
     # only loaded in demonstration mode
     'demo': [],

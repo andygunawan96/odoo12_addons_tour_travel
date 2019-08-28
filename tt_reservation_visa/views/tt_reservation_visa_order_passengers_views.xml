@@ -68,7 +68,7 @@
                         <field name="to_requirement_ids">  <!-- attrs="{'readonly': [('state', 'not in', ['draft','re_validate','confirm'])]}"-->
                             <tree editable="bottom" create="0">
                                 <field name="requirement_id"/>
-                                <field name="passenger_state" invisible="0"/>
+                                <field name="passenger_state" invisible="1"/>
                                 <field name="is_ori" readonly="1" groups="tt_base.group_tt_tour_travel_operator"/>
                                 <field name="is_ori" attrs="{'readonly': [('passenger_state', 'not in', ['draft','Draft'])]}" groups="tt_base.group_tt_agent_user_operator"/>
                                 <field name="is_copy" readonly="1" groups="tt_base.group_tt_tour_travel_operator"/>
