@@ -1,5 +1,6 @@
 from odoo import api, fields, models
 from odoo.http import request
+from ...tools import util,variables,ERR
 from .ApiConnector_Activity import ApiConnectorActivity
 import logging, traceback
 import json
@@ -592,7 +593,7 @@ class MasterActivity(models.Model):
 
                 sku_vals = {
                     'activity_line_id': activity_obj.id,
-                    'sku_id': 'ADT',
+                    'sku_id': 'Adult',
                     'title': 'Adult',
                     'minPax': rec['type_details']['data']['minPax'],
                     'maxPax': rec['type_details']['data']['maxPax'],
@@ -605,7 +606,7 @@ class MasterActivity(models.Model):
                 if rec['type_details']['data']['allowChildren']:
                     sku_vals = {
                         'activity_line_id': activity_obj.id,
-                        'sku_id': 'CHD',
+                        'sku_id': 'Child',
                         'title': 'Child',
                         'minPax': rec['type_details']['data']['minChildren'],
                         'maxPax': rec['type_details']['data']['maxChildren'],
@@ -618,7 +619,7 @@ class MasterActivity(models.Model):
                 if rec['type_details']['data']['allowSeniors']:
                     sku_vals = {
                         'activity_line_id': activity_obj.id,
-                        'sku_id': 'YCD',
+                        'sku_id': 'Senior',
                         'title': 'Senior',
                         'minPax': rec['type_details']['data']['minSeniors'],
                         'maxPax': rec['type_details']['data']['maxSeniors'],
@@ -631,7 +632,7 @@ class MasterActivity(models.Model):
                 if rec['type_details']['data']['allowInfant']:
                     sku_vals = {
                         'activity_line_id': activity_obj.id,
-                        'sku_id': 'INF',
+                        'sku_id': 'Infant',
                         'title': 'Infant',
                         'minPax': 0,
                         'maxPax': 5,
@@ -776,7 +777,7 @@ class MasterActivity(models.Model):
             if is_adult:
                 sku_vals = {
                     'activity_line_id': activity_obj.id,
-                    'sku_id': 'ADT',
+                    'sku_id': 'Adult',
                     'title': 'Adult',
                     'minPax': 1,
                     'maxPax': 10,
@@ -789,7 +790,7 @@ class MasterActivity(models.Model):
             if is_child:
                 sku_vals = {
                     'activity_line_id': activity_obj.id,
-                    'sku_id': 'CHD',
+                    'sku_id': 'Child',
                     'title': 'Child',
                     'minPax': 0,
                     'maxPax': 10,
@@ -802,7 +803,7 @@ class MasterActivity(models.Model):
             if is_senior:
                 sku_vals = {
                     'activity_line_id': activity_obj.id,
-                    'sku_id': 'YCD',
+                    'sku_id': 'Senior',
                     'title': 'Senior',
                     'minPax': 0,
                     'maxPax': 10,
@@ -814,7 +815,7 @@ class MasterActivity(models.Model):
 
             sku_vals = {
                 'activity_line_id': activity_obj.id,
-                'sku_id': 'INF',
+                'sku_id': 'Infant',
                 'title': 'Infant',
                 'minPax': 0,
                 'maxPax': 5,
@@ -1132,277 +1133,465 @@ class MasterActivity(models.Model):
         return cities
 
     def search_by_api(self, req):
-        query = req.get('query') and '%' + req['query'] + '%' or ''
-        country = req.get('country') and req['country'] or ''
-        city = req.get('city') and req['city'] or ''
+        try:
+            query = req.get('query') and '%' + req['query'] + '%' or ''
+            country = req.get('country') and req['country'] or ''
+            city = req.get('city') and req['city'] or ''
 
-        type_id = req['type_id'] != '0' and self.env['tt.activity.category'].sudo().search([('id', '=', req['type_id']), ('type', '=', 'type')]).id or ''
-        # sub_category = sub_category != '0' and sub_category or ''
-        category = req['sub_category'] and (req['sub_category'] != '0' and req['sub_category'] or (req['category'] != '0' and req['category'] or '')) or ''
-        provider = req.get('provider', 'all')
-        provider_id = self.env['tt.provider'].sudo().search([('code', '=', provider)], limit=1)
-        provider_id = provider_id and provider_id[0] or False
-        provider_code = provider_id and provider_id[0].code or ''
+            type_id = req['type_id'] != '0' and self.env['tt.activity.category'].sudo().search([('id', '=', req['type_id']), ('type', '=', 'type')]).id or ''
+            # sub_category = sub_category != '0' and sub_category or ''
+            category = req['sub_category'] and (req['sub_category'] != '0' and req['sub_category'] or (req['category'] != '0' and req['category'] or '')) or ''
+            provider = req.get('provider', 'all')
+            provider_id = self.env['tt.provider'].sudo().search([('code', '=', provider)], limit=1)
+            provider_id = provider_id and provider_id[0] or False
+            provider_code = provider_id and provider_id[0].code or ''
 
-        sql_query = 'select themes.* from tt_master_activity themes left join tt_activity_location_rel locrel on locrel.product_id = themes.id left join tt_activity_master_locations loc on loc.id = locrel.location_id '
+            sql_query = 'select themes.* from tt_master_activity themes left join tt_activity_location_rel locrel on locrel.product_id = themes.id left join tt_activity_master_locations loc on loc.id = locrel.location_id '
 
-        if category:
-            sql_query += 'left join tt_activity_category_rel catrel on catrel.activity_id = themes.id '
+            if category:
+                sql_query += 'left join tt_activity_category_rel catrel on catrel.activity_id = themes.id '
 
-        if type_id:
-            sql_query += 'left join tt_activity_type_rel typerel on typerel.activity_id = themes.id '
+            if type_id:
+                sql_query += 'left join tt_activity_type_rel typerel on typerel.activity_id = themes.id '
 
-        sql_query += "where "
+            sql_query += "where "
 
-        if query:
-            sql_query += "themes.name ilike '" + query + "' "
-        else:
-            sql_query += "themes.active = True "
+            if query:
+                sql_query += "themes.name ilike '" + query + "' "
+            else:
+                sql_query += "themes.active = True "
 
-        if type_id:
-            sql_query += 'and typerel.type_id = ' + type_id + ' '
+            if type_id:
+                sql_query += 'and typerel.type_id = ' + type_id + ' '
 
-        if category:
-            sql_query += 'and catrel.category_id = "' + category + '" '
+            if category:
+                sql_query += 'and catrel.category_id = "' + category + '" '
 
-        if req.get('country') and not req.get('city'):
-            sql_query += "and (loc.country_id = " + country + ") "
+            if req.get('country') and not req.get('city'):
+                sql_query += "and (loc.country_id = " + country + ") "
 
-        if req.get('city'):
-            sql_query += "and (loc.country_id = " + country + " and loc.city_id = " + city + ") "
+            if req.get('city'):
+                sql_query += "and (loc.country_id = " + country + " and loc.city_id = " + city + ") "
 
-        if provider in ['globaltix', 'bemyguest', 'klook']:
-            if provider_id:
-                sql_query += "and themes.provider_id = '" + provider_id.id + "' "
+            if provider in ['globaltix', 'bemyguest', 'klook']:
+                if provider_id:
+                    sql_query += "and themes.provider_id = '" + provider_id.id + "' "
 
-        if query:
-            sql_query += 'and themes.active = True '
-        sql_query += 'group by themes.id '
+            if query:
+                sql_query += 'and themes.active = True '
+            sql_query += 'group by themes.id '
 
-        self.env.cr.execute(sql_query)
+            self.env.cr.execute(sql_query)
 
-        result_id_list = self.env.cr.dictfetchall()
-        result_list = []
+            result_id_list = self.env.cr.dictfetchall()
+            result_list = []
 
-        for result in result_id_list:
-            res_provider = result.get('provider_id') and self.env['tt.provider'].browse(result['provider_id']) or None
-            result = {
-                'additionalInfo': result.get('additionalInfo') and result['additionalInfo'] or '',
-                'airportPickup': result.get('airportPickup') and result['airportPickup'] or False,
-                'basePrice': result['basePrice'],
-                'businessHoursFrom': result.get('businessHoursFrom') and result['businessHoursFrom'] or '',
-                'businessHoursTo': result.get('businessHoursTo') and result['businessHoursTo'] or '',
-                'currency_id': result['currency_id'],
-                'description': result.get('description') and result['description'] or '',
-                'highlights': result.get('highlights') and result['highlights'] or '',
-                'hotelPickup': result.get('hotelPickup') and result['hotelPickup'] or False,
-                'id': result['id'],
-                'itinerary': result.get('itinerary') and result['itinerary'] or '',
-                'latitude': result.get('latitude') and result['latitude'] or 0.0,
-                'longitude': result.get('longitude') and result['longitude'] or 0.0,
-                'maxPax': result['maxPax'] or 0,
-                'minPax': result['minPax'] or 0,
-                'name': result['name'],
-                'priceExcludes': result.get('priceExcludes') and result['priceExcludes'] or '',
-                'priceIncludes': result.get('priceIncludes') and result['priceIncludes'] or '',
-                'provider_id': result.get('provider_id') and result['provider_id'] or '',
-                'provider': res_provider and res_provider.code or '',
-                'reviewAverageScore': result.get('reviewAverageScore') and result['reviewAverageScore'] or 0.0,
-                'reviewCount': result.get('reviewCount') and result['reviewCount'] or 0,
-                'safety': result.get('safety') and result['safety'] or '',
-                'type_id': result.get('type_id') and result['type_id'] or 0,
-                'uuid': result['uuid'],
-                'warnings': result.get('warnings') and result['warnings'] or '',
-            }
+            for result in result_id_list:
+                res_provider = result.get('provider_id') and self.env['tt.provider'].browse(result['provider_id']) or None
+                result = {
+                    'additionalInfo': result.get('additionalInfo') and result['additionalInfo'] or '',
+                    'airportPickup': result.get('airportPickup') and result['airportPickup'] or False,
+                    'basePrice': result['basePrice'],
+                    'businessHoursFrom': result.get('businessHoursFrom') and result['businessHoursFrom'] or '',
+                    'businessHoursTo': result.get('businessHoursTo') and result['businessHoursTo'] or '',
+                    'currency_id': result['currency_id'],
+                    'description': result.get('description') and result['description'] or '',
+                    'highlights': result.get('highlights') and result['highlights'] or '',
+                    'hotelPickup': result.get('hotelPickup') and result['hotelPickup'] or False,
+                    'id': result['id'],
+                    'itinerary': result.get('itinerary') and result['itinerary'] or '',
+                    'latitude': result.get('latitude') and result['latitude'] or 0.0,
+                    'longitude': result.get('longitude') and result['longitude'] or 0.0,
+                    'maxPax': result['maxPax'] or 0,
+                    'minPax': result['minPax'] or 0,
+                    'name': result['name'],
+                    'priceExcludes': result.get('priceExcludes') and result['priceExcludes'] or '',
+                    'priceIncludes': result.get('priceIncludes') and result['priceIncludes'] or '',
+                    'provider_id': result.get('provider_id') and result['provider_id'] or '',
+                    'provider': res_provider and res_provider.code or '',
+                    'reviewAverageScore': result.get('reviewAverageScore') and result['reviewAverageScore'] or 0.0,
+                    'reviewCount': result.get('reviewCount') and result['reviewCount'] or 0,
+                    'safety': result.get('safety') and result['safety'] or '',
+                    'type_id': result.get('type_id') and result['type_id'] or 0,
+                    'uuid': result['uuid'],
+                    'warnings': result.get('warnings') and result['warnings'] or '',
+                }
 
-            additionalInfo = (result['additionalInfo'].replace('<p>', '\n').replace('</p>', ''))[1:]
-            description = (result['description'].replace('<p>', '\n').replace('</p>', ''))[1:]
-            highlights = (result['highlights'].replace('<p>', '\n').replace('</p>', ''))[1:]
-            itinerary = (result['itinerary'].replace('<p>', '\n').replace('</p>', ''))[1:]
-            safety = (result['safety'].replace('<p>', '\n').replace('</p>', ''))[1:]
-            warnings = (result['warnings'].replace('<p>', '\n').replace('</p>', ''))[1:]
-            priceExcludes = (result['priceExcludes'].replace('<p>', '\n').replace('</p>', ''))[1:]
-            priceIncludes = (result['priceIncludes'].replace('<p>', '\n').replace('</p>', ''))[1:]
+                additionalInfo = (result['additionalInfo'].replace('<p>', '\n').replace('</p>', ''))[1:]
+                description = (result['description'].replace('<p>', '\n').replace('</p>', ''))[1:]
+                highlights = (result['highlights'].replace('<p>', '\n').replace('</p>', ''))[1:]
+                itinerary = (result['itinerary'].replace('<p>', '\n').replace('</p>', ''))[1:]
+                safety = (result['safety'].replace('<p>', '\n').replace('</p>', ''))[1:]
+                warnings = (result['warnings'].replace('<p>', '\n').replace('</p>', ''))[1:]
+                priceExcludes = (result['priceExcludes'].replace('<p>', '\n').replace('</p>', ''))[1:]
+                priceIncludes = (result['priceIncludes'].replace('<p>', '\n').replace('</p>', ''))[1:]
 
-            result.update({
-                'additionalInfo': additionalInfo,
-                'description': description,
-                'highlights': highlights,
-                'itinerary': itinerary,
-                'safety': safety,
-                'warnings': warnings,
-                'priceExcludes': priceExcludes,
-                'priceIncludes': priceIncludes,
-            })
+                result.update({
+                    'additionalInfo': additionalInfo,
+                    'description': description,
+                    'highlights': highlights,
+                    'itinerary': itinerary,
+                    'safety': safety,
+                    'warnings': warnings,
+                    'priceExcludes': priceExcludes,
+                    'priceIncludes': priceIncludes,
+                })
 
-            result_obj = self.env['tt.master.activity'].browse(result['id'])
-            image_objs = result_obj.image_ids
-            image_temp = []
-            for image_obj in image_objs:
-                if image_obj.photos_path and image_obj.photos_url:
-                    img_temp = {
-                        'path': image_obj.photos_path,
-                        'url': image_obj.photos_url,
-                    }
-                    image_temp.append(img_temp)
+                result_obj = self.env['tt.master.activity'].browse(result['id'])
+                image_temp = []
+                if result_obj.image_ids:
+                    image_objs = result_obj.image_ids
+                    for image_obj in image_objs:
+                        if image_obj.photos_path and image_obj.photos_url:
+                            img_temp = {
+                                'path': image_obj.photos_path,
+                                'url': image_obj.photos_url,
+                            }
+                            image_temp.append(img_temp)
+                        else:
+                            img_temp = {
+                                'path': 'http://static.skytors.id/tour_packages/not_found.png',
+                                'url': '',
+                            }
+                            image_temp.append(img_temp)
                 else:
                     img_temp = {
-                        'path': 'https://via.placeholder.com/260x150',
+                        'path': 'http://static.skytors.id/tour_packages/not_found.png',
                         'url': '',
                     }
                     image_temp.append(img_temp)
-            result.update({
-                'images': image_temp,
-            })
+                result.update({
+                    'images': image_temp,
+                })
 
-            category_objs = result_obj.category_ids
-            category_temp = []
-            for category_obj in category_objs:
-                cat_temp = {
-                    'category_name': category_obj.name,
-                    'category_uuid': category_obj.line_ids.uuid,
-                    'category_id': category_obj.id,
-                }
-                category_temp.append(cat_temp)
-            result.update({
-                'categories': category_temp,
-            })
-
-            location_objs = result_obj.location_ids
-            location_temp = []
-            for location_obj in location_objs:
-                loc_temp = {
-                    'country_name': location_obj.country_id.name,
-                    'state_name': location_obj.state_id.name,
-                    'city_name': location_obj.city_id.name,
-                }
-                location_temp.append(loc_temp)
-            result.update({
-                'locations': location_temp,
-            })
-
-            from_currency = self.env['res.currency'].browse(result['currency_id'])
-
-            try:
-                if result.get('provider'):
-                    temp = self.reprice_currency(result['provider'], from_currency.name, result['basePrice'])
+                video_temp = []
+                if result_obj.video_ids:
+                    video_objs = result_obj.video_ids
+                    for video_obj in video_objs:
+                        if video_obj.video_url:
+                            vid_temp = {
+                                'url': video_obj.video_url,
+                            }
+                            video_temp.append(vid_temp)
+                        else:
+                            vid_temp = {
+                                'url': '',
+                            }
+                            video_temp.append(vid_temp)
                 else:
+                    vid_temp = {
+                        'url': '',
+                    }
+                    video_temp.append(vid_temp)
+                result.update({
+                    'videos': video_temp,
+                })
+
+                category_objs = result_obj.category_ids
+                category_temp = []
+                for category_obj in category_objs:
+                    cat_temp = {
+                        'category_name': category_obj.name,
+                        'category_uuid': category_obj.line_ids.uuid,
+                        'category_id': category_obj.id,
+                    }
+                    category_temp.append(cat_temp)
+                result.update({
+                    'categories': category_temp,
+                })
+
+                location_objs = result_obj.location_ids
+                location_temp = []
+                for location_obj in location_objs:
+                    loc_temp = {
+                        'country_name': location_obj.country_id.name,
+                        'state_name': location_obj.state_id.name,
+                        'city_name': location_obj.city_id.name,
+                    }
+                    location_temp.append(loc_temp)
+                result.update({
+                    'locations': location_temp,
+                })
+
+                from_currency = self.env['res.currency'].browse(result['currency_id'])
+
+                try:
+                    if result.get('provider'):
+                        temp = self.reprice_currency(result['provider'], from_currency.name, result['basePrice'])
+                    else:
+                        temp = self.env['res.currency']._compute(from_currency, self.env.user.company_id.currency_id,
+                                                                 result['basePrice'])
+                except Exception as e:
                     temp = self.env['res.currency']._compute(from_currency, self.env.user.company_id.currency_id,
                                                              result['basePrice'])
-            except Exception as e:
-                temp = self.env['res.currency']._compute(from_currency, self.env.user.company_id.currency_id,
-                                                         result['basePrice'])
-                _logger.info('Cannot convert to vendor price: ' + str(e))
+                    _logger.info('Cannot convert to vendor price: ' + str(e))
 
-            converted_price = temp + 10000
+                converted_price = temp + 10000
 
-            sale_price = 0
-            # pembulatan sale price keatas
-            for idx in range(10):
-                if (converted_price % 100) == 0:
-                    sale_price = converted_price
-                    break
-                if idx == 9 and ((converted_price % 1000) < int(str(idx + 1) + '00')) and converted_price > 0:
-                    sale_price = str(int(converted_price / 1000) + 1) + '000'
-                    break
-                elif (converted_price % 1000) < int(str(idx + 1) + '00') and converted_price > 0:
-                    if int(converted_price / 1000) == 0:
-                        sale_price = str(idx + 1) + '00'
-                    else:
-                        sale_price = str(int(converted_price / 1000)) + str(idx + 1) + '00'
-                    break
+                sale_price = 0
+                # pembulatan sale price keatas
+                for idx in range(10):
+                    if (converted_price % 100) == 0:
+                        sale_price = converted_price
+                        break
+                    if idx == 9 and ((converted_price % 1000) < int(str(idx + 1) + '00')) and converted_price > 0:
+                        sale_price = str(int(converted_price / 1000) + 1) + '000'
+                        break
+                    elif (converted_price % 1000) < int(str(idx + 1) + '00') and converted_price > 0:
+                        if int(converted_price / 1000) == 0:
+                            sale_price = str(idx + 1) + '00'
+                        else:
+                            sale_price = str(int(converted_price / 1000)) + str(idx + 1) + '00'
+                        break
 
-            result.update({
-                'converted_price': int(sale_price),
-                'currency_code': from_currency.name,
-                'provider_id': result['provider_id'],
-                'provider': res_provider.code,
-            })
-            result_list.append(result)
+                result.update({
+                    'converted_price': int(sale_price),
+                    'currency_code': from_currency.name,
+                    'provider_id': result['provider_id'],
+                    'provider': res_provider.code,
+                })
+                result_list.append(result)
 
-        return result_list
+            return ERR.get_no_error(result_list)
+        except Exception as e:
+            _logger.info('Activity Search Error')
+            return ERR.get_error(500)
+
+    def get_details_by_api(self, req):
+        try:
+            activity_id = self.search([('uuid', '=', req['uuid']), ('provider_id', '=', int(req['provider_id']))], limit=1)
+            activity_id = activity_id and activity_id[0] or None
+            provider = activity_id.provider_id.code
+            result_id_list = self.env['tt.master.activity.lines'].search([('activity_id', '=', activity_id.id)])
+            temp = []
+            for result_id in result_id_list:
+                result = {
+                    'activity_id': result_id.activity_id.id,
+                    'uuid': result_id.uuid,
+                    'name': result_id.name,
+                    'provider_code': provider,
+                    'description': result_id.description and result_id.description or '',
+                    'durationDays': result_id.durationDays and result_id.durationDays or 0,
+                    'durationHours': result_id.durationHours and result_id.durationHours or 0,
+                    'durationMinutes': result_id.durationMinutes and result_id.durationMinutes or 0,
+                    'isNonRefundable': result_id.isNonRefundable and result_id.isNonRefundable or True,
+                    'minPax': result_id.minPax and result_id.minPax or 1,
+                    'maxPax': result_id.maxPax and result_id.maxPax or 100,
+                    'voucherUse': result_id.voucherUse and result_id.voucherUse or '',
+                    'voucherRedemptionAddress': result_id.voucherRedemptionAddress and result_id.voucherRedemptionAddress or '',
+                    'voucherRequiresPrinting': result_id.voucherRequiresPrinting and result_id.voucherRequiresPrinting or '',
+                    'cancellationPolicies': result_id.cancellationPolicies and result_id.cancellationPolicies or '',
+                    'meetingLocation': result_id.meetingLocation and result_id.meetingLocation or '',
+                    'meetingAddress': result_id.meetingAddress and result_id.meetingAddress or '',
+                    'meetingTime': result_id.meetingTime and result_id.meetingTime or '',
+                    'instantConfirmation': result_id.instantConfirmation and result_id.instantConfirmation or False,
+                }
+                description = (result['description'].replace('<p>', '\n').replace('</p>', ''))[1:]
+                voucherUse = (result['voucherUse'].replace('<p>', '\n').replace('</p>', ''))[1:]
+                voucherRedemptionAddress = (result['voucherRedemptionAddress'].replace('<p>', '\n').replace('</p>', ''))[1:]
+
+                if result_id.voucher_validity_type == 'only_visit_date':
+                    voucher_validity = 'Valid only on the stated visit date'
+                elif result_id.voucher_validity_type == 'from_travel_date':
+                    voucher_validity = 'Valid until ' + str(
+                        result_id.voucher_validity_days) + ' days after from the stated visit date'
+                elif result_id.voucher_validity_type == 'after_issue_date':
+                    voucher_validity = 'Valid until ' + str(result_id.voucher_validity_days) + ' days after issued date'
+                elif result_id.voucher_validity_type == 'until_date':
+                    voucher_validity = 'Valid until ' + result_id.voucher_validity_date
+                else:
+                    voucher_validity = '-'
+
+                result.update({
+                    'description': description,
+                    'voucherUse': voucherUse,
+                    'voucherRedemptionAddress': voucherRedemptionAddress,
+                    'voucher_validity': voucher_validity,
+                })
+                skus = []
+                if result_id.sku_ids:
+                    for sku in result_id.sku_ids.ids:
+                        sku_obj = self.env['tt.master.activity.sku'].browse(int(sku))
+                        sku_temp = {
+                            'sku_id': sku_obj.sku_id,
+                            'title': sku_obj.title,
+                            'minPax': sku_obj.minPax,
+                            'maxPax': sku_obj.maxPax,
+                            'minAge': sku_obj.minAge,
+                            'maxAge': sku_obj.maxAge,
+                            'add_information': sku_obj.add_information,
+                        }
+                        skus.append(sku_temp)
+                    result.update({
+                        'skus': skus
+                    })
+
+                per_book = []
+                per_pax = []
+                from_currency = self.env['res.currency'].search([('name', '=', 'SGD')], limit=1)
+                if result_id.option_ids:
+                    for opt in result_id.option_ids.ids:
+                        activity_opt_obj = self.env['tt.activity.booking.option'].browse(opt)
+                        temp_opt = {
+                            'uuid': activity_opt_obj.uuid,
+                            'name': activity_opt_obj.name,
+                            'description': activity_opt_obj.description and activity_opt_obj.description or '',
+                            'required': activity_opt_obj.required,
+                            'formatRegex': activity_opt_obj.formatRegex,
+                            'inputType': activity_opt_obj.inputType,
+                            'type': activity_opt_obj.type,
+                            'price': activity_opt_obj.price,
+                            'currency_id': activity_opt_obj.currency_id.id,
+                        }
+                        description = (temp_opt['description'].replace('<p>', '\n').replace('</p>',''))[1:]
+                        temp_opt.update({
+                            'description': description,
+                        })
+                        if activity_opt_obj.price:
+                            try:
+                                price = self.reprice_currency(provider, from_currency.name, activity_opt_obj.price)
+                            except Exception as e:
+                                price = self.env['res.currency']._compute(from_currency, self.env.user.company_id.currency_id, activity_opt_obj.price)
+                            temp_opt.update({
+                                'price': price,
+                            })
+                        opt_item = []
+                        if activity_opt_obj.items:
+                            for item in activity_opt_obj.items:
+                                temp_item = {
+                                    'label': item.label,
+                                    'value': item.value,
+                                    'price': item.price,
+                                    'currency_id': item.currency_id.id,
+                                }
+                                if item.price:
+                                    try:
+                                        price2 = self.reprice_currency(provider, from_currency.name, item.price)
+                                    except Exception as e:
+                                        price2 = self.env['res.currency']._compute(from_currency, self.env.user.company_id.currency_id, item.price)
+                                    temp_item.update({
+                                        'price': price2,
+                                    })
+                                opt_item.append(temp_item)
+                            temp_opt.update({
+                                'items': opt_item,
+                            })
+
+                        if activity_opt_obj.type == 'perPax':
+                            per_pax.append(temp_opt)
+                        elif activity_opt_obj.type == 'perBooking':
+                            per_book.append(temp_opt)
+                result.update({
+                    'options': {
+                        'perPax': per_pax,
+                        'perBooking': per_book,
+                    }
+                })
+
+                timeslot = []
+                if result_id.timeslot_ids:
+                    for time in result_id.timeslot_ids.ids:
+                        timeslot_obj = self.env['tt.activity.master.timeslot'].browse(time)
+                        time_temp = {
+                            'uuid': timeslot_obj.uuid,
+                            'startTime': timeslot_obj.startTime,
+                            'endTime': timeslot_obj.endTime,
+                        }
+                        timeslot.append(time_temp)
+                result.update({
+                    'timeslots': timeslot
+                })
+                temp.append(result)
+            return ERR.get_no_error(temp)
+        except Exception as e:
+            _logger.info('Activity Search Detail Error')
+            return ERR.get_error(500)
 
     def get_pricing_by_api(self, result, context):
-        agent_type = self.env['res.users'].browse(context['co_uid']).agent_id.agent_type_id.id
-        if agent_type in [self.env.ref('tt_base_rodex.agent_type_citra').id, self.env.ref('tt_base_rodex.agent_type_btbo').id]:
-            multiplier = 1
-        elif agent_type in [self.env.ref('tt_base_rodex.agent_type_japro').id, self.env.ref('tt_base_rodex.agent_type_btbr').id]:
-            multiplier = 0.8
-        elif agent_type in [self.env.ref('tt_base_rodex.agent_type_fipro').id]:
-            multiplier = 0.6
-        else:
-            multiplier = 0
+        try:
+            agent_type = self.env['res.users'].browse(context['co_uid']).agent_id.agent_type_id.id
+            if agent_type in [self.env.ref('tt_base.agent_type_citra').id, self.env.ref('tt_base.agent_type_btbo').id]:
+                multiplier = 1
+            elif agent_type in [self.env.ref('tt_base.agent_type_japro').id, self.env.ref('tt_base.agent_type_btbr').id]:
+                multiplier = 0.8
+            elif agent_type in [self.env.ref('tt_base.agent_type_fipro').id]:
+                multiplier = 0.6
+            else:
+                multiplier = 0
 
-        list = ['adults', 'children', 'seniors']
-        for res in list:
+            list = ['adults', 'children', 'seniors']
+            for res in list:
+                if result['type_pricing'].get('data'):
+                    for results in result['type_pricing']['data']:
+                        for rec in results:
+                            if rec['prices'][res]:
+                                from_currency = self.env['res.currency'].search([('name', '=', rec['currency'])])
+                                for key, value in rec['prices'][res].iteritems():
+                                    try:
+                                        to_currency = self.reprice_currency(result['provider'], from_currency.name, value)
+                                    except Exception as e:
+                                        to_currency = self.env['res.currency']._compute(from_currency, self.env.user.company_id.currency_id, value)
+                                    if to_currency:
+                                        final_price = to_currency + 10000
+                                    else:
+                                        final_price = 0
+
+                                    price_temp = int(final_price * 1.03)
+
+                                    sale_price = 0
+                                    # pembulatan sale price keatas
+                                    for idx in range(10):
+                                        if (price_temp % 100) == 0:
+                                            sale_price = price_temp
+                                            break
+                                        if idx == 9 and ((price_temp % 1000) < int(str(idx + 1) + '00')) and price_temp > 0:
+                                            sale_price = str(int(price_temp / 1000) + 1) + '000'
+                                            break
+                                        elif (price_temp % 1000) < int(str(idx + 1) + '00') and price_temp > 0:
+                                            if int(price_temp / 1000) == 0:
+                                                sale_price = str(idx + 1) + '00'
+                                            else:
+                                                sale_price = str(int(price_temp / 1000)) + str(idx + 1) + '00'
+                                            break
+
+                                    temp = int((int(sale_price) - final_price) * multiplier)
+                                    commission_price = 0
+                                    # pembulatan commission price kebawah
+                                    for idx in range(10):
+                                        if (temp % 1000) < int(str(idx + 1) + '00') and temp > 0:
+                                            if int(temp / 1000) == 0:
+                                                commission_price = (str(idx) + '00')
+                                            else:
+                                                commission_price = str(int(temp / 1000)) + (str(idx) + '00')
+                                            break
+
+                                    rec['prices'][res].update({
+                                        key: {
+                                            'sale_price': int(sale_price),
+                                            'commission_price': int(commission_price),
+                                        },
+                                    })
+
+                                    rec.update({
+                                        'currency_code': self.env.user.company_id.currency_id.name
+                                    })
+
+            response = []
             if result['type_pricing'].get('data'):
                 for results in result['type_pricing']['data']:
                     for rec in results:
-                        if rec['prices'][res]:
-                            from_currency = self.env['res.currency'].search([('name', '=', rec['currency'])])
-                            for key, value in rec['prices'][res].iteritems():
-                                try:
-                                    to_currency = self.reprice_currency(result['provider'], from_currency.name, value)
-                                except Exception as e:
-                                    to_currency = self.env['res.currency']._compute(from_currency, self.env.user.company_id.currency_id, value)
-                                if to_currency:
-                                    final_price = to_currency + 10000
-                                else:
-                                    final_price = 0
+                        rec.get('links') and rec.pop('links')
+                        rec.get('currency') and rec.pop('currency')
+                        rec.get('options') and rec.pop('options')
+                        rec.get('timeslots') and rec.pop('timeslots')
+                        rec.get('weekday') and rec.pop('weekday')
+                        rec['prices'].get('cancellationPolicy') and rec['prices'].pop('cancellationPolicy')
+                    response.append(results)
 
-                                price_temp = int(final_price * 1.03)
-
-                                sale_price = 0
-                                # pembulatan sale price keatas
-                                for idx in range(10):
-                                    if (price_temp % 100) == 0:
-                                        sale_price = price_temp
-                                        break
-                                    if idx == 9 and ((price_temp % 1000) < int(str(idx + 1) + '00')) and price_temp > 0:
-                                        sale_price = str(int(price_temp / 1000) + 1) + '000'
-                                        break
-                                    elif (price_temp % 1000) < int(str(idx + 1) + '00') and price_temp > 0:
-                                        if int(price_temp / 1000) == 0:
-                                            sale_price = str(idx + 1) + '00'
-                                        else:
-                                            sale_price = str(int(price_temp / 1000)) + str(idx + 1) + '00'
-                                        break
-
-                                temp = int((int(sale_price) - final_price) * multiplier)
-                                commission_price = 0
-                                # pembulatan commission price kebawah
-                                for idx in range(10):
-                                    if (temp % 1000) < int(str(idx + 1) + '00') and temp > 0:
-                                        if int(temp / 1000) == 0:
-                                            commission_price = (str(idx) + '00')
-                                        else:
-                                            commission_price = str(int(temp / 1000)) + (str(idx) + '00')
-                                        break
-
-                                rec['prices'][res].update({
-                                    key: {
-                                        'sale_price': int(sale_price),
-                                        'commission_price': int(commission_price),
-                                    },
-                                })
-
-                                rec.update({
-                                    'currency_code': self.env.user.company_id.currency_id.name
-                                })
-
-        response = []
-        if result['type_pricing'].get('data'):
-            for results in result['type_pricing']['data']:
-                for rec in results:
-                    rec.get('links') and rec.pop('links')
-                    rec.get('currency') and rec.pop('currency')
-                    rec.get('options') and rec.pop('options')
-                    rec.get('timeslots') and rec.pop('timeslots')
-                    rec.get('weekday') and rec.pop('weekday')
-                    rec['prices'].get('cancellationPolicy') and rec['prices'].pop('cancellationPolicy')
-                response.append(results)
-
-        return response
+            return ERR.get_no_error(response)
+        except Exception as e:
+            _logger.info('Activity Get Pricing Error')
+            return ERR.get_error(500)
 
 
 

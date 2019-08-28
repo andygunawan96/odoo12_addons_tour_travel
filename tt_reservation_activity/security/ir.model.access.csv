@@ -5,6 +5,7 @@ tt_reservation_activity_line_for_all,tt.reservation.activity.line.for.all,model_
 tt_activity_category_for_all,tt.activity.category.for.all,model_tt_activity_category,,1,0,0,0
 tt_activity_category_lines_for_all,tt.activity.category.lines.for.all,model_tt_activity_category_lines,,1,0,0,0
 tt_activity_master_images_for_all,tt.activity.master.images.for.all,model_tt_activity_master_images,,1,0,0,0
+tt_activity_master_videos_for_all,tt.activity.master.videos.for.all,model_tt_activity_master_videos,,1,0,0,0
 tt_activity_master_locations_for_all,tt.activity.master.locations.for.all,model_tt_activity_master_locations,,1,0,0,0
 tt_activity_master_timeslot_for_all,tt.activity.master.timeslot.for.all,model_tt_activity_master_timeslot,,1,0,0,0
 tt_activity_booking_option_for_all,tt.activity.booking.option.for.all,model_tt_activity_booking_option,,1,0,0,0
@@ -35,6 +36,10 @@ tt_activity_category_lines_for_tour_travel_manager,tt.activity.category.lines.fo
 tt_activity_master_images_for_tour_travel_operator,tt.activity.master.images.for.tour.travel.operator,model_tt_activity_master_images,tt_base.group_tt_tour_travel_operator,1,0,0,0
 tt_activity_master_images_for_tour_travel_supervisor,tt.activity.master.images.for.tour.travel.supervisor,model_tt_activity_master_images,tt_base.group_tt_tour_travel_supervisor,1,0,0,0
 tt_activity_master_images_for_tour_travel_manager,tt.activity.master.images.for.tour.travel.manager,model_tt_activity_master_images,tt_base.group_tt_tour_travel_manager,1,0,0,0
+,,,,,,,
+tt_activity_master_videos_for_tour_travel_operator,tt.activity.master.videos.for.tour.travel.operator,model_tt_activity_master_videos,tt_base.group_tt_tour_travel_operator,1,0,0,0
+tt_activity_master_videos_for_tour_travel_supervisor,tt.activity.master.videos.for.tour.travel.supervisor,model_tt_activity_master_videos,tt_base.group_tt_tour_travel_supervisor,1,0,0,0
+tt_activity_master_videos_for_tour_travel_manager,tt.activity.master.videos.for.tour.travel.manager,model_tt_activity_master_videos,tt_base.group_tt_tour_travel_manager,1,0,0,0
 ,,,,,,,
 tt_activity_master_locations_for_tour_travel_operator,tt.activity.master.locations.for.tour.travel.operator,model_tt_activity_master_locations,tt_base.group_tt_tour_travel_operator,1,0,0,0
 tt_activity_master_locations_for_tour_travel_supervisor,tt.activity.master.locations.for.tour.travel.supervisor,model_tt_activity_master_locations,tt_base.group_tt_tour_travel_supervisor,1,0,0,0
@@ -85,6 +90,10 @@ tt_activity_master_images_for_agent_user_operator,tt.activity.master.images.for.
 tt_activity_master_images_for_agent_user_supervisor,tt.activity.master.images.for.agent.user.supervisor,model_tt_activity_master_images,tt_base.group_tt_agent_user_supervisor,1,0,0,0
 tt_activity_master_images_for_agent_user_manager,tt.activity.master.images.for.agent.user.manager,model_tt_activity_master_images,tt_base.group_tt_agent_user_manager,1,0,0,0
 ,,,,,,,
+tt_activity_master_videos_for_agent_user_operator,tt.activity.master.videos.for.agent.user.operator,model_tt_activity_master_videos,tt_base.group_tt_agent_user_operator,1,0,0,0
+tt_activity_master_videos_for_agent_user_supervisor,tt.activity.master.videos.for.agent.user.supervisor,model_tt_activity_master_videos,tt_base.group_tt_agent_user_supervisor,1,0,0,0
+tt_activity_master_videos_for_agent_user_manager,tt.activity.master.videos.for.agent.user.manager,model_tt_activity_master_videos,tt_base.group_tt_agent_user_manager,1,0,0,0
+,,,,,,,
 tt_activity_master_locations_for_agent_user_operator,tt.activity.master.locations.for.agent.user.operator,model_tt_activity_master_locations,tt_base.group_tt_agent_user_operator,1,0,0,0
 tt_activity_master_locations_for_agent_user_supervisor,tt.activity.master.locations.for.agent.user.supervisor,model_tt_activity_master_locations,tt_base.group_tt_agent_user_supervisor,1,0,0,0
 tt_activity_master_locations_for_agent_user_manager,tt.activity.master.locations.for.agent.user.manager,model_tt_activity_master_locations,tt_base.group_tt_agent_user_manager,1,0,0,0
@@ -133,6 +142,10 @@ tt_activity_category_lines_for_sub_agent_user_manager,tt.activity.category.lines
 tt_activity_master_images_for_sub_agent_user_operator,tt.activity.master.images.for.sub.agent.user.operator,model_tt_activity_master_images,tt_base.group_tt_sub_agent_user_operator,1,0,0,0
 tt_activity_master_images_for_sub_agent_user_supervisor,tt.activity.master.images.for.sub.agent.user.supervisor,model_tt_activity_master_images,tt_base.group_tt_sub_agent_user_supervisor,1,0,0,0
 tt_activity_master_images_for_sub_agent_user_manager,tt.activity.master.images.for.sub.agent.user.manager,model_tt_activity_master_images,tt_base.group_tt_sub_agent_user_manager,1,0,0,0
+,,,,,,,
+tt_activity_master_videos_for_sub_agent_user_operator,tt.activity.master.videos.for.sub.agent.user.operator,model_tt_activity_master_videos,tt_base.group_tt_sub_agent_user_operator,1,0,0,0
+tt_activity_master_videos_for_sub_agent_user_supervisor,tt.activity.master.videos.for.sub.agent.user.supervisor,model_tt_activity_master_videos,tt_base.group_tt_sub_agent_user_supervisor,1,0,0,0
+tt_activity_master_videos_for_sub_agent_user_manager,tt.activity.master.videos.for.sub.agent.user.manager,model_tt_activity_master_videos,tt_base.group_tt_sub_agent_user_manager,1,0,0,0
 ,,,,,,,
 tt_activity_master_locations_for_sub_agent_user_operator,tt.activity.master.locations.for.sub.agent.user.operator,model_tt_activity_master_locations,tt_base.group_tt_sub_agent_user_operator,1,0,0,0
 tt_activity_master_locations_for_sub_agent_user_supervisor,tt.activity.master.locations.for.sub.agent.user.supervisor,model_tt_activity_master_locations,tt_base.group_tt_sub_agent_user_supervisor,1,0,0,0

@@ -294,7 +294,50 @@
                             </field>
                         </page>
                         <page string="Itinerary">
-                            <field name="itinerary"/>
+                            <field name="itinerary_ids">
+                                <tree>
+                                    <field name="day"/>
+                                    <field name="name"/>
+                                    <field name="date"/>
+                                </tree>
+                                <form>
+                                    <sheet>
+                                        <group>
+                                            <group>
+                                                <field name="day"/>
+                                                <field name="name"/>
+                                            </group>
+                                            <group>
+                                                <field name="date"/>
+                                            </group>
+                                        </group>
+                                        <group>
+                                            <field name="item_ids">
+                                                <tree>
+                                                    <field name="timeslot"/>
+                                                    <field name="name"/>
+                                                    <field name="description"/>
+                                                </tree>
+                                                <form>
+                                                    <sheet>
+                                                        <group>
+                                                            <group>
+                                                                <field name="name"/>
+                                                                <field name="description"/>
+                                                            </group>
+                                                            <group>
+                                                                <field name="timeslot"/>
+                                                                <field name="image"/>
+                                                            </group>
+                                                        </group>
+
+                                                    </sheet>
+                                                </form>
+                                            </field>
+                                        </group>
+                                    </sheet>
+                                </form>
+                            </field>
                         </page>
                         <page string="Terms &amp; Conditions">
                             <field name="requirements"/>

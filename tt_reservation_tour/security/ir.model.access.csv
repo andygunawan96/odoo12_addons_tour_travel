@@ -9,6 +9,16 @@ tt_reservation_tour_line_for_tour_travel_operator,tt.reservation.tour.line.for.t
 tt_reservation_tour_line_for_tour_travel_supervisor,tt.reservation.tour.line.for.tour.travel.supervisor,model_tt_reservation_tour_line,tt_base.group_tt_tour_travel_supervisor,1,1,1,0
 tt_reservation_tour_line_for_tour_travel_manager,tt.reservation.tour.line.for.tour.travel.manager,model_tt_reservation_tour_line,tt_base.group_tt_tour_travel_manager,1,1,1,0
 ,,,,,,,
+tt_reservation_tour_itinerary_for_all,tt.reservation.tour.itinerary.for.all,model_tt_reservation_tour_itinerary,,0,0,0,0
+tt_reservation_tour_itinerary_for_tour_travel_operator,tt.reservation.tour.itinerary.for.tour.travel.operator,model_tt_reservation_tour_itinerary,tt_base.group_tt_tour_travel_operator,1,1,1,1
+tt_reservation_tour_itinerary_for_tour_travel_supervisor,tt.reservation.tour.itinerary.for.tour.travel.supervisor,model_tt_reservation_tour_itinerary,tt_base.group_tt_tour_travel_supervisor,1,1,1,1
+tt_reservation_tour_itinerary_for_tour_travel_manager,tt.reservation.tour.itinerary.for.tour.travel.manager,model_tt_reservation_tour_itinerary,tt_base.group_tt_tour_travel_manager,1,1,1,1
+,,,,,,,
+tt_reservation_tour_itinerary_item_for_all,tt.reservation.tour.itinerary.item.for.all,model_tt_reservation_tour_itinerary_item,,0,0,0,0
+tt_reservation_tour_itinerary_item_for_tour_travel_operator,tt.reservation.tour.itinerary.item.for.tour.travel.operator,model_tt_reservation_tour_itinerary_item,tt_base.group_tt_tour_travel_operator,1,1,1,1
+tt_reservation_tour_itinerary_item_for_tour_travel_supervisor,tt.reservation.tour.itinerary.item.for.tour.travel.supervisor,model_tt_reservation_tour_itinerary_item,tt_base.group_tt_tour_travel_supervisor,1,1,1,1
+tt_reservation_tour_itinerary_item_for_tour_travel_manager,tt.reservation.tour.itinerary.item.for.tour.travel.manager,model_tt_reservation_tour_itinerary_item,tt_base.group_tt_tour_travel_manager,1,1,1,1
+,,,,,,,
 tt_reservation_tour_pricelist_for_all,tt.reservation.tour.pricelist.for.all,model_tt_reservation_tour_pricelist,,0,0,0,0
 tt_reservation_tour_pricelist_for_tour_travel_operator,tt.reservation.tour.pricelist.for.tour.travel.operator,model_tt_reservation_tour_pricelist,tt_base.group_tt_tour_travel_operator,1,1,1,0
 tt_reservation_tour_pricelist_for_tour_travel_supervisor,tt.reservation.tour.pricelist.for.tour.travel.supervisor,model_tt_reservation_tour_pricelist,tt_base.group_tt_tour_travel_supervisor,1,1,1,0
