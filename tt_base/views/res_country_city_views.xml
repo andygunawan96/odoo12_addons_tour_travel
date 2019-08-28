@@ -15,14 +15,27 @@
                     </div>
 
                     <group>
-                        <field name="name"/>
-                        <field name="code"/>
-                        <field name="zipcode"/>
-                        <field name="country_id"/>
-                        <field name="state_id"/>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="zipcode"/>
+                            <field name="country_id"/>
+                            <field name="state_id"/>
+                            <field name="latitude"/>
+                            <field name="longitude"/>
+                            <!--<field name="address_detail_ids"/>-->
+                            <!--<field name="provide_code_ids"/>-->
+                        </group>
+                        <group>
+                            <field name="other_name_ids">
+                                <tree editable="bottom">
+                                    <field name="name"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </group>
+                    <group>
                         <field name="district_ids"/>
-                        <!--<field name="address_detail_ids"/>-->
-                        <!--<field name="provide_code_ids"/>-->
                     </group>
                 </sheet>
             </form>

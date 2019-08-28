@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+        <record id="find_similar_form_view" model="ir.ui.view">
+            <field name="name">find.similar.view.form</field>
+            <field name="model">find.similar</field>
+            <field name="arch" type="xml">
+                <form string="Find Similar">
+                    <group>
+                        <field name="rec_id" readonly="1"/>
+                        <field name="rec_model" readonly="1"/>
+                        <field name="rec_name" readonly="1"/>
+                        <field name="similar_ids">
+                            <tree editable="bottom">
+                                <field name="rec_id"/>
+                                <field name="name" readonly="1"/>
+                                <field name="is_selected"/>
+                            </tree>
+                        </field>
+                    </group>
+                    <footer>
+                        <button string="Save Parent" name="open_table" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_find_similar_view" model="ir.actions.act_window">
+            <field name="name">Find Similar</field>
+            <field name="res_model">find.similar</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="find_similar_form_view"/>
+            <field name="target">new</field>
+        </record>
+</odoo>

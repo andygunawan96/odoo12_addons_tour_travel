@@ -278,6 +278,7 @@ class ReservationAirline(models.Model):
 
             response = {
                 'book_id': book_obj.id,
+                'order_number': book_obj.name,
                 'provider_ids': response_provider_ids
             }
             return Response().get_no_error(response)
