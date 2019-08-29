@@ -16,6 +16,17 @@
         </field>
     </record>
 
+    <record id="api_config_provider_view_tree_inherit" model="ir.ui.view">
+        <field name="name">api.config.provider.view.tree.inherit</field>
+        <field name="model">tt.api.config</field>
+        <field name="inherit_id" ref="tt_api_management.api_config_view_tree"/>
+        <field name="arch" type="xml">
+            <field name="provider_type_id" position="after">
+                <field name="provider_access"/>
+            </field>
+        </field>
+    </record>
+
     <record id="api_provider_view_form" model="ir.ui.view">
         <field name="name">api.provider.view.form</field>
         <field name="model">tt.api.provider</field>

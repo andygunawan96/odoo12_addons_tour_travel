@@ -16,6 +16,17 @@
         </field>
     </record>
 
+    <record id="api_provider_carrier_view_tree_inherit" model="ir.ui.view">
+        <field name="name">api.provider.carrier.view.tree.inherit</field>
+        <field name="model">tt.api.provider</field>
+        <field name="inherit_id" ref="tt_api_management.api_provider_view_tree"/>
+        <field name="arch" type="xml">
+            <field name="provider_id" position="after">
+                <field name="carrier_access"/>
+            </field>
+        </field>
+    </record>
+
     <record id="api_carrier_view_form" model="ir.ui.view">
         <field name="name">api.carrier.view.form</field>
         <field name="model">tt.api.carrier</field>
