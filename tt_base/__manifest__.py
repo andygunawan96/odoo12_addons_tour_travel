@@ -60,6 +60,7 @@ Key Features
         'views/tt_routes_views.xml',
         'views/error_api_views.xml',
         'views/tt_ssr_views.xml',
+        'views/tt_frontend_security.xml'
     ],
     'demo': [],
     'qweb': [],
