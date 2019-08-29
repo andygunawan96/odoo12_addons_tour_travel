@@ -29,7 +29,7 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="name"/>
-                <button name="apply_to_all_user" type="object" string="Apply"/>
+<!--                <button name="apply_to_all_user" type="object" string="Apply"/>-->
             </tree>
         </field>
     </record>
