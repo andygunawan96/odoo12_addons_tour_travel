@@ -145,8 +145,6 @@ class TtProviderAirline(models.Model):
             'ticket_ids': ticket_list
         })
 
-
-
     def update_ticket_api(self,passengers):##isi ticket number
         ticket_not_found = []
         for psg in passengers:

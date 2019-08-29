@@ -331,8 +331,6 @@ class ReservationAirline(models.Model):
                         continue
                     if req.get('force_issued'):
                         self.update_pnr_booked(provider_obj,provider,context)
-                        book_obj.calculate_service_charge()
-                        book_obj.action_booked_api_airline(context, pnr_list, hold_date)
 
                     #action issued dan create ticket number
                     provider_obj.action_issued_api_airline(context)
@@ -359,6 +357,9 @@ class ReservationAirline(models.Model):
                     customer_parent_id = self.env['tt.customer.parent'].search([('seq_id','=',req['seq_id'])])
                 else:
                     customer_parent_id = book_obj.agent_id.customer_parent_walkin_id.id
+                if req.get('force_issued'):
+                    book_obj.calculate_service_charge()
+                    book_obj.action_booked_api_airline(context, pnr_list, hold_date)
                 book_obj.action_issued_api_airline(context,customer_parent_id)
             elif any(rec == 'ISSUED' for rec in book_status):
                 #partial issued
