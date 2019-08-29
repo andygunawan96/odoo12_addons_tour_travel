@@ -7,7 +7,6 @@ from datetime import datetime
 import uuid, base64
 import logging, traceback
 
-
 _DB_CON = BackendConnector()
 _logger = logging.getLogger(__name__)
 
@@ -127,6 +126,7 @@ class ResUsersApiInherit(models.Model):
             '%sagent_type_id' % prefix: '',
             '%sagent_type_name' % prefix: '',
             '%sagent_type_code' % prefix: '',
+            '%sagent_frontend_security' % prefix: [rec.code for rec in self.frontend_security_ids]
         }
         if self.agent_id:
             res.update(self.agent_id.get_credential(prefix))

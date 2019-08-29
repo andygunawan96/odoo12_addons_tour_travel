@@ -43,24 +43,24 @@
         </field>
     </record>
 
-    <!--    <record id="tt_agent_invoice_tree_view" model="ir.ui.view">-->
-    <!--        <field name="name">tt.agent.invoice.tree.view</field>-->
-    <!--        <field name="model">tt.reservation.train</field>-->
-    <!--        <field name="arch" type="xml">-->
+<!--        <record id="tt_agent_invoice_tree_view" model="ir.ui.view">-->
+<!--            <field name="name">tt.agent.invoice.tree.view</field>-->
+<!--            <field name="model">tt.reservation.train</field>-->
+<!--            <field name="arch" type="xml">-->
 
-    <!--            <tree>-->
-    <!--                <button type="object" string="Create Booking" name="create_booking_test"/>-->
-    <!--                <button type="object" string="ISSUED1" name="action_issued_api"/>-->
-    <!--                <field name="name"/>-->
-    <!--                <field name="sub_agent_id"/>-->
-    <!--                <field name="pnr"/>-->
-    <!--                <field name="date"/>-->
-    <!--                <field name="expired_date"/>-->
-    <!--                <field name="hold_date"/>-->
-    <!--                <field name="state"/>-->
-    <!--            </tree>-->
-    <!--        </field>-->
-    <!--    </record>-->
+<!--                <tree>-->
+<!--                    <button type="object" string="Create Booking" name="create_booking_test"/>-->
+<!--                    <button type="object" string="ISSUED1" name="action_issued_api"/>-->
+<!--                    <field name="name"/>-->
+<!--                    <field name="sub_agent_id"/>-->
+<!--                    <field name="pnr"/>-->
+<!--                    <field name="date"/>-->
+<!--                    <field name="expired_date"/>-->
+<!--                    <field name="hold_date"/>-->
+<!--                    <field name="state"/>-->
+<!--                </tree>-->
+<!--            </field>-->
+<!--        </record>-->
 
     <record id="tt_agent_invoice_action_view" model="ir.actions.act_window" >
         <field name="name">Agent Invoice</field>

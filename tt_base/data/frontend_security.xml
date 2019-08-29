@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="able_to_ticketing" model="tt.frontend.security">
+        <field name="name">Ticketing</field>
+        <field name="code">ticketing</field>
+    </record>
+
+    <record id="able_to_top_up" model="tt.frontend.security">
+        <field name="name">Top Up</field>
+        <field name="code">top_up</field>
+    </record>
+
+    <record id="able_to_admin" model="tt.frontend.security">
+        <field name="name">Admin</field>
+        <field name="code">admin</field>
+    </record>
+
+    <record id="able_to_login" model="tt.frontend.security">
+        <field name="name">Login</field>
+        <field name="code">login</field>
+    </record>
+</odoo>

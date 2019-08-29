@@ -209,3 +209,5 @@ access_tt_provider_currency_for_tour_travel_operator,tt.provider.currency.for.to
 
 access_tt_destination_alias_for_public,tt.destination.alias.for.public,model_tt_destination_alias,,1,0,0,0
 access_tt_destination_alias_for_tour_travel_operator,tt.destination.alias.for.tour_travel_operator,model_tt_destination_alias,group_tt_tour_travel_operator,1,1,1,0
+
+access_tt_frontend_security_for_public,tt.frontend.security.for.public,model_tt_frontend_security,,1,1,1,1

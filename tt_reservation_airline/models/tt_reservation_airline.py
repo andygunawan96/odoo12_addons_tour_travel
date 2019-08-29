@@ -1,5 +1,6 @@
 from odoo import api,models,fields, _
 from ...tools import util,variables,ERR
+from ...tools.ERR import RequestException
 from ...tools.api import Response
 import logging,traceback
 import datetime
@@ -249,7 +250,7 @@ class ReservationAirline(models.Model):
             booker_obj = self.create_booker_api(booker,context)
             contact_obj = self.create_contact_api(contacts[0],booker_obj,context)
             list_customer_obj = self.create_customer_api(passengers,context,booker_obj.seq_id,contact_obj.seq_id,['title','sequence'])
-            list_passenger_id = self.create_passenger_api(list_customer_obj)
+            list_passenger_id = self.create_passenger_api   (list_customer_obj)
 
             values.update({
                 'user_id': context['co_uid'],
@@ -281,11 +282,18 @@ class ReservationAirline(models.Model):
                 'order_number': book_obj.name,
                 'provider_ids': response_provider_ids
             }
-            return Response().get_no_error(response)
-        except Exception as e:
-            _logger.error(str(e) + traceback.format_exc())
+            return ERR.get_no_error(response)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
             try:
-                book_obj.notes += str(e)+traceback.format_exc()+'\n'
+                book_obj.notes += traceback.format_exc()+'\n'
+            except:
+                _logger.error('Creating Notes Error')
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            try:
+                book_obj.notes += traceback.format_exc()+'\n'
             except:
                 _logger.error('Creating Notes Error')
             return ERR.get_error(1004)
@@ -299,7 +307,7 @@ class ReservationAirline(models.Model):
         try:
             book_obj = self.env['tt.reservation.airline'].browse(req['book_id'])
             if not book_obj:
-                return ERR.get_error(1001)
+                raise RequestException(1001)
 
             book_status = []
             pnr_list = []
@@ -308,7 +316,7 @@ class ReservationAirline(models.Model):
             for provider in req['provider_bookings']:
                 provider_obj = self.env['tt.provider.airline'].browse(provider['provider_id'])
                 if not provider_obj:
-                    return ERR.get_error(1002)
+                    raise RequestException(1002)
                 book_status.append(provider['status'])
 
                 if provider['status'] == 'BOOKED' and not provider.get('error_code'):
@@ -368,17 +376,23 @@ class ReservationAirline(models.Model):
             else:
                 #entah status apa
                 _logger.error('Entah status apa')
-                return ERR.get_error(1006)
+                raise RequestException(1006)
 
-            return Response().get_no_error({
+            return ERR.get_no_error({
                 'order_number': book_obj.name,
                 'book_id': book_obj.id
             })
-
-        except Exception as e:
-            _logger.error(str(e) + traceback.format_exc())
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
             try:
-                book_obj.notes += str(e)+traceback.format_exc()+'\n'
+                book_obj.notes += traceback.format_exc()+'\n'
+            except:
+                _logger.error('Creating Notes Error')
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            try:
+                book_obj.notes += traceback.format_exc()+'\n'
             except:
                 _logger.error('Creating Notes Error')
             return ERR.get_error(1005)
@@ -407,10 +421,14 @@ class ReservationAirline(models.Model):
                 _logger.info("Get resp\n" + json.dumps(res))
                 return Response().get_no_error(res)
             else:
-                return ERR.get_error(1001)
+                raise RequestException(1001)
+
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
         except Exception as e:
-            _logger.info(str(e) + traceback.format_exc())
-            return ERR.get_error(500)
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1013)
 
     ##ini potong ledger
     def payment_airline_api(self,req,context):
@@ -421,20 +439,27 @@ class ReservationAirline(models.Model):
                 #cek balance due book di sini, mungkin suatu saat yang akan datang
                 if book_obj.state == 'issued':
                     _logger.error('Transaction Has been paid.')
-                    return ERR.get_error(1009)
+                    raise RequestException(1009)
 
                 #cek saldo
                 balance_res = self.env['tt.agent'].check_balance_limit_api(context['co_agent_id'],book_obj.total_nta)
                 if balance_res['error_code']!=0:
                     _logger.error('Balance not enough')
-                    return ERR.get_error(1007)
+                    raise RequestException(1007)
 
                 for provider in book_obj.provider_booking_ids:
                     provider.action_create_ledger()
 
                 return ERR.get_no_error()
             else:
-                return ERR.get_error(1001)
+                RequestException(1001)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            try:
+                book_obj.notes += traceback.format_exc() + '\n'
+            except:
+                _logger.error('Creating Notes Error')
+            return e.error_dict()
         except Exception as e:
             _logger.info(str(e) + traceback.format_exc())
             try:
@@ -448,7 +473,7 @@ class ReservationAirline(models.Model):
         for provider in req['provider_bookings']:
             provider_obj = self.env['tt.provider.airline'].browse(provider['provider_id'])
             if not provider_obj:
-                return ERR.get_error(1002)
+                raise RequestException(1002)
             provider_obj.delete_service_charge()
             provider_obj.write({
                 'balance_due': provider['balance_due']
@@ -489,17 +514,13 @@ class ReservationAirline(models.Model):
         return booking_tmp
 
     def create_passenger_api(self,list_customer):
-        try:
-            passenger_obj = self.env['tt.reservation.passenger.airline']
-            list_passenger = []
-            for rec in list_customer:
-                vals = rec[0].copy_to_passenger()
-                if rec[1]:
-                    vals.update(rec[1])
-                list_passenger.append(passenger_obj.create(vals).id)
-        except Exception as e:
-            #logger
-            raise Exception(('Create passenger error, %s' % str(e)))
+        passenger_obj = self.env['tt.reservation.passenger.airline']
+        list_passenger = []
+        for rec in list_customer:
+            vals = rec[0].copy_to_passenger()
+            if rec[1]:
+                vals.update(rec[1])
+            list_passenger.append(passenger_obj.create(vals).id)
         return list_passenger
 
     def _create_provider_api(self, providers, api_context):

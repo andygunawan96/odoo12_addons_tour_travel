@@ -14,6 +14,7 @@ tt_error_api_1009,1009,Transaction has been paid,,,1,1
 tt_error_api_1010,1010,Top up not found,,,1,1
 tt_error_api_1011,1011,Payment Error,,,1,1
 tt_error_api_1012,1012,Get Transaction Error,,,1,1
+tt_error_api_1013,1013,Get Booking Error,,,1,1
 tt_error_api_4001,4001,Invalid action type,,,1,1
 tt_error_api_4002,4002,Error while validating your credential,,,1,1
 tt_error_api_4003,4003,Your session has been expired,,,1,1

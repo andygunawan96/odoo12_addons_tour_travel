@@ -22,11 +22,8 @@
                             <field name='user_type' groups="base.group_user" readonly="False"/>
                             <field name='device_type' groups="base.group_user" readonly="False"/>
                         </group>
-                    </group>
-                    <group>
-                        <group>
-
-                        </group>
+                        <separator string="Rodextrip Frontend"/>
+                        <field name="frontend_security_ids"/>
                     </group>
                 </page>
                 <page string="Access Activity" name="access_activity">

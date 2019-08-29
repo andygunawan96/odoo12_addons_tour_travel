@@ -15,6 +15,7 @@ Key Features
     'depends': ['base', 'base_setup', 'base_address_city', 'mail','payment'],
     'data': [
         'data/ir_module_category_data.xml',
+        'data/frontend_security.xml',
         'data/res_groups_data.xml',
         'data/agent_type_rodex_data.xml',
         'data/skipped_history_data.xml',

@@ -59,6 +59,10 @@ class ResUsers(models.Model):
     device_type = fields.Selection(DEVICE_TYPE, 'Device Type')
     access_activity_ids = fields.One2many('tt.access.activity', 'user_id', 'Access Activities')
 
+    ####security utk django
+    frontend_security_ids = fields.Many2many('tt.frontend.security','res_users_frontend_rel','res_users_id','frontend_security_id','Frontend Securities')
+
+
     # Fungsi ini perlu di lengkapi/disempurnakan
     # Tujuan : kalau res_pertner.parent_agent_id berubah maka user.agent_id ikut berubah
     @api.onchange('partner_id.parent_agent_id')
