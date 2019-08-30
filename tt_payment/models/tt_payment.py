@@ -27,9 +27,11 @@ class PaymentTransaction(models.Model):
 
     state = fields.Selection([('draft','Draft'),
                               ('confirm','Confirm'),
-                              ('validated','Validated')], 'State', default='draft', help='Draft: New payment can be edited,'
+                              ('validated','Validated by Operator'),
+                              ('validated2','Validated by Supervisor')], 'State', default='draft', help='Draft: New payment can be edited,'
                                                                                          'Confirm: Agent Confirmed the payment'
-                                                                                         'Validate: HO Confirmed the payment')
+                                                                                         'Validate by Operator'
+                                                                                         'Validate by Supervisor')
 
     # Tambahan
     confirm_uid = fields.Many2one('res.users', 'Confirm by')

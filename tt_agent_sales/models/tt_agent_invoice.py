@@ -71,7 +71,6 @@ class AgentInvoice(models.Model):
 
     date_invoice = fields.Date(string='Invoice Date', default=fields.Date.context_today,
                                index=True, copy=False, readonly=True)
-    expired_date = fields.Date(string='Due Date', index=True, copy=False,readonly=True)
     description = fields.Text('Description',readonly=True)
 
     @api.model

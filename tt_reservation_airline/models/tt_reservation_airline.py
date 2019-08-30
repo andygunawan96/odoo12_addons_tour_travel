@@ -86,7 +86,7 @@ class ReservationAirline(models.Model):
             'booked_date': datetime.datetime.now()
         })
 
-    def action_issued_api_airline(self,context,customer_parent_id):
+    def action_issued_api_airline(self,context,customer_parent_id,payment_acquirer=False):
         self.action_issued_airline(context['co_uid'],customer_parent_id)
 
     def action_issued_airline(self,co_uid,customer_parent_id):
@@ -311,7 +311,7 @@ class ReservationAirline(models.Model):
 
             book_status = []
             pnr_list = []
-            hold_date = datetime.datetime(9999, 12, 31, 23, 59, 59, 999999)
+            hold_date = datetime.datetime.max
 
             for provider in req['provider_bookings']:
                 provider_obj = self.env['tt.provider.airline'].browse(provider['provider_id'])
@@ -340,10 +340,6 @@ class ReservationAirline(models.Model):
                 elif provider['status'] == 'FAIL_ISSUED':
                     provider_obj.action_failed_issued_api_airline()
 
-            if req.get('force_issued'):
-                self.payment_airline_api({'book_id': req['book_id']},context)
-
-
             for rec in book_obj.provider_booking_ids:
                 pnr_list.append(rec.pnr)
 
@@ -360,6 +356,7 @@ class ReservationAirline(models.Model):
                 if req.get('force_issued'):
                     book_obj.calculate_service_charge()
                     book_obj.action_booked_api_airline(context, pnr_list, hold_date)
+                    self.payment_airline_api({'book_id': req['book_id']}, context)
                 book_obj.action_issued_api_airline(context,customer_parent_id)
             elif any(rec == 'ISSUED' for rec in book_status):
                 #partial issued

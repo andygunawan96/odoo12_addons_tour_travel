@@ -144,6 +144,7 @@
                     </t>
                 </td>
             </tr>
+
             <tr>
                 <td style="width:50px;"/>
                 <td style="width:10px;"/>
@@ -175,24 +176,23 @@
                     </t>
                 </td>
             </tr>
-            <tr>
-                <td style="width:50px;"/>
-                <td style="width:10px;"/>
-                <td style="width:100px;"/>
-                <td style="width:150px;">Due Date</td>
-                <td style="width:10px;">:</td>
-                <td style="width:400px;">
-                    <t  t-if="doc.expired_date">
-                        <i t-field="doc.expired_date" t-options ='{"format": "dd/MM/yyyy"}'/>
-                    </t>
-                    <t  t-if="not doc.expired_date and doc.hold_date">
-                        <i t-field="doc.hold_date" t-options ='{"format": "dd/MM/yyyy"}'/>
-                    </t>
-                    <t t-if="not doc.expired_date and not doc.hold_date">
-                        <i style="color: white;">...</i>
-                    </t>
-                </td>
-            </tr>
+            <t t-if="'hold_date' in doc.fields_get()">
+                <tr>
+                    <td style="width:50px;"/>
+                    <td style="width:10px;"/>
+                    <td style="width:100px;"/>
+                    <td style="width:150px;">Due Date</td>
+                    <td style="width:10px;">:</td>
+                    <td style="width:400px;">
+                        <t t-if="doc.hold_date">
+                            <i t-field="doc.hold_date" t-options ='{"format": "dd/MM/yyyy"}'/>
+                        </t>
+                        <t t-if="not doc.hold_date">
+                            <i style="color: white;">...</i>
+                        </t>
+                    </td>
+                </tr>
+            </t>
             <tr>
                 <td style="width:50px;"/>
                 <td style="width:10px;"/>

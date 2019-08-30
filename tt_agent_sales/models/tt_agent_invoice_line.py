@@ -11,7 +11,7 @@ class AgentInvoice(models.Model,test_to_dict.ToDict):
     name = fields.Char('Name')
     name_inv = fields.Char('Name',related="invoice_id.name")
 
-    total = fields.Integer('Total',compute='_compute_total')
+    total = fields.Integer('Total',compute='_compute_total', store=True)
 
     res_model_resv = fields.Char(
         'Related Reservation Name', required=True, index=True)
@@ -46,6 +46,7 @@ class AgentInvoice(models.Model,test_to_dict.ToDict):
         return new_invoice_line
 
     @api.multi
+    @api.depends('invoice_line_detail_ids.price_subtotal')
     def _compute_total(self):
         for rec in self:
             total = 0

@@ -31,7 +31,6 @@
                     <group name="invoice_info">
                         <group>
                             <field name="date_invoice"/>
-                            <field name="expired_date"/>
                             <field name="booker_id"/>
                         </group>
                         <group>

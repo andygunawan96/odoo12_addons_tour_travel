@@ -1,5 +1,5 @@
 from odoo import models,api,fields
-
+from datetime import datetime
 class ReservationTrain(models.Model):
 
     _inherit = 'tt.reservation.airline'
@@ -83,6 +83,15 @@ class ReservationTrain(models.Model):
                     'invoice_line_id': invoice_line_id,
                 })]
             })
+
+        ##membuat payment dalam draft
+        self.env['tt.payment'].create({
+            'agent_id': self.agent_id.id,
+            'acquirer_id': 7,
+            'total_amount': inv_line_obj.total,
+            'invoice_id': invoice_line_id,
+            'payment_date': datetime.now()
+        })
 
 
     # # ## CREATED by Samvi 2018/07/24
