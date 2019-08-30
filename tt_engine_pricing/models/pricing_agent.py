@@ -98,7 +98,6 @@ class PricingAgent(models.Model):
     def get_commission(self, amount, agent_id, provider_type_id, provider_ids=[]):
         price_obj = self.search([('agent_type_id', '=', agent_id.agent_type_id.id),
                  ('provider_type_id', '=', provider_type_id.id)], limit=1)
-        print(price_obj.read())
         vals_list = []
         remaining_diff = 0
 
@@ -124,7 +123,6 @@ class PricingAgent(models.Model):
 
             # find hierarchy agent
             agent_hierarchy = self.get_agent_hierarchy(agent_id, hierarchy=[])
-            print(agent_hierarchy)
             curr_rule = {}
 
             for line in self.line_ids:
@@ -167,16 +165,14 @@ class PricingAgent(models.Model):
                 })
                 vals_list.append(vals)
                 rac_count += 1
-            ho_agent_type_id = self.env['tt.agent.type'].search([('code', '=', 'ho')], limit=1).id
-            ho_agent = self.env['tt.agent'].search([('agent_type_id', '=', ho_agent_type_id)], limit=1)
-            vals_list.append({
-                'agent_id': ho_agent.id,
-                'agent_type_id': ho_agent_type_id,
-                'agent_name': ho_agent.name,
-                'type': 'remaining_diff',
-                'code': 'diff',
-                'amount': remaining_diff,
-            })
+            if remaining_diff > 0:
+                ho_agent_type_id = self.env['tt.agent.type'].search([('code', '=', 'ho')], limit=1).id
+                ho_agent = self.env['tt.agent'].search([('agent_type_id', '=', ho_agent_type_id)], limit=1)
+                for vals in vals_list:
+                    if vals['agent_id'] == ho_agent.id:
+                        vals.update({
+                            'amount': amount + remaining_diff
+                        })
 
             # for line in self.line_ids:
             #     if line.agent_type_id.code == 'citra':
@@ -242,7 +238,6 @@ class PricingAgent(models.Model):
                     }
                     vals_list.append(vals)
 
-        print(vals_list)
         return vals_list
 
     def split_commission(self, base_comm, provider, context):
