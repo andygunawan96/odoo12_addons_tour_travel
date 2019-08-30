@@ -263,7 +263,7 @@ class IssuedOffline(models.Model):
             self.issued_date = fields.Datetime.now()
             self.issued_uid = kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
             # create prices
-            self.sudo().create_ledger_offline()
+            self.sudo().create_ssc_ledger()
             # create ledger
             # self.sudo().create_ledger()
             # set state = paid
@@ -342,22 +342,23 @@ class IssuedOffline(models.Model):
 
     # LEDGER & PRICES
 
-    def create_ledger_offline(self):
+    def create_ssc_ledger(self):
         provider_obj = self.env['tt.reservation.offline.lines'].search([('booking_id', '=', self.id)])
-        # booking_obj = self.browse(self.id)
-
         try:
-            # print(provider_obj)
-            pricing_obj = self.env['tt.pricing.agent'].search([('agent_type_id', '=', self.agent_type_id.id),
-                                                              ('provider_type_id', '=', self.provider_type_id.id)],
-                                                              limit=1)
-            commission_list = pricing_obj.get_commission(self.agent_commission, self.agent_id, self.provider_type_id)
-            self.sudo().create_service_charge()
+            service_charge_list = []
+            if self.provider_type_id_name == 'airline' or self.provider_type_id_name == 'train':
+                total_passengers = len(self.passenger_ids)
+                for psg in self.passenger_ids:
+                    service_charge_list.append(self.get_service_charge_summary_airline_train(psg, total_passengers))
+            elif self.provider_type_id_name == 'hotel':
+                total_line = len(self.line_ids)
+                for line in self.line_ids:
+                    service_charge_list.append((self.get_service_charge_summary_hotel(total_line)))
+            service_charge_list = self.sudo().get_service_charge_list_offline(service_charge_list)
+            self.sudo().create_service_charge_new(service_charge_list)
             self.sudo().create_ledger(provider_obj)
             self.sudo().create_ledger_commission(provider_obj)
-            # self.sudo().create_ledger_parent_agent_commission(provider_obj)
-            self.sudo().create_ledger_ho_commission(provider_obj)
-            # provider_obj.action_create_ledger()
+            # self.sudo().create_ledger_ho_commission(provider_obj)
         except Exception as e:
             self.env.cr.rollback()
             _logger.error(msg=str(e) + '\n' + traceback.format_exc())
@@ -366,21 +367,63 @@ class IssuedOffline(models.Model):
                 'error_msg': str(e) + '\nCreate ledger / service charge failed.'
             }
 
-    def create_reverse_ledger_offline(self):
-        provider_obj = self.env['tt.reservation.offline.lines'].search([('booking_id', '=', self.id)])
+    def get_service_charge_list_offline(self, service_charge_list):
+        new_sc_list = []
+        total_pax = len(service_charge_list)
+        for service_charge in service_charge_list:
+            for sc in service_charge['service_charges']:
+                found = False
+                print(new_sc_list)
+                if new_sc_list:
+                    for new_sc in new_sc_list:
+                        if new_sc['charge_code'] == sc['charge_code']:
+                            if new_sc['pax_type'] == sc['pax_type']:
+                                found = True
+                                new_sc['pax_count'] = new_sc['pax_count'] + 1
+                                new_sc['total'] = new_sc['amount'] * int(new_sc['pax_count'])
+                                break
+                if not found:
+                    if sc['charge_type'] == 'FARE':
+                        sc.update({
+                            'total': sc['amount']
+                        })
+                    else:
+                        sc.update({
+                            'amount': sc['amount'] / total_pax,
+                            'total': sc['amount'] / total_pax
+                        })
+                    new_sc_list.append(sc)
+        # for HO Commission
+        ho_agent = self.env['tt.agent'].sudo().search([('parent_agent_id', '=', False),
+                                                       ('agent_type_id', '=', 'HO')], limit=1)
+        new_sc_list.append({
+            'agent_id': ho_agent.id,
+            'agent_type_id': ho_agent.agent_type_id.id,
+            'charge_type': 'RAC',
+            'type': 'RAC',
+            'charge_code': 'hoc',
+            'code': 'hoc',
+            'pax_count': 1,
+            'pax_type': 'ADT',
+            'amount': self.ho_commission,
+            'total': self.ho_commission,
+            'currency': self.currency_id,
+        })
+        return new_sc_list
 
-        try:
-            self.sudo().create_reverse_ledger(provider_obj)
-            self.sudo().create_reverse_ledger_agent_commission(provider_obj)
-            self.sudo().create_reverse_ledger_parent_agent_commission(provider_obj)
-            self.sudo().create_reverse_ledger_ho_commission(provider_obj)
-        except Exception as e:
-            self.env.cr.rollback()
-            _logger.error(msg=str(e) + '\n' + traceback.format_exc())
-            return {
-                'error_code': 1,
-                'error_msg': str(e) + '\nCreate ledger / service charge failed.'
-            }
+    def create_service_charge_new(self, service_charge_list):
+        for ssc in self.sale_service_charge_ids:
+            ssc.sudo().unlink()
+        service_chg_obj = self.env['tt.service.charge']
+        for sc in service_charge_list:
+            sc.update({
+                'booking_offline_id': self.id,
+            })
+            if sc['charge_type'] != 'FARE':
+                sc.update({
+                    'commission_agent_id': sc['agent_id']
+                })
+            service_chg_obj.create(sc)
 
     def create_service_charge(self):
         # unlink dulu
@@ -553,121 +596,153 @@ class IssuedOffline(models.Model):
             if self.provider_type_id_name == 'airline' or self.provider_type_id_name == 'train':
                 pnr = self.get_pnr_list()
 
-            pricing_vals = self.env['tt.pricing.agent'].get_commission(self.agent_commission, self.agent_id, self.provider_type_id)
+            agent_obj = self.env['tt.agent']
+            agent_type_obj = self.env['tt.agent.type']
+            vals_list = []
 
-            for vals in pricing_vals:
-                agent_type_obj = self.env['tt.agent.type'].search([('id', '=', vals['agent_type_id'])], limit=1)
-                if int(vals['amount']) > 0:
-                    if vals['code'] == 'rac':
-                        vals1 = self.env['tt.ledger'].prepare_vals('Commission : ' + rec.name, rec.name,
-                                                                   rec.validate_date, 3, rec.currency_id.id,
-                                                                   vals['amount'], 0)
-                        vals1 = self.env['tt.ledger'].prepare_vals_for_resv(self, vals1)
-                        vals1.update({
-                            'agent_id': rec.agent_id.id,
-                            'agent_type_id': rec.agent_id.agent_type_id.id,
-                            'pnr': pnr,
-                            'provider_type_id': self.provider_type_id,
-                            'display_provider_name': self.get_display_provider_name(),
-                            'issued_uid': self.env.user.id,
-                        })
-                        commission_aml = rec.env['tt.ledger'].create(vals1)
-                    elif agent_type_obj.code == 'ho':
-                        vals1 = self.env['tt.ledger'].prepare_vals('Commission : ' + rec.name, 'HO: ' + rec.name,
-                                                                   rec.validate_date, 3, rec.currency_id.id,
-                                                                   vals['amount'], 0)
-                        ho_agent = self.env['tt.agent'].sudo().search([('parent_agent_id', '=', False),
-                                                                       ('agent_type_id', '=', 'HO')], limit=1)
-                        vals1 = self.env['tt.ledger'].prepare_vals_for_resv(self, vals1)
-                        vals1.update({
-                            'agent_id': ho_agent.id,
-                            'agent_type_id': ho_agent.agent_type_id.id,
-                            'pnr': pnr,
-                            'provider_type_id': self.provider_type_id,
-                            'issued_uid': self.env.user.id,
-                            'display_provider_name': self.get_display_provider_name()
-                        })
-                        commission_aml = self.env['tt.ledger'].create(vals1)
-                    else:
-                        vals1 = self.env['tt.ledger'].prepare_vals('Commission : ' + rec.name, 'PA: ' + rec.name,
-                                                                   rec.validate_date, 3, rec.currency_id.id,
-                                                                   vals['amount'], 0)
-                        # vals1.update(vals_comm_temp)
-                        vals1 = self.env['tt.ledger'].prepare_vals_for_resv(self, vals1)
-                        vals1.update({
-                            'agent_id': rec.agent_id.parent_agent_id.id,
-                            'agent_type_id': rec.agent_id.parent_agent_id.agent_type_id.id,
-                            'pnr': pnr,
-                            'provider_type_id': self.provider_type_id,
-                            'display_provider_name': self.get_display_provider_name(),
-                            'issued_uid': self.env.user.id,
-                        })
-                        commission_aml = self.env['tt.ledger'].create(vals1)
+            for ssc in self.sale_service_charge_ids:
+                if ssc.charge_type != 'FARE':
+                    if ssc.amount > 0:
+                        found = False
+                        for vals in vals_list:
+                            if ssc.commission_agent_id.id == vals['agent_id'] and ssc.charge_code == vals['charge_code']:
+                                found = True
+                                amount = vals['debit'] + ssc.total
+                                vals.update({
+                                    'debit': amount
+                                })
+                        if not found:
+                            if ssc.charge_type == 'RAC' or ssc.charge_type == 'rac':
+                                # komisi HO
+                                if ssc.charge_code == 'hoc':
+                                    vals1 = self.env['tt.ledger'].prepare_vals('Commission : ' + rec.name,
+                                                                               'HO: ' + rec.name, rec.validate_date, 3,
+                                                                               rec.currency_id.id, ssc.total, 0)
+                                    vals1 = self.env['tt.ledger'].prepare_vals_for_resv(self, vals1)
+                                    vals1.update({
+                                        'agent_id': ssc.commission_agent_id.id,
+                                        'agent_type_id': ssc.commission_agent_id.agent_type_id.id,
+                                        'pnr': pnr,
+                                        'charge_code': ssc.charge_code,
+                                        'description': vals1[
+                                                           'description'] + ' | Agent : ' + ssc.commission_agent_id.name,
+                                        'provider_type_id': self.provider_type_id,
+                                        'issued_uid': self.env.user.id,
+                                        'display_provider_name': self.get_display_provider_name()
+                                    })
+                                    vals_list.append(vals1)
+                                else:
+                                    if ssc.charge_code == 'rac':
+                                        vals1 = self.env['tt.ledger'].prepare_vals('Commission : ' + rec.name, rec.name,
+                                                                                   rec.validate_date, 3,
+                                                                                   rec.currency_id.id, ssc.total, 0)
+                                        vals1 = self.env['tt.ledger'].prepare_vals_for_resv(self, vals1)
+                                        vals1.update({
+                                            'agent_id': ssc.commission_agent_id.id,
+                                            'agent_type_id': ssc.commission_agent_id.agent_type_id.id,
+                                            'pnr': pnr,
+                                            'charge_code': ssc.charge_code,
+                                            'description': vals1[
+                                                               'description'] + ' | Agent : ' + ssc.commission_agent_id.name,
+                                            'provider_type_id': self.provider_type_id,
+                                            'display_provider_name': self.get_display_provider_name(),
+                                            'issued_uid': self.env.user.id,
+                                        })
+                                        vals_list.append(vals1)
+                                    else:
+                                        vals1 = self.env['tt.ledger'].prepare_vals('Commission : ' + rec.name,
+                                                                                   'PA: ' + rec.name,
+                                                                                   rec.validate_date, 3,
+                                                                                   rec.currency_id.id, ssc.total, 0)
+                                        vals1 = self.env['tt.ledger'].prepare_vals_for_resv(self, vals1)
+                                        vals1.update({
+                                            'agent_id': ssc.commission_agent_id.id,
+                                            'agent_type_id': ssc.commission_agent_id.agent_type_id.id,
+                                            'pnr': pnr,
+                                            'charge_code': ssc.charge_code,
+                                            'description': vals1[
+                                                               'description'] + ' | Agent : ' + ssc.commission_agent_id.name,
+                                            'provider_type_id': self.provider_type_id,
+                                            'display_provider_name': self.get_display_provider_name(),
+                                            'issued_uid': self.env.user.id,
+                                        })
+                                        vals_list.append(vals1)
 
-    def create_ledger_agent_commission(self, provider_obj):
-        # Create Commission
-        for rec in self:
-            pnr = ''
-            if self.provider_type_id_name == 'airline' or self.provider_type_id_name == 'train':
-                pnr = self.get_pnr_list()
+            # for ssc in self.sale_service_charge_ids:
+            #     if ssc.charge_type != 'FARE':
+            #         if ssc.amount > 0:
+            #             if ssc.charge_type == 'RAC' or ssc.charge_type == 'rac':
+            #                 # komisi HO
+            #                 if ssc.charge_code == 'hoc':
+            #                     vals1 = self.env['tt.ledger'].prepare_vals('Commission : ' + rec.name,
+            #                                                                'HO: ' + rec.name, rec.validate_date, 3,
+            #                                                                rec.currency_id.id, ssc.total, 0)
+            #                     vals1 = self.env['tt.ledger'].prepare_vals_for_resv(self, vals1)
+            #                     vals1.update({
+            #                         'agent_id': ssc.commission_agent_id.id,
+            #                         'agent_type_id': ssc.commission_agent_id.agent_type_id.id,
+            #                         'pnr': pnr,
+            #                         'description': vals1['description'] + ' | Agent : ' + ssc.commission_agent_id.name,
+            #                         'provider_type_id': self.provider_type_id,
+            #                         'issued_uid': self.env.user.id,
+            #                         'display_provider_name': self.get_display_provider_name()
+            #                     })
+            #                     vals_list.append(vals1)
+            #                     self.env['tt.ledger'].create(vals1)
+            #                 else:
+            #                     if ssc.charge_code == 'rac':
+            #                         vals1 = self.env['tt.ledger'].prepare_vals('Commission : ' + rec.name, rec.name,
+            #                                                                    rec.validate_date, 3, rec.currency_id.id,
+            #                                                                    ssc.total, 0)
+            #                         vals1 = self.env['tt.ledger'].prepare_vals_for_resv(self, vals1)
+            #                         vals1.update({
+            #                             'agent_id': ssc.commission_agent_id.id,
+            #                             'agent_type_id': ssc.commission_agent_id.agent_type_id.id,
+            #                             'pnr': pnr,
+            #                             'description': vals1['description'] + ' | Agent : ' + ssc.commission_agent_id.name,
+            #                             'provider_type_id': self.provider_type_id,
+            #                             'display_provider_name': self.get_display_provider_name(),
+            #                             'issued_uid': self.env.user.id,
+            #                         })
+            #                         vals_list.append(vals1)
+            #                         rec.env['tt.ledger'].create(vals1)
+            #                     else:
+            #                         vals1 = self.env['tt.ledger'].prepare_vals('Commission : ' + rec.name,
+            #                                                                    'PA: ' + rec.name,
+            #                                                                    rec.validate_date, 3, rec.currency_id.id,
+            #                                                                    ssc.total, 0)
+            #                         vals1 = self.env['tt.ledger'].prepare_vals_for_resv(self, vals1)
+            #                         vals1.update({
+            #                             'agent_id': ssc.commission_agent_id.id,
+            #                             'agent_type_id': ssc.commission_agent_id.agent_type_id.id,
+            #                             'pnr': pnr,
+            #                             'description': vals1['description'] + ' | Agent : ' + ssc.commission_agent_id.name,
+            #                             'provider_type_id': self.provider_type_id,
+            #                             'display_provider_name': self.get_display_provider_name(),
+            #                             'issued_uid': self.env.user.id,
+            #                         })
+            #                         vals_list.append(vals1)
+            #                         self.env['tt.ledger'].create(vals1)
 
-            if rec.agent_commission > 0:
-                vals1 = self.env['tt.ledger'].prepare_vals('Commission : ' + rec.name, rec.name, rec.validate_date,
-                                                           3, rec.currency_id.id, rec.agent_commission, 0)
-                vals1 = self.env['tt.ledger'].prepare_vals_for_resv(self, vals1)
-                vals1.update({
-                    'pnr': pnr,
-                    'provider_type_id': self.provider_type_id,
-                    'display_provider_name': self.get_display_provider_name(),
-                    'issued_uid': self.env.user.id,
-                })
-                commission_aml = rec.env['tt.ledger'].create(vals1)
+        for vals in vals_list:
+            self.env['tt.ledger'].create(vals)
+        print(vals_list)
 
-    def create_ledger_parent_agent_commission(self, provider_obj):
-        for rec in self:
-            pnr = ''
-            if self.provider_type_id_name == 'airline' or self.provider_type_id_name == 'train':
-                pnr = self.get_pnr_list()
+    def create_reverse_ledger_offline(self):
+        provider_obj = self.env['tt.reservation.offline.lines'].search([('booking_id', '=', self.id)])
 
-            if rec.parent_agent_commission > 0:
-                vals1 = self.env['tt.ledger'].prepare_vals('Commission : ' + rec.name, 'PA: ' + rec.name,
-                                                           rec.validate_date, 3, rec.currency_id.id,
-                                                           rec.parent_agent_commission, 0)
-                # vals1.update(vals_comm_temp)
-                vals1 = self.env['tt.ledger'].prepare_vals_for_resv(self, vals1)
-                vals1.update({
-                    'agent_id': rec.agent_id.parent_agent_id.id,
-                    'agent_type_id': rec.agent_id.parent_agent_id.agent_type_id.id,
-                    'pnr': pnr,
-                    'provider_type_id': self.provider_type_id,
-                    'display_provider_name': self.get_display_provider_name(),
-                    'issued_uid': self.env.user.id,
-                })
-                commission_aml = self.env['tt.ledger'].create(vals1)
-
-    def create_ledger_ho_commission(self, provider_obj):
-        for rec in self:
-            pnr = ''
-            if self.provider_type_id_name == 'airline' or self.provider_type_id_name == 'train':
-                pnr = self.get_pnr_list()
-
-            if rec.ho_commission > 0:
-                vals1 = self.env['tt.ledger'].prepare_vals('Commission : ' + rec.name, 'HO: ' + rec.name,
-                                                           rec.validate_date, 3, rec.currency_id.id,
-                                                           rec.ho_commission, 0)
-                # vals1.update(vals_temp)
-                ho_agent = self.env['tt.agent'].sudo().search([('parent_agent_id', '=', False),
-                                                               ('agent_type_id', '=', 'HO')], limit=1)
-                vals1 = self.env['tt.ledger'].prepare_vals_for_resv(self, vals1)
-                vals1.update({
-                    'agent_id': ho_agent.id,
-                    'agent_type_id': ho_agent.agent_type_id.id,
-                    'pnr': pnr,
-                    'provider_type_id': self.provider_type_id,
-                    'issued_uid': self.env.user.id,
-                    'display_provider_name': self.get_display_provider_name()
-                })
-                self.env['tt.ledger'].create(vals1)
+        try:
+            self.sudo().create_reverse_ledger(provider_obj)
+            self.sudo().create_reverse_ledger_agent_commission(provider_obj)
+            self.sudo().create_reverse_ledger_parent_agent_commission(provider_obj)
+            self.sudo().create_reverse_ledger_ho_commission(provider_obj)
+        except Exception as e:
+            self.env.cr.rollback()
+            _logger.error(msg=str(e) + '\n' + traceback.format_exc())
+            return {
+                'error_code': 1,
+                'error_msg': str(e) + '\nCreate ledger / service charge failed.'
+            }
 
     def create_reverse_ledger(self, provider_obj):
         for rec in self:
