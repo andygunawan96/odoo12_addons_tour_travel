@@ -1526,63 +1526,69 @@ class MasterActivity(models.Model):
                 multiplier = 0.6
             else:
                 multiplier = 0
-
-            list = ['adults', 'children', 'seniors']
+            list = []
+            if result['type_pricing'].get('data'):
+                for results in result['type_pricing']['data']:
+                    for rec in results:
+                        for key, value in rec['prices'].items():
+                            if key not in list:
+                                list.append(key)
             for res in list:
                 if result['type_pricing'].get('data'):
                     for results in result['type_pricing']['data']:
                         for rec in results:
-                            if rec['prices'][res]:
+                            if rec['prices'].get(res):
                                 from_currency = self.env['res.currency'].search([('name', '=', rec['currency'])])
-                                for key, value in rec['prices'][res].iteritems():
-                                    try:
-                                        to_currency = self.reprice_currency(result['provider'], from_currency.name, value)
-                                    except Exception as e:
-                                        to_currency = self.env['res.currency']._compute(from_currency, self.env.user.company_id.currency_id, value)
-                                    if to_currency:
-                                        final_price = to_currency + 10000
-                                    else:
-                                        final_price = 0
+                                for key, value in rec['prices'][res].items():
+                                    if key not in ['sku_title', 'available']:
+                                        try:
+                                            to_currency = self.reprice_currency(result['provider'], from_currency.name, value)
+                                        except Exception as e:
+                                            to_currency = self.env['res.currency']._compute(from_currency, self.env.user.company_id.currency_id, int(value))
+                                        if to_currency:
+                                            final_price = to_currency + 10000
+                                        else:
+                                            final_price = 0
 
-                                    price_temp = int(final_price * 1.03)
+                                        price_temp = int(final_price * 1.03)
 
-                                    sale_price = 0
-                                    # pembulatan sale price keatas
-                                    for idx in range(10):
-                                        if (price_temp % 100) == 0:
-                                            sale_price = price_temp
-                                            break
-                                        if idx == 9 and ((price_temp % 1000) < int(str(idx + 1) + '00')) and price_temp > 0:
-                                            sale_price = str(int(price_temp / 1000) + 1) + '000'
-                                            break
-                                        elif (price_temp % 1000) < int(str(idx + 1) + '00') and price_temp > 0:
-                                            if int(price_temp / 1000) == 0:
-                                                sale_price = str(idx + 1) + '00'
-                                            else:
-                                                sale_price = str(int(price_temp / 1000)) + str(idx + 1) + '00'
-                                            break
+                                        sale_price = 0
+                                        # pembulatan sale price keatas
+                                        for idx in range(10):
+                                            if (price_temp % 100) == 0:
+                                                sale_price = price_temp
+                                                break
+                                            if idx == 9 and ((price_temp % 1000) < int(str(idx + 1) + '00')) and price_temp > 0:
+                                                sale_price = str(int(price_temp / 1000) + 1) + '000'
+                                                break
+                                            elif (price_temp % 1000) < int(str(idx + 1) + '00') and price_temp > 0:
+                                                if int(price_temp / 1000) == 0:
+                                                    sale_price = str(idx + 1) + '00'
+                                                else:
+                                                    sale_price = str(int(price_temp / 1000)) + str(idx + 1) + '00'
+                                                break
 
-                                    temp = int((int(sale_price) - final_price) * multiplier)
-                                    commission_price = 0
-                                    # pembulatan commission price kebawah
-                                    for idx in range(10):
-                                        if (temp % 1000) < int(str(idx + 1) + '00') and temp > 0:
-                                            if int(temp / 1000) == 0:
-                                                commission_price = (str(idx) + '00')
-                                            else:
-                                                commission_price = str(int(temp / 1000)) + (str(idx) + '00')
-                                            break
+                                        temp = int((int(sale_price) - final_price) * multiplier)
+                                        commission_price = 0
+                                        # pembulatan commission price kebawah
+                                        for idx in range(10):
+                                            if (temp % 1000) < int(str(idx + 1) + '00') and temp > 0:
+                                                if int(temp / 1000) == 0:
+                                                    commission_price = (str(idx) + '00')
+                                                else:
+                                                    commission_price = str(int(temp / 1000)) + (str(idx) + '00')
+                                                break
 
-                                    rec['prices'][res].update({
-                                        key: {
-                                            'sale_price': int(sale_price),
-                                            'commission_price': int(commission_price),
-                                        },
-                                    })
+                                        rec['prices'][res].update({
+                                            key: {
+                                                'sale_price': int(sale_price),
+                                                'commission_price': int(commission_price),
+                                            },
+                                        })
 
-                                    rec.update({
-                                        'currency_code': self.env.user.company_id.currency_id.name
-                                    })
+                                        rec.update({
+                                            'currency_code': self.env.user.company_id.currency_id.name
+                                        })
 
             response = []
             if result['type_pricing'].get('data'):
