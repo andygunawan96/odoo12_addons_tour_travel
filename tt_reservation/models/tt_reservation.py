@@ -2,6 +2,7 @@ from odoo import api, fields, models, _
 from ...tools import variables, util, ERR
 import logging, traceback
 from datetime import datetime
+import os
 
 _logger = logging.getLogger(__name__)
 
@@ -348,13 +349,19 @@ class TtReservation(models.Model):
         })
 
     def cron_expired_booking(self):
-        for rec in variables.PROVIDER_TYPE:
-            new_bookings = self.env['tt.reservation.%s' % rec].search(['|',('state','=','draft'),('state','=','booked')])
-            for booking in new_bookings:
-                try:
-                    if datetime.now() >= (booking.hold_date or datetime.min):
-                        booking.state = 'cancel2'
-                except Exception as e:
-                    _logger.error('%s something failed during expired cron.\n' % (booking.name) + traceback.format_exc())
-
-    # def get_agent_reservation(self):
+        try:
+            for rec in variables.PROVIDER_TYPE:
+                new_bookings = self.env['tt.reservation.%s' % rec].search(['|',('state','=','draft'),('state','=','booked')])
+                for booking in new_bookings:
+                    try:
+                        if datetime.now() >= (booking.hold_date or datetime.min):
+                            booking.state = 'cancel2'
+                    except Exception as e:
+                        _logger.error('%s something failed during expired cron.\n' % (booking.name) + traceback.format_exc())
+        except Exception as e:
+            dest = '/var/log/odoo/cron_log'
+            if not os.path.exists(dest):
+                os.mkdir(dest)
+            file = open('%s/%s_%s_error.log' % (dest,'auto expired',datetime.now().strftime('%Y-%m-%d_%H:%M:%S')),'w')
+            file.write(traceback.format_exc())
+            file.close()
