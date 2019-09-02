@@ -1531,7 +1531,7 @@ class MasterActivity(models.Model):
                 for results in result['type_pricing']['data']:
                     for rec in results:
                         for key, value in rec['prices'].items():
-                            if key not in list:
+                            if key not in list and key not in ['cancellationPolicy']:
                                 list.append(key)
             for res in list:
                 if result['type_pricing'].get('data'):
@@ -1540,7 +1540,7 @@ class MasterActivity(models.Model):
                             if rec['prices'].get(res):
                                 from_currency = self.env['res.currency'].search([('name', '=', rec['currency'])])
                                 for key, value in rec['prices'][res].items():
-                                    if key not in ['sku_title', 'available']:
+                                    if key.isdigit():
                                         try:
                                             to_currency = self.reprice_currency(result['provider'], from_currency.name, value)
                                         except Exception as e:
