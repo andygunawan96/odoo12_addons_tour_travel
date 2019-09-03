@@ -61,25 +61,26 @@ class VisaOrderPassengers(models.Model):
     _name = 'tt.reservation.visa.order.passengers'
     _description = 'Tour & Travel - Visa Order Passengers'
 
-    name = fields.Char('Name', related='passenger_id.first_name', readonly=1)
+    name = fields.Char('Name', related='passenger_id.first_name', readonly=1)  # readonly=1
     to_requirement_ids = fields.One2many('tt.reservation.visa.order.requirements', 'to_passenger_id', 'Requirements',
                                          readonly=0, states={'ready': [('readonly', True)],
                                                              'done': [('readonly', True)]})
-    visa_id = fields.Many2one('tt.reservation.visa', 'Visa', readonly=1)
-    passenger_id = fields.Many2one('tt.customer', 'Passenger', readonly=1)
-    pricelist_id = fields.Many2one('tt.reservation.visa.pricelist', 'Visa Pricelist', readonly=1)
-    passenger_type = fields.Selection(PASSENGER_TYPE, 'Pax Type', readonly=1)
-    title = fields.Selection(TITLE, 'Title', readonly=1)
+    visa_id = fields.Many2one('tt.reservation.visa', 'Visa', readonly=0)  # readonly=1
+    passenger_id = fields.Many2one('tt.customer', 'Passenger', readonly=0)  # readonly=1
+    pricelist_id = fields.Many2one('tt.reservation.visa.pricelist', 'Visa Pricelist', readonly=0)  # readonly=1
+    passenger_type = fields.Selection(PASSENGER_TYPE, 'Pax Type', readonly=0)  # readonly=1
+    title = fields.Selection(TITLE, 'Title', readonly=0)  # readonly=1
     passport_number = fields.Char(string='Passport Number')
     passport_expdate = fields.Datetime(string='Passport Exp Date')
-    passenger_domicile = fields.Char('Domicile', related='passenger_id.domicile', readonly=1)
+    passenger_domicile = fields.Char('Domicile', related='passenger_id.domicile', readonly=0)  # readonly=1
     process_status = fields.Selection(PROCESS_STATUS, string='Process Result',
-                                      readonly=1)
+                                      readonly=0)  # readonly=1
     sequence = fields.Integer('Sequence')
+    biometrics_interview = fields.Boolean('Biometrics / Interview')
 
-    in_process_date = fields.Datetime('In Process Date', readonly=1)
-    payment_date = fields.Datetime('Payment Date', readonly=1)
-    payment_uid = fields.Many2one('res.users', 'Payment By', readonly=1)
+    in_process_date = fields.Datetime('In Process Date', readonly=1)  # readonly=1
+    payment_date = fields.Datetime('Payment Date', readonly=1)  # readonly=1
+    payment_uid = fields.Many2one('res.users', 'Payment By', readonly=1)  # readonly=1
     call_date = fields.Date('Call Date', help='Call to interview (visa) or take a photo (passport)')
     out_process_date = fields.Datetime('Out Process Date', readonly=1)
     to_HO_date = fields.Datetime('Send to HO Date', readonly=1)
@@ -123,6 +124,9 @@ class VisaOrderPassengers(models.Model):
                                                 rejected = Rejected by the Consulate
                                                 ready = ready to pickup by customer
                                                 done = picked up by customer''')
+
+    def action_send_email_interview(self):
+        pass
 
     def action_draft(self):
         for rec in self:

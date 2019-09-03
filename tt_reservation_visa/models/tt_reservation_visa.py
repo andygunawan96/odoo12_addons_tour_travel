@@ -273,8 +273,8 @@ class TtVisa(models.Model):
 
     param_sell_visa = {
         "pax": {
-            "adult": 2,
-            "child": 1,
+            "adult": 3,
+            "child": 0,
             "infant": 0,
             "elder": 0
         },
@@ -503,14 +503,14 @@ class TtVisa(models.Model):
         print('Response : ' + str(json.dumps(res)))
         return Response().get_no_error(res)
 
-    def create_booking_visa_api(self, data, context, kwargs):
-        sell_visa = data['sell_visa']  # copy.deepcopy(self.param_sell_visa)
-        booker = data['booker']  # copy.deepcopy(self.param_booker)
-        contact = data['contact']  # copy.deepcopy(self.param_contact)
-        passengers = data['passenger']  # copy.deepcopy(self.param_passenger)
-        search = data['search']  # copy.deepcopy(self.param_search)
-        context = context  # copy.deepcopy(self.param_context)
-        kwargs = kwargs  # copy.deepcopy(self.param_kwargs)
+    def create_booking_visa_api(self):  # , data, context, kwargs
+        sell_visa = copy.deepcopy(self.param_sell_visa)  # data['sell_visa']
+        booker = copy.deepcopy(self.param_booker)  # data['booker']
+        contact = copy.deepcopy(self.param_contact)  # data['contact']
+        passengers = copy.deepcopy(self.param_passenger)  # data['passenger']
+        search = copy.deepcopy(self.param_search)  # data['search']
+        context = copy.deepcopy(self.param_context)  # context
+        kwargs = copy.deepcopy(self.param_kwargs)  # kwargs
 
         try:
             user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
@@ -980,7 +980,8 @@ class TtVisa(models.Model):
                     doc_type.append(sc.pricelist_id.visa_type)
                 if sc.charge_code == 'fare':
                     total_order += sc.total
-                desc = sc.pricelist_id.display_name.upper() + ' ' + sc.pricelist_id.entry_type.upper()
+                if sc.pricelist_id.display_name:
+                    desc = sc.pricelist_id.display_name.upper() + ' ' + sc.pricelist_id.entry_type.upper()
 
             doc_type = ','.join(str(e) for e in doc_type)
 
@@ -1046,9 +1047,10 @@ class TtVisa(models.Model):
             doc_type = []
             desc = ''
             for sc in rec.sale_service_charge_ids:
-                if not sc.pricelist_id.visa_type in doc_type:
+                if sc.pricelist_id.visa_type not in doc_type:
                     doc_type.append(sc.pricelist_id.visa_type)
-                desc = sc.pricelist_id.display_name.upper() + ' ' + sc.pricelist_id.entry_type.upper()
+                if sc.pricelist_id.display_name:
+                    desc = sc.pricelist_id.display_name.upper() + ' ' + sc.pricelist_id.entry_type.upper()
 
             doc_type = ','.join(str(e) for e in doc_type)
 
@@ -1085,7 +1087,8 @@ class TtVisa(models.Model):
                 # else:
                 if sc.pricelist_id.visa_type not in doc_type:
                     doc_type.append(sc.pricelist_id.visa_type)
-                desc = sc.pricelist_id.display_name.upper() + ' ' + sc.pricelist_id.entry_type.upper()
+                if sc.pricelist_id.display_name:
+                    desc = sc.pricelist_id.display_name.upper() + ' ' + sc.pricelist_id.entry_type.upper()
 
             doc_type = ','.join(str(e) for e in doc_type)
 
