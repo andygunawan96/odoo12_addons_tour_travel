@@ -134,7 +134,10 @@ class ResUsersApiInherit(models.Model):
 
     def reset_password_api(self, data, context):
         try:
-            user_obj = self.sudo().browse(int(context['co_uid']))
+            # September 2, 2019 - SAM
+            # Ganti mekanisme dengan mengirimkan email
+            # user_obj = self.sudo().browse(int(context['co_uid']))
+            user_obj = self.sudo().search([('login', '=', data['email'])], limit=1)
             if not user_obj:
                 raise Exception('User does not exist')
             user_obj.action_reset_password()

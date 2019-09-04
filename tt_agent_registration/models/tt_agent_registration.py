@@ -41,7 +41,8 @@ class AgentRegistration(models.Model):
                                      validate = Validate
                                      done = Done''')
     active = fields.Boolean('Active', default=True)
-    parent_agent_id = fields.Many2one('tt.agent', string="Parent Agent", Help="Agent who became Parent of This Agent")
+    parent_agent_id = fields.Many2one('tt.agent', string="Parent Agent", Help="Agent who became Parent of This Agent",
+                                      readonly=True, compute='default_parent_agent_id')
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', required=True)
     partner_id = fields.Many2one('tt.agent', 'Partner id', readonly=True)
     currency_id = fields.Many2one('res.currency', string='Currency')
@@ -65,7 +66,7 @@ class AgentRegistration(models.Model):
 
     # agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', readonly=True, required=True,
     #                                 states={'draft': [('readonly', False)]})
-    reference_id = fields.Many2one('tt.agent', 'Reference', readonly=False, default=lambda self: self.env.user.agent_id)
+    reference_id = fields.Many2one('tt.agent', 'Reference', readonly=True, default=lambda self: self.env.user.agent_id)
     # parent_agent_id = fields.Many2one('tt.agent', 'Parent Agent', readonly=True, store=True,
     #                                   compute='default_parent_agent_id')
     agent_level = fields.Integer('Agent Level', readonly=True)
@@ -116,13 +117,14 @@ class AgentRegistration(models.Model):
     @api.onchange('agent_type_id')
     @api.depends('agent_type_id')
     def default_parent_agent_id(self):
-        if self.agent_type_id:
-            if self.agent_type_id.name == 'Citra':
-                self.parent_agent_id = self.env['tt.agent'].sudo().search([('agent_type_id.name', '=', 'HO')], limit=1)
+        for rec in self:
+            if rec.agent_type_id:
+                if rec.agent_type_id.name == 'Citra':
+                    rec.parent_agent_id = rec.env['tt.agent'].sudo().search([('agent_type_id.name', '=', 'HO')], limit=1)
+                else:
+                    rec.parent_agent_id = rec.env.user.agent_id
             else:
-                self.parent_agent_id = self.env.user.agent_id
-        else:
-            self.parent_agent_id = self.env.user.agent_id
+                rec.parent_agent_id = rec.env.user.agent_id
 
     @api.depends('agent_type_id')
     @api.onchange('agent_type_id')
@@ -206,15 +208,14 @@ class AgentRegistration(models.Model):
         agent_comm, parent_agent_comm, ho_comm = self.agent_type_id.calc_recruitment_commission(self.parent_agent_id.agent_type_id, self.total_fee)
         ledger = self.env['tt.ledger']
 
-        agent_comm_vals = ledger.prepare_vals('Recruit Comm. : ' + self.name,
-                                                             'Recruit Comm. : ' + self.name, datetime.now(),
-                                                             'commission', self.currency_id.id, agent_comm, 0)
+        agent_comm_vals = ledger.prepare_vals('Recruit Comm. : ' + self.name, 'Recruit Comm. : ' + self.name,
+                                              datetime.now(), 3, self.currency_id.id, agent_comm, 0)
         agent_comm_vals = ledger.prepare_vals_for_agent_regis(self, agent_comm_vals)
         self.env['tt.ledger'].create(agent_comm_vals)
 
         parent_agent_comm_vals = self.env['tt.ledger'].prepare_vals('Recruit Comm. Parent: ' + self.name,
                                                                     'Recruit Comm. Parent: ' + self.name,
-                                                                    datetime.now(), 'commission', self.currency_id.id,
+                                                                    datetime.now(), 3, self.currency_id.id,
                                                                     parent_agent_comm, 0)
         parent_agent_comm_vals = ledger.prepare_vals_for_agent_regis(self, parent_agent_comm_vals)
         parent_agent_comm_vals.update({
@@ -224,7 +225,7 @@ class AgentRegistration(models.Model):
 
         ho_comm_vals = self.env['tt.ledger'].prepare_vals('Recruit Comm. HO: ' + self.name,
                                                           'Recruit Comm. HO: ' + self.name, datetime.now(),
-                                                          'commission', self.currency_id.id, ho_comm, 0)
+                                                          3, self.currency_id.id, ho_comm, 0)
         ho_comm_vals = ledger.prepare_vals_for_agent_regis(self, ho_comm_vals)
         ho_comm_vals.update({
             'agent_id': self.env['tt.agent'].sudo().search([('agent_type_id.name', '=', 'HO')], limit=1).id
@@ -235,7 +236,7 @@ class AgentRegistration(models.Model):
         ledger = self.env['tt.ledger']
 
         vals_credit = self.env['tt.ledger'].prepare_vals('Opening Balance : ' + self.name,
-                                                         'Opening Balance : ' + self.name, datetime.now(), 'commission',
+                                                         'Opening Balance : ' + self.name, datetime.now(), 3,
                                                          self.currency_id.id, 0, self.opening_balance)
         vals_credit = ledger.prepare_vals_for_agent_regis(self, vals_credit)
         vals_credit.update({
@@ -244,7 +245,7 @@ class AgentRegistration(models.Model):
         self.env['tt.ledger'].create(vals_credit)
 
         vals_debit = self.env['tt.ledger'].prepare_vals('Opening Balance', 'Opening Balance', datetime.now(),
-                                                        'commission', self.currency_id.id, self.opening_balance, 0)
+                                                        3, self.currency_id.id, self.opening_balance, 0)
         vals_debit = ledger.prepare_vals_for_agent_regis(self, vals_debit)
         vals_debit.update({
             'agent_id': self.partner_id.id
