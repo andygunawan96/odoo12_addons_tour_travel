@@ -173,39 +173,6 @@ class PricingAgent(models.Model):
                         vals.update({
                             'amount': amount + remaining_diff
                         })
-
-            # for line in self.line_ids:
-            #     if line.agent_type_id.code == 'citra':
-            #         vals = {
-            #             'agent_type_id': line.agent_type_id.id,
-            #             'amount': amount * line.basic_amount / 100,
-            #             'type': 'RAC',
-            #             'code': 'rac' + str(n)
-            #         }
-            #         vals_list.append(vals)
-            #         perc_remaining -= line.basic_amount
-            #         n += 1
-            #     elif line.agent_type_id.code == 'ho':
-            #         vals = {
-            #             'agent_type_id': line.agent_type_id.id,
-            #             'amount': amount * line.basic_amount / 100,
-            #             'type': 'RAC',
-            #             'code': 'rac' + str(n)
-            #         }
-            #         vals_list.append(vals)
-            #         perc_remaining -= line.basic_amount
-            # if perc_remaining > 0:
-            #     if self.loop_level > 0:
-            #         for level in range(self.loop_level):
-            #             pass
-            #     else:
-            #         vals = {
-            #             'agent_type_id': self.env['tt.agent.type'].search([('code', '=', 'ho')], limit=1).id,
-            #             'amount': amount * perc_remaining / 100,
-            #             'type': 'RAC',
-            #             'code': 'diff'
-            #         }
-            #         vals_list.append(vals)
         elif self.basic_amount_type == 'amount':
             vals = {
                 'agent_type_id': self.agent_type_id.id,

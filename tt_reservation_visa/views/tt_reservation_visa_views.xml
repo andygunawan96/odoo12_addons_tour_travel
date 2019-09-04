@@ -168,7 +168,7 @@
                     <notebook colspan="4">
                         <page string="Passengers">
                             <field name="passenger_ids">
-                                <tree create="0">
+                                <tree create="1">
                                     <field name="customer_id"/>
                                     <field name="passenger_type"/>
                                     <field name="pricelist_id"/>

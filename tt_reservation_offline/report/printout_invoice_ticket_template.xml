@@ -507,8 +507,8 @@
                                 <tbody>
                                     <tr t-foreach="line_ids" t-as="line">
                                         <th><span t-esc="line['pnr']"/></th>
-                                        <th><span t-esc="line['obj_name']"/></th>
-                                        <th><span t-esc="line['obj_subname']"/></th>
+                                        <th><span t-esc="line['hotel_name']"/></th>
+                                        <th><span t-esc="line['room']"/></th>
                                         <th><span t-esc="line['check_in']"/></th>
                                         <th><span t-esc="line['check_out']"/></th>
                                         <th><span t-esc="line['meal_type']"/></th>
@@ -530,8 +530,8 @@
                                 <tbody>
                                     <tr t-foreach="line_ids" t-as="line">
                                         <th><span t-esc="line['pnr']"/></th>
-                                        <th><span t-esc="line['obj_name']"/></th>
-                                        <th><span t-esc="line['obj_subname']"/></th>
+                                        <th><span t-esc="line['activity_name']"/></th>
+                                        <th><span t-esc="line['activity_package']"/></th>
                                         <th><span t-esc="line['check_in']"/></th>
                                     </tr>
                                 </tbody>

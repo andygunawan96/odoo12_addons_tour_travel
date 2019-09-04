@@ -178,7 +178,7 @@
                             </group>
                         </group>
                         <notebook>
-                            <page string="Line(s)" attrs="{'invisible': [('provider_type_id_name', 'not in', ['airline','train','hotel','activity'])]}">  <!--Airlines, Train, Hotel, Activity-->
+                            <page string="Line(s)" attrs="{'invisible': [('provider_type_id_name', 'not in', ['airline','train','hotel','activity','cruise'])]}">  <!--Airlines, Train, Hotel, Activity-->
                                 <field name="line_ids"/>
                             </page>
                             <page string="Passenger(s)">

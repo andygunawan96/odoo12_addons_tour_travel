@@ -566,7 +566,7 @@ class TtPassport(models.Model):
                             ssc_same = True
                             # update ssc_final
                             ssc_final['pax_count'] = ssc_final['pax_count'] + 1,
-                            ssc_final['passenger_visa_ids'].append(ssc['passenger_visa_id'])
+                            ssc_final['passenger_passport_ids'].append(ssc['passenger_passport_id'])
                             ssc_final['total'] += ssc.get('amount')
                             ssc_final['pax_count'] = ssc_final['pax_count'][0]
                             break
@@ -575,7 +575,6 @@ class TtPassport(models.Model):
                     'amount': ssc['amount'],
                     'charge_code': ssc['charge_code'],
                     'charge_type': ssc['charge_type'],
-                    'passenger_visa_ids': [],
                     'description': ssc['description'],
                     'pax_type': ssc['pax_type'],
                     'currency_id': ssc['currency_id'],
@@ -583,7 +582,7 @@ class TtPassport(models.Model):
                     'total': ssc['total'],
                     'pricelist_id': ssc['pricelist_id']
                 }
-                vals['passenger_visa_ids'].append(ssc['passenger_visa_id'])
+                vals['passenger_passport_ids'].append(ssc['passenger_passport_id'])
                 ssc_list_final.append(vals)
         print('Final : ' + str(ssc_list_final))
         return ssc_list_final

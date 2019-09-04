@@ -33,7 +33,7 @@
                             </button>
                         </div>
                         <field name="image" widget='image' class="oe_avatar"
-                               options='{"preview_image": "image_medium", "size": [90, 90]}'/>
+                               options='{"size": [90, 90]}'/>  <!--"preview_image": "image_medium", -->
                         <div class="oe_title">
                             <field name="company_type" widget="radio"
                                class="oe_edit_only"

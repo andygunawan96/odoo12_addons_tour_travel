@@ -42,7 +42,6 @@ class ReservationVisa(models.Model):
             invoice_id = self.env['tt.agent.invoice'].create({
                 'contact_id': self.contact_id.id,
                 'agent_id': self.agent_id.id,
-                'sub_agent_id': self.agent_id.id  # self.sub_agent_id.id
             })
 
         inv_line_obj = self.env['tt.agent.invoice.line'].create({

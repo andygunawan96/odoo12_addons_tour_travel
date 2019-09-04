@@ -45,7 +45,6 @@ class ReservationOffline(models.Model):
             invoice_id = self.env['tt.agent.invoice'].create({
                 'contact_id': self.contact_id.id,
                 'agent_id': self.agent_id.id,
-                'sub_agent_id': self.agent_id.id  # self.sub_agent_id.id
             })
 
         inv_line_obj = self.env['tt.agent.invoice.line'].create({
@@ -86,7 +85,7 @@ class ReservationOffline(models.Model):
                 inv_line_obj.write({
                     'invoice_line_detail_ids': [(0, 0, {
                         'desc': desc_text,
-                        'price_unit': price_unit / len(self.passenger_ids),
+                        'price_unit': self.total_sale_price / len(self.passenger_ids),
                         'quantity': 1,
                         'invoice_line_id': invoice_line_id,
                     })]
