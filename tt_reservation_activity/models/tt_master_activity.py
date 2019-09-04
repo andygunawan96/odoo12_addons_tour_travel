@@ -1011,7 +1011,7 @@ class MasterActivity(models.Model):
                 if extra_info.get('general'):
                     for book in extra_info['general']:
                         type_lib = {
-                            'text': 4,
+                            'text': 50,
                             'date': 6,
                             'list': 1,
                             'checkBox': 5,
@@ -1148,7 +1148,23 @@ class MasterActivity(models.Model):
 
             type_id = req['type_id'] != '0' and self.env['tt.activity.category'].sudo().search([('id', '=', req['type_id']), ('type', '=', 'type')]).id or ''
             # sub_category = sub_category != '0' and sub_category or ''
-            category = req['sub_category'] and (req['sub_category'] != '0' and req['sub_category'] or (req['category'] != '0' and req['category'] or '')) or ''
+
+            get_cat_instead = 0
+            category = ''
+            if req.get('sub_category'):
+                if req['sub_category'] != '0':
+                    category = req['sub_category']
+                else:
+                    get_cat_instead = 1
+            else:
+                get_cat_instead = 1
+
+            if get_cat_instead:
+                if req.get('category'):
+                    category = req['category'] != '0' and req['category'] or ''
+                else:
+                    category = ''
+
             provider = req.get('provider', 'all')
             provider_id = self.env['tt.provider'].sudo().search([('code', '=', provider)], limit=1)
             provider_id = provider_id and provider_id[0] or False
@@ -1173,7 +1189,7 @@ class MasterActivity(models.Model):
                 sql_query += 'and typerel.type_id = ' + type_id + ' '
 
             if category:
-                sql_query += 'and catrel.category_id = "' + category + '" '
+                sql_query += 'and catrel.category_id = ' + category + ' '
 
             if req.get('country') and not req.get('city'):
                 sql_query += "and (loc.country_id = " + country + ") "
