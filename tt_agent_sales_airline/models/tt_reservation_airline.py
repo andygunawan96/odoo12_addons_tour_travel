@@ -85,13 +85,20 @@ class ReservationTrain(models.Model):
             })
 
         ##membuat payment dalam draft
-        self.env['tt.payment'].create({
+        payment_obj = self.env['tt.payment'].create({
             'agent_id': self.agent_id.id,
             'acquirer_id': 7,
             'total_amount': inv_line_obj.total,
-            'invoice_id': invoice_line_id,
             'payment_date': datetime.now()
         })
+
+        self.env['tt.payment.invoice.rel'].create({
+            'invoice_id': invoice_id.id,
+            'payment_id': payment_obj.id,
+            'pay_amount': inv_line_obj.total,
+        })
+        payment_obj.compute_available_amount()
+
 
 
     # # ## CREATED by Samvi 2018/07/24

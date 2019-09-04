@@ -14,7 +14,7 @@
                     <h1>
                         <field name="name"/>
                     </h1>
-                    <group>
+                    <group name="payment_info">
                         <group string="Agent">
                             <field name="agent_id"/>
                             <field name="payment_date"/>
@@ -39,8 +39,6 @@
                             <field name="used_amount"/>
                             <field name="available_amount"/>
                             <field name="currency_id" invisible="1"/>
-                        </group>
-                        <group string="Amount">
                         </group>
                     </group>
                 </sheet>

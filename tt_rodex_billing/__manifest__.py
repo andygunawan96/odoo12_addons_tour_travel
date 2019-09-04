@@ -6,7 +6,7 @@
     'summary': 'billing statement',
     'sequence': 2,
     'description': """
-TT_TRANSPORT
+Billing Statement
 """,
     'category': 'billing',
     'website': '',

@@ -10,6 +10,7 @@ class TtPaymentInvoiceRel(models.Model):
     pay_amount = fields.Monetary('Pay Amount', required=True)
     available_amount = fields.Monetary('Available Ammount', related="payment_id.available_amount")
     currency_id = fields.Many2one('res.currency', 'currency', related="payment_id.currency_id")
+    state = fields.Selection('State',related='payment_id.state')
 
     @api.model
     def create(self, vals_list):
@@ -46,9 +47,8 @@ class TtPaymentInvoiceRel(models.Model):
             missing_ammount = self.invoice_id.total - self.invoice_id.paid_amount
             if self.payment_id.available_amount >= missing_ammount and self.pay_amount > missing_ammount:
                 self.pay_amount = missing_ammount
-                # raise exceptions.UserError("Pay amount changed to missing amount")
-            if self.pay_amount > self.payment_id.available_amount:
-                raise exceptions.UserError("Pay amount on %s exceeded payment's residual amount" % (self.invoice_id.name))
+                # raise exceptions.UserError("Pay amount c8hanged to missing amount")
+
 
 
 
@@ -61,8 +61,18 @@ class TtPaymentInh(models.Model):
     @api.depends('invoice_ids.pay_amount','total_amount','fee')
     def compute_available_amount(self):
         for rec in self:
+            super(TtPaymentInh, rec).compute_available_amount()
             used_amount = 0
             for inv in rec.invoice_ids:
-                used_amount += inv.pay_amount
+                if inv.create_date:
+                    used_amount += inv.pay_amount
+                # used_amount += inv.pay_amount
             rec.used_amount = used_amount
-            super(TtPaymentInh, self).compute_available_amount()
+            rec.available_amount -= rec.used_amount
+
+            print(rec.used_amount)
+            print(rec.available_amount)
+            if rec.available_amount < 0:
+                raise exceptions.UserError("Pay amount on %s exceeded payment's residual amount" % (self.name))
+
+

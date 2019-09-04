@@ -115,7 +115,10 @@ class AgentInvoice(models.Model):
     def _compute_paid_amount(self):
         for inv in self:
             paid_amount = 0
-            paid_amount = sum(rec.pay_amount for rec in inv.payment_ids if rec.create_date)
+            # paid_amount = sum(rec.pay_amount for rec in inv.payment_ids if (rec.create_date and rec.state in ['validate','validate2']))
+            for rec in inv.payment_ids:
+                if rec.create_date and rec.state in ['validated','validated2']:
+                    paid_amount += rec.pay_amount
             inv.paid_amount = paid_amount
 
     # def calculate_paid_amount(self):
