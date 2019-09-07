@@ -18,8 +18,8 @@
                     </div>
                     <group>
                         <field name="invoice_id"/>
-                        <field name="res_model_resv" invisible="1"/>
-                        <field name="res_id_resv" invisible="1"/>
+                        <field name="res_model_resv" groups="base.user_admin"/>
+                        <field name="res_id_resv" groups="base.user_admin"/>
                         <field name="desc"/>
                     </group>
                     <group>

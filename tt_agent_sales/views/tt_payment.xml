@@ -5,6 +5,9 @@
         <field name="model">tt.payment.invoice.rel</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <field name="state"/>
+                </header>
                 <sheet>
                     <group>
                         <field name="invoice_id" readonly="1"/>
@@ -25,20 +28,23 @@
             <tree>
                 <field name="invoice_id"/>
                 <field name="pay_amount"/>
+                <field name="state"/>
                 <field name="currency_id" invisible="1"/>
             </tree>
         </field>
     </record>
+
 
     <record id="tt_payment_invoice_rel_invoice_tree_view" model="ir.ui.view">
         <field name="name">tt.payment.invoice.rel.invoice.tree.view</field>
         <field name="model">tt.payment.invoice.rel</field>
         <field name="priority">21</field>
         <field name="arch" type="xml">
-            <tree editable="bottom">
+            <tree>
                 <field name="payment_id"/>
                 <field name="available_amount"/>
                 <field name="pay_amount"/>
+                <field name="state"/>
                 <field name="currency_id" invisible="1"/>
             </tree>
         </field>
@@ -59,4 +65,17 @@
             }
         </field>
     </record>
+
+    <record id="tt_payment_form_inh_view" model="ir.ui.view">
+        <field name="name">tt.payment.form.inh.view</field>
+        <field name="model">tt.payment</field>
+        <field name="inherit_id" ref="tt_payment.tt_payment_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='payment_info']" position="after">
+                <separator string="Used on"/>
+                <field name="invoice_ids"/>
+            </xpath>
+        </field>
+    </record>
+
 </odoo>

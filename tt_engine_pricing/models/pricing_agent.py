@@ -50,11 +50,20 @@ class PricingAgent(models.Model):
             if not provider_obj:
                 raise Exception('Provider Type not found')
             _obj = self.sudo().search([('provider_type_id', '=', provider_obj.id), ('active', '=', 1)])
-            response = {}
-            for rec in _obj:
-                response.update({
-                    rec.agent_type_id.code: rec.get_data()
-                })
+
+            qs = [rec.get_data() for rec in _obj if rec.active]
+
+            # response = {}
+            # for rec in _obj:
+            #     response.update({
+            #         rec.agent_type_id.code: rec.get_data()
+            #     })
+
+            response = {
+                'pricing_agents': qs,
+                'pricing_type': _provider_type
+            }
+
             res = Response().get_no_error(response)
         except Exception as e:
             _logger.error('%s, %s' % (str(e), traceback.format_exc()))

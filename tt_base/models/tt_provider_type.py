@@ -12,6 +12,7 @@ class ProviderType(models.Model):
 
     def fill_provider_type(self):
         provider_type_obj = self.search([])
+        variables.PROVIDER_TYPE = []
         for rec in provider_type_obj:
             variables.PROVIDER_TYPE.append(rec.code)
 

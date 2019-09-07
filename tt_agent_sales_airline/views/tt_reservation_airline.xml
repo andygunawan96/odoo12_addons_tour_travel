@@ -11,7 +11,6 @@
 <!--            </field>-->
             <xpath expr="//page[@name='prices']" position="after">
                 <page string="Agent Invoice" name="agent_invoice">
-                    <field name="invoice_names" invisible="1"/>
                     <field name="invoice_line_ids" readonly="1">
                         <tree>
                             <field name="name"/>

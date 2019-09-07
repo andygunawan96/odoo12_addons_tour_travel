@@ -11,8 +11,6 @@ class ReservationPassport(models.Model):
 
     invoice_line_ids = fields.One2many('tt.agent.invoice.line', 'res_id_resv', 'Invoice')
 
-    invoice_names = fields.Char('Invoice Names', compute='_get_invoice_names')
-
     @api.depends('invoice_line_ids')
     def set_agent_invoice_state(self):
 
@@ -28,21 +26,14 @@ class ReservationPassport(models.Model):
         elif any(state != 'draft' for state in states):
             self.state_invoice = 'partial'
 
-    def _get_invoice_names(self):
-        name = ""
-        for rec in self.invoice_line_ids:
-            name = name and "%s~%s" % (name, rec.name_inv) or rec.name_inv
-        self.invoice_names = name
-
     def action_create_invoice(self):
         invoice_id = self.env['tt.agent.invoice'].search(
-            [('contact_id', '=', self.contact_id.id), ('state', '=', 'draft')])
+            [('booker_id', '=', self.contact_id.id), ('state', '=', 'draft')])
 
         if not invoice_id:
             invoice_id = self.env['tt.agent.invoice'].create({
                 'contact_id': self.contact_id.id,
                 'agent_id': self.agent_id.id,
-                'sub_agent_id': self.agent_id.id  # self.sub_agent_id.id
             })
 
         inv_line_obj = self.env['tt.agent.invoice.line'].create({
@@ -54,27 +45,20 @@ class ReservationPassport(models.Model):
 
         invoice_line_id = inv_line_obj.id
 
-        # get prices
-        def get_pax_price():
-            res = {
-                'ADT': 0,
-                'CHD': 0,
-                'INF': 0,
-            }
-            for svrc in self.sale_service_charge_ids:
-                if 'r.ac' not in svrc.charge_code:
-                    res[svrc.pax_type] += svrc.amount
-            return res
-
-        pax_price = get_pax_price()
-
-        for psg in self.to_passenger_ids:
-            desc_text = psg.passenger_id.first_name + ' ' + psg.passenger_id.last_name + ', ' + psg.passenger_type
-
+        for psg in self.passenger_ids:
+            desc_text = psg.first_name + ' ' + psg.last_name + ', ' + psg.title + ' (' + psg.passenger_type + ') ' + \
+                        psg.pricelist_id.entry_type.capitalize() + ' ' + psg.pricelist_id.visa_type.capitalize() + ' ' \
+                        + psg.pricelist_id.process_type.capitalize() + ' (' + str(psg.pricelist_id.duration) + ' days)'
+            price = 0
+            for srvc in psg['cost_service_charge_ids']:
+                if srvc.charge_code != 'rac':
+                    price += srvc.amount
+            for srvc in psg['channel_service_charge_ids']:
+                price += srvc.amount
             inv_line_obj.write({
-                'invoice_line_detail_ids': [(0,0,{
+                'invoice_line_detail_ids': [(0, 0, {
                     'desc': desc_text,
-                    'price_unit': pax_price[psg.passenger_type],
+                    'price_unit': price,
                     'quantity': 1,
                     'invoice_line_id': invoice_line_id,
                 })]

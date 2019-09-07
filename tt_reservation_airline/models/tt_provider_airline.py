@@ -89,25 +89,8 @@ class TtProviderAirline(models.Model):
                 'state': 'fail_issued'
             })
 
-    def action_set_as_booked(self):
-        self.write({
-            'state': 'booked',
-        })
-        # self.booking_id.action_check_provider_state()
-
-    def action_issued(self, api_context=None):
-        if not api_context: #Jika dari Backend, TIDAK ada api_context
-            api_context = {
-                'co_uid': self.env.user.id,
-            }
-        # self._validate_issued(api_context=api_context)
-        for rec in self:
-            rec.write({
-                'state': 'issued',
-                'issued_uid': api_context['co_uid'],
-                'issued_date': fields.Datetime.now(),
-            })
-            rec.booking_id.action_check_provider_state(api_context)
+    def action_expired(self):
+        self.state = 'cancel2'
 
     def create_ticket_api(self,passengers):
         ticket_list = []

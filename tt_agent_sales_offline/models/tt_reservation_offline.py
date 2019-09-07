@@ -5,16 +5,11 @@ class ReservationOffline(models.Model):
 
     _inherit = 'tt.reservation.offline'
 
-    # invoice_line_ids = fields.One2many('tt.agent.invoice.line.','res_id_resv', 'Invoice',
-    #                               domain="[('res_model_resv','=','self._name'),('res_id_resv','=','self.id')]")
-
     state_invoice = fields.Selection([('wait', 'Waiting'), ('partial', 'Partial'), ('full', 'Full')],
                                      'Invoice Status', help="Agent Invoice status", default='wait',
                                      readonly=True)  # , compute='set_agent_invoice_state'
 
     invoice_line_ids = fields.One2many('tt.agent.invoice.line', 'res_id_resv', 'Invoice')
-
-    invoice_names = fields.Char('Invoice Names', compute='_get_invoice_names')
 
     @api.depends('invoice_line_ids')
     def set_agent_invoice_state(self):
@@ -30,12 +25,6 @@ class ReservationOffline(models.Model):
             self.state_invoice = 'full'
         elif any(state != 'draft' for state in states):
             self.state_invoice = 'partial'
-
-    def _get_invoice_names(self):
-        name = ""
-        for rec in self.invoice_line_ids:
-            name = name and "%s~%s" % (name, rec.name_inv) or rec.name_inv
-        self.invoice_names = name
 
     def action_create_invoice(self):
         invoice_id = self.env['tt.agent.invoice'].search(

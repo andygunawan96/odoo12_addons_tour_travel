@@ -1,6 +1,7 @@
 from odoo import api, fields, models, _
 import datetime
 from ...tools.api import Response
+from ...tools import ERR
 import logging
 import traceback
 from ...tools.db_connector import GatewayConnector
@@ -86,7 +87,7 @@ class Routes(models.Model):
         return {
             'name': self.name,
             'type': self.type,
-            'carrier_code': self.carrier_code.to_dict(),
+            'carrier_code': self.carrier_code,
             'carrier_number': self.carrier_number,
             'operating_airline_code': self.operating_airline_code,
             'code_share': self.code_share,
@@ -110,9 +111,26 @@ class Routes(models.Model):
             'destination_terminal': self.destination_terminal and self.destination_terminal or '',
             'departure_time': self.departure_time,
             'arrival_time': self.arrival_time,
+            'carrier_code': self.carrier_code,
+            'carrier_number': self.carrier_number,
             'operating_airline_code': self.operating_airline_code and self.operating_airline_code or '',
         }
         return res
+
+    def get_routes_api(self, _provider_type):
+        try:
+            provider_obj = self.env['tt.provider.type'].sudo().search([('code', '=', _provider_type)], limit=1)
+            routes_obj = self.sudo().search([('provider_type_id', '=', provider_obj.id)])
+            qs = [rec.get_route_data() for rec in routes_obj]
+            response = {
+                'routes': qs,
+                'provider_type': _provider_type
+            }
+            return ERR.get_no_error(response)
+        except Exception as e:
+            error_msg = '%s, %s' % (str(e), traceback.format_exc())
+            _logger.error('Error Get Routes API, %s, %s' % (str(e), traceback.format_exc()))
+            return ERR.get_error(500, error_msg)
 
     def get_all_routes_api(self, _provider_type):
         try:

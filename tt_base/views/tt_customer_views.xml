@@ -34,6 +34,7 @@
                             <field name="customer_parent_ids"/>
                             <field name="name" readonly="True"/>
                             <field name="nickname"/>
+                            <field name="email"/>
                             <field name="gender"/>
                             <field name="marital_status"/>
                             <field name="nationality_id"/>
