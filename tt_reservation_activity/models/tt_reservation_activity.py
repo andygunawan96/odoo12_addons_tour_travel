@@ -1285,6 +1285,7 @@ class ReservationActivity(models.Model):
                 if not is_enough['error_code'] == 0:
                     raise Exception('BALANCE not enough')
 
+            header_val = search_request
             contact_obj = self._create_contact(contact_data, context)
 
             psg_ids = self._evaluate_passenger_info(passengers, contact_obj.id, context['agent_id'])
