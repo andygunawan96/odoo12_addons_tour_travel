@@ -595,6 +595,7 @@ class MasterActivity(models.Model):
                     'activity_line_id': activity_obj.id,
                     'sku_id': 'Adult',
                     'title': 'Adult',
+                    'pax_type': 'adult',
                     'minPax': rec['type_details']['data']['minPax'],
                     'maxPax': rec['type_details']['data']['maxPax'],
                     'minAge': rec['type_details']['data']['minAdultAge'],
@@ -608,6 +609,7 @@ class MasterActivity(models.Model):
                         'activity_line_id': activity_obj.id,
                         'sku_id': 'Child',
                         'title': 'Child',
+                        'pax_type': 'child',
                         'minPax': rec['type_details']['data']['minChildren'],
                         'maxPax': rec['type_details']['data']['maxChildren'],
                         'minAge': rec['type_details']['data']['minChildAge'],
@@ -621,6 +623,7 @@ class MasterActivity(models.Model):
                         'activity_line_id': activity_obj.id,
                         'sku_id': 'Senior',
                         'title': 'Senior',
+                        'pax_type': 'senior',
                         'minPax': rec['type_details']['data']['minSeniors'],
                         'maxPax': rec['type_details']['data']['maxSeniors'],
                         'minAge': rec['type_details']['data']['minSeniorAge'],
@@ -634,6 +637,7 @@ class MasterActivity(models.Model):
                         'activity_line_id': activity_obj.id,
                         'sku_id': 'Infant',
                         'title': 'Infant',
+                        'pax_type': 'infant',
                         'minPax': 0,
                         'maxPax': 5,
                         'minAge': rec['type_details']['data']['minInfantAge'],
@@ -779,6 +783,7 @@ class MasterActivity(models.Model):
                     'activity_line_id': activity_obj.id,
                     'sku_id': 'Adult',
                     'title': 'Adult',
+                    'pax_type': 'adult',
                     'minPax': 1,
                     'maxPax': 10,
                     'minAge': 13,
@@ -792,6 +797,7 @@ class MasterActivity(models.Model):
                     'activity_line_id': activity_obj.id,
                     'sku_id': 'Child',
                     'title': 'Child',
+                    'pax_type': 'child',
                     'minPax': 0,
                     'maxPax': 10,
                     'minAge': 4,
@@ -805,6 +811,7 @@ class MasterActivity(models.Model):
                     'activity_line_id': activity_obj.id,
                     'sku_id': 'Senior',
                     'title': 'Senior',
+                    'pax_type': 'senior',
                     'minPax': 0,
                     'maxPax': 10,
                     'minAge': 66,
@@ -817,6 +824,7 @@ class MasterActivity(models.Model):
                 'activity_line_id': activity_obj.id,
                 'sku_id': 'Infant',
                 'title': 'Infant',
+                'pax_type': 'infant',
                 'minPax': 0,
                 'maxPax': 5,
                 'minAge': 0,
@@ -936,9 +944,19 @@ class MasterActivity(models.Model):
                         sku_min_pax = rec3['sku_min_pax'] >= temp_sku_min_pax and rec3['sku_min_pax'] or temp_sku_min_pax
                     if rec3.get('sku_max_pax'):
                         sku_max_pax = rec3['sku_max_pax'] <= 100 and rec3['sku_max_pax'] or 100
+
+                    temp_pax_type = rec3.get('title') and rec3['title'].split(' ')[0].lower()
+                    sku_temp = rec3.get('title') and rec3['title'].split('(')
+                    if sku_temp[0] in ['Adult', 'Child', 'Senior', 'Infant']:
+                        temp_pax_type = sku_temp[0].lower()
+
+                    if temp_pax_type not in ['adult', 'child', 'senior', 'infant']:
+                        temp_pax_type = 'adult'
+
                     sku_create_vals = {
                         'sku_id': rec3.get('sku_id') and rec3['sku_id'] or '',
                         'title': rec3.get('title') and rec3['title'] or '',
+                        'pax_type': temp_pax_type,
                         'minPax': sku_min_pax,
                         'maxPax': sku_max_pax,
                         'minAge': min_age,
@@ -1437,8 +1455,10 @@ class MasterActivity(models.Model):
                     for sku in result_id.sku_ids.ids:
                         sku_obj = self.env['tt.master.activity.sku'].browse(int(sku))
                         sku_temp = {
+                            'id': sku_obj.id,
                             'sku_id': sku_obj.sku_id,
                             'title': sku_obj.title,
+                            'pax_type': sku_obj.pax_type,
                             'minPax': sku_obj.minPax,
                             'maxPax': sku_obj.maxPax,
                             'minAge': sku_obj.minAge,

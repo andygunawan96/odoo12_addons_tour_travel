@@ -170,6 +170,7 @@
                                 <tree>
                                     <field name="sku_id"/>
                                     <field name="title"/>
+                                    <field name="pax_type"/>
                                     <field name="minPax"/>
                                     <field name="maxPax"/>
                                     <field name="minAge"/>
@@ -188,6 +189,7 @@
                                         <group>
                                             <field name="sku_id"/>
                                             <field name="title"/>
+                                            <field name="pax_type"/>
                                             <field name="add_information"/>
                                         </group>
                                         <group>

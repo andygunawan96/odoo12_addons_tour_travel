@@ -142,14 +142,11 @@ class TtReservation(models.Model):
             'marital_status': 'married' if vals.get('title') == 'MRS' else '',
             'customer_parent_ids': [(4,agent_obj.customer_parent_walkin_id.id )],
         })
-
-
         return booker_obj.create(vals)
 
     def create_contact_api(self, vals, booker, context):
         contact_obj = self.env['tt.customer'].sudo()
         get_contact_seq_id = util.get_without_empty(vals,'contact_seq_id',False)
-
 
         if get_contact_seq_id or vals.get('is_also_booker'):
             if get_contact_seq_id:
@@ -189,7 +186,7 @@ class TtReservation(models.Model):
             'email': vals.get('email'),
             'phone_ids': [(0,0,{
                 'calling_code': vals.get('calling_code', ''),
-                'calling_number': vals.get('mobile',''),
+                'calling_number': vals.get('mobile', ''),
                 'phone_number': '%s%s' % (vals.get('calling_code',''),vals.get('mobile','')),
                 'country_id': country and country[0].id or False,
             })],

@@ -250,7 +250,7 @@ class ReservationAirline(models.Model):
             booker_obj = self.create_booker_api(booker,context)
             contact_obj = self.create_contact_api(contacts[0],booker_obj,context)
             list_customer_obj = self.create_customer_api(passengers,context,booker_obj.seq_id,contact_obj.seq_id,['title','sequence'])
-            list_passenger_id = self.create_passenger_api   (list_customer_obj)
+            list_passenger_id = self.create_passenger_api(list_customer_obj)
 
             values.update({
                 'user_id': context['co_uid'],
