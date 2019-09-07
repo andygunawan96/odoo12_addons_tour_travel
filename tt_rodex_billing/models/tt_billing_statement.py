@@ -31,7 +31,7 @@ class TtBillingStatement(models.Model):
                              states={'draft': [('readonly', False)]})
     notes = fields.Text('Notes', readonly=True, states={'draft': [('readonly', False)]})
     currency_id = fields.Many2one('res.currency', 'Currency', default=lambda self: self.env.user.company_id.currency_id)
-    amount_total = fields.Monetary('Total',  readonly=True)#compute='_compute_total'
+    amount_total = fields.Monetary('Total', compute='_compute_amount_total')#compute='_compute_total'
     company_id = fields.Many2one('res.company', 'Company', required=True, default=lambda self: self.env.user.company_id)
 
     invoice_ids = fields.One2many('tt.agent.invoice', 'billing_statement_id', string='Agent Invoices', required=True)
@@ -68,17 +68,26 @@ class TtBillingStatement(models.Model):
 
     @api.model
     def create(self, vals_list):
-        if 'invoice_ids' in vals_list:
-            amount_total = 0
-            for inv in vals_list['invoice_ids']:
-                amount_total+= self.env['tt.agent.invoice'].browse(inv[2][0]).total
-            vals_list['amount_total'] = amount_total
+        # if 'invoice_ids' in vals_list:
+        #     amount_total = 0
+        #     for inv in vals_list['invoice_ids']:
+        #         amount_total+= self.env['tt.agent.invoice'].browse(inv[2][0]).total
+        #     vals_list['amount_total'] = amount_total
 
         vals_list['name'] = self.env['ir.sequence'].next_by_code('tt.billing.statement')
 
         return super(TtBillingStatement, self).create(vals_list)
-    @api.one
 
+    @api.multi
+    @api.depends('invoice_ids.total')
+    def _compute_amount_total(self):
+        for rec in self:
+            amount_total = 0
+            for inv in rec.invoice_ids:
+                amount_total += inv.total
+            rec.amount_total = amount_total
+
+    @api.one
     def action_confirm(self):
         # self.paid_amount = 0
         # self.amount_total = 200000

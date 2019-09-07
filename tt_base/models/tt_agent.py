@@ -74,13 +74,10 @@ class TtAgent(models.Model):
     def create(self, vals_list):
         new_agent = super(TtAgent, self).create(vals_list)
         agent_name = str(new_agent.name)
-        walkin_obj = self.env['tt.customer.parent'].create(
-            {
-                'parent_agent_id': new_agent.id,
-                'customer_parent_type_id': self.env.ref('tt_base.agent_type_fpo').id,
-                'name': agent_name + ' FPO'
-            }
-        )
+
+        walkin_obj_val = self.create_walkin_obj_val(new_agent,agent_name)
+
+        walkin_obj = self.env['tt.customer.parent'].create(walkin_obj_val)
 
         self.env['payment.acquirer'].create({
             'name': 'Cash',
@@ -95,6 +92,13 @@ class TtAgent(models.Model):
             'seq_id': self.env['ir.sequence'].next_by_code('tt.agent.type.%s' % (new_agent.agent_type_id.code))
         })
         return new_agent
+
+    def create_walkin_obj_val(self,new_agent,agent_name):
+        return  {
+            'parent_agent_id': new_agent.id,
+            'customer_parent_type_id': self.env.ref('tt_base.agent_type_fpo').id,
+            'name': agent_name + ' FPO',
+        }
 
     def _compute_balance_agent(self):
         for rec in self:

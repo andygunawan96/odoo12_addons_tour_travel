@@ -14,9 +14,6 @@
                         <group>
                             <field name="state_invoice"/>
                         </group>
-                        <group>
-                            <field name="invoice_names"/>
-                        </group>
                     </group>
                     <field name="invoice_line_ids" readonly="1">
                         <tree>

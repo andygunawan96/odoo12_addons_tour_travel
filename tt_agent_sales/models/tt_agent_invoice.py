@@ -17,7 +17,8 @@ class AgentInvoice(models.Model):
     name = fields.Char('Name', default='New', readonly=True)
     total = fields.Monetary('Total', compute="_compute_total",store=True)
     paid_amount = fields.Monetary('Paid Amount', compute="_compute_paid_amount",store=True)
-    invoice_line_ids = fields.One2many('tt.agent.invoice.line','invoice_id','Invoice Line', readonly=True)
+    invoice_line_ids = fields.One2many('tt.agent.invoice.line','invoice_id','Invoice Line', readonly=True,
+                                       states={'draft': [('readonly', False)]})
     booker_id = fields.Many2one('tt.customer', 'Booker',readonly=True)
     type = fields.Selection([
         ('out_invoice', 'Customer Invoice'),
@@ -44,7 +45,7 @@ class AgentInvoice(models.Model):
              " * The 'Paid' status is set when the payment total .\n"
              " * The 'Cancelled' status is used when user cancel invoice.")
 
-    agent_id = fields.Many2one('tt.agent', string='Agent', required=True, readonly=True)
+    agent_id = fields.Many2one('tt.agent', string='Agent', required=True, readonly=True, states={'draft': [('readonly', False)]})
     customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer', readonly=True, states={'draft': [('readonly', False)]}, help='COR/POR Name')
     customer_parent_type_id = fields.Many2one('tt.customer.parent.type', 'Customer Parent Type',
                                               related='customer_parent_id.customer_parent_type_id')
@@ -66,9 +67,6 @@ class AgentInvoice(models.Model):
     confirmed_uid = fields.Many2one('res.users', 'Confirmed by', readonly=True)
     confirmed_date = fields.Datetime('Confirmed Date', readonly=True)
 
-    bill_uid = fields.Many2one('res.users', 'Billed by', readonly=True)
-    bill_date = fields.Datetime('Billed Date', readonly=True)
-
     date_invoice = fields.Date(string='Invoice Date', default=fields.Date.context_today,
                                index=True, copy=False, readonly=True)
     description = fields.Text('Description',readonly=True)
@@ -79,10 +77,12 @@ class AgentInvoice(models.Model):
         return super(AgentInvoice, self).create(vals_list)
     
     def write(self, vals):
-        super(AgentInvoice, self).write(vals)
+        #pengecekan paid di sini dan tidak di compute paid supaya status berubah ketika tekan tombol save
+        #jika tidak, saat pilih payment sebelum save bisa lgsg berubah jadi paid
         if 'payment_ids' in vals:
             if self.check_paid_status():
-                self.state = 'paid'
+                vals['state'] = 'paid'
+        super(AgentInvoice, self).write(vals)
 
     def set_as_confirm(self):
         self.state = "confirm"
@@ -97,9 +97,7 @@ class AgentInvoice(models.Model):
             self.confirmed_uid = self.env.user.id
 
     def check_paid_status(self):
-        if self.paid_amount >= self.total:
-            return True
-        return False
+        return self.paid_amount >= self.total and self.total != 0
 
     @api.multi
     @api.depends('invoice_line_ids.total')
@@ -111,7 +109,7 @@ class AgentInvoice(models.Model):
             inv.total = total
 
     @api.multi
-    @api.depends('payment_ids.pay_amount')
+    @api.depends('payment_ids.pay_amount','payment_ids.state')
     def _compute_paid_amount(self):
         for inv in self:
             paid_amount = 0

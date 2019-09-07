@@ -30,17 +30,6 @@ class ReservationTrain(models.Model):
         elif any(state != 'draft' for state in states):
             self.state_invoice = 'partial'
 
-
-
-
-    def _get_invoice_names(self):
-        name = ""
-        for rec in self.invoice_line_ids:
-            name = name and "%s~%s" % (name,rec.name_inv) or rec.name_inv
-        self.invoice_names=name
-
-    invoice_names = fields.Char('Invoice Names', compute=_get_invoice_names)
-
     def get_segment_description(self):
         tmp = ''
         # vals = []

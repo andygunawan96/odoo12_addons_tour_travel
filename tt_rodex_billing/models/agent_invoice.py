@@ -25,15 +25,6 @@ class AgentInvoice(models.Model):
         for rec in self:
             rec.ledger_id.sudo().unlink()
 
-    def test_FPO_set_to_confirm(self):
-        #FIXME. Fungsi ini harus di remove, krn hanya Temporary
-        fpo_obj = self.env['tt.agent.invoice'].search([('booker_type', '=', 'FPO'),('billing_statement_id','!=','False')])
-        for rec in fpo_obj:
-            if rec.billing_statement_id.state == 'draft':
-                rec.ledger_id.action_set_to_draft()
-                rec.action_set_to_confirm()
-                self._cr.commit()
-
     # MOVED TO ACTION_CANCEL ON TT_AGENT_SALES/MODELS/TT_AGENT_INVOICE.PY
     @api.one
     def action_set_to_confirm(self):
@@ -113,10 +104,11 @@ class AgentInvoice(models.Model):
         inv_by_cor = {}
         for rec in self.search([('state', 'in', ['draft', 'confirm'])]):
             try:
-                rec.action_confirm()
-                sub_agent_id = rec.sub_agent_id.id
-                if sub_agent_id not in inv_by_cor:
-                    inv_by_cor[sub_agent_id] = {
+                if rec.state == 'draft':
+                    rec.action_confirm()
+                customer_parent_id = rec.customer_parent_id.id
+                if customer_parent_id not in inv_by_cor:
+                    inv_by_cor[customer_parent_id] = {
                         # 'payment_term_id': rec.payment_term_id.id and rec.payment_term_id.id or False,
                         'due_date': fields.Date.context_today(rec) and fields.Date.context_today(rec) or False,
                         'agent_id': rec.agent_id.id and rec.agent_id.id or False,
@@ -125,7 +117,7 @@ class AgentInvoice(models.Model):
                         'invoice_ids': [(6, 0, rec.ids)],
                     }
                 else:
-                    inv_by_cor[sub_agent_id]['invoice_ids'][0][2].append(rec.id)
+                    inv_by_cor[customer_parent_id]['invoice_ids'][0][2].append(rec.id)
 
             except Exception as e:
                 _logger.error('Cron Error: Create Billing Statement New' + '\n' + traceback.format_exc())
