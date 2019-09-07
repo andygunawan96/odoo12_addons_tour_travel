@@ -735,3 +735,8 @@ class ReservationAirline(models.Model):
         res = res and res[0] or {}
         datas['form'] = res
         return self.env.ref('tt_report_common.action_report_printout_reservation_airline').report_action([], data=datas)
+
+    def action_expired(self):
+        super(ReservationAirline, self).action_expired()
+        for provider in self.provider_booking_ids:
+            provider.action_expired()

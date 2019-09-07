@@ -79,10 +79,10 @@ class AgentInvoice(models.Model):
     def write(self, vals):
         #pengecekan paid di sini dan tidak di compute paid supaya status berubah ketika tekan tombol save
         #jika tidak, saat pilih payment sebelum save bisa lgsg berubah jadi paid
+        super(AgentInvoice, self).write(vals)
         if 'payment_ids' in vals:
             if self.check_paid_status():
-                vals['state'] = 'paid'
-        super(AgentInvoice, self).write(vals)
+                self.state = 'paid'
 
     def set_as_confirm(self):
         self.state = "confirm"
@@ -133,47 +133,6 @@ class AgentInvoice(models.Model):
 
     def set_to_bill(self):
         self.state = 'bill'
-
-    def create_ledger(self):
-        # create_ledger dilakukan saat state = bill atau bill2
-
-        # JIKA FPO : TIDAK BOLEH CREATE LEDGER
-
-
-        # if self.contact_id.booker_type == 'FPO':
-        #     return True
-
-        #fixme ini mau di apain rulesnya
-        #1. pakai external ID corpor
-        #2. kalau agent_id dan customer_parent_type_id nya berbeda
-        if self.agent_id.id == self.customer_parent_type_id.id:
-            return True
-
-        ledger = self.env['tt.ledger'].sudo()
-        amount = 0
-        for rec in self.invoice_line_ids:
-            amount += rec.total
-            
-        vals = ledger.prepare_vals('Agent Invoice : ' + self.name, self.name, datetime.datetime.now(), 'transport',
-                                   self.currency_id.id, 0, amount)
-        # vals['transport_booking_id'] = self.id
-        vals['agent_id'] = self.customer_parent_type_id.id
-        vals['agent_invoice_id'] = self.id
-
-        ledger.create(vals)
-        self.customer_parent_type_id.balance -= amount
-        self.customer_parent_type_id.actual_balance -= amount
-
-    def action_bill(self):
-        # security : user_agent_supervisor
-        if self.state != 'confirm':
-            raise exceptions.UserError('You can only create Bill Statement from an invoice that has been set to \'Confirm\'.')
-        if self.ledger_ids:
-            raise exceptions.UserError('You cannot Bill already Billed Invoice')
-        self.state = 'bill'
-        self.bill_uid = self.env.user.id
-        self.bill_date = fields.Datetime.now()
-        self.create_ledger()
 
     def print_invoice(self):
         if not self.agent_id.logo:

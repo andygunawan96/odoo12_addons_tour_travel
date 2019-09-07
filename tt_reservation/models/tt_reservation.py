@@ -16,7 +16,7 @@ class TtReservation(models.Model):
 
     date = fields.Datetime('Booking Date', default=lambda self: fields.Datetime.now(), readonly=True, states={'draft': [('readonly', False)]})
     expired_date = fields.Datetime('Expired Date', readonly=True)  # fixme terpakai?
-    hold_date = fields.Datetime('Hold Date', readonly=True)
+    hold_date = fields.Datetime('Hold Date', readonly=True, states={'draft': [('readonly',False)]})
 
     state = fields.Selection(variables.BOOKING_STATE, 'State', default='draft')
 
@@ -348,6 +348,11 @@ class TtReservation(models.Model):
             'state': 'fail_issued'
         })
 
+    ##override fungsi ini untuk melakukan action extra jika expired
+    def action_expired(self):
+        self.state = 'cancel2'
+        pass
+
     def cron_expired_booking(self):
         try:
             for rec in variables.PROVIDER_TYPE:
@@ -355,7 +360,7 @@ class TtReservation(models.Model):
                 for booking in new_bookings:
                     try:
                         if datetime.now() >= (booking.hold_date or datetime.min):
-                            booking.state = 'cancel2'
+                            booking.action_expired()
                     except Exception as e:
                         _logger.error('%s something failed during expired cron.\n' % (booking.name) + traceback.format_exc())
         except Exception as e:

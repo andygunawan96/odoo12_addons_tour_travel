@@ -80,12 +80,17 @@ class TtCustomerParentInh(models.Model):
             pr = cor.name
             print(pr+ ' : '+','.join([str(rec.name) for rec in cor.billing_cycle_ids]))
 
-            ##search invoice cor tersebut
+            # create BS
+            new_bs_obj = self.env['tt.billing.statement'].create({})
 
+            ##search invoice cor tersebut
             invoice_list_obj = self.env['tt.agent.invoice'].search([('customer_parent_id','=',cor.id),('state','in',['draft','confirm'])])
             for inv in invoice_list_obj:
                 # if inv.state == 'draft':
                     # inv.action_confirm()
                 print(inv.name)
 
+
+
                 ##inv.bill
+

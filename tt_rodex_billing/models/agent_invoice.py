@@ -62,6 +62,31 @@ class AgentInvoice(models.Model):
                 'response': {}
             }
 
+    #manual
+    def action_bill(self):
+        # security : user_agent_supervisor
+        if self.state != 'confirm':
+            raise UserError('You can only create Bill Statement from an invoice that has been set to \'Confirm\'.')
+        if self.ledger_ids:
+            raise UserError('You cannot Bill already Billed Invoice')
+        self.state = 'bill'
+        self.bill_uid = self.env.user.id
+        self.bill_date = fields.Datetime.now()
+        self.create_ledger()
+
+    #cron
+    def action_bill2(self):
+        # security : user_agent_supervisor
+        if self.state != 'confirm':
+            raise UserError('You can only create Bill Statement from an invoice that has been set to \'Confirm\'.')
+        if self.ledger_ids:
+            raise UserError('You cannot Bill already Billed Invoice')
+        self.state = 'bill2'
+        self.bill_uid = self.env.user.id
+        self.bill_date = fields.Datetime.now()
+        self.create_ledger()
+
+
     def action_bill_api(self, obj_id, api_context=None):
         invoice_obj = self.browse(int(obj_id))
         if invoice_obj:
@@ -87,6 +112,32 @@ class AgentInvoice(models.Model):
                 'response': {}
             }
 
+    def create_ledger(self):
+        # create_ledger dilakukan saat state = bill atau bill2
+        # JIKA FPO : TIDAK BOLEH CREATE LEDGER
+        # if self.contact_id.booker_type == 'FPO':
+        #     return True
+        # fixme ini mau di apain rulesnya
+        # 1. pakai external ID corpor
+        # 2. kalau agent_id dan customer_parent_type_id nya berbeda
+        if self.customer_parent_type_id == self.env.ref('tt_base.agent_type_fpo'):
+            return True
+
+        ledger = self.env['tt.ledger'].sudo()
+        amount = 0
+        for rec in self.invoice_line_ids:
+            amount += rec.total
+
+        vals = ledger.prepare_vals('Agent Invoice : ' + self.name, self.name, datetime.datetime.now(), 'transport',
+                                   self.currency_id.id, 0, amount)
+        # vals['transport_booking_id'] = self.id
+        vals['agent_id'] = self.customer_parent_type_id.id
+        vals['agent_invoice_id'] = self.id
+
+        ledger.create(vals)
+        self.customer_parent_type_id.balance -= amount
+        self.customer_parent_type_id.actual_balance -= amount
+
     def action_write_model_api(self, model, rec_id, vals):
         rec_obj = self.env[model].browse(int(rec_id))
         if rec_obj:
@@ -99,40 +150,6 @@ class AgentInvoice(models.Model):
             self.state = 'confirm'
             self.confirmed_date = fields.Datetime.now()
             self.confirmed_uid = self.env.user.id
-
-    def create_billing_statement_new(self):
-        inv_by_cor = {}
-        for rec in self.search([('state', 'in', ['draft', 'confirm'])]):
-            try:
-                if rec.state == 'draft':
-                    rec.action_confirm()
-                customer_parent_id = rec.customer_parent_id.id
-                if customer_parent_id not in inv_by_cor:
-                    inv_by_cor[customer_parent_id] = {
-                        # 'payment_term_id': rec.payment_term_id.id and rec.payment_term_id.id or False,
-                        'due_date': fields.Date.context_today(rec) and fields.Date.context_today(rec) or False,
-                        'agent_id': rec.agent_id.id and rec.agent_id.id or False,
-                        'sub_agent_id': rec.sub_agent_id.id and rec.sub_agent_id.id or rec.agent_id.id,
-                        'contact_id': rec.contact_id and rec.contact_id.id or False,
-                        'invoice_ids': [(6, 0, rec.ids)],
-                    }
-                else:
-                    inv_by_cor[customer_parent_id]['invoice_ids'][0][2].append(rec.id)
-
-            except Exception as e:
-                _logger.error('Cron Error: Create Billing Statement New' + '\n' + traceback.format_exc())
-
-        for cor,value in inv_by_cor.items():
-            bill_obj = rec.env['tt.billing.statement'].create(value)
-            # bill_obj.onchange_sub_agent_id()  # Update payment_term, due_date
-            for record in bill_obj.invoice_ids:
-                # record.update({
-                #     'billing_statement_id': bill_obj.id,
-                # })
-                # record._onchange_payment_term_date_invoice()
-                record.action_bill()  # this call create_ledger for Agent Invoice
-                bill_obj.action_confirm()
-            rec.env.cr.commit()
 
     def create_billing_statement(self):
         if any(rec.state != 'confirm' for rec in self):
@@ -250,48 +267,3 @@ class AgentInvoice(models.Model):
             }
 
         return response
-
-# class ResPartnerRequest(models.Model):
-#     _inherit = 'res.partner.request'
-#
-#     agent_invoice_ids = fields.One2many('tt.agent.invoice', 'registration_id', 'Invoice(s)')
-#
-# class RequestPayment(models.Model):
-#     _inherit = 'tt.request.payment'
-#
-#     agent_inv_id = fields.Many2one('tt.agent.invoice', string='Agent Inv.')
-#
-#     @api.one
-#     def create_agent_invoice(self):
-#         def prepare_agent_invoice(cust_obj):
-#             return {
-#                 'origin': 'Registration ' + self.request_id.name,
-#                 'agent_id': self.request_id.reference_id.id,
-#                 'sub_agent_id': self.request_id.reference_id.id,
-#                 'contact_id': cust_obj.id,
-#                 'payment_term_id': False,
-#             }
-#
-#         Invoice = self.env['tt.agent.invoice']
-#         InvoiceLine = self.env['tt.agent.invoice.line']
-#         cust_obj = self.env['tt.customer.details'].create({
-#             'first_name': self.request_id.partner_id.name.split(' ')[:-1],
-#             'last_name': self.request_id.partner_id.name.split(' ')[-1:],
-#             'mobile': self.request_id.partner_id.mobile,
-#             'email': self.request_id.partner_id.email,
-#         })
-#         invoice = Invoice.create(prepare_agent_invoice(cust_obj))
-#         doc_name = self.name and self.name or ''
-#         values_line = {
-#             'name': 'Registration ' + self.request_id.agent_type_id.name + ' ' + self.request_id.name + ':' + doc_name,
-#             'price_unit': self.request_id.total_fee,
-#             'quantity': 1,
-#         }
-#         values_line.update({'invoice_id': invoice.id})
-#         InvoiceLine.sudo().create(values_line)
-#         return invoice.id
-#
-#     def action_paid(self):
-#         super(RequestPayment, self).action_paid()
-#         self.agent_inv_id = self.create_agent_invoice()
-#         self.agent_inv_id.registration_id = self.request_id.id
