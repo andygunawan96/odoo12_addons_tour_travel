@@ -409,29 +409,29 @@ class TourPricelist(models.Model):
             result = []
 
             for idx, rec in enumerate(result_temp):
-                if rec['departure_date']:
+                if rec.get('departure_date'):
                     if search_request['departure_month'] != '00':
                         if search_request['departure_year'] != '0000':
-                            if rec['departure_date'][:7] == search_request['departure_date']:
+                            if str(rec['departure_date'])[:7] == search_request['departure_date']:
                                 result.append(rec)
                         else:
-                            if rec['departure_date'][5:7] == search_request['departure_month']:
+                            if str(rec['departure_date'])[5:7] == search_request['departure_month']:
                                 result.append(rec)
                     elif search_request['departure_year'] != '0000':
-                        if rec['departure_date'][:4] == search_request['departure_year']:
+                        if str(rec['departure_date'])[:4] == search_request['departure_year']:
                             result.append(rec)
                     else:
                         result.append(rec)
                 if rec['start_period']:
                     if search_request['departure_month'] != '00':
                         if search_request['departure_year'] != '0000':
-                            if rec['start_period'][:7] <= search_request['departure_date'] <= rec['end_period'][:7]:
+                            if str(rec['start_period'])[:7] <= search_request['departure_date'] <= str(rec['end_period'])[:7]:
                                 result.append(rec)
                         else:
-                            if rec['start_period'][5:7] <= search_request['departure_month'] <= rec['end_period'][5:7]:
+                            if str(rec['start_period'])[5:7] <= search_request['departure_month'] <= str(rec['end_period'])[5:7]:
                                 result.append(rec)
                     elif search_request['departure_year'] != '0000':
-                        if rec['start_period'][:4] <= search_request['departure_year'] <= rec['end_period'][:4]:
+                        if str(rec['start_period'])[:4] <= search_request['departure_year'] <= str(rec['end_period'])[:4]:
                             result.append(rec)
                     else:
                         result.append(rec)
