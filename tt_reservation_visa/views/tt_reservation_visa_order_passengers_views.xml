@@ -15,7 +15,7 @@
                     <button string="Payment" name="action_add_payment" type="object" attrs="{'invisible': [('state', 'not in', ['in_process','re_confirm','confirm_payment'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
                     <button string="Confirm Payment" name="action_confirm_payment" type="object" attrs="{'invisible': [('state', 'not in', ['add_payment',])]}" groups="account.group_account_invoice"/>
                     <button string="Waiting Call" name="action_waiting" type="object" attrs="{'invisible': [('state', 'not in', ['in_process2'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <button string="Send Email Interview" name="action_send_email_interview" type="object" attrs="{'invisible': [('state', 'not in', ['in_process2'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <button string="Send Email Interview" name="action_send_email_interview" type="object" groups="tt_base.group_tt_tour_travel_operator"/>  <!-- attrs="{'invisible': [('state', 'not in', ['in_process2'])]}"-->
                     <button string="Proceed" name="action_proceed" type="object" attrs="{'invisible': [('state', '!=', 'waiting')]}" groups="tt_base.group_tt_tour_travel_operator"/>
                     <button string="Reject" name="action_reject" type="object" attrs="{'invisible': [('state', '!=', 'proceed')]}" groups="tt_base.group_tt_tour_travel_operator"/>
                     <button string="Accept" name="action_accept" type="object" attrs="{'invisible': [('state', '!=', 'proceed')]}" groups="tt_base.group_tt_tour_travel_operator"/>

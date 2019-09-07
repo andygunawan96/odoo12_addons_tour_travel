@@ -15,13 +15,13 @@ class AgentRegistrationCustomerContact(models.Model):
     agent_registration_id = fields.Many2one('tt.agent.registration', 'Agent Registration ID')
     # agent_id = fields.Many2one('tt.agent', 'Agent')
     customer_id = fields.Many2one('tt.customer', 'Customer', readonly=True)
-    first_name = fields.Char('First Name')
+    first_name = fields.Char('First Name', required=True)
     last_name = fields.Char('Last Name')
     gender = fields.Selection(variables.GENDER, string='Gender')
 
     marital_status = fields.Selection(variables.MARITAL_STATUS, 'Marital Status')
     religion = fields.Selection(variables.RELIGION, 'Religion')
     birth_date = fields.Date('Birth Date')
-    email = fields.Char('Email')
+    email = fields.Char('Email', required=True)
     phone = fields.Char('Phone')  # akan diubah mjd One2many
     mobile = fields.Char('Mobile')  # akan diubah mjd One2many

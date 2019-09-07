@@ -495,7 +495,6 @@ class IssuedOffline(models.Model):
             vals = self.env['tt.ledger'].prepare_vals_for_resv(self, vals)
             vals.update({
                 'pnr': pnr,
-                'provider_type_id': self.provider_type_id,
                 'display_provider_name': self.get_display_provider_name(),
                 'issued_uid': self.env.user.id,
             })
@@ -847,7 +846,7 @@ class IssuedOffline(models.Model):
                 "social_media_id": data_reservation_offline.get('social_media_id'),
                 "expired_date": data_reservation_offline.get('expired_date'),
                 'state': 'confirm',
-                'agent_id': context['agent_id'],
+                'agent_id': context['co_agent_id'],
                 'user_id': context['co_uid'],
             }
             if data_reservation_offline['type'] == 'airline':
@@ -881,8 +880,8 @@ class IssuedOffline(models.Model):
         else:  # jika tidak ada id booker
             country = country_env.search([('code', '=', booker.pop('nationality_code'))])
             booker.update({
-                'commercial_agent_id': context['agent_id'],
-                'agent_id': context['agent_id'],
+                'commercial_agent_id': context['co_agent_id'],
+                'agent_id': context['co_agent_id'],
                 'nationality_id': country and country[0].id or False,
                 'email': booker.get('email', booker['email']),
                 # 'mobile': booker.get('mobile', booker['mobile']),
@@ -911,8 +910,8 @@ class IssuedOffline(models.Model):
         else:
             country = country_env.search([('code', '=', contact.pop('nationality_code'))])  # diubah ke country_code
             contact.update({
-                'commercial_agent_id': context['agent_id'],
-                'agent_id': context['agent_id'],
+                'commercial_agent_id': context['co_agent_id'],
+                'agent_id': context['co_agent_id'],
                 'nationality_id': country and country[0].id or False,
                 # 'passenger_type': 'ADT',
                 'email': contact.get('email', contact['email'])
@@ -948,8 +947,8 @@ class IssuedOffline(models.Model):
             else:
                 country = country_env.search([('code', '=', con.pop('nationality_code'))])  # diubah ke country_code
                 con.update({
-                    'commercial_agent_id': context['agent_id'],
-                    'agent_id': context['agent_id'],
+                    'commercial_agent_id': context['co_agent_id'],
+                    'agent_id': context['co_agent_id'],
                     'nationality_id': country and country[0].id or False,
                     # 'passenger_type': 'ADT',
                     'email': con.get('email', con['email'])
@@ -966,8 +965,8 @@ class IssuedOffline(models.Model):
 
     def _set_customer_parent(self, context, contact):
         customer_parent_env = self.env['tt.customer.parent']
-        print('Agent ID : ' + str(context['agent_id']))
-        agent_obj = self.env['tt.agent'].search([('id', '=', context['agent_id'])])
+        print('Agent ID : ' + str(context['co_agent_id']))
+        agent_obj = self.env['tt.agent'].search([('id', '=', context['co_agent_id'])])
         # customer_parent_obj = customer_parent_env.sudo().search([('name', '=', context.agent_id.name + ' FPO')], limit=1)
         walkin_obj = agent_obj.customer_parent_walkin_id
         if walkin_obj:
@@ -979,7 +978,7 @@ class IssuedOffline(models.Model):
             # create new Customer Parent FPO
             walkin_obj = customer_parent_env.create(
                 {
-                    'parent_agent_id': context['agent_id'],
+                    'parent_agent_id': context['co_agent_id'],
                     'customer_parent_type_id': self.env.ref('tt_base.customer_type_fpo').id,
                     'name': agent_obj.name + ' FPO'
                 }
@@ -1026,7 +1025,7 @@ class IssuedOffline(models.Model):
 
                 psg.update({
                     'passenger_id': False,
-                    'agent_id': context['agent_id']
+                    'agent_id': context['co_agent_id']
                 })
                 psg_res = passenger_env.create(psg)
                 psg.update({

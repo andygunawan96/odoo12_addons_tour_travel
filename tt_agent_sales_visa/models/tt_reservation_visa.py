@@ -11,7 +11,6 @@ class ReservationVisa(models.Model):
 
     invoice_line_ids = fields.One2many('tt.agent.invoice.line', 'res_id_resv', 'Invoice')
 
-
     @api.depends('invoice_line_ids')
     def set_agent_invoice_state(self):
 
@@ -57,7 +56,7 @@ class ReservationVisa(models.Model):
             for srvc in psg['channel_service_charge_ids']:
                 price += srvc.amount
             inv_line_obj.write({
-                'invoice_line_detail_ids': [(0,0,{
+                'invoice_line_detail_ids': [(0, 0, {
                     'desc': desc_text,
                     'price_unit': price,
                     'quantity': 1,
