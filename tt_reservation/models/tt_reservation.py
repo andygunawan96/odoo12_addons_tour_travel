@@ -253,6 +253,17 @@ class TtReservation(models.Model):
 
         return res_ids
 
+    #passenger_obj di isi oleh self.env['']
+    def create_passenger_api(self,list_customer,passenger_obj):
+        list_passenger = []
+        for rec in list_customer:
+            vals = rec[0].copy_to_passenger()
+            if rec[1]:
+                vals.update(rec[1])
+            list_passenger.append(passenger_obj.create(vals).id)
+        return list_passenger
+
+
     def _compute_total_fare(self):
         fare_total = 0
         for rec in self.sale_service_charge_ids:

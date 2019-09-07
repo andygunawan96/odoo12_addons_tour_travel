@@ -120,7 +120,7 @@ class AgentInvoice(models.Model):
         # fixme ini mau di apain rulesnya
         # 1. pakai external ID corpor
         # 2. kalau agent_id dan customer_parent_type_id nya berbeda
-        if self.customer_parent_type_id == self.env.ref('tt_base.agent_type_fpo'):
+        if self.customer_parent_type_id == self.env.ref('tt_base.customer_type_fpo'):
             return True
 
         ledger = self.env['tt.ledger'].sudo()
