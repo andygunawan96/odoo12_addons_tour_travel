@@ -1153,7 +1153,7 @@ class MasterActivity(models.Model):
             category = ''
             if req.get('sub_category'):
                 if req['sub_category'] != '0':
-                    category = req['sub_category']
+                    category = req['sub_category'].split(' ')[0]
                 else:
                     get_cat_instead = 1
             else:
@@ -1161,7 +1161,7 @@ class MasterActivity(models.Model):
 
             if get_cat_instead:
                 if req.get('category'):
-                    category = req['category'] != '0' and req['category'] or ''
+                    category = req['category'] != '0' and req['category'].split(' ')[0] or ''
                 else:
                     category = ''
 

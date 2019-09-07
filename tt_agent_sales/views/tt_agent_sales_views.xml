@@ -23,7 +23,6 @@
                                 string="Print" type="object" icon="fa-print"/>
                     </div>
                     <div class="oe_title">
-                        <label for="name">Invoice</label>
                         <h1>
                             <field name="name" nolabel='1' placeholder="Name" readonly="True"/>
                         </h1>
@@ -44,7 +43,7 @@
                         <notebook>
                             <page string="Line">
                                 <field name="invoice_line_ids">
-                                    <tree create="false">
+                                    <tree>
                                         <field name="name"/>
                                         <field name="desc"/>
                                         <field name="model_type_id"/>
@@ -81,6 +80,10 @@
             <tree create="false" edit="false">
                 <field name="name"/>
                 <field name="state"/>
+                <field name="agent_id"/>
+                <field name="customer_parent_id"/>
+                <field name="total"/>
+                <field name="paid_amount"/>
             </tree>
         </field>
     </record>

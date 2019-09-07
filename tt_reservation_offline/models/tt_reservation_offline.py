@@ -979,7 +979,7 @@ class IssuedOffline(models.Model):
             walkin_obj = customer_parent_env.create(
                 {
                     'parent_agent_id': context['co_agent_id'],
-                    'customer_parent_type_id': self.env.ref('tt_base.agent_type_fpo').id,
+                    'customer_parent_type_id': self.env.ref('tt_base.customer_type_fpo').id,
                     'name': agent_obj.name + ' FPO'
                 }
             )

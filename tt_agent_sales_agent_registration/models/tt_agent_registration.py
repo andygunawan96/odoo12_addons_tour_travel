@@ -10,5 +10,3 @@ class AgentRegistration(models.Model):
                                      readonly=True)  # , compute='set_agent_invoice_state'
 
     invoice_line_ids = fields.One2many('tt.agent.registration.invoice.line', 'res_id_resv', 'Invoice')
-
-    invoice_names = fields.Char('Invoice Names', compute='_get_invoice_names')

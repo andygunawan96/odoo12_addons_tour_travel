@@ -77,7 +77,6 @@
                                 <tree create="false">
                                     <field name="name"/>
                                     <field name="date_invoice"/>
-                                    <field name="expired_date"/>
                                     <field name="total"/>
                                     <field name="state"/>
                                 </tree>

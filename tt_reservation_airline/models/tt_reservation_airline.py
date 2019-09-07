@@ -250,7 +250,7 @@ class ReservationAirline(models.Model):
             booker_obj = self.create_booker_api(booker,context)
             contact_obj = self.create_contact_api(contacts[0],booker_obj,context)
             list_customer_obj = self.create_customer_api(passengers,context,booker_obj.seq_id,contact_obj.seq_id,['title','sequence'])
-            list_passenger_id = self.create_passenger_api   (list_customer_obj)
+            list_passenger_id = self.create_passenger_api(list_customer_obj,self.env['tt.reservation.passenger.airline'])
 
             values.update({
                 'user_id': context['co_uid'],
@@ -511,16 +511,6 @@ class ReservationAirline(models.Model):
 
         return booking_tmp
 
-    def create_passenger_api(self,list_customer):
-        passenger_obj = self.env['tt.reservation.passenger.airline']
-        list_passenger = []
-        for rec in list_customer:
-            vals = rec[0].copy_to_passenger()
-            if rec[1]:
-                vals.update(rec[1])
-            list_passenger.append(passenger_obj.create(vals).id)
-        return list_passenger
-
     def _create_provider_api(self, providers, api_context):
         dest_obj = self.env['tt.destinations']
         provider_airline_obj = self.env['tt.provider.airline']
@@ -735,3 +725,8 @@ class ReservationAirline(models.Model):
         res = res and res[0] or {}
         datas['form'] = res
         return self.env.ref('tt_report_common.action_report_printout_reservation_airline').report_action([], data=datas)
+
+    def action_expired(self):
+        super(ReservationAirline, self).action_expired()
+        for provider in self.provider_booking_ids:
+            provider.action_expired()

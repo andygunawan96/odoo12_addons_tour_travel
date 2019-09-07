@@ -8,13 +8,6 @@ class ReservationHotel(models.Model):
     state_invoice = fields.Selection([('wait', 'Waiting'), ('partial', 'Partial'), ('full', 'Full')],
                                      'Invoice Status', help="Agent Invoice status", default='wait',
                                      readonly=True, compute='set_agent_invoice_state')
-    invoice_names = fields.Char('Invoice Names', compute='get_invoice_names')
-
-    def get_invoice_names(self):
-        name = ""
-        for rec in self.invoice_line_ids:
-            name = name and "%s~%s" % (name, rec.name_inv) or rec.name_inv
-        self.invoice_names = name
 
     @api.depends('invoice_line_ids')
     def set_agent_invoice_state(self):

@@ -84,39 +84,43 @@ class PricingProvider(models.Model):
 
             _obj = self.sudo().search([('provider_type_id', '=', provider_type_obj.id), ('active', '=', 1)])
 
-            response = {}
-            for rec in _obj:
-                if not rec.active:
-                    continue
-                temp = rec.get_pricing_data()
-                carrier_codes = temp.pop('carrier_codes')
-                providers = temp.pop('providers')
-                is_sale = temp.get('is_sale')
-                is_commission = temp.get('is_commission')
-                is_provider_commission = temp.get('is_provider_commission')
+            qs = [rec.get_pricing_data() for rec in _obj if rec.active]
 
-                # provider = rec.provider_id.code
-                # pricing_type = rec.pricing_type
+            # response = {}
+            # for rec in _obj:
+            #     if not rec.active:
+            #         continue
+            #     temp = rec.get_pricing_data()
+            #     carrier_codes = temp.pop('carrier_codes')
+            #     providers = temp.pop('providers')
+            #     is_sale = temp.get('is_sale')
+            #     is_commission = temp.get('is_commission')
+            #     is_provider_commission = temp.get('is_provider_commission')
+            #
+            #     for provider in providers:
+            #         if not response.get(provider):
+            #             response[provider] = {}
+            #
+            #         for carrier_code in carrier_codes:
+            #             if not response[provider].get(carrier_code):
+            #                 response[provider][carrier_code] = {}
+            #             if is_sale:
+            #                 response[provider][carrier_code].update({
+            #                     'sale': temp
+            #                 })
+            #             if is_commission:
+            #                 response[provider][carrier_code].update({
+            #                     'commission': temp
+            #                 })
+            #             if is_provider_commission:
+            #                 response[provider][carrier_code].update({
+            #                     'provider': temp
+            #                 })
 
-                for provider in providers:
-                    if not response.get(provider):
-                        response[provider] = {}
-
-                    for carrier_code in carrier_codes:
-                        if not response[provider].get(carrier_code):
-                            response[provider][carrier_code] = {}
-                        if is_sale:
-                            response[provider][carrier_code].update({
-                                'sale': temp
-                            })
-                        if is_commission:
-                            response[provider][carrier_code].update({
-                                'commission': temp
-                            })
-                        if is_provider_commission:
-                            response[provider][carrier_code].update({
-                                'provider': temp
-                            })
+            response = {
+                'pricing_providers': qs,
+                'provider_type': provider_type
+            }
             res = Response().get_no_error(response)
         except Exception as e:
             err_msg = '%s, %s' % (str(e), traceback.format_exc())

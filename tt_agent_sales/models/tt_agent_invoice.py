@@ -17,7 +17,8 @@ class AgentInvoice(models.Model):
     name = fields.Char('Name', default='New', readonly=True)
     total = fields.Monetary('Total', compute="_compute_total",store=True)
     paid_amount = fields.Monetary('Paid Amount', compute="_compute_paid_amount",store=True)
-    invoice_line_ids = fields.One2many('tt.agent.invoice.line','invoice_id','Invoice Line', readonly=True)
+    invoice_line_ids = fields.One2many('tt.agent.invoice.line','invoice_id','Invoice Line', readonly=True,
+                                       states={'draft': [('readonly', False)]})
     booker_id = fields.Many2one('tt.customer', 'Booker',readonly=True)
     type = fields.Selection([
         ('out_invoice', 'Customer Invoice'),
@@ -44,7 +45,7 @@ class AgentInvoice(models.Model):
              " * The 'Paid' status is set when the payment total .\n"
              " * The 'Cancelled' status is used when user cancel invoice.")
 
-    agent_id = fields.Many2one('tt.agent', string='Agent', required=True, readonly=True)
+    agent_id = fields.Many2one('tt.agent', string='Agent', required=True, readonly=True, states={'draft': [('readonly', False)]})
     customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer', readonly=True, states={'draft': [('readonly', False)]}, help='COR/POR Name')
     customer_parent_type_id = fields.Many2one('tt.customer.parent.type', 'Customer Parent Type',
                                               related='customer_parent_id.customer_parent_type_id')
@@ -66,9 +67,6 @@ class AgentInvoice(models.Model):
     confirmed_uid = fields.Many2one('res.users', 'Confirmed by', readonly=True)
     confirmed_date = fields.Datetime('Confirmed Date', readonly=True)
 
-    bill_uid = fields.Many2one('res.users', 'Billed by', readonly=True)
-    bill_date = fields.Datetime('Billed Date', readonly=True)
-
     date_invoice = fields.Date(string='Invoice Date', default=fields.Date.context_today,
                                index=True, copy=False, readonly=True)
     description = fields.Text('Description',readonly=True)
@@ -79,6 +77,8 @@ class AgentInvoice(models.Model):
         return super(AgentInvoice, self).create(vals_list)
     
     def write(self, vals):
+        #pengecekan paid di sini dan tidak di compute paid supaya status berubah ketika tekan tombol save
+        #jika tidak, saat pilih payment sebelum save bisa lgsg berubah jadi paid
         super(AgentInvoice, self).write(vals)
         if 'payment_ids' in vals:
             if self.check_paid_status():
@@ -97,9 +97,7 @@ class AgentInvoice(models.Model):
             self.confirmed_uid = self.env.user.id
 
     def check_paid_status(self):
-        if self.paid_amount >= self.total:
-            return True
-        return False
+        return self.paid_amount >= self.total and self.total != 0
 
     @api.multi
     @api.depends('invoice_line_ids.total')
@@ -111,11 +109,14 @@ class AgentInvoice(models.Model):
             inv.total = total
 
     @api.multi
-    @api.depends('payment_ids.pay_amount')
+    @api.depends('payment_ids.pay_amount','payment_ids.state')
     def _compute_paid_amount(self):
         for inv in self:
             paid_amount = 0
-            paid_amount = sum(rec.pay_amount for rec in inv.payment_ids if rec.create_date)
+            # paid_amount = sum(rec.pay_amount for rec in inv.payment_ids if (rec.create_date and rec.state in ['validate','validate2']))
+            for rec in inv.payment_ids:
+                if rec.create_date and rec.state in ['validated','validated2']:
+                    paid_amount += rec.pay_amount
             inv.paid_amount = paid_amount
 
     # def calculate_paid_amount(self):
@@ -132,47 +133,6 @@ class AgentInvoice(models.Model):
 
     def set_to_bill(self):
         self.state = 'bill'
-
-    def create_ledger(self):
-        # create_ledger dilakukan saat state = bill atau bill2
-
-        # JIKA FPO : TIDAK BOLEH CREATE LEDGER
-
-
-        # if self.contact_id.booker_type == 'FPO':
-        #     return True
-
-        #fixme ini mau di apain rulesnya
-        #1. pakai external ID corpor
-        #2. kalau agent_id dan customer_parent_type_id nya berbeda
-        if self.agent_id.id == self.customer_parent_type_id.id:
-            return True
-
-        ledger = self.env['tt.ledger'].sudo()
-        amount = 0
-        for rec in self.invoice_line_ids:
-            amount += rec.total
-            
-        vals = ledger.prepare_vals('Agent Invoice : ' + self.name, self.name, datetime.datetime.now(), 'transport',
-                                   self.currency_id.id, 0, amount)
-        # vals['transport_booking_id'] = self.id
-        vals['agent_id'] = self.customer_parent_type_id.id
-        vals['agent_invoice_id'] = self.id
-
-        ledger.create(vals)
-        self.customer_parent_type_id.balance -= amount
-        self.customer_parent_type_id.actual_balance -= amount
-
-    def action_bill(self):
-        # security : user_agent_supervisor
-        if self.state != 'confirm':
-            raise exceptions.UserError('You can only create Bill Statement from an invoice that has been set to \'Confirm\'.')
-        if self.ledger_ids:
-            raise exceptions.UserError('You cannot Bill already Billed Invoice')
-        self.state = 'bill'
-        self.bill_uid = self.env.user.id
-        self.bill_date = fields.Datetime.now()
-        self.create_ledger()
 
     def print_invoice(self):
         if not self.agent_id.logo:
