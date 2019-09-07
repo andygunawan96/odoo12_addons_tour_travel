@@ -59,6 +59,7 @@
                                         <sheet>
                                             <group>
                                                 <field name="country_id"/>
+                                                <field name="is_apply"/>
                                                 <field name="is_all_city"/>
                                             </group>
                                             <group attrs="{'invisible':[('is_all_city','=',True)]}">

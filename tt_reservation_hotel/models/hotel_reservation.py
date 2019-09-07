@@ -194,7 +194,7 @@ class HotelReservation(models.Model):
 
     def create_commission_ledger(self):
         # Create Commission
-        vals = self.env['tt.ledger'].prepare_vals('Commission : ' + self.name, self.name, self.issued_date, 'hotel',
+        vals = self.env['tt.ledger'].prepare_vals('Commission : ' + self.name, self.name, self.issued_date, 3,
                                                   self.currency_id.id, self.total_commission_amount, 0)
         vals = self.env['tt.ledger'].prepare_vals_for_resv(self, vals)
         self.create_agent_ledger(vals)
@@ -204,7 +204,7 @@ class HotelReservation(models.Model):
         for rec in self:
             rec.create_commission_ledger()
 
-            vals = self.env['tt.ledger'].prepare_vals('Reservation : '+ rec.name, rec.name, rec.issued_date, 'hotel', rec.currency_id.id, 0, rec.total)
+            vals = self.env['tt.ledger'].prepare_vals('Reservation : '+ rec.name, rec.name, rec.issued_date, 2, rec.currency_id.id, 0, rec.total)
             vals = self.env['tt.ledger'].prepare_vals_for_resv(rec, vals)
             rec.create_agent_ledger(vals)
 
@@ -212,7 +212,7 @@ class HotelReservation(models.Model):
     def _refund_ledger(self):
         ledger = self.env['tt.ledger']
         for rec in self:
-            vals = ledger.prepare_vals('Resv : ' + rec.name, rec.name, rec.issued_date, 'hotel', rec.currency_id.id, rec.total,
+            vals = ledger.prepare_vals('Resv : ' + rec.name, rec.name, rec.issued_date, 2, rec.currency_id.id, rec.total,
                                        0)
             vals['hotel_reservation_id'] = rec.id
             vals['agent_id'] = rec.agent_id.id

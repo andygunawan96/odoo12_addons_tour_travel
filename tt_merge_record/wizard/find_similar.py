@@ -16,9 +16,12 @@ class FindSimilar(models.TransientModel):
     def find_similar(self, rec_model, obj_str):
         obj_str_no_space = obj_str.replace(' ', '')
         obj_str_remark = obj_str.replace('-', '')
-        return self.env[rec_model].search(['|', '|', '|', ('name', 'ilike', obj_str), ('name', 'ilike', obj_str_no_space),
+        rec_ids = self.env[rec_model].search(['|', '|', '|', ('name', 'ilike', obj_str), ('name', 'ilike', obj_str_no_space),
                                            ('name', 'ilike', obj_str_remark), '&', ('name', 'ilike', obj_str_no_space[:3]),
                                            ('name', 'ilike', obj_str_remark[-3:])])
+        new_ids = []
+        rec_ids += self.env[rec_model].browse(new_ids)
+        return rec_ids
 
     @api.model
     def default_get(self, fields_list):

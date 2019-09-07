@@ -1,5 +1,7 @@
 from odoo import models,api,fields
 from datetime import datetime
+
+
 class ReservationTrain(models.Model):
 
     _inherit = 'tt.reservation.airline'
