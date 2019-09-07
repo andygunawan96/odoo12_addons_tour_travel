@@ -11,8 +11,6 @@ class ReservationVisa(models.Model):
 
     invoice_line_ids = fields.One2many('tt.agent.invoice.line', 'res_id_resv', 'Invoice')
 
-    invoice_names = fields.Char('Invoice Names', compute='_get_invoice_names')
-
     @api.depends('invoice_line_ids')
     def set_agent_invoice_state(self):
 
@@ -27,12 +25,6 @@ class ReservationVisa(models.Model):
             self.state_invoice = 'full'
         elif any(state != 'draft' for state in states):
             self.state_invoice = 'partial'
-
-    def _get_invoice_names(self):
-        name = ""
-        for rec in self.invoice_line_ids:
-            name = name and "%s~%s" % (name, rec.name_inv) or rec.name_inv
-        self.invoice_names = name
 
     def action_create_invoice(self):
         invoice_id = self.env['tt.agent.invoice'].search(
@@ -64,7 +56,7 @@ class ReservationVisa(models.Model):
             for srvc in psg['channel_service_charge_ids']:
                 price += srvc.amount
             inv_line_obj.write({
-                'invoice_line_detail_ids': [(0,0,{
+                'invoice_line_detail_ids': [(0, 0, {
                     'desc': desc_text,
                     'price_unit': price,
                     'quantity': 1,

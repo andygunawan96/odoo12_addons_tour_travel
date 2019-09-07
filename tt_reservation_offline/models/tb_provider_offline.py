@@ -11,19 +11,8 @@ class ProviderOffline(models.Model):
 
     pnr = fields.Char('PNR')
     provider = fields.Char('Provider')
-    # state = fields.Selection(BOOKING_STATE, 'Status', default='draft')
     booking_id = fields.Many2one('tt.reservation.offline', 'Order Number', ondelete='cascade')
     sequence = fields.Integer('Sequence')
-
-    # direction = fields.Selection(JOURNEY_DIRECTION, string='Direction')
-    # origin_id = fields.Many2one('tt.destinations', 'Origin')
-    # destination_id = fields.Many2one('tt.destinations', 'Destination')
-    # departure_date = fields.Datetime('Departure Date')
-    # return_date = fields.Datetime('Return Date')
-    # origin = fields.Char('Origin')
-    # destination = fields.Char('Destination')
-
-    # journey_ids = fields.One2many('tt.tb.journey.train', 'provider_booking_id', string='Journeys')
     sale_service_charge_ids = fields.One2many('tt.service.charge', 'provider_offline_booking_id', 'Cost Service Charges')
 
     currency_id = fields.Many2one('res.currency', 'Currency', readonly=True, states={'draft': [('readonly', False)]},
@@ -33,12 +22,6 @@ class ProviderOffline(models.Model):
     total_orig = fields.Monetary(string='Total (Original)', readonly=True)
     promotion_code = fields.Char(string='Promotion Code')
 
-    # sid_connector = fields.Char('SID Connector', readonly=True)
-    # sid = fields.Char('Session ID', readonly=True)
-
-    # Booking Progress
-    # booked_uid = fields.Many2one('res.users', 'Booked By')
-    # booked_date = fields.Datetime('Booking Date')
     confirm_uid = fields.Many2one('res.users', 'Confirmed By')
     confirm_date = fields.Datetime('Confirm Date')
     sent_uid = fields.Many2one('res.users', 'Sent By')
@@ -47,11 +30,6 @@ class ProviderOffline(models.Model):
     issued_date = fields.Datetime('Issued Date')
     hold_date = fields.Datetime('Hold Date')
     expired_date = fields.Datetime('Expired Date')
-    #
-    # refund_uid = fields.Many2one('res.users', 'Refund By')
-    # refund_date = fields.Datetime('Refund Date')
-
-    # ticket_ids = fields.One2many('tt.tb.ticket.train', 'provider_id', 'Ticket Number')
 
     error_msg = fields.Text('Message Error', readonly=True, states={'draft': [('readonly', False)]})
 
