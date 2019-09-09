@@ -28,9 +28,11 @@ class TtCustomerParentInh(models.Model):
 
     @api.model
     def create(self, vals_list):
-        if not vals_list['billing_cycle_ids'][0][2] if vals_list.get('billing_cycle_ids') else False:
-            print('default kan billing cycle ke daily')
-            vals_list['billing_cycle_ids'][0] = self.default_cycle()
+        if vals_list.get('billing_cycle_ids'):
+            val_cycle = vals_list['billing_cycle_ids'][0] ## hard code ke create list index 0
+            if not val_cycle[2]: ## hard code 6,0,ids kosong
+                print('default kan billing cycle ke daily')
+                vals_list['billing_cycle_ids'] = self.default_cycle()
         else:
             self.ensure_one_no_billing(vals_list)
         return super(TtCustomerParentInh, self).create(vals_list)
@@ -46,7 +48,7 @@ class TtCustomerParentInh(models.Model):
                 vals['billing_cycle_ids'][0] = [6,0,[no_billing_id]]
 
     def default_cycle(self):
-        return [4,self.env.ref('tt_rodex_billing.billing_cycle_daily').id]
+        return [(6,0,[self.env.ref('tt_rodex_billing.billing_cycle_daily').id])]
 
     #might be deprecated
     def _check_billing_cycle(self,date_param):

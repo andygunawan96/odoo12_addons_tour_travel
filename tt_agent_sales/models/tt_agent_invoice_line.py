@@ -30,8 +30,17 @@ class AgentInvoice(models.Model,test_to_dict.ToDict):
     desc = fields.Text('Description')
 
     def create(self, vals_list):
-        if 'name' not in vals_list:
-            vals_list[0]['name'] = self.env['ir.sequence'].next_by_code('agent.invoice.line')
+        # yang harusnya di pakai
+        # if 'name' not in vals_list:
+        #     vals_list['name'] = self.env['ir.sequence'].next_by_code('agent.invoice.line')
+
+        ##utk debugging karena bisa jadi list val
+        if type(vals_list) == dict:
+            vals_list = [vals_list]
+        for rec in vals_list:
+            if 'name' not in rec:
+                rec['name'] = self.env['ir.sequence'].next_by_code('agent.invoice.line')
+        #####
 
         new_invoice_line = super(AgentInvoice, self).create(vals_list)
 

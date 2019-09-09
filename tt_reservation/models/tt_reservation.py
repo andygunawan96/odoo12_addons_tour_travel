@@ -263,7 +263,6 @@ class TtReservation(models.Model):
             list_passenger.append(passenger_obj.create(vals).id)
         return list_passenger
 
-
     def _compute_total_fare(self):
         fare_total = 0
         for rec in self.sale_service_charge_ids:

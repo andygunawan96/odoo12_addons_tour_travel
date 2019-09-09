@@ -133,7 +133,7 @@ class TtTopUp(models.Model):
         vals['agent_id'] = self.agent_id.id
         new_aml = ledger_obj.create(vals)
         self.write({
-            'state':'valid',
+            'state': 'valid',
             'ledger_id': new_aml.id,
             'validate_uid': self.env.user.id,
             'validate_date': datetime.now()
