@@ -1,4 +1,5 @@
 from odoo import api, fields, models, _
+from datetime import datetime
 
 
 class TtLedger(models.Model):
@@ -19,3 +20,14 @@ class TtLedger(models.Model):
             'agent_type_id': agent_regis_obj.parent_agent_id.agent_type_id.id
         })
         return vals
+
+    def create_agent_comm_ledger(self):
+        ledger = self.env['tt.ledger']
+
+        agent_comm_vals = ledger.prepare_vals('Recruit Comm. : ' + self.name, 'Recruit Comm. : ' + self.name,
+                                              datetime.now(), 3, self.currency_id.id, line.amount, 0)
+        agent_comm_vals = ledger.prepare_vals_for_agent_regis(self, agent_comm_vals)
+        agent_comm_vals.update({
+            'agent_id': self.parent_agent_id.id
+        })
+        self.env['tt.ledger'].create(agent_comm_vals)

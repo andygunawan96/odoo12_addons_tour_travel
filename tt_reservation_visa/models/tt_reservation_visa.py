@@ -911,37 +911,38 @@ class TtVisa(models.Model):
 
     @api.one
     def action_issued_visa(self, api_context=None):
-        if not api_context:  # Jika dari call from backend
-            api_context = {
-                'co_uid': self.env.user.id
-            }
-        if not api_context.get('co_uid'):
-            api_context.update({
-                'co_uid': self.env.user.id
-            })
+        for rec in self:
+            if not api_context:  # Jika dari call from backend
+                api_context = {
+                    'co_uid': rec.env.user.id
+                }
+            if not api_context.get('co_uid'):
+                api_context.update({
+                    'co_uid': rec.env.user.id
+                })
 
-        vals = {}
+            vals = {}
 
-        if self.name == 'New':
+            if rec.name == 'New':
+                vals.update({
+                    'state': 'partial_booked',
+                })
+
             vals.update({
-                'state': 'partial_booked',
+                'state': 'issued',
+                'issued_uid': api_context['co_uid'],
+                'issued_date': datetime.now(),
+                'confirmed_uid': api_context['co_uid'],
+                'confirmed_date': datetime.now(),
             })
 
-        vals.update({
-            'state': 'issued',
-            'issued_uid': api_context['co_uid'],
-            'issued_date': datetime.now(),
-            'confirmed_uid': api_context['co_uid'],
-            'confirmed_date': datetime.now(),
-        })
+            self.write(vals)
 
-        self.write(vals)
-
-        self._compute_commercial_state()
-        self._create_ledger_visa()
-        self._create_ho_ledger_visa()
-        self._create_commission_ledger_visa()
-        self._calc_grand_total()
+            self._compute_commercial_state()
+            self._create_ledger_visa()
+            self._create_ho_ledger_visa()
+            self._create_commission_ledger_visa()
+            self._calc_grand_total()
 
     def _create_ho_ledger_visa(self):
         ledger = self.env['tt.ledger']
@@ -997,9 +998,6 @@ class TtVisa(models.Model):
             ledger_obj = rec.env['tt.ledger']
             agent_commission, parent_commission, ho_commission = rec.agent_id.agent_type_id.calc_commission(
                 rec.total_commission, 1)
-            # print('Agent Comm : ' + str(agent_commission))
-            # print('Parent Comm : ' + str(parent_commission))
-            # print('HO Comm : ' + str(ho_commission))
 
             if agent_commission > 0:
                 vals = ledger_obj.prepare_vals('Commission : ' + rec.name, rec.name, rec.issued_date, 3,
@@ -1008,13 +1006,7 @@ class TtVisa(models.Model):
                 vals.update({
                     'description': 'Agent Commission'
                 })
-                # vals.update({
-                #     'agent_id': rec.agent_id.id,
-                #     'res_id': rec.id,
-                # })
                 commission_aml = ledger_obj.create(vals)
-                # commission_aml.action_done()
-                # rec.commission_ledger_id = commission_aml.id
             if parent_commission > 0:
                 vals = ledger_obj.prepare_vals('Commission : ' + rec.name, 'PA: ' + rec.name, rec.issued_date,
                                                3, rec.currency_id.id, parent_commission, 0)
@@ -1024,8 +1016,6 @@ class TtVisa(models.Model):
                     'description': 'Parent Agent Commission'
                 })
                 commission_aml = ledger_obj.create(vals)
-                # commission_aml.action_done()
-
             if int(ho_commission) > 0:
                 vals = ledger_obj.prepare_vals('Commission : ' + rec.name, 'HO: ' + rec.name, rec.issued_date,
                                                3, rec.currency_id.id, ho_commission, 0)
@@ -1036,7 +1026,6 @@ class TtVisa(models.Model):
                     'description': 'HO Commission'
                 })
                 commission_aml = ledger_obj.create(vals)
-                # commission_aml.action_done()
         print('Total Fare : ' + str(self.total_fare))
 
     # ANTI / REVERSE LEDGER
@@ -1064,6 +1053,7 @@ class TtVisa(models.Model):
             vals.update({
                 'agent_id': self.env['tt.agent'].sudo().search([('parent_agent_id', '=', False)], limit=1).id,
                 'description': 'REVERSAL ' + desc,
+                'is_reversed': True
             })
 
             new_aml = ledger.create(vals)
@@ -1080,11 +1070,6 @@ class TtVisa(models.Model):
             desc = ''
 
             for sc in rec.sale_service_charge_ids:
-                # if rec.transport_type == 'passport':
-                #     if not sc.pricelist_id.apply_type in doc_type:
-                #         doc_type.append(sc.pricelist_id.apply_type)
-                #     desc = sc.pricelist_id.passport_type.upper() + ' ' + sc.pricelist_id.apply_type.upper()
-                # else:
                 if sc.pricelist_id.visa_type not in doc_type:
                     doc_type.append(sc.pricelist_id.visa_type)
                 if sc.pricelist_id.display_name:
@@ -1099,6 +1084,7 @@ class TtVisa(models.Model):
             # vals['display_provider_name'] = rec.display_provider_name
             vals.update({
                 'description': 'REVERSAL ' + desc,
+                'is_reversed': True
             })
 
             new_aml = ledger.create(vals)
@@ -1115,11 +1101,12 @@ class TtVisa(models.Model):
             agent_commission, parent_commission, ho_commission = rec.agent_id.agent_type_id.calc_commission(
                 rec.total_commission, 1)
             if agent_commission > 0:
-                vals = ledger_obj.prepare_vals('Commission : ' + rec.name, rec.name, rec.issued_date, 'commission',
+                vals = ledger_obj.prepare_vals('Commission : ' + rec.name, rec.name, rec.issued_date, 3,
                                                rec.currency_id.id, 0, agent_commission)
                 vals = ledger_obj.prepare_vals_for_resv(self, vals)
                 vals.update({
                     'description': 'REVERSAL - Agent Commission',
+                    'is_reversed': True
                 })
                 commission_aml = ledger_obj.create(vals)
                 commission_aml.update({
@@ -1134,6 +1121,7 @@ class TtVisa(models.Model):
                 vals.update({
                     'agent_id': rec.agent_id.parent_agent_id.id,
                     'description': 'REVERSAL - Parent Agent Commission',
+                    'is_reversed': True
                 })
                 commission_aml_parent = ledger_obj.create(vals)
                 commission_aml_parent.update({
@@ -1148,6 +1136,7 @@ class TtVisa(models.Model):
                     'agent_id': rec.env['tt.agent'].sudo().search(
                         [('parent_agent_id', '=', False)], limit=1).id,
                     'description': 'REVERSAL - HO Commission',
+                    'is_reversed': True
                 })
                 commission_aml_ho = ledger_obj.create(vals)
                 commission_aml_ho.update({

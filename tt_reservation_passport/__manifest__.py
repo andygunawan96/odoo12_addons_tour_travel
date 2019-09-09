@@ -26,6 +26,7 @@
     'data': [
         'security/ir.model.access.csv',
         'data/ir_sequence_data.xml',
+        'data/ir_send_email.xml',
         'views/tt_reservation_passport_menuheader.xml',
         'views/tt_reservation_passport_views.xml',
         'views/tt_reservation_passport_order_passengers_views.xml',

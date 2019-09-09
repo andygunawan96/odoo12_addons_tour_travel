@@ -22,7 +22,6 @@ class TtAgentType(models.Model):
     registration_form = fields.Html(string="Registration Form")
     document = fields.Char(string="Document", required=False, )
     agent_ids = fields.One2many('tt.agent', 'agent_type_id', 'Agent')
-    # is_allow_regis = fields.Boolean('Allow Registration', default=False)
     can_register_agent = fields.Boolean('Can Register Agent', default=False)
     can_be_registered = fields.Boolean('Can be Registered', default=False)
     commission_rule_ids = fields.One2many('tt.commission.rule', 'agent_type_id', 'Commission Rule(s)')

@@ -17,3 +17,16 @@ class HotelFacility(models.Model):
     image_url = fields.Char('Image URL #1')
     image_url2 = fields.Char('Image URL #2')
     image_url3 = fields.Char('Image URL #3')
+
+
+class HotelTopFacility(models.Model):
+    _name = 'tt.hotel.top.facility'
+    _order = 'sequence, id'
+
+    name = fields.Char('Name')
+    facility_id = fields.Many2one('tt.hotel.facility', 'Facility')
+    image_url = fields.Char('Image URL #1')
+    image_url2 = fields.Char('Image URL #2')
+    image_url3 = fields.Char('Image URL #3')
+    sequence = fields.Integer('Sequence')
+    active = fields.Boolean('Active', default=True)

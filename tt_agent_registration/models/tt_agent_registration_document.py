@@ -29,15 +29,9 @@ class AgentRegistrationDocument(models.Model):
 class AgentRegistrationDocumentType(models.Model):
     _name = 'tt.document.type'
 
-    name = fields.Char('Name')
+    name = fields.Char('Name', required=True)
     description = fields.Text('Description')
     active = fields.Boolean('Active', default=True)
     document_type = fields.Selection([('opening', 'Opening'), ('registration', 'Registration')], 'Document Type')
     agent_type_ids = fields.Many2many('tt.agent.type', 'tt_agent_type_document_type_1_2_rel', 'document_type_id', 'agent_type_id', 'Agent Type',
                                       help='''Agent Type yang memerlukan persyaratan suatu dokumen.''')
-
-
-class AgentRegistrationAgentType(models.Model):
-    _inherit = 'tt.agent.type'
-
-    document_type_id = fields.Many2one('tt.document.type', 'Document Type')

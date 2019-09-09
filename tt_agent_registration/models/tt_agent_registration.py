@@ -1,5 +1,5 @@
 from odoo import models, fields, api, _
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from odoo.exceptions import UserError
 from ...tools.api import Response
 import base64
@@ -42,18 +42,23 @@ class AgentRegistration(models.Model):
                                      done = Done''')
     active = fields.Boolean('Active', default=True)
     parent_agent_id = fields.Many2one('tt.agent', string="Parent Agent", Help="Agent who became Parent of This Agent",
-                                      readonly=True, compute='default_parent_agent_id')
+                                      readonly=True)
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', required=True)
-    partner_id = fields.Many2one('tt.agent', 'Partner id', readonly=True)
+    agent_id = fields.Many2one('tt.agent', 'Agent ID', readonly=True)
     currency_id = fields.Many2one('res.currency', string='Currency')
     company_type = fields.Selection(COMPANY_TYPE, 'Company Type', default='individual')
     registration_num = fields.Char('Registration No.', readonly=True)
     registration_fee = fields.Float('Registration Fee', store=True, compute='get_registration_fee')
-    discount = fields.Float('Discount', readonly=True, states={'draft': [('readonly', False)],
-                                                               'confirm': [('readonly', False)]})
+    # promotion_id required supaya agent yang merekrut bisa dapat komisi
+    promotion_id = fields.Many2one('tt.agent.registration.promotion', 'Promotion', readonly=True, required=True,
+                                   states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]},
+                                   domain=lambda self: [("agent_type_id", "=", self.env.user.agent_id.agent_type_id.id),
+                                                        ("start_date", "<=", date.today().strftime('%d/%m/%Y')),
+                                                        ("end_date", ">=", date.today().strftime('%d/%m/%Y'))])
+    discount = fields.Float('Discount', readonly=True, compute='compute_discount')
     opening_balance = fields.Float('Opening Balance', readonly=True, states={'draft': [('readonly', False)],
                                                                              'confirm': [('readonly', False)]})
-    total_fee = fields.Monetary('Total Fee', store=True, compute='compute_total_fee')
+    total_fee = fields.Monetary('Total Fee', compute='compute_total_fee')
     registration_date = fields.Datetime('Registration Date', required=True, readonly=True,
                                         states={'draft': [('readonly', False)]})
     expired_date = fields.Date('Expired Date', readonly=True, states={'draft': [('readonly', False)]})
@@ -100,13 +105,6 @@ class AgentRegistration(models.Model):
     tac = fields.Text('Terms and Conditions', readonly=True, states={'draft': [('readonly', False)],
                                                                      'confirm': [('readonly', False)]})
 
-    # def print_report_printout_invoice(self):
-    #     data = {
-    #         'ids': self.ids,
-    #         'model': self._name
-    #     }
-    #     self.env.ref('printout_invoice_model').report_action(self, data=data)
-
     def print_agent_registration_invoice(self):
         data = {
             'ids': self.ids,
@@ -114,13 +112,29 @@ class AgentRegistration(models.Model):
         }
         return self.env.ref('tt_agent_registration.action_report_printout_invoice').report_action(self, data=data)
 
-    @api.onchange('agent_type_id')
-    @api.depends('agent_type_id')
-    def default_parent_agent_id(self):
+    @api.onchange('promotion_id', 'agent_type_id')
+    @api.depends('promotion_id', 'agent_type_id')
+    def compute_discount(self):
+        for rec in self:
+            if self.agent_type_id and self.promotion_id:
+                promotion_obj = self.env['tt.agent.registration.promotion'].search([('id', '=', self.promotion_id.id)], limit=1)
+                rec.discount = 0
+                for line in promotion_obj.agent_type_ids:
+                    if line.agent_type_id == self.agent_type_id:
+                        if line.discount_amount_type == 'percentage':
+                            rec.discount += rec.total_fee * line.discount_amount / 100
+                        else:
+                            rec.discount += line.discount_amount
+                rec.compute_total_fee()
+            else:
+                pass
+
+    def set_parent_agent_id(self):
         for rec in self:
             if rec.agent_type_id:
-                if rec.agent_type_id.name == 'Citra':
-                    rec.parent_agent_id = rec.env['tt.agent'].sudo().search([('agent_type_id.name', '=', 'HO')], limit=1)
+                if rec.agent_type_id.code == 'citra':
+                    rec.parent_agent_id = rec.env['tt.agent'].sudo().search([('agent_type_id.code', '=', 'ho')],
+                                                                            limit=1)
                 else:
                     rec.parent_agent_id = rec.env.user.agent_id
             else:
@@ -130,6 +144,7 @@ class AgentRegistration(models.Model):
     @api.onchange('agent_type_id')
     def get_registration_fee(self):
         for rec in self:
+            rec.promotion_id = False
             rec.registration_fee = rec.agent_type_id.registration_fee
 
     @api.depends('registration_fee', 'discount')
@@ -203,36 +218,123 @@ class AgentRegistration(models.Model):
             if self.tac is False or '':
                 raise UserError('Terms and Conditions is Empty')
 
+    def get_parent_citra(self, parent_agent_id):
+        if parent_agent_id.parent_agent_id.agent_type_id.code == 'citra':
+            return parent_agent_id.parent_agent_id
+        else:
+            return self.get_parent_citra(parent_agent_id.parent_agent_id)
+
     def calc_commission(self):
         # Hitung dulu semua komisi, lalu masukkan ke dalam ledger
-        agent_comm, parent_agent_comm, ho_comm = self.agent_type_id.calc_recruitment_commission(self.parent_agent_id.agent_type_id, self.total_fee)
+        # agent_comm, parent_agent_comm, ho_comm = self.agent_type_id.calc_recruitment_commission(self.parent_agent_id.agent_type_id, self.total_fee)
+        # ledger = self.env['tt.ledger']
+        #
+        # agent_comm_vals = ledger.prepare_vals('Recruit Comm. : ' + self.name, 'Recruit Comm. : ' + self.name,
+        #                                       datetime.now(), 3, self.currency_id.id, agent_comm, 0)
+        # agent_comm_vals = ledger.prepare_vals_for_agent_regis(self, agent_comm_vals)
+        # self.env['tt.ledger'].create(agent_comm_vals)
+        #
+        # parent_agent_comm_vals = self.env['tt.ledger'].prepare_vals('Recruit Comm. Parent: ' + self.name,
+        #                                                             'Recruit Comm. Parent: ' + self.name,
+        #                                                             datetime.now(), 3, self.currency_id.id,
+        #                                                             parent_agent_comm, 0)
+        # parent_agent_comm_vals = ledger.prepare_vals_for_agent_regis(self, parent_agent_comm_vals)
+        # parent_agent_comm_vals.update({
+        #     'agent_id': self.parent_agent_id.id
+        # })
+        # self.env['tt.ledger'].create(parent_agent_comm_vals)
+        #
+        # ho_comm_vals = self.env['tt.ledger'].prepare_vals('Recruit Comm. HO: ' + self.name,
+        #                                                   'Recruit Comm. HO: ' + self.name, datetime.now(),
+        #                                                   3, self.currency_id.id, ho_comm, 0)
+        # ho_comm_vals = ledger.prepare_vals_for_agent_regis(self, ho_comm_vals)
+        # ho_comm_vals.update({
+        #     'agent_id': self.env['tt.agent'].sudo().search([('agent_type_id.name', '=', 'HO')], limit=1).id
+        # })
+        # self.env['tt.ledger'].create(ho_comm_vals)
+        self.calc_ledger()
+        line_obj = self.env['tt.agent.registration.promotion.agent.type'].search(
+            [('promotion_id', '=', self.promotion_id.id), ('agent_type_id', '=', self.agent_type_id.id)])
+        if self.reference_id.agent_type_id.code == 'japro':
+            self.calc_commission_japro(line_obj)
+        elif self.reference_id.agent_type_id.code == 'citra':
+            self.calc_commission_citra(line_obj)
+
+    def calc_ledger(self):
         ledger = self.env['tt.ledger']
 
-        agent_comm_vals = ledger.prepare_vals('Recruit Comm. : ' + self.name, 'Recruit Comm. : ' + self.name,
-                                              datetime.now(), 3, self.currency_id.id, agent_comm, 0)
+        agent_comm_vals = ledger.prepare_vals('Recruit Fee : ' + self.name, 'Recruit Fee : ' + self.name,
+                                              datetime.now(), 3, self.currency_id.id, 0, self.total_fee)
         agent_comm_vals = ledger.prepare_vals_for_agent_regis(self, agent_comm_vals)
-        self.env['tt.ledger'].create(agent_comm_vals)
-
-        parent_agent_comm_vals = self.env['tt.ledger'].prepare_vals('Recruit Comm. Parent: ' + self.name,
-                                                                    'Recruit Comm. Parent: ' + self.name,
-                                                                    datetime.now(), 3, self.currency_id.id,
-                                                                    parent_agent_comm, 0)
-        parent_agent_comm_vals = ledger.prepare_vals_for_agent_regis(self, parent_agent_comm_vals)
-        parent_agent_comm_vals.update({
+        agent_comm_vals.update({
             'agent_id': self.parent_agent_id.id
         })
-        self.env['tt.ledger'].create(parent_agent_comm_vals)
+        self.env['tt.ledger'].create(agent_comm_vals)
 
-        ho_comm_vals = self.env['tt.ledger'].prepare_vals('Recruit Comm. HO: ' + self.name,
-                                                          'Recruit Comm. HO: ' + self.name, datetime.now(),
-                                                          3, self.currency_id.id, ho_comm, 0)
-        ho_comm_vals = ledger.prepare_vals_for_agent_regis(self, ho_comm_vals)
-        ho_comm_vals.update({
+    def calc_commission_citra(self, line_obj):
+        amount_remaining = self.total_fee
+        for line in line_obj.line_ids:
+            if line.agent_type_id.code == 'citra':
+                ledger = self.env['tt.ledger']
+
+                agent_comm_vals = ledger.prepare_vals('Recruit Comm. : ' + self.name, 'Recruit Comm. : ' + self.name,
+                                                      datetime.now(), 3, self.currency_id.id, line.amount, 0)
+                agent_comm_vals = ledger.prepare_vals_for_agent_regis(self, agent_comm_vals)
+                agent_comm_vals.update({
+                    'agent_id': self.reference_id.id
+                })
+                self.env['tt.ledger'].create(agent_comm_vals)
+                amount_remaining -= line.amount
+        # HO
+        ledger = self.env['tt.ledger']
+
+        agent_comm_vals = ledger.prepare_vals('Recruit Comm. HO : ' + self.name, 'Recruit Comm. HO : ' +
+                                              self.name, datetime.now(), 3, self.currency_id.id, amount_remaining,
+                                              0)
+        agent_comm_vals = ledger.prepare_vals_for_agent_regis(self, agent_comm_vals)
+        agent_comm_vals.update({
             'agent_id': self.env['tt.agent'].sudo().search([('agent_type_id.name', '=', 'HO')], limit=1).id
         })
-        self.env['tt.ledger'].create(ho_comm_vals)
+        self.env['tt.ledger'].create(agent_comm_vals)
 
-    def create_opening_balance_ledger(self):
+    def calc_commission_japro(self, line_obj):
+        citra_parent_agent = self.get_parent_citra(self.parent_agent_id)
+        amount_remaining = self.total_fee
+        for line in line_obj.line_ids:
+            if line.agent_type_id.code == 'citra':
+                ledger = self.env['tt.ledger']
+
+                agent_comm_vals = ledger.prepare_vals('Recruit Comm. Parent : ' + self.name, 'Recruit Comm. Parent : ' +
+                                                      self.name, datetime.now(), 3, self.currency_id.id, line.amount, 0)
+                agent_comm_vals = ledger.prepare_vals_for_agent_regis(self, agent_comm_vals)
+                agent_comm_vals.update({
+                    'agent_id': citra_parent_agent.id
+                })
+                self.env['tt.ledger'].create(agent_comm_vals)
+                amount_remaining -= line.amount
+            elif line.agent_type_id.code == 'japro':
+                ledger = self.env['tt.ledger']
+
+                agent_comm_vals = ledger.prepare_vals('Recruit Comm. : ' + self.name, 'Recruit Comm. : ' + self.name,
+                                                      datetime.now(), 3, self.currency_id.id, line.amount, 0)
+                agent_comm_vals = ledger.prepare_vals_for_agent_regis(self, agent_comm_vals)
+                agent_comm_vals.update({
+                    'agent_id': self.reference_id.id
+                })
+                self.env['tt.ledger'].create(agent_comm_vals)
+                amount_remaining -= line.amount
+        # HO
+        ledger = self.env['tt.ledger']
+
+        agent_comm_vals = ledger.prepare_vals('Recruit Comm. HO : ' + self.name, 'Recruit Comm. HO : ' +
+                                              self.name, datetime.now(), 3, self.currency_id.id, amount_remaining, 0)
+        agent_comm_vals = ledger.prepare_vals_for_agent_regis(self, agent_comm_vals)
+        agent_comm_vals.update({
+            'agent_id': self.env['tt.agent'].sudo().search([('agent_type_id.name', '=', 'HO')], limit=1).id
+        })
+        self.env['tt.ledger'].create(agent_comm_vals)
+
+    def create_opening_balance_ledger(self, agent_id):
         ledger = self.env['tt.ledger']
 
         vals_credit = self.env['tt.ledger'].prepare_vals('Opening Balance : ' + self.name,
@@ -240,7 +342,7 @@ class AgentRegistration(models.Model):
                                                          self.currency_id.id, 0, self.opening_balance)
         vals_credit = ledger.prepare_vals_for_agent_regis(self, vals_credit)
         vals_credit.update({
-            'agent_id': self.parent_agent_id.id,
+            'agent_id': self.reference_id.id,
         })
         self.env['tt.ledger'].create(vals_credit)
 
@@ -248,7 +350,7 @@ class AgentRegistration(models.Model):
                                                         3, self.currency_id.id, self.opening_balance, 0)
         vals_debit = ledger.prepare_vals_for_agent_regis(self, vals_debit)
         vals_debit.update({
-            'agent_id': self.partner_id.id
+            'agent_id': agent_id.id
         })
         self.env['tt.ledger'].create(vals_debit)
 
@@ -258,6 +360,7 @@ class AgentRegistration(models.Model):
             'balance': self.opening_balance,
             'agent_type_id': self.agent_type_id.id,
             'parent_agent_id': self.parent_agent_id.id,
+            'reference_id': self.reference_id.id,
             'address_ids': self.address_ids,
             'logo': self.image,
             'social_media_ids': self.social_media_ids,
@@ -272,6 +375,7 @@ class AgentRegistration(models.Model):
                 'phone_ids': self.contact_ids.phone_ids,
             })
         partner_obj = self.env['tt.agent'].create(vals)
+        self.agent_id = partner_obj.id
         return partner_obj
 
     def create_customers_contact(self, agent_id):
@@ -318,46 +422,28 @@ class AgentRegistration(models.Model):
                 })
         return customer_id
 
-    # def create_customers_contact(self):
-    #     contact_objs = []
-    #     for rec in self:
-    #         print(rec.contact_ids.read())
-    #         for con in rec.contact_ids:
-    #             contact_vals = {
-    #                 'name': con['name'],
-    #                 'logo': con['logo'],
-    #                 'logo_thumb': con['logo_thumb'],
-    #                 'first_name': con['first_name'],
-    #                 'last_name': con['last_name'],
-    #                 'nickname': con['nickname'],
-    #                 'gender': con['gender'],
-    #                 'marital_status': con['marital_status'],
-    #                 'religion': con['religion'],
-    #                 'birth_date': con['birth_date'],
-    #                 'nationality_id': con['nationality_id'],
-    #                 'country_of_issued_id': con['country_of_issued_id'],
-    #                 'address_ids': con['address_ids'],
-    #                 'phone_ids': con['phone_ids'],
-    #                 'social_media_ids': con['social_media_ids'],
-    #                 'email': con['email'],
-    #                 'identity_type': con['identity_type'],
-    #                 'identity_number': con['identity_number'],
-    #                 'passport_number': con['passport_number'],
-    #                 'passport_expdate': con['passport_expdate'],
-    #                 'customer_bank_detail_ids': con['customer_bank_detail_ids'],
-    #                 'agent_id': con['agent_id'],
-    #                 'customer_parent_ids': con['customer_parent_ids'],
-    #                 'active': con['active'],
-    #                 'agent_registration_id': con['agent_registration_id'].id,
-    #             }
-    #             contact_obj = self.env['tt.customer'].create(contact_vals)
-    #             contact_objs.append(contact_obj)
-    #     # contact_obj = self.env['tt.customer'].create(self.contact_ids)
-    #     return contact_objs
+    def create_agent_user(self, agent_id):
+        for rec in self:
+            for con in rec.agent_registration_customer_ids:
+                name = (con.first_name or '') + ' ' + (con.last_name or '')
+                vals = {
+                    'name': name,
+                    'login': con.email,
+                    'password': '123456',
+                    'partner_id': agent_id.id,
+                    'agent_id': agent_id.id,
+                    'sel_groups_1_9_10': 1,  # User Type
+                    'sel_groups_190_191_192': 3,  # Billing Statement
+                    'sel_groups_193_194_195': 3,  # Agent Invoice
+                    'sel_groups_199_200_201': 3,  # Agent User
+                    'sel_groups_14_15': 3,  # Employees
+                }
+                self.env['res.users'].create(vals)
 
     def action_confirm(self):
         self.check_address()
         self.set_agent_address()
+        self.set_parent_agent_id()
         if not self.registration_num:
             self.registration_num = self.env['ir.sequence'].next_by_code(self._name)
         if not self.registration_document_ids:
@@ -382,9 +468,9 @@ class AgentRegistration(models.Model):
                 raise UserError('Please complete all the payments.')
             else:
                 percentage += rec.percentage
-        if percentage == 100:
+        if percentage >= 100:
             self.calc_commission()
-            self.partner_id = self.parent_agent_id.id
+            # self.partner_id = self.parent_agent_id.id
             self.create_opening_documents()
             self.state = 'validate'
         else:
@@ -395,42 +481,21 @@ class AgentRegistration(models.Model):
         agent_id = self.create_partner_agent()
         if self.agent_registration_customer_ids:
             self.create_customers_contact(agent_id)
-        self.create_opening_balance_ledger()
+            self.create_agent_user(agent_id)
+        self.create_opening_balance_ledger(agent_id)
         self.state = 'done'
 
     def action_cancel(self):
         self.state = 'cancel'
 
     def action_draft(self):
-        # self.create_uid = False
-        # self.create_date = False
-        # self.cancel_date = False
-        # self.cancel_uid = False
-
-        # self.agent_type_id.sudo().unlink()
-        # self.parent_agent_id.sudo().unlink()
-        # self.reference_id.sudo().unlink()
-        # self.partner_id.sudo().unlink()
-        #
-        # self.registration_num = False
-        # self.registration_fee = False
-        # self.registration_date = False
-        # self.total_fee = False
-        # self.discount = False
-        # self.opening_balance = False
-        #
-        # self.ledger_ids.sudo().unlink()
-        # self.address_ids.sudo().unlink()
-        # self.contact_ids.sudo().unlink()
-        # self.registration_document_ids.sudo().unlink()
-        # self.open_document_ids.sudo().unlink()
-        # self.payment_ids.sudo().unlink()
-        if self.registration_document_ids:
-            for rec in self:
-                rec.registration_document_ids.active = False
-        if self.open_document_ids:
-            for rec in self:
-                rec.open_document_ids.active = False
+        for rec in self:
+            if rec.registration_document_ids:
+                for reg_doc in rec.registration_document_ids:
+                    reg_doc.sudo().unlink()
+            if rec.open_document_ids:
+                for op_doc in rec.open_document_ids:
+                    op_doc.sudo().unlink()
 
         self.state = 'draft'
 
@@ -458,39 +523,6 @@ class AgentRegistration(models.Model):
         "address": "jl testing",
         "address2": "jl testing2"
     }
-
-    # param_regis_doc = {
-    #     'ktp': [
-    #         {
-    #             "data": "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAQAAAAAYLlVAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAHdElNRQfjBhsHEDrd3TvUAAADgklEQVRo3u2ZTWxMURiGnzvTRkv/FFEkqqWpxL+UBQthQyQWFmzKQqPSWBCijYhQxE8TQUUrlZC0kQgWNtViIfGfEBo2xEQ0TUwVDUPJYGauRTvVmTnn3nNOZyyk79nd77vf8845997vzrkWevIykzLmU0whk0gnlzB9fOUDPl7zjPt81qyorAzW0cJHbMcRpoMDzEw2vIRT9LqgY8dTKhjlWLOUlYxTgU+nmZAWPDr81JAprGlRRwSbXpa6TftBgkbw6OhkPVYCvnEw3uGEX4RvWPDouMnkGPzZIbGQDG6xnZ9JwdvYfGLtYN2muJhQaQlpwx0RarGwaEiICJTFrSTj+0cz5wVHE5TJ7ZTgJSMtDp/ONZar3J38wEeAACGyGU8xOUpnuarR1XOQViqYhTfuzELKuchX7TmI0RaXZD87yXP8AZlU8tLUQCk/HBK/sYMMpVn0UuXaMwQGvDxySGtjqtZSTqRV18BWh6R6PAbX03bC6gZy+SBJCLHRAA5gKT1PBnRIEo5QaYw/o74EWdJuvz/F+AED2yTBO0Zrr4MfMPBCGApQmHK8DbBAEjpiiD+tgbcB6oSBnzGvEeqq0cLb8gW4YISHbl0DBUSEgXmGBvxa+HcepiS8NAK08dzQwEmt7FMWUENZ3OEvHKHT0ACsYzVjFPK+08ZVY8qIRjSiEf03svhXj84i9pAbcyRECzegWqt7VRsbuC6o5gfd/v3eED9b2PTvgYcCrUJhQwO7hE3/JqD5/lJjhJ8s2e4p0zXQJPwd7jomrObrr6aOP2OIn0ZAWG9ffzjVeC93hfV+R/91pBYv/9d5KZqQWnyVpGKEheoG7hvjN0l3mS//TVKZgfqELSl3eTgqrRekSM+AzQOma+GnOW5O7BuaqnoX9LGf0UrwDHbwzaHSE9JMDNjY9LCXCY7wsVS7dJdA/PcUHQP99287W5kVt3WRxhw2084vl7PDrInFW9iYKcgbuunDSx55lCjuIVZzPP6Q7gwMZ9SKPCWmNXLl3+ETDZzDwqI2yfAQVbJViU1sGHzqbZD0MJPRzQr5ZRES4gGKeZgU/A0mOl2XHRI8gIdKeoYF76Hc7cZYQi82EeokLSeXw3w2ggc46PJ1YUD5rKLUMSObnZrfEN+wm3wVuI4Wc4JXCuh6Vqhv8ep3+gKWMZcZlJBPDjmE+U4ffrp4y2Oe0KVX7g80n8kI3NRLcgAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOS0wNi0yN1QwNToxNjo1OCswMjowMGCy6rIAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTktMDYtMjdUMDU6MTY6NTgrMDI6MDAR71IOAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAABJRU5ErkJggg==",
-    #             "content_type": "image/png"
-    #         },
-    #         {
-    #             "data": "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAQAAAAAYLlVAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAHdElNRQfjBhsHEDrd3TvUAAADgklEQVRo3u2ZTWxMURiGnzvTRkv/FFEkqqWpxL+UBQthQyQWFmzKQqPSWBCijYhQxE8TQUUrlZC0kQgWNtViIfGfEBo2xEQ0TUwVDUPJYGauRTvVmTnn3nNOZyyk79nd77vf8845997vzrkWevIykzLmU0whk0gnlzB9fOUDPl7zjPt81qyorAzW0cJHbMcRpoMDzEw2vIRT9LqgY8dTKhjlWLOUlYxTgU+nmZAWPDr81JAprGlRRwSbXpa6TftBgkbw6OhkPVYCvnEw3uGEX4RvWPDouMnkGPzZIbGQDG6xnZ9JwdvYfGLtYN2muJhQaQlpwx0RarGwaEiICJTFrSTj+0cz5wVHE5TJ7ZTgJSMtDp/ONZar3J38wEeAACGyGU8xOUpnuarR1XOQViqYhTfuzELKuchX7TmI0RaXZD87yXP8AZlU8tLUQCk/HBK/sYMMpVn0UuXaMwQGvDxySGtjqtZSTqRV18BWh6R6PAbX03bC6gZy+SBJCLHRAA5gKT1PBnRIEo5QaYw/o74EWdJuvz/F+AED2yTBO0Zrr4MfMPBCGApQmHK8DbBAEjpiiD+tgbcB6oSBnzGvEeqq0cLb8gW4YISHbl0DBUSEgXmGBvxa+HcepiS8NAK08dzQwEmt7FMWUENZ3OEvHKHT0ACsYzVjFPK+08ZVY8qIRjSiEf03svhXj84i9pAbcyRECzegWqt7VRsbuC6o5gfd/v3eED9b2PTvgYcCrUJhQwO7hE3/JqD5/lJjhJ8s2e4p0zXQJPwd7jomrObrr6aOP2OIn0ZAWG9ffzjVeC93hfV+R/91pBYv/9d5KZqQWnyVpGKEheoG7hvjN0l3mS//TVKZgfqELSl3eTgqrRekSM+AzQOma+GnOW5O7BuaqnoX9LGf0UrwDHbwzaHSE9JMDNjY9LCXCY7wsVS7dJdA/PcUHQP99287W5kVt3WRxhw2084vl7PDrInFW9iYKcgbuunDSx55lCjuIVZzPP6Q7gwMZ9SKPCWmNXLl3+ETDZzDwqI2yfAQVbJViU1sGHzqbZD0MJPRzQr5ZRES4gGKeZgU/A0mOl2XHRI8gIdKeoYF76Hc7cZYQi82EeokLSeXw3w2ggc46PJ1YUD5rKLUMSObnZrfEN+wm3wVuI4Wc4JXCuh6Vqhv8ep3+gKWMZcZlJBPDjmE+U4ffrp4y2Oe0KVX7g80n8kI3NRLcgAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOS0wNi0yN1QwNToxNjo1OCswMjowMGCy6rIAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTktMDYtMjdUMDU6MTY6NTgrMDI6MDAR71IOAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAABJRU5ErkJggg==",
-    #             "content_type": "image/png"
-    #         }
-    #     ],
-    #     'siup': [
-    #         {
-    #             "data": "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAQAAAAAYLlVAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAHdElNRQfjBhsHEDrd3TvUAAADgklEQVRo3u2ZTWxMURiGnzvTRkv/FFEkqqWpxL+UBQthQyQWFmzKQqPSWBCijYhQxE8TQUUrlZC0kQgWNtViIfGfEBo2xEQ0TUwVDUPJYGauRTvVmTnn3nNOZyyk79nd77vf8845997vzrkWevIykzLmU0whk0gnlzB9fOUDPl7zjPt81qyorAzW0cJHbMcRpoMDzEw2vIRT9LqgY8dTKhjlWLOUlYxTgU+nmZAWPDr81JAprGlRRwSbXpa6TftBgkbw6OhkPVYCvnEw3uGEX4RvWPDouMnkGPzZIbGQDG6xnZ9JwdvYfGLtYN2muJhQaQlpwx0RarGwaEiICJTFrSTj+0cz5wVHE5TJ7ZTgJSMtDp/ONZar3J38wEeAACGyGU8xOUpnuarR1XOQViqYhTfuzELKuchX7TmI0RaXZD87yXP8AZlU8tLUQCk/HBK/sYMMpVn0UuXaMwQGvDxySGtjqtZSTqRV18BWh6R6PAbX03bC6gZy+SBJCLHRAA5gKT1PBnRIEo5QaYw/o74EWdJuvz/F+AED2yTBO0Zrr4MfMPBCGApQmHK8DbBAEjpiiD+tgbcB6oSBnzGvEeqq0cLb8gW4YISHbl0DBUSEgXmGBvxa+HcepiS8NAK08dzQwEmt7FMWUENZ3OEvHKHT0ACsYzVjFPK+08ZVY8qIRjSiEf03svhXj84i9pAbcyRECzegWqt7VRsbuC6o5gfd/v3eED9b2PTvgYcCrUJhQwO7hE3/JqD5/lJjhJ8s2e4p0zXQJPwd7jomrObrr6aOP2OIn0ZAWG9ffzjVeC93hfV+R/91pBYv/9d5KZqQWnyVpGKEheoG7hvjN0l3mS//TVKZgfqELSl3eTgqrRekSM+AzQOma+GnOW5O7BuaqnoX9LGf0UrwDHbwzaHSE9JMDNjY9LCXCY7wsVS7dJdA/PcUHQP99287W5kVt3WRxhw2084vl7PDrInFW9iYKcgbuunDSx55lCjuIVZzPP6Q7gwMZ9SKPCWmNXLl3+ETDZzDwqI2yfAQVbJViU1sGHzqbZD0MJPRzQr5ZRES4gGKeZgU/A0mOl2XHRI8gIdKeoYF76Hc7cZYQi82EeokLSeXw3w2ggc46PJ1YUD5rKLUMSObnZrfEN+wm3wVuI4Wc4JXCuh6Vqhv8ep3+gKWMZcZlJBPDjmE+U4ffrp4y2Oe0KVX7g80n8kI3NRLcgAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOS0wNi0yN1QwNToxNjo1OCswMjowMGCy6rIAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTktMDYtMjdUMDU6MTY6NTgrMDI6MDAR71IOAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAABJRU5ErkJggg==",
-    #             "content_type": "image/png"
-    #         },
-    #         {
-    #             "data": "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAQAAAAAYLlVAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAHdElNRQfjBhsHEDrd3TvUAAADgklEQVRo3u2ZTWxMURiGnzvTRkv/FFEkqqWpxL+UBQthQyQWFmzKQqPSWBCijYhQxE8TQUUrlZC0kQgWNtViIfGfEBo2xEQ0TUwVDUPJYGauRTvVmTnn3nNOZyyk79nd77vf8845997vzrkWevIykzLmU0whk0gnlzB9fOUDPl7zjPt81qyorAzW0cJHbMcRpoMDzEw2vIRT9LqgY8dTKhjlWLOUlYxTgU+nmZAWPDr81JAprGlRRwSbXpa6TftBgkbw6OhkPVYCvnEw3uGEX4RvWPDouMnkGPzZIbGQDG6xnZ9JwdvYfGLtYN2muJhQaQlpwx0RarGwaEiICJTFrSTj+0cz5wVHE5TJ7ZTgJSMtDp/ONZar3J38wEeAACGyGU8xOUpnuarR1XOQViqYhTfuzELKuchX7TmI0RaXZD87yXP8AZlU8tLUQCk/HBK/sYMMpVn0UuXaMwQGvDxySGtjqtZSTqRV18BWh6R6PAbX03bC6gZy+SBJCLHRAA5gKT1PBnRIEo5QaYw/o74EWdJuvz/F+AED2yTBO0Zrr4MfMPBCGApQmHK8DbBAEjpiiD+tgbcB6oSBnzGvEeqq0cLb8gW4YISHbl0DBUSEgXmGBvxa+HcepiS8NAK08dzQwEmt7FMWUENZ3OEvHKHT0ACsYzVjFPK+08ZVY8qIRjSiEf03svhXj84i9pAbcyRECzegWqt7VRsbuC6o5gfd/v3eED9b2PTvgYcCrUJhQwO7hE3/JqD5/lJjhJ8s2e4p0zXQJPwd7jomrObrr6aOP2OIn0ZAWG9ffzjVeC93hfV+R/91pBYv/9d5KZqQWnyVpGKEheoG7hvjN0l3mS//TVKZgfqELSl3eTgqrRekSM+AzQOma+GnOW5O7BuaqnoX9LGf0UrwDHbwzaHSE9JMDNjY9LCXCY7wsVS7dJdA/PcUHQP99287W5kVt3WRxhw2084vl7PDrInFW9iYKcgbuunDSx55lCjuIVZzPP6Q7gwMZ9SKPCWmNXLl3+ETDZzDwqI2yfAQVbJViU1sGHzqbZD0MJPRzQr5ZRES4gGKeZgU/A0mOl2XHRI8gIdKeoYF76Hc7cZYQi82EeokLSeXw3w2ggc46PJ1YUD5rKLUMSObnZrfEN+wm3wVuI4Wc4JXCuh6Vqhv8ep3+gKWMZcZlJBPDjmE+U4ffrp4y2Oe0KVX7g80n8kI3NRLcgAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOS0wNi0yN1QwNToxNjo1OCswMjowMGCy6rIAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTktMDYtMjdUMDU6MTY6NTgrMDI6MDAR71IOAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAABJRU5ErkJggg==",
-    #             "content_type": "image/png"
-    #         }
-    #     ],
-    #     'npwp': [
-    #         {
-    #             "data": "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAQAAAAAYLlVAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAHdElNRQfjBhsHEDrd3TvUAAADgklEQVRo3u2ZTWxMURiGnzvTRkv/FFEkqqWpxL+UBQthQyQWFmzKQqPSWBCijYhQxE8TQUUrlZC0kQgWNtViIfGfEBo2xEQ0TUwVDUPJYGauRTvVmTnn3nNOZyyk79nd77vf8845997vzrkWevIykzLmU0whk0gnlzB9fOUDPl7zjPt81qyorAzW0cJHbMcRpoMDzEw2vIRT9LqgY8dTKhjlWLOUlYxTgU+nmZAWPDr81JAprGlRRwSbXpa6TftBgkbw6OhkPVYCvnEw3uGEX4RvWPDouMnkGPzZIbGQDG6xnZ9JwdvYfGLtYN2muJhQaQlpwx0RarGwaEiICJTFrSTj+0cz5wVHE5TJ7ZTgJSMtDp/ONZar3J38wEeAACGyGU8xOUpnuarR1XOQViqYhTfuzELKuchX7TmI0RaXZD87yXP8AZlU8tLUQCk/HBK/sYMMpVn0UuXaMwQGvDxySGtjqtZSTqRV18BWh6R6PAbX03bC6gZy+SBJCLHRAA5gKT1PBnRIEo5QaYw/o74EWdJuvz/F+AED2yTBO0Zrr4MfMPBCGApQmHK8DbBAEjpiiD+tgbcB6oSBnzGvEeqq0cLb8gW4YISHbl0DBUSEgXmGBvxa+HcepiS8NAK08dzQwEmt7FMWUENZ3OEvHKHT0ACsYzVjFPK+08ZVY8qIRjSiEf03svhXj84i9pAbcyRECzegWqt7VRsbuC6o5gfd/v3eED9b2PTvgYcCrUJhQwO7hE3/JqD5/lJjhJ8s2e4p0zXQJPwd7jomrObrr6aOP2OIn0ZAWG9ffzjVeC93hfV+R/91pBYv/9d5KZqQWnyVpGKEheoG7hvjN0l3mS//TVKZgfqELSl3eTgqrRekSM+AzQOma+GnOW5O7BuaqnoX9LGf0UrwDHbwzaHSE9JMDNjY9LCXCY7wsVS7dJdA/PcUHQP99287W5kVt3WRxhw2084vl7PDrInFW9iYKcgbuunDSx55lCjuIVZzPP6Q7gwMZ9SKPCWmNXLl3+ETDZzDwqI2yfAQVbJViU1sGHzqbZD0MJPRzQr5ZRES4gGKeZgU/A0mOl2XHRI8gIdKeoYF76Hc7cZYQi82EeokLSeXw3w2ggc46PJ1YUD5rKLUMSObnZrfEN+wm3wVuI4Wc4JXCuh6Vqhv8ep3+gKWMZcZlJBPDjmE+U4ffrp4y2Oe0KVX7g80n8kI3NRLcgAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOS0wNi0yN1QwNToxNjo1OCswMjowMGCy6rIAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTktMDYtMjdUMDU6MTY6NTgrMDI6MDAR71IOAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAABJRU5ErkJggg==",
-    #             "content_type": "image/png"
-    #         },
-    #         {
-    #             "data": "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAQAAAAAYLlVAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAHdElNRQfjBhsHEDrd3TvUAAADgklEQVRo3u2ZTWxMURiGnzvTRkv/FFEkqqWpxL+UBQthQyQWFmzKQqPSWBCijYhQxE8TQUUrlZC0kQgWNtViIfGfEBo2xEQ0TUwVDUPJYGauRTvVmTnn3nNOZyyk79nd77vf8845997vzrkWevIykzLmU0whk0gnlzB9fOUDPl7zjPt81qyorAzW0cJHbMcRpoMDzEw2vIRT9LqgY8dTKhjlWLOUlYxTgU+nmZAWPDr81JAprGlRRwSbXpa6TftBgkbw6OhkPVYCvnEw3uGEX4RvWPDouMnkGPzZIbGQDG6xnZ9JwdvYfGLtYN2muJhQaQlpwx0RarGwaEiICJTFrSTj+0cz5wVHE5TJ7ZTgJSMtDp/ONZar3J38wEeAACGyGU8xOUpnuarR1XOQViqYhTfuzELKuchX7TmI0RaXZD87yXP8AZlU8tLUQCk/HBK/sYMMpVn0UuXaMwQGvDxySGtjqtZSTqRV18BWh6R6PAbX03bC6gZy+SBJCLHRAA5gKT1PBnRIEo5QaYw/o74EWdJuvz/F+AED2yTBO0Zrr4MfMPBCGApQmHK8DbBAEjpiiD+tgbcB6oSBnzGvEeqq0cLb8gW4YISHbl0DBUSEgXmGBvxa+HcepiS8NAK08dzQwEmt7FMWUENZ3OEvHKHT0ACsYzVjFPK+08ZVY8qIRjSiEf03svhXj84i9pAbcyRECzegWqt7VRsbuC6o5gfd/v3eED9b2PTvgYcCrUJhQwO7hE3/JqD5/lJjhJ8s2e4p0zXQJPwd7jomrObrr6aOP2OIn0ZAWG9ffzjVeC93hfV+R/91pBYv/9d5KZqQWnyVpGKEheoG7hvjN0l3mS//TVKZgfqELSl3eTgqrRekSM+AzQOma+GnOW5O7BuaqnoX9LGf0UrwDHbwzaHSE9JMDNjY9LCXCY7wsVS7dJdA/PcUHQP99287W5kVt3WRxhw2084vl7PDrInFW9iYKcgbuunDSx55lCjuIVZzPP6Q7gwMZ9SKPCWmNXLl3+ETDZzDwqI2yfAQVbJViU1sGHzqbZD0MJPRzQr5ZRES4gGKeZgU/A0mOl2XHRI8gIdKeoYF76Hc7cZYQi82EeokLSeXw3w2ggc46PJ1YUD5rKLUMSObnZrfEN+wm3wVuI4Wc4JXCuh6Vqhv8ep3+gKWMZcZlJBPDjmE+U4ffrp4y2Oe0KVX7g80n8kI3NRLcgAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOS0wNi0yN1QwNToxNjo1OCswMjowMGCy6rIAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTktMDYtMjdUMDU6MTY6NTgrMDI6MDAR71IOAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAABJRU5ErkJggg==",
-    #             "content_type": "image/png"
-    #         }
-    #     ],
-    # }
 
     param_regis_doc = [
         {
@@ -628,29 +660,6 @@ class AgentRegistration(models.Model):
             vals_list.append(customer_obj.id)
         return vals_list
 
-    # def prepare_contact(self, pic):
-    #     contact_env = self.env['tt.customer'].sudo()
-    #     vals_list = []
-    #
-    #     for rec in pic:
-    #         vals = {
-    #             'birth_date': rec.get('birth_date'),
-    #             'first_name': rec.get('first_name'),
-    #             'last_name': rec.get('last_name'),
-    #             'email': rec.get('email'),
-    #             'agent_id': self.env.user.agent_id.id
-    #             # 'phone': rec.get('phone'),
-    #         }
-    #         contact_obj = contact_env.create(vals)
-    #         contact_obj.update({
-    #             'phone_ids': contact_obj.phone_ids.create({
-    #                 'phone_number': rec.get('mobile', rec['mobile']),
-    #                 'type': 'work'
-    #             }),
-    #         })
-    #         vals_list.append(contact_obj.id)
-    #     return vals_list
-
     def prepare_address(self, address):
         print(address)
         address_list = []
@@ -701,41 +710,3 @@ class AgentRegistration(models.Model):
             doc_ids.append(doc_obj.id)
         self.registration_document_ids = [(6, 0, doc_ids)]
         self.state = 'confirm'
-            # doc_name = str(document_type_env.search([('id', '=', doc['document_id'])], limit=1).name)
-            # if str(rec_regis_doc) == doc_name or str(rec_regis_doc) == doc_name.lower():
-            # attachment_list = []
-            # for rec_regis_doc2 in regis_doc[rec_regis_doc]:
-            #     # print('Regis Doc 2 : ' + str(rec_regis_doc2))
-            #     if rec_regis_doc2.get('data') and rec_regis_doc2.get('content_type'):
-            #         attachment_value = {
-            #             'name': str(rec_regis_doc) + '.png',
-            #             'datas': rec_regis_doc2.get('data'),
-            #             'datas_fname': str(rec_regis_doc) + '.png',
-            #             'res_model': self._name,
-            #             'res_id': self.id,
-            #             'type': 'binary',
-            #             'url': 'localhost:8069/web/content',
-            #             'mimetype': rec_regis_doc2.get('content_type'),
-            #         }
-            #         attachment_obj = self.env['ir.attachment'].sudo().create(attachment_value)
-            #         print(attachment_obj._full_path(attachment_obj.store_fname))
-            #         attachment_list.append(attachment_obj.id)
-
-            # self.env['ir.attachment'].sudo().create(attachment_value)
-            #             # print('Doc : ' + str(doc))
-            #             vals = {
-            #                 'state': 'draft',
-            #                 'qty': len(attachment_list),
-            #                 'receive_qty': len(attachment_list),
-            #                 'schedule_date': datetime.now(),
-            #                 'receive_date': datetime.now(),
-            #                 'document_id': doc['document_id'],
-            #                 'description': document_type_env.search([('id', '=', doc['document_id'])], limit=1).description,
-            #                 'attachment_ids': [(6, 0, attachment_list)]
-            #             }
-            #             doc_list.append(vals)
-            #             break
-            # print(doc_list)
-            # self.registration_document_ids = self.env['tt.agent.registration.document'].create(doc_list)
-            # self.state = 'confirm'
-            # self.state = 'confirm'

@@ -94,7 +94,7 @@ class TtAgent(models.Model):
         return new_agent
 
     def create_walkin_obj_val(self,new_agent,agent_name):
-        return  {
+        return{
             'parent_agent_id': new_agent.id,
             'customer_parent_type_id': self.env.ref('tt_base.customer_type_fpo').id,
             'name': agent_name + ' FPO',

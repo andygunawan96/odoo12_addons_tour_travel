@@ -16,6 +16,7 @@ from . import hotel_compare
 from . import res_country
 from . import tt_master_vendor
 from . import provider_code
+from . import hotel_provider_data
 
 # from . import tb_provider_hotel
 from . import hotel_reservation

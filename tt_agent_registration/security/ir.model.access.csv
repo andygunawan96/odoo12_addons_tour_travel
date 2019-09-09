@@ -8,8 +8,11 @@ tt_agent_registration_customer_tour_travel_operator,tt.agent.registration.custom
 tt_agent_registration_customer_for_agent_user_operator,tt.agent.registration.customer.for.agent.user.operator,model_tt_agent_registration_customer,tt_base.group_tt_agent_user_operator,1,1,1,0
 
 tt_agent_registration_document,tt.agent.registration.document,model_tt_agent_registration_document,,1,0,0,0
-tt_agent_registration_document_tour_travel_operator,tt.agent.registration.document.for.tour.travel.operator,model_tt_agent_registration_document,tt_base.group_tt_tour_travel_operator,1,1,0,0
-tt_agent_registration_document_for_agent_user_operator,tt.agent.registration.document.for.agent.user.operator,model_tt_agent_registration_document,tt_base.group_tt_agent_user_operator,1,1,0,0
+tt_agent_registration_document_for_tour_travel_operator,tt.agent.registration.document.for.tour.travel.operator,model_tt_agent_registration_document,tt_base.group_tt_tour_travel_operator,1,1,1,0
+tt_agent_registration_document_for_agent_user_operator,tt.agent.registration.document.for.agent.user.operator,model_tt_agent_registration_document,tt_base.group_tt_agent_user_operator,1,1,1,0
+
+tt_agent_registration_promotion,tt.agent.registration.promotion,model_tt_agent_registration_promotion,,1,0,0,0
+tt_agent_registration_promotion_for_tour_travel_operator,tt.agent.registration.promotion.for.tour.travel.operator,model_tt_agent_registration_promotion,tt_base.group_tt_tour_travel_operator,1,1,1,0
 
 tt_agent_registration_payment,tt.agent.registration.payment,model_tt_agent_registration_payment,,1,0,0,0
 tt_agent_registration_payment_tour_travel_operator,tt.agent.registration.payment.for.tour.travel.operator,model_tt_agent_registration_payment,tt_base.group_tt_tour_travel_operator,1,1,1,0
@@ -18,3 +21,5 @@ tt_agent_registration_payment_for_agent_user_operator,tt.agent.registration.paym
 tt_document_type,tt.document.type,model_tt_document_type,,1,0,0,0
 tt_document_type_tour_travel_operator,tt.document.type.for.tour.travel.operator,model_tt_document_type,tt_base.group_tt_tour_travel_operator,1,1,1,0
 tt_document_type_for_agent_user_operator,tt.document.type.for.agent.user.operator,model_tt_document_type,tt_base.group_tt_agent_user_operator,1,1,1,0
+tt_agent_registration_promotion_agent_type,tt.agent.registration.promotion.agent.type,model_tt_agent_registration_promotion_agent_type,,1,1,1,1
+tt_agent_registration_promotion_line,tt.agent.registration.promotion.line,model_tt_agent_registration_promotion_line,,1,1,1,1

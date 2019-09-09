@@ -3,6 +3,7 @@ from datetime import datetime, timedelta, date, time
 from odoo import http
 from dateutil.relativedelta import relativedelta
 from odoo.exceptions import UserError
+from ...tools import util,variables,ERR
 from ...tools.db_connector import GatewayConnector
 from .ApiConnector_Activity import ApiConnectorActivity
 
@@ -106,7 +107,7 @@ class ReservationActivity(models.Model):
     sale_service_charge_ids = fields.One2many('tt.service.charge', 'activity_id', string='Prices')
     invoice_ids = fields.One2many('tt.agent.invoice', 'activity_transaction_id', string='Invoices')
     ledger_id = fields.One2many('tt.ledger', 'reservation_activity_id', string='Ledgers')
-    line_ids = fields.One2many('tt.reservation.activity.line', 'reservation_activity_id', string='Line')
+    line_ids = fields.One2many('tt.reservation.passenger.activity', 'reservation_activity_id', string='Passengers')
 
     booking_option = fields.Text('Booking Option')
 
@@ -504,7 +505,7 @@ class ReservationActivity(models.Model):
 
     def action_expired(self):
         self.write({
-            'state': 'expired',
+            'state': 'cancel2',
             'expired_date': datetime.now(),
         })
         self.message_post(body='Order EXPIRED')
@@ -1118,223 +1119,32 @@ class ReservationActivity(models.Model):
         }
         GatewayConnector().telegram_notif_api(data, {})
 
-    def _validate_activity(self, data, type):
-        list_data = []
-        if type == 'context':
-            list_data = ['co_uid', 'is_company_website']
-        elif type == 'header':
-            list_data = ['senior', 'adult', 'child', 'infant']
-
-        keys_data = []
-        for rec in data.iterkeys():
-            keys_data.append(str(rec))
-
-        for ls in list_data:
-            if not ls in keys_data:
-                raise Exception('ERROR Validate %s, key : %s' % (type, ls))
-        return True
-
-    def _activity_header_normalization(self, data):
-        res = {}
-        int_key_att = ['senior', 'adult', 'child', 'infant']
-
-        for rec in int_key_att:
-            res.update({
-                rec: int(data[rec])
-            })
-
-        return res
-
-    def update_api_context(self, customer_parent_id, context):
-        context['co_uid'] = int(context['co_uid'])
-        user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
-        if context['is_company_website']:
-            #============================================
-            #====== Context dari WEBSITE/FRONTEND =======
-            #============================================
-            if user_obj.agent_id.agent_type_id.id in \
-                    (self.env.ref('tt_base_rodex.agent_type_cor').id, self.env.ref('tt_base_rodex.agent_type_por').id):
-                # ===== COR/POR User =====
-                context.update({
-                    'agent_id': user_obj.agent_id.parent_agent_id.id,
-                    'customer_parent_id': user_obj.agent_id.id,
-                    'booker_type': 'COR/POR',
-                })
-            elif customer_parent_id:
-                # ===== COR/POR in Contact =====
-                context.update({
-                    'agent_id': user_obj.agent_id.id,
-                    'customer_parent_id': customer_parent_id,
-                    'booker_type': 'COR/POR',
-                })
-            else:
-                # ===== FPO in Contact =====
-                context.update({
-                    'agent_id': user_obj.agent_id.id,
-                    'customer_parent_id': user_obj.agent_id.id,
-                    'booker_type': 'FPO',
-                })
-        else:
-            # ===============================================
-            # ====== Context dari API Client ( BTBO ) =======
-            # ===============================================
-            context.update({
-                'agent_id': user_obj.agent_id.id,
-                'customer_parent_id': user_obj.agent_id.id,
-                'booker_type': 'FPO',
-            })
-        return context
-
-    def _create_contact(self, vals, context):
-        country_obj = self.env['res.country'].sudo()
-        contact_obj = self.env['tt.customer.details'].sudo()
-        if vals.get('contact_id'):
-            vals['contact_id'] = int(vals['contact_id'])
-            contact_rec = contact_obj.browse(vals['contact_id'])
-            if contact_rec:
-                contact_rec.update({
-                    'email': vals.get('email', contact_rec.email),
-                    'mobile': vals.get('mobile', contact_rec.mobile),
-                })
-            return contact_rec
-
-        country = country_obj.search([('code', '=', vals.pop('nationality_code'))])
-        vals['nationality_id'] = country and country[0].id or False
-
-        if context['booker_type'] == 'COR/POR':
-            vals['passenger_on_partner_ids'] = [(4, context['customer_parent_id'])]
-
-        country = country_obj.search([('code', '=', vals.pop('country_code'))])
-        vals.update({
-            'commercial_agent_id': context['agent_id'],
-            'agent_id': context['agent_id'],
-            'country_id': country and country[0].id or False,
-            'pax_type': 'ADT',
-            'bill_to': '<span><b>{title} {first_name} {last_name}</b> <br>Phone: {mobile}</span>'.format(**vals),
-            'mobile_orig': vals.get('mobile', ''),
-            'email': vals.get('email', vals['email']),
-            'mobile': vals.get('mobile', vals['mobile']),
-        })
-        return contact_obj.sudo().create(vals)
-
-    # def issued_booking(self, service_charge_summary, activity_data, context, kwargs):
-    #     book_obj = self.browse(context['order_id'])
-    #     book_obj.action_issued_activity(service_charge_summary, activity_data, kwargs, context)
-    #     self.env.cr.commit()
-    #     return {
-    #         'error_code': 0,
-    #         'error_msg': 'Success',
-    #         'response': {
-    #             'order_id': book_obj.id,
-    #             'order_number': book_obj.name,
-    #             'status': book_obj.state,
-    #         }
-    #     }
-
-    def _create_passengers(self, passengers, contact_obj, context):
-        country_obj = self.env['res.country'].sudo()
-        passenger_obj = self.env['tt.customer.details'].sudo()
-        res_ids = []
-        for psg in passengers:
-            if psg.get('nationality_code'):
-                country = country_obj.search([('code', '=', psg.pop('nationality_code'))])
-                psg['nationality_id'] = country and country[0].id or False
-            if psg.get('country_of_issued_code'):
-                country = country_obj.search([('code', '=', psg.pop('country_of_issued_code'))])
-                psg['country_of_issued_id'] = country and country[0].id or False
-
-            vals_for_update = {
-                # 'passport_number': psg.get('passport_number'),
-                # 'passport_expdate': psg.get('passport_expdate'),
-                'nationality_id': psg['nationality_id'],
-                # 'country_of_issued_id': psg.get('country_of_issued_id'),
-                # 'passport_issued_date': psg.get('passport_issued_date'),
-                # 'identity_type': psg.get('identity_type'),
-                # 'identity_number': psg.get('identity_number'),
-                'birth_date': psg.get('birth_date'),
-                'email': psg.get('email'),
-                'commercial_agent_id': contact_obj.commercial_agent_id.id,
-                'agent_id': contact_obj.agent_id.id,
-                'mobile': psg.get('mobile'),
-            }
-
-            psg_exist = False
-            if psg['passenger_id']:
-                psg['passenger_id'] = int(psg['passenger_id'])
-                passenger_obj = self.env['tt.customer.details'].sudo().browse(psg['passenger_id'])
-                if passenger_obj:
-                    psg_exist = True
-                    if context['booker_type'] == 'COR/POR':
-                        vals_for_update['passenger_on_partner_ids'] = [(4, context['customer_parent_id'])]
-                    passenger_obj.write(vals_for_update)
-                    res_ids.append(passenger_obj.id)
-            if not psg_exist:
-                # Cek Booker sama dengan Passenger
-                if [psg['title'], psg['first_name'], psg['last_name']] == [contact_obj.title, contact_obj.first_name, contact_obj.last_name]:
-                    contact_obj.write(vals_for_update)
-                    psg_exist = True
-                    res_ids.append(contact_obj.id)
-
-            if not psg_exist:
-                if context['booker_type'] == 'COR/POR':
-                    psg['passenger_on_partner_ids'] = [(4, context['customer_parent_id'])]
-                    psg['agent_id'] = context['customer_parent_id']
-                else:
-                    psg['agent_id'] = context['agent_id']
-
-                psg.update({
-                    'commercial_agent_id': context['agent_id'],
-                    'bill_to': '<span><b>{title} {first_name} {last_name}</b> <br>Phone:</span>'.format(**psg),
-                })
-                psg_obj = passenger_obj.create(psg)
-                res_ids.append(psg_obj.id)
-        return res_ids
-
-    def create_booking(self, contact_data, passengers, option, search_request, file_upload, context, kwargs):
+    def create_booking(self, req, context, kwargs):
         try:
-            self._validate_activity(context, 'context')
-            self._validate_activity(search_request, 'header')
+            booker_data = req.get('booker_data') and req['booker_data'] or False
+            contact_data = req.get('contact_data') and req['contact_data'] or False
+            passengers = req.get('passengers_data') and req['passengers_data'] or False
+            option = req.get('option') and req['option'] or False
+            search_request = req.get('search_request') and req['search_request'] or False
+            file_upload = req.get('file_upload') and req['file_upload'] or False
             try:
-                agent_obj = self.env['tt.customer.details'].browse(int(contact_data['contact_id'])).agent_id
+                agent_obj = self.env['tt.customer'].browse(int(contact_data['contact_id'])).agent_id
                 if not agent_obj:
                     agent_obj = self.env['res.users'].browse(int(context['co_uid'])).agent_id
             except Exception:
                 agent_obj = self.env['res.users'].browse(int(context['co_uid'])).agent_id
-            context = self.update_api_context(agent_obj.id, context)
 
             if kwargs['force_issued']:
-                is_enough = self.env['res.partner'].check_balance_limit(agent_obj.id, kwargs['amount'])
+                is_enough = self.env['tt.agent'].check_balance_limit_api(agent_obj.id, kwargs['amount'])
                 if not is_enough['error_code'] == 0:
                     raise Exception('BALANCE not enough')
 
-            # ========= Validasi agent_id ===========
-            # TODO : Security Issue VERY HIGH LEVEL
-            # 1. Jika BUKAN is_company_website, maka contact.contact_id DIABAIKAN
-            # 2. Jika ADA contact.contact_id MAKA agent_id = contact.contact_id.agent_id
-            # 3. Jika TIDAK ADA contact.contact_id MAKA agent_id = co_uid.agent_id
-
-            # PRODUCTION
-            # self.validate_booking(api_context=context)
-            user_obj = self.env['res.users'].sudo().browse(int(context['co_uid']))
-            contact_data.update({
-                'agent_id': user_obj.agent_id.id,
-                'commercial_agent_id': user_obj.agent_id.id,
-                'booker_type': 'FPO',
-                'display_mobile': user_obj.mobile,
-            })
-            if user_obj.agent_id.agent_type_id.id in (self.env.ref('tt_base_rodex.agent_type_cor').id, self.env.ref('tt_base_rodex.agent_type_por').id):
-                if user_obj.agent_id.parent_agent_id:
-                    contact_data.update({
-                        'commercial_agent_id': user_obj.agent_id.parent_agent_id.id,
-                        'booker_type': 'COR/POR',
-                        'display_mobile': user_obj.mobile,
-                    })
-
-            header_val = self._activity_header_normalization(search_request)
-            contact_obj = self._create_contact(contact_data, context)
+            header_val = search_request
+            booker_obj = self.create_booker_api(booker_data, context)
+            contact_obj = self.create_contact_api(contact_data, booker_obj, context)
 
             psg_ids = self._evaluate_passenger_info(passengers, contact_obj.id, context['agent_id'])
-            activity_id = self.env['tt.master.activity.lines'].sudo().search([('uuid', '=', search_request['product_type_uuid'])])
+            activity_type_id = self.env['tt.master.activity.lines'].sudo().search([('uuid', '=', search_request['product_type_uuid'])])
 
             booking_option = ''
             if option['perBooking']:
@@ -1343,14 +1153,15 @@ class ReservationActivity(models.Model):
 
             header_val.update({
                 'contact_id': contact_obj.id,
+                'booker_id': booker_obj.id,
                 'display_mobile': contact_obj.mobile,
                 'state': 'reserved',
                 'agent_id': context['agent_id'],
                 'user_id': context['co_uid'],
-                'activity_id': activity_id.activity_id.id,
+                'activity_id': activity_type_id.activity_id.id,
                 'visit_date': datetime.strptime(search_request['visit_date'], '%Y-%m-%d').strftime('%d %b %Y'),
-                'activity_name': activity_id.activity_id.name,
-                'activity_product': activity_id.name,
+                'activity_name': activity_type_id.activity_id.name,
+                'activity_product': activity_type_id.name,
                 'activity_product_uuid': search_request['product_type_uuid'],
                 'booking_option': booking_option,
                 'senior': search_request['senior'],
@@ -1358,27 +1169,30 @@ class ReservationActivity(models.Model):
                 'child': search_request['child'],
                 'infant': search_request['infant'],
                 'transport_type': 'activity',
-                'provider': activity_id.activity_id.provider,
+                'provider': activity_type_id.activity_id.provider,
                 'file_upload': file_upload,
             })
 
-            if not activity_id.instantConfirmation:
+            if not activity_type_id.instantConfirmation:
                 header_val.update({
                     'information': 'On Request (max. 3 working days)',
                 })
 
             # create header & Update customer_parent_id
             book_obj = self.sudo().create(header_val)
+            pax_ids = self.create_customer_api(passengers, context, booker_obj.seq_id, contact_obj.seq_id, ['title', 'pax_type', 'api_data', 'sku_real_id'])
 
-            for psg in passengers:
-                vals = {
+            for psg in pax_ids:
+                temp_obj = psg[0]
+                extra_dict = psg[1]
+                vals = temp_obj.copy_to_passenger()
+                vals.update({
                     'reservation_activity_id': book_obj.id,
-                    'passenger_id': psg['passenger_id'],
-                    'pax_type': psg['pax_type'],
-                    'pax_mobile': psg.get('mobile'),
-                    'api_data': psg.get('api_data'),
-                }
-                self.env['tt.reservation.activity.line'].sudo().create(vals)
+                    'pax_type': extra_dict['pax_type'],
+                    'api_data': extra_dict.get('api_data', ''),
+                    'activity_sku_id': extra_dict.get('sku_real_id', 0)
+                })
+                self.env['tt.reservation.passenger.activity'].sudo().create(vals)
 
             book_obj.customer_parent_id = contact_data['agent_id']
 
@@ -1387,69 +1201,19 @@ class ReservationActivity(models.Model):
             if kwargs['force_issued']:
                 book_obj.action_issued_activity(context)
 
-            self._create_passengers(passengers, contact_obj, context)
-
             self.env.cr.commit()
-            return {
-                'error_code': 0,
-                'error_msg': 'Success',
-                'response': {
-                    'order_id': book_obj.id,
-                    'order_number': book_obj.name,
-                    'status': book_obj.state,
-                }
+
+            response = {
+                'order_id': book_obj.id,
+                'order_number': book_obj.name,
+                'status': book_obj.state,
             }
+
+            return ERR.get_no_error(response)
         except Exception as e:
             self.env.cr.rollback()
             _logger.error(msg=str(e) + '\n' + traceback.format_exc())
-            return {
-                'error_code': 1,
-                'error_msg': str(e)
-            }
-
-    def _evaluate_passenger_info(self, passengers, contact_id, agent_id):
-        res = []
-        country_obj = self.env['res.country'].sudo()
-        psg_obj = self.env['tt.customer.details'].sudo()
-        for psg in passengers:
-            p_id = psg.get('passenger_id')
-            if p_id:
-                p_object = psg_obj.browse(int(p_id))
-                if p_object:
-                    res.append(int(p_id))
-                    if psg.get('passport_number'):
-                        p_object['passport_number'] = psg['passport_number']
-                    if psg.get('passport_expdate'):
-                        p_object['passport_expdate'] = psg['passport_expdate']
-                    if psg.get('country_of_issued_id'):
-                        p_object['country_of_issued_id'] = psg['country_of_issued_id']
-                    p_object.write({
-                        'domicile': psg.get('domicile'),
-                        'mobile': psg.get('mobile')
-                    })
-            else:
-                country = country_obj.search([('code', '=', psg.pop('nationality_code'))])
-                psg['nationality_id'] = country and country[0].id or False
-                if psg.get('country_of_issued_code'):
-                    country = country_obj.search([('code', '=', psg.pop('country_of_issued_code'))])
-                    psg['country_of_issued_id'] = country and country[0].id or False
-                if not psg.get('passport_expdate'):
-                    try:
-                        psg.pop('passport_expdate')
-                    except Exception:
-                        pass
-
-                psg.update({
-                    'contact_id': contact_id,
-                    'passenger_id': False,
-                    'agent_id': agent_id,
-                })
-                psg_res = psg_obj.sudo().create(psg)
-                psg.update({
-                    'passenger_id': psg_res.id,
-                })
-                res.append(psg_res.id)
-        return res
+            return ERR.get_error(500)
 
     def _get_pricelist_ids(self, service_charge_summary):
         res = []
@@ -1807,7 +1571,7 @@ class ReservationActivity(models.Model):
             })
 
         vals.update({
-            'state': 'reserved',
+            'state': 'booked',
             'booked_uid': api_context and api_context['co_uid'],
             'date': datetime.now(),
             'hold_date': datetime.now() + relativedelta(days=1),
@@ -1990,7 +1754,7 @@ class ReservationActivity(models.Model):
         if order_id:
             book_obj = self.sudo().search([('pnr', '=', order_id)], limit=1)
             book_obj = book_obj[0]
-            if book_obj.state not in ['approved', 'done', 'cancelled', 'expired', 'refunded']:
+            if book_obj.state not in ['done', 'cancel', 'cancel2', 'refund']:
                 book_obj.sudo().write({
                     'state': req.get('status') == 'confirmed' and 'done' or 'rejected',
                     'voucher_url': req.get('voucher_url') and req['voucher_url'] or ''
@@ -2030,7 +1794,7 @@ class ReservationActivity(models.Model):
     def cron_update_status_booking(self):
         try:
             cookie = ''
-            booking_objs = self.env['tt.reservation.activity'].search([('state', 'not in', ['approved', 'rejected', 'cancelled', 'done', 'expired', 'refunded'])])
+            booking_objs = self.env['tt.reservation.activity'].search([('state', 'not in', ['rejected', 'cancel', 'done', 'cancel2', 'refund'])])
             for rec in booking_objs:
                 req = {
                     'provider': rec['provider_name'],
