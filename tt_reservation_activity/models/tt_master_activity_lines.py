@@ -60,5 +60,6 @@ class MasterActivitySKU(models.Model):
     minAge = fields.Integer('Min Passenger Age')
     maxAge = fields.Integer('Max Passenger Age')
     add_information = fields.Text('Additional Information')
+    pax_type = fields.Char('Passenger Type')
     activity_line_id = fields.Many2one('tt.master.activity.lines', 'Activity Type', ondelete="cascade")
     active = fields.Boolean('Active', default=True)

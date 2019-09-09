@@ -3,6 +3,7 @@ from datetime import datetime, timedelta, date, time
 from odoo import http
 from dateutil.relativedelta import relativedelta
 from odoo.exceptions import UserError
+from ...tools import util,variables,ERR
 from ...tools.db_connector import GatewayConnector
 from .ApiConnector_Activity import ApiConnectorActivity
 
@@ -1118,33 +1119,6 @@ class ReservationActivity(models.Model):
         }
         GatewayConnector().telegram_notif_api(data, {})
 
-    def _validate_activity(self, data, type):
-        list_data = []
-        if type == 'context':
-            list_data = ['co_uid', 'is_company_website']
-        elif type == 'header':
-            list_data = ['senior', 'adult', 'child', 'infant']
-
-        keys_data = []
-        for rec in data.iterkeys():
-            keys_data.append(str(rec))
-
-        for ls in list_data:
-            if not ls in keys_data:
-                raise Exception('ERROR Validate %s, key : %s' % (type, ls))
-        return True
-
-    def _activity_header_normalization(self, data):
-        res = {}
-        int_key_att = ['senior', 'adult', 'child', 'infant']
-
-        for rec in int_key_att:
-            res.update({
-                rec: int(data[rec])
-            })
-
-        return res
-
     def update_api_context(self, customer_parent_id, context):
         context['co_uid'] = int(context['co_uid'])
         user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
@@ -1290,12 +1264,16 @@ class ReservationActivity(models.Model):
                 res_ids.append(psg_obj.id)
         return res_ids
 
-    def create_booking(self, contact_data, passengers, option, search_request, file_upload, context, kwargs):
+    def create_booking(self, req, context, kwargs):
         try:
-            self._validate_activity(context, 'context')
-            self._validate_activity(search_request, 'header')
+            booker_data = req.get('booker_data') and req['booker_data'] or False
+            contact_data = req.get('contact_data') and req['contact_data'] or False
+            passengers = req.get('passengers_data') and req['passengers_data'] or False
+            option = req.get('option') and req['option'] or False
+            search_request = req.get('search_request') and req['search_request'] or False
+            file_upload = req.get('file_upload') and req['file_upload'] or False
             try:
-                agent_obj = self.env['tt.customer.details'].browse(int(contact_data['contact_id'])).agent_id
+                agent_obj = self.env['tt.customer'].browse(int(contact_data['contact_id'])).agent_id
                 if not agent_obj:
                     agent_obj = self.env['res.users'].browse(int(context['co_uid'])).agent_id
             except Exception:
@@ -1303,34 +1281,11 @@ class ReservationActivity(models.Model):
             context = self.update_api_context(agent_obj.id, context)
 
             if kwargs['force_issued']:
-                is_enough = self.env['res.partner'].check_balance_limit(agent_obj.id, kwargs['amount'])
+                is_enough = self.env['tt.agent'].check_balance_limit_api(agent_obj.id, kwargs['amount'])
                 if not is_enough['error_code'] == 0:
                     raise Exception('BALANCE not enough')
 
-            # ========= Validasi agent_id ===========
-            # TODO : Security Issue VERY HIGH LEVEL
-            # 1. Jika BUKAN is_company_website, maka contact.contact_id DIABAIKAN
-            # 2. Jika ADA contact.contact_id MAKA agent_id = contact.contact_id.agent_id
-            # 3. Jika TIDAK ADA contact.contact_id MAKA agent_id = co_uid.agent_id
-
-            # PRODUCTION
-            # self.validate_booking(api_context=context)
-            user_obj = self.env['res.users'].sudo().browse(int(context['co_uid']))
-            contact_data.update({
-                'agent_id': user_obj.agent_id.id,
-                'commercial_agent_id': user_obj.agent_id.id,
-                'booker_type': 'FPO',
-                'display_mobile': user_obj.mobile,
-            })
-            if user_obj.agent_id.agent_type_id.id in (self.env.ref('tt_base_rodex.agent_type_cor').id, self.env.ref('tt_base_rodex.agent_type_por').id):
-                if user_obj.agent_id.parent_agent_id:
-                    contact_data.update({
-                        'commercial_agent_id': user_obj.agent_id.parent_agent_id.id,
-                        'booker_type': 'COR/POR',
-                        'display_mobile': user_obj.mobile,
-                    })
-
-            header_val = self._activity_header_normalization(search_request)
+            header_val = search_request
             contact_obj = self._create_contact(contact_data, context)
 
             psg_ids = self._evaluate_passenger_info(passengers, contact_obj.id, context['agent_id'])
@@ -1390,22 +1345,18 @@ class ReservationActivity(models.Model):
             self._create_passengers(passengers, contact_obj, context)
 
             self.env.cr.commit()
-            return {
-                'error_code': 0,
-                'error_msg': 'Success',
-                'response': {
-                    'order_id': book_obj.id,
-                    'order_number': book_obj.name,
-                    'status': book_obj.state,
-                }
+
+            response = {
+                'order_id': book_obj.id,
+                'order_number': book_obj.name,
+                'status': book_obj.state,
             }
+
+            return ERR.get_no_error(response)
         except Exception as e:
             self.env.cr.rollback()
             _logger.error(msg=str(e) + '\n' + traceback.format_exc())
-            return {
-                'error_code': 1,
-                'error_msg': str(e)
-            }
+            return ERR.get_error(500)
 
     def _evaluate_passenger_info(self, passengers, contact_id, agent_id):
         res = []
