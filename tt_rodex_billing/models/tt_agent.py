@@ -8,3 +8,4 @@ class TtAgentInh(models.Model):
         val.update({
             'billing_cycle_ids': [4,self.env.ref('tt_rodex_billing.billing_cycle_no').id]
         })
+        return val

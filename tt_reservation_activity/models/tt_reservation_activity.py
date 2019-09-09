@@ -107,7 +107,7 @@ class ReservationActivity(models.Model):
     sale_service_charge_ids = fields.One2many('tt.service.charge', 'activity_id', string='Prices')
     invoice_ids = fields.One2many('tt.agent.invoice', 'activity_transaction_id', string='Invoices')
     ledger_id = fields.One2many('tt.ledger', 'reservation_activity_id', string='Ledgers')
-    line_ids = fields.One2many('tt.reservation.activity.line', 'reservation_activity_id', string='Line')
+    line_ids = fields.One2many('tt.reservation.passenger.activity', 'reservation_activity_id', string='Passengers')
 
     booking_option = fields.Text('Booking Option')
 
@@ -1153,6 +1153,7 @@ class ReservationActivity(models.Model):
 
             header_val.update({
                 'contact_id': contact_obj.id,
+                'booker_id': booker_obj.id,
                 'display_mobile': contact_obj.mobile,
                 'state': 'reserved',
                 'agent_id': context['agent_id'],
@@ -1184,16 +1185,14 @@ class ReservationActivity(models.Model):
             for psg in pax_ids:
                 temp_obj = psg[0]
                 extra_dict = psg[1]
-
-                vals = {
+                vals = temp_obj.copy_to_passenger()
+                vals.update({
                     'reservation_activity_id': book_obj.id,
-                    'passenger_id': psg['passenger_id'],
-                    'pax_type': psg['pax_type'],
-                    'pax_mobile': psg.get('mobile', ''),
-                    'api_data': psg.get('api_data', ''),
-                    'activity_sku_id': psg.get('sku_real_id', 0)
-                }
-                self.env['tt.reservation.activity.line'].sudo().create(vals)
+                    'pax_type': extra_dict['pax_type'],
+                    'api_data': extra_dict.get('api_data', ''),
+                    'activity_sku_id': extra_dict.get('sku_real_id', 0)
+                })
+                self.env['tt.reservation.passenger.activity'].sudo().create(vals)
 
             book_obj.customer_parent_id = contact_data['agent_id']
 
@@ -1201,8 +1200,6 @@ class ReservationActivity(models.Model):
             context['order_id'] = book_obj.id
             if kwargs['force_issued']:
                 book_obj.action_issued_activity(context)
-
-            self._create_passengers(passengers, contact_obj, context)
 
             self.env.cr.commit()
 

@@ -126,24 +126,25 @@
                         <page string="Participants">
                             <field name="line_ids" readonly="1">
                                 <tree>
-                                    <field name="passenger_id" string="Name"/>
+                                    <field name="customer_id" string="Name"/>
                                     <field name="pax_type"/>
-                                    <field name="pax_mobile"/>
+                                    <field name="birth_date"/>
+                                    <field name="gender"/>
                                     <field name="activity_sku_id" string="SKU"/>
                                     <field name="api_data" string="Option Request"/>
                                 </tree>
                                 <form>
                                     <group>
                                         <group>
-                                            <field name="passenger_id" string="Name"/>
+                                            <field name="customer_id" string="Name"/>
                                             <field name="pax_type"/>
-                                            <field name="pax_mobile"/>
+                                            <field name="birth_date"/>
+                                            <field name="gender"/>
                                             <field name="api_data" string="Option Request"/>
                                         </group>
                                         <group>
                                             <field name="reservation_activity_id" string="Order Number"/>
                                             <field name="activity_sku_id" string="SKU"/>
-                                            <field name="state"/>
                                         </group>
                                     </group>
                                 </form>
