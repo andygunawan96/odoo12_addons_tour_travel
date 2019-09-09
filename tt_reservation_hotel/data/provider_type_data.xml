@@ -65,5 +65,12 @@
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
         </record>
+        <record id="tt_hotel_provider_tbo" model="tt.provider">
+            <field name="name">TBO Holidays</field>
+            <field name="alias">A9</field>
+            <field name="code">tbo</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
     </data>
 </odoo>

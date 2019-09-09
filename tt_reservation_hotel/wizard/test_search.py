@@ -539,7 +539,11 @@ class TestSearch(models.Model):
 
         booker_obj = self.env['tt.reservation.hotel'].create_booker_api(booker_detail, context)
         booker_detail['contact_id'] = booker_obj.id
-        cust_partner_obj = self.env['tt.reservation.hotel'].create_contact_api(booker_detail, {}, context)
+        cust_partner_obj = booker_obj
+        # try:
+        #     cust_partner_obj = self.env['tt.reservation.hotel'].create_contact_api(booker_detail, {}, context)
+        # except:
+        #     cust_partner_obj = booker_obj
 
         backend_hotel_obj = self.get_backend_object(provider_name, hotel_obj['id'])
         vals = self.prepare_resv_value(backend_hotel_obj, hotel_obj, check_in, check_out, room_rates,

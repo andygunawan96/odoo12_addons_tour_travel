@@ -219,7 +219,7 @@
                             <field name="hotel_phone"/>
                         </group>
                         <group>
-                            <field name="checkin_date" required="1"/>
+                            <field name="checkin_date" required="1" options="{'datepicker': {'minDate': 'now'}}"/>
                             <field name="checkout_date" required="1"/>
                             <field name="nights"/>
                         </group>

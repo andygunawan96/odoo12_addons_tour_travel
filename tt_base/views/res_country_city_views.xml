@@ -28,8 +28,15 @@
                         </group>
                         <group>
                             <field name="other_name_ids">
-                                <tree editable="bottom">
+                                <tree editable="bottom" options="{'limit': 4}">
                                     <field name="name"/>
+                                </tree>
+                            </field>
+                            <field name="provide_code_ids">
+                                <tree editable="bottom" options="{'limit': 4}">
+                                    <field name="code"/>
+                                    <field name="name"/>
+                                    <field name="provider_id"/>
                                 </tree>
                             </field>
                         </group>

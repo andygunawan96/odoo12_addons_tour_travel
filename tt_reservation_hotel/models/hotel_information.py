@@ -108,3 +108,12 @@ class HotelImage(models.Model):
     _inherit = 'tt.hotel.image'
 
     hotel_id = fields.Many2one('tt.hotel', "Hotel")
+
+
+class TtTemporaryRecord(models.Model):
+    _inherit = 'tt.temporary.record'
+
+    def get_obj(self):
+        obj_list = super(TtTemporaryRecord, self).get_obj()
+        obj_list += [('tt.hotel', 'city_id')]
+        return obj_list
