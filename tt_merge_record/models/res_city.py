@@ -26,7 +26,7 @@ class ResCity(models.Model):
                     })
                 else:
                     city_id = city_id[0]
-                if not self.env['tt.destination.alias'].search([('name', '=', rec[1]), ('city_id', '=', city_id.id)]):
+                if not self.env['tt.destination.alias'].search([('name', '=', rec[1]), ('city_id', '=', city_id.id)]) and rec[0] != rec[1]:
                     self.env['tt.destination.alias'].create({'name': rec[1], 'city_id': city_id.id,})
                 self.env.cr.commit()
 
@@ -35,23 +35,21 @@ class ResCity(models.Model):
         with open('/home/rodex-it-05/Downloads/simplemaps_worldcities_basicv1.5/res.country.city.csv', 'r') as f:
             rows = csv.reader(f)
             for rec in rows:
-                country_id = self.env['res.country'].search([('code', '=', rec[5])], limit=1)
+                country_id = self.env['res.country'].search([('code', '=', rec[4])], limit=1)
                 if not country_id:
-                    country_id = self.env['res.country'].create({'name': rec[4], 'code': rec[5], })
+                    country_id = self.env['res.country'].create({'name': rec[2], 'code': rec[4], })
                 else:
                     country_id = country_id[0]
-                city_id = self.env['res.city'].search(['|', ('name', '=', rec[0]), ('name', '=', rec[1])], limit=1)
+                city_id = self.env['res.city'].search([('name', '=', rec[1])], limit=1)
+                # Find using alias name
                 if not city_id:
-                    city_id = self.env['res.city'].create({
-                        'name': rec[0],
-                        'latitude': rec[2],
-                        'longitude': rec[3],
+                    alias_id = self.env['tt.destination.alias'].search([('name', '=', rec[1]), ('city_id', '!=', False)], limit=1)
+                    city_id = alias_id and alias_id[0].city_id or False
+                if not city_id:
+                    self.env['res.city'].create({
+                        'name': rec[1],
                         'country_id': country_id.id,
                     })
-                else:
-                    city_id = city_id[0]
-                if not self.env['tt.destination.alias'].search([('name', '=', rec[1]), ('city_id', '=', city_id.id)]):
-                    self.env['tt.destination.alias'].create({'name': rec[1], 'city_id': city_id.id,})
                 self.env.cr.commit()
     # Internal use only End
 

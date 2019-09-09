@@ -6,7 +6,7 @@
     'summary': 'billing statement',
     'sequence': 2,
     'description': """
-TT_TRANSPORT
+Billing Statement
 """,
     'category': 'billing',
     'website': '',
@@ -14,9 +14,12 @@ TT_TRANSPORT
     'depends' : ['base_setup','tt_base','tt_accounting', 'tt_agent_sales', 'tt_payment'],
     'data': [
         'data/ir_sequence_data.xml',
-        # 'security/ir.model.access.csv',
+        'data/tt_billing_cycle.xml',
+        'security/ir.model.access.csv',
+
         'views/tt_agent_invoice_views.xml',
         'views/tt_billing_statement_views.xml',
+        'views/tt_customer_parent_views.xml',
         'security/ir.model.access.csv',
     ],
     'demo': [],

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="tt_agent_registration_promotion_form_view" model="ir.ui.view">
+            <field name="name">tt.agent.registration.promotion.form.view</field>
+            <field name="model">tt.agent.registration.promotion</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="toggle_active" type="object"
+                                    class="oe_stat_button" icon="fa-archive">
+<!--                                groups="tt_base.group_tt_tour_travel_operator"-->
+                                <field name="active" widget="boolean_button"
+                                       options='{"terminology": "archive"}'/>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Promotion Name"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                            <field name="agent_type_id"/>
+                            <field name="agent_type_ids">
+                                <form>
+                                    <sheet>
+                                        <group>
+                                            <field name="agent_type_id"/>
+                                            <field name="discount_amount_type"/>
+                                            <field name="discount_amount"/>
+                                            <field name="line_ids">
+                                                <form>
+                                                    <sheet>
+                                                        <group>
+                                                            <field name="agent_type_id"/>
+                                                            <field name="amount"/>
+                                                        </group>
+                                                    </sheet>
+                                                </form>
+                                                <tree>
+                                                    <field name="agent_type_id"/>
+                                                    <field name="amount"/>
+                                                </tree>
+                                            </field>
+                                        </group>
+                                    </sheet>
+                                </form>
+                                <tree>
+                                    <field name="agent_type_id"/>
+                                    <field name="discount_amount_type"/>
+                                    <field name="discount_amount"/>
+                                </tree>
+                            </field>
+                            <field name="description"/>
+                            <field name="sequence"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="tt_agent_registration_promotion_tree_view" model="ir.ui.view">
+            <field name="name">tt.agent.registration.promotion.tree.view</field>
+            <field name="model">tt.agent.registration.promotion</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="start_date"/>
+                    <field name="end_date"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="tt_agent_registration_promotion_action_view" model="ir.actions.act_window">
+            <field name="name">Agent Registration Promotion</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">tt.agent.registration.promotion</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">
+                {
+                    'form_view_ref': 'tt_agent_registration_promotion.tt_agent_registration_promotion_form_view',
+                    'tree_view_ref': 'tt_agent_registration_promotion.tt_agent_registration_promotion_tree_view',
+                }
+            </field>
+        </record>
+
+        <menuitem id="submenu_transaction_promotion" parent="menu_transaction_agent"
+                  name="Promotion" action="tt_agent_registration_promotion_action_view" sequence="2"/>
+
+    </data>
+</odoo>

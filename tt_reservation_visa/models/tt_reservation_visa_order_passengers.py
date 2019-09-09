@@ -126,7 +126,11 @@ class VisaOrderPassengers(models.Model):
                                                 done = picked up by customer''')
 
     def action_send_email_interview(self):
-        pass
+        """Dijalankan, jika user menekan tombol 'Send Email Interview'"""
+        template = self.env.ref('tt_reservation_visa.template_mail_visa_interview')
+        mail = self.env['mail.template'].browse(template.id)
+        mail.send_mail(self.id)
+        print("Email Sent")
 
     def action_draft(self):
         for rec in self:

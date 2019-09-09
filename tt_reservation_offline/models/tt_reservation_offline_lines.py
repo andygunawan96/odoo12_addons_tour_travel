@@ -113,9 +113,6 @@ class IssuedOfflineLines(models.Model):
 
     @api.onchange('transaction_type', 'booking_id.provider_type_id')
     def onchange_domain(self):
-        print('Provider Type ID : ' + str(self.booking_id.provider_type_id_name))
-        booking_type = self.booking_id.provider_type_id.code
-
         return {'domain': {
             'carrier_id': [('provider_type_id', '=', self.booking_id.provider_type_id.id)],
             'origin_id': [('provider_type_id', '=', self.booking_id.provider_type_id.id)],

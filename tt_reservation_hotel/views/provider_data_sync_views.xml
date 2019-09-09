@@ -1,0 +1,81 @@
+<odoo>
+    <record model="ir.ui.view" id="tt_hotel_provider_data_view_form_rodex" >
+        <field name="name">tt.hotel.provider.data.view.form.rodex</field>
+        <field name="model">tt.hotel.provider.data</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button string="Confirm" name="action_confirm" type="object" states="draft"/>
+                    <button string="Manual Sync" name="action_sync" type="object" states="confirm"/>
+                    <button string="Re Sync" name="action_resync" type="object" states="error"/>
+                    <button string="Set to Draft" name="action_draft" type="object" states="confirm,error"/>
+
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" default_focus="1" placeholder="Ex: (Provider): (Sync type)(Date)"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="provider_id"/>
+                            <field name="sync_type"/>
+                            <field name="schedule_date"/>
+                        </group>
+                        <group>
+                            <field name="all_result"/>
+                            <field name="process_result"/>
+                            <field name="unprocess_result"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <field name="line_ids"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="tt_hotel_provider_data_view_tree_rodex" >
+        <field name="name">tt.hotel.provider.data.view.tree.rodex</field>
+        <field name="model">tt.hotel.provider.data</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="provider_id"/>
+                <field name="sync_type"/>
+                <field name="name"/>
+                <field name="schedule_date"/>
+                <field name="process_result"/>
+                <field name="all_result"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+    <record id="tt_hotel_provider_data_view_search" model="ir.ui.view">
+        <field name="name">tt.hotel.provider.data.view.search</field>
+        <field name="model">tt.hotel.provider.data</field>
+        <field name="arch" type="xml">
+            <search string="Sync Provider Data">
+                <field name="name" string="Name"/>
+                <field name="provider_id" string="Provider"/>
+                <field name="sync_type" string="Sync Type"/>
+                <filter name="filter_need_to_process" string="Need to Process" domain="[('unprocess_result','!=', 0)]"/>
+                <filter name="filter_need_to_sync" string="Need to Sync" domain="[('schedule_date','=', True)]"/>
+                <group expand="0" string="Group By...">
+                    <filter name="group_by_provider" string="Group: Provider" domain="[]" context="{'group_by':'provider_id'}"/>
+                    <filter name="group_by_sync_type" string="Group: Type" domain="[]" context="{'group_by':'sync_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_hotel_provider_data_view_action_rodex">
+        <field name="name">Hotel Provider Data</field>
+        <field name="res_model">tt.hotel.provider.data</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+    </record>
+</odoo>

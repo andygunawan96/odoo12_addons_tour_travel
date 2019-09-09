@@ -111,6 +111,13 @@ class PassportOrderPassengers(models.Model):
                                                 ready = ready to pickup by customer
                                                 done = picked up by customer''')
 
+    def action_send_email_interview(self):
+        """Dijalankan, jika user menekan tombol 'Send Email Interview'"""
+        template = self.env.ref('tt_reservation_passport.template_mail_passport_interview')
+        mail = self.env['mail.template'].browse(template.id)
+        mail.send_mail(self.id)
+        print("Email Sent")
+
     def action_draft(self):
         for rec in self:
             rec.write({

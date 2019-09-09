@@ -9,7 +9,6 @@ class AgentInvoice(models.Model,test_to_dict.ToDict):
     _description = 'Rodex Model'
 
     name = fields.Char('Name')
-    name_inv = fields.Char('Name',related="invoice_id.name")
 
     total = fields.Integer('Total',compute='_compute_total', store=True)
 
@@ -32,7 +31,7 @@ class AgentInvoice(models.Model,test_to_dict.ToDict):
 
     def create(self, vals_list):
         if 'name' not in vals_list:
-            vals_list['name'] = self.env['ir.sequence'].next_by_code('agent.invoice.line')
+            vals_list[0]['name'] = self.env['ir.sequence'].next_by_code('agent.invoice.line')
 
         new_invoice_line = super(AgentInvoice, self).create(vals_list)
 

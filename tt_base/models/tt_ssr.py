@@ -110,21 +110,28 @@ class TtSSRList(models.Model):
             'rules': self.rules and self.rules or '',
             'notes': self.notes and self.notes or '',
             'category_id': self.category_id and self.category_id.get_data() or '',
+            'provider_id': self.provider_id and self.provider_id.get_data() or '',
             'lines': lines,
         }
         return res
 
-    def get_ssr_api(self, provider, provider_type):
+    def get_ssr_api(self, provider_type):
         try:
             provider_type_obj = self.env['tt.provider.type'].sudo().search([('code', '=', provider_type)], limit=1)
-            provider_obj = self.env['tt.provider'].sudo().search([('code', '=', provider)], limit=1)
+            # provider_obj = self.env['tt.provider'].sudo().search([('code', '=', provider)], limit=1)
             if not provider_type_obj:
                 raise Exception('Provider Type not found, %s' % provider_type)
-            if not provider_obj:
-                raise Exception('Provider not found, %s' % provider)
+            # if not provider_obj:
+            #     raise Exception('Provider not found, %s' % provider)
 
-            _objs = self.sudo().search([('provider_id', '=', provider_obj.id), ('provider_type_id', '=', provider_type_obj.id), ('active', '=', 1)])
-            response = [rec.get_ssr_data() for rec in _objs]
+            # _objs = self.sudo().search([('provider_id', '=', provider_obj.id), ('provider_type_id', '=', provider_type_obj.id), ('active', '=', 1)])
+            _objs = self.sudo().search([('provider_type_id', '=', provider_type_obj.id), ('active', '=', 1)])
+            # response = [rec.get_ssr_data() for rec in _objs]
+            ssrs = [rec.get_ssr_data() for rec in _objs]
+            response = {
+                'ssrs': ssrs,
+                'provider_type': provider_type,
+            }
             res = Response().get_no_error(response)
         except Exception as e:
             _logger.error('Error Get SSR API, %s, %s' % (str(e), traceback.format_exc()))

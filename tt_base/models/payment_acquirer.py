@@ -114,7 +114,8 @@ class PaymentAcquirer(models.Model):
             res = {}
             res['non_member'] = values
             res['member'] = {}
-            res['member']['credit_limit'] = self.generate_credit_limit(req['booker_seq_id']) if util.get_without_empty(req,'booker_seq_id') else []
+            if req.get('booker_seq_id'):
+                res['member']['credit_limit'] = self.generate_credit_limit(req['booker_seq_id']) if util.get_without_empty(req,'booker_seq_id') else []
             _logger.info("payment acq resp\n"+ json.dumps(res))
             return ERR.get_no_error(res)
         except Exception as e:

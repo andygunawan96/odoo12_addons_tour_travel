@@ -1,4 +1,5 @@
-from odoo import fields, api, models, _
+from odoo import fields, api, models
+from odoo import exceptions
 import datetime
 
 
@@ -38,7 +39,7 @@ class PaymentTransaction(models.Model):
     confirm_date = fields.Datetime('Confirm on')
     validate_uid = fields.Many2one('res.users', 'Validate by')
     validate_date = fields.Datetime('Validate on')
-    reference = fields.Char('Trans. Ref.', help='Transaction Reference / Approval number')
+    reference = fields.Char('Validate Ref.', help='Transaction Reference / Approval number')
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True)  
     acquirer_id = fields.Many2one('payment.acquirer', 'Acquirer', domain="['|', ('agent_id', '=', agent_id), ('agent_id', '=', False)]")
 
@@ -54,7 +55,7 @@ class PaymentTransaction(models.Model):
     @api.depends('total_amount','fee')
     def compute_available_amount(self):
         for rec in self:
-            rec.available_amount = rec.total_amount - rec.used_amount - rec.fee
+            rec.available_amount = rec.total_amount - rec.fee
 
     @api.multi
     @api.depends('name','currency_id','available_amount')
@@ -74,8 +75,9 @@ class PaymentTransaction(models.Model):
     # def write(self, vals):
     #     vals['residual_amount'] = self.get_residual_amount(vals)
     #     super(PaymentTransaction, self).write(vals)
-    #
-    #
-    #
+
     def action_validate_from_button(self):
-        self.state = 'validated'
+        if self.reference:
+            self.state = 'validated'
+        else:
+            raise exceptions.UserError('Please write down the payment reference')
