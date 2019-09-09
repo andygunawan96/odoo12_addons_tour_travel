@@ -3,17 +3,16 @@ from datetime import datetime, timedelta
 import logging, traceback
 
 
-class TransportBookActivityLine(models.Model):
-    _name = 'tt.reservation.activity.line'
+class TtReservationCustomer(models.Model):
+    _name = 'tt.reservation.passenger.activity'
+    _inherit = 'tt.reservation.passenger'
     _description = 'Rodex Model'
 
     reservation_activity_id = fields.Many2one('tt.reservation.activity', 'Activity Booking')
-    passenger_id = fields.Many2one('tt.customer', 'Passenger')
-    pax_type = fields.Selection([('ADT', 'Adult'), ('YCD', 'Senior'), ('CHD', 'Child'), ('INF', 'Infant')], string='Pax Type')
-    pax_mobile = fields.Char('Mobile Number')
+    pax_type = fields.Selection([('ADT', 'Adult'), ('YCD', 'Senior'), ('CHD', 'Child'), ('INF', 'Infant')],
+                                string='Pax Type')
     activity_sku_id = fields.Many2one('tt.master.activity.sku', 'Activity SKU')
     api_data = fields.Text('API Data')
-    state = fields.Selection([], related='reservation_activity_id.state')
 
 
 class TransportBookActivityPrice(models.Model):
