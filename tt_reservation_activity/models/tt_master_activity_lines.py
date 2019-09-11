@@ -51,6 +51,7 @@ class MasterActivityLines(models.Model):
 
 class MasterActivitySKU(models.Model):
     _name = 'tt.master.activity.sku'
+    _rec_name = 'title'
     _description = 'Rodex Model'
 
     sku_id = fields.Char('SKU ID')
