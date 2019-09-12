@@ -360,6 +360,12 @@ class TtReservation(models.Model):
         self.state = 'cancel2'
         pass
 
+    ## Digunakan untuk mengupdate PNR seluruh ledger untuk resv ini
+    # Digunakan di hotel dan activity
+    def update_ledger_pnr(self, new_pnr):
+        for rec in self.ledger_ids:
+            rec.update({'pnr': new_pnr})
+
     def cron_expired_booking(self):
         try:
             for rec in variables.PROVIDER_TYPE:

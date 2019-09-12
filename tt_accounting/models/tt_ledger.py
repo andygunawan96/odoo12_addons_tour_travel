@@ -97,14 +97,22 @@ class Ledger(models.Model):
     #         vals['balance'] = self.calc_balance(vals)
     #     return super(Ledger, self).create(vals_list)
 
+    def get_allowed_list(self):
+        return {
+            'is_reversed': ['is_reversed', 'reverse_id']
+        }
+
+
+    ##fungsi return tuple
+    ## [0] ada key apa
+    ## [1]
     @api.multi
     def write(self, vals):
-        for value in vals:
-            if value not in ['is_reversed', 'reverse_id']:
-                raise UserError(_('You cannot modify a Ledger'))
-            else:
-                if self.is_reversed:
-                    raise UserError(_('You cannot Reverse Ledger that already Reversed'))
+        for check_key, restriction in self.get_allowed_list().items():
+            if getattr(self, check_key):
+                for item in restriction:
+                    if item in vals.keys():
+                        raise UserError('Error')
         return super(Ledger, self).write(vals)
 
     @api.multi
