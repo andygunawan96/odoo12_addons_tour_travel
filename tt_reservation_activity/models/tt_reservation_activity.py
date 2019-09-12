@@ -160,11 +160,6 @@ class ReservationActivity(models.Model):
     def action_calc_prices(self):
         self._calc_grand_total()
 
-    def action_confirm(self, commission, parent_commission, ho_commission):
-        self.create_agent_invoice_activity()
-        self._create_ledger_activity()
-        self._create_commission_ledger_activity(commission, parent_commission, ho_commission)
-
     def force_update_booking(self):
         cookie = ''
         req = {
@@ -537,15 +532,38 @@ class ReservationActivity(models.Model):
         })
         self.message_post(body='Order DONE')
 
-    def update_booking(self, booking_id, prices, book_info, api_context, kwargs):
+    def update_pnr_data(self, book_id, pnr):
+        provider_objs = self.env['tt.provider.activity'].search([('booking_id', '=', book_id)])
+        for rec in provider_objs:
+            rec.write({
+                'pnr': pnr
+            })
+            cost_service_charges = self.env['tt.service.charge'].search([('provider_activity_booking_id', '=', rec.id)])
+            for rec2 in cost_service_charges:
+                rec2.write({
+                    'description': pnr
+                })
+
+        ledger_objs = self.env['tt.ledger'].search([('res_id', '=', book_id)])
+        for rec in ledger_objs:
+            rec.write({
+                'pnr': pnr
+            })
+
+    def update_booking(self, req, api_context, kwargs):
         try:
+            booking_id = req['booking_id'],
+            prices = req['prices']
+            book_info = req['book_info']
+
             booking_obj = self.browse(booking_id)
             booking_obj.write({
-                'pnr': book_info['code'],
-                'booking_uuid': book_info['uuid'],
-                'sid': api_context['sid'],
+                'pnr': book_info.get('code') and book_info['code'] or '',
+                'booking_uuid': book_info.get('uuid') and book_info['uuid'] or '',
+                'sid_booked': api_context.get('sid') and api_context['sid'] or '',
                 'state': book_info['status']
             })
+            booking_obj.update_pnr_data(booking_id, book_info['code'])
             self.env.cr.commit()
 
             if not api_context or api_context['co_uid'] == 1:
@@ -819,34 +837,12 @@ class ReservationActivity(models.Model):
 
                     booking_obj.action_calc_prices()
 
-            if kwargs['force_issued']:
-                booking_obj.action_confirm(total_commission_price, total_parent_commission_price, total_ho_commission_price)
-
-                vals = self.env['tt.ledger'].prepare_vals('Commission & Profit : ' + booking_obj.name, 'HO: ' + booking_obj.name, str(fields.Datetime.now()), 'commission', booking_obj.currency_id.id, commission_ho, 0)
-                vals.update({
-                    'agent_id': self.env['res.partner'].sudo().search([('is_HO', '=', True), ('parent_id', '=', False)], limit=1).id,
-                    'reservation_activity_id': booking_obj.id,
-                })
-                commission_aml = self.env['tt.ledger'].create(vals)
-                commission_aml.action_done()
-
-                from_currency = self.env['res.currency'].search([('name', '=', book_info['currencyCode'])], limit=1)
-                temp1 = 0
-                for rec in booking_obj.sale_service_charge_ids:
-                    if rec['charge_code'] == 'fare':
-                        temp1 += rec['foreign_amount'] * rec['pax_count']
-                temp2 = self.env['res.currency']._compute(from_currency, self.env.user.company_id.currency_id, temp1)
-
-                temp3 = self.env['tt.vendor.ledger'].search([('description', '=', booking_obj.name)])
-                for temp4 in temp3:
-                    temp4.sudo().unlink()
-
-            return {
-                'error_code': 0,
-                'error_msg': 'Success',
-                'order_number': booking_obj.name,
+            response = {
+                'order_number': booking_obj.name
             }
 
+            res = ERR.get_no_error(response)
+            return res
 
         except Exception as e:
             self.env.cr.rollback()
@@ -884,14 +880,14 @@ class ReservationActivity(models.Model):
     def create_booking(self, req, context, kwargs):
         try:
             booker_data = req.get('booker_data') and req['booker_data'] or False
-            contact_data = req.get('contact_data') and req['contact_data'] or False
+            contacts_data = req.get('contacts_data') and req['contacts_data'] or False
             passengers = req.get('passengers_data') and req['passengers_data'] or False
             option = req.get('option') and req['option'] or False
             search_request = req.get('search_request') and req['search_request'] or False
             file_upload = req.get('file_upload') and req['file_upload'] or False
             provider = req.get('provider') and req['provider'] or ''
             try:
-                agent_obj = self.env['tt.customer'].browse(int(contact_data['contact_id'])).agent_id
+                agent_obj = self.env['tt.customer'].browse(int(booker_data['booker_id'])).agent_id
                 if not agent_obj:
                     agent_obj = self.env['res.users'].browse(int(context['co_uid'])).agent_id
             except Exception:
@@ -904,9 +900,19 @@ class ReservationActivity(models.Model):
 
             header_val = search_request
             booker_obj = self.create_booker_api(booker_data, context)
-            contact_obj = self.create_contact_api(contact_data, booker_obj, context)
+            contact_data = contacts_data[0]
+            contact_objs = []
+            for con in contacts_data:
+                contact_objs.append(self.create_contact_api(con, booker_obj, context))
+
+            contact_obj = contact_objs[0]
 
             activity_type_id = self.env['tt.master.activity.lines'].sudo().search([('uuid', '=', search_request['product_type_uuid'])])
+            if activity_type_id:
+                activity_type_id = activity_type_id[0]
+            provider_id = self.env['tt.provider'].sudo().search([('code', '=', search_request['provider'])])
+            if provider_id:
+                provider_id = provider_id[0]
 
             booking_option = ''
             if option['perBooking']:
@@ -952,7 +958,7 @@ class ReservationActivity(models.Model):
                 extra_dict = psg[1]
                 vals = temp_obj.copy_to_passenger()
                 vals.update({
-                    'reservation_activity_id': book_obj.id,
+                    'booking_id': book_obj.id,
                     'pax_type': extra_dict['pax_type'],
                     'api_data': extra_dict.get('api_data', ''),
                     'activity_sku_id': extra_dict.get('sku_real_id', 0)
@@ -965,11 +971,21 @@ class ReservationActivity(models.Model):
                 'activity_id': activity_type_id.activity_id.id,
                 'activity_product': activity_type_id.name,
                 'activity_product_uuid': search_request['product_type_uuid'],
-                'visit_date': datetime.strptime(search_request['visit_date'], '%Y-%m-%d').strftime('%d %b %Y'),
+                'provider_id': provider_id.id,
+                'visit_date': search_request['visit_date'],
                 'balance_due': kwargs['amount'],
             }
 
-            self.env[''].create(provider_activity_vals)
+            provider_activity_obj = self.env['tt.provider.activity'].sudo().create(provider_activity_vals)
+            for psg in book_obj.passenger_ids:
+                vals = {
+                    'provider_id': provider_activity_obj.id,
+                    'passenger_id': psg.id,
+                    'pax_type': psg.pax_type,
+                    'ticket_number': psg.activity_sku_id.sku_id
+                }
+                self.env['tt.ticket.activity'].sudo().create(vals)
+
             book_obj.action_booked_activity(context)
             context['order_id'] = book_obj.id
             if kwargs['force_issued']:
