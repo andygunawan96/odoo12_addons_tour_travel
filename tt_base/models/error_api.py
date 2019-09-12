@@ -5,6 +5,7 @@ from ...tools.api import Response
 class ErrorApi(models.Model):
     _name = 'tt.error.api'
     _description = 'Rodex Model'
+    _order = 'code'
 
     code = fields.Integer(string='Code', help='Error code', required=True)
     message = fields.Char(string='Message', help='Error message', required=True)
