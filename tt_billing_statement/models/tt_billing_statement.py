@@ -8,16 +8,14 @@ class TtBillingStatement(models.Model):
     name = fields.Char('Number', required=True, readonly=True, default='New')
     date = fields.Date('Date', index=True, default=fields.Date.context_today, required=True, readonly=True,
                        states={'draft': [('readonly', False)]})
-    # payment_term_id = fields.Many2one('account.payment.term', string='Payment Terms', readonly=True,
-    #                                   states={'draft': [('readonly', False)]})
     due_date = fields.Date('Due Date')
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True, readonly=True,
                                states={'draft': [('readonly', False)]},
                                default=lambda self: self.env.user.agent_id.id)
     agent_type_id = fields.Many2one('tt.agent.type', string='Agent Type', related='agent_id.agent_type_id', store=True)
-    sub_agent_id = fields.Many2one('tt.agent', 'Customer', required=True, readonly=True,
+    customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer', required=True, readonly=True,
                                    states={'draft': [('readonly', False)]})
-    sub_agent_type_id = fields.Many2one('tt.agent.type', string='Customer Type', related='sub_agent_id.agent_type_id',
+    customer_parent_type_id = fields.Many2one('tt.customer.parent.type', string='Customer Type', related='customer_parent_id.customer_parent_type_id',
                                         store=True)
 
     contact_id = fields.Many2one('tt.customer', 'Booker / Contact', readonly=True,
@@ -32,12 +30,8 @@ class TtBillingStatement(models.Model):
     notes = fields.Text('Notes', readonly=True, states={'draft': [('readonly', False)]})
     currency_id = fields.Many2one('res.currency', 'Currency', default=lambda self: self.env.user.company_id.currency_id)
     amount_total = fields.Monetary('Total', compute='_compute_amount_total', store=True)
-    company_id = fields.Many2one('res.company', 'Company', required=True, default=lambda self: self.env.user.company_id)
 
-    invoice_ids = fields.One2many('tt.agent.invoice', 'billing_statement_id', string='Agent Invoices', required=True)
-    display_invoice_name = fields.Char(string='Invoice Number')#, compute='_action_display_invoice'
-    # TODO NEXT UPLOAD
-    # display_invoice_name = fields.Char(string='Invoice Number', compute='_action_display_invoice', store=True)
+    invoice_ids = fields.One2many('tt.agent.invoice', 'billing_statement_id', string='Agent Invoices')
 
     # payment_transaction_ids = fields.One2many('payment.transaction', 'billing_statement_id', string='Payments',
     #                                           required=True)
@@ -77,21 +71,15 @@ class TtBillingStatement(models.Model):
         return super(TtBillingStatement, self).create(vals_list)
 
     @api.multi
-    @api.depends('invoice_ids.total')
+    @api.depends('invoice_ids.total', 'invoice_ids.paid_amount','invoice_ids')
     def _compute_amount_total(self):
         for rec in self:
             amount_total = 0
-            for inv in rec.invoice_ids:
-                amount_total += inv.total
-            rec.amount_total = amount_total
-
-    @api.multi
-    @api.depends('invoice_ids.paid_amount')
-    def _compute_amount_total(self):
-        for rec in self:
             paid_amount = 0
             for inv in rec.invoice_ids:
+                amount_total += inv.total
                 paid_amount += inv.paid_amount
+            rec.amount_total = amount_total
             rec.paid_amount = paid_amount
 
     @api.one

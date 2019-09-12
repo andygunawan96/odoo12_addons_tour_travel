@@ -5,11 +5,12 @@
         <field name="model">tt.customer.parent</field>
         <field name="inherit_id" ref="tt_base.tt_customer_parent_form_view"/>
         <field name="arch" type="xml">
-            <field name="credit_limit" position="after">
+            <xpath expr="//field[@name='credit_limit']" position="after">
                 <field name="billing_cycle_ids" widget="many2many_tags" options="{'no_create_edit': True,'color_field': 'color'}"/>
+                <field name="billing_due_date" options='{"type": "number", "step": 1}'/>
                 <button name="test_check_billing_cycle" type="object" string="Check Cycle"/>
                 <button name="cron_create_billing_statement" type="object" string="Cron Cycle"/>
-            </field>
+            </xpath>
         </field>
     </record>
 </odoo>

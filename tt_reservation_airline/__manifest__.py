@@ -11,7 +11,7 @@ TT_TRANSPORT
     'category': 'booking',
     'website': '',
     'images' : [],
-    'depends' : ['base_setup','tt_base','tt_reservation','base_address_city'],
+    'depends' : ['base_setup','tt_base','tt_reservation','base_address_city','tt_in_api_connector'],
     'data': [
         'data/ir_sequence_data.xml',
         'data/tt_provider_type_data.xml',

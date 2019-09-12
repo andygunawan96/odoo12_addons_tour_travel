@@ -1,6 +1,7 @@
 from odoo import fields, models, api, _
 import werkzeug
 from odoo.exceptions import UserError
+from datetime import datetime
 import logging, traceback
 _logger = logging.getLogger(__name__)
 
@@ -19,7 +20,6 @@ class AgentInvoice(models.Model):
     # Vin Registrasi]
     #fixme uncomment later
     # registration_id = fields.Many2one('res.partner.request', 'Registration')
-
 
     def _unlink_ledger(self):
         for rec in self:
@@ -128,15 +128,13 @@ class AgentInvoice(models.Model):
         for rec in self.invoice_line_ids:
             amount += rec.total
 
-        vals = ledger.prepare_vals('Agent Invoice : ' + self.name, self.name, datetime.datetime.now(), 'transport',
+        vals = ledger.prepare_vals('Agent Invoice : ' + self.name, self.name, datetime.now(), 2,
                                    self.currency_id.id, 0, amount)
-        # vals['transport_booking_id'] = self.id
+
         vals['agent_id'] = self.customer_parent_type_id.id
         vals['agent_invoice_id'] = self.id
 
         ledger.create(vals)
-        self.customer_parent_type_id.balance -= amount
-        self.customer_parent_type_id.actual_balance -= amount
 
     def action_write_model_api(self, model, rec_id, vals):
         rec_obj = self.env[model].browse(int(rec_id))

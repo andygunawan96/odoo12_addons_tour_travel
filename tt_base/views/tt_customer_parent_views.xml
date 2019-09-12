@@ -15,7 +15,13 @@
                         <field name="actual_balance"/>
                         <field name="balance"/>
                         <field name="credit_limit"/>
-                        <field name="customer_ids" domain="[('agent_id', '=', parent_agent_id)]"/>
+                        <field name="customer_ids" domain="[('agent_id', '=', parent_agent_id)]">
+                            <tree limit="10">
+                                <field name="first_name"/>
+                                <field name="last_name"/>
+                                <field name="birth_date"/>
+                            </tree>
+                        </field>
                         <field name="currency_id"/>
                     </group>
                 </sheet>

@@ -6,6 +6,6 @@ class TtAgentInh(models.Model):
     def create_walkin_obj_val(self,new_agent,agent_name):
         val = super(TtAgentInh, self).create_walkin_obj_val(new_agent,agent_name)
         val.update({
-            'billing_cycle_ids': [(6,0,[self.env.ref('tt_rodex_billing.billing_cycle_no').id])]
+            'billing_cycle_ids': [(6,0,[self.env.ref('tt_billing_statement.billing_cycle_no').id])]
         })
         return val
