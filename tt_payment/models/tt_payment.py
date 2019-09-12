@@ -40,7 +40,7 @@ class PaymentTransaction(models.Model):
     validate_uid = fields.Many2one('res.users', 'Validate by')
     validate_date = fields.Datetime('Validate on')
     reference = fields.Char('Validate Ref.', help='Transaction Reference / Approval number')
-    agent_id = fields.Many2one('tt.agent', 'Agent', required=True)  
+    agent_id = fields.Many2one('tt.agent', 'Agent', required=True)
     acquirer_id = fields.Many2one('payment.acquirer', 'Acquirer', domain="['|', ('agent_id', '=', agent_id), ('agent_id', '=', False)]")
 
     # #Todo:
