@@ -62,6 +62,15 @@ class ActivityResendVoucher(models.TransientModel):
             raise UserError(_('Resend Voucher Failed!'))
 
 
+class TtActivityPassengerOption(models.Model):
+    _name = 'tt.reservation.activity.option'
+    _description = 'Rodex Model'
+
+    name = fields.Char('Information')
+    value = fields.Char('Value')
+    booking_id = fields.Many2one('tt.reservation.activity', 'Activity Booking')
+
+
 class ReservationActivity(models.Model):
     _inherit = ['tt.reservation']
     _name = 'tt.reservation.activity'
@@ -89,12 +98,11 @@ class ReservationActivity(models.Model):
                                            readonly=True, states={'draft': [('readonly', False)]})
     passenger_ids = fields.One2many('tt.reservation.passenger.activity', 'booking_id', string='Passengers')
 
-    booking_option = fields.Text('Booking Option')
-
     information = fields.Text('Additional Information')
     file_upload = fields.Text('File Upload')
     voucher_url = fields.Text('Voucher URL')
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type',default=lambda self: self.env.ref('tt_reservation_activity.tt_provider_type_activity'))
+    option_ids = fields.One2many('tt.reservation.activity.option', 'booking_id', 'Options')
 
     def _calc_grand_total(self):
         for rec in self:
@@ -535,24 +543,24 @@ class ReservationActivity(models.Model):
     def update_pnr_data(self, book_id, pnr):
         provider_objs = self.env['tt.provider.activity'].search([('booking_id', '=', book_id)])
         for rec in provider_objs:
-            rec.write({
+            rec.sudo().write({
                 'pnr': pnr
             })
             cost_service_charges = self.env['tt.service.charge'].search([('provider_activity_booking_id', '=', rec.id)])
             for rec2 in cost_service_charges:
-                rec2.write({
+                rec2.sudo().write({
                     'description': pnr
                 })
 
         ledger_objs = self.env['tt.ledger'].search([('res_id', '=', book_id)])
         for rec in ledger_objs:
-            rec.write({
+            rec.sudo().write({
                 'pnr': pnr
             })
 
     def update_booking(self, req, api_context, kwargs):
         try:
-            booking_id = req['booking_id'],
+            booking_id = req['order_id'],
             prices = req['prices']
             book_info = req['book_info']
 
@@ -569,273 +577,236 @@ class ReservationActivity(models.Model):
             if not api_context or api_context['co_uid'] == 1:
                 api_context['co_uid'] = booking_obj.booked_uid.id
 
-            sale_service_charge_summary = book_info['amountBreakdown']
-            service_chg_obj = self.env['tt.service.charge']
-            pax_lib = {
-                'senior': 'YCD',
-                'adult': 'ADT',
-                'child': 'CHD',
-                'infant': 'INF',
-            }
-            from_currency = self.env['res.currency'].search([('name', '=', book_info['currencyCode'])])
-            agent_type = self.env['res.users'].browse(api_context['co_uid']).agent_id.agent_type_id.id
-            if agent_type == self.env.ref('tt_base_rodex.agent_type_ho').id:
-                agent_type = booking_obj.agent_type_id.id
-
-            if agent_type in [self.env.ref('tt_base_rodex.agent_type_citra').id, self.env.ref('tt_base_rodex.agent_type_btbo').id]:
-                multiplier = 1
-                parent_multiplier = 0
-                ho_multiplier = 0
-            elif agent_type in [self.env.ref('tt_base_rodex.agent_type_japro').id, self.env.ref('tt_base_rodex.agent_type_btbr').id]:
-                multiplier = 0.8
-                parent_multiplier = 0.17
-                ho_multiplier = 0.03
-            elif agent_type in [self.env.ref('tt_base_rodex.agent_type_fipro').id]:
-                multiplier = 0.6
-                parent_multiplier = 0.35
-                ho_multiplier = 0.05
-            else:
-                multiplier = 0
-                parent_multiplier = 1
-                ho_multiplier = 0
-
-            commission_ho = 0
-            total_commission_price = 0
-            total_parent_commission_price = 0
-            total_ho_commission_price = 0
-
-            for service_charge in booking_obj.sale_service_charge_ids:
-                service_charge.sudo().unlink()
-
-            for val in sale_service_charge_summary:
-                pax_type_string = ''
-                if val.get('name'):
-                    if val['name'] == 'senior':
-                        pax_type_string = 'seniors'
-                        # pax = book_info['seniors']
-                    elif val['name'] == 'adult':
-                        pax_type_string = 'adults'
-                        # pax = book_info['adults']
-                    elif val['name'] == 'child':
-                        pax_type_string = 'children'
-                        # pax = book_info['children']
-                    else:
-                        pax_type_string = 'adults'
-                        # pax = book_info['adults']
-
-                if val.get('price'):
-                    to_currency = self.env['res.currency']._compute(from_currency, self.env.user.company_id.currency_id, float(val['price']))
-
-                    # break down coding ini kalo mau min price berdasarkan masing2 max type
-                    pax = book_info['adults'] + book_info['children'] + book_info['seniors']
-                    for price in prices:
-                        for price_temp in price:
-                            if book_info.get('event_id') and price_temp.get('id'):
-                                if price_temp['id'] == book_info['event_id']:
-                                    min_currency = price_temp['prices'][pax_type_string][str(pax)]
-                            else:
-                                if price_temp['date'] == book_info['arrivalDate']:
-                                    min_currency = price_temp['prices'][pax_type_string][str(pax)]
-                    ############################################################
-
-                    # if val['name'] == 'senior':
-                    #     if book_info['productTypeUuid'] == 'efedb1fc-f150-5eaa-bf6e-fc202f6114bd': #uss
-                    #         min_currency = self.env['res.currency']._compute(from_currency, self.env.user.company_id.currency_id, float(38))
-                    #     elif book_info['productTypeUuid'] == '7c101353-085e-5a3c-935e-35ac89761f39': #sea
-                    #         min_currency = self.env['res.currency']._compute(from_currency, self.env.user.company_id.currency_id, float(26))
-                    #     elif book_info['productTypeUuid'] == '2d22548e-365b-4ca7-bc5c-7bcfac7d44b4': #combo
-                    #         min_currency = self.env['res.currency']._compute(from_currency, self.env.user.company_id.currency_id, float(62))
-                    # if val['name'] == 'adult':
-                    #     if book_info['productTypeUuid'] == 'efedb1fc-f150-5eaa-bf6e-fc202f6114bd': #uss
-                    #         min_currency = self.env['res.currency']._compute(from_currency, self.env.user.company_id.currency_id, float(72))
-                    #     elif book_info['productTypeUuid'] == '7c101353-085e-5a3c-935e-35ac89761f39': #sea
-                    #         min_currency = self.env['res.currency']._compute(from_currency, self.env.user.company_id.currency_id, float(35))
-                    #     elif book_info['productTypeUuid'] == '2d22548e-365b-4ca7-bc5c-7bcfac7d44b4': #combo
-                    #         min_currency = self.env['res.currency']._compute(from_currency, self.env.user.company_id.currency_id, float(107))
-                    # if val['name'] == 'child':
-                    #     if book_info['productTypeUuid'] == 'efedb1fc-f150-5eaa-bf6e-fc202f6114bd': #uss
-                    #         min_currency = self.env['res.currency']._compute(from_currency, self.env.user.company_id.currency_id, float(53))
-                    #     elif book_info['productTypeUuid'] == '7c101353-085e-5a3c-935e-35ac89761f39': #sea
-                    #         min_currency = self.env['res.currency']._compute(from_currency, self.env.user.company_id.currency_id, float(26))
-                    #     elif book_info['productTypeUuid'] == '2d22548e-365b-4ca7-bc5c-7bcfac7d44b4': #combo
-                    #         min_currency = self.env['res.currency']._compute(from_currency, self.env.user.company_id.currency_id, float(79))
-
-                    if to_currency:
-                        final_price = to_currency + 10000
-                        commission_ho += 10000 * val['quantity']
-                        # if to_currency <= 150000:
-                        #     final_price = to_currency + 2000
-                        #     commission_ho += 2000 * val['quantity']
-                        # elif to_currency <= 300000:
-                        #     final_price = to_currency + 4000
-                        #     commission_ho += 4000 * val['quantity']
-                        # elif to_currency <= 450000:
-                        #     final_price = to_currency + 6000
-                        #     commission_ho += 6000 * val['quantity']
-                        # elif to_currency <= 600000:
-                        #     final_price = to_currency + 8000
-                        #     commission_ho += 8000 * val['quantity']
-                        # else:
-                        #     final_price = to_currency + 10000
-                        #     commission_ho += 10000 * val['quantity']
-                    else:
-                        final_price = 0
-
-                    sale_price = int(final_price * 1.03)
-
-                    if api_context['is_mobile']:
-                        min_currency2 = min_currency['sale_price']
-                    else:
-                        min_currency2 = self.env['res.currency']._compute(from_currency, self.env.user.company_id.currency_id, float(min_currency))
-
-                    if sale_price < min_currency2:
-                        sale_price = int(min_currency2)
-
-                    commission_price = int((sale_price - final_price) * multiplier)
-
-                    final_sale_price = 0
-                    # pembulatan sale price keatas
-                    for idx in range(10):
-                        if (sale_price % 100) == 0:
-                            final_sale_price = sale_price
-                            break
-                        if idx == 9 and ((sale_price % 1000) < int(str(idx + 1) + '00')) and sale_price > 0:
-                            final_sale_price = str(int(sale_price / 1000) + 1) + '000'
-                            break
-                        elif (sale_price % 1000) < int(str(idx + 1) + '00') and sale_price > 0:
-                            if int(sale_price / 1000) == 0:
-                                final_sale_price = str(idx + 1) + '00'
-                            else:
-                                final_sale_price = str(int(sale_price / 1000)) + str(idx + 1) + '00'
-                            break
-
-                    final_commission_price = 0
-                    # pembulatan commission price kebawah
-                    for idx in range(10):
-                        if not commission_price > 0:
-                            break
-                        if int(commission_price % 1000) < int(str(idx + 1) + '00'):
-                            if int(commission_price / 1000) == 0:
-                                final_commission_price = str(idx) + '00'
-                            else:
-                                final_commission_price = str(int(commission_price / 1000)) + str(idx) + '00'
-                            break
-
-                    total_commission_price += int(final_commission_price) * val['quantity']
-                    parent_commission_price = int((int(final_sale_price) - final_price) * parent_multiplier)
-                    total_parent_commission_price += parent_commission_price * val['quantity']
-                    ho_commission_price = int((int(final_sale_price) - final_price) * ho_multiplier)
-                    total_ho_commission_price += ho_commission_price * val['quantity']
-
-                    val.update({
-                        'activity_id': booking_id,
-                        'charge_code': 'fare',
-                        'charge_type': 'fare',
-                        'pax_type': pax_lib[val['name']],
-                        'currency_id': self.env['res.currency'].browse(self.env.user.company_id.currency_id.id).id,
-                        'pax_count': val['quantity'],
-                        'amount': int(final_sale_price),
-                        'foreign_amount': val['price'],
-                        'foreign_currency_id': self.env['res.currency'].search([('name', '=', book_info['currencyCode'])], limit=1).id,
-                        'description': booking_obj.provider_name,
-                    })
-                    val.pop('price')
-                    val.pop('name')
-                    val.pop('quantity')
-                    service_chg_obj.create(val)
-                    self.env.cr.commit()
-
-                    commission_val = {
-                        'activity_id': booking_id,
-                        'charge_code': 'r.ac',
-                        'charge_type': 'r.ac',
-                        'pax_type': val['pax_type'],
-                        'currency_id': self.env['res.currency'].browse(self.env.user.company_id.currency_id.id).id,
-                        'pax_count': val['pax_count'],
-                        'amount': int(final_commission_price) * -1,
-                        'foreign_amount': 0,
-                        'foreign_currency_id': self.env['res.currency'].search([('name', '=', book_info['currencyCode'])], limit=1).id,
-                        'description': booking_obj.provider_name,
-                    }
-                    service_chg_obj.create(commission_val)
-                    self.env.cr.commit()
-
-                    commission_val = {
-                        'activity_id': booking_id,
-                        'charge_code': 'r.ac1',
-                        'charge_type': 'r.ac1',
-                        'pax_type': val['pax_type'],
-                        'currency_id': self.env['res.currency'].browse(self.env.user.company_id.currency_id.id).id,
-                        'pax_count': val['pax_count'],
-                        'amount': parent_commission_price * -1,
-                        'foreign_amount': 0,
-                        'foreign_currency_id': self.env['res.currency'].search([('name', '=', book_info['currencyCode'])], limit=1).id,
-                        'description': booking_obj.provider_name,
-                    }
-                    service_chg_obj.create(commission_val)
-                    self.env.cr.commit()
-
-                    commission_val = {
-                        'activity_id': booking_id,
-                        'charge_code': 'r.ac2',
-                        'charge_type': 'r.ac2',
-                        'pax_type': val['pax_type'],
-                        'currency_id': self.env['res.currency'].browse(self.env.user.company_id.currency_id.id).id,
-                        'pax_count': val['pax_count'],
-                        'amount': ho_commission_price * -1,
-                        'foreign_amount': 0,
-                        'foreign_currency_id': self.env['res.currency'].search([('name', '=', book_info['currencyCode'])], limit=1).id,
-                        'description': booking_obj.provider_name,
-                    }
-                    service_chg_obj.create(commission_val)
-                    self.env.cr.commit()
-
-                    commission_val = {
-                        'activity_id': booking_id,
-                        'charge_code': 'r.oc',
-                        'charge_type': 'r.oc',
-                        'pax_type': val['pax_type'],
-                        'currency_id': self.env['res.currency'].browse(self.env.user.company_id.currency_id.id).id,
-                        'pax_count': val['pax_count'],
-                        'amount': int(final_commission_price),
-                        'foreign_amount': 0,
-                        'foreign_currency_id': self.env['res.currency'].search([('name', '=', book_info['currencyCode'])], limit=1).id,
-                        'description': booking_obj.provider_name,
-                    }
-                    service_chg_obj.create(commission_val)
-                    self.env.cr.commit()
-
-                    commission_val = {
-                        'activity_id': booking_id,
-                        'charge_code': 'r.oc1',
-                        'charge_type': 'r.oc1',
-                        'pax_type': val['pax_type'],
-                        'currency_id': self.env['res.currency'].browse(self.env.user.company_id.currency_id.id).id,
-                        'pax_count': val['pax_count'],
-                        'amount': parent_commission_price,
-                        'foreign_amount': 0,
-                        'foreign_currency_id': self.env['res.currency'].search([('name', '=', book_info['currencyCode'])], limit=1).id,
-                        'description': booking_obj.provider_name,
-                    }
-                    service_chg_obj.create(commission_val)
-                    self.env.cr.commit()
-
-                    commission_val = {
-                        'activity_id': booking_id,
-                        'charge_code': 'r.oc2',
-                        'charge_type': 'r.oc2',
-                        'pax_type': val['pax_type'],
-                        'currency_id': self.env['res.currency'].browse(self.env.user.company_id.currency_id.id).id,
-                        'pax_count': val['pax_count'],
-                        'amount': ho_commission_price,
-                        'foreign_amount': 0,
-                        'foreign_currency_id': self.env['res.currency'].search([('name', '=', book_info['currencyCode'])], limit=1).id,
-                        'description': booking_obj.provider_name,
-                    }
-                    service_chg_obj.create(commission_val)
-                    self.env.cr.commit()
-
-                    booking_obj.action_calc_prices()
+            # sale_service_charge_summary = book_info['amountBreakdown']
+            # service_chg_obj = self.env['tt.service.charge']
+            # pax_lib = {
+            #     'senior': 'YCD',
+            #     'adult': 'ADT',
+            #     'child': 'CHD',
+            #     'infant': 'INF',
+            # }
+            # from_currency = self.env['res.currency'].search([('name', '=', book_info['currencyCode'])])
+            # agent_type = self.env['res.users'].browse(api_context['co_uid']).agent_id.agent_type_id.id
+            # if agent_type == self.env.ref('tt_base_rodex.agent_type_ho').id:
+            #     agent_type = booking_obj.agent_type_id.id
+            #
+            # if agent_type in [self.env.ref('tt_base_rodex.agent_type_citra').id, self.env.ref('tt_base_rodex.agent_type_btbo').id]:
+            #     multiplier = 1
+            #     parent_multiplier = 0
+            #     ho_multiplier = 0
+            # elif agent_type in [self.env.ref('tt_base_rodex.agent_type_japro').id, self.env.ref('tt_base_rodex.agent_type_btbr').id]:
+            #     multiplier = 0.8
+            #     parent_multiplier = 0.17
+            #     ho_multiplier = 0.03
+            # elif agent_type in [self.env.ref('tt_base_rodex.agent_type_fipro').id]:
+            #     multiplier = 0.6
+            #     parent_multiplier = 0.35
+            #     ho_multiplier = 0.05
+            # else:
+            #     multiplier = 0
+            #     parent_multiplier = 1
+            #     ho_multiplier = 0
+            #
+            # commission_ho = 0
+            # total_commission_price = 0
+            # total_parent_commission_price = 0
+            # total_ho_commission_price = 0
+            #
+            # for service_charge in booking_obj.sale_service_charge_ids:
+            #     service_charge.sudo().unlink()
+            #
+            # for val in sale_service_charge_summary:
+            #     pax_type_string = ''
+            #     if val.get('name'):
+            #         if val['name'] == 'senior':
+            #             pax_type_string = 'seniors'
+            #             # pax = book_info['seniors']
+            #         elif val['name'] == 'adult':
+            #             pax_type_string = 'adults'
+            #             # pax = book_info['adults']
+            #         elif val['name'] == 'child':
+            #             pax_type_string = 'children'
+            #             # pax = book_info['children']
+            #         else:
+            #             pax_type_string = 'adults'
+            #             # pax = book_info['adults']
+            #
+            #     if val.get('price'):
+            #         to_currency = self.env['res.currency']._compute(from_currency, self.env.user.company_id.currency_id, float(val['price']))
+            #
+            #         # break down coding ini kalo mau min price berdasarkan masing2 max type
+            #         pax = book_info['adults'] + book_info['children'] + book_info['seniors']
+            #         for price in prices:
+            #             for price_temp in price:
+            #                 if book_info.get('event_id') and price_temp.get('id'):
+            #                     if price_temp['id'] == book_info['event_id']:
+            #                         min_currency = price_temp['prices'][pax_type_string][str(pax)]
+            #                 else:
+            #                     if price_temp['date'] == book_info['arrivalDate']:
+            #                         min_currency = price_temp['prices'][pax_type_string][str(pax)]
+            #         ############################################################
+            #
+            #         if to_currency:
+            #             final_price = to_currency + 10000
+            #             commission_ho += 10000 * val['quantity']
+            #         else:
+            #             final_price = 0
+            #
+            #         sale_price = int(final_price * 1.03)
+            #
+            #         if api_context['is_mobile']:
+            #             min_currency2 = min_currency['sale_price']
+            #         else:
+            #             min_currency2 = self.env['res.currency']._compute(from_currency, self.env.user.company_id.currency_id, float(min_currency))
+            #
+            #         if sale_price < min_currency2:
+            #             sale_price = int(min_currency2)
+            #
+            #         commission_price = int((sale_price - final_price) * multiplier)
+            #
+            #         final_sale_price = 0
+            #         # pembulatan sale price keatas
+            #         for idx in range(10):
+            #             if (sale_price % 100) == 0:
+            #                 final_sale_price = sale_price
+            #                 break
+            #             if idx == 9 and ((sale_price % 1000) < int(str(idx + 1) + '00')) and sale_price > 0:
+            #                 final_sale_price = str(int(sale_price / 1000) + 1) + '000'
+            #                 break
+            #             elif (sale_price % 1000) < int(str(idx + 1) + '00') and sale_price > 0:
+            #                 if int(sale_price / 1000) == 0:
+            #                     final_sale_price = str(idx + 1) + '00'
+            #                 else:
+            #                     final_sale_price = str(int(sale_price / 1000)) + str(idx + 1) + '00'
+            #                 break
+            #
+            #         final_commission_price = 0
+            #         # pembulatan commission price kebawah
+            #         for idx in range(10):
+            #             if not commission_price > 0:
+            #                 break
+            #             if int(commission_price % 1000) < int(str(idx + 1) + '00'):
+            #                 if int(commission_price / 1000) == 0:
+            #                     final_commission_price = str(idx) + '00'
+            #                 else:
+            #                     final_commission_price = str(int(commission_price / 1000)) + str(idx) + '00'
+            #                 break
+            #
+            #         total_commission_price += int(final_commission_price) * val['quantity']
+            #         parent_commission_price = int((int(final_sale_price) - final_price) * parent_multiplier)
+            #         total_parent_commission_price += parent_commission_price * val['quantity']
+            #         ho_commission_price = int((int(final_sale_price) - final_price) * ho_multiplier)
+            #         total_ho_commission_price += ho_commission_price * val['quantity']
+            #
+            #         val.update({
+            #             'activity_id': booking_id,
+            #             'charge_code': 'fare',
+            #             'charge_type': 'fare',
+            #             'pax_type': pax_lib[val['name']],
+            #             'currency_id': self.env['res.currency'].browse(self.env.user.company_id.currency_id.id).id,
+            #             'pax_count': val['quantity'],
+            #             'amount': int(final_sale_price),
+            #             'foreign_amount': val['price'],
+            #             'foreign_currency_id': self.env['res.currency'].search([('name', '=', book_info['currencyCode'])], limit=1).id,
+            #             'description': booking_obj.provider_name,
+            #         })
+            #         val.pop('price')
+            #         val.pop('name')
+            #         val.pop('quantity')
+            #         service_chg_obj.create(val)
+            #         self.env.cr.commit()
+            #
+            #         commission_val = {
+            #             'activity_id': booking_id,
+            #             'charge_code': 'r.ac',
+            #             'charge_type': 'r.ac',
+            #             'pax_type': val['pax_type'],
+            #             'currency_id': self.env['res.currency'].browse(self.env.user.company_id.currency_id.id).id,
+            #             'pax_count': val['pax_count'],
+            #             'amount': int(final_commission_price) * -1,
+            #             'foreign_amount': 0,
+            #             'foreign_currency_id': self.env['res.currency'].search([('name', '=', book_info['currencyCode'])], limit=1).id,
+            #             'description': booking_obj.provider_name,
+            #         }
+            #         service_chg_obj.create(commission_val)
+            #         self.env.cr.commit()
+            #
+            #         commission_val = {
+            #             'activity_id': booking_id,
+            #             'charge_code': 'r.ac1',
+            #             'charge_type': 'r.ac1',
+            #             'pax_type': val['pax_type'],
+            #             'currency_id': self.env['res.currency'].browse(self.env.user.company_id.currency_id.id).id,
+            #             'pax_count': val['pax_count'],
+            #             'amount': parent_commission_price * -1,
+            #             'foreign_amount': 0,
+            #             'foreign_currency_id': self.env['res.currency'].search([('name', '=', book_info['currencyCode'])], limit=1).id,
+            #             'description': booking_obj.provider_name,
+            #         }
+            #         service_chg_obj.create(commission_val)
+            #         self.env.cr.commit()
+            #
+            #         commission_val = {
+            #             'activity_id': booking_id,
+            #             'charge_code': 'r.ac2',
+            #             'charge_type': 'r.ac2',
+            #             'pax_type': val['pax_type'],
+            #             'currency_id': self.env['res.currency'].browse(self.env.user.company_id.currency_id.id).id,
+            #             'pax_count': val['pax_count'],
+            #             'amount': ho_commission_price * -1,
+            #             'foreign_amount': 0,
+            #             'foreign_currency_id': self.env['res.currency'].search([('name', '=', book_info['currencyCode'])], limit=1).id,
+            #             'description': booking_obj.provider_name,
+            #         }
+            #         service_chg_obj.create(commission_val)
+            #         self.env.cr.commit()
+            #
+            #         commission_val = {
+            #             'activity_id': booking_id,
+            #             'charge_code': 'r.oc',
+            #             'charge_type': 'r.oc',
+            #             'pax_type': val['pax_type'],
+            #             'currency_id': self.env['res.currency'].browse(self.env.user.company_id.currency_id.id).id,
+            #             'pax_count': val['pax_count'],
+            #             'amount': int(final_commission_price),
+            #             'foreign_amount': 0,
+            #             'foreign_currency_id': self.env['res.currency'].search([('name', '=', book_info['currencyCode'])], limit=1).id,
+            #             'description': booking_obj.provider_name,
+            #         }
+            #         service_chg_obj.create(commission_val)
+            #         self.env.cr.commit()
+            #
+            #         commission_val = {
+            #             'activity_id': booking_id,
+            #             'charge_code': 'r.oc1',
+            #             'charge_type': 'r.oc1',
+            #             'pax_type': val['pax_type'],
+            #             'currency_id': self.env['res.currency'].browse(self.env.user.company_id.currency_id.id).id,
+            #             'pax_count': val['pax_count'],
+            #             'amount': parent_commission_price,
+            #             'foreign_amount': 0,
+            #             'foreign_currency_id': self.env['res.currency'].search([('name', '=', book_info['currencyCode'])], limit=1).id,
+            #             'description': booking_obj.provider_name,
+            #         }
+            #         service_chg_obj.create(commission_val)
+            #         self.env.cr.commit()
+            #
+            #         commission_val = {
+            #             'activity_id': booking_id,
+            #             'charge_code': 'r.oc2',
+            #             'charge_type': 'r.oc2',
+            #             'pax_type': val['pax_type'],
+            #             'currency_id': self.env['res.currency'].browse(self.env.user.company_id.currency_id.id).id,
+            #             'pax_count': val['pax_count'],
+            #             'amount': ho_commission_price,
+            #             'foreign_amount': 0,
+            #             'foreign_currency_id': self.env['res.currency'].search([('name', '=', book_info['currencyCode'])], limit=1).id,
+            #             'description': booking_obj.provider_name,
+            #         }
+            #         service_chg_obj.create(commission_val)
+            #         self.env.cr.commit()
+            #
+            #         booking_obj.action_calc_prices()
 
             response = {
                 'order_number': booking_obj.name
@@ -914,11 +885,6 @@ class ReservationActivity(models.Model):
             if provider_id:
                 provider_id = provider_id[0]
 
-            booking_option = ''
-            if option['perBooking']:
-                for rec in option['perBooking']:
-                    booking_option += rec['name'] + ': ' + str(rec['value']) + '\n'
-
             header_val.update({
                 'contact_id': contact_obj.id,
                 'booker_id': booker_obj.id,
@@ -934,7 +900,6 @@ class ReservationActivity(models.Model):
                 'activity_name': activity_type_id.activity_id.name,
                 'activity_product': activity_type_id.name,
                 'activity_product_uuid': search_request['product_type_uuid'],
-                'booking_option': booking_option,
                 'senior': search_request['senior'],
                 'adult': search_request['adult'],
                 'child': search_request['child'],
@@ -951,6 +916,14 @@ class ReservationActivity(models.Model):
 
             # create header & Update customer_parent_id
             book_obj = self.sudo().create(header_val)
+            if option['perBooking']:
+                for rec in option['perBooking']:
+                    self.env['tt.reservation.activity.option'].sudo().create({
+                        'name': rec['name'],
+                        'value': str(rec['value']),
+                        'booking_id': book_obj.id
+                    })
+
             pax_ids = self.create_customer_api(passengers, context, booker_obj.seq_id, contact_obj.seq_id, ['title', 'pax_type', 'api_data', 'sku_real_id'])
 
             for psg in pax_ids:
@@ -960,10 +933,17 @@ class ReservationActivity(models.Model):
                 vals.update({
                     'booking_id': book_obj.id,
                     'pax_type': extra_dict['pax_type'],
-                    'api_data': extra_dict.get('api_data', ''),
                     'activity_sku_id': extra_dict.get('sku_real_id', 0)
                 })
-                self.env['tt.reservation.passenger.activity'].sudo().create(vals)
+                psg_obj = self.env['tt.reservation.passenger.activity'].sudo().create(vals)
+                if extra_dict.get('api_data'):
+                    for temp_psg_opt in extra_dict['api_data']:
+                        pax_opt_vals = {
+                            'name': temp_psg_opt['name'],
+                            'value': temp_psg_opt['value'],
+                            'activity_passenger_id': psg_obj.id
+                        }
+                        self.env['tt.reservation.passenger.activity.option'].sudo().create(pax_opt_vals)
 
             book_obj.customer_parent_id = contact_data['agent_id']
             provider_activity_vals = {

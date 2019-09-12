@@ -16,7 +16,15 @@ class TtReservationCustomer(models.Model):
     pax_type = fields.Selection([('ADT', 'Adult'), ('YCD', 'Senior'), ('CHD', 'Child'), ('INF', 'Infant')],
                                 string='Pax Type')
     activity_sku_id = fields.Many2one('tt.master.activity.sku', 'Activity SKU')
-    api_data = fields.Text('API Data')
+    option_ids = fields.One2many('tt.reservation.passenger.activity.option', 'activity_passenger_id', 'Options')
 
+
+class TtActivityPassengerOption(models.Model):
+    _name = 'tt.reservation.passenger.activity.option'
+    _description = 'Rodex Model'
+
+    name = fields.Char('Information')
+    value = fields.Char('Value')
+    activity_passenger_id = fields.Many2one('tt.reservation.passenger.activity', 'Activity Passenger')
 
 
