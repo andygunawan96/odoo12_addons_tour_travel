@@ -23,24 +23,6 @@ import requests
 _logger = logging.getLogger(__name__)
 
 
-class ActivityTtLedger(models.Model):
-    _inherit = 'tt.ledger'
-
-    reservation_activity_id = fields.Many2one('tt.reservation.activity', 'Activity Booking', readonly=True)
-
-
-class ActivityInvoiceInh(models.Model):
-    _inherit = 'tt.agent.invoice'
-
-    activity_transaction_id = fields.Many2one('tt.reservation.activity', 'Activity Booking', readonly=True)
-
-
-class ActivityPricesInh(models.Model):
-    _inherit = 'tt.service.charge'
-
-    activity_id = fields.Many2one('tt.reservation.activity', 'Activity Booking', readonly=True)
-
-
 class ActivityResendVoucher(models.TransientModel):
     _name = "activity.voucher.wizard"
     _description = 'Rodex Model'
@@ -100,14 +82,12 @@ class ReservationActivity(models.Model):
     activity_product = fields.Char('Product Type')
     activity_product_uuid = fields.Char('Product Type Uuid')
     visit_date = fields.Datetime('Visit Date')
-    passenger_ids = fields.Many2many('tt.customer', 'tt_reservation_activity_passengers_rel', 'booking_id',
-                                     'passenger_id',
-                                     string='List of Passenger', readonly=True, states={'draft': [('readonly', False)]})
 
-    sale_service_charge_ids = fields.One2many('tt.service.charge', 'activity_id', string='Prices')
-    invoice_ids = fields.One2many('tt.agent.invoice', 'activity_transaction_id', string='Invoices')
-    ledger_id = fields.One2many('tt.ledger', 'reservation_activity_id', string='Ledgers')
-    line_ids = fields.One2many('tt.reservation.passenger.activity', 'reservation_activity_id', string='Passengers')
+    sale_service_charge_ids = fields.One2many('tt.service.charge', 'booking_activity_id', string='Prices')
+    ledger_ids = fields.One2many('tt.ledger', 'res_id', 'Ledger', domain=[('res_model','=','tt.reservation.activity')])
+    provider_booking_ids = fields.One2many('tt.provider.activity', 'booking_id', string='Provider Booking',
+                                           readonly=True, states={'draft': [('readonly', False)]})
+    passenger_ids = fields.One2many('tt.reservation.passenger.activity', 'booking_id', string='Passengers')
 
     booking_option = fields.Text('Booking Option')
 
@@ -472,7 +452,7 @@ class ReservationActivity(models.Model):
                     vals.update({
                         'agent_id': self.env['res.partner'].sudo().search(
                             [('is_HO', '=', True), ('parent_id', '=', False)], limit=1).id,
-                        'reservation_activity_id': self.id,
+                        'booking_id': self.id,
                     })
                     commission_aml = self.env['tt.ledger'].create(vals)
                     commission_aml.action_done()
@@ -512,7 +492,7 @@ class ReservationActivity(models.Model):
 
     def action_refunded(self):
         self.write({
-            'state': 'refunded',
+            'state': 'refund',
             'refund_date': datetime.now(),
         })
 
@@ -527,7 +507,7 @@ class ReservationActivity(models.Model):
         self._create_anti_ledger_activity()
         self._create_anti_commission_ledger_activity()
         self.write({
-            'state': 'cancelled',
+            'state': 'cancel',
             'cancelled_date': datetime.now(),
             'cancelled_uid': self.env.user.id
         })
@@ -536,7 +516,7 @@ class ReservationActivity(models.Model):
     def action_failed(self, booking_id, error_msg):
         booking_rec = self.browse(booking_id)
         booking_rec.write({
-            'state': 'failed',
+            'state': 'fail_issued',
             'error_msg': error_msg
         })
         return {
@@ -547,7 +527,7 @@ class ReservationActivity(models.Model):
 
     def action_failed_sync(self):
         self.write({
-            'state': 'failed',
+            'state': 'fail_issued',
         })
         self.message_post(body='Order FAILED')
 
@@ -556,224 +536,6 @@ class ReservationActivity(models.Model):
             'state': 'done',
         })
         self.message_post(body='Order DONE')
-
-    #######################################################################################################
-    #######################################################################################################
-
-    def _create_ledger_activity(self):
-        ledger = self.env['tt.ledger']
-        for rec in self:
-            vals = ledger.prepare_vals('Activity Payment : ' + rec.name, rec.name,
-                                       str(fields.Datetime.now()), 'activity', rec.currency_id.id, 0, rec.total)
-            vals.update({
-                'reservation_activity_id': rec.id,
-                'agent_id': rec.agent_id.id,
-                'pnr': rec.pnr,
-                'display_provider_name': rec.activity_id.name,
-            })
-            # vals['description'] = rec.description
-
-            new_aml = ledger.sudo().create(vals)
-            new_aml.action_done()
-
-    def _create_anti_ledger_activity(self):
-        ledger = self.env['tt.ledger']
-        for rec in self:
-            vals = ledger.prepare_vals('Reversal Activity Payment : ' + rec.name, rec.name,
-                                       str(fields.Datetime.now()), 'activity', rec.currency_id.id, rec.total, 0)
-            vals['reservation_activity_id'] = rec.id
-            vals['agent_id'] = rec.agent_id.id
-            vals['display_provider_name'] = rec.activity_id.name
-
-            new_aml = ledger.sudo().create(vals)
-            new_aml.action_done()
-            # rec.cancel_ledger_id = new_aml
-
-    def _create_commission_ledger_activity(self, agent_commission, parent_commission, ho_commission):
-        for rec in self:
-            ledger_obj = rec.env['tt.ledger']
-            # total_commission = rec.total_commission
-            #
-            # if rec.customer_parent_id.agent_type_id.id in [self.env.ref('tt_base_rodex.agent_type_citra').id, self.env.ref('tt_base_rodex.agent_type_btbo').id]:
-            #     agent_commission = total_commission
-            #     parent_commission = 0
-            #     ho_commission = 0
-            # elif rec.customer_parent_id.agent_type_id.id in [self.env.ref('tt_base_rodex.agent_type_japro').id, self.env.ref('tt_base_rodex.agent_type_btbr').id]:
-            #     agent_commission = total_commission * 0.8
-            #     parent_commission = total_commission * 0.17
-            #     ho_commission = total_commission * 0.03
-            # elif rec.customer_parent_id.agent_type_id.id in [self.env.ref('tt_base_rodex.agent_type_fipro').id]:
-            #     agent_commission = total_commission * 0.6
-            #     parent_commission = total_commission * 0.35
-            #     ho_commission = total_commission * 0.05
-            # elif rec.customer_parent_id.agent_type_id.id in [self.env.ref('tt_base_rodex.agent_type_cor').id, self.env.ref('tt_base_rodex.agent_type_por').id]:
-            #     agent_commission = 0
-            #     parent_commission = total_commission
-            #     ho_commission = 0
-            # else:
-            #     agent_commission = 0
-            #     parent_commission = 0
-            #     ho_commission = 0
-
-            if agent_commission > 0:
-                vals = ledger_obj.prepare_vals('Commission : ' + rec.name, rec.name,
-                                               str(fields.Datetime.now()), 'commission', rec.currency_id.id, agent_commission, 0)
-                vals.update({
-                    'agent_id': rec.agent_id.id,
-                    'reservation_activity_id': rec.id,
-                })
-                commission_aml = ledger_obj.create(vals)
-                commission_aml.action_done()
-                # rec.commission_ledger_id = commission_aml.id
-
-            if parent_commission > 0:
-                vals = ledger_obj.prepare_vals('Commission : ' + rec.name, 'PA: ' + rec.name, str(fields.Datetime.now()), 'commission',
-                                               rec.currency_id.id, parent_commission, 0)
-                vals.update({
-                    'agent_id': rec.customer_parent_id.parent_agent_id.id,
-                    'reservation_activity_id': rec.id,
-                })
-                commission_aml = ledger_obj.create(vals)
-                commission_aml.action_done()
-
-            if ho_commission > 0:
-                vals = ledger_obj.prepare_vals('Commission & Profit : ' + rec.name, 'HO: ' + rec.name, str(fields.Datetime.now()),
-                                               'commission',
-                                               rec.currency_id.id, ho_commission, 0)
-                vals.update({
-                    'agent_id': rec.env['res.partner'].sudo().search(
-                        [('is_HO', '=', True), ('parent_id', '=', False)], limit=1).id,
-                    'reservation_activity_id': rec.id,
-                })
-                commission_aml = ledger_obj.create(vals)
-                commission_aml.action_done()
-
-    def _create_anti_commission_ledger_activity(self):
-        for rec in self:
-            ledger_obj = rec.env['tt.ledger']
-            sum_comisi = rec.sum_comisi
-
-            if rec.customer_parent_id.agent_type_id.id in [self.env.ref('tt_base_rodex.agent_type_citra').id, self.env.ref('tt_base_rodex.agent_type_btbo').id]:
-                agent_commission = sum_comisi
-                parent_commission = 0
-                ho_commission = 0
-            elif rec.customer_parent_id.agent_type_id.id in [self.env.ref('tt_base_rodex.agent_type_japro').id, self.env.ref('tt_base_rodex.agent_type_btbr').id]:
-                agent_commission = sum_comisi * 0.8
-                parent_commission = sum_comisi * 0.17
-                ho_commission = sum_comisi * 0.03
-            elif rec.customer_parent_id.agent_type_id.id in [self.env.ref('tt_base_rodex.agent_type_fipro').id]:
-                agent_commission = sum_comisi * 0.6
-                parent_commission = sum_comisi * 0.35
-                ho_commission = sum_comisi * 0.05
-            elif rec.customer_parent_id.agent_type_id.id in [self.env.ref('tt_base_rodex.agent_type_cor').id, self.env.ref('tt_base_rodex.agent_type_por').id]:
-                agent_commission = 0
-                parent_commission = sum_comisi
-                ho_commission = 0
-            else:
-                agent_commission = 0
-                parent_commission = 0
-                ho_commission = 0
-
-            if agent_commission > 0:
-                vals = ledger_obj.prepare_vals('Reversal Commission : ' + rec.name, rec.name,
-                                               str(fields.Datetime.now()), 'commission', rec.currency_id.id, 0, agent_commission)
-                vals.update({
-                    'agent_id': rec.agent_id.id,
-                    'reservation_activity_id': rec.id,
-                })
-                commission_aml = ledger_obj.create(vals)
-                commission_aml.action_done()
-                # rec.commission_ledger_id = commission_aml.id
-
-            if parent_commission > 0:
-                vals = ledger_obj.prepare_vals('Reversal Commission : ' + rec.name, 'PA: ' + rec.name, str(fields.Datetime.now()), 'commission',
-                                               rec.currency_id.id, 0, parent_commission)
-                vals.update({
-                    'agent_id': rec.customer_parent_id.parent_agent_id.id,
-                    'reservation_activity_id': rec.id,
-                })
-                commission_aml = ledger_obj.create(vals)
-                commission_aml.action_done()
-
-            if ho_commission > 0:
-                vals = ledger_obj.prepare_vals('Reversal Commission & Profit : ' + rec.name, 'HO: ' + rec.name, str(fields.Datetime.now()),
-                                               'commission',
-                                               rec.currency_id.id, 0, ho_commission)
-                vals.update({
-                    'agent_id': rec.env['res.partner'].sudo().search(
-                        [('is_HO', '=', True), ('parent_id', '=', False)], limit=1).id,
-                    'reservation_activity_id': rec.id,
-                })
-                commission_aml = ledger_obj.create(vals)
-                commission_aml.action_done()
-
-    def create_agent_invoice_activity(self):
-        def prepare_agent_invoice(self):
-            return {
-                'origin': self.name,
-                'agent_id': self.agent_id.id,
-                'customer_parent_id': self.customer_parent_id.id,
-                'contact_id': self.contact_id.id,
-                'activity_transaction_id': self.id,
-                'pnr': self.pnr
-            }
-
-        Invoice = self.env['tt.agent.invoice']
-        InvoiceLine = self.env['tt.agent.invoice.line']
-        invoice = Invoice.create(prepare_agent_invoice(self))
-
-        if self.activity_id.name and self.activity_product:
-            try:
-                description = str(self.activity_id.name.decode('utf-8')) + '\n' + str(self.activity_product.decode('utf-8')) + '\n' + str(self.visit_date) + '\nAn. '
-            except:
-                description = str(self.activity_id.name.encode('utf-8')) + '\n' + str(self.activity_product.encode('utf-8')) + '\n' + str(self.visit_date) + '\nAn. '
-        else:
-            description = str(self.activity_id.name) + '\n' + str(self.activity_product) + '\n' + str(self.visit_date) + '\nAn. '
-
-        for pax in self.line_ids:
-            description += str(pax['passenger_id']['title'] + ' ' + pax['passenger_id']['first_name'] + ' ' + pax['passenger_id']['last_name']) + '\n'
-        for price in self.sale_service_charge_ids:
-            if price['charge_code'] not in ['r.ac', 'r.oc', 'r.ac1', 'r.oc1', 'r.ac2', 'r.oc2']:
-                values_line = {
-                    'name': description,
-                    'price_unit': price['amount'],
-                    'quantity': price['pax_count'],
-                }
-                values_line.update({'invoice_id': invoice.id})
-                InvoiceLine.sudo().create(values_line)
-
-    #######################################################################################################
-    #######################################################################################################
-
-    def delete_prices(self, booking_id):
-        try:
-            booking_obj = self.browse(booking_id)
-            for rec in booking_obj.ledger_id:
-                if rec.transaction_type == 3:
-                    ledger_type = 'commission'
-                elif rec.transaction_type == 23:
-                    ledger_type = 'activity'
-                else:
-                    ledger_type = 'activity'
-                vals = self.env['tt.ledger'].prepare_vals(rec.name, rec.ref, str(fields.Datetime.now()),
-                                                          ledger_type, rec.currency_id.id, rec.credit, rec.debit)
-                vals.update({
-                    'agent_id': rec.agent_id.id,
-                    'reservation_activity_id': booking_obj.id,
-                })
-                ledger_obj = self.env['tt.ledger'].create(vals)
-                ledger_obj.action_done()
-            for rec in booking_obj.invoice_id:
-                rec.sudo().action_cancel()
-            return {
-                'error_code': 0,
-                'error_msg': 'Success',
-            }
-        except Exception as e:
-            return {
-                'error_code': 1,
-                'error_msg': str(e) + '\nDelete prices failure'
-            }
 
     def update_booking(self, booking_id, prices, book_info, api_context, kwargs):
         try:
@@ -1127,6 +889,7 @@ class ReservationActivity(models.Model):
             option = req.get('option') and req['option'] or False
             search_request = req.get('search_request') and req['search_request'] or False
             file_upload = req.get('file_upload') and req['file_upload'] or False
+            provider = req.get('provider') and req['provider'] or ''
             try:
                 agent_obj = self.env['tt.customer'].browse(int(contact_data['contact_id'])).agent_id
                 if not agent_obj:
@@ -1143,7 +906,6 @@ class ReservationActivity(models.Model):
             booker_obj = self.create_booker_api(booker_data, context)
             contact_obj = self.create_contact_api(contact_data, booker_obj, context)
 
-            psg_ids = self._evaluate_passenger_info(passengers, contact_obj.id, context['agent_id'])
             activity_type_id = self.env['tt.master.activity.lines'].sudo().search([('uuid', '=', search_request['product_type_uuid'])])
 
             booking_option = ''
@@ -1154,9 +916,12 @@ class ReservationActivity(models.Model):
             header_val.update({
                 'contact_id': contact_obj.id,
                 'booker_id': booker_obj.id,
-                'display_mobile': contact_obj.mobile,
-                'state': 'reserved',
-                'agent_id': context['agent_id'],
+                'contact_name': contact_data['first_name'] + ' ' + contact_data['last_name'],
+                'contact_email': contact_data.get('email') and contact_data['email'] or '',
+                'contact_phone': contact_data.get('mobile') and str(contact_data['calling_code']) + str(contact_data['mobile']),
+                'state': 'booked',
+                'date': datetime.now(),
+                'agent_id': context['co_agent_id'],
                 'user_id': context['co_uid'],
                 'activity_id': activity_type_id.activity_id.id,
                 'visit_date': datetime.strptime(search_request['visit_date'], '%Y-%m-%d').strftime('%d %b %Y'),
@@ -1169,7 +934,7 @@ class ReservationActivity(models.Model):
                 'child': search_request['child'],
                 'infant': search_request['infant'],
                 'transport_type': 'activity',
-                'provider': activity_type_id.activity_id.provider,
+                'provider_name': activity_type_id.activity_id.provider_id.code,
                 'file_upload': file_upload,
             })
 
@@ -1195,7 +960,16 @@ class ReservationActivity(models.Model):
                 self.env['tt.reservation.passenger.activity'].sudo().create(vals)
 
             book_obj.customer_parent_id = contact_data['agent_id']
+            provider_activity_vals = {
+                'booking_id': book_obj.id,
+                'activity_id': activity_type_id.activity_id.id,
+                'activity_product': activity_type_id.name,
+                'activity_product_uuid': search_request['product_type_uuid'],
+                'visit_date': datetime.strptime(search_request['visit_date'], '%Y-%m-%d').strftime('%d %b %Y'),
+                'balance_due': kwargs['amount'],
+            }
 
+            self.env[''].create(provider_activity_vals)
             book_obj.action_booked_activity(context)
             context['order_id'] = book_obj.id
             if kwargs['force_issued']:
@@ -1564,18 +1338,13 @@ class ReservationActivity(models.Model):
             api_context = {
                 'co_uid': self.env.user.id
             }
-        vals = {}
-        if self.name == 'New':
-            vals.update({
-                'name': self.env['ir.sequence'].next_by_code('activity.booking'),
-            })
 
-        vals.update({
+        vals = {
             'state': 'booked',
             'booked_uid': api_context and api_context['co_uid'],
-            'date': datetime.now(),
+            'booked_date': datetime.now(),
             'hold_date': datetime.now() + relativedelta(days=1),
-        })
+        }
         self.write(vals)
         self.send_push_notif('booked')
 
@@ -1595,6 +1364,8 @@ class ReservationActivity(models.Model):
             'issued_date': datetime.now(),
         }
         self.sudo().write(vals)
+        for rec in self.provider_booking_ids:
+            rec.action_create_ledger()
         self.send_push_notif('issued')
 
     def get_id(self, booking_number):

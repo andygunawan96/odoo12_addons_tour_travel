@@ -43,179 +43,141 @@
         </field>
     </record>
 
-    <record model="ir.ui.view" id="tt_reservation_activity_view_form">
-        <field name="name">tt.reservation.activity.view.form</field>
+    <record model="ir.ui.view" id="tt_reservation_activity_form_view">
+        <field name="name">tt.reservation.activity.form.view</field>
         <field name="model">tt.reservation.activity</field>
+        <field name="mode">primary</field>
+        <field name="inherit_id" ref="tt_reservation.tt_reservation_form_views"/>
         <field name="arch" type="xml">
-            <form create="false">
-                <header>
-                    <field name="state" widget="statusbar" statusbar_visible="reserved,waiting,done"/>
-                    <!--<button string="Cancel Booking" name="action_cancelled" type="object" attrs="{'invisible': [('state', '!=', 'booked')]}" groups="tt_base.group_tt_agent_user_operator"/>-->
-                    <!--<button string="Confirm To HO" name="action_confirm_to_ho" type="object" attrs="{'invisible': [('state', '!=', 'issued')]}" groups="tt_base.group_tt_agent_user_operator"/>-->
-                    <!--<button string="Reject" name="action_rejected" type="object" attrs="{'invisible': [('state', '!=', 'approved')]}" groups="tt_base.group_tt_tour_travel_operator"/>-->
-                    <!--<button string="Process" name="action_process" type="object" attrs="{'invisible': [('state', '!=', 'confirmed')]}" groups="tt_base.group_tt_reservation_activity_travel_operator"/>-->
-                    <button string="Issued" name="action_issued" type="object" attrs="{'invisible': [('state', 'not in', ['reserved'])]}"/>
-                    <!--<button string="Get Vouchers" name="get_vouchers_button" type="object" attrs="{'invisible': [('state', 'not in', ['approved'])]}"/>-->
-                    <button string="Sync Status Booking" name="cron_update_status_booking" type="object"/>
-                    <button string="Reverse Ledger" name="action_cancelled" type="object" attrs="{'invisible': [('state', 'in', ['cancelled', 'done'])]}" groups="tt_base.group_tt_tour_travel_supervisor"/>
-                    <button string="Force Update Booking" name="force_update_booking" type="object" groups="base.group_no_one"/>
-                    <button string="Generate Ledger PNR" name="generate_ledger_pnr" type="object" groups="base.group_no_one"/>
-                </header>
-                <sheet>
-                    <div class="oe_button_box">
-                        <button name="get_vouchers_button"
-                                string="Get Vouchers"
-                                type="object"
-                                class="oe_stat_button"
-                                icon="fa-print"
-                                attrs="{'invisible': ['|', ('state', '!=', 'approved'), ('provider_name', '=', 'klook')]}"/>
-                        <button name="action_activity_print_invoice"
-                                string="Print Invoice"
-                                type="object"
-                                class="oe_stat_button"
-                                icon="fa-print"/>
-                        <button name="resend_voucher_button"
-                                string="Resend Voucher"
-                                type="object"
-                                class="oe_stat_button"
-                                icon="fa-print"
-                                attrs="{'invisible': ['|', '&amp;', ('state', '!=', 'approved'), ('state', '!=', 'done'), ('provider_name', '!=', 'klook')]}"/>
-                    </div>
-                    <div class="oe_title">
-                        <h1>
-                            <field name="name" readonly="1"/>
-                        </h1>
-                    </div>
+            <!--            <header>-->
+            <!--                <button string="Sync Status Booking" name="cron_update_status_booking" type="object"/>-->
+            <!--                <button string="Reverse Ledger" name="action_cancelled" type="object" attrs="{'invisible': [('state', 'in', ['cancelled', 'done'])]}" groups="tt_base.group_tt_tour_travel_supervisor"/>-->
+            <!--                <button string="Force Update Booking" name="force_update_booking" type="object" groups="base.group_no_one"/>-->
+            <!--                <button string="Generate Ledger PNR" name="generate_ledger_pnr" type="object" groups="base.group_no_one"/>-->
+            <!--            </header>-->
+            <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                <div class="oe_button_box" name="button_box">
+                    <button name="get_vouchers_button"
+                            string="Get Vouchers"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-print"
+                            attrs="{'invisible': ['|', ('state', '!=', 'approved'), ('provider_name', '=', 'klook')]}"/>
+                    <button name="action_activity_print_invoice"
+                            string="Print Invoice"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-print"/>
+                    <button name="resend_voucher_button"
+                            string="Resend Voucher"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-print"
+                            attrs="{'invisible': ['|', '&amp;', ('state', '!=', 'approved'), ('state', '!=', 'done'), ('provider_name', '!=', 'klook')]}"/>
+                </div>
+            </xpath>
+            <field name="adult" position="after">
+                <field name="senior"/>
+                <field name="child"/>
+            </field>
+            <field name="provider_name" position="after">
+                <field name="voucher_url"/>
+            </field>
+            <xpath expr="//group[@name='paxgroup']" position="before">
+                <separator string="Activity Information"/>
+                <group>
                     <group>
-                        <group>
-                            <field name="activity_id" string="Activity Name" readonly="1"/>
-                            <field name="activity_product" readonly="1"/>
-                            <field name="visit_date" readonly="1"/>
-                            <field name="booking_option" readonly="1"/>
-                            <field name="information" readonly="1"/>
-                            <field name="provider_name" readonly="1"/>
-                            <field name="booking_uuid" readonly="1" groups="base.group_system"/>
-                            <field name="sid_booked" readonly="1" groups="base.group_system"/>
-                            <field name="senior" readonly="1"/>
-                            <field name="adult" readonly="1"/>
-                            <field name="child" readonly="1"/>
-                            <field name="infant" readonly="1"/>
-                            <!--<field name="user_id" readonly="1"/>-->
-                        </group>
-                        <group>
-                            <field name="pnr" readonly="1"/>
-                            <field name="voucher_url" readonly="1" attrs="{'invisible': [('provider_name', '!=', 'klook')]}"/>
-                            <field name="agent_id" readonly="1"/>
-                            <field name="customer_parent_id" readonly="1"/>
-                            <field name="contact_id" readonly="1"/>
-                            <field name="display_mobile"/>
-                            <label for="issued_date" string="Issued By"/>
-                            <div>
-                                <field name="issued_date" class="oe_inline" readonly="1"/> /
-                                <field name="booked_uid" class="oe_inline" readonly="1"/>
-                            </div>
-                            <!--<field name="hold_date" readonly="1"/>-->
-                            <field name="acceptance_date" readonly="1" attrs="{'invisible': [('acceptance_date', '=', False)]}"/>
-                            <field name="rejected_date" readonly="1" attrs="{'invisible': [('rejected_date', '=', False)]}"/>
-                            <field name="expired_date" readonly="1" attrs="{'invisible': [('expired_date', '=', False)]}"/>
-                            <!--<field name="vendor_ledger_id" readonly="1" groups="tt_base.group_tt_tour_travel_operator"/>-->
-                        </group>
+                        <field name="activity_id" string="Activity" readonly="1"/>
+                        <field name="activity_product" readonly="1"/>
                     </group>
-
-                    <notebook>
-                        <page string="Participants">
-                            <field name="line_ids" readonly="1">
-                                <tree>
-                                    <field name="customer_id" string="Name"/>
-                                    <field name="pax_type"/>
-                                    <field name="birth_date"/>
+                    <group>
+                        <field name="visit_date" readonly="1"/>
+                        <field name="booking_option" readonly="1"/>
+                        <field name="information" readonly="1"/>
+                    </group>
+                </group>
+            </xpath>
+            <xpath expr="//page[@name='anchor']" position="before">
+                <page string="Passengers">
+                    <field name="passenger_ids" readonly="1">
+                        <tree>
+                            <field name="title"/>
+                            <field name="first_name"/>
+                            <field name="last_name"/>
+                            <field name="gender"/>
+                            <field name="birth_date"/>
+                            <field name="nationality_id"/>
+                            <field name="activity_sku_id" string="SKU"/>
+                            <field name="api_data" string="Option Request"/>
+                        </tree>
+                        <form>
+                            <group>
+                                <group>
+                                    <field name="title"/>
+                                    <field name="first_name"/>
+                                    <field name="last_name"/>
                                     <field name="gender"/>
-                                    <field name="activity_sku_id" string="SKU"/>
-                                    <field name="api_data" string="Option Request"/>
-                                </tree>
-                                <form>
-                                    <group>
-                                        <group>
-                                            <field name="customer_id" string="Name"/>
-                                            <field name="pax_type"/>
-                                            <field name="birth_date"/>
-                                            <field name="gender"/>
-                                            <field name="api_data" string="Option Request"/>
-                                        </group>
-                                        <group>
-                                            <field name="reservation_activity_id" string="Order Number"/>
-                                            <field name="activity_sku_id" string="SKU"/>
-                                        </group>
-                                    </group>
-                                </form>
-                            </field>
-                        </page>
-                        <page string="Prices">
-                            <field name="sale_service_charge_ids" readonly="1">
-                                <tree>
-                                    <field name="charge_code"/>
+                                    <field name="birth_date"/>
+                                    <field name="nationality_id"/>
                                     <field name="pax_type"/>
-                                    <field name="pax_count"/>
-                                    <field name="currency_id"/>
-                                    <field name="amount"/>
-                                    <field name="total"/>
-                                    <field name="description" groups="tt_base.group_tt_tour_travel_operator"/>
-                                </tree>
-                                <form>
-                                    <group>
-                                        <group>
-                                            <field name="pax_type"/>
-                                            <field name="pax_count"/>
-                                            <field name="charge_code"/>
-                                            <field name="charge_type"/>
-                                            <field name="currency_id" invisible="1"/>
-                                            <field name="amount"/>
-                                            <field name="total"/>
-                                        </group>
-                                        <group>
-                                            <field name="activity_id"/>
-                                            <field name="description"/>
-                                            <field name="foreign_amount" groups="tt_base.group_tt_tour_travel_operator" string="Base Price From Vendor"/>
-                                            <field name="foreign_currency_id" invisible="1"/>
-                                        </group>
-                                    </group>
-                                </form>
-                            </field>
-                        </page>
-                        <page string="Ledger" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator">
-                            <field name="ledger_id" readonly="1"/>
-                        </page>
-                        <page string="Invoices" name="invoices">
-                            <field name="invoice_ids" readonly="1">
-
-                            </field>
-                        </page>
-                    </notebook>
-                    <group>
-                        <group string="Total Information" class="oe_subtotal_footer oe_right" attrs="{'invisible': [('total', '=', 0)]}">
-                            <field name="total_fare" class="oe_subtotal_footer_separator" attrs="{'invisible': [('total_fare', '=', 0)]}"/>
-                            <field name="total_tax" class="oe_subtotal_footer_separator" attrs="{'invisible': [('total_tax', '=', 0)]}"/>
-                            <field name="total_discount" class="oe_subtotal_footer_separator" attrs="{'invisible': [('total_discount', '=', 0)]}"/>
-                            <field name="total" class="oe_subtotal_footer_separator" attrs="{'invisible': [('total', '=', 0)]}"/>
-                            <field name="total_commission" class="oe_subtotal_footer_separator" attrs="{'invisible': [('total_commission', '=', 0)]}"/>
-                            <field name="total_nta" class="oe_subtotal_footer_separator" attrs="{'invisible': [('total_nta', '=', 0)]}"/>
+                                    <field name="api_data" string="Option Request"/>
+                                </group>
+                                <group>
+                                    <field name="customer_id" string="Name"/>
+                                    <field name="booking_id" string="Order Number"/>
+                                    <field name="activity_sku_id" string="SKU"/>
+                                </group>
+                            </group>
+                        </form>
+                    </field>
+                </page>
+            </xpath>
+            <xpath expr="//page[@name='anchor']" position="before">
+                <page string="Prices" name="prices">
+                    <!--                    <button name="calculate_service_charge" type="object" string="calc"/>-->
+                    <!--                    <button name="test_error" type="object" string="test_error"/>-->
+                    <field name="sale_service_charge_ids">
+                        <tree>
+                            <field name="charge_code"/>
+                            <field name="charge_type"/>
+                            <field name="pax_type"/>
+                            <field name="pax_count"/>
+                            <field name="amount"/>
+                            <field name="total"/>
+                            <field name="description"/>
                             <field name="currency_id" invisible="1"/>
-                        </group>
-                    </group>
-                </sheet>
-            </form>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+            <xpath expr="//page[@name='anchor']" position="before">
+                <page string="Vendor" name="vendor" groups="tt_base.group_tt_tour_travel_operator">
+                    <field name="provider_booking_ids"/>
+<!--                        &lt;!&ndash;<tree>&ndash;&gt;-->
+<!--                        &lt;!&ndash;<field name="pnr"/>&ndash;&gt;-->
+<!--                        &lt;!&ndash;<field name="direction"/>&ndash;&gt;-->
+<!--                        &lt;!&ndash;<field name="provider" groups="tt_base.group_tt_tour_travel_operator"/>&ndash;&gt;-->
+<!--                        &lt;!&ndash;<field name="origin"/>&ndash;&gt;-->
+<!--                        &lt;!&ndash;<field name="destination"/>&ndash;&gt;-->
+<!--                        &lt;!&ndash;<field name="departure_date"/>&ndash;&gt;-->
+<!--                        &lt;!&ndash;<field name="return_date"/>&ndash;&gt;-->
+<!--                        &lt;!&ndash;&lt;!&ndash;<field name="total"/>&ndash;&gt;&ndash;&gt;-->
+<!--                        &lt;!&ndash;<field name="state"/>&ndash;&gt;-->
+<!--                        &lt;!&ndash;</tree>&ndash;&gt;-->
+<!--                    </field>-->
+                </page>
+            </xpath>
         </field>
     </record>
 
-    <record model="ir.ui.view" id="tt_reservation_activity_view_tree" >
-        <field name="name">tt.reservation.activity.view.tree</field>
+    <record model="ir.ui.view" id="tt_reservation_activity_tree_view" >
+        <field name="name">tt.reservation.activity.tree.view</field>
         <field name="model">tt.reservation.activity</field>
         <field name="arch" type="xml">
             <tree>
                 <field name="name"/>
                 <field name="pnr"/>
                 <field name="visit_date"/>
-<!--                <field name="vendor_ledger_id" groups="tt_base.group_tt_tour_travel_operator"/>-->
                 <field name="activity_id"/>
                 <field name="contact_id"/>
                 <field name="agent_id"/>
@@ -236,8 +198,8 @@
         <field name="domain">[]</field>
         <field name="context">
             {
-            'form_view_ref': 'tt_reservation_activity.tt_reservation_activity_view_form',
-            'tree_view_ref': 'tt_reservation_activity.tt_reservation_activity_view_tree',
+            'form_view_ref': 'tt_reservation_activity.tt_reservation_activity_form_view',
+            'tree_view_ref': 'tt_reservation_activity.tt_reservation_activity_tree_view',
             'search_default_all': 1
             }
         </field>
@@ -251,8 +213,8 @@
         <field name="domain">[]</field>
         <field name="context">
             {
-            'form_view_ref': 'tt_reservation_activity.tt_reservation_activity_view_form',
-            'tree_view_ref': 'tt_reservation_activity.tt_reservation_activity_view_tree',
+            'form_view_ref': 'tt_reservation_activity.tt_reservation_activity_form_view',
+            'tree_view_ref': 'tt_reservation_activity.tt_reservation_activity_tree_view',
             'search_default_issued': 1
             }
         </field>
@@ -266,8 +228,8 @@
         <field name="domain">[]</field>
         <field name="context">
             {
-            'form_view_ref': 'tt_reservation_activity.tt_reservation_activity_view_form',
-            'tree_view_ref': 'tt_reservation_activity.tt_reservation_activity_view_tree',
+            'form_view_ref': 'tt_reservation_activity.tt_reservation_activity_form_view',
+            'tree_view_ref': 'tt_reservation_activity.tt_reservation_activity_tree_view',
             'search_default_failed_expired': 1
             }
         </field>
@@ -281,8 +243,8 @@
         <field name="domain">[]</field>
         <field name="context">
             {
-            'form_view_ref': 'tt_reservation_activity.tt_reservation_activity_view_form',
-            'tree_view_ref': 'tt_reservation_activity.tt_reservation_activity_view_tree',
+            'form_view_ref': 'tt_reservation_activity.tt_reservation_activity_form_view',
+            'tree_view_ref': 'tt_reservation_activity.tt_reservation_activity_tree_view',
             'search_default_approved_done': 1
             }
         </field>
@@ -296,8 +258,8 @@
         <field name="domain">[]</field>
         <field name="context">
             {
-            'form_view_ref': 'tt_reservation_activity.tt_reservation_activity_view_form',
-            'tree_view_ref': 'tt_reservation_activity.tt_reservation_activity_view_tree',
+            'form_view_ref': 'tt_reservation_activity.tt_reservation_activity_form_view',
+            'tree_view_ref': 'tt_reservation_activity.tt_reservation_activity_tree_view',
             'search_default_cancelled': 1
             }
         </field>
@@ -317,15 +279,4 @@
 
     <menuitem id="submenu_reservation_activity_cancelled" parent="tt_reservation_activity.menu_reservations_activity"
               name="Cancelled/Rejected/Refunded" action="tt_reservation_activity.tt_reservation_activity_view_action_cancelled" sequence="5"/>
-
-    <record model="ir.ui.view" id="tt_agent_invoice_form_inh">
-        <field name="name">tt_agent_invoice_form_view_inh</field>
-        <field name="model">tt.agent.invoice</field>
-        <field name="inherit_id" ref="tt_agent_sales.tt_agent_invoice_form_view"/>
-        <field name="arch" type="xml">
-            <field name="customer_parent_id" position="after">
-                <field name="activity_transaction_id" attrs="{'invisible': [('activity_transaction_id', '=', False)]}"/>
-            </field>
-        </field>
-    </record>
 </odoo>

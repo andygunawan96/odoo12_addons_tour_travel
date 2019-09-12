@@ -25,6 +25,7 @@ TT_TRANSPORT
         'views/tt_activity_category_views.xml',
         'views/tt_master_activity_views.xml',
         'views/tt_reservation_activity_views.xml',
+        'views/tt_service_charge_views.xml'
         # 'views/tt_activity_printout_menu.xml',
         # 'views/ir_cron.xml',
     ],
