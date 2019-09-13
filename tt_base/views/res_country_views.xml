@@ -19,13 +19,18 @@
                         <field name="code"/>
                         <field name="phone_code"/>
                         <field name="currency_id"/>
-                        <field name="state_ids"/>
-                        <field name="city_ids"/>
                         <!--<field name="address_detail_ids"/>-->
                         <!--<field name="phone_detail_ids"/>-->
-
                         <!--<field name="provide_code_ids"/>-->
                     </group>
+                    <notebook>
+                        <page id="state_page" string="State(s)">
+                            <field name="state_ids"/>
+                        </page>
+                        <page id="city_page" string="City(s)">
+                            <field name="city_ids"/>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>

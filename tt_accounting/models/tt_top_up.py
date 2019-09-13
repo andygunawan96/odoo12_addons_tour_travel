@@ -79,7 +79,7 @@ class TtTopUp(models.Model):
     unique_amount = fields.Monetary('Unique Amount', default=0,
                                  states={'draft': [('readonly', False)]},
                                     help='''Unique amount for identification agent top-up via wire transfer''')
-    fees = fields.Monetary('Fees',  default=0, help='F4ees amount; set by the system because depends on the acquirer')
+    fees = fields.Monetary('Fees',  default=0, help='Fees amount; set by the system because depends on the acquirer')
     total = fields.Monetary('Total', compute='_compute_amount', store=True, readonly=True)
     total_with_fees = fields.Monetary('Total + fees', compute='_compute_amount', store=False)
     ledger_id = fields.Many2one('tt.ledger', string='Ledger', readonly=True, copy=False)
