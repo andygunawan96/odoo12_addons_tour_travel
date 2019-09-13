@@ -521,20 +521,21 @@
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
                 <div class="page">
-                    <t t-call="tt_report_common.external_layout">
+                    <t t-if="doc_model == 'tt.reservation.airline'">
+                        <t t-call="tt_report_common.printout_ticket_airline_template"/>
+                    </t>
+                    <t t-if="doc_model != 'tt.reservation.airline'">
+                        <t t-call="tt_report_common.external_layout">
                         <t t-if="doc_model == 'tt.agent.invoice'">
                             <t t-call="tt_report_common.agent_invoice_content_view"/>
                         </t>
                         <t t-elif="doc_model == 'tt.reservation.hotel'">
                             <t t-call="tt_report_common.reservation_hotel_content_view"/>
                         </t>
-                        <t t-elif="doc_model == 'tt.reservation.airline'">
-                            <t t-call="tt_report_common.reservation_airline_content_view"/>
-                            <t t-call="tt_report_common.reservation_airline_footer_view"/>
-                        </t>
                         <t t-elif="doc_model == 'tt.reservation.train'">
                             <t t-call="tt_report_common.reservation_train_content_view"/>
                         </t>
+                    </t>
                     </t>
                 </div>
             </t>

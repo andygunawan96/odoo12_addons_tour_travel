@@ -1015,6 +1015,7 @@ class TestSearch(models.Model):
                  'image_url': facility.image_url, 'image_url2': facility.image_url2} for
                 facility in self.env['tt.hotel.top.facility'].search([], limit=limit)]
 
+
 class TestSearchLine(models.Model):
     _name = 'test.search.line'
 
