@@ -67,6 +67,7 @@ BOOKING_STATE_STR = {
     'fail_issued': 'Failed (Issue)',
     'partial_issued': 'Partial Issued',
     'issued': 'Issued',
+    'pending': 'Pending',
     'done': 'Done',
     'fail_refunded': 'Failed (REFUNDED)',
     'refund': 'Refund',

@@ -6,8 +6,6 @@
         <field name="inherit_id" ref="tt_reservation.tt_service_charge_form_view"/>
         <field name="mode">primary</field>
         <field name="arch" type="xml">
-            <field name="passenger_airline_ids" position="replace">
-            </field>
             <field name="description" position="after">
                 <field name="passenger_tour_ids"/>
             </field>
