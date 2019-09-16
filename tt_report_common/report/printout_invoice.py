@@ -92,7 +92,7 @@ class PrintoutInvoice(models.AbstractModel):
             for rec2 in rec.invoice_line_ids:
                 resv_obj = self.env[rec2.res_model_resv].browse(rec2.res_id_resv)
                 values[rec.id] = self.calc_segments(resv_obj, resv_obj.passenger_ids)
-        terbilang = self.get_terbilang(110111)
+        terbilang = self.get_terbilang(0)
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],

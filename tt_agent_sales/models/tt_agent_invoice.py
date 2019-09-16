@@ -142,4 +142,4 @@ class AgentInvoice(models.Model):
         res = self.read()
         res = res and res[0] or {}
         datas['form'] = res
-        return self.env.ref('tt_report_common.action_report_printout_invoice').report_action([], data=datas)
+        return self.env.ref('tt_report_common.action_report_printout_invoice').report_action(self, data=datas)
