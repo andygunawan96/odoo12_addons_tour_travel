@@ -31,7 +31,7 @@ class AgentRegistration(models.Model):
     _description = 'Rodex Model'
     _order = 'registration_num desc'
 
-    name = fields.Char('Name', required=True, default='')
+    name = fields.Char('Name', default='')
     image = fields.Binary('Image', store=True)
     state = fields.Selection(STATE, 'State', default='draft',
                              help='''draft = Requested
@@ -111,6 +111,11 @@ class AgentRegistration(models.Model):
             'model': self._name
         }
         return self.env.ref('tt_agent_registration.action_report_printout_invoice').report_action(self, data=data)
+
+    def action_send_email(self):
+        template = self.env.ref('tt_agent_registration.template_mail_agent_regis')
+        mail = self.env['mail.template'].browse(template.id)
+        mail.send_mail(self.id)
 
     @api.onchange('promotion_id', 'agent_type_id')
     @api.depends('promotion_id', 'agent_type_id')
@@ -225,33 +230,6 @@ class AgentRegistration(models.Model):
             return self.get_parent_citra(parent_agent_id.parent_agent_id)
 
     def calc_commission(self):
-        # Hitung dulu semua komisi, lalu masukkan ke dalam ledger
-        # agent_comm, parent_agent_comm, ho_comm = self.agent_type_id.calc_recruitment_commission(self.parent_agent_id.agent_type_id, self.total_fee)
-        # ledger = self.env['tt.ledger']
-        #
-        # agent_comm_vals = ledger.prepare_vals('Recruit Comm. : ' + self.name, 'Recruit Comm. : ' + self.name,
-        #                                       datetime.now(), 3, self.currency_id.id, agent_comm, 0)
-        # agent_comm_vals = ledger.prepare_vals_for_agent_regis(self, agent_comm_vals)
-        # self.env['tt.ledger'].create(agent_comm_vals)
-        #
-        # parent_agent_comm_vals = self.env['tt.ledger'].prepare_vals('Recruit Comm. Parent: ' + self.name,
-        #                                                             'Recruit Comm. Parent: ' + self.name,
-        #                                                             datetime.now(), 3, self.currency_id.id,
-        #                                                             parent_agent_comm, 0)
-        # parent_agent_comm_vals = ledger.prepare_vals_for_agent_regis(self, parent_agent_comm_vals)
-        # parent_agent_comm_vals.update({
-        #     'agent_id': self.parent_agent_id.id
-        # })
-        # self.env['tt.ledger'].create(parent_agent_comm_vals)
-        #
-        # ho_comm_vals = self.env['tt.ledger'].prepare_vals('Recruit Comm. HO: ' + self.name,
-        #                                                   'Recruit Comm. HO: ' + self.name, datetime.now(),
-        #                                                   3, self.currency_id.id, ho_comm, 0)
-        # ho_comm_vals = ledger.prepare_vals_for_agent_regis(self, ho_comm_vals)
-        # ho_comm_vals.update({
-        #     'agent_id': self.env['tt.agent'].sudo().search([('agent_type_id.name', '=', 'HO')], limit=1).id
-        # })
-        # self.env['tt.ledger'].create(ho_comm_vals)
         self.calc_ledger()
         line_obj = self.env['tt.agent.registration.promotion.agent.type'].search(
             [('promotion_id', '=', self.promotion_id.id), ('agent_type_id', '=', self.agent_type_id.id)])
@@ -354,18 +332,18 @@ class AgentRegistration(models.Model):
         })
         self.env['tt.ledger'].create(vals_debit)
 
-    def create_partner_agent(self):
+    def create_partner_agent(self, user_ids):
         vals = {
             'name': self.name,
             'balance': self.opening_balance,
             'agent_type_id': self.agent_type_id.id,
             'parent_agent_id': self.parent_agent_id.id,
-            'reference_id': self.reference_id.id,
-            'address_ids': self.address_ids,
+            'reference': self.reference_id.id,
+            'address_ids': [(6, 0, self.address_ids)],
             'logo': self.image,
             'social_media_ids': self.social_media_ids,
             'currency_id': self.env.user.company_id.currency_id.id,
-            'user_ids': '',
+            'user_ids': user_ids,
             'tac': self.tac
         }
         if self.contact_ids:
@@ -422,23 +400,21 @@ class AgentRegistration(models.Model):
                 })
         return customer_id
 
-    def create_agent_user(self, agent_id):
+    def create_agent_user(self):
+        user_list = []
         for rec in self:
             for con in rec.agent_registration_customer_ids:
                 name = (con.first_name or '') + ' ' + (con.last_name or '')
+
                 vals = {
                     'name': name,
                     'login': con.email,
                     'password': '123456',
-                    'partner_id': agent_id.id,
-                    'agent_id': agent_id.id,
-                    'sel_groups_1_9_10': 1,  # User Type
-                    'sel_groups_190_191_192': 3,  # Billing Statement
-                    'sel_groups_193_194_195': 3,  # Agent Invoice
-                    'sel_groups_199_200_201': 3,  # Agent User
-                    'sel_groups_14_15': 3,  # Employees
                 }
-                self.env['res.users'].create(vals)
+                user_id = self.env['res.users'].create(vals)
+                user_list.append(user_id.id)
+        user_ids = [(6, 0, user_list)]
+        return user_ids
 
     def action_confirm(self):
         self.check_address()
@@ -477,13 +453,16 @@ class AgentRegistration(models.Model):
             raise UserError('Please complete all the payments.')
 
     def action_done(self):
-        self.check_opening_documents()
-        agent_id = self.create_partner_agent()
-        if self.agent_registration_customer_ids:
+        try:
+            self.check_opening_documents()
+            user_ids = self.create_agent_user()
+            agent_id = self.create_partner_agent(user_ids)
             self.create_customers_contact(agent_id)
-            self.create_agent_user(agent_id)
-        self.create_opening_balance_ledger(agent_id)
-        self.state = 'done'
+            self.create_opening_balance_ledger(agent_id)
+            self.state = 'done'
+        except Exception as e:
+            self.env.cr.rollback()
+            _logger.error(msg=str(e) + '\n' + traceback.format_exc())
 
     def action_cancel(self):
         self.state = 'cancel'
