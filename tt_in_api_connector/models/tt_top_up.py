@@ -1,0 +1,23 @@
+from odoo import api,models,fields
+from ...tools.ERR import RequestException
+
+class TtAirlineApiCon(models.Model):
+    _name = 'tt.top.up.api.con'
+    _inherit = 'tt.api.con'
+
+    table_name = 'tt.top.up'
+
+    def action_call(self,table_obj,action,data,context):
+
+        if action == 'create_top_up':
+            res = table_obj.create_top_up_api(data,context)
+        elif action == 'get_top_up':
+            res = table_obj.get_top_up_api(context)
+        elif action == 'cancel_top_up':
+            res = table_obj.cancel_top_up_api(data,context)
+        elif action == 'get_top_up_amount':
+            res = self.env['tt.top.up.amount'].get_top_up_amount_api()
+        else:
+            raise RequestException(999)
+        return res
+

@@ -6,11 +6,6 @@
         <field name="arch" type="xml">
             <form string="Partners Travel Customer" create="false">
                 <header>
-
-                    <button name="action_validate" states="request"
-                            groups="tt_base.group_tt_tour_travel_operator"
-                            string="Validate" type="object" class="oe_highlight"/>
-
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,validate,done"/>
                 </header>
                 <sheet>
@@ -19,7 +14,6 @@
                             <field name="name" readonly="1"/>
                         </h1>
                     </div>
-
                     <group>
                         <group>
                             <field name="agent_id"/>
@@ -32,8 +26,12 @@
                                 <field name="validate_uid" readonly="1" class="oe_inline"/> -
                                 <field name="validate_date" readonly="1" class="oe_inline"/>
                             </div>
+                            <label for="cancel_uid" string="Cancel By"/>
+                            <div>
+                                <field name="cancel_uid" readonly="1" class="oe_inline"/> -
+                                <field name="cancel_date" readonly="1" class="oe_inline"/>
+                            </div>
                             <field name="ledger_id"/>
-                            <field name="payment_acquirer_id"/>
                         </group>
                     </group>
                     <separator string="Payment"/>
@@ -49,11 +47,6 @@
                             <field name="total_with_fees"/>
                         </group>
                     </group>
-<!--                    <notebook colspan="4">-->
-<!--                        <page name='notes' string="Notes">-->
-<!--                            <field name="notes" placeholder="Notes..."/>-->
-<!--                        </page>-->
-<!--                    </notebook>-->
                 </sheet>
 <!--                <div class="oe_chatter">-->
 <!--                    <field name="message_follower_ids" widget="mail_followers"/>-->
@@ -66,21 +59,33 @@
     <record id="tt_top_up_tree_view_page" model="ir.ui.view">
         <field name="name">tt.top.up.tree.view.page</field>
         <field name="model">tt.top.up</field>
+        <field name="priority">15</field>
         <field name="arch" type="xml">
             <tree create="false">
                 <field name="name"/>
-                <field name="payment_acquirer_id"/>
                 <field name="date"/>
                 <field name="due_date"/>
                 <field name="agent_id"/>
                 <field name="total"/>
                 <field name="state"/>
-                <button name="validate" type="object" string="validate"/>
             </tree>
         </field>
     </record>
 
-        <record id="tt_top_up_view_search" model="ir.ui.view">
+    <record id="tt_top_up_payment_tree_view_page" model="ir.ui.view">
+        <field name="name">tt.top.up.payment.tree.view.page</field>
+        <field name="model">tt.top.up</field>
+        <field name="arch" type="xml">
+            <tree create="false">
+                <field name="name"/>
+<!--                <field name="pay_amount"/>-->
+                <field name="state"/>
+<!--                <button name="validate" type="object" string="validate"/>-->
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_top_up_view_search" model="ir.ui.view">
         <field name="name">tt.top.up.view.search</field>
         <field name="model">tt.top.up</field>
         <field name="arch" type="xml">

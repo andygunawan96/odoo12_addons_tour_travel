@@ -58,20 +58,19 @@ class TtPaymentInh(models.Model):
     invoice_ids = fields.One2many('tt.payment.invoice.rel', 'payment_id', 'Invoices',readonly=True)
 
     @api.multi
-    @api.depends('invoice_ids.pay_amount','total_amount','fee')
     def compute_available_amount(self):
         for rec in self:
-            super(TtPaymentInh, rec).compute_available_amount()
+            super(TtPaymentInh, self).compute_available_amount()
             used_amount = 0
             for inv in rec.invoice_ids:
                 if inv.create_date:
                     used_amount += inv.pay_amount
                 # used_amount += inv.pay_amount
-            rec.used_amount = used_amount
-            rec.available_amount -= rec.used_amount
+            rec.used_amount += used_amount
+            rec.available_amount -= used_amount
 
-            print(rec.used_amount)
-            print(rec.available_amount)
+            print("used amount "+str(rec.used_amount))
+            print("available amount "+str(rec.available_amount))
             if rec.available_amount < 0:
                 raise exceptions.UserError("Pay amount on %s exceeded payment's residual amount" % (self.name))
 

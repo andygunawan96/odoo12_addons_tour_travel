@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button string="Validate" name="action_validate_from_button" type="object"/>
+                    <button string="Validate" name="action_validate_from_button" type="object" groups="tt_base.group_tt_tour_travel_operator"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,validated"/>
                 </header>
                 <sheet>
@@ -17,21 +17,23 @@
                     <group name="payment_info">
                         <group string="Agent">
                             <field name="agent_id"/>
+                            <field name="customer_parent_id"/>
                             <field name="payment_date"/>
                             <field name="acquirer_id"/>
-                            <field name="reference"/>
                         </group>
                         <group string="User">
                             <label for="confirm_uid" string="Confirm By"/>
                             <div>
                                 <field name="confirm_uid" readonly="1" class="oe_inline"/> -
                                 <field name="confirm_date" readonly="1" class="oe_inline"/>
+
                             </div>
                             <label for="validate_uid" string="Validate By"/>
                             <div>
                                 <field name="validate_uid" readonly="1" class="oe_inline"/> -
                                 <field name="validate_date" readonly="1" class="oe_inline"/>
                             </div>
+                            <field name="reference"/>
                         </group>
                         <group string="Amount">
                             <field name="total_amount"/>
@@ -40,6 +42,11 @@
                             <field name="available_amount"/>
                             <field name="currency_id" invisible="1"/>
                         </group>
+                    </group>
+                    <separator name="used_on" string="Used on"/>
+                    <group>
+                        <field name="top_up_id"
+                        attrs="{'invisible': [('customer_parent_id', '!=', False)]}"/>
                     </group>
                 </sheet>
             </form>

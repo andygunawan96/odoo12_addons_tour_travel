@@ -15,6 +15,7 @@ TT_PAYMENT
     'data': [
         'data/ir_sequence_data.xml',
         'views/tt_payment_views.xml',
+        'views/tt_top_up_views.xml',
         'security/ir.model.access.csv',
     ],
     'demo': [],

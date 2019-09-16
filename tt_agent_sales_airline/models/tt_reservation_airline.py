@@ -91,8 +91,6 @@ class ReservationTrain(models.Model):
             'payment_id': payment_obj.id,
             'pay_amount': inv_line_obj.total,
         })
-        payment_obj.compute_available_amount()
-
 
 
     # # ## CREATED by Samvi 2018/07/24

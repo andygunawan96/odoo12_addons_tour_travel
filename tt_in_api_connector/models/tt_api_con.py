@@ -15,7 +15,7 @@ class TtApiCon(models.Model):
             try:
                 table_obj = self.env[self.table_name]
             except:
-                raise  RequestException(1000)
+                raise RequestException(1000)
 
             res = self.action_call(table_obj,action,data,context)
 

@@ -16,7 +16,7 @@ class AgentInvoice(models.Model):
 
     name = fields.Char('Name', default='New', readonly=True)
     total = fields.Monetary('Total', compute="_compute_total",store=True)
-    paid_amount = fields.Monetary('Paid Amount', compute="_compute_paid_amount",store=True)
+    paid_amount = fields.Monetary('Paid Amount', compute="_compute_paid_amount")
     invoice_line_ids = fields.One2many('tt.agent.invoice.line','invoice_id','Invoice Line', readonly=True,
                                        states={'draft': [('readonly', False)]})
     booker_id = fields.Many2one('tt.customer', 'Booker',readonly=True)
@@ -100,7 +100,7 @@ class AgentInvoice(models.Model):
         return self.paid_amount >= self.total and self.total != 0
 
     @api.multi
-    @api.depends('invoice_line_ids.total')
+    @api.depends('invoice_line_ids.total', 'invoice_line_ids')
     def _compute_total(self):
         for inv in self:
             total = 0
@@ -109,13 +109,12 @@ class AgentInvoice(models.Model):
             inv.total = total
 
     @api.multi
-    @api.depends('payment_ids.pay_amount','payment_ids.state')
     def _compute_paid_amount(self):
         for inv in self:
             paid_amount = 0
             # paid_amount = sum(rec.pay_amount for rec in inv.payment_ids if (rec.create_date and rec.state in ['validate','validate2']))
             for rec in inv.payment_ids:
-                if rec.create_date and rec.state in ['validated','validated2']:
+                if rec.state in ['validated','validated2']:
                     paid_amount += rec.pay_amount
             inv.paid_amount = paid_amount
 
