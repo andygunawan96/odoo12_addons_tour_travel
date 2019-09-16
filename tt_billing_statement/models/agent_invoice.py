@@ -157,8 +157,8 @@ class AgentInvoice(models.Model):
             # 'payment_term_id': self.payment_term_id.id,
             'due_date': fields.Date.context_today(self),
             'agent_id': self.agent_id.id,
-            'sub_agent_id': self.sub_agent_id.id,
-            'contact_id': self.contact_id and self.contact_id.id or False,
+            'customer_parent_id': self.customer_parent_id.id,
+            'contact_id': self.booker_id and self.booker_id .id or False,
             'invoice_ids': [(4, 0, self.ids)],
         }
 

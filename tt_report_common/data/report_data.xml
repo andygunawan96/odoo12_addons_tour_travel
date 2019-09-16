@@ -27,7 +27,7 @@
             report_type="qweb-html"
             name="tt_report_common.printout_invoice"
             file="tt_report_common.printout_invoice"
-            paperformat="tt_report_common.paperformat_A4"
+            paperformat="tt_report_common.paperformat_A4_no_margin"
             print_report_name="'Voucher - %s' % (object.name)"
             menu="False"
         />
@@ -50,6 +50,16 @@
             name="tt_report_common.printout_invoice"
             file="tt_report_common.printout_invoice"
             paperformat="tt_report_common.paperformat_A4"
+        />
+        <report
+            string="Billing"
+            id="action_report_printout_billing"
+            model="tt.billing.statement"
+            report_type="qweb-html"
+            name="tt_report_common.printout_billing"
+            file="tt_report_common.printout_billing"
+            paperformat="tt_report_common.paperformat_A4_no_margin"
+            print_report_name="'Billing - %s' % (object.name)"
         />
     </data>
 </odoo>
