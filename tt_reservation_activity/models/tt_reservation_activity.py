@@ -62,7 +62,7 @@ class ActivityResendVoucher(models.TransientModel):
             raise UserError(_('Resend Voucher Failed!'))
 
 
-class TtActivityPassengerOption(models.Model):
+class TtReservationActivityOption(models.Model):
     _name = 'tt.reservation.activity.option'
     _description = 'Rodex Model'
 
@@ -91,6 +91,7 @@ class ReservationActivity(models.Model):
     activity_product = fields.Char('Product Type')
     activity_product_uuid = fields.Char('Product Type Uuid')
     visit_date = fields.Datetime('Visit Date')
+    timeslot = fields.Char('Timeslot')
 
     sale_service_charge_ids = fields.One2many('tt.service.charge', 'booking_activity_id', string='Prices')
     ledger_ids = fields.One2many('tt.ledger', 'res_id', 'Ledger', domain=[('res_model','=','tt.reservation.activity')])
@@ -101,7 +102,7 @@ class ReservationActivity(models.Model):
     information = fields.Text('Additional Information')
     file_upload = fields.Text('File Upload')
     voucher_url = fields.Text('Voucher URL')
-    provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type',default=lambda self: self.env.ref('tt_reservation_activity.tt_provider_type_activity'))
+    provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', default=lambda self: self.env.ref('tt_reservation_activity.tt_provider_type_activity'))
     option_ids = fields.One2many('tt.reservation.activity.option', 'booking_id', 'Options')
 
     def _calc_grand_total(self):
@@ -909,6 +910,11 @@ class ReservationActivity(models.Model):
                 'file_upload': file_upload,
             })
 
+            if search_request.get('timeslot'):
+                header_val.update({
+                    'timeslot': str(search_request['timeslot']['startTime']) + ' - ' + str(search_request['timeslot']['endTime']),
+                })
+
             if not activity_type_id.instantConfirmation:
                 header_val.update({
                     'information': 'On Request (max. 3 working days)',
@@ -932,6 +938,7 @@ class ReservationActivity(models.Model):
                 vals = temp_obj.copy_to_passenger()
                 vals.update({
                     'booking_id': book_obj.id,
+                    'title': extra_dict['title'],
                     'pax_type': extra_dict['pax_type'],
                     'activity_sku_id': extra_dict.get('sku_real_id', 0)
                 })
@@ -945,7 +952,7 @@ class ReservationActivity(models.Model):
                         }
                         self.env['tt.reservation.passenger.activity.option'].sudo().create(pax_opt_vals)
 
-            book_obj.customer_parent_id = contact_data['agent_id']
+            book_obj.customer_parent_id = booker_obj.agent_id.id
             provider_activity_vals = {
                 'booking_id': book_obj.id,
                 'activity_id': activity_type_id.activity_id.id,
@@ -1207,126 +1214,153 @@ class ReservationActivity(models.Model):
         }
         return values
 
-    def get_booking_by_api(self, data):
-        order_number = data['order_number']
+    def get_booking_for_vendor_by_api(self, data):
+        try:
+            order_number = data['order_number']
 
-        self.env.cr.execute("""SELECT * FROM tt_reservation_activity WHERE name=%s""", (order_number,))
-        activity_booking = self.env.cr.dictfetchall()
+            self.env.cr.execute("""SELECT * FROM tt_reservation_activity WHERE name=%s""", (order_number,))
+            activity_booking = self.env.cr.dictfetchall()
 
-        self.env.cr.execute("""SELECT * FROM tt_tb_service_charge WHERE activity_id=%s""", (activity_booking[0]['id'],))
-        api_price_ids = self.env.cr.dictfetchall()
+            if activity_booking:
+                self.env.cr.execute("""SELECT * FROM tt_provider_activity WHERE booking_id=%s""", (activity_booking[0]['id'],))
+                act_provider_ids = self.env.cr.dictfetchall()
 
-        req = {
-            'provider': api_price_ids[0]['description'],
-            'uuid': activity_booking[0]['booking_uuid'],
-            'pnr': activity_booking[0]['pnr'],
-            'order_number': order_number,
-            'order_id': activity_booking[0]['id'],
-        }
-        return req
+                provider_obj = self.env['tt.provider'].browse(act_provider_ids[0]['provider_id'])
+                req = {
+                    'provider': provider_obj.code,
+                    'uuid': activity_booking[0]['booking_uuid'],
+                    'pnr': activity_booking[0]['pnr'],
+                    'order_number': order_number,
+                    'order_id': activity_booking[0]['id'],
+                }
+            else:
+                req = {
+                    'no_order_number': True
+                }
+            result = ERR.get_no_error(req)
+        except Exception as e:
+            self.env.cr.rollback()
+            _logger.error(msg=str(e) + '\n' + traceback.format_exc())
+            result = ERR.get_error(500)
+        return result
 
-    def get_booking_by_api2(self, res, req):
-        values = res['response']
-        order_number = req['order_number']
+    def get_booking_by_api(self, res, req):
+        try:
+            values = res['response']
+            order_number = req['order_number']
 
-        self.env.cr.execute("""SELECT * FROM tt_reservation_activity WHERE name=%s""", (order_number,))
-        activity_booking = self.env.cr.dictfetchall()
+            activity_booking = self.env['tt.reservation.activity'].search([('name', '=', order_number)])
+            if activity_booking:
+                activity_booking = activity_booking[0]
 
-        self.env.cr.execute("""SELECT * FROM tt_service_charge WHERE activity_id=%s""", (activity_booking[0]['id'],))
-        api_price_ids = self.env.cr.dictfetchall()
+            book_option_ids = []
+            for rec in activity_booking.option_ids:
+                book_option_ids.append({
+                    'name': rec.name,
+                    'value': rec.value,
+                })
 
-        self.env.cr.execute("""SELECT * FROM tt_reservation_activity_line WHERE reservation_activity_id=%s""", (activity_booking[0]['id'],))
-        line_ids = self.env.cr.dictfetchall()
+            # self.env.cr.execute("""SELECT * FROM tt_service_charge WHERE booking_activity_id=%s""", (activity_booking[0]['id'],))
+            # api_price_ids = self.env.cr.dictfetchall()
 
-        pax_ids = ()
-        for rec in line_ids:
-            pax_ids += (rec['passenger_id'],)
+            passengers = []
+            for rec in activity_booking.passenger_ids:
+                passengers.append({
+                    'name': str(rec.title) + '. ' + str(rec.first_name) + ' ' + str(rec.last_name),
+                    'birth_date': rec.birth_date,
+                    'pax_type': rec.pax_type,
+                    'sku_name': rec.activity_sku_id.title
+                })
 
-        self.env.cr.execute("""SELECT birth_date, first_name, id, last_name, pax_type, title FROM tt_customer_details WHERE id in %s""", (pax_ids,))
-        passenger_ids = self.env.cr.dictfetchall()
+            # prices = self.prepare_summary_prices(api_price_ids, activity_booking[0]['infant'])
+            # prices.update({
+            #     'total_itinerary_price': prices['total_itinerary_price'],
+            # })
 
-        prices = self.prepare_summary_prices(api_price_ids, activity_booking[0]['infant'])
-        prices.update({
-            'total_itinerary_price': prices['total_itinerary_price'],
-        })
+            contact = self.env['tt.customer'].browse(activity_booking.contact_id.id)
 
-        temp = self.env['tt.master.activity'].browse(activity_booking[0]['activity_id'])
-        activity_details = {
-            'name': temp.name,
-            'description': temp.description,
-            'highlights': temp.highlights,
-            'additionalInfo': temp.additionalInfo,
-            'safety': temp.safety,
-            'warnings': temp.warnings,
-            'priceIncludes': temp.priceIncludes,
-            'priceExcludes': temp.priceExcludes,
-        }
-        temp2 = self.env['tt.master.activity.lines'].search([('activity_id', '=', temp.id), ('uuid', '=', activity_booking[0]['activity_product_uuid'])])
-        voucher_detail = {
-            'voucher_validity': {
-                'voucher_validity_date': temp2.voucher_validity_date,
-                'voucher_validity_days': temp2.voucher_validity_days,
-                'voucher_validity_type': temp2.voucher_validity_type,
-            },
-            'voucherUse': temp2.voucherUse,
-            'voucherRedemptionAddress': temp2.voucherRedemptionAddress,
-            'cancellationPolicies': temp2.cancellationPolicies,
-        }
+            master = self.env['tt.master.activity'].browse(activity_booking.activity_id.id)
+            activity_details = {
+                'name': master.name,
+                'description': master.description,
+                'highlights': master.highlights,
+                'additionalInfo': master.additionalInfo,
+                'safety': master.safety,
+                'warnings': master.warnings,
+                'priceIncludes': master.priceIncludes,
+                'priceExcludes': master.priceExcludes,
+            }
+            master_line = self.env['tt.master.activity.lines'].search([('activity_id', '=', master.id), ('uuid', '=', activity_booking.activity_product_uuid)])
+            if master_line:
+                master_line = master_line[0]
+            voucher_detail = {
+                'voucher_validity': {
+                    'voucher_validity_date': master_line.voucher_validity_date,
+                    'voucher_validity_days': master_line.voucher_validity_days,
+                    'voucher_validity_type': master_line.voucher_validity_type,
+                },
+                'voucherUse': master_line.voucherUse,
+                'voucherRedemptionAddress': master_line.voucherRedemptionAddress,
+                'cancellationPolicies': master_line.cancellationPolicies,
+            }
 
-        attachments = self.env['ir.attachment'].search([('res_model', '=', 'tt.reservation.activity'), ('res_id', '=', activity_booking[0]['id'])]).ids
-        booking_obj = self.env['tt.reservation.activity'].search([('name', '=', order_number)])
+            attachments = self.env['ir.attachment'].search([('res_model', '=', 'tt.reservation.activity'), ('res_id', '=', activity_booking.id)]).ids
+            booking_obj = self.env['tt.reservation.activity'].search([('name', '=', order_number)])
 
-        if not attachments:
-            res2 = self.get_vouchers_button_api(activity_booking[0]['id'], self.env.user.id)
-            if res2:
-                attachments = res2
+            if not attachments:
+                res2 = self.get_vouchers_button_api(activity_booking.id, self.env.user.id)
+                if res2:
+                    attachments = res2
 
-        if attachments:
-            booking_obj.sudo().write({
-                'state': 'done',
-            })
-            self.env.cr.commit()
-            values.update({
-                'status': 'done',
-            })
+            if attachments:
+                booking_obj.sudo().write({
+                    'state': 'done',
+                })
+                self.env.cr.commit()
+                values.update({
+                    'status': 'done',
+                })
 
-        if booking_obj.state != 'done':
-            booking_obj.sudo().write({
-                'state': values['status']
-            })
-            self.env.cr.commit()
+            if booking_obj.state != 'done':
+                booking_obj.sudo().write({
+                    'state': values['status']
+                })
+                self.env.cr.commit()
 
-        master = self.env['tt.master.activity'].browse(int(activity_booking[0]['activity_id']))
-
-        result = {
-            'contacts': {
-                'email': values['email'],
-                'first_name': values['firstName'],
-                'last_name': values['lastName'],
-                'phone': values['phone'],
-                'title': values['salutation'],
-            },
-            'activity': {
-                'name': activity_booking[0]['activity_name'],
-                'type': values['productTypeTitle'],
-            },
-            'adults': values['adults'],
-            'children': values['children'],
-            'seniors': values['seniors'],
-            'pnr': values['code'],
-            'visit_date': values['arrivalDate'],
-            'currencyCode': values['currencyCode'],
-            # 'productTypeUuid': values['productTypeUuid'],
-            'price_itinerary': prices,
-            'passengers': passenger_ids,
-            'name': order_number,
-            'activity_details': activity_details,
-            'voucher_detail': voucher_detail,
-            'uuid': values['uuid'],
-            'status': values['status'],
-            'attachment_ids': attachments,
-            'photo_url': master.image_ids[0].photos_url + master.image_ids[0].photos_path
-        }
+            response = {
+                'contacts': {
+                    'email': activity_booking.contact_email,
+                    'name': activity_booking.contact_name,
+                    'phone': activity_booking.contact_phone,
+                    'gender': contact.gender and contact.gender or '',
+                    'marital_status': contact.marital_status and contact.marital_status or '',
+                },
+                'activity': {
+                    'name': master.name,
+                    'type': master_line.name,
+                },
+                'adults': activity_booking.adult,
+                'children': activity_booking.child,
+                'seniors': activity_booking.senior,
+                'pnr': activity_booking.pnr,
+                'visit_date': str(activity_booking.visit_date)[:10],
+                'timeslot': activity_booking.timeslot and activity_booking.timeslot or False,
+                'currencyCode': values['currencyCode'],
+                # 'price_itinerary': prices,
+                'passengers': passengers,
+                'name': order_number,
+                'activity_details': activity_details,
+                'voucher_detail': voucher_detail,
+                'uuid': values.get('uuid') and values['uuid'] or '',
+                'status': values['status'],
+                'attachment_ids': attachments,
+                'booking_options': book_option_ids,
+            }
+            result = ERR.get_no_error(response)
+        except Exception as e:
+            self.env.cr.rollback()
+            _logger.error(msg=str(e) + '\n' + traceback.format_exc())
+            result = ERR.get_error(500)
         return result
 
     def action_booked_activity(self, api_context=None):

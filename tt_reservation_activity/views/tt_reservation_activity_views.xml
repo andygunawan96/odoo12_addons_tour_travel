@@ -92,6 +92,7 @@
                     </group>
                     <group>
                         <field name="visit_date" readonly="1"/>
+                        <field name="timeslot" readonly="1"/>
                         <field name="information" readonly="1"/>
                     </group>
                 </group>

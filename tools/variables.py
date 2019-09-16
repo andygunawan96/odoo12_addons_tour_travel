@@ -69,6 +69,7 @@ BOOKING_STATE_STR = {
     'issued': 'Issued',
     'pending': 'Pending',
     'done': 'Done',
+    'rejected': 'Rejected',
     'fail_refunded': 'Failed (REFUNDED)',
     'refund': 'Refund',
     'reroute': 'Reroute', #diganti reissue
