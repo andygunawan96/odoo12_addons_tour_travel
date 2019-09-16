@@ -19,16 +19,17 @@
             name="tt_report_common.printout_invoice"
             file="tt_report_common.printout_invoice"
             paperformat="tt_report_common.paperformat_A4"
+            print_report_name="'Hotel Voucher - %s' %(object.name)"
         />
         <report
             string="Airlines Ticket"
             id="action_report_printout_reservation_airline"
             model="tt.reservation.airline"
-            report_type="qweb-html"
+            report_type="qweb-pdf"
             name="tt_report_common.printout_invoice"
             file="tt_report_common.printout_invoice"
             paperformat="tt_report_common.paperformat_A4_no_margin"
-            print_report_name="'Voucher - %s' % (object.name)"
+            print_report_name="'Airlines Ticket - %s' % object.name"
             menu="False"
         />
         <report
@@ -50,6 +51,7 @@
             name="tt_report_common.printout_invoice"
             file="tt_report_common.printout_invoice"
             paperformat="tt_report_common.paperformat_A4"
+            print_report_name="(object.name)"
         />
         <report
             string="Billing"

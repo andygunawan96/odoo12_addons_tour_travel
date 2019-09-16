@@ -9,16 +9,16 @@
                         <img t-if="doc.agent_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(doc.agent_id.logo)" height="200" border="1" width="300" style="max-height:100px; max-width:165px; margin-bottom: 20px"/><br/>
                         <!--<span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">eTicket Itinerary</span>-->
                     </div>
-                    <div class="col-4">
+                    <div class="col-2">
 
                     </div>
-                    <div class="col-4 text-center">
+                    <div class="col-5 text-center">
                         <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">eTicket Itinerary</span><br/>
                         <div style="height: 105px; margin-left: 0px">
                             <div id="circle" style="width: 60px; height: 60px; background: #DC5413; border-radius: 100%; position: absolute; z-index: 1;">
                                 <img t-att-src="'/tt_report_common/static/images/airfreight-white.svg'" style="max-height: 35px; max-width: 35px; margin: 12px 0px 0px 0px;"/>
                             </div>
-                            <div id="rectangle" style="width: 100%; height: 50px; bottom: 15px; background-image:  url('/tt_report_common/static/images/background footer airline.jpg'); border-radius: 25px; position: absolute; z-index: 0;">
+                            <div id="rectangle" style="width: 420px; height: 50px; bottom: 15px; background-image:  url('/tt_report_common/static/images/background footer airline.jpg'); border-radius: 25px; position: absolute; z-index: 0; margin-right:10px;">
                                 <div style="padding-left: 60px; padding-bottom: 0px; vertical-align: middle; text-align: center; border-radius: 25px; background-color: rgba(39,62,84,0.76); height:50px;">
                                     <div style="vertical-align: middle; display: flex">
                                         <span t-field="doc.name" style="letter-spacing: 0.15em; font-size: 33px; color: white; font-weight: 600;"/>
@@ -119,9 +119,9 @@
                                     <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.passenger_id.name"/></label>
                                 </div>
                                 <div class="col-2" style="text-align: left">
-                                    <i style="margin-right:3px;" class="fa fa-suitcase"/>
-                                    <i style="margin-right:3px;" class="fa fa-cutlery"/>
-                                    <i style="margin-right:3px;" class="fa fa-wheelchair"/>
+<!--                                    <i style="margin-right:3px;" class="fa fa-suitcase"/>-->
+<!--                                    <i style="margin-right:3px;" class="fa fa-cutlery"/>-->
+<!--                                    <i style="margin-right:3px;" class="fa fa-wheelchair"/>-->
                                 </div>
                                 <div class="col-2" style="text-align: center">
                                     <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.pax_type"/></label>
