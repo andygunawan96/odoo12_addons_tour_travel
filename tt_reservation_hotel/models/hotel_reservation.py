@@ -313,6 +313,10 @@ class HotelReservation(models.Model):
                 if not room_detail.issued_name:
                     state = 'partial_issued'
         self.state = state
+        self.env.cr.commit()
+
+        pnr_list = ','.join([rec['issued_code'] for rec in issued_response.values()])
+        self.update_ledger_pnr(pnr_list)
         if state == 'done':
             self.action_create_invoice()
 

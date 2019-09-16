@@ -1,5 +1,6 @@
 from . import tt_service_charge_activity
 from . import tt_provider_activity
+from . import tt_ticket_activity
 from . import tt_master_activity
 from . import tt_activity_category
 from . import tt_master_activity_lines

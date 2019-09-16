@@ -32,18 +32,22 @@
                                     <field name="name"/>
                                 </tree>
                             </field>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page id="district_page" string="District(s)">
+                            <field name="district_ids"/>
+                        </page>
+                        <page id="provider_code_page" string="Provider Code(s)">
                             <field name="provide_code_ids">
-                                <tree editable="bottom" options="{'limit': 4}">
+                                <tree editable="bottom">
                                     <field name="code"/>
                                     <field name="name"/>
                                     <field name="provider_id"/>
                                 </tree>
                             </field>
-                        </group>
-                    </group>
-                    <group>
-                        <field name="district_ids"/>
-                    </group>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>

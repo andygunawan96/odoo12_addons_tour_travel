@@ -43,6 +43,7 @@ class TtProviderActivity(models.Model):
     #
     # refund_uid = fields.Many2one('res.users', 'Refund By')
     # refund_date = fields.Datetime('Refund Date')
+    ticket_ids = fields.One2many('tt.ticket.activity', 'provider_id', 'Ticket Number')
 
     error_msg = fields.Text('Message Error', readonly=True, states={'draft': [('readonly', False)]})
 
@@ -165,7 +166,7 @@ class TtProviderActivity(models.Model):
             scs.pop('currency')
             scs.pop('foreign_currency')
             scs['passenger_activity_ids'] = [(6,0,scs['passenger_activity_ids'])]
-            scs['description'] = self.pnr
+            scs['description'] = self.pnr and self.pnr or ''
             service_chg_obj.create(scs)
 
         # "sequence": 1,

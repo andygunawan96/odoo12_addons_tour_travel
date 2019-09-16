@@ -18,10 +18,18 @@
                         <field name="name"/>
                         <field name="code"/>
                         <field name="country_id"/>
-                        <field name="city_ids"/>
+
                         <!--<field name="address_detail_ids"/>-->
                         <!--<field name="provider_code_ids"/>-->
                     </group>
+                    <notebook>
+                        <page id="city_page" string="City(s)">
+                            <field name="city_ids"/>
+                        </page>
+                        <page id="provider_code_page" string="Provider Code(s)">
+                            <field name="provide_code_ids"/>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>

@@ -14,6 +14,9 @@ tt_master_activity_lines_for_all,tt.master.activity.lines.for.all,model_tt_maste
 tt_master_activity_sku_for_all,tt.master.activity.sku.for.all,model_tt_master_activity_sku,,1,0,0,0
 tt_reservation_passenger_activity_for_all,tt.reservation.passenger.activity.for.all,model_tt_reservation_passenger_activity,,1,0,0,0
 tt_provider_activity_for_all,tt.provider.activity.for.all,model_tt_provider_activity,,1,0,0,0
+tt_ticket_activity_for_all,tt.ticket.activity.for.all,model_tt_ticket_activity,,1,0,0,0
+tt_reservation_activity_option_for_all,tt.reservation.activity.option.for.all,model_tt_reservation_activity_option,,1,0,0,0
+tt_reservation_passenger_activity_option_for_all,tt.reservation.passenger.activity.option.for.all,model_tt_reservation_passenger_activity_option,,1,0,0,0
 ,,,,,,,
 tt_master_activity_for_tour_travel_operator,tt.master.activity.for.tour.travel.operator,model_tt_master_activity,tt_base.group_tt_tour_travel_operator,1,0,0,0
 tt_master_activity_for_tour_travel_supervisor,tt.master.activity.for.tour.travel.supervisor,model_tt_master_activity,tt_base.group_tt_tour_travel_supervisor,1,0,0,0
@@ -74,6 +77,10 @@ tt_reservation_passenger_activity_for_tour_travel_manager,tt.reservation.passeng
 tt_provider_activity_for_tour_travel_operator,tt.provider.activity.for.tour.travel.operator,model_tt_provider_activity,tt_base.group_tt_tour_travel_operator,1,0,0,0
 tt_provider_activity_for_tour_travel_supervisor,tt.provider.activity.for.tour.travel.supervisor,model_tt_provider_activity,tt_base.group_tt_tour_travel_supervisor,1,0,0,0
 tt_provider_activity_for_tour_travel_manager,tt.provider.activity.for.tour.travel.manager,model_tt_provider_activity,tt_base.group_tt_tour_travel_manager,1,0,0,0
+,,,,,,,
+tt_ticket_activity_for_tour_travel_operator,tt.ticket.activity.for.tour.travel.operator,model_tt_ticket_activity,tt_base.group_tt_tour_travel_operator,1,0,0,0
+tt_ticket_activity_for_tour_travel_supervisor,tt.ticket.activity.for.tour.travel.supervisor,model_tt_ticket_activity,tt_base.group_tt_tour_travel_supervisor,1,0,0,0
+tt_ticket_activity_for_tour_travel_manager,tt.ticket.activity.for.tour.travel.manager,model_tt_ticket_activity,tt_base.group_tt_tour_travel_manager,1,0,0,0
 ,,,,,,,
 ,,,,,,,
 tt_master_activity_for_agent_user_operator,tt.master.activity.for.agent.user.operator,model_tt_master_activity,tt_base.group_tt_agent_user_operator,1,0,0,0
@@ -136,6 +143,10 @@ tt_provider_activity_for_agent_user_operator,tt.provider.activity.for.agent.user
 tt_provider_activity_for_agent_user_supervisor,tt.provider.activity.for.agent.user.supervisor,model_tt_provider_activity,tt_base.group_tt_agent_user_supervisor,1,0,0,0
 tt_provider_activity_for_agent_user_manager,tt.provider.activity.for.agent.user.manager,model_tt_provider_activity,tt_base.group_tt_agent_user_manager,1,0,0,0
 ,,,,,,,
+tt_ticket_activity_for_agent_user_operator,tt.ticket.activity.for.agent.user.operator,model_tt_ticket_activity,tt_base.group_tt_agent_user_operator,1,0,0,0
+tt_ticket_activity_for_agent_user_supervisor,tt.ticket.activity.for.agent.user.supervisor,model_tt_ticket_activity,tt_base.group_tt_agent_user_supervisor,1,0,0,0
+tt_ticket_activity_for_agent_user_manager,tt.ticket.activity.for.agent.user.manager,model_tt_ticket_activity,tt_base.group_tt_agent_user_manager,1,0,0,0
+,,,,,,,
 ,,,,,,,
 tt_master_activity_for_sub_agent_user_operator,tt.master.activity.for.sub.agent.user.operator,model_tt_master_activity,tt_base.group_tt_sub_agent_user_operator,1,0,0,0
 tt_master_activity_for_sub_agent_user_supervisor,tt.master.activity.for.sub.agent.user.supervisor,model_tt_master_activity,tt_base.group_tt_sub_agent_user_supervisor,1,0,0,0
@@ -196,3 +207,7 @@ tt_reservation_passenger_activity_for_sub_agent_user_manager,tt.reservation.pass
 tt_provider_activity_for_sub_agent_user_operator,tt.provider.activity.for.sub.agent.user.operator,model_tt_provider_activity,tt_base.group_tt_sub_agent_user_operator,1,0,0,0
 tt_provider_activity_for_sub_agent_user_supervisor,tt.provider.activity.for.sub.agent.user.supervisor,model_tt_provider_activity,tt_base.group_tt_sub_agent_user_supervisor,1,0,0,0
 tt_provider_activity_for_sub_agent_user_manager,tt.provider.activity.for.sub.agent.user.manager,model_tt_provider_activity,tt_base.group_tt_sub_agent_user_manager,1,0,0,0
+,,,,,,,
+tt_ticket_activity_for_sub_agent_user_operator,tt.ticket.activity.for.sub.agent.user.operator,model_tt_ticket_activity,tt_base.group_tt_sub_agent_user_operator,1,0,0,0
+tt_ticket_activity_for_sub_agent_user_supervisor,tt.ticket.activity.for.sub.agent.user.supervisor,model_tt_ticket_activity,tt_base.group_tt_sub_agent_user_supervisor,1,0,0,0
+tt_ticket_activity_for_sub_agent_user_manager,tt.ticket.activity.for.sub.agent.user.manager,model_tt_ticket_activity,tt_base.group_tt_sub_agent_user_manager,1,0,0,0
