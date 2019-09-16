@@ -99,3 +99,9 @@ class TtBillingStatement(models.Model):
         if all ([rec.state == 'paid' for rec in self.invoice_ids]):
             self.state = 'paid'
 
+    def print_report_billing_statement(self):
+        datas = {'ids': self.env.context.get('active_ids', [])}
+        res = self.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        return self.env.ref('tt_report_common.action_report_printout_billing').report_action([], data=datas)

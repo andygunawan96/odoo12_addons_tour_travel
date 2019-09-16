@@ -2,12 +2,14 @@
 <odoo>
     <template id="external_layout">
         <div class="container">
-            <t t-call="tt_report_common.external_layout_header"/>
-            <t t-raw="0"/>
-            <t t-if="doc_model == 'tt.agent.invoice'">
-                <t t-call="tt_report_common.price_and_sign"/>
-            </t>
-            <t t-call="tt_report_common.external_layout_footer"/>
+            <div class="article" style="margin: 0px !important; padding: 0px !important">
+                <t t-call="tt_report_common.external_layout_header"/>
+                <t t-raw="0"/>
+                <t t-if="doc_model == 'tt.agent.invoice'">
+                    <t t-call="tt_report_common.price_and_sign"/>
+                </t>
+                <t t-call="tt_report_common.external_layout_footer"/>
+            </div>
         </div>
     </template>
 
@@ -60,7 +62,8 @@
             </address>
         </template>
 
-    <template id="external_layout_header">
+    <!-- Versi before 12 sept 2019 -->
+    <template id="external_layout_header_1">
         <table width="100%">
             <tr>
                 <td width="20%"><img t-if="doc.agent_id.logo" t-attf-src="data:image/png;base64,#{doc.agent_id.logo}" style="max-width: 110px; max-height: 85px;"/></td>
@@ -221,11 +224,72 @@
         </table>
     </template>
 
+    <template id="external_layout_header">
+        <div class="row" style="height:100px;">
+            <div class="col-4">
+                <img t-if="doc.agent_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(doc.agent_id.logo)" height="200" border="1" width="300" style="max-height:100px; max-width:165px; margin-bottom: 20px"/><br/>
+                <!--<span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">eTicket Itinerary</span>-->
+            </div>
+            <div class="col-4">
+
+            </div>
+            <div class="col-4 text-center">
+                <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Invoice</span><br/>
+                <div style="height: 105px; margin-left: 0px">
+                    <div id="circle" style="width: 60px; height: 60px; background: #DC5413; border-radius: 100%; position: absolute; z-index: 1;">
+                        <img t-att-src="'/tt_report_common/static/images/airfreight-white.svg'" style="max-height: 35px; max-width: 35px; margin: 12px 0px 0px 0px;"/>
+                    </div>
+                    <div id="rectangle" style="width: 100%; height: 50px; bottom: 15px; background-image:  url('/tt_report_common/static/images/background footer airline.jpg'); border-radius: 25px; position: absolute; z-index: 0;">
+                        <div style="padding-left: 60px; padding-bottom: 0px; vertical-align: middle; text-align: center; border-radius: 25px; background-color: rgba(39,62,84,0.76); height:50px;">
+                            <div style="vertical-align: middle; display: flex">
+                                <span t-field="doc.name" style="letter-spacing: 0.15em; font-size: 33px; color: white; font-weight: 600;"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="width: 100%; border-bottom: 1px solid black; margin:0 -15px;"/>
+    </template>
+
     <template id="external_layout_footer">
-        <div class="footer">
-            <div class="row text-center" style="border-top: 1px solid black;">
-                <div class="col col-3 offset-9 text-right">
-                    Page:<span class="page"/>/<span class="topage"/>
+        <div class="footer" style="margin:0 -15px; background-image: url('/tt_report_common/static/images/background footer airline.jpg');">
+            <div class="box-footer" style="padding: 0px; width: 100%; height: 120px; background: rgba(39,62,84,0.82);">  <!--rgba(70,70,70,0.8);-->
+                <div class="row">
+                    <div class="col-2" style="margin-top:20px; margin-left: 15px;">
+                         <img t-if="doc.agent_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(doc.agent_id.logo)" height="200" border="1" width="300" style="max-height:80px; max-width:150px;"/>
+                    </div>
+                    <div class="col-4" style="margin-top:10px; margin-left: 15px;">
+                        <div>
+                            <span style="font-weight: 600; color: white">PT Roda Express Sukses Mandiri</span>
+                        </div>
+                        <div>
+                            <span style="color: white">Jl. Raya Darmo 177-B, Surabaya Indonesia, 60241</span>
+                        </div>
+                    </div>
+                    <div class="col-5" style="margin-top:10px;">
+                        <div>
+                            <span style="font-weight: 500; color: white">Contact Customer Care</span>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div style="margin-top: 5px;">
+                                    <span style="color: white"><img t-att-src="'/tt_report_common/static/images/24-hours-phone-service.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/> <span style="color: white; font-size: 14px">031 - 5662000</span></span>
+                                </div>
+                                <div style="margin-top: 5px;">
+                                    <span style="font-size: 10px; color: white"><img t-att-src="'/tt_report_common/static/images/mail.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/> <span style="color: white; font-size: 9px">reservasi@rodextravel.tours</span></span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div style="margin-top: 5px;">
+                                    <span style="color: white"><img t-att-src="'/tt_report_common/static/images/telegram.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/> <span style="color: white; font-size: 14px">@rodexdarmobot</span></span>
+                                </div>
+                                <div style="margin-top: 5px;">
+                                    <span style="color: white"><img t-att-src="'/tt_report_common/static/images/line.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/> <span style="color: white; font-size: 14px">@rodexdarmo</span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -236,86 +300,105 @@
             <!--No Rekening-->
             <div class="col-7">
                 <t t-if="doc.agent_id.payment_acquirer_ids">
-                    Transfer pada rekening berikut:
-                    <ul>
-                        <t t-set="limit" t-value="3"/>
-                        <t t-set="current" t-value="0"/>
-                        <t t-foreach="doc.agent_id.payment_acquirer_ids" t-as="payment_id">
-                            <t t-if="payment_id.account_number and payment_id.account_name and current &lt; limit">
-                                <li><span t-field="payment_id.bank_id.name"/> (IDR) <span t-field="payment_id.account_number"/> A/N <span t-field="payment_id.account_name"/></li>
-                                <t t-set="current" t-value="current + 1"/>
-                            </t>
-                        </t>
-                    </ul>
+                    Notes:<br/>
+                    <ol>
+                        <li>Payment by transfer/cheque/giro is valid after being credited &amp; confirmed by the bank in full amount.</li>
+                        <li>
+                            Transfer pada rekening berikut:
+                            <ul>
+                                <t t-set="limit" t-value="3"/>
+                                <t t-set="current" t-value="0"/>
+                                <t t-foreach="doc.agent_id.payment_acquirer_ids" t-as="payment_id">
+                                    <t t-if="payment_id.account_number and payment_id.account_name and current &lt; limit">
+                                        <li><span t-field="payment_id.bank_id.name"/> (IDR) <span t-field="payment_id.account_number"/> A/N <span t-field="payment_id.account_name"/></li>
+                                        <t t-set="current" t-value="current + 1"/>
+                                    </t>
+                                </t>
+                            </ul>
+                        </li>
+                        <li>This is invoice is generated by computer system and is considered as a legal invoice of <t t-esc="doc.agent_id.name"/></li>
+                    </ol>
                 </t>
             </div>
             <div class="col-1"/>
             <!--Signature-->
             <div class="col-4 text-center" style="font-size:10px;">
-                <p style="color: white;">.</p>
-                <p style="color: white;">.</p>
-                <p style="color: white;">.</p>
-                <p style="border-top: 1px solid black">Representative Signature</p>
+
             </div>
         </div>
-        <table>
-            <tr>
-                <td width="60%">
-                    <t t-if="doc.agent_id.payment_acquirer_ids">
-                        Transfer pada rekening berikut:
-                        <ul>
-                            <t t-set="limit" t-value="3"/>
-                            <t t-set="current" t-value="0"/>
-                            <t t-foreach="doc.agent_id.payment_acquirer_ids" t-as="payment_id">
-                                <t t-if="payment_id.account_number and payment_id.account_name and current &lt; limit">
-                                    <li><span t-field="payment_id.bank_id.name"/> (IDR) <span t-field="payment_id.account_number"/> A/N <span t-field="payment_id.account_name"/></li>
-                                    <t t-set="current" t-value="current + 1"/>
-                                </t>
-                            </t>
-                        </ul>
-                    </t>
-                </td>
-                <td width="5%"/>
-                <td width="35%" class="text-center" style="font-size:10px;">
-                    <p style="color: white;">.</p>
-                    <p style="color: white;">.</p>
-                    <p style="color: white;">.</p>
-                    <p style="border-top: 1px solid black">Representative Signature</p>
-                </td>
-            </tr>
-        </table>
     </template>
 
     <template id="agent_invoice_content_view">
+        <!-- Base Info Booker dkk -->
+        <table style="margin: 1px;">
+            <tr>
+                <td style="width:50px;">To</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px; vertical-align: top;" rowspan="4">
+                    <t t-set="o_addr" t-value="doc.booker_id"/>
+                    <t t-call="tt_report_common.address_layout"/>
+                </td>
+                <td style="width:100px;"/>
+                <td style="width:150px;">Invoice Date</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px;">
+                    <span t-field="doc.date_invoice" t-options ='{"format": "dd/MM/yyyy"}'/>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:50px;"/>
+                <td style="width:10px;"/>
+                <td style="width:100px;"/>
+                <td style="width:150px;">Due Date</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px;">
+                    <span t-field="doc.date_invoice" t-options ='{"format": "dd/MM/yyyy"}'/>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:50px;"/>
+                <td style="width:10px;"/>
+                <td style="width:100px;"/>
+                <td style="width:150px;">Booker</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px;">
+                    <i t-field="doc.booker_id.name"/>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:50px;"/>
+                <td style="width:10px;"/>
+                <td style="width:100px;"/>
+                <td style="width:150px;">Operator</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px;">
+                    <i t-field="doc.confirmed_uid.name"/>
+                </td>
+            </tr>
+        </table>
         <!-- Issued Code + Line Info -->
-        <div class="row">
-            <table class="table table-condensed mt32">
-                <thead>
-                    <tr>
-                        <th>Ref. Number</th>
-                        <th>Pax(s)</th><!-- Remark untuk tipe 1 -->
-                        <th>Description</th>
-                        <th class="text-right">Amount</th>
-                        <th class="text-right">Tax</th>
-                        <th class="text-center">Disc</th>
-                        <th class="text-right">Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-<!--                    <tr t-foreach="doc.invoice_line_ids" t-as="line">-->
-<!--                        <td><span t-field="line.name"/></td>-->
-<!--                        <td><span t-field="line.desc"/></td>-->
-<!--                        <td class="text-right"><span t-field="line.total" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/></td>-->
-<!--                        <td class="text-center"><span t-esc="0" t-esc-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/></td>-->
-<!--                        <td class="text-center"><span t-esc="0" t-esc-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/></td>-->
-<!--                        <td class="text-right"><span t-field="line.total" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/></td>-->
-<!--                    </tr>-->
+        <table style="margin-top: 15px;" class="table mt32">
+            <thead>
+                <th width="15%"></th>
+                <th width="25%"></th>
+                <th width="45%"></th>
+                <th width="15%"></th>
+            </thead>
+                <tr style="background-color:#f15a22;">
+                    <td colspan="4" style="color: white; text-align:center;"><b>Invoice Detail</b></td>
+                </tr>
+                <tr style="background-color:#f15a22; color: white;">
+                    <td>Ref. Number</td>
+                    <td>Passenger(s)</td><!-- Remark untuk tipe 1 -->
+                    <td>Detail</td>
+                    <td class="text-right">Amount</td>
+                </tr>
                     <tr t-foreach="inv_lines[doc.id].keys()" t-as="line_idx">
                         <t t-set="line" t-value="inv_lines[doc.id][line_idx]"/>
                         <t t-set="col_len" t-value="len(line['descs'])"/>
                         <td t-att-colspan="col_len"><span t-esc="line_idx"/></td>
                         <td t-att-colspan="col_len">
-                            <ul style="padding-left:1px;">
+                            <ul style="padding-left:15px;">
                                 <t t-foreach="line['paxs']" t-as="pax">
                                     <li><span t-field="pax.first_name"/> <span t-field="pax.last_name"/></li>
                                 </t>
@@ -327,16 +410,24 @@
                             </t>
                         </td>
                         <td class="text-right" t-att-colspan="col_len"><span t-esc="line['total']" t-esc-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
-                        <td class="text-right" t-att-colspan="col_len"><span t-esc="0" t-esc-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
-                        <td class="text-right" t-att-colspan="col_len"><span t-esc="0" t-esc-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
-                        <td class="text-right" t-att-colspan="col_len"><span t-esc="line['total']" t-esc-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
                     </tr>
-                </tbody>
             </table>
-        </div>
         <!-- SubTotal -->
         <div class="row mt4 mb2">
-            <div class="col-8"/>
+            <div class="col-8">
+                <table style="width:80%;">
+                    <tr>
+                        <td style="width:100px;">Terbilang</td>
+                        <td style="width:20px;">:</td>
+                        <td style=""><t t-esc="terbilang"/></td>
+                    </tr>
+                    <tr>
+                        <td>Remarks</td>
+                        <td>:</td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
             <div class="col-4">
                 <table class="table table-condensed">
                     <tr>
@@ -346,13 +437,13 @@
                         </td>
                     </tr>
                     <tr>
-                        <td><strong>Tax</strong></td>
+                        <td><strong>Discount</strong></td>
                         <td class="text-right">
                             <span t-esc="0" t-esc-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
                         </td>
                     </tr>
                     <tr>
-                        <td><strong>Discount</strong></td>
+                        <td><strong>Tax</strong></td>
                         <td class="text-right">
                             <span t-esc="0" t-esc-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
                         </td>
@@ -517,7 +608,7 @@
 
     <template id="printout_invoice">
         <t t-set="data_report_header_spacing" t-value="20"/>
-        <t t-set="data_report_margin_top" t-value="22"/>
+        <t t-set="data_report_margin_top" t-value="2"/>
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
                 <div class="page">
@@ -526,16 +617,16 @@
                     </t>
                     <t t-if="doc_model != 'tt.reservation.airline'">
                         <t t-call="tt_report_common.external_layout">
-                        <t t-if="doc_model == 'tt.agent.invoice'">
-                            <t t-call="tt_report_common.agent_invoice_content_view"/>
+                            <t t-if="doc_model == 'tt.agent.invoice'">
+                                <t t-call="tt_report_common.agent_invoice_content_view"/>
+                            </t>
+                            <t t-elif="doc_model == 'tt.reservation.hotel'">
+                                <t t-call="tt_report_common.reservation_hotel_content_view"/>
+                            </t>
+                            <t t-elif="doc_model == 'tt.reservation.train'">
+                                <t t-call="tt_report_common.reservation_train_content_view"/>
+                            </t>
                         </t>
-                        <t t-elif="doc_model == 'tt.reservation.hotel'">
-                            <t t-call="tt_report_common.reservation_hotel_content_view"/>
-                        </t>
-                        <t t-elif="doc_model == 'tt.reservation.train'">
-                            <t t-call="tt_report_common.reservation_train_content_view"/>
-                        </t>
-                    </t>
                     </t>
                 </div>
             </t>

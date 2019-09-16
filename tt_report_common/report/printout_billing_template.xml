@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="printout_billing_content">
+        <!-- Base Info Booker dkk -->
+        <table style="margin: 1px;">
+            <tr>
+                <td style="width:50px;">To</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px; vertical-align: top;" rowspan="4">
+                    <t t-set="o_addr" t-value="doc.contact_id"/>
+                    <t t-call="tt_report_common.address_layout"/>
+                </td>
+                <td style="width:100px;"/>
+                <td style="width:150px;"><b>Transaction Report</b></td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px;"></td>
+            </tr>
+            <tr>
+                <td style="width:50px;"/>
+                <td style="width:10px;"/>
+                <td style="width:100px;"/>
+                <td style="width:150px;">Transaction Period</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px;">
+                    <span t-field="doc.due_date" t-options ='{"format": "dd/MM/yyyy"}'/>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:50px;"/>
+                <td style="width:10px;"/>
+                <td style="width:100px;"/>
+                <td style="width:150px;">Billing Printed Date</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px;">
+                    <i t-field="doc.confirm_date" t-options ='{"format": "dd/MM/yyyy"}'/>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:50px;"/>
+                <td style="width:10px;"/>
+                <td style="width:100px;"/>
+                <td style="width:150px;">Payment Due Date</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px;">
+                    <i t-field="doc.due_date" t-options ='{"format": "dd/MM/yyyy"}'/>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:50px;"/>
+                <td style="width:10px;"/>
+                <td style="width:100px;"/>
+                <td style="width:150px;">Billing Total</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px;">
+                    <i t-field="doc.amount_total"/>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:50px;"/>
+                <td style="width:10px;"/>
+                <td style="width:100px;"/>
+                <td style="width:150px;">Collectibility Status</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px;">
+                    <i t-field="doc.collectibility_status"/>
+                </td>
+            </tr>
+        </table>
+        <!-- Line Info -->
+        <table style="margin-top: 15px;" class="table mt32">
+            <thead>
+                <th width="2%"></th>
+                <th width="13%"></th>
+                <th width="15%"></th>
+                <th width="45%"></th>
+                <th width="15%"></th>
+            </thead>
+                <tr style="background-color:#f15a22; color: white;">
+                    <td>No.</td>
+                    <td>Issued Date</td>
+                    <td>Invoice No.</td>
+                    <td>Transaction Detail</td>
+                    <td class="text-right">Amount</td>
+                </tr>
+                    <tr t-foreach="doc.invoice_ids" t-as="inv_id">
+                        <td>1</td>
+                        <td><span t-field="inv_id.date_invoice"/></td>
+                        <td><span t-field="inv_id.name"/></td>
+                        <td>
+                            <ul>
+                                <t t-foreach="inv_id.invoice_line_ids" t-as="line_id">
+                                    <li><span t-field="line_id.desc"/></li>
+                                </t>
+                            </ul>
+                        </td>
+                        <td class="text-right" t-att-colspan="col_len"><span t-field="inv_id.total" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                    </tr>
+            </table>
+        <!-- SubTotal -->
+        <div class="row mt4 mb2">
+            <div class="col-8">
+                <table style="width:80%;">
+                    <tr>
+                        <td style="width:100px;">Terbilang</td>
+                        <td style="width:20px;">:</td>
+                        <td style=""><t t-esc="terbilang"/></td>
+                    </tr>
+                    <tr>
+                        <td>Remarks</td>
+                        <td>:</td>
+                        <td></td>
+                    </tr>
+                </table>
+
+                <ol string="Collectibility status information (late categories):">
+                    <li>Current (Payment is on time and did not exceed due date)</li>
+                    <li>Special Mention (Payment is yet to be done between 1 - 10 calender days after due date)</li>
+                    <li>Substandart (Payment is yet to be done between 11 - 20 calender days after due date)</li>
+                    <li>Doubtful (Payment is yet to be done between 21 - 30 calender days after due date)</li>
+                </ol>
+            </div>
+            <div class="col-4">
+
+            </div>
+        </div>
+    </template>
+
+    <template id="printout_billing">
+        <t t-set="data_report_header_spacing" t-value="20"/>
+        <t t-set="data_report_margin_top" t-value="2"/>
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <div class="page">
+                    <t t-call="tt_report_common.external_layout">
+                        <t t-call="tt_report_common.printout_billing_content"/>
+                    </t>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

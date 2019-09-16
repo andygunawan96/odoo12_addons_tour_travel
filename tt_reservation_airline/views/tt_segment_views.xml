@@ -18,6 +18,7 @@
                         <group>
                             <field name="carrier_id"/>
                             <field name="carrier_code"/>
+                            <field name="carrier_number"/>
                         </group>
                     </group>
                     <group>

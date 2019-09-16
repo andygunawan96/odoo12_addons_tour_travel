@@ -25,8 +25,13 @@
                             <field name="booking_id"/>
                             <field name="pnr"/>
                             <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                            <field name="journey_type"/>
                         </group>
                         <group>
+                            <field name="origin_id"/>
+                            <field name="destination_id"/>
+                            <field name="departure_date"/>
+                            <field name="arrival_date"/>
                             <!--<field name="hold_date"/>-->
                             <!--<field name="expired_date"/>-->
                             <!--<field name="booked_uid"/>-->
@@ -36,6 +41,9 @@
                             <!--<field name="refund_uid"/>-->
                             <!--<field name="refund_date"/>-->
                         </group>
+                    </group>
+                    <group>
+                        <field name="segment_ids"/>
                     </group>
                     <!--<separator string="Passengers"/>-->
                     <!--<field name="ticket_ids"/>-->
