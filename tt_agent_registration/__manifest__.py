@@ -25,8 +25,10 @@
     # always loaded
     'data': [
         'security/ir.model.access.csv',
+        'security/ir_rule_data.xml',
         'data/ir_sequence_data.xml',
         'data/ir_cron_data.xml',
+        'data/ir_send_email.xml',
         'data/tt_provider_type_data.xml',
         'data/param_data.xml',
         'views/tt_agent_registration_views.xml',
