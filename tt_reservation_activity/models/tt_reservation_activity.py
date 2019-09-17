@@ -54,10 +54,10 @@ class ActivityResendVoucher(models.TransientModel):
         }
         res = ApiConnectorActivity().resend_voucher(req, '')
         if res['response'].get('success'):
-            self.env['msg.wizard'].raise_msg("The Voucher has been Resent Successfully!")
+            # self.env['msg.wizard'].raise_msg("The Voucher has been Resent Successfully!")
             context = self.env.context
             new_obj = self.env[context['active_model']].browse(context['active_id'])
-            new_obj.message_post(body='Resent Voucher Email.')
+            # new_obj.message_post(body='Resent Voucher Email.')
         else:
             raise UserError(_('Resend Voucher Failed!'))
 

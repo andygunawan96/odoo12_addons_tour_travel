@@ -48,9 +48,9 @@ class ApiConnectorActivity:
         # req_post.pop('url_book')
         res = self.send_request('signin', req_post)
         try:
-            if res['http_code'] == 0:
-                cookie = res['cookie']
-                res = json.loads(res['response'])['result']
+            res = json.loads(res['response'])['result']
+            if res['error_code'] == 0:
+                cookie = res['response']['signature']
                 res['cookie'] = cookie
             else:
                 res['error_code'] = res['http_code']
