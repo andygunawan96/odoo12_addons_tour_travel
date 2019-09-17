@@ -2,7 +2,7 @@
 <odoo>
     <template id="printout_billing_content">
         <!-- Base Info Booker dkk -->
-        <table style="margin: 1px;">
+        <table style="margin: 1px; 1px; 15px;">
             <tr>
                 <td style="width:50px;">To</td>
                 <td style="width:10px;">:</td>
@@ -32,7 +32,7 @@
                 <td>Billing Printed Date</td>
                 <td>:</td>
                 <td>
-                    <i t-field="doc.confirm_date" t-options ='{"format": "dd/MM/yyyy"}'/>
+                    <span t-field="doc.confirm_date" t-options ='{"format": "dd/MM/yyyy"}'/>
                 </td>
             </tr>
             <tr>
@@ -42,7 +42,7 @@
                 <td>Payment Due Date</td>
                 <td>:</td>
                 <td>
-                    <i t-field="doc.due_date" t-options ='{"format": "dd/MM/yyyy"}'/>
+                    <span t-field="doc.due_date" t-options ='{"format": "dd/MM/yyyy"}'/>
                 </td>
             </tr>
             <tr>
@@ -52,7 +52,7 @@
                 <td>Billing Total</td>
                 <td>:</td>
                 <td>
-                    <i t-field="doc.amount_total"/>
+                    <b t-field="doc.amount_total"/>
                 </td>
             </tr>
             <tr>
@@ -62,48 +62,61 @@
                 <td>Collectibility Status</td>
                 <td>:</td>
                 <td>
-                    <i t-field="doc.collectibility_status"/>
+                    <span t-field="doc.collectibility_status"/>
                 </td>
             </tr>
         </table>
         <!-- Line Info -->
-        <table style="margin-top: 15px;" class="table mt32">
-            <thead>
-                <th width="2%"></th>
-                <th width="13%"></th>
-                <th width="15%"></th>
-                <th width="45%"></th>
-                <th width="15%"></th>
-            </thead>
-                <tr style="background-color:#f15a22; color: white;">
-                    <td>No.</td>
-                    <td>Issued Date</td>
-                    <td>Invoice No.</td>
-                    <td>Transaction Detail</td>
-                    <td class="text-right">Amount</td>
-                </tr>
-                    <tr t-foreach="doc.invoice_ids" t-as="inv_id">
-                        <td>1</td>
-                        <td><span t-field="inv_id.date_invoice"/></td>
-                        <td><span t-field="inv_id.name"/></td>
-                        <td>
-                            <ul>
-                                <t t-foreach="inv_id.invoice_line_ids" t-as="line_id">
-                                    <li><span t-field="line_id.desc"/></li>
-                                </t>
-                            </ul>
-                        </td>
-                        <td class="text-right" t-att-colspan="col_len"><span t-field="inv_id.total" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
-                    </tr>
-            </table>
-        <!-- SubTotal -->
-        <div class="row mt4 mb2">
-            <div class="col-8">
+        <div class="box" style="margin: 0">
+            <div class="title" style="background-color: #DC5413; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px">
+                <div class="row" style="padding-left: 20px; color: white; font-weight: 600; font-size: 18px; text-align: center;">
+<!--                    <div class="col-1">No.</div>-->
+                    <div class="col-3">Invoice No.</div>
+                    <div class="col-3">Passenger(s)</div>
+                    <div class="col-3">Transaction Detail</div>
+                    <div class="col-3">Amount</div>
+                </div>
+            </div>
+            <t t-set="index" t-value="1"/>
+            <t t-foreach="doc.invoice_ids" t-as="inv_id">
+                <div class="row" style="margin-left: 0px; margin-right: 0px; border: 1px solid #BBB;">
+<!--                    <div class="col-1" style="background: #F0F0F0;">-->
+<!--                        <t t-esc="index"/>-->
+<!--                    </div>-->
+                    <div class="col-3" style="text-align:center"><span t-field="inv_id.name"/><br/><span t-field="inv_id.date_invoice"/></div>
+                    <div class="col-3">
+                        <ul style="padding-left:15px;">
+<!--                            <t t-foreach="inv_id.passenger_ids" t-as="pax">-->
+<!--                                <li><span t-field="pax.first_name"/> <span t-field="pax.last_name"/></li>-->
+<!--                            </t>-->
+                        </ul>
+                    </div>
+                    <div class="col-3">
+                        <t t-foreach="inv_id.invoice_line_ids" t-as="line_id">
+                            <span t-field="line_id.desc"/>
+                        </t>
+                    </div>
+                    <div class="col-3 text-right" style="padding: 10px 25px;">
+                        <span t-field="inv_id.total" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                    </div>
+                    <t t-set="index" t-value="index + 1"/>
+                </div>
+            </t>
+            <div class="row" style="margin-left: 0px; margin-right: 0px; margin-bottom: 20px; border-radius: 0 0 20px 20px; border: 1px solid #BBB;">
+                <div class="col-7" style="background: #F0F0F0; border-radius: 0 0 0px 20px; padding: 10px 10px 10px 20px;"/>
+                <div class="col-3 text-right" style="background-color: #F0F0F0;">Billing Total</div>
+                <div class="col-2 text-right" style="background-color: #f15a22; border-radius: 0 0 20px 0; color: white; padding: 10px 25px;"><span t-field="doc.amount_total"/></div>
+            </div>
+        </div>
+        <!-- Price and Sign -->
+        <div class="row mt4">
+            <!--No Rekening-->
+            <div class="col-11">
                 <table style="width:80%;">
                     <tr>
-                        <td style="width:100px;">Terbilang</td>
+                        <td style="width:100px;">In Words</td>
                         <td style="width:20px;">:</td>
-                        <td style=""><t t-esc="terbilang"/></td>
+                        <td style=""><t t-esc="terbilang[doc.name]"/></td>
                     </tr>
                     <tr>
                         <td>Remarks</td>
@@ -111,16 +124,40 @@
                         <td></td>
                     </tr>
                 </table>
-
-                <ol string="Collectibility status information (late categories):">
+                <t t-if="doc.agent_id.payment_acquirer_ids">
+                    <span style="font-size: 28px; font-weight: 730">IMPORTANT NOTES</span><br/>
+                    <ol style="margin: 0 25px;">
+                        <li>Payment by transfer/cheque/giro is valid after being credited &amp; confirmed by the bank in full amount.</li>
+                        <li>
+                            Please transfer to the following account:
+                            <ul>
+                                <t t-set="limit" t-value="3"/>
+                                <t t-set="current" t-value="0"/>
+                                <t t-foreach="doc.agent_id.payment_acquirer_ids" t-as="payment_id">
+                                    <t t-if="payment_id.account_number and payment_id.account_name and current &lt; limit">
+                                        <li><span t-field="payment_id.bank_id.name"/> (IDR) <span t-field="payment_id.account_number"/> A/N <span t-field="payment_id.account_name"/></li>
+                                        <t t-set="current" t-value="current + 1"/>
+                                    </t>
+                                </t>
+                            </ul>
+                        </li>
+                    </ol>
+                </t>
+            </div>
+            <div class="col-1"/>
+        </div>
+        <!-- Legend -->
+        <div class="row mt16" style="font-size:12px;">
+            <div class="col-11">
+                Collectibility status information (late categories):
+                <ol style="margin: 0 25px;">
                     <li>Current (Payment is on time and did not exceed due date)</li>
                     <li>Special Mention (Payment is yet to be done between 1 - 10 calender days after due date)</li>
                     <li>Substandart (Payment is yet to be done between 11 - 20 calender days after due date)</li>
                     <li>Doubtful (Payment is yet to be done between 21 - 30 calender days after due date)</li>
                 </ol>
             </div>
-            <div class="col-4">
-
+            <div class="col-1">
             </div>
         </div>
     </template>
@@ -132,6 +169,7 @@
             <t t-foreach="docs" t-as="doc">
                 <div class="page">
                     <t t-call="tt_report_common.external_layout">
+                        <br/>
                         <t t-call="tt_report_common.printout_billing_content"/>
                     </t>
                 </div>

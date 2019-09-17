@@ -5,7 +5,7 @@
             string="Invoice"
             id="action_report_printout_invoice"
             model="tt.agent.invoice"
-            report_type="qweb-pdf"
+            report_type="qweb-html"
             name="tt_report_common.printout_invoice"
             file="tt_report_common.printout_invoice"
             paperformat="tt_report_common.paperformat_A4"
@@ -62,6 +62,16 @@
             file="tt_report_common.printout_billing"
             paperformat="tt_report_common.paperformat_A4_no_margin"
             print_report_name="'Billing - %s' % (object.name)"
+        />
+        <report
+            string="Top Up"
+            id="action_report_printout_topup"
+            model="tt.top.up"
+            report_type="qweb-html"
+            name="tt_report_common.printout_topup"
+            file="tt_report_common.printout_topup"
+            paperformat="tt_report_common.paperformat_A4_no_margin"
+            print_report_name="'Top UP - %s' % (object.name)"
         />
     </data>
 </odoo>
