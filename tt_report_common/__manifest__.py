@@ -30,6 +30,7 @@
         'report/printout_invoice_template.xml',
         'report/printout_billing_template.xml',
         'report/printout_itinerary_template.xml',
+        'report/printout_topup_template.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

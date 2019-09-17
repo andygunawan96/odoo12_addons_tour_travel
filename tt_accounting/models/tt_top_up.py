@@ -53,6 +53,7 @@ class TopUpAmount(models.Model):
         vals_list['seq_id'] = self.env['ir.sequence'].next_by_code('tt.top.up.amount')
         return super(TopUpAmount, self).create(vals_list)
 
+
 class TtTopUp(models.Model):
     _name = 'tt.top.up'
     _order = 'id desc'
@@ -245,3 +246,11 @@ class TtTopUp(models.Model):
 
     def cron_expire_top_up(self):
         self.search([('state','=','')])
+
+    def print_topup(self):
+        datas = {'ids': self.env.context.get('active_ids', [])}
+        # res = self.read(['price_list', 'qty1', 'qty2', 'qty3', 'qty4', 'qty5'])
+        res = self.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        return self.env.ref('tt_report_common.action_report_printout_topup').report_action(self, data=datas)
