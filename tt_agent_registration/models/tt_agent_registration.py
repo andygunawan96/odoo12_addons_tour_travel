@@ -264,16 +264,16 @@ class AgentRegistration(models.Model):
                 self.env['tt.ledger'].create(agent_comm_vals)
                 amount_remaining -= line.amount
         # HO
-        ledger = self.env['tt.ledger']
-
-        agent_comm_vals = ledger.prepare_vals('Recruit Comm. HO : ' + self.name, 'Recruit Comm. HO : ' +
-                                              self.name, datetime.now(), 3, self.currency_id.id, amount_remaining,
-                                              0)
-        agent_comm_vals = ledger.prepare_vals_for_agent_regis(self, agent_comm_vals)
-        agent_comm_vals.update({
-            'agent_id': self.env['tt.agent'].sudo().search([('agent_type_id.name', '=', 'HO')], limit=1).id
-        })
-        self.env['tt.ledger'].create(agent_comm_vals)
+        # ledger = self.env['tt.ledger']
+        #
+        # agent_comm_vals = ledger.prepare_vals('Recruit Comm. HO : ' + self.name, 'Recruit Comm. HO : ' +
+        #                                       self.name, datetime.now(), 3, self.currency_id.id, amount_remaining,
+        #                                       0)
+        # agent_comm_vals = ledger.prepare_vals_for_agent_regis(self, agent_comm_vals)
+        # agent_comm_vals.update({
+        #     'agent_id': self.env['tt.agent'].sudo().search([('agent_type_id.name', '=', 'HO')], limit=1).id
+        # })
+        # self.env['tt.ledger'].create(agent_comm_vals)
 
     def calc_commission_japro(self, line_obj):
         citra_parent_agent = self.get_parent_citra(self.parent_agent_id)
@@ -333,24 +333,32 @@ class AgentRegistration(models.Model):
         self.env['tt.ledger'].create(vals_debit)
 
     def create_partner_agent(self, user_ids):
+        address_ids = []
+        phone_ids = []
+        social_media_ids = []
+        for address in self.address_ids:
+            address_ids.append(address.id)
+        if self.social_media_ids:
+            for social_media in self.social_media_ids:
+                social_media_ids.append(social_media.id)
         vals = {
             'name': self.name,
             'balance': self.opening_balance,
             'agent_type_id': self.agent_type_id.id,
             'parent_agent_id': self.parent_agent_id.id,
             'reference': self.reference_id.id,
-            'address_ids': [(6, 0, self.address_ids)],
+            'address_ids': [(6, 0, address_ids)],
             'logo': self.image,
-            'social_media_ids': self.social_media_ids,
+            'social_media_ids': [(6, 0, social_media_ids)],
             'currency_id': self.env.user.company_id.currency_id.id,
             'user_ids': user_ids,
             'tac': self.tac
         }
-        if self.contact_ids:
+        if self.agent_registration_customer_ids:
             vals.update({
                 # 'website': self.contact_ids[0].website,
-                'email': self.contact_ids[0].email,
-                'phone_ids': self.contact_ids.phone_ids,
+                'email': self.agent_registration_customer_ids[0].email,
+                # 'phone_ids': self.agent_registration_customer_ids.phone_ids,
             })
         partner_obj = self.env['tt.agent'].create(vals)
         self.agent_id = partner_obj.id
@@ -358,12 +366,14 @@ class AgentRegistration(models.Model):
 
     def create_customers_contact(self, agent_id):
         customer_id = []
+        customer_parent_ids = [agent_id.customer_parent_ids[0].id]
         for rec in self:
             for con in rec.agent_registration_customer_ids:
                 vals = {
                     'first_name': con['first_name'],
                     'last_name': con['last_name'],
                     'agent_id': agent_id.id,
+                    'customer_parent_ids': [(6, 0, customer_parent_ids)],
                     'email': con['email'],
                     'birth_date': con['birth_date'],
                     'gender': con['gender'],
@@ -530,14 +540,14 @@ class AgentRegistration(models.Model):
         'co_uid': 7
     }
 
-    def create_agent_registration_api(self, data, context, kwargs):
-        company = data['company']
-        pic = data['pic']
-        address = data['address']
-        other = data['other']
-        context = context
-        regis_doc = data['regis_doc']
-        registration_list = self.search([('name', '=', data['company']['name'])], order='registration_date desc', limit=1)
+    def create_agent_registration_api(self):  # , data, context, kwargs
+        company = copy.deepcopy(self.param_company)  # data['company']
+        pic = copy.deepcopy(self.param_pic)  # data['pic']
+        address = copy.deepcopy(self.param_address)  # data['address']
+        other = copy.deepcopy(self.param_other)  # data['other']
+        context = copy.deepcopy(self.param_context)  # context
+        regis_doc = copy.deepcopy(self.param_regis_doc)  # data['regis_doc']
+        registration_list = self.search([('name', '=', company['name'])], order='registration_date desc', limit=1)  # data['company']
         check = 0
         for rec in registration_list:
             response = {
