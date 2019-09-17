@@ -20,7 +20,7 @@
                     <group>
                         <group>
                             <field name="agent_id"/>
-                            <field name="date"/>
+                            <!--<field name="date"/>-->
                             <field name="due_date"/>
                         </group>
                         <group>
@@ -71,7 +71,6 @@
         <field name="arch" type="xml">
             <tree create="false">
                 <field name="name"/>
-                <field name="date"/>
                 <field name="due_date"/>
                 <field name="agent_id"/>
                 <field name="total"/>

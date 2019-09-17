@@ -61,7 +61,8 @@ class TtTopUp(models.Model):
 
     name = fields.Char('Document Number', required='True', readonly=True, states={'draft': [('readonly', False)]},
                        index=True, default=lambda self: 'New')
-    date = fields.Datetime('Date', readonly=True, states={'draft': [('readonly', False)]}, default=fields.Datetime.now)
+    # TODO Remove Date
+    # date = fields.Datetime('Date', readonly=True, states={'draft': [('readonly', False)]}, default=fields.Datetime.now)
     due_date = fields.Datetime('Due Date', readonly=True)
     agent_id = fields.Many2one('tt.agent', string="Agent", required=True, readonly=True,
                                default=lambda self: self.env.user.agent_id)

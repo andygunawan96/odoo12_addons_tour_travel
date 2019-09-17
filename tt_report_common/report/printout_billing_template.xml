@@ -55,7 +55,7 @@
                     <b t-field="doc.amount_total"/>
                 </td>
             </tr>
-            <tr >
+            <tr>
                 <td/>
                 <td/>
                 <td/>
@@ -67,23 +67,23 @@
             </tr>
         </table>
         <!-- Line Info -->
-        <div class="box" style="margin: 0px 20px 20px 20px">
+        <div class="box" style="margin: 0">
             <div class="title" style="background-color: #DC5413; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px">
-                <div class="row" style="padding-left: 20px; color: white; font-weight: 600; font-size: 18px">
-                    <div class="col-1">No.</div>
-                    <div class="col-2">Invoice No.</div>
+                <div class="row" style="padding-left: 20px; color: white; font-weight: 600; font-size: 18px; text-align: center;">
+<!--                    <div class="col-1">No.</div>-->
+                    <div class="col-3">Invoice No.</div>
                     <div class="col-3">Passenger(s)</div>
-                    <div class="col-4">Transaction Detail</div>
-                    <div class="col-2">Amount</div>
+                    <div class="col-3">Transaction Detail</div>
+                    <div class="col-3">Amount</div>
                 </div>
             </div>
             <t t-set="index" t-value="1"/>
             <t t-foreach="doc.invoice_ids" t-as="inv_id">
                 <div class="row" style="margin-left: 0px; margin-right: 0px; border: 1px solid #BBB;">
-                    <div class="col-1" style="background: #F0F0F0;">
-                        <t t-esc="index"/>
-                    </div>
-                    <div class="col-2" style="text-align:center"><span t-field="inv_id.name"/><br/><span t-field="inv_id.date_invoice"/></div>
+<!--                    <div class="col-1" style="background: #F0F0F0;">-->
+<!--                        <t t-esc="index"/>-->
+<!--                    </div>-->
+                    <div class="col-3" style="text-align:center"><span t-field="inv_id.name"/><br/><span t-field="inv_id.date_invoice"/></div>
                     <div class="col-3">
                         <ul style="padding-left:15px;">
 <!--                            <t t-foreach="inv_id.passenger_ids" t-as="pax">-->
@@ -91,28 +91,27 @@
 <!--                            </t>-->
                         </ul>
                     </div>
-                    <div class="col-4">
-                        <ul>
-                            <t t-foreach="inv_id.invoice_line_ids" t-as="line_id">
-                                <li><span t-field="line_id.desc"/></li>
-                            </t>
-                        </ul>
+                    <div class="col-3">
+                        <t t-foreach="inv_id.invoice_line_ids" t-as="line_id">
+                            <span t-field="line_id.desc"/>
+                        </t>
                     </div>
-                    <div class="col-2 text-right" style="padding: 10px 25px;">
+                    <div class="col-3 text-right" style="padding: 10px 25px;">
                         <span t-field="inv_id.total" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
                     </div>
                     <t t-set="index" t-value="index + 1"/>
                 </div>
             </t>
-            <div class="row" style="margin-left: 0px; margin-right: 0px; margin-bottom: 40px border: 1px solid #BBB;">
+            <div class="row" style="margin-left: 0px; margin-right: 0px; margin-bottom: 20px; border-radius: 0 0 20px 20px; border: 1px solid #BBB;">
                 <div class="col-7" style="background: #F0F0F0; border-radius: 0 0 0px 20px; padding: 10px 10px 10px 20px;"/>
                 <div class="col-3 text-right" style="background-color: #F0F0F0;">Billing Total</div>
-                <div class="col-2 text-right" style="background-color: #f15a22; color: white; border-radius: 0 0 20px 0px; padding: 10px 25px;"><span t-field="doc.amount_total"/></div>
+                <div class="col-2 text-right" style="background-color: #f15a22; border-radius: 0 0 20px 0; color: white; padding: 10px 25px;"><span t-field="doc.amount_total"/></div>
             </div>
         </div>
-        <!-- SubTotal -->
-        <div class="row mt4 mb2">
-            <div class="col-8">
+        <!-- Price and Sign -->
+        <div class="row mt4">
+            <!--No Rekening-->
+            <div class="col-11">
                 <table style="width:80%;">
                     <tr>
                         <td style="width:100px;">In Words</td>
@@ -125,24 +124,8 @@
                         <td></td>
                     </tr>
                 </table>
-                Collectibility status information (late categories):
-                <ol style="margin: 0 25px;">
-                    <li>Current (Payment is on time and did not exceed due date)</li>
-                    <li>Special Mention (Payment is yet to be done between 1 - 10 calender days after due date)</li>
-                    <li>Substandart (Payment is yet to be done between 11 - 20 calender days after due date)</li>
-                    <li>Doubtful (Payment is yet to be done between 21 - 30 calender days after due date)</li>
-                </ol>
-            </div>
-            <div class="col-4">
-
-            </div>
-        </div>
-        <!-- Price and Sign -->
-        <div class="row">
-            <!--No Rekening-->
-            <div class="col-11">
                 <t t-if="doc.agent_id.payment_acquirer_ids">
-                    Important Notes:<br/>
+                    <span style="font-size: 28px; font-weight: 730">IMPORTANT NOTES</span><br/>
                     <ol style="margin: 0 25px;">
                         <li>Payment by transfer/cheque/giro is valid after being credited &amp; confirmed by the bank in full amount.</li>
                         <li>
@@ -162,6 +145,20 @@
                 </t>
             </div>
             <div class="col-1"/>
+        </div>
+        <!-- Legend -->
+        <div class="row mt16" style="font-size:12px;">
+            <div class="col-11">
+                Collectibility status information (late categories):
+                <ol style="margin: 0 25px;">
+                    <li>Current (Payment is on time and did not exceed due date)</li>
+                    <li>Special Mention (Payment is yet to be done between 1 - 10 calender days after due date)</li>
+                    <li>Substandart (Payment is yet to be done between 11 - 20 calender days after due date)</li>
+                    <li>Doubtful (Payment is yet to be done between 21 - 30 calender days after due date)</li>
+                </ol>
+            </div>
+            <div class="col-1">
+            </div>
         </div>
     </template>
 
