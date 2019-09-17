@@ -21,6 +21,11 @@
                             <field name="due_date"/>
                         </group>
                         <group>
+                            <label for="request_uid" string="Request By"/>
+                            <div>
+                                <field name="request_uid" readonly="1" class="oe_inline"/> -
+                                <field name="request_date" readonly="1" class="oe_inline"/>
+                            </div>
                             <label for="validate_uid" string="Approve By"/>
                             <div>
                                 <field name="validate_uid" readonly="1" class="oe_inline"/> -
@@ -36,7 +41,7 @@
                     </group>
                     <separator string="Payment"/>
                     <group>
-                        <group>
+                        <group name="payment">
                             <field name="currency_id" groups="base.group_multi_currency"/>
 
                             <field name="amount_id"/>

@@ -85,7 +85,11 @@ class AgentInvoice(models.Model):
                 self.state = 'paid'
 
     def set_as_confirm(self):
-        self.state = "confirm"
+        self.write({
+            'state': "confirm",
+            'confirmed_uid': self.env.user.id,
+            'confirmed_date': datetime.datetime.now()
+        })
 
     def set_as_paid(self):
         self.state = "paid"

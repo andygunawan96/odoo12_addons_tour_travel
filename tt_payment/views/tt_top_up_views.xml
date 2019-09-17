@@ -5,9 +5,12 @@
         <field name="model">tt.top.up</field>
         <field name="inherit_id" ref="tt_accounting.tt_top_up_view_form"/>
         <field name="arch" type="xml">
-            <field name="total_with_fees" position="after">
-                <field name="payment_id"/>
-            </field>
+            <xpath expr="//group[@name='payment']" position="after">
+                <group>
+                    <field name="payment_id"/>
+                    <field name="validated_amount"/>
+                </group>
+            </xpath>
         </field>
     </record>
 </odoo>

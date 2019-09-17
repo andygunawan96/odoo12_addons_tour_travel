@@ -68,7 +68,7 @@ class ResUsers(models.Model):
     @api.onchange('partner_id.parent_agent_id')
     @api.depends('partner_id.parent_agent_id')
     def _onchange_partner_id(self):
-        self.agent_id = self.parent_id.parent_agent_id
+        self.agent_id = self.parent_id.parent_agent_idF
 
     # @api.multi
     # def _compute_allowed_customer_ids(self):

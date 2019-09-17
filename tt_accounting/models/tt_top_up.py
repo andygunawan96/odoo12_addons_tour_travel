@@ -11,6 +11,7 @@ _logger = logging.getLogger(__name__)
 
 class TopUpAmount(models.Model):
     _name = 'tt.top.up.amount'
+    _description = 'Rodex Model'
 
     seq_id = fields.Char('Sequence ID')
     name = fields.Char('Description')
@@ -61,9 +62,9 @@ class TtTopUp(models.Model):
                        index=True, default=lambda self: 'New')
     date = fields.Datetime('Date', readonly=True, states={'draft': [('readonly', False)]}, default=fields.Datetime.now)
     due_date = fields.Datetime('Due Date', readonly=True)
-    agent_id = fields.Many2one('tt.agent', string="Agent", required=True, readonly=False,
+    agent_id = fields.Many2one('tt.agent', string="Agent", required=True, readonly=True,
                                default=lambda self: self.env.user.agent_id)
-    state = fields.Selection([('draft', 'Draft'), ('request', 'Request'), ('valid', 'Validated'), ('done', 'Done'), ('cancel', 'Cancelled')],
+    state = fields.Selection([('draft', 'Draft'), ('request', 'Request'), ('valid', 'Validated'), ('cancel', 'Cancelled')],
                              string='State', default='draft',
                              help='''
                              Open, after submit and choose payment method
@@ -86,6 +87,8 @@ class TtTopUp(models.Model):
     total_with_fees = fields.Monetary('Total + fees', compute='_compute_amount', store=False)
     ledger_id = fields.Many2one('tt.ledger', string='Ledger', readonly=True, copy=False)
     # payment_acquirer_id = fields.Many2one('payment.acquirer','Payment Type')
+    request_uid = fields.Many2one('res.users','Request By')
+    request_date = fields.Datetime('Request Date')
     validate_uid = fields.Many2one('res.users','Validate By')
     validate_date = fields.Datetime('Validate Date')
     cancel_uid = fields.Many2one('res.users', 'Cancel By')
@@ -126,10 +129,10 @@ class TtTopUp(models.Model):
     def action_validate_top_up(self):
         print("validate")
         if self.state != 'request':
-            raise UserWarning('Can only validate request state Top Up.')
+            raise UserWarning('Can only validate [request] state Top Up.')
 
         ledger_obj = self.env['tt.ledger']
-        vals = ledger_obj.prepare_vals(self.name,self.name,datetime.now(),1,self.currency_id.id,self.total)
+        vals = ledger_obj.prepare_vals('Top Up : %s' % (self.name),self.name,datetime.now(),1,self.currency_id.id,self.get_total_amount())
         vals['agent_id'] = self.agent_id.id
         new_aml = ledger_obj.create(vals)
         self.write({
@@ -139,14 +142,8 @@ class TtTopUp(models.Model):
             'validate_date': datetime.now()
         })
 
-    # {
-    #     'name': 'New',
-    #     'currency_code': '?',
-    #     'amount_seq_id': 'TUA.010101',
-    #     'amount_count': 5,
-    #     'unique_amount': 212,
-    #     'fees': 0,
-    # }
+    def get_total_amount(self):
+        return self.total
 
     def to_dict(self):
         res = {
@@ -177,6 +174,8 @@ class TtTopUp(models.Model):
                 'agent_id': agent_obj.id,
                 'currency_id': self.env['res.currency'].search([('name','=',data.pop('currency_code'))]).id,
                 'amount_id': self.env['tt.top.up.amount'].search([('seq_id','=',data.pop('amount_seq_id'))]).id,
+                'request_uid': context['co_uid'],
+                'request_date': datetime.now()
             })
             new_top_up = self.create(data)
 
@@ -185,7 +184,7 @@ class TtTopUp(models.Model):
                 raise RequestException(1017)
             ##make payment
             new_payment = self.env['tt.payment'].create({
-                'total_amount': new_top_up.total_with_fees,
+                'real_total_amount': new_top_up.total_with_fees,
                 'currency_id': new_top_up.currency_id.id,
                 'agent_id': new_top_up.agent_id.id,
                 'acquirer_id': acquirer_obj.id,
@@ -244,40 +243,5 @@ class TtTopUp(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1016)
 
-    # def confirm_top_up_api(self,data,context):
-    #     try:
-    #         agent_obj = self.browse(context['co_agent_id'])
-    #         if not agent_obj:
-    #             ERR.get_error(1008)
-    #
-    #         top_up_obj = self.search([('name','=',data['name'])])
-    #         if not top_up_obj:
-    #             ERR.get_error(1010)
-    #         if top_up_obj.state in ['request,validate,done']:
-    #             raise ('cannot confirm already requested Top Up.')
-    #
-    #         top_up_obj.action_confirm(data)
-    #
-    #         return ERR.get_no_error()
-    #
-    #     except Exception as e:
-    #         _logger.error(str(e) + traceback.format_exc())
-    #         return ERR.get_error(500)
-
-    # def request_top_up_api(self,data,context):
-    #     try:
-    #         agent_obj = self.browse(context['co_agent_id'])
-    #         if not agent_obj:
-    #             ERR.get_error(1008)
-    #
-    #         top_up_obj = self.search([('name','=',data['name'])])
-    #         if not top_up_obj:
-    #             ERR.get_error(1010)
-    #
-    #         top_up_obj.action_request(data) # ubah ke status request
-    #
-    #         return ERR.get_no_error()
-    #
-    #     except Exception as e:
-    #         _logger.error(str(e) + traceback.format_exc())
-    #         return ERR.get_error(500)
+    def cron_expire_top_up(self):
+        self.search([('state','=','')])

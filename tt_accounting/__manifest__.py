@@ -20,7 +20,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'base_setup', 'tt_base'],
+    'depends': ['base', 'base_setup', 'tt_base', 'tt_in_api_connector'],
 
     # always loaded
     'data': [
