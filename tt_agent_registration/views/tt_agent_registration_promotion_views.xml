@@ -90,7 +90,7 @@
             </field>
         </record>
 
-        <menuitem id="submenu_transaction_promotion" parent="menu_transaction_agent"
+        <menuitem id="submenu_transaction_promotion" parent="tt_agent_registration.menu_tour_travel_agent_registration_master"
                   name="Promotion" action="tt_agent_registration_promotion_action_view" sequence="2"/>
 
     </data>

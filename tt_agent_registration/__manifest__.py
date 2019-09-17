@@ -32,6 +32,7 @@
         'data/tt_provider_type_data.xml',
         'data/param_data.xml',
         'views/tt_agent_registration_views.xml',
+        'views/tt_agent_registration_menuheader.xml',
         'views/tt_agent_registration_promotion_views.xml',
         'views/tt_agent_registration_customer_views.xml',
         'views/tt_document_type_views.xml',
