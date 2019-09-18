@@ -39,7 +39,7 @@
                         </group>
                         <group string="Amount">
                             <field name="total_amount"/>
-                            <field name="real_total_amount" groups="tt_base.group_tt_accounting_manager"/>
+                            <field name="real_total_amount" groups="tt_base.group_tt_accounting_operator,tt_base.group_tt_tour_travel_operator"/>
                             <field name="fee"/>
                             <field name="used_amount"/>
                             <field name="available_amount"/>
