@@ -109,7 +109,8 @@
             </div>
         </div>
         <!-- Price and Sign -->
-        <div class="row mt4">
+        <div class="row">
+            <br/>
             <!--No Rekening-->
             <div class="col-11">
                 <table style="width:80%;">
@@ -147,7 +148,8 @@
             <div class="col-1"/>
         </div>
         <!-- Legend -->
-        <div class="row mt16" style="font-size:12px;">
+        <div class="row" style="font-size:12px;">
+            <br/>
             <div class="col-11">
                 Collectibility status information (late categories):
                 <ol style="margin: 0 25px;">
