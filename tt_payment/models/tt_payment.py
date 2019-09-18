@@ -46,12 +46,13 @@ class PaymentTransaction(models.Model):
         if self.customer_parent_id:
             return [('agent_id','=',self.agent_id.id)]
         else:
-            return [('agent_id','=',)]
+            ho_id = self.env['tt.agent'].sudo().search([('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id )], limit=1).id
+            return [('agent_id','=', ho_id )]
 
     @api.onchange('customer_parent_id')
     def _onchange_domain_customer_parent_id(self):
         return {'domain': {
-            'acquirer_id': [('agent_id','=',self.agent_id.id)]
+            'acquirer_id': self._get_acquirer_domain()
         }}
 
     # Tambahan
@@ -62,7 +63,7 @@ class PaymentTransaction(models.Model):
     reference = fields.Char('Validate Ref.', help='Transaction Reference / Approval number',states={'validated': [('readonly', True)]})
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True,readonly=True,states={'draft': [('readonly', False)]})
     customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer',readonly=True,states={'draft': [('readonly', False)]}, domain=_get_c_parent_domain)
-    acquirer_id = fields.Many2one('payment.acquirer', 'Acquirer', domain="['|', ('agent_id', '=', agent_id), ('agent_id', '=', False)]",states={'validated': [('readonly', True)]})
+    acquirer_id = fields.Many2one('payment.acquirer', 'Acquirer', domain=_get_acquirer_domain,states={'validated': [('readonly', True)]})
 
     # #Todo:
     # # 1. Pertimbangkan penggunaan monetary field untuk integer field (pertimbangkan multi currency juga)
