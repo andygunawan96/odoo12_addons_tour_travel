@@ -250,3 +250,6 @@ class TtTopUp(models.Model):
         except Exception as e:
             _logger.error(traceback.format_exc())
             return ERR.get_error(1016)
+
+    def cron_expire_top_up(self):
+        self.search([('state','=','')])

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!--Top Menu Tour & Travel Agent Registration-->
+        <menuitem id="top_tour_travel_agent_registration"
+              parent="tt_base.main_tour_travel"
+              name="Agent Registration"
+              sequence="5"
+              groups="base.group_user"/>
+
+            <!--Menu Visa-->
+            <menuitem id="menu_tour_travel_agent_registration_master"
+                  name="Master"
+                  parent="top_tour_travel_agent_registration"
+                  sequence="1"/>
+
+    </data>
+</odoo>

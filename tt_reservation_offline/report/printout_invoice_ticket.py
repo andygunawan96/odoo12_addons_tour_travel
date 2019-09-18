@@ -1,6 +1,7 @@
 from odoo import models, api
 import pytz
 import datetime
+from datetime import timedelta
 
 
 class PrintoutInvoiceTicket(models.AbstractModel):
