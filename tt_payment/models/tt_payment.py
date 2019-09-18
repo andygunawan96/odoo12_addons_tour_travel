@@ -42,6 +42,12 @@ class PaymentTransaction(models.Model):
             'customer_parent_id': self._get_c_parent_domain()
         }}
 
+    def _get_acquirer_domain(self):
+        if self.customer_parent_id:
+            return [('agent_id','=',self.agent_id.id)]
+        else:
+            return [('agent_id','=',)]
+
     @api.onchange('customer_parent_id')
     def _onchange_domain_customer_parent_id(self):
         return {'domain': {

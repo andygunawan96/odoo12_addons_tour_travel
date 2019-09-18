@@ -21,7 +21,7 @@
                             <field name="agent_id"/>
                             <field name="customer_parent_id" attrs="{'readonly':[('agent_id','=', False)]}"/>
                             <field name="create_date"/>
-                            <field name="acquirer_id" attrs="{'readonly':[('customer_parent_id','=', False)]}"/>
+                            <field name="acquirer_id"/>
                         </group>
                         <group string="User">
                             <label for="confirm_uid" string="Confirm By"/>
