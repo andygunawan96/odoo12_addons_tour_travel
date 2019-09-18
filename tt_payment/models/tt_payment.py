@@ -9,7 +9,7 @@ class PaymentTransaction(models.Model):
     _description = 'Rodex Model'
 
     name = fields.Char('Name', default='New', help='Sequence number set on Confirm state example:PAY.XXX',readonly=True)
-    fee = fields.Monetary('Fee', help='Third party fee',readonly=True) # g dihitung sebagai uang yg bisa digunakan
+    fee = fields.Monetary('Fee', help='Third party fee',readonly=True, states={'draft': [('readonly', False)]}) # g dihitung sebagai uang yg bisa digunakan
 
     used_amount = fields.Monetary('Used Amount',readonly=True)#yang sudah dipakai membayar
     available_amount = fields.Monetary('Available Amount', compute="compute_available_amount",
@@ -17,9 +17,9 @@ class PaymentTransaction(models.Model):
 
     display_name = fields.Char('Display Name',compute="_compute_display_name_payment",store=True,readonly=True)
 
-    payment_date = fields.Datetime('Payment Date',readonly=True) #required
+    payment_date = fields.Datetime('Payment Date',states={'validated': [('readonly', True)]})
 
-    real_total_amount = fields.Monetary('Adjusting Amount',help='To edit total when real payment done by customer is different.')
+    real_total_amount = fields.Monetary('Adjusting Amount',help='To edit total when real payment done by customer is different.',states={'validated': [('readonly', True)]})
     total_amount = fields.Monetary('Total Payment', required=True, related="real_total_amount") # yang benar benar di transfer
     currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.user.company_id.currency_id,readonly=True)
 
@@ -33,15 +33,30 @@ class PaymentTransaction(models.Model):
                                                                                          'Validate by Operator'
                                                                                          'Validate by Supervisor')
 
+    def _get_c_parent_domain(self):
+        return [('parent_agent_id','=',self.agent_id.id)]
+
+    @api.onchange('agent_id')
+    def _onchange_domain_agent_id(self):
+        return {'domain': {
+            'customer_parent_id': self._get_c_parent_domain()
+        }}
+
+    @api.onchange('customer_parent_id')
+    def _onchange_domain_customer_parent_id(self):
+        return {'domain': {
+            'acquirer_id': [('agent_id','=',self.agent_id.id)]
+        }}
+
     # Tambahan
     confirm_uid = fields.Many2one('res.users', 'Confirm by',readonly=True)
     confirm_date = fields.Datetime('Confirm on',readonly=True)
     validate_uid = fields.Many2one('res.users', 'Validate by',readonly=True)
     validate_date = fields.Datetime('Validate on',readonly=True)
-    reference = fields.Char('Validate Ref.', help='Transaction Reference / Approval number')
-    agent_id = fields.Many2one('tt.agent', 'Agent', required=True,readonly=True)
-    customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer',readonly=True)
-    acquirer_id = fields.Many2one('payment.acquirer', 'Acquirer', domain="['|', ('agent_id', '=', agent_id), ('agent_id', '=', False)]",readonly=True)
+    reference = fields.Char('Validate Ref.', help='Transaction Reference / Approval number',states={'validated': [('readonly', True)]})
+    agent_id = fields.Many2one('tt.agent', 'Agent', required=True,readonly=True,states={'draft': [('readonly', False)]})
+    customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer',readonly=True,states={'draft': [('readonly', False)]}, domain=_get_c_parent_domain)
+    acquirer_id = fields.Many2one('payment.acquirer', 'Acquirer', domain="['|', ('agent_id', '=', agent_id), ('agent_id', '=', False)]",states={'validated': [('readonly', True)]})
 
     # #Todo:
     # # 1. Pertimbangkan penggunaan monetary field untuk integer field (pertimbangkan multi currency juga)
@@ -51,9 +66,14 @@ class PaymentTransaction(models.Model):
     # # 5. Ganti payment_uid dengan agent_id
     # # 6. Tambahkan Payment Acquirer metode pembayaran e
 
-    @api.onchange('acc_adj_amount')
-    def _onchange_adj(self):
-        self.total_amount += self.acc_adj_amount
+
+
+    @api.onchange('real_total_amount','acquirer_id')
+    def _onchange_adj_validator(self):
+        print('onchange')
+        if self.create_date:
+            if datetime.datetime.now().day == self.create_date.day:
+                raise exceptions.UserError('Cannot change, have to wait 1 day.')
 
     @api.multi
     def compute_available_amount(self):
@@ -82,12 +102,16 @@ class PaymentTransaction(models.Model):
     def action_validate_from_button(self):
         if self.state != 'confirm':
            raise exceptions.UserError('Can only validate [Confirmed] state Payment.')
-        if self.reference:
-            if self.top_up_id and self.env.ref('tt_base.group_tt_accounting_manager') in self.env.user.groups_id:
-                self.top_up_id.action_validate_top_up(self.total_amount)
-                self.state = 'validated'
+        if self.reference and self.payment_date:
+            if self.top_up_id:
+                if ({self.env.ref('tt_base.group_tt_tour_travel_operator'),
+                      self.env.ref('tt_base.group_tt_accounting_operator')}.intersection({self.env.user.groups_id.ids})):
+                    self.top_up_id.action_validate_top_up(self.total_amount)
+                    self.state = 'validated'
+                else:
+                    raise  exceptions.UserError('No permission to validate Top Up.')
             else:
-                raise  exceptions.UserError('No permission to validate Top Up.')
+                self.state = 'validated'
         else:
-            raise exceptions.UserError('Please write down the payment reference.')
+            raise exceptions.UserError('Please write down the payment reference and payment date.')
 

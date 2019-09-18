@@ -4,10 +4,9 @@ from datetime import datetime,timedelta
 from ...tools import ERR
 from ...tools.ERR import RequestException
 import logging,traceback
-import json
+import json,os
 
 _logger = logging.getLogger(__name__)
-
 
 class TopUpAmount(models.Model):
     _name = 'tt.top.up.amount'
@@ -58,20 +57,19 @@ class TtTopUp(models.Model):
     _order = 'id desc'
     _description = 'Rodex Model'
 
-    name = fields.Char('Document Number', required='True', readonly=True, states={'draft': [('readonly', False)]},
+    name = fields.Char('Document Number', required='True', readonly=True,
                        index=True, default=lambda self: 'New')
-    date = fields.Datetime('Date', readonly=True, states={'draft': [('readonly', False)]}, default=fields.Datetime.now)
     due_date = fields.Datetime('Due Date', readonly=True)
     agent_id = fields.Many2one('tt.agent', string="Agent", required=True, readonly=True,
                                default=lambda self: self.env.user.agent_id)
-    state = fields.Selection([('draft', 'Draft'), ('request', 'Request'), ('valid', 'Validated'), ('cancel', 'Cancelled')],
+    state = fields.Selection([('draft', 'Draft'), ('request', 'Request'), ('valid', 'Validated'), ('cancel', 'Cancelled'), ('expired','Expired')],
                              string='State', default='draft',
                              help='''
-                             Open, after submit and choose payment method
+                             Draft, new top up
                              Request, requested top-up by agent
-                             Confirm, transfared top-up amount by agent
-                             Validate, top-up was check by top-up receiver
-                             Paid, top-up was clearing and approve by top-up receiver
+                             Validate, top-up approved by top-up receiver
+                             Cancelled, top-up cancelled
+                             Expired, top-up expired
                              ''')
 
     currency_id = fields.Many2one('res.currency', 'Currency', readonly=True,
@@ -82,7 +80,7 @@ class TtTopUp(models.Model):
     unique_amount = fields.Monetary('Unique Amount', default=0,
                                  states={'draft': [('readonly', False)]},
                                     help='''Unique amount for identification agent top-up via wire transfer''')
-    fees = fields.Monetary('Fees',  default=0, help='Fees amount; set by the system because depends on the acquirer')
+    fees = fields.Monetary('Fees',  default=0, help='Fees amount; set by the system because depends on the acquirer',readonly=True, states={'draft': [('readonly', False)]})
     total = fields.Monetary('Total', compute='_compute_amount', store=True, readonly=True)
     total_with_fees = fields.Monetary('Total + fees', compute='_compute_amount', store=False)
     ledger_id = fields.Many2one('tt.ledger', string='Ledger', readonly=True, copy=False)
@@ -121,10 +119,20 @@ class TtTopUp(models.Model):
             'cancel_date': datetime.now(),
         })
 
+    def test_set_as_draft(self):
+        self.write({
+            'state': 'draft'
+        })
 
-    def generate_unique_amount(self):
-        random = randint(1, 333)
-        return random
+    def test_set_as_request(self):
+        self.write({
+            'state': 'request'
+        })
+
+    def action_expired_top_up(self):
+        self.write({
+            'state': 'expired'
+        })
 
     def action_validate_top_up(self):
         print("validate")
@@ -149,7 +157,7 @@ class TtTopUp(models.Model):
         res = {
             'name': self.name,
             'currency_code': self.currency_id and self.currency_id.name or '',
-            'date': self.date and self.date.strftime('%Y-%m-%d %H:%M:%S') or '',
+            'date': self.request_date and self.request_date.strftime('%Y-%m-%d %H:%M:%S') or '',
             'due_date': self.due_date and self.due_date.strftime('%Y-%m-%d %H:%M:%S') or '',
             'total': self.total or '',
             'state': self.state
@@ -242,6 +250,3 @@ class TtTopUp(models.Model):
         except Exception as e:
             _logger.error(traceback.format_exc())
             return ERR.get_error(1016)
-
-    def cron_expire_top_up(self):
-        self.search([('state','=','')])

@@ -19,9 +19,9 @@
                     <group name="payment_info">
                         <group string="Agent">
                             <field name="agent_id"/>
-                            <field name="customer_parent_id"/>
-                            <field name="payment_date"/>
-                            <field name="acquirer_id"/>
+                            <field name="customer_parent_id" attrs="{'readonly':[('agent_id','=', False)]}"/>
+                            <field name="create_date"/>
+                            <field name="acquirer_id" attrs="{'readonly':[('customer_parent_id','=', False)]}"/>
                         </group>
                         <group string="User">
                             <label for="confirm_uid" string="Confirm By"/>
@@ -34,6 +34,7 @@
                                 <field name="validate_uid" readonly="1" class="oe_inline"/> -
                                 <field name="validate_date" readonly="1" class="oe_inline"/>
                             </div>
+                            <field name="payment_date"/>
                             <field name="reference"/>
                         </group>
                         <group string="Amount">

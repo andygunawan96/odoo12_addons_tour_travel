@@ -46,7 +46,7 @@ class Ledger(models.Model):
 
     description = fields.Text('Description')
     pnr = fields.Char('PNR')
-    issued_uid = fields.Many2one('res.users')
+    issued_uid = fields.Many2one('res.users', 'Issued UID')
     display_provider_name = fields.Char('Provider', help='Display Provider Name')
 
     reverse_id = fields.Many2one('tt.ledger', 'Reverse')
