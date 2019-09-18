@@ -19,7 +19,7 @@
                     <group name="payment_info">
                         <group string="Agent">
                             <field name="agent_id"/>
-                            <field name="customer_parent_id" attrs="{'readonly':[('agent_id','=', False)]}"/>
+                            <field name="customer_parent_id"/>
                             <field name="create_date"/>
                             <field name="acquirer_id"/>
                         </group>
