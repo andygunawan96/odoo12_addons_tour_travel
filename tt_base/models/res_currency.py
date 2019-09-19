@@ -10,6 +10,7 @@ class ResCurrency(models.Model):
     user_ids = fields.One2many('res.users', 'currency_id', 'Users')
     provider_ids = fields.One2many('tt.provider', 'currency_id', 'Providers')
     active = fields.Boolean('Active')
+    decimal_places = fields.Integer('Decimal Places',readonly=False)
 
     def get_id(self, currency_code):
         res = self.search([('name', '=', currency_code)])

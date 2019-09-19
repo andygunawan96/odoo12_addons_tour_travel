@@ -14,7 +14,6 @@
                     <button name="set_as_confirm" string="Confirm" type="object" groups="tt_base.group_tt_tour_travel_operator"/>
                     <button name="set_as_paid" string="Paid" type="object" groups="tt_base.group_tt_tour_travel_operator"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,issued"/>
-
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
@@ -31,11 +30,13 @@
                         <group>
                             <field name="date_invoice"/>
                             <field name="booker_id"/>
+                            <field name="customer_parent_id"/>
+                            <field name="customer_parent_type_id" string="Customer Type"/>
                         </group>
                         <group>
                             <field name="agent_id"/>
-                            <field name="customer_parent_id"/>
-                            <field name="customer_parent_type_id" string="Customer Type"/>
+                            <field name="confirmed_uid"/>
+                            <field name="confirmed_date"/>
                         </group>
                     </group>
 

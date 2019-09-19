@@ -160,7 +160,10 @@ class IssuedOffline(models.Model):
             'model': self._name,
             'provider_type': self.provider_type_id_name
         }
-        return self.env.ref('tt_reservation_offline.action_report_printout_invoice_ticket').report_action(self, data=data)
+        if self.provider_type_id_name == 'airline':
+            return self.env.ref('tt_reservation_offline.action_report_printout_invoice_ticket_airline').report_action(self, data=data)
+        else:
+            return self.env.ref('tt_reservation_offline.action_report_printout_invoice_ticket').report_action(self, data=data)
 
     def check_line_empty(self):
         empty = True

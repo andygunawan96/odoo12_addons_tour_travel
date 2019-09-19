@@ -58,7 +58,7 @@
             </field>
         </record>
 
-        <menuitem id="submenu_transaction_document_type" parent="menu_transaction_agent"
+        <menuitem id="submenu_transaction_document_type" parent="tt_agent_registration.menu_tour_travel_agent_registration_master"
                       name="Document Type" action="tt_document_type_action_view" sequence="2"/>
 
     </data>

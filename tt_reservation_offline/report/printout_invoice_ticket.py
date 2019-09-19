@@ -1,6 +1,7 @@
 from odoo import models, api
 import pytz
 import datetime
+from datetime import timedelta
 
 
 class PrintoutInvoiceTicket(models.AbstractModel):
@@ -12,11 +13,62 @@ class PrintoutInvoiceTicket(models.AbstractModel):
         """
 
     def invoice_line_select(self, provider_type, ids):
+        if provider_type == 'airline':
+            line_obj = self.env['tt.reservation.offline.lines'].search([('booking_id', 'in', ids)]).read()
+            return self.get_airline_vals_list(line_obj)
         if provider_type == 'train':
             line_obj = self.env['tt.reservation.offline.lines'].search([('booking_id', 'in', ids)]).read()
             return self.get_train_line(line_obj)
         else:
             return self.get_line(ids)
+
+    def get_airline_vals_list(self, line_obj):
+        line_list = []
+        for line in line_obj:
+            found = False
+            for val in line_list:
+                if val['pnr'] in line['pnr']:
+                    found = True
+                    print(val)
+                    val['vals_list'].append(self.get_airline_line(line))
+                    break
+            if not found:
+                vals_list = []
+                line_vals = {
+                    'pnr': line['pnr'],
+                    'vals_list': vals_list,
+                }
+                line_vals['vals_list'].append(self.get_airline_line(line))
+                line_list.append(line_vals)
+        print(line_list)
+        return line_list
+
+    def get_airline_line(self, line):
+        destination_env = self.env['tt.destinations'].sudo()
+        tz = pytz.timezone(self.env.user.tz) or pytz.utc
+        vals = {
+            'carrier_name': line['carrier_id'][1],
+            'carrier_code': line['carrier_code'],
+            'carrier_number': line['carrier_number'],
+            'departure_date': datetime.datetime.strptime(str(line['departure_date']), "%Y-%m-%d %H:%M:%S").astimezone(tz),
+            'return_date': datetime.datetime.strptime(str(line['return_date']), "%Y-%m-%d %H:%M:%S").astimezone(tz),
+            'origin_id': line['origin_id'],
+            'origin_name': destination_env.browse(line['origin_id'][0]).name,
+            'origin_city': destination_env.browse(line['origin_id'][0]).city,
+            'origin_code': destination_env.browse(line['origin_id'][0]).code,
+            'destination_id': line['destination_id'],
+            'destination_name': destination_env.browse(line['destination_id'][0]).name,
+            'destination_city': destination_env.browse(line['destination_id'][0]).city,
+            'destination_code': destination_env.browse(line['destination_id'][0]).code,
+            'subclass': line['subclass']
+        }
+        if line['class_of_service'] == 'eco':
+            vals['class_of_service'] = 'Economy'
+        if line['class_of_service'] == 'pre':
+            vals['class_of_service'] = 'Premium Economy'
+        if line['class_of_service'] == 'bus':
+            vals['class_of_service'] = 'Business'
+        return vals
 
     def get_train_line(self, line_obj):
         destination_env = self.env['tt.destinations'].sudo()
@@ -102,13 +154,20 @@ class PrintoutInvoiceTicket(models.AbstractModel):
     @api.model
     def _get_report_values(self, docids, data=None):
         docs = self.invoice_line_select(data['provider_type'], data['ids'])
-        print(docs)
-        return {
+        vals = {
             'doc_ids': data['ids'],
             'doc_model': data['model'],
             'docs': self.env['tt.reservation.offline'].browse(data['ids']),
             'line_ids': docs,
-            'line_length': len(self.env['tt.reservation.offline.lines'].search([('booking_id', 'in', data['ids'])])),
             'passenger_ids': self.get_passenger(data['ids']),
             'passenger_amount': self.get_passenger_amount(data['ids'])
         }
+        if data['provider_type'] == 'airline':
+            vals.update({
+                'line_length': len([i for i in docs])
+            })
+        else:
+            vals.update({
+                'line_length': len(self.env['tt.reservation.offline.lines'].search([('booking_id', 'in', data['ids'])])),
+            })
+        return vals

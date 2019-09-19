@@ -1,5 +1,7 @@
 from odoo import models,api,fields
 from datetime import date,datetime,timedelta
+import os, traceback
+
 
 DAY_TO_INT = {
     'Mon' : -1,
@@ -102,6 +104,12 @@ class TtCustomerParentInh(models.Model):
                         'customer_parent_id': cor.id,
                         'invoice_ids': invoice_list
                     })
-        except:
-            pass
-            #make log file here
+        except Exception as e:
+            dest = '/var/log/odoo/cron_log'
+            if not os.path.exists(dest):
+                os.mkdir(dest)
+            file = open(
+                '%s/%s_%s_error.log' % (dest, 'auto billing', datetime.now().strftime('%Y-%m-%d_%H:%M:%S')),
+                'w')
+            file.write(traceback.format_exc())
+            file.close()

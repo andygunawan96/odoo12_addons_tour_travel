@@ -57,7 +57,7 @@
                 <div class="row">
                     <div class="col-4">
                         <img t-if="o.agent_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(o.agent_id.logo)" height="200" border="1" width="300" style="max-height:100px; max-width:165px; margin-bottom: 20px"/><br/>
-                        <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">eTicket Itinerary / Receipt</span>
+                        <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">eTicket Itinerary</span>
                     </div>
                     <div class="col-4">
 

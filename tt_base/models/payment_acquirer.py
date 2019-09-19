@@ -31,8 +31,7 @@ class PaymentAcquirer(models.Model):
         return super(PaymentAcquirer, self).create(vals_list)
     # FUNGSI
     def generate_unique_amount(self):
-        random = randint(1, 999)
-        return random
+        return int(self.env['ir.sequence'].next_by_code('tt.payment.unique.amount'))
 
     def compute_fee(self, amount):
         fee = uniq= 0
@@ -72,13 +71,15 @@ class PaymentAcquirer(models.Model):
         }
 
     def button_test_acquirer(self):
-        self.get_payment_acquirer_api({
-            'transaction_type': 'billing',
-            'amount': 16000,
-            'booker_seq_id': 'CU.010101'
-        },{
-            'agent_id': 5
-        })
+        print(self.env['ir.sequence'].next_by_code('tt.payment.unique.amount'))
+        # self.env['tt.cron.log'].create_cron_log_folder()
+        # self.get_payment_acquirer_api({
+        #     'transaction_type': 'billing',
+        #     'amount': 16000,
+        #     'booker_seq_id': 'CU.010101'
+        # },{
+        #     'agent_id': 5
+        # })
 
     ##fixmee amount di cache
     def get_payment_acquirer_api(self, req,context):

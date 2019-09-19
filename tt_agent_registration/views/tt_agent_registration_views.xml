@@ -16,20 +16,28 @@
                         <button string="Done" name="action_done" attrs="{'invisible': [('state', '!=', 'validate')]}" type="object" groups="tt_base.group_tt_tour_travel_operator"/>
 <!--                        <button string="Cancel" name="action_cancel" attrs="{'invisible': [('state', '!=', ['confirm','progress','payment','validate'])]}" type="object"/>-->
                          <button string="Cancel" name="action_cancel" type="object" states="confirm,progress,payment,validate"/>
+                         <button string="Send Email" name="action_send_email" type="object" states="progress"/>
                         <button string="Set to Draft" name="action_draft" attrs="{'invisible': [('state', '!=', 'cancel')]}" type="object" confirm="All data will be deleted. Proceed?"/>
                     </header>
                     <sheet>
-                        <button name="print_agent_registration_invoice"
-                                class="oe_stat_button"
-                                string="Invoice (HO-AGENT)" type="object" icon="fa-print"
-                                states="validate,done"/>
+<!--                        <button name="print_agent_registration_invoice"-->
+<!--                                class="oe_stat_button"-->
+<!--                                string="Invoice (HO-AGENT)" type="object" icon="fa-print"-->
+<!--                                states="validate,done"/>-->
 <!--                        groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"-->
                         <div class="oe_button_box" name="button_box">
-                            <button name="toggle_active" type="object"
-                                    class="oe_stat_button" icon="fa-archive">
+                            <button name="print_agent_registration_invoice"
+                                    string="Invoice (HO-AGENT)"
+                                    type="object"
+                                    class="oe_stat_button"
+                                    icon="fa-print"
+                                    states="validate,done"/>
+                            <button name="toggle_active"
+                                    type="object"
+                                    class="oe_stat_button"
+                                    icon="fa-archive">
 <!--                                groups="tt_base.group_tt_tour_travel_operator"-->
-                                <field name="active" widget="boolean_button"
-                                       options='{"terminology": "archive"}'/>
+                                <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
                             </button>
                         </div>
                         <field name="image" widget='image' class="oe_avatar"

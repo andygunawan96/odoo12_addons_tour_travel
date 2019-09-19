@@ -83,7 +83,6 @@ class ReservationTrain(models.Model):
             'agent_id': self.agent_id.id,
             'acquirer_id': 7,
             'total_amount': inv_line_obj.total,
-            'payment_date': datetime.now()
         })
 
         self.env['tt.payment.invoice.rel'].create({
@@ -91,8 +90,6 @@ class ReservationTrain(models.Model):
             'payment_id': payment_obj.id,
             'pay_amount': inv_line_obj.total,
         })
-        payment_obj.compute_available_amount()
-
 
 
     # # ## CREATED by Samvi 2018/07/24

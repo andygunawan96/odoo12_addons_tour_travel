@@ -1,7 +1,5 @@
 from odoo import api,models,fields
-from ...tools import ERR
 from ...tools.ERR import RequestException
-import logging,traceback
 
 class TtAirlineApiCon(models.Model):
     _name = 'tt.airline.api.con'

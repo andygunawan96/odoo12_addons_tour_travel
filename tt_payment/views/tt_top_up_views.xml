@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="tt_top_up_form_inh_view" model="ir.ui.view">
+        <field name="name">tt.top.up.form.inh.view</field>
+        <field name="model">tt.top.up</field>
+        <field name="inherit_id" ref="tt_accounting.tt_top_up_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='payment']" position="after">
+                <group>
+                    <field name="payment_id"/>
+                    <field name="validated_amount"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

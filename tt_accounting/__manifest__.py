@@ -20,13 +20,14 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'base_setup', 'tt_base'],
+    'depends': ['base', 'base_setup', 'tt_base', 'tt_in_api_connector'],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
         'data/ir_sequence_data.xml',
+        'data/ir_cron_data.xml',
         'views/tt_ledger_views.xml',
         'views/tt_agent_views.xml',
         'views/tt_top_up_views.xml'

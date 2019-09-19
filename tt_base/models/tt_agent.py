@@ -80,7 +80,7 @@ class TtAgent(models.Model):
         walkin_obj = self.env['tt.customer.parent'].create(walkin_obj_val)
 
         self.env['payment.acquirer'].create({
-            'name': 'Cash',
+            'name': '%s Cash' % (new_agent.name),
             'provider': 'manual',
             'agent_id': new_agent.id,
             'type': 'cash',

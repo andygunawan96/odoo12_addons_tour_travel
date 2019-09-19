@@ -26,6 +26,7 @@
                             <field name="code"/>
                             <field name="symbol"/>
                             <field name="position"/>
+                            <field name="rounding"/>
                             <field name="decimal_places"/>
                             <field name="rate_ids"/>
                             <field name="country_ids"/>
