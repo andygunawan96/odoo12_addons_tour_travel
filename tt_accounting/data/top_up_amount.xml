@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <record id="top_up_amount_1000k" model="tt.top.up.amount">
+            <field name="name">Rp 1.000.000</field>
+            <field name="amount">1000000</field>
+        </record>
+
+        <record id="top_up_amount_500k" model="tt.top.up.amount">
+            <field name="name">Rp 500.000</field>
+            <field name="amount">500000</field>
+        </record>
+
+        <record id="top_up_amount_250k" model="tt.top.up.amount">
+            <field name="name">Rp 250.000</field>
+            <field name="amount">250000</field>
+        </record>
+
+        <record id="top_up_amount_100k" model="tt.top.up.amount">
+            <field name="name">Rp 100.000</field>
+            <field name="amount">100000</field>
+        </record>
+
+        <record id="top_up_amount_50k" model="tt.top.up.amount">
+            <field name="name">Rp 50.000</field>
+            <field name="amount">50000</field>
+        </record>
+    </data>
+</odoo>

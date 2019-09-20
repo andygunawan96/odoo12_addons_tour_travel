@@ -112,6 +112,9 @@ class TtTopUp(models.Model):
                 'total_with_fees': tp.amount_count * tp.amount_id.amount + tp.unique_amount + tp.fees,
             })
 
+    def action_reject_from_button(self):
+        self.action_cancel_top_up({'co_uid':self.env.user.id
+                                   })
     def action_cancel_top_up(self,context):
         self.write({
             'state' : 'cancel',
