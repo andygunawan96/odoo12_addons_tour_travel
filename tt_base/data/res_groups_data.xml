@@ -95,7 +95,7 @@
         <field name="implied_ids" eval="[(4, ref('group_tt_agent_management_supervisor'))]"/>
     </record>
 
-    <!--TICKETING SYSTEMN GROUP-->
+     <!--TICKETING SYSTEM GROUP-->
     <record id="group_tt_ticketing_operator" model="res.groups">
         <field name="name">Operator</field>
         <field name="category_id" ref="tt_base.module_category_ticketing_system"/>

@@ -50,7 +50,7 @@ class PrintoutInvoice(models.AbstractModel):
             amount_to_str = self.get_terbilang(a, separator_index, separator_index2) + ' ' + amount_to_str
         return amount_to_str
 
-    def compute_terbilang(self, recs):
+    def compute_terbilang(self, recs, currency_str='Rupiah'):
         a = {}
         for rec2 in recs:
             terbilang = self.get_terbilang(rec2.total)
@@ -79,6 +79,7 @@ class PrintoutInvoice(models.AbstractModel):
                 else:
                     new_list.append(rec)
 
+            new_list.append(currency_str)
             a.update({rec2.name: ' '.join(filter(None, new_list))})
         return a
 
@@ -179,7 +180,7 @@ class PrintoutBilling(models.AbstractModel):
             amount_to_str = self.get_terbilang(a, separator_index, separator_index2) + ' ' + amount_to_str
         return amount_to_str
 
-    def compute_terbilang(self, recs):
+    def compute_terbilang(self, recs, currency_str='Rupiah'):
         a = {}
         for rec2 in recs:
             terbilang = self.get_terbilang(rec2.amount_total)
@@ -208,6 +209,7 @@ class PrintoutBilling(models.AbstractModel):
                 else:
                     new_list.append(rec)
 
+            new_list.append(currency_str)
             a.update({rec2.name: ' '.join(filter(None, new_list))})
         return a
 
@@ -255,7 +257,7 @@ class PrintoutTopUp(models.AbstractModel):
             amount_to_str = self.get_terbilang(a, separator_index, separator_index2) + ' ' + amount_to_str
         return amount_to_str
 
-    def compute_terbilang(self, recs):
+    def compute_terbilang(self, recs, currency_str='Rupiah'):
         a = {}
         for rec2 in recs:
             terbilang = self.get_terbilang(rec2.total_with_fees)
@@ -284,6 +286,7 @@ class PrintoutTopUp(models.AbstractModel):
                 else:
                     new_list.append(rec)
 
+            new_list.append(currency_str)
             a.update({rec2.name: ' '.join(filter(None, new_list))})
         return a
 
