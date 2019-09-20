@@ -109,44 +109,6 @@
                             <field name="nationality_id"/>
                             <field name="activity_sku_id" string="SKU"/>
                         </tree>
-                        <form>
-                            <group>
-                                <group>
-                                    <field name="title"/>
-                                    <field name="first_name"/>
-                                    <field name="last_name"/>
-                                    <field name="gender"/>
-                                    <field name="birth_date"/>
-                                    <field name="nationality_id"/>
-                                    <field name="pax_type"/>
-                                </group>
-                                <group>
-                                    <field name="customer_id" string="Name"/>
-                                    <field name="booking_id" string="Order Number"/>
-                                    <field name="activity_sku_id" string="SKU"/>
-                                </group>
-                            </group>
-                            <notebook>
-                                <page string="Passenger Options">
-                                    <field name="option_ids" readonly="1">
-                                        <tree>
-                                            <field name="name"/>
-                                            <field name="value"/>
-                                        </tree>
-                                        <form>
-                                            <group>
-                                                <group>
-                                                    <field name="name"/>
-                                                </group>
-                                                <group>
-                                                    <field name="value"/>
-                                                </group>
-                                            </group>
-                                        </form>
-                                    </field>
-                                </page>
-                            </notebook>
-                        </form>
                     </field>
                 </page>
             </xpath>
