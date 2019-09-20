@@ -155,19 +155,21 @@ class TtProviderActivity(models.Model):
             scs['pax_count'] = 0
             scs['passenger_activity_ids'] = []
             scs['total'] = 0
-            scs['currency_id'] = currency_obj.get_id(scs.get('currency'))
-            scs['foreign_currency_id'] = currency_obj.get_id(scs.get('foreign_currency'))
+            scs['currency_id'] = currency_obj.get_id('IDR')
+            scs['foreign_currency_id'] = currency_obj.get_id('IDR')
             scs['provider_activity_booking_id'] = self.id
             for psg in self.ticket_ids:
-                if scs['pax_type'] == psg.pax_type:
+                if scs['pax_type'] == psg.pax_type and scs['sku_id'] == psg.ticket_number:
                     scs['passenger_activity_ids'].append(psg.passenger_id.id)
                     scs['pax_count'] += 1
                     scs['total'] += scs['amount']
-            scs.pop('currency')
-            scs.pop('foreign_currency')
+            # scs.pop('currency')
+            # scs.pop('foreign_currency')
+            scs.pop('sku_id')
             scs['passenger_activity_ids'] = [(6,0,scs['passenger_activity_ids'])]
             scs['description'] = self.pnr and self.pnr or ''
-            service_chg_obj.create(scs)
+            if scs['total'] != 0:
+                service_chg_obj.create(scs)
 
         # "sequence": 1,
         # "charge_code": "fare",

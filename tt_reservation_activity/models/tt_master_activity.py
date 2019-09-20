@@ -99,13 +99,21 @@ class MasterActivity(models.Model):
     def _compute_provider_code(self):
         self.provider_code = self.provider_id.code
 
-    def reprice_currency(self, provider, from_currency, base_amount, to_currency='IDR'):
-        from_currency_id = self.env['res.currency'].sudo().search([('name', '=', from_currency)], limit=1)
-        from_currency_id = from_currency_id and from_currency_id[0] or False
-        provider_id = self.env['tt.provider'].sudo().search([('code', '=', provider)], limit=1)
-        provider_id = provider_id[0]
-        multiplier = self.env['tt.provider.rate'].sudo().search([('provider_id', '=', provider_id.id), ('date', '<=', datetime.now()), ('currency_id', '=', from_currency_id.id)], limit=1)
-        computed_amount = base_amount * multiplier[0].sell_rate
+    def reprice_currency(self, req, context):
+        provider = req['provider']
+        from_currency = req['from_currency']
+        base_amount = req['base_amount']
+        to_currency = req.get('to_currency') and req['to_currency'] or 'IDR'
+        try:
+            from_currency_id = self.env['res.currency'].sudo().search([('name', '=', from_currency)], limit=1)
+            from_currency_id = from_currency_id and from_currency_id[0] or False
+            provider_id = self.env['tt.provider'].sudo().search([('code', '=', provider)], limit=1)
+            provider_id = provider_id[0]
+            multiplier = self.env['tt.provider.rate'].sudo().search([('provider_id', '=', provider_id.id), ('date', '<=', datetime.now()), ('currency_id', '=', from_currency_id.id)], limit=1)
+            computed_amount = base_amount * multiplier[0].sell_rate
+        except Exception as e:
+            computed_amount = self.env['res.currency']._compute(from_currency_id, self.env.user.company_id.currency_id, base_amount)
+            _logger.info('Cannot convert to vendor price: ' + str(e))
         return computed_amount
 
     def action_sync_config_globaltix(self, add_parameter):
@@ -1158,7 +1166,7 @@ class MasterActivity(models.Model):
             _logger.info('Activity Get Cities Error')
             return ERR.get_error(500)
 
-    def search_by_api(self, req):
+    def search_by_api(self, req, context):
         try:
             query = req.get('query') and '%' + req['query'] + '%' or ''
             country = req.get('country') and req['country'] or ''
@@ -1357,16 +1365,16 @@ class MasterActivity(models.Model):
 
                 from_currency = self.env['res.currency'].browse(result['currency_id'])
 
-                try:
-                    if result.get('provider'):
-                        temp = self.reprice_currency(result['provider'], from_currency.name, result['basePrice'])
-                    else:
-                        temp = self.env['res.currency']._compute(from_currency, self.env.user.company_id.currency_id,
-                                                                 result['basePrice'])
-                except Exception as e:
+                if result.get('provider'):
+                    req = {
+                        'provider': result['provider'],
+                        'from_currency': from_currency.name,
+                        'base_amount': result['basePrice']
+                    }
+                    temp = self.reprice_currency(req, context)
+                else:
                     temp = self.env['res.currency']._compute(from_currency, self.env.user.company_id.currency_id,
                                                              result['basePrice'])
-                    _logger.info('Cannot convert to vendor price: ' + str(e))
 
                 converted_price = temp + 10000
 
@@ -1399,7 +1407,7 @@ class MasterActivity(models.Model):
             _logger.info('Activity Search Error')
             return ERR.get_error(500)
 
-    def get_details_by_api(self, req):
+    def get_details_by_api(self, req, context):
         try:
             activity_id = self.search([('uuid', '=', req['uuid']), ('provider_id', '=', int(req['provider_id']))], limit=1)
             activity_id = activity_id and activity_id[0] or None
@@ -1492,10 +1500,12 @@ class MasterActivity(models.Model):
                             'description': description,
                         })
                         if activity_opt_obj.price:
-                            try:
-                                price = self.reprice_currency(provider, from_currency.name, activity_opt_obj.price)
-                            except Exception as e:
-                                price = self.env['res.currency']._compute(from_currency, self.env.user.company_id.currency_id, activity_opt_obj.price)
+                            req = {
+                                'provider': provider,
+                                'from_currency': from_currency.name,
+                                'base_amount': activity_opt_obj.price
+                            }
+                            price = self.reprice_currency(req, context)
                             temp_opt.update({
                                 'price': price,
                             })
@@ -1509,10 +1519,12 @@ class MasterActivity(models.Model):
                                     'currency_id': item.currency_id.id,
                                 }
                                 if item.price:
-                                    try:
-                                        price2 = self.reprice_currency(provider, from_currency.name, item.price)
-                                    except Exception as e:
-                                        price2 = self.env['res.currency']._compute(from_currency, self.env.user.company_id.currency_id, item.price)
+                                    req = {
+                                        'provider': provider,
+                                        'from_currency': from_currency.name,
+                                        'base_amount': item.price
+                                    }
+                                    price2 = self.reprice_currency(req, context)
                                     temp_item.update({
                                         'price': price2,
                                     })
@@ -1551,97 +1563,6 @@ class MasterActivity(models.Model):
             _logger.info('Activity Search Detail Error')
             return ERR.get_error(500)
 
-    def get_pricing_by_api(self, result, context):
-        try:
-            agent_type = self.env['res.users'].browse(context['co_uid']).agent_id.agent_type_id.id
-            if agent_type in [self.env.ref('tt_base.agent_type_citra').id, self.env.ref('tt_base.agent_type_btbo').id]:
-                multiplier = 1
-            elif agent_type in [self.env.ref('tt_base.agent_type_japro').id, self.env.ref('tt_base.agent_type_btbr').id]:
-                multiplier = 0.8
-            elif agent_type in [self.env.ref('tt_base.agent_type_fipro').id]:
-                multiplier = 0.6
-            else:
-                multiplier = 0
-            list = []
-            if result['type_pricing'].get('data'):
-                for results in result['type_pricing']['data']:
-                    for rec in results:
-                        for key, value in rec['prices'].items():
-                            if key not in list and key not in ['cancellationPolicy']:
-                                list.append(key)
-            for res in list:
-                if result['type_pricing'].get('data'):
-                    for results in result['type_pricing']['data']:
-                        for rec in results:
-                            if rec['prices'].get(res):
-                                from_currency = self.env['res.currency'].search([('name', '=', rec['currency'])])
-                                for key, value in rec['prices'][res].items():
-                                    if key.isdigit():
-                                        try:
-                                            to_currency = self.reprice_currency(result['provider'], from_currency.name, value)
-                                        except Exception as e:
-                                            to_currency = self.env['res.currency']._compute(from_currency, self.env.user.company_id.currency_id, int(value))
-                                        if to_currency:
-                                            final_price = to_currency + 10000
-                                        else:
-                                            final_price = 0
-
-                                        price_temp = int(final_price * 1.03)
-
-                                        sale_price = 0
-                                        # pembulatan sale price keatas
-                                        for idx in range(10):
-                                            if (price_temp % 100) == 0:
-                                                sale_price = price_temp
-                                                break
-                                            if idx == 9 and ((price_temp % 1000) < int(str(idx + 1) + '00')) and price_temp > 0:
-                                                sale_price = str(int(price_temp / 1000) + 1) + '000'
-                                                break
-                                            elif (price_temp % 1000) < int(str(idx + 1) + '00') and price_temp > 0:
-                                                if int(price_temp / 1000) == 0:
-                                                    sale_price = str(idx + 1) + '00'
-                                                else:
-                                                    sale_price = str(int(price_temp / 1000)) + str(idx + 1) + '00'
-                                                break
-
-                                        temp = int((int(sale_price) - final_price) * multiplier)
-                                        commission_price = 0
-                                        # pembulatan commission price kebawah
-                                        for idx in range(10):
-                                            if (temp % 1000) < int(str(idx + 1) + '00') and temp > 0:
-                                                if int(temp / 1000) == 0:
-                                                    commission_price = (str(idx) + '00')
-                                                else:
-                                                    commission_price = str(int(temp / 1000)) + (str(idx) + '00')
-                                                break
-
-                                        rec['prices'][res].update({
-                                            key: {
-                                                'sale_price': int(sale_price),
-                                                'commission_price': int(commission_price),
-                                            },
-                                        })
-
-                                        rec.update({
-                                            'currency_code': self.env.user.company_id.currency_id.name
-                                        })
-
-            response = []
-            if result['type_pricing'].get('data'):
-                for results in result['type_pricing']['data']:
-                    for rec in results:
-                        rec.get('links') and rec.pop('links')
-                        rec.get('currency') and rec.pop('currency')
-                        rec.get('options') and rec.pop('options')
-                        rec.get('timeslots') and rec.pop('timeslots')
-                        rec.get('weekday') and rec.pop('weekday')
-                        rec['prices'].get('cancellationPolicy') and rec['prices'].pop('cancellationPolicy')
-                    response.append(results)
-
-            return ERR.get_no_error(response)
-        except Exception as e:
-            _logger.info('Activity Get Pricing Error')
-            return ERR.get_error(500)
 
 
 
