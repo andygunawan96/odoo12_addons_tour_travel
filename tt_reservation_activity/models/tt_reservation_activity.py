@@ -574,7 +574,6 @@ class ReservationActivity(models.Model):
             })
             booking_obj.update_pnr_data(booking_id, book_info['code'])
             booking_obj.calculate_service_charge()
-            # booking_obj.action_create_invoice()
             self.env.cr.commit()
 
             if not api_context or api_context['co_uid'] == 1:
@@ -678,60 +677,6 @@ class ReservationActivity(models.Model):
                 'sale_service_charge_ids': values
             })
 
-    def action_create_invoice(self):
-        invoice_id = self.env['tt.agent.invoice'].search([('booker_id','=',self.booker_id.id), ('state','=','draft')])
-
-        if not invoice_id:
-            invoice_id = self.env['tt.agent.invoice'].create({
-                'booker_id': self.booker_id.id,
-                'agent_id': self.agent_id.id,
-                'customer_parent_id': self.customer_parent_id.id,
-                'customer_parent_type_id': self.customer_parent_type_id.id
-            })
-
-        inv_line_obj = self.env['tt.agent.invoice.line'].create({
-            'res_model_resv': self._name,
-            'res_id_resv': self.id,
-            'invoice_id': invoice_id.id,
-            'desc': self.get_segment_description()
-        })
-
-        invoice_line_id = inv_line_obj.id
-
-        #untuk harga fare per passenger
-        for psg in self.passenger_ids:
-            desc_text = '%s, %s' % (' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '')
-            price_unit = 0
-            for cost_charge in psg.cost_service_charge_ids:
-                if cost_charge.charge_type != 'RAC':
-                    price_unit += cost_charge.amount
-            for channel_charge in psg.channel_service_charge_ids:
-                price_unit += channel_charge.amount
-
-            inv_line_obj.write({
-                'invoice_line_detail_ids': [(0,0,{
-                    'desc': desc_text,
-                    'price_unit': price_unit,
-                    'quantity': 1,
-                    'invoice_line_id': invoice_line_id,
-                })]
-            })
-
-        ##membuat payment dalam draft
-        payment_obj = self.env['tt.payment'].create({
-            'agent_id': self.agent_id.id,
-            'acquirer_id': 7,
-            'total_amount': inv_line_obj.total,
-            'payment_date': datetime.now()
-        })
-
-        self.env['tt.payment.invoice.rel'].create({
-            'invoice_id': invoice_id.id,
-            'payment_id': payment_obj.id,
-            'pay_amount': inv_line_obj.total,
-        })
-        payment_obj.compute_available_amount()
-
     def create_booking_activity_api(self, req, context):
         try:
             booker_data = req.get('booker_data') and req['booker_data'] or False
@@ -751,8 +696,8 @@ class ReservationActivity(models.Model):
 
             if req['force_issued']:
                 is_enough = self.env['tt.agent'].check_balance_limit_api(agent_obj.id, req['amount'])
-                # if not is_enough['error_code'] == 0:
-                #     raise Exception('BALANCE not enough')
+                if not is_enough['error_code'] == 0:
+                    raise Exception('BALANCE not enough')
 
             header_val = search_request
             booker_obj = self.create_booker_api(booker_data, context)

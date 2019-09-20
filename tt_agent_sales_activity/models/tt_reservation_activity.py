@@ -40,7 +40,8 @@ class ReservationActivity(models.Model):
         return tmp
 
     def action_create_invoice(self):
-        invoice_id = self.env['tt.agent.invoice'].search([('booker_id','=',self.booker_id.id), ('state','=','draft')])
+        invoice_id = self.env['tt.agent.invoice'].search(
+            [('booker_id', '=', self.booker_id.id), ('state', '=', 'draft')])
 
         if not invoice_id:
             invoice_id = self.env['tt.agent.invoice'].create({
@@ -54,12 +55,12 @@ class ReservationActivity(models.Model):
             'res_model_resv': self._name,
             'res_id_resv': self.id,
             'invoice_id': invoice_id.id,
-            # 'desc': self.get_segment_description()
+            'desc': self.get_segment_description()
         })
 
         invoice_line_id = inv_line_obj.id
 
-        #untuk harga fare per passenger
+        # untuk harga fare per passenger
         for psg in self.passenger_ids:
             desc_text = '%s, %s' % (' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '')
             price_unit = 0
@@ -70,7 +71,7 @@ class ReservationActivity(models.Model):
                 price_unit += channel_charge.amount
 
             inv_line_obj.write({
-                'invoice_line_detail_ids': [(0,0,{
+                'invoice_line_detail_ids': [(0, 0, {
                     'desc': desc_text,
                     'price_unit': price_unit,
                     'quantity': 1,
@@ -93,6 +94,6 @@ class ReservationActivity(models.Model):
         })
         payment_obj.compute_available_amount()
 
-    # def action_issued_activity(self, api_context=None):
-    #     super(ReservationActivity, self).action_issued_activity(api_context)
-    #     self.action_create_invoice()
+    def update_booking_by_api(self, req, api_context):
+        super(ReservationActivity, self).update_booking_by_api(req, api_context)
+        # self.action_create_invoice()
