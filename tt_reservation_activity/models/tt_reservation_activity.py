@@ -541,6 +541,9 @@ class ReservationActivity(models.Model):
         })
         self.message_post(body='Order DONE')
 
+    def call_create_invoice(self):
+        _logger.info('Creating Invoice for ' + self.name)
+
     def update_pnr_data(self, book_id, pnr):
         provider_objs = self.env['tt.provider.activity'].search([('booking_id', '=', book_id)])
         for rec in provider_objs:
@@ -575,6 +578,7 @@ class ReservationActivity(models.Model):
             booking_obj.update_pnr_data(booking_id, book_info['code'])
             booking_obj.calculate_service_charge()
             self.env.cr.commit()
+            booking_obj.call_create_invoice()
 
             if not api_context or api_context['co_uid'] == 1:
                 api_context['co_uid'] = booking_obj.booked_uid.id
@@ -751,6 +755,16 @@ class ReservationActivity(models.Model):
 
             # create header & Update customer_parent_id
             book_obj = self.sudo().create(header_val)
+
+            if req.get('member'):
+                customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', req['seq_id'])])
+            else:
+                customer_parent_id = book_obj.agent_id.customer_parent_walkin_id.id
+
+            book_obj.sudo().write({
+                'customer_parent_id': customer_parent_id,
+            })
+
             if option['perBooking']:
                 for rec in option['perBooking']:
                     self.env['tt.reservation.activity.option'].sudo().create({
@@ -977,75 +991,6 @@ class ReservationActivity(models.Model):
 
         return result
 
-    # def get_vouchers_by_api2(self, res2, req):
-    #     temp = self.env['tt.reservation.activity'].search([('name', '=', req['order_number'])])
-    #     if res2['response']['ticket'] and temp.state != 'done':
-    #         temp.action_done()
-    #
-    #     result = {}
-    #     for rec in res2['response']['ticket']:
-    #         if res2['response']['provider'] == 'bemyguest':
-    #             pdf_data = pickle.loads(rec)
-    #             if not pdf_data:
-    #                 return False
-    #             result = {
-    #                 'type': 'pdf',
-    #                 'value': base64.encodestring(pdf_data)
-    #             }
-    #         if res2['response']['provider'] == 'globaltix':
-    #             result = {
-    #                 'type': 'url',
-    #                 'value': rec
-    #             }
-    #     return result
-
-    def prepare_summary_prices(self, values, infant):
-        senior_amount = 0
-        senior_price = 0
-        adult_amount = 0
-        adult_price = 0
-        child_amount = 0
-        child_price = 0
-        additional_charge_amount = 0
-        additional_charge_total = 0
-        infant_amount = infant
-        infant_price = 0
-        commission_total = 0
-        for rec in values:
-            if rec['pax_type'] == 'YCD' and rec['charge_code'] == 'fare':
-                senior_amount += rec['pax_count']
-                senior_price += rec['amount'] * rec['pax_count']
-            if rec['pax_type'] == 'ADT' and rec['charge_code'] == 'fare':
-                adult_amount += rec['pax_count']
-                adult_price += rec['amount'] * rec['pax_count']
-            if rec['pax_type'] == 'CHD' and rec['charge_code'] == 'fare':
-                child_amount += rec['pax_count']
-                child_price += rec['amount'] * rec['pax_count']
-            # if rec['pax_type'] == 'INF' and rec['charge_code'] == 'fare':
-            #     infant_amount += rec['pax_count']
-            if rec['charge_code'] == 'r.ac':
-                commission_total += rec['amount'] * rec['pax_count'] * -1
-            if rec['pax_type'] == 'ADT' and rec['charge_code'] == 'tax':
-                additional_charge_amount += rec['pax_count']
-                additional_charge_total += rec['amount']
-        total_itinerary_price = senior_price + adult_price + child_price + additional_charge_total
-
-        values = {
-            'senior_amount': senior_amount,
-            'senior_price': senior_price,
-            'adult_amount': adult_amount,
-            'adult_price': adult_price,
-            'child_amount': child_amount,
-            'child_price': child_price,
-            'additional_charge_amount': additional_charge_amount,
-            'additional_charge_total': additional_charge_total,
-            'infant_amount': infant_amount,
-            'infant_price': infant_price,
-            'total_itinerary_price': total_itinerary_price,
-            'commission_total': commission_total
-        }
-        return values
-
     def get_booking_for_vendor_by_api(self, data, context):
         try:
             order_number = data['order_number']
@@ -1096,6 +1041,7 @@ class ReservationActivity(models.Model):
             # api_price_ids = self.env.cr.dictfetchall()
 
             passengers = []
+            pricing = []
             for rec in activity_booking.passenger_ids:
                 passengers.append({
                     'name': str(rec.title) + '. ' + str(rec.first_name) + ' ' + str(rec.last_name),
@@ -1103,11 +1049,28 @@ class ReservationActivity(models.Model):
                     'pax_type': rec.pax_type,
                     'sku_name': rec.activity_sku_id.title
                 })
-
-            # prices = self.prepare_summary_prices(api_price_ids, activity_booking[0]['infant'])
-            # prices.update({
-            #     'total_itinerary_price': prices['total_itinerary_price'],
-            # })
+                for rec2 in rec.cost_service_charge_ids:
+                    if rec2.charge_type == 'FARE':
+                        pricing.append({
+                            'type': 'fare',
+                            'name': str(rec.first_name) + ' ' + str(rec.last_name) + ' Fare',
+                            'currency': rec2.currency_id.name,
+                            'price': rec2.amount
+                        })
+                    elif rec2.charge_type == 'ROC':
+                        pricing.append({
+                            'type': 'roc',
+                            'name': str(rec.first_name) + ' ' + str(rec.last_name) + ' Tax',
+                            'currency': rec2.currency_id.name,
+                            'price': rec2.amount
+                        })
+                    elif rec2.charge_code == 'rac':
+                        pricing.append({
+                            'type': 'rac',
+                            'name': str(rec.first_name) + ' ' + str(rec.last_name) + ' Commission',
+                            'currency': rec2.currency_id.name,
+                            'price': rec2.amount * -1
+                        })
 
             contact = self.env['tt.customer'].browse(activity_booking.contact_id.id)
 
@@ -1153,6 +1116,11 @@ class ReservationActivity(models.Model):
                     'status': 'done',
                 })
 
+            if values.get('voucher_url') and not booking_obj.voucher_url:
+                booking_obj.sudo().write({
+                    'voucher_url': values['voucher_url']
+                })
+
             if booking_obj.state != 'done':
                 booking_obj.sudo().write({
                     'state': values['status']
@@ -1178,8 +1146,8 @@ class ReservationActivity(models.Model):
                 'visit_date': str(activity_booking.visit_date)[:10],
                 'timeslot': activity_booking.timeslot and activity_booking.timeslot or False,
                 'currencyCode': values['currencyCode'],
-                # 'price_itinerary': prices,
                 'passengers': passengers,
+                'pricing': pricing,
                 'name': order_number,
                 'activity_details': activity_details,
                 'voucher_detail': voucher_detail,
@@ -1187,6 +1155,7 @@ class ReservationActivity(models.Model):
                 'status': values['status'],
                 'attachment_ids': attachments,
                 'booking_options': book_option_ids,
+                'voucher_url': values.get('voucher_url') and values['voucher_url'] or False
             }
             result = ERR.get_no_error(response)
         except Exception as e:
@@ -1235,152 +1204,6 @@ class ReservationActivity(models.Model):
         if not row:
             return ''
         return row.id
-
-    def get_booking(self, booking_number):
-        row = self.env['tt.reservation.activity'].search([('name', '=', booking_number)])
-        if not row:
-            return ''
-        temp = {
-            'provider': row.provider,
-            'uuid': row.booking_uuid,
-            'pnr': row.pnr,
-            'order_id': row.id,
-            'upload_value': row.file_upload,
-            'total_amount': row.total_fare,
-        }
-        return temp
-
-    def get_booking_activity(self, booking_number=None, booking_id=None, api_context=None):
-        if booking_number:
-            booking_id = self.sudo().get_id(booking_number)
-
-        if not booking_id:
-            return {
-                'error_code': 200,
-                'error_msg': 'Invalid booking number %s or agent id' % booking_number
-            }
-
-        book_obj = self.sudo().browse(booking_id)
-
-        # ENABLE IN PRODUCTION
-        # user_obj = self.env['res.users'].sudo().browse(api_context['co_uid'])
-        # if book_obj.agent_id.id != user_obj.agent_id.id:
-        #     return {
-        #         'error_code': 200,
-        #         'error_msg': 'Invalid booking number %s or agent id' % booking_number,
-        #         'response': {}
-        #     }
-
-        def get_pricelist_info(activity_id):
-            values = {
-                'id': activity_id.id,
-                'name': activity_id.name,
-                'description': activity_id.description,
-                'pax_type': activity_id.pax_type,
-                'transport_type': activity_id.transport_type,
-                'duration': activity_id.duration,
-                'entry_type': activity_id.entry_type,
-                'visa_type': activity_id.visa_type,
-                'passport_type': activity_id.passport_type,
-                'apply_type': activity_id.apply_type,
-                'process_type': activity_id.process_type,
-                'notes': activity_id.notes,
-                'country': {
-                    'id': activity_id.country_id.id,
-                    'name': activity_id.country_id.name,
-                },
-            }
-            return values
-
-        def get_itinerary_price(rec):
-            res = []
-            for price in rec:
-                price_values = {
-                    'charge_code': price.charge_code,
-                    'pax_type': price.pax_type,
-                    'currency': price.currency_id and {
-                        'id': price.currency_id.id,
-                        'name': price.currency_id.name,
-                    } or {},
-                    'pax_count': price.pax_count,
-                    'amount': price.amount,
-                    'total': price.total,
-                    'foreign_amount': price.foreign_amount,
-                    'foreign_currency': price.foreign_currency and {
-                        'id': price.foreign_currency.id,
-                        'name': price.foreign_currency.name,
-                    } or {},
-                    'description': price.description and price.description or '',
-                }
-                res.append(price_values)
-            return res
-
-        def get_contacts(rec):
-            values = {
-                'title': rec.title or '',
-                'first_name': rec.first_name or '',
-                'last_name': rec.last_name or '',
-                'mobile': rec.mobile or '',
-                'email': rec.email or '',
-                'home_phone': rec.home_phone or '',
-                'work_phone': rec.work_phone or '',
-                'other_phone': rec.other_phone or '',
-                'address': rec.address or '',
-                'city': rec.city or '',
-            }
-            return values
-
-        def get_passengers(to_passenger_ids):
-            res = []
-            for rec in to_passenger_ids:
-                passenger = rec.passenger_id
-                passenger_values = {
-                    'title': passenger.title or '',
-                    'first_name': passenger.first_name or '',
-                    'last_name': passenger.last_name or '',
-                    'pax_type': passenger.pax_type or '',
-                    'birth_date': passenger.birth_date or '',
-                    'nationality': {
-                        'id': passenger.nationality_id.id or '',
-                        'name': passenger.nationality_id.name or '',
-                        'code': passenger.nationality_id.code or '',
-                        'phone_code': passenger.nationality_id.phone_code or '',
-                    },
-                    'mobile': passenger.mobile or '',
-                    'email': passenger.email or '',
-                    'passport_number': passenger.passport_number or '',
-                    'passport_expdate': passenger.passport_expdate or '',
-                    'identity_number': passenger.identity_number or '',
-                    'identity_type': passenger.identity_type or '',
-                    'pricelist': get_pricelist_info(rec.activity_id) or '',
-                }
-                res.append(passenger_values)
-            return res
-
-        booking_row = {
-            'id': book_obj.id or '',
-            'name': book_obj.name or '',
-            'date': book_obj.issued_date or '',
-            'state': book_obj.state or '',
-            'hold_date': book_obj.hold_date or ''
-        }
-        booking_row.update({
-            'contacts': get_contacts(book_obj.contact_id) or {},
-            # 'passengers': get_passengers(book_obj.to_passenger_ids) or [],
-            'price_itinerary': get_itinerary_price(book_obj.sale_service_charge_ids) or [],
-        })
-
-        if not booking_row:
-            return {
-                'error_code': 200,
-                'error_msg': 'Invalid booking number or agent id'
-            }
-
-        return {
-            'response': booking_row,
-            'error_code': 0,
-            'error_msg': False
-        }
 
     def confirm_booking_webhook(self, req):
         order_id = req.get('order_id')
