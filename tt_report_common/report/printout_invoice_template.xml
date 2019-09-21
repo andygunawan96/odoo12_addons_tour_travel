@@ -269,10 +269,7 @@
         <div class="footer" style="position: absolute; left: 0; right: 0; background-image: url('/tt_reservation_offline/static/images/background footer airline.jpg');">
             <div class="box-footer" style="padding: 0px; width: 100%; height: 120px; background: rgba(39,62,84,0.82);">  <!--rgba(70,70,70,0.8);-->
                 <div class="row">
-                    <div class="col-2" style="margin-top:20px; margin-left: 15px;">
-                         <img t-if="doc.agent_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(doc.agent_id.logo)" height="200" border="1" width="300" style="max-height:80px; max-width:150px;"/>
-                    </div>
-                    <div class="col-4" style="margin-top:10px; margin-left: 15px;">
+                    <div class="col-6" style="margin-top:15px; margin-left: 15px; padding: 0 30px;">
                         <div>
                             <span style="font-weight: 600; color: white" t-field="doc.agent_id.name"/>
                         </div>
@@ -292,12 +289,20 @@
                         <div class="row">
                             <div class="col-6">
                                 <div style="margin-top: 5px;">
-                                    <t t-if="doc.agent_id.phone_ids">
-                                        <span style="color: white"><img t-att-src="'/tt_report_common/static/images/24-hours-phone-service.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/> <span style="color: white; font-size: 14px" t-field="doc.agent_id.phone_ids[0].calling_code"/> <span style="color: white; font-size: 14px" t-field="doc.agent_id.phone_ids[0].calling_number"/></span>
-                                    </t>
+                                    <span style="color: white"><img t-att-src="'/tt_report_common/static/images/24-hours-phone-service.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
+                                        <t t-if="doc.agent_id.phone_ids">
+                                            <span style="color: white; font-size: 14px" t-field="doc.agent_id.phone_ids[0].calling_code"/> <span style="color: white; font-size: 14px" t-field="doc.agent_id.phone_ids[0].calling_number"/>
+                                        </t>
+                                        <t t-else=""><span style="color: white; font-size: 14px">-</span></t>
+                                    </span>
                                 </div>
                                 <div style="margin-top: 5px;">
-                                    <span style="color: white"><img t-att-src="'/tt_report_common/static/images/mail.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/> <span style="color: white; font-size: 14px" t-field="doc.agent_id.email"/></span>
+                                    <span style="color: white"><img t-att-src="'/tt_report_common/static/images/whatsapp.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
+                                        <t t-if="doc.agent_id.social_media_ids.filtered(lambda x: x.type_id.name == 'Whatsapp')">
+                                            <span style="color: white; font-size: 14px" t-field="doc.agent_id.social_media_ids.filtered(lambda x: x.type_id.name == 'Whatsapp')[0].name"/>
+                                        </t>
+                                        <t t-else=""><span style="color: white; font-size: 14px">-</span></t>
+                                    </span>
                                 </div>
                             </div>
                             <div class="col-6">
@@ -306,6 +311,7 @@
                                         <t t-if="doc.agent_id.social_media_ids.filtered(lambda x: x.type_id.name == 'Telegram')">
                                             <span style="color: white; font-size: 14px" t-field="doc.agent_id.social_media_ids.filtered(lambda x: x.type_id.name == 'Telegram')[0].name"/>
                                         </t>
+                                        <t t-else=""><span style="color: white; font-size: 14px">-</span></t>
                                     </span>
                                 </div>
                                 <div style="margin-top: 5px;">
@@ -313,6 +319,7 @@
                                         <t t-if="doc.agent_id.social_media_ids.filtered(lambda x: x.type_id.name == 'Line')">
                                             <span style="color: white; font-size: 14px" t-field="doc.agent_id.social_media_ids.filtered(lambda x: x.type_id.name == 'Line')[0].name"/>
                                         </t>
+                                        <t t-else=""><span style="color: white; font-size: 14px">-</span></t>
                                     </span>
                                 </div>
                             </div>
@@ -444,7 +451,7 @@
             <div class="col-8">
                 <table style="width:80%;">
                     <tr>
-                        <td style="width:100px;">In Word</td>
+                        <td style="width:100px;">In Words</td>
                         <td style="width:20px;">:</td>
                         <td style=""><t t-esc="terbilang[doc.name]"/></td>
                     </tr>

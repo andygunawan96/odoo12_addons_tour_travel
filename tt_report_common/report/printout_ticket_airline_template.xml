@@ -48,34 +48,46 @@
                             <div class="col-2" style="background: #F0F0F0; border-radius: 0 0 0px 20px; border-color: #CCC; padding-right: 10px; padding-top: 10px; padding-bottom: 10px; padding-left: 20px; margin-right: 10px; border: 1px solid #BBB;">
                                 <!--<span style="font-size: 15px; color: #DC5413">STATUS : CONFIRMED</span><br/>-->
                                 <b><span style="font-size: 16px;">PNR: <span t-field="segment_obj.pnr"/></span></b><br/>
-                                <img t-att-src="'http://static.skytors.id/'+ segment_obj.carrier_code +'.png'" style="height: 70px; width: 70px; max-height: 20px; max-width: 20px; margin: 0px 0px 0px 0px; text-align: center"/>
+                                <img t-att-src="'http://static.skytors.id/'+ segment_obj.carrier_code +'.png'" style="height: 70px; width: 70px; max-height: 20px; width:auto; max_width:20px;"/>
                                 <span style="font-size: 13px;"><span t-field="segment_obj.carrier_id.name"/></span><br/>
                                 <span style="font-size: 13px; font-weight:450;"><span t-field="segment_obj.carrier_code"/> - <span t-field="segment_obj.carrier_number"/></span><br/>
                                 <span style="font-size: 13px;"><span t-field="segment_obj.class_of_service"/> - <span t-field="segment_obj.cabin_class"/></span><br/>
                             </div>
-                            <div class="col-10" style="background-color: #FFF; border-radius: 0 0 20px 0px; border-color: #CCC; border: 1px solid #BBB; padding-left: 25px; margin-left: -10px; padding-top: 10px; padding-bottom: 10px; padding-right: 25px;">
+                            <div class="col-8" style="background-color: #FFF; border-color: #CCC; border: 1px solid #BBB; padding-left: 25px; margin-left: -10px; padding-top: 10px; padding-bottom: 10px; padding-right: 25px;">
                                 <div class="row">
                                     <div class="col-5" style="margin-right: 0px">
                                         <div style="height: 75px; max-height: 150px">
                                             <span style="font-size: 18px; font-weight:500"><span t-field="segment_obj.origin_id.city"/> (<span t-field="segment_obj.origin_id.code"/>)</span><br/>
                                             <span style="font-size: 16px; font-weight:200"><span t-field="segment_obj.origin_id.name"/></span>
                                         </div>
-                                        <span style="font-size: 16px; font-weight:200"><span t-esc="time.strftime('%a, %d %b %Y', time.strptime(line.departure_date[:10],'%Y-%m-%d'))"/></span><br/>
-                                        <span style="font-size: 16px; font-weight:200"><span t-esc="line.departure_date[10:16]"/></span>
+                                        <span style="font-size: 16px; font-weight:200"><span t-esc="time.strftime('%a, %d %b %Y', time.strptime(segment_obj.departure_date[:10],'%Y-%m-%d'))"/></span><br/>
+                                        <span style="font-size: 16px; font-weight:200"><span t-esc="segment_obj.departure_date[10:16]"/></span>
 
                                     </div>
                                     <div class="col-2" style="text-align: center;">
                                         <img t-att-src="'/tt_report_common/static/images/airfreight-orange.svg'" style="max-height:65px; max-width:65px; margin-top:25%; transform: rotate(45deg); -webkit-transform: rotate(45deg);"/>
+                                        <span style="font-size: 15px; font-weight: 400;"><span t-field="segment_obj.elapsed_time"/></span>
                                     </div>
                                     <div class="col-5">
                                         <div style="height: 75px; max-height: 150px">
                                             <span style="font-size: 18px; font-weight:500"><span t-field="segment_obj.destination_id.city"/> (<span t-field="segment_obj.destination_id.code"/>)</span><br/>
                                             <span style="font-size: 16px; font-weight:200"><span t-field="segment_obj.destination_id.name"/></span>
                                         </div>
-                                        <span style="font-size: 16px; font-weight:200"><span t-esc="time.strftime('%a, %d %b %Y', time.strptime(line.arrival_date[:10],'%Y-%m-%d'))"/></span><br/>
+                                        <span style="font-size: 16px; font-weight:200"><span t-esc="time.strftime('%a, %d %b %Y', time.strptime(segment_obj.arrival_date[:10],'%Y-%m-%d'))"/></span><br/>
                                         <span style="font-size: 16px; font-weight:200"><span t-esc="segment_obj.arrival_date[10:16]"/></span>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="col-2" style="background-color: #FFF; border-radius: 0 0 20px 0px; border-bottom: 2px solid #909090; border-right: 2px solid #909090; padding-left: 25px; padding-top: 10px; padding-right: 25px; padding-bottom: 10px; margin-right: 0px;">
+                                <t t-set="transit_total" t-value="0"/>
+                                <span style="font-size: 18px; font-weight: 400">Transit : <span t-esc="transit_total"/></span><br/>
+                                <t t-foreach="range(transit_total)" t-as="index">
+                                    <span style="font-size: 14px">SUB <img t-att-src="'/tt_reservation_offline/static/images/arrow-right.png'" style="max-height:20px; max-width:15px; margin-bottom: 4px;" /> SIN</span><br/>
+                                    <img t-att-src="'/tt_reservation_offline/static/images/clock-circular-outline.png'" style="max-height:20px; max-width:20px;" /> <span style="font-size: 14px; font-weight: 400;"><span t-esc="(line['return_date']-line['departure_date']).seconds // 3600"/>h:<span t-esc="((line['return_date']-line['departure_date']).seconds // 60) %60"/>m</span><br/>
+                                    <t t-if="index+1 != transit_total">
+                                        <div style="border-bottom: 1px solid #909090; margin-top: 3px; margin-bottom: 3px;"/>
+                                    </t>
+                                </t>
                             </div>
                         </div>
                         </t>

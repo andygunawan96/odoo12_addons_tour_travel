@@ -8,6 +8,7 @@ import json,os
 
 _logger = logging.getLogger(__name__)
 
+
 class TopUpAmount(models.Model):
     _name = 'tt.top.up.amount'
     _description = 'Rodex Model'
@@ -51,6 +52,7 @@ class TopUpAmount(models.Model):
     def create(self, vals_list):
         vals_list['seq_id'] = self.env['ir.sequence'].next_by_code('tt.top.up.amount')
         return super(TopUpAmount, self).create(vals_list)
+
 
 class TtTopUp(models.Model):
     _name = 'tt.top.up'
@@ -232,3 +234,33 @@ class TtTopUp(models.Model):
         except Exception as e:
             _logger.error(traceback.format_exc())
             return ERR.get_error(1014)
+
+    def cancel_top_up_api(self,data,context):
+        try:
+            agent_obj = self.browse(context['co_agent_id'])
+            if not agent_obj:
+                raise RequestException(1008)
+
+            top_up_obj = self.search([('name','=',data['name'])])
+            if not top_up_obj:
+                raise RequestException(1010)
+            if top_up_obj.state != 'request':
+                raise RequestException(1018)
+
+            top_up_obj.action_cancel_top_up(context) # ubah ke status cancel
+
+            return ERR.get_no_error()
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1016)
+
+    def print_topup(self):
+        datas = {'ids': self.env.context.get('active_ids', [])}
+        # res = self.read(['price_list', 'qty1', 'qty2', 'qty3', 'qty4', 'qty5'])
+        res = self.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        return self.env.ref('tt_report_common.action_report_printout_topup').report_action(self, data=datas)
