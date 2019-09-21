@@ -141,6 +141,36 @@ class MasterActivity(models.Model):
             print(activity_id_list)
         file.close()
 
+    def action_get_bemyguest_json(self):
+        provider = 'bemyguest'
+        cookie = None
+        res = ApiConnectorActivity().signin()
+        if res.get('response'):
+            temp_res = json.loads(res['response'])
+            if temp_res['result'].get('response'):
+                cookie = temp_res['result']['response'].get('signature') and temp_res['result']['response']['signature'] or None
+
+        req_post = {
+            'query': '',
+            'type': '',
+            'category': '',
+            'country': '',
+            'city': '',
+            'sort': 'price',
+            'page': 1,
+            'per_page': 1,
+            'provider': provider
+        }
+
+        file = {}
+        res = ApiConnectorActivity().search(req_post, cookie)
+        if res['error_code'] == 0:
+            file = res['response']
+        if file:
+            total_pages = file['total_pages']
+            for page in range(total_pages):
+                self.write_bmg_json(provider, False, page + 1)
+
     def action_sync_products(self, provider, add_parameter):
         cookie = None
         res = ApiConnectorActivity().signin()

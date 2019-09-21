@@ -31,12 +31,10 @@ class ReservationActivity(models.Model):
         elif any(state != 'draft' for state in states):
             self.state_invoice = 'partial'
 
-    def get_segment_description(self):
+    def get_activity_description(self):
         tmp = ''
-        # vals = []
-        for rec in self.journey_ids:
-            tmp += '%s(%s) - %s(%s),' % (rec.origin_id.city, rec.origin_id.code, rec.destination_id.city, rec.destination_id.code)
-            tmp += '%s - %s\n ' % (rec.departure_date[:16], rec.arrival_date[:16])
+        tmp += '%s(%s),' % (self.activity_id.name, self.activity_product,)
+        tmp += '%s\n ' % (self.visit_date,)
         return tmp
 
     def action_create_invoice(self):
@@ -55,7 +53,7 @@ class ReservationActivity(models.Model):
             'res_model_resv': self._name,
             'res_id_resv': self.id,
             'invoice_id': invoice_id.id,
-            'desc': self.get_segment_description()
+            'desc': self.get_activity_description()
         })
 
         invoice_line_id = inv_line_obj.id
@@ -94,6 +92,6 @@ class ReservationActivity(models.Model):
         })
         payment_obj.compute_available_amount()
 
-    def update_booking_by_api(self, req, api_context):
-        super(ReservationActivity, self).update_booking_by_api(req, api_context)
+    def call_create_invoice(self):
+        super(ReservationActivity, self).call_create_invoice()
         # self.action_create_invoice()

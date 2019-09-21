@@ -80,10 +80,10 @@
                 <field name="senior"/>
                 <field name="child"/>
             </field>
-            <field name="provider_name" position="after">
-                <field name="voucher_url"/>
-            </field>
             <xpath expr="//group[@name='paxgroup']" position="before">
+                <group>
+                    <field name="voucher_url" attrs="{'invisible': [('provider_name', '!=', 'klook')]}"/>
+                </group>
                 <separator string="Activity Information"/>
                 <group>
                     <group>
