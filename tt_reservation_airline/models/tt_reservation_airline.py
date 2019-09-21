@@ -85,15 +85,15 @@ class ReservationAirline(models.Model):
             'booked_date': datetime.datetime.now()
         })
 
-    def action_issued_api_airline(self,acquirer_id,context):
-        self.action_issued_airline(context['co_uid'],acquirer_id)
+    def action_issued_api_airline(self,acquirer_id,customer_parent_id,context):
+        self.action_issued_airline(context['co_uid'],customer_parent_id,acquirer_id)
 
-    def action_issued_airline(self,co_uid,acquirer_id):
+    def action_issued_airline(self,co_uid,customer_parent_id,acquirer_id):
         self.write({
             'state': 'issued',
             'issued_date': datetime.datetime.now(),
             'issued_uid': co_uid,
-            'customer_parent_id': acquirer_id.agent_id.id
+            'customer_parent_id': customer_parent_id
         })
 
     def action_partial_booked_api_airline(self,context,pnr_list,hold_date):
@@ -348,11 +348,6 @@ class ReservationAirline(models.Model):
                 book_obj.action_booked_api_airline(context,pnr_list,hold_date)
             elif all(rec == 'ISSUED' for rec in book_status):
                 #issued
-                # if req.get('member'):
-                #     req['customer_parent_id'] = self.env['tt.customer.parent'].search([('seq_id','=',req['seq_id'])])
-                # else:
-                #     req['customer_parent_id'] = book_obj.agent_id.customer_parent_walkin_id.id
-
                 ##get payment acquirer
                 if req.get('seq_id'):
                     acquirer_id = self.env['payment.acquirer'].search([('seq_id','=',req['seq_id'])])
@@ -361,12 +356,18 @@ class ReservationAirline(models.Model):
                 else:
                     raise RequestException(1017)
 
+                if req.get('member'):
+                    customer_parent_id = acquirer_id.agent_id.id
+                else:
+                    customer_parent_id = book_obj.agent_id.customer_parent_walkin_id.id
+
+
                 if req.get('force_issued'):
                     book_obj.calculate_service_charge()
                     book_obj.action_booked_api_airline(context, pnr_list, hold_date)
                     self.payment_airline_api({'book_id': req['book_id']}, context)
 
-                book_obj.action_issued_api_airline(acquirer_id,context)
+                book_obj.action_issued_api_airline(acquirer_id.id,customer_parent_id,context)
             elif any(rec == 'ISSUED' for rec in book_status):
                 #partial issued
                 book_obj.action_partial_issued_api_airline()
