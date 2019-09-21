@@ -113,7 +113,8 @@ class TtTopUp(models.Model):
             })
 
     def action_reject_from_button(self):
-        self.action_cancel_top_up({'co_uid':self.env.user.id
+        self.action_cancel_top_up({
+            'co_uid':self.env.user.id
                                    })
     def action_cancel_top_up(self,context):
         self.write({
@@ -231,28 +232,3 @@ class TtTopUp(models.Model):
         except Exception as e:
             _logger.error(traceback.format_exc())
             return ERR.get_error(1014)
-
-    def cancel_top_up_api(self,data,context):
-        try:
-            agent_obj = self.browse(context['co_agent_id'])
-            if not agent_obj:
-                raise RequestException(1008)
-
-            top_up_obj = self.search([('name','=',data['name'])])
-            if not top_up_obj:
-                raise RequestException(1010)
-            if top_up_obj.state != 'request':
-                raise RequestException(1018)
-
-            top_up_obj.action_cancel_top_up(context) # ubah ke status request
-
-            return ERR.get_no_error()
-        except RequestException as e:
-            _logger.error(traceback.format_exc())
-            return e.error_dict()
-        except Exception as e:
-            _logger.error(traceback.format_exc())
-            return ERR.get_error(1016)
-
-    def cron_expire_top_up(self):
-        self.search([('state','=','')])

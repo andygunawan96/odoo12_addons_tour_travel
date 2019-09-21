@@ -28,13 +28,17 @@ class PaymentTransaction(models.Model):
     state = fields.Selection([('draft','Draft'),
                               ('confirm','Confirm'),
                               ('validated','Validated by Operator'),
-                              ('validated2','Validated by Supervisor')], 'State', default='draft', help='Draft: New payment can be edited,'
+                              ('validated2','Validated by Supervisor'),
+                              ('cancel','Cancelled')], 'State', default='draft', help='Draft: New payment can be edited,'
                                                                                          'Confirm: Agent Confirmed the payment'
                                                                                          'Validate by Operator'
                                                                                          'Validate by Supervisor')
 
     def _get_c_parent_domain(self):
-        return [('parent_agent_id','=',self.agent_id.id)]
+        # if self.agent_id:
+        #     return [('parent_agent_id','=',self.agent_id.id)]
+        # else:
+        return "[('parent_agent_id', '=', agent_id)]"
 
     @api.onchange('agent_id')
     def _onchange_domain_agent_id(self):
@@ -44,7 +48,9 @@ class PaymentTransaction(models.Model):
 
     def _get_acquirer_domain(self):
         if self.customer_parent_id:
-            return [('agent_id','=',self.agent_id.id)]
+            return "[('agent_id', '=', agent_id)]"
+        # if self.customer_parent_id:
+        #     return [('agent_id','=',self.agent_id.id)]
         else:
             ho_id = self.env['tt.agent'].sudo().search([('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id )], limit=1).id
             return [('agent_id','=', ho_id )]
@@ -55,11 +61,14 @@ class PaymentTransaction(models.Model):
             'acquirer_id': self._get_acquirer_domain()
         }}
 
+
     # Tambahan
     confirm_uid = fields.Many2one('res.users', 'Confirm by',readonly=True)
     confirm_date = fields.Datetime('Confirm on',readonly=True)
     validate_uid = fields.Many2one('res.users', 'Validate by',readonly=True)
     validate_date = fields.Datetime('Validate on',readonly=True)
+    cancel_uid = fields.Many2one('res.users', 'Cancel By',readonly=True)
+    cancel_date = fields.Datetime('Cancel Date',readonly=True)
     reference = fields.Char('Validate Ref.', help='Transaction Reference / Approval number',states={'validated': [('readonly', True)]})
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True,readonly=True,states={'draft': [('readonly', False)]})
     customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer',readonly=True,states={'draft': [('readonly', False)]}, domain=_get_c_parent_domain)
@@ -73,7 +82,15 @@ class PaymentTransaction(models.Model):
     # # 5. Ganti payment_uid dengan agent_id
     # # 6. Tambahkan Payment Acquirer metode pembayaran e
 
+    def test_set_as_draft(self):
+        self.write({
+            'state': 'draft'
+        })
 
+    def test_set_as_confirm(self):
+        self.write({
+            'state': 'confirm'
+        })
 
     @api.onchange('real_total_amount','acquirer_id')
     def _onchange_adj_validator(self):
@@ -87,10 +104,12 @@ class PaymentTransaction(models.Model):
         for rec in self:
             available_amount = rec.total_amount - rec.fee
             rec.used_amount = 0
-            if self.top_up_id:
+            if rec.top_up_id:
                 rec.used_amount = self.top_up_id.total
             available_amount -= rec.used_amount
             rec.available_amount = available_amount
+            print("Supered Used Amount %d" % (rec.used_amount))
+            print("Supered Availale Amount %d" % (rec.available_amount))
 
     @api.multi
     @api.depends('name','currency_id','total_amount')
@@ -121,4 +140,16 @@ class PaymentTransaction(models.Model):
                 self.state = 'validated'
         else:
             raise exceptions.UserError('Please write down the payment reference and payment date.')
+
+    def action_cancel_payment(self,context):
+        if self.state != 'confirm':
+            raise exceptions.UserError('Can only cancel [Confirmed] state Payment.')
+        self.write({
+            'state': 'cancel',
+            'cancel_uid': context.get('co_uid'),
+            'cancel_date': datetime.datetime.now()
+        })
+
+    def action_reject_from_button(self):
+        self.action_cancel_payment({'co_uid': self.env.user.id})
 
