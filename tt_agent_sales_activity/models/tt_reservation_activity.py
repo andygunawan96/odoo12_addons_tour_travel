@@ -37,7 +37,7 @@ class ReservationActivity(models.Model):
         tmp += '%s\n ' % (self.visit_date,)
         return tmp
 
-    def action_create_invoice(self):
+    def action_create_invoice(self, acquirer_id):
         invoice_id = self.env['tt.agent.invoice'].search(
             [('booker_id', '=', self.booker_id.id), ('state', '=', 'draft')])
 
@@ -80,9 +80,9 @@ class ReservationActivity(models.Model):
         ##membuat payment dalam draft
         payment_obj = self.env['tt.payment'].create({
             'agent_id': self.agent_id.id,
-            'acquirer_id': 7,
-            'total_amount': inv_line_obj.total,
-            'payment_date': datetime.now()
+            'acquirer_id': acquirer_id.id,
+            'real_total_amount': inv_line_obj.total,
+            # 'customer_parent_id': acquirer_id.agent_id.id
         })
 
         self.env['tt.payment.invoice.rel'].create({
@@ -90,8 +90,7 @@ class ReservationActivity(models.Model):
             'payment_id': payment_obj.id,
             'pay_amount': inv_line_obj.total,
         })
-        payment_obj.compute_available_amount()
 
-    def call_create_invoice(self):
-        super(ReservationActivity, self).call_create_invoice()
-        # self.action_create_invoice()
+    def call_create_invoice(self, acquirer_id):
+        super(ReservationActivity, self).call_create_invoice(acquirer_id)
+        self.action_create_invoice(acquirer_id)

@@ -2,7 +2,7 @@ from odoo import models,api,fields
 from datetime import datetime
 
 
-class ReservationTrain(models.Model):
+class ReservationAirline(models.Model):
 
     _inherit = 'tt.reservation.airline'
 
@@ -108,5 +108,5 @@ class ReservationTrain(models.Model):
     #     return res
 
     def action_issued_airline(self,co_uid,acquirer_id):
-        super(ReservationTrain, self).action_issued_airline(co_uid,acquirer_id)
+        super(ReservationAirline, self).action_issued_airline(co_uid,acquirer_id)
         self.action_create_invoice(acquirer_id)
