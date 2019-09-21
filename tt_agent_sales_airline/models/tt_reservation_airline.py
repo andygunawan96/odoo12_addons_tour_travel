@@ -39,7 +39,7 @@ class ReservationTrain(models.Model):
             tmp += '%s - %s\n ' % (rec.departure_date[:16], rec.arrival_date[:16])
         return tmp
 
-    def action_create_invoice(self):
+    def action_create_invoice(self,acquirer_id):
         invoice_id = self.env['tt.agent.invoice'].search([('booker_id','=',self.booker_id.id), ('state','=','draft')])
 
         if not invoice_id:
@@ -81,8 +81,9 @@ class ReservationTrain(models.Model):
         ##membuat payment dalam draft
         payment_obj = self.env['tt.payment'].create({
             'agent_id': self.agent_id.id,
-            'acquirer_id': 7,
-            'total_amount': inv_line_obj.total,
+            'acquirer_id': acquirer_id.id,
+            'real_total_amount': inv_line_obj.total,
+            'customer_parent_id': acquirer_id.agent_id.id
         })
 
         self.env['tt.payment.invoice.rel'].create({
@@ -106,6 +107,6 @@ class ReservationTrain(models.Model):
     #
     #     return res
 
-    def action_issued_airline(self,co_uid,customer_parent_id):
-        super(ReservationTrain, self).action_issued_airline(co_uid,customer_parent_id)
-        self.action_create_invoice()
+    def action_issued_airline(self,co_uid,acquirer_id):
+        super(ReservationTrain, self).action_issued_airline(co_uid,acquirer_id)
+        self.action_create_invoice(acquirer_id)

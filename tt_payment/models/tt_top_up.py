@@ -12,3 +12,8 @@ class TtTopUpInh(models.Model):
     def action_validate_top_up(self,validate_amount):
         self.validated_amount = validate_amount
         super(TtTopUpInh, self).action_validate_top_up()
+
+    def action_cancel_top_up(self,context):
+        super(TtTopUpInh, self).action_cancel_top_up(context)
+        if self.payment_id:
+            self.payment_id.action_cancel_payment(context)

@@ -115,7 +115,8 @@ class TtTopUp(models.Model):
             })
 
     def action_reject_from_button(self):
-        self.action_cancel_top_up({'co_uid':self.env.user.id
+        self.action_cancel_top_up({
+            'co_uid':self.env.user.id
                                    })
     def action_cancel_top_up(self,context):
         self.write({
@@ -246,7 +247,7 @@ class TtTopUp(models.Model):
             if top_up_obj.state != 'request':
                 raise RequestException(1018)
 
-            top_up_obj.action_cancel_top_up(context) # ubah ke status request
+            top_up_obj.action_cancel_top_up(context) # ubah ke status cancel
 
             return ERR.get_no_error()
         except RequestException as e:
@@ -255,9 +256,6 @@ class TtTopUp(models.Model):
         except Exception as e:
             _logger.error(traceback.format_exc())
             return ERR.get_error(1016)
-
-    def cron_expire_top_up(self):
-        self.search([('state','=','')])
 
     def print_topup(self):
         datas = {'ids': self.env.context.get('active_ids', [])}

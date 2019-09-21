@@ -60,12 +60,14 @@ class TtPaymentInh(models.Model):
     @api.multi
     def compute_available_amount(self):
         for rec in self:
-            super(TtPaymentInh, self).compute_available_amount()
+            pass
+            super(TtPaymentInh, rec).compute_available_amount()
             used_amount = 0
             for inv in rec.invoice_ids:
                 if inv.create_date:
                     used_amount += inv.pay_amount
                 # used_amount += inv.pay_amount
+            print("inv used amount %d" %(used_amount))
             rec.used_amount += used_amount
             rec.available_amount -= used_amount
 
