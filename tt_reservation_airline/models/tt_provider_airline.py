@@ -55,6 +55,9 @@ class TtProviderAirline(models.Model):
 
     notes = fields.Text('Notes', readonly=True, states={'draft': [('readonly', False)]})
 
+    error_history_ids = fields.One2many('tt.reservation.err.history','res_id','Error History')
+    # , domain = [('res_model', '=', 'tt.provider.airline')]
+
     def action_booked_api_airline(self, provider_data, api_context):
         for rec in self:
             rec.write({
@@ -77,16 +80,23 @@ class TtProviderAirline(models.Model):
                 'balance_due': 0
             })
 
-    def action_failed_booked_api_airline(self):
+    def action_failed_booked_api_airline(self,err_code,err_msg):
         for rec in self:
             rec.write({
-                'state': 'fail_booked'
+                'state': 'fail_booked',
+                'error_history_ids': [(0,0,{
+                    'res_model': self._name,
+                    'res_id': self.id,
+                    'error_code': err_code,
+                    'error_msg': err_msg
+                })]
             })
 
-    def action_failed_issued_api_airline(self):
+    def action_failed_issued_api_airline(self,err_msg):
         for rec in self:
             rec.write({
-                'state': 'fail_issued'
+                'state': 'fail_issued',
+                'error_msg': err_msg
             })
 
     def action_expired(self):
@@ -232,6 +242,7 @@ class TtProviderAirline(models.Model):
             'currency': self.currency_id.name,
             'hold_date': self.hold_date and self.hold_date or '',
             'tickets': ticket_list,
+            'error_msg': self.error_history_ids and self.error_history_ids[-1].error_msg or ''
         }
 
         return res

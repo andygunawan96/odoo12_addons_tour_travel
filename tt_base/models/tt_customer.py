@@ -124,6 +124,7 @@ class TtCustomer(models.Model):
             customer_list_obj = self.search([('agent_id','=',context['co_agent_id']),('name','ilike',req['name'])])
             customer_list = []
             for cust in customer_list_obj:
+                # if not ()
                 values = cust.to_dict()
                 customer_list.append(values)
             _logger.info(json.dumps(customer_list))

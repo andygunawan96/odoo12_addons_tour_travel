@@ -335,9 +335,9 @@ class ReservationAirline(models.Model):
                     provider_obj.action_issued_api_airline(context)
                     provider_obj.update_ticket_api(provider['passengers'])
                 elif provider['status'] == 'FAIL_BOOKED':
-                    provider_obj.action_failed_booked_api_airline()
+                    provider_obj.action_failed_booked_api_airline(provider.get('error_code'),provider.get('error_msg'))
                 elif provider['status'] == 'FAIL_ISSUED':
-                    provider_obj.action_failed_issued_api_airline()
+                    provider_obj.action_failed_issued_api_airline(provider.get('error_msg'))
 
             for rec in book_obj.provider_booking_ids:
                 pnr_list.append(rec.pnr)
@@ -360,7 +360,6 @@ class ReservationAirline(models.Model):
                     customer_parent_id = acquirer_id.agent_id.id
                 else:
                     customer_parent_id = book_obj.agent_id.customer_parent_walkin_id.id
-
 
                 if req.get('force_issued'):
                     book_obj.calculate_service_charge()
@@ -448,7 +447,9 @@ class ReservationAirline(models.Model):
                 if book_obj.state == 'issued':
                     _logger.error('Transaction Has been paid.')
                     raise RequestException(1009)
-
+                if book_obj.state != 'booked':
+                    _logger.error('Cannot issue not [Booked] State.')
+                    raise RequestException(1020)
                 #cek saldo
                 balance_res = self.env['tt.agent'].check_balance_limit_api(context['co_agent_id'],book_obj.total_nta)
                 if balance_res['error_code']!=0:

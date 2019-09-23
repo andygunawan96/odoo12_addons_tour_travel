@@ -17,7 +17,7 @@
                     <!--&lt;!&ndash;<field name="state" widget="statusbar" statusbar_visible="draft,booked,issued" clickable="1"/>&ndash;&gt;-->
                     <!--<field name="state" widget="statusbar" statusbar_visible="draft,booked,issued"/>-->
                 <!--</header>-->
-                <field name="state"/>
+                <field name="state" widget="status_bar"/>
                 <sheet>
                     <group>
                         <group>
@@ -27,8 +27,8 @@
                             <field name="pnr"/>
                             <field name="pnr2"/>
                             <field name="provider_id"/>
-                            <field name="notes"/>
-                            <field name="error_msg"/>
+<!--                            <field name="notes"/>-->
+<!--                            <field name="error_msg"/>-->
                             <field name="balance_due"/>
                         </group>
                         <group>
@@ -42,13 +42,6 @@
                             <!--<field name="refund_date"/>-->
                         </group>
                     </group>
-                    <separator string="Passengers"/>
-                    <field name="ticket_ids">
-                        <tree>
-                            <field name="passenger_id"/>
-                            <field name="ticket_number"/>
-                        </tree>
-                    </field>
                     <group string="Itinerary Info">
                         <group>
                             <field name="origin_id"/>
@@ -63,6 +56,13 @@
                             <field name="promotion_code"/>
                         </group>
                     </group>
+                    <separator string="Passengers"/>
+                    <field name="ticket_ids">
+                        <tree>
+                            <field name="passenger_id"/>
+                            <field name="ticket_number"/>
+                        </tree>
+                    </field>
                     <separator string="Journeys"/>
                     <field name="journey_ids"/>
                     <separator string="Service Charges"/>
@@ -76,6 +76,13 @@
                             <field name="amount"/>
                             <field name="total"/>
                             <field name="passenger_airline_ids"/>
+                        </tree>
+                    </field>
+                    <separator string="Error History"/>
+                    <field name="error_history_ids">
+                        <tree>
+                            <field name="error_code"/>
+                            <field name="error_msg"/>
                         </tree>
                     </field>
                     <!--<group string="Total Information" class="oe_subtotal_footer oe_right" groups="tt_base.group_tt_tour_travel_operator">-->

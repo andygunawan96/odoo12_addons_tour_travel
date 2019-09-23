@@ -23,6 +23,7 @@ tt_error_api_1016,1016,Cancel Top Up Error,,,1,1
 tt_error_api_1017,1017,Payment Acquirer Not Found,,,1,1
 tt_error_api_1018,1018,Cannot cancel top up state not request,,,1,1
 tt_error_api_1019,1019,Cannot create top up there're already 3 active request\nPlease cancel first,,,1,1
+tt_error_api_1020,1020,Cannot issued non booked state,,,1,1
 tt_error_api_4001,4001,Invalid action type,,,1,1
 tt_error_api_4002,4002,Error while validating your credential,,,1,1
 tt_error_api_4003,4003,Your session has been expired,,,1,1
