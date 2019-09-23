@@ -4,6 +4,7 @@ from odoo import http
 from dateutil.relativedelta import relativedelta
 from odoo.exceptions import UserError
 from ...tools import util,variables,ERR
+from ...tools.ERR import RequestException
 from ...tools.db_connector import GatewayConnector
 from .ApiConnector_Activity import ApiConnectorActivity
 
@@ -541,7 +542,7 @@ class ReservationActivity(models.Model):
         })
         self.message_post(body='Order DONE')
 
-    def call_create_invoice(self):
+    def call_create_invoice(self, acquirer_id):
         _logger.info('Creating Invoice for ' + self.name)
 
     def update_pnr_data(self, book_id, pnr):
@@ -567,6 +568,12 @@ class ReservationActivity(models.Model):
             booking_id = req['order_id'],
             prices = req['prices']
             book_info = req['book_info']
+            if req.get('seq_id'):
+                acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', req['seq_id'])])
+                if not acquirer_id:
+                    raise RequestException(1017)
+            else:
+                raise RequestException(1017)
 
             booking_obj = self.browse(booking_id)
             booking_obj.write({
@@ -578,7 +585,7 @@ class ReservationActivity(models.Model):
             booking_obj.update_pnr_data(booking_id, book_info['code'])
             booking_obj.calculate_service_charge()
             self.env.cr.commit()
-            booking_obj.call_create_invoice()
+            booking_obj.call_create_invoice(acquirer_id)
 
             if not api_context or api_context['co_uid'] == 1:
                 api_context['co_uid'] = booking_obj.booked_uid.id

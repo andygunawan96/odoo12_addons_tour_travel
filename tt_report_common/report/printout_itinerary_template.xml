@@ -24,9 +24,12 @@
 
     <template id="itinerary_signature">
         <div class="row">
-            I, the undersigned, declare that the reservations I have made is correspond to my true IDs and I made this statement consciously without any
-            pressure from anyone.
+            <div class="col-11">
+                I, the undersigned, declare that the reservations I have made is correspond to my true IDs and I made this statement consciously without any
+                pressure from anyone.
+            </div>
         </div>
+        <br/><br/>
         <table width="100%">
             <tr>
                 <td width="80%"/>
@@ -45,7 +48,7 @@
 
     <template id="printout_itinerary">
         <t t-set="data_report_header_spacing" t-value="20"/>
-        <t t-set="data_report_margin_top" t-value="22"/>
+        <t t-set="data_report_margin_top" t-value="2"/>
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
                 <div class="page">

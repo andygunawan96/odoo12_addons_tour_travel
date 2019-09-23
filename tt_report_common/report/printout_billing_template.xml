@@ -22,7 +22,7 @@
                 <td>Transaction Period</td>
                 <td>:</td>
                 <td>
-                    <span t-field="doc.due_date" t-options ='{"format": "dd/MM/yyyy"}'/>
+                    <span t-esc="last_billing[doc.name]"/> - <span t-field="doc.due_date" t-options ='{"format": "dd/MM/yyyy"}'/>
                 </td>
             </tr>
             <tr>
@@ -104,8 +104,8 @@
             </t>
             <div class="row" style="margin-left: 0px; margin-right: 0px; margin-bottom: 20px; border-radius: 0 0 20px 20px; border: 1px solid #BBB;">
                 <div class="col-7" style="background: #F0F0F0; border-radius: 0 0 0px 20px; padding: 10px 10px 10px 20px;"/>
-                <div class="col-3 text-right" style="background-color: #F0F0F0;">Billing Total</div>
-                <div class="col-2 text-right" style="background-color: #f15a22; border-radius: 0 0 20px 0; color: white;"><span t-field="doc.amount_total"/></div>
+                <div class="col-3 text-right" style="background-color: #F0F0F0; padding: 5px;">Billing Total</div>
+                <div class="col-2 text-right" style="background-color: #f15a22; border-radius: 0 0 20px 0; color: white; padding: 5px 25px;"><span t-field="doc.amount_total"/></div>
             </div>
         </div>
         <!-- Price and Sign -->

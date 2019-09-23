@@ -245,6 +245,8 @@
                     <t t-if="doc.state in ['valid','done']">
                         <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">HO Invoice</span><br/>
                     </t>
+                </t><t t-elif="doc_type == 'itin'">
+                    <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Itinerary</span><br/>
                 </t><t t-else="">
                     <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Other</span><br/>
                 </t>
@@ -440,7 +442,7 @@
                             <span t-esc="desc"/>
                         </t>
                     </div>
-                    <div class="col-2" style="border-radius: 0 0 20px 0px; padding: 10px 25px;">
+                    <div class="col-2 text-right" style="border-radius: 0 0 20px 0px; padding: 10px 25px;">
                         <span t-esc="line['total']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
                     </div>
                 </div>
@@ -449,6 +451,7 @@
         <!-- SubTotal -->
         <div class="row mt4 mb2">
             <div class="col-8">
+                <br/>
                 <table style="width:80%;">
                     <tr>
                         <td style="width:100px;">In Words</td>
@@ -467,25 +470,25 @@
                     <tr>
                         <td><strong>Subtotal</strong></td>
                         <td class="text-right">
-                            <span t-field="doc.total" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                            <span style="padding: 10px 25px;" t-field="doc.total" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
                         </td>
                     </tr>
                     <tr>
                         <td><strong>Discount</strong></td>
                         <td class="text-right">
-                            <span t-esc="0" t-esc-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                            <span style="padding: 10px 25px;" t-esc="0" t-esc-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
                         </td>
                     </tr>
                     <tr>
                         <td><strong>Tax</strong></td>
                         <td class="text-right">
-                            <span t-esc="0" t-esc-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                            <span style="padding: 10px 25px;" t-esc="0" t-esc-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
                         </td>
                     </tr>
                     <tr class="border-black">
                         <td><strong>Grand Total</strong></td>
                         <td class="text-right">
-                            <span t-field="doc.total" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                            <span style="padding: 10px 25px;" t-field="doc.total" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
                         </td>
                     </tr>
                 </table>
@@ -566,61 +569,67 @@
 
     <template id="reservation_airline_content_view">
         <!-- Main Params -->
-        <div class="row mt32">
-            <h2>Itinerary Details</h2>
-            <t t-foreach="doc.provider_booking_ids" t-as="provider_itin_id">
-                <table class="table table-sm" style="text-align:center;">
-                    <thead>
-                        <tr>
-                            <th>PNR</th>
-                            <th>Origin</th>
-                            <th>Destination</th>
-                            <th>Carrier</th>
-                            <th>Flight</th>
-                            <th>Departure Date</th>
-                            <th>Arrival Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <t t-foreach="doc.segment_ids.filtered(lambda x:x.pnr == provider_itin_id.pnr)" t-as="provider_segment_id">
+        <div class="row">
+            <div class="col-12">
+                <span style="font-size: 28px; font-weight: 730">ITINERARY DETAILS</span><br/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <t t-foreach="doc.provider_booking_ids" t-as="provider_itin_id">
+                    <table class="table table-sm" style="text-align:center;">
+                        <thead>
                             <tr>
-                                <td><span t-field="provider_segment_id.pnr"/></td>
-                                <td><span t-field="provider_segment_id.origin_id.name"/></td>
-                                <td><span t-field="provider_segment_id.destination_id.name"/></td>
-                                <td><span t-field="provider_segment_id.carrier_id.name"/></td>
-                                <td><span t-field="provider_segment_id.name"/></td>
-                                <td><span t-field="provider_segment_id.departure_date" t-options ='{"format": "dd/MM/yyyy HH:mm:ss"}'/></td>
-                                <td><span t-field="provider_segment_id.arrival_date" t-options ='{"format": "dd/MM/yyyy HH:mm:ss"}'/></td>
+                                <th>PNR</th>
+                                <th>Origin</th>
+                                <th>Destination</th>
+                                <th>Carrier</th>
+                                <th>Flight</th>
+                                <th>Departure Date</th>
+                                <th>Arrival Date</th>
                             </tr>
-                        </t>
-                    </tbody>
-                </table>
-                <h5>Passenger Details</h5>
-                <table class="table table-sm" style="text-align:center;">
-                    <thead>
-                        <tr>
-                            <th width="200px">Ticket Number</th>
-                            <th width="400px">Name</th>
-                            <th width="100px">Pax Type</th>
-                            <th width="300px">Baggage</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr t-foreach="provider_itin_id.ticket_ids" t-as="psg_rec">
-                            <td><span t-field="psg_rec.ticket_number"/></td>
-                            <td>
-                                <span t-field="psg_rec.passenger_id.title"/>
-                                <span/>
-                                <span t-field="psg_rec.passenger_id.first_name"/>
-                                <span/>
-                                <span t-field="psg_rec.passenger_id.last_name"/>
-                            </td>
-                            <td><span t-field="psg_rec.pax_type"/></td>
-                            <td>No Additional Baggage</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </t>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="doc.segment_ids.filtered(lambda x:x.pnr == provider_itin_id.pnr)" t-as="provider_segment_id">
+                                <tr>
+                                    <td><span t-field="provider_segment_id.pnr"/></td>
+                                    <td><span t-field="provider_segment_id.origin_id.name"/></td>
+                                    <td><span t-field="provider_segment_id.destination_id.name"/></td>
+                                    <td><span t-field="provider_segment_id.carrier_id.name"/></td>
+                                    <td><span t-field="provider_segment_id.name"/></td>
+                                    <td><span t-field="provider_segment_id.departure_date" t-options ='{"format": "dd/MM/yyyy HH:mm:ss"}'/></td>
+                                    <td><span t-field="provider_segment_id.arrival_date" t-options ='{"format": "dd/MM/yyyy HH:mm:ss"}'/></td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                    <h5>Passenger Detail(s)</h5>
+                    <table class="table table-sm" style="text-align:center;">
+                        <thead>
+                            <tr>
+                                <th width="200px">Ticket Number</th>
+                                <th width="400px">Name</th>
+                                <th width="100px">Pax Type</th>
+                                <th width="300px">Baggage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="provider_itin_id.ticket_ids" t-as="psg_rec">
+                                <td><span t-field="psg_rec.ticket_number"/></td>
+                                <td>
+                                    <span t-field="psg_rec.passenger_id.title"/>
+                                    <span/>
+                                    <span t-field="psg_rec.passenger_id.first_name"/>
+                                    <span/>
+                                    <span t-field="psg_rec.passenger_id.last_name"/>
+                                </td>
+                                <td><span t-field="psg_rec.pax_type"/></td>
+                                <td>No Additional Baggage</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </t>
+            </div>
         </div>
     </template>
 

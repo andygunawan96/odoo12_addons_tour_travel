@@ -117,7 +117,8 @@ class TtTopUp(models.Model):
     def action_reject_from_button(self):
         self.action_cancel_top_up({
             'co_uid':self.env.user.id
-                                   })
+       })
+
     def action_cancel_top_up(self,context):
         self.write({
             'state' : 'cancel',
