@@ -70,9 +70,9 @@ tt_master_activity_sku_for_tour_travel_operator,tt.master.activity.sku.for.tour.
 tt_master_activity_sku_for_tour_travel_supervisor,tt.master.activity.sku.for.tour.travel.supervisor,model_tt_master_activity_sku,tt_base.group_tt_tour_travel_supervisor,1,0,0,0
 tt_master_activity_sku_for_tour_travel_manager,tt.master.activity.sku.for.tour.travel.manager,model_tt_master_activity_sku,tt_base.group_tt_tour_travel_manager,1,0,0,0
 ,,,,,,,
-tt_reservation_passenger_activity_for_tour_travel_operator,tt.reservation.passenger.activity.for.tour.travel.operator,model_tt_reservation_passenger_activity,tt_base.group_tt_tour_travel_operator,1,0,0,0
-tt_reservation_passenger_activity_for_tour_travel_supervisor,tt.reservation.passenger.activity.for.tour.travel.supervisor,model_tt_reservation_passenger_activity,tt_base.group_tt_tour_travel_supervisor,1,0,0,0
-tt_reservation_passenger_activity_for_tour_travel_manager,tt.reservation.passenger.activity.for.tour.travel.manager,model_tt_reservation_passenger_activity,tt_base.group_tt_tour_travel_manager,1,0,0,0
+tt_reservation_passenger_activity_for_tour_travel_operator,tt.reservation.passenger.activity.for.tour.travel.operator,model_tt_reservation_passenger_activity,tt_base.group_tt_tour_travel_operator,1,1,1,0
+tt_reservation_passenger_activity_for_tour_travel_supervisor,tt.reservation.passenger.activity.for.tour.travel.supervisor,model_tt_reservation_passenger_activity,tt_base.group_tt_tour_travel_supervisor,1,1,1,0
+tt_reservation_passenger_activity_for_tour_travel_manager,tt.reservation.passenger.activity.for.tour.travel.manager,model_tt_reservation_passenger_activity,tt_base.group_tt_tour_travel_manager,1,1,1,0
 ,,,,,,,
 tt_provider_activity_for_tour_travel_operator,tt.provider.activity.for.tour.travel.operator,model_tt_provider_activity,tt_base.group_tt_tour_travel_operator,1,0,0,0
 tt_provider_activity_for_tour_travel_supervisor,tt.provider.activity.for.tour.travel.supervisor,model_tt_provider_activity,tt_base.group_tt_tour_travel_supervisor,1,0,0,0
