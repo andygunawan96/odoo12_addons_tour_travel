@@ -147,6 +147,7 @@ class PrintoutIteneraryForm(models.AbstractModel):
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
+            'doc_type': 'itin',
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
             'price_lines': values,
             'date_now': fields.Date.today()
@@ -156,6 +157,19 @@ class PrintoutIteneraryForm(models.AbstractModel):
 class PrintoutBilling(models.AbstractModel):
     _name = 'report.tt_report_common.printout_billing'
     _description = 'Rodex Model'
+
+    def last_billing(self, recs):
+        a = {}
+        for rec in recs:
+            bill_id = self.env['tt.billing.statement'].search([('customer_parent_id', '=', rec.customer_parent_id.id),('id', '!=', rec.id)],
+                                                              limit=1, order='date DESC')
+            if bill_id:
+                a.update({ rec.name: bill_id.date.strftime('%d/%m/%Y') })
+            else:
+                # Find lowest Invoice Date
+                inv_obj = rec.invoice_ids.sorted(key=lambda x: x.confirmed_date)
+                a.update({ rec.name: inv_obj[0].confirmed_date.strftime('%d/%m/%Y') })
+        return a
 
     def get_terbilang(self, amount, separator_index=0, separator_index2=0):
         angka = ["", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan", "Sepuluh", "Sebelas"]
@@ -226,6 +240,8 @@ class PrintoutBilling(models.AbstractModel):
             'doc_model': data['context']['active_model'],
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
             'terbilang': self.compute_terbilang(
+                self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
+            'last_billing': self.last_billing(
                 self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
         }
 
