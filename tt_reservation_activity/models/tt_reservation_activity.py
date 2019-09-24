@@ -782,7 +782,7 @@ class ReservationActivity(models.Model):
 
             pax_ids = self.create_customer_api(passengers, context, booker_obj.seq_id, contact_obj.seq_id, ['title', 'pax_type', 'api_data', 'sku_real_id'])
 
-            for psg in pax_ids:
+            for idx, psg in enumerate(pax_ids):
                 temp_obj = psg[0]
                 extra_dict = psg[1]
                 vals = temp_obj.copy_to_passenger()
@@ -790,7 +790,8 @@ class ReservationActivity(models.Model):
                     'booking_id': book_obj.id,
                     'title': extra_dict['title'],
                     'pax_type': extra_dict['pax_type'],
-                    'activity_sku_id': extra_dict.get('sku_real_id', 0)
+                    'activity_sku_id': extra_dict.get('sku_real_id', 0),
+                    'sequence': idx + 1,
                 })
                 psg_obj = self.env['tt.reservation.passenger.activity'].sudo().create(vals)
                 if extra_dict.get('api_data'):
@@ -1046,39 +1047,9 @@ class ReservationActivity(models.Model):
 
             # self.env.cr.execute("""SELECT * FROM tt_service_charge WHERE booking_activity_id=%s""", (activity_booking[0]['id'],))
             # api_price_ids = self.env.cr.dictfetchall()
-
             passengers = []
-            pricing = []
-            for rec in activity_booking.passenger_ids:
-                passengers.append({
-                    'name': str(rec.title) + '. ' + str(rec.first_name) + ' ' + str(rec.last_name),
-                    'birth_date': rec.birth_date,
-                    'pax_type': rec.pax_type,
-                    'sku_name': rec.activity_sku_id.title
-                })
-                for rec2 in rec.cost_service_charge_ids:
-                    if rec2.charge_type == 'FARE':
-                        pricing.append({
-                            'type': 'fare',
-                            'name': str(rec.first_name) + ' ' + str(rec.last_name) + ' Fare',
-                            'currency': rec2.currency_id.name,
-                            'price': rec2.amount
-                        })
-                    elif rec2.charge_type == 'ROC':
-                        pricing.append({
-                            'type': 'roc',
-                            'name': str(rec.first_name) + ' ' + str(rec.last_name) + ' Tax',
-                            'currency': rec2.currency_id.name,
-                            'price': rec2.amount
-                        })
-                    elif rec2.charge_code == 'rac':
-                        pricing.append({
-                            'type': 'rac',
-                            'name': str(rec.first_name) + ' ' + str(rec.last_name) + ' Commission',
-                            'currency': rec2.currency_id.name,
-                            'price': rec2.amount * -1
-                        })
-
+            for rec in activity_booking.sudo().passenger_ids:
+                passengers.append(rec.to_dict())
             contact = self.env['tt.customer'].browse(activity_booking.contact_id.id)
 
             master = self.env['tt.master.activity'].browse(activity_booking.activity_id.id)
@@ -1140,7 +1111,7 @@ class ReservationActivity(models.Model):
                     'name': activity_booking.contact_name,
                     'phone': activity_booking.contact_phone,
                     'gender': contact.gender and contact.gender or '',
-                    'marital_status': contact.marital_status and contact.marital_status or '',
+                    'marital_status': contact.marital_status and contact.marital_status or False,
                 },
                 'activity': {
                     'name': master.name,
@@ -1154,7 +1125,6 @@ class ReservationActivity(models.Model):
                 'timeslot': activity_booking.timeslot and activity_booking.timeslot or False,
                 'currencyCode': values['currencyCode'],
                 'passengers': passengers,
-                'pricing': pricing,
                 'name': order_number,
                 'activity_details': activity_details,
                 'voucher_detail': voucher_detail,
