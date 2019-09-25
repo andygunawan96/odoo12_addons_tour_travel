@@ -1,5 +1,5 @@
 <odoo>
-    <data>
+    <data noupdate="1">
         <record id="agent_type_ho" model="tt.agent.type">
             <field name="name">HO</field>
             <field name="code">ho</field>

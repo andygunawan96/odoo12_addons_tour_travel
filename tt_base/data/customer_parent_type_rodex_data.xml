@@ -1,5 +1,5 @@
 <odoo>
-    <data>
+    <data noupdate="1">
         <record id="customer_type_cor" model="tt.customer.parent.type">
             <field name="name">COR</field>
             <field name="code">cor</field>

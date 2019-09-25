@@ -1,5 +1,5 @@
 from odoo import models, fields, api, _
-from datetime import datetime
+from datetime import datetime,date
 from dateutil.relativedelta import relativedelta
 from odoo.tools import image
 from ...tools import variables,util,ERR
@@ -123,8 +123,15 @@ class TtCustomer(models.Model):
             print("request teropong\n"+json.dumps((req))+json.dumps(context))
             customer_list_obj = self.search([('agent_id','=',context['co_agent_id']),('name','ilike',req['name'])])
             customer_list = []
+            if req.get('lower') and req.get('upper'):
+                lower = date.today() - relativedelta(years=req.get('lower'))
+                upper = date.today() - relativedelta(years=req.get('upper'))
+            else:
+                lower = date.today() - relativedelta(years=17)
+                upper = date.today() - relativedelta(years=200)
             for cust in customer_list_obj:
-                # if not ()
+                if not (upper <= cust.birth_date <= lower):
+                    continue
                 values = cust.to_dict()
                 customer_list.append(values)
             _logger.info(json.dumps(customer_list))
