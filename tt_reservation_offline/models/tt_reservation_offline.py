@@ -36,7 +36,7 @@ SECTOR_TYPE = [
 
 
 class IssuedOffline(models.Model):
-    _inherit = ['tt.history', 'tt.reservation']
+    _inherit = 'tt.reservation'
     _name = 'tt.reservation.offline'
     _order = 'name desc'
     _description = 'Rodex Model'

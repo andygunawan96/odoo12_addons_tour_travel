@@ -51,7 +51,7 @@
                     <group string="Activity Info">
                         <group>
                             <field name="activity_id"/>
-                            <field name="activity_product"/>
+                            <field name="activity_product_id"/>
                             <field name="activity_product_uuid"/>
                             <field name="visit_date"/>
                         </group>
@@ -91,7 +91,7 @@
                 <field name="pnr"/>
                 <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
                 <field name="activity_id"/>
-                <field name="activity_product"/>
+                <field name="activity_product_id"/>
                 <field name="visit_date"/>
                 <!--<field name="total"/>-->
                 <field name="state"/>

@@ -12,9 +12,9 @@
                 <group>
                     <filter string="All" name="all"/>
                     <filter string="Issued" name="issued" domain="[('state','=','issued')]"/>
-                    <filter string="Failed/Expired" name="failed_expired" domain="['|', ('state','=','failed'),('state','=','expired')]"/>
-                    <filter string="Approved/Done" name="approved_done" domain="['|', ('state','=','approved'),('state','=','done')]"/>
-                    <filter string="Cancelled/Rejected/Refunded" name="cancelled" domain="['|', ('state','=','cancelled'),('state','=','rejected'),('state','=','refunded')]"/>
+                    <filter string="Failed/Expired" name="failed_expired" domain="['|', ('state','=','fail_booked'),('state','=','fail_issued'),('state','=','fail_refunded'),('state','=','cancel2')]"/>
+                    <filter string="Approved/Done" name="approved_done" domain="[('state','=','done')]"/>
+                    <filter string="Cancelled/Rejected/Refunded" name="cancelled" domain="['|', ('state','=','cancel'),('state','=','rejected'),('state','=','refund')]"/>
                 </group>
                 <separator/>
                 <filter name="today" string="Today" domain="[('date','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>
@@ -88,7 +88,7 @@
                 <group>
                     <group>
                         <field name="activity_id" string="Activity" readonly="1"/>
-                        <field name="activity_product" readonly="1"/>
+                        <field name="activity_product_id" readonly="1"/>
                     </group>
                     <group>
                         <field name="visit_date" readonly="1"/>

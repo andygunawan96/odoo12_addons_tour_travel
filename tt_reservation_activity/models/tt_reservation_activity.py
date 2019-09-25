@@ -88,6 +88,7 @@ class ReservationActivity(models.Model):
     refund_date = fields.Datetime('Refund Date')
 
     activity_id = fields.Many2one('tt.master.activity', 'Activity')
+    activity_product_id = fields.Many2one('tt.master.activity.lines', 'Activity Product')
     activity_name = fields.Char('Activity Name')
     activity_product = fields.Char('Product Type')
     activity_product_uuid = fields.Char('Product Type Uuid')
@@ -737,6 +738,7 @@ class ReservationActivity(models.Model):
                 'agent_id': context['co_agent_id'],
                 'user_id': context['co_uid'],
                 'activity_id': activity_type_id.activity_id.id,
+                'activity_product_id': activity_type_id.id,
                 'visit_date': datetime.strptime(search_request['visit_date'], '%Y-%m-%d').strftime('%d %b %Y'),
                 'activity_name': activity_type_id.activity_id.name,
                 'activity_product': activity_type_id.name,
@@ -807,6 +809,7 @@ class ReservationActivity(models.Model):
             provider_activity_vals = {
                 'booking_id': book_obj.id,
                 'activity_id': activity_type_id.activity_id.id,
+                'activity_product_id': activity_type_id.id,
                 'activity_product': activity_type_id.name,
                 'activity_product_uuid': search_request['product_type_uuid'],
                 'provider_id': provider_id.id,
@@ -855,6 +858,7 @@ class ReservationActivity(models.Model):
     def get_vouchers_button_api(self, obj_id, co_uid):
         obj = self.env['tt.reservation.activity'].browse(obj_id)
         req = {
+            'order_number': obj.name,
             'uuid': obj.booking_uuid,
             'pnr': obj.pnr,
             'provider': obj.provider_name
@@ -864,17 +868,6 @@ class ReservationActivity(models.Model):
         try:
             ids = []
             for rec in res2['response']['ticket']:
-                if res2['response']['provider'] == 'klook':
-                    attachment_value = {
-                        'name': 'Ticket.pdf',
-                        'datas_fname': 'Ticket.pdf',
-                        'res_model': 'tt.reservation.activity',
-                        'res_id': obj.id,
-                        'type': 'url',
-                        'mimetype': res2['response']['format'],
-                        'url': rec,
-                    }
-
                 if res2['response']['provider'] == 'globaltix':
                     attachment_value = {
                         'name': 'Ticket.pdf',
@@ -887,13 +880,13 @@ class ReservationActivity(models.Model):
                     }
 
                 if res2['response']['provider'] == 'bemyguest':
-                    pdf_data = pickle.loads(rec)
+                    pdf_data = pickle.loads(rec.encode())
                     if not pdf_data:
                         return False
 
                     attachment_value = {
                         'name': 'Ticket.pdf',
-                        'datas': base64.encodestring(pdf_data),
+                        'datas': base64.encodebytes(pdf_data),
                         'datas_fname': 'Ticket.pdf',
                         'res_model': 'tt.reservation.activity',
                         'res_id': obj.id,
@@ -1076,34 +1069,29 @@ class ReservationActivity(models.Model):
                 'voucherRedemptionAddress': master_line.voucherRedemptionAddress,
                 'cancellationPolicies': master_line.cancellationPolicies,
             }
+            attachments = False
+            if activity_booking.provider_name in ['bemyguest', 'globaltix']:
+                attachments = self.env['ir.attachment'].search([('res_model', '=', 'tt.reservation.activity'), ('res_id', '=', activity_booking.id)]).ids
 
-            attachments = self.env['ir.attachment'].search([('res_model', '=', 'tt.reservation.activity'), ('res_id', '=', activity_booking.id)]).ids
-            booking_obj = self.env['tt.reservation.activity'].search([('name', '=', order_number)])
+                if not attachments:
+                    res2 = self.get_vouchers_button_api(activity_booking.id, self.env.user.id)
+                    if res2:
+                        attachments = res2
 
-            if not attachments:
-                res2 = self.get_vouchers_button_api(activity_booking.id, self.env.user.id)
-                if res2:
-                    attachments = res2
-
-            if attachments:
-                booking_obj.sudo().write({
-                    'state': 'done',
-                })
-                self.env.cr.commit()
-                values.update({
-                    'status': 'done',
-                })
-
-            if values.get('voucher_url') and not booking_obj.voucher_url:
-                booking_obj.sudo().write({
+            if values.get('voucher_url') and not activity_booking.voucher_url:
+                activity_booking.sudo().write({
                     'voucher_url': values['voucher_url']
                 })
 
-            if booking_obj.state != 'done':
-                booking_obj.sudo().write({
+            if activity_booking.state != 'done':
+                activity_booking.sudo().write({
                     'state': values['status']
                 })
                 self.env.cr.commit()
+                if attachments:
+                    values.update({
+                        'status': 'done',
+                    })
 
             response = {
                 'contacts': {
@@ -1189,7 +1177,7 @@ class ReservationActivity(models.Model):
             book_obj = book_obj[0]
             if book_obj.state not in ['done', 'cancel', 'cancel2', 'refund']:
                 book_obj.sudo().write({
-                    'state': req.get('status') == 'confirmed' and 'done' or 'rejected',
+                    'state': req.get('status') and req['status'] or 'pending',
                     'voucher_url': req.get('voucher_url') and req['voucher_url'] or ''
                 })
 
