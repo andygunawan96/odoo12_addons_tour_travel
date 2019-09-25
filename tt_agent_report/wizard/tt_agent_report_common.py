@@ -20,6 +20,7 @@ class AgentReportCommon(models.TransientModel):
     date_to = fields.Date(string='End Date')
 
     agent_id = fields.Many2one('tt.agent', string='Agent', default=lambda self: self.env.user.agent_id)
+    agent_type_id = fields.Many2one('tt.agent.type', string='Agent Type', related='agent_id.agent_type_id')
 
     subtitle_report = fields.Char('Subtitle', help='This field use for report subtitle')
 
