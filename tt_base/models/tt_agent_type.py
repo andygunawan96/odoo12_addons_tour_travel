@@ -19,6 +19,7 @@ class TtAgentType(models.Model):
     max_monthly_fee = fields.Monetary('Max Monthly Fee')
     percentage_monthly_fee = fields.Monetary('Percentage Monthly Fee')
     recruitment_fee = fields.Monetary('Recruitment Fee')
+    user_template = fields.Many2one('res.users', 'User Template')
     registration_form = fields.Html(string="Registration Form")
     document = fields.Char(string="Document", required=False, )
     agent_ids = fields.One2many('tt.agent', 'agent_type_id', 'Agent')

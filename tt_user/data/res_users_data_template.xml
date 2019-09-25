@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+<!--        <record id="user_citra_template" model="res.users">-->
+<!--            <field name="group_id" eval="[(4,ref('tt_base.group_tt_agent_invoice_operator')), (4,ref('tt_base.group_tt_agent_user_operator')), (4,ref('tt_base.group_tt_agent_invoice_operator'))]"/>-->
+<!--        </record>-->
+
+<!--        <record id="user_japro_template" model="res.users">-->
+<!--            <field name="group_id" eval="[(4,ref('tt_base.group_tt_agent_invoice_manager')), (4,ref('tt_base.group_tt_agent_user_manager')), (4,ref('tt_base.group_tt_agent_invoice_manager'))]"/>-->
+<!--        </record>-->
+    </data>
+</odoo>

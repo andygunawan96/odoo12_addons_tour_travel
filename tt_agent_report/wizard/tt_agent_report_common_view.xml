@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="agent_common_report_view" model="ir.ui.view">
+        <field name="name">Common Report</field>
+        <field name="model">tt.agent.report.common.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Report Options">
+                <field name="company_id" invisible="1"/>
+                <group>
+                    <group>
+                        <field name="period" required="1"/>
+                        <field name="date_from" attrs="{'invisible': [('period', '!=', 'custom')]}"/>
+                        <field name="date_to" attrs="{'invisible': [('period', '!=', 'custom')]}"/>
+                    </group>
+                    <group>
+                        <field name="agent_id"/>  <!--attrs="{'invisible': [('is_ho_user', '=', False)]}"-->
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_print" string="Print in PDF" type="object" default_focus="1" class="oe_highlight"/>
+                    <button name="action_print_excel" string="Print in Excel" type="object" class="oe_highlight"/>
+                    or
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_agent_common_menu" model="ir.actions.act_window">
+        <field name="name">Common Report</field>
+        <field name="res_model">tt.agent.report.common.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="agent_common_report_view"/>
+        <field name="target">new</field>
+    </record>
+</odoo>

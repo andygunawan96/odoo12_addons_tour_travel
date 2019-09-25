@@ -19,7 +19,6 @@
                             <field name="pax_type"/>
                         </group>
                         <group string="Document Information">
-<!--                            <field name="transport_type"/>-->
                             <field name="country_id"/>
                             <field name="duration"/>
                             <field name="description" string="Consulate"/>
@@ -90,7 +89,7 @@
         <field name="res_model">tt.reservation.visa.pricelist</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
-        <field name="domain"/>  <!--[('transport_type','=', 'visa')]-->
+        <field name="domain"/>
         <field name="context">
             {
                 'form_view_ref': 'tt_reservation_visa.tt_reservation_visa_pricelist_view_form',

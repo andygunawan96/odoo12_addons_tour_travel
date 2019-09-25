@@ -36,7 +36,7 @@ SECTOR_TYPE = [
 
 
 class IssuedOffline(models.Model):
-    _inherit = ['tt.history', 'tt.reservation']
+    _inherit = ['tt.reservation']
     _name = 'tt.reservation.offline'
     _order = 'name desc'
     _description = 'Rodex Model'
@@ -63,8 +63,8 @@ class IssuedOffline(models.Model):
     parent_agent_commission = fields.Monetary('Parent Agent Commission', readonly=True)  # , compute='_get_agent_commission'
     ho_commission = fields.Monetary('HO Commission', readonly=True,   # , compute='_get_agent_commission'
                                     states={'confirm': [('readonly', False)], 'confirm': [('readonly', False)]})
-    nta_price = fields.Monetary('NTA Price', readonly=True, compute='_get_nta_price')
-    agent_nta_price = fields.Monetary('Agent Price', readonly=True, compute='_get_agent_price')
+    nta_price = fields.Monetary('NTA Price', readonly=True, compute='_get_nta_price', store=True)
+    agent_nta_price = fields.Monetary('Agent Price', readonly=True, compute='_get_agent_price', store=True)
 
     vendor = fields.Char('Vendor Provider', readonly=True, states={'confirm': [('readonly', False)]})
     master_vendor_id = fields.Char('Master Vendor', readonly=True, states={'confirm': [('readonly', False)]})
