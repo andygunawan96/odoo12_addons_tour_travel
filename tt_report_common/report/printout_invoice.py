@@ -25,17 +25,23 @@ class PrintoutTicketForm(models.AbstractModel):
         values = {}
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
-            for rec3 in rec.passenger_ids:
-                a = {'fare': 0, 'tax': 0, 'name': rec3.name, 'pax_type': 'ADT'}
-                for rec2 in rec3.cost_service_charge_ids:
-                    if rec2.charge_code == 'tax':
-                        a['tax'] += rec2.amount
-                    elif rec2.charge_type == 'RAC':
-                        pass
-                    else:
-                        a['fare'] += rec2.amount
-                    a['pax_type'] = rec2.pax_type
-                values[rec.id].append(a)
+            a = {}
+            for rec2 in rec.sale_service_charge_ids:
+                if rec2.pax_type not in a.keys():
+                    a[rec2.pax_type] = {
+                        'pax_type': rec2.pax_type,
+                        'fare': 0,
+                        'tax': 0,
+                        'qty': 1,
+                    }
+                else:
+                    a[rec2.pax_type]['qty'] += 1
+
+                if rec2.charge_type.lower() == 'fare':
+                    a[rec2.pax_type]['fare'] += rec.amount
+                elif rec2.charge_type.lower() in ['roc', 'tax']:
+                    a[rec2.pax_type]['tax'] += rec.amount
+            values[rec.id].append([a[new_a] for new_a in a])
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -177,17 +183,23 @@ class PrintoutIteneraryForm(models.AbstractModel):
         values = {}
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
-            for rec3 in rec.passenger_ids:
-                a = {'fare': 0, 'tax': 0, 'name': rec3.name, 'pax_type': 'ADT'}
-                for rec2 in rec3.cost_service_charge_ids:
-                    if rec2.charge_code == 'tax':
-                        a['tax'] += rec2.amount
-                    elif rec2.charge_type == 'RAC':
-                        pass
-                    else:
-                        a['fare'] += rec2.amount
-                    a['pax_type'] = rec2.pax_type
-                values[rec.id].append(a)
+            a = {}
+            for rec2 in rec.sale_service_charge_ids:
+                if rec2.pax_type not in a.keys():
+                    a[rec2.pax_type] = {
+                        'pax_type': rec2.pax_type,
+                        'fare': 0,
+                        'tax': 0,
+                        'qty': 1,
+                    }
+                else:
+                    a[rec2.pax_type]['qty'] += 1
+
+                if rec2.charge_type.lower() == 'fare':
+                    a[rec2.pax_type]['fare'] += rec.amount
+                elif rec2.charge_type.lower() in ['roc', 'tax']:
+                    a[rec2.pax_type]['tax'] += rec.amount
+            values[rec.id].append([a[new_a] for new_a in a])
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
