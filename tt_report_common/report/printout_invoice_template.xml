@@ -106,10 +106,7 @@
                 </td>
                 <td width="30%" style="font-size:16px;">
                     <div class="list-inline" style="float:right; margin-bottom:0;">
-                        <t t-if="doc_model == 'tt.agent.invoice' ">
-                            <b>Date: </b><span t-field="doc.date_invoice" t-options ='{"format": "dd/MM/yyyy"}'/>
-                        </t>
-                        <t t-elif="'tt.reservation' in doc_model">
+                        <t t-if="doc.date">
                             <b>Date: </b><span t-field="doc.date" t-options ='{"format": "dd/MM/yyyy"}'/>
                         </t>
                         <t t-else="">
@@ -379,16 +376,16 @@
                     <span t-field="doc.date_invoice" t-options ='{"format": "dd/MM/yyyy"}'/>
                 </td>
             </tr>
-            <tr>
-                <td style="width:50px;"/>
-                <td style="width:10px;"/>
-                <td style="width:100px;"/>
-                <td style="width:150px;">Due Date</td>
-                <td style="width:10px;">:</td>
-                <td style="width:400px;">
-                    <span t-field="doc.date_invoice" t-options ='{"format": "dd/MM/yyyy"}'/>
-                </td>
-            </tr>
+<!--            <tr>-->
+<!--                <td style="width:50px;"/>-->
+<!--                <td style="width:10px;"/>-->
+<!--                <td style="width:100px;"/>-->
+<!--                <td style="width:150px;">Due Date</td>-->
+<!--                <td style="width:10px;">:</td>-->
+<!--                <td style="width:400px;">-->
+<!--                    <span t-field="doc.date_invoice" t-options ='{"format": "dd/MM/yyyy"}'/>-->
+<!--                </td>-->
+<!--            </tr>-->
             <tr>
                 <td style="width:50px;"/>
                 <td style="width:10px;"/>
@@ -567,72 +564,6 @@
         </div>
     </template>
 
-    <template id="reservation_airline_content_view">
-        <!-- Main Params -->
-        <div class="row">
-            <div class="col-12">
-                <span style="font-size: 28px; font-weight: 730">ITINERARY DETAILS</span><br/>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-12">
-                <t t-foreach="doc.provider_booking_ids" t-as="provider_itin_id">
-                    <table class="table table-sm" style="text-align:center;">
-                        <thead>
-                            <tr>
-                                <th>PNR</th>
-                                <th>Origin</th>
-                                <th>Destination</th>
-                                <th>Carrier</th>
-                                <th>Flight</th>
-                                <th>Departure Date</th>
-                                <th>Arrival Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <t t-foreach="doc.segment_ids.filtered(lambda x:x.pnr == provider_itin_id.pnr)" t-as="provider_segment_id">
-                                <tr>
-                                    <td><span t-field="provider_segment_id.pnr"/></td>
-                                    <td><span t-field="provider_segment_id.origin_id.name"/></td>
-                                    <td><span t-field="provider_segment_id.destination_id.name"/></td>
-                                    <td><span t-field="provider_segment_id.carrier_id.name"/></td>
-                                    <td><span t-field="provider_segment_id.name"/></td>
-                                    <td><span t-field="provider_segment_id.departure_date" t-options ='{"format": "dd/MM/yyyy HH:mm:ss"}'/></td>
-                                    <td><span t-field="provider_segment_id.arrival_date" t-options ='{"format": "dd/MM/yyyy HH:mm:ss"}'/></td>
-                                </tr>
-                            </t>
-                        </tbody>
-                    </table>
-                    <h5>Passenger Detail(s)</h5>
-                    <table class="table table-sm" style="text-align:center;">
-                        <thead>
-                            <tr>
-                                <th width="200px">Ticket Number</th>
-                                <th width="400px">Name</th>
-                                <th width="100px">Pax Type</th>
-                                <th width="300px">Baggage</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr t-foreach="provider_itin_id.ticket_ids" t-as="psg_rec">
-                                <td><span t-field="psg_rec.ticket_number"/></td>
-                                <td>
-                                    <span t-field="psg_rec.passenger_id.title"/>
-                                    <span/>
-                                    <span t-field="psg_rec.passenger_id.first_name"/>
-                                    <span/>
-                                    <span t-field="psg_rec.passenger_id.last_name"/>
-                                </td>
-                                <td><span t-field="psg_rec.pax_type"/></td>
-                                <td>No Additional Baggage</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </t>
-            </div>
-        </div>
-    </template>
-
     <template id="reservation_airline_footer_view">
         <div class="">
             <h4 class="sub-table">Important Notes</h4>
@@ -655,22 +586,9 @@
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
                 <div class="page">
-                    <t t-if="doc_model == 'tt.reservation.airline'">
-                        <t t-call="tt_report_common.printout_ticket_airline_template"/>
-                    </t>
-                    <t t-if="doc_model != 'tt.reservation.airline'">
-                        <t t-call="tt_report_common.external_layout">
-                            <br/>
-                            <t t-if="doc_model == 'tt.agent.invoice'">
-                                <t t-call="tt_report_common.agent_invoice_content_view"/>
-                            </t>
-                            <t t-elif="doc_model == 'tt.reservation.hotel'">
-                                <t t-call="tt_report_common.reservation_hotel_content_view"/>
-                            </t>
-                            <t t-elif="doc_model == 'tt.reservation.train'">
-                                <t t-call="tt_report_common.reservation_train_content_view"/>
-                            </t>
-                        </t>
+                    <t t-call="tt_report_common.external_layout">
+                        <br/>
+                        <t t-call="tt_report_common.agent_invoice_content_view"/>
                     </t>
                 </div>
             </t>
