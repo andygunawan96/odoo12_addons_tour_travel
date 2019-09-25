@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="agent_report_xls_output_view" model="ir.ui.view">
+         <field name="name">Excel Output</field>
+         <field name="model">tt.agent.report.excel.output.wizard</field>
+         <field name="arch" type="xml">
+             <form string="Excel Output">
+                   <separator colspan="4" string="Please click the link file below to download"/>
+                   <field name="name" invisible="1"/>
+                   <field name="file_output" filename='name' readonly='1'/>
+                   <footer>
+                       <button string="Close" class="oe_link" special="cancel"/>
+                   </footer>
+             </form>
+         </field>
+    </record>
+
+</odoo>

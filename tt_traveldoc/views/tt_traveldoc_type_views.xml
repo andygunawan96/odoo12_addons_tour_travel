@@ -36,7 +36,7 @@
         <field name="res_model">tt.traveldoc.type</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
-        <field name="domain"/>  <!--[('transport_type','=', 'passport')]-->
+        <field name="domain"/>
         <field name="context">
             {
                 'form_view_ref': 'tt_traveldoc.tt_traveldoc_type_view_form',
