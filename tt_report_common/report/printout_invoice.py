@@ -189,16 +189,15 @@ class PrintoutIteneraryForm(models.AbstractModel):
                         'pax_type': rec2.pax_type,
                         'fare': 0,
                         'tax': 0,
-                        'qty': 1,
+                        'qty': 0,
                     }
-                else:
-                    a[rec2.pax_type]['qty'] += 1
 
                 if rec2.charge_type.lower() == 'fare':
                     a[rec2.pax_type]['fare'] += rec2.amount
+                    a[rec2.pax_type]['qty'] += 1
                 elif rec2.charge_type.lower() in ['roc', 'tax']:
                     a[rec2.pax_type]['tax'] += rec2.amount
-            values[rec.id].append([a[new_a] for new_a in a])
+            values[rec.id] = [a[new_a] for new_a in a]
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
