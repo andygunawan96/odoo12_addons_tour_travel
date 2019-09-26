@@ -1680,7 +1680,224 @@ class MasterActivity(models.Model):
         activity_id = self.env['tt.master.activity'].sudo().search(
             [('uuid', '=', req['productUuid']), ('provider_id', '=', provider_id.id)], limit=1)
         product_id = activity_id[0].id
+        activity_type_exist = self.env['tt.master.activity.lines'].search([('activity_id', '=', product_id), ('uuid', '=', req['data']['uuid']), '|', ('active', '=', False), ('active', '=', True)])
+        cancellationPolicies = ''
+        if req['data']['cancellationPolicies']:
+            for cancel in req['data']['cancellationPolicies']:
+                cancellationPolicies += 'Please refund ' + str(
+                    cancel['numberOfDays']) + ' days before the stated visit date to accept ' + str(
+                    cancel['refundPercentage']) + '% cashback.\n'
+        vals = {
+            'activity_id': product_id,
+            'uuid': req['data']['uuid'],
+            'name': req['data']['title'],
+            'description': req['data']['description'],
+            'durationDays': req['data']['durationDays'],
+            'durationHours': req['data']['durationHours'],
+            'durationMinutes': req['data']['durationMinutes'],
+            'isNonRefundable': req['data']['isNonRefundable'],
+            'minPax': req['data']['minGroup'],
+            'maxPax': req['data']['maxGroup'],
+            'voucherUse': req['data']['voucherUse'],
+            'voucherRedemptionAddress': req['data']['voucherRedemptionAddress'],
+            'voucherRequiresPrinting': req['data']['voucherRequiresPrinting'],
+            'cancellationPolicies': cancellationPolicies,
+            'voucher_validity_type': req['data']['validity']['type'],
+            'voucher_validity_days': req['data']['validity']['days'],
+            'voucher_validity_date': req['data']['validity']['date'],
+            'meetingLocation': req['data']['meetingLocation'],
+            'meetingAddress': req['data']['meetingAddress'],
+            'meetingTime': req['data']['meetingTime'],
+            'instantConfirmation': req['data']['instantConfirmation'],
+            'advanceBookingDays': 0,
+            'minimumSellingPrice': 0,
+            'active': True
+        }
+        if activity_type_exist:
+            activity_obj = activity_type_exist[0]
+            activity_obj.sudo().write(vals)
+        else:
+            activity_obj = self.env['tt.master.activity.lines'].sudo().create(vals)
+        self.env.cr.commit()
 
+        old_adult_sku = self.env['tt.master.activity.sku'].search(
+            [('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Adult'), '|', ('active', '=', False),
+             ('active', '=', True)])
+        sku_vals = {
+            'activity_line_id': activity_obj.id,
+            'sku_id': 'Adult',
+            'title': 'Adult',
+            'pax_type': 'adult',
+            'minPax': req['data']['minPax'],
+            'maxPax': req['data']['maxPax'],
+            'minAge': req['data']['minAdultAge'],
+            'maxAge': req['data']['maxAdultAge'],
+            'active': True,
+        }
+        if old_adult_sku:
+            old_adult_sku[0].sudo().write(sku_vals)
+        else:
+            self.env['tt.master.activity.sku'].sudo().create(sku_vals)
+        self.env.cr.commit()
+
+        old_child_sku = self.env['tt.master.activity.sku'].search(
+            [('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Child'), '|', ('active', '=', False),
+             ('active', '=', True)])
+        if req['data']['allowChildren']:
+            sku_vals = {
+                'activity_line_id': activity_obj.id,
+                'sku_id': 'Child',
+                'title': 'Child',
+                'pax_type': 'child',
+                'minPax': req['data']['minChildren'],
+                'maxPax': req['data']['maxChildren'],
+                'minAge': req['data']['minChildAge'],
+                'maxAge': req['data']['maxChildAge'],
+                'active': True,
+            }
+            if old_child_sku:
+                old_child_sku[0].sudo().write(sku_vals)
+            else:
+                self.env['tt.master.activity.sku'].sudo().create(sku_vals)
+            self.env.cr.commit()
+        else:
+            if old_child_sku:
+                old_child_sku[0].sudo().write({
+                    'active': False
+                })
+
+        old_senior_sku = self.env['tt.master.activity.sku'].search(
+            [('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Senior'), '|', ('active', '=', False),
+             ('active', '=', True)])
+        if req['data']['allowSeniors']:
+            sku_vals = {
+                'activity_line_id': activity_obj.id,
+                'sku_id': 'Senior',
+                'title': 'Senior',
+                'pax_type': 'senior',
+                'minPax': req['data']['minSeniors'],
+                'maxPax': req['data']['maxSeniors'],
+                'minAge': req['data']['minSeniorAge'],
+                'maxAge': req['data']['maxSeniorAge'],
+                'active': True,
+            }
+            if old_senior_sku:
+                old_senior_sku[0].sudo().write(sku_vals)
+            else:
+                self.env['tt.master.activity.sku'].sudo().create(sku_vals)
+            self.env.cr.commit()
+        else:
+            if old_senior_sku:
+                old_senior_sku[0].sudo().write({
+                    'active': False
+                })
+
+        old_infant_sku = self.env['tt.master.activity.sku'].search(
+            [('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Infant'), '|', ('active', '=', False),
+             ('active', '=', True)])
+        if req['data']['allowInfant']:
+            sku_vals = {
+                'activity_line_id': activity_obj.id,
+                'sku_id': 'Infant',
+                'title': 'Infant',
+                'pax_type': 'infant',
+                'minPax': 0,
+                'maxPax': 5,
+                'minAge': req['data']['minInfantAge'],
+                'maxAge': req['data']['maxInfantAge'],
+                'active': True,
+            }
+            if old_infant_sku:
+                old_infant_sku[0].sudo().write(sku_vals)
+            else:
+                self.env['tt.master.activity.sku'].sudo().create(sku_vals)
+            self.env.cr.commit()
+        else:
+            if old_infant_sku:
+                old_infant_sku[0].sudo().write({
+                    'active': False
+                })
+
+        old_timeslot = self.env['tt.activity.master.timeslot'].search([('product_type_id', '=', activity_obj.id)])
+        for old_time in old_timeslot:
+            old_time.sudo().write({
+                'active': False
+            })
+
+        if req['data']['timeslots']:
+            for time in req['data']['timeslots']:
+                old_timeslot = self.env['tt.activity.master.timeslot'].search(
+                    [('product_type_id', '=', activity_obj.id), ('uuid', '=', time['uuid']), '|',
+                     ('active', '=', False), ('active', '=', True)])
+                value = {
+                    'product_type_id': activity_obj.id,
+                    'uuid': time['uuid'],
+                    'startTime': time['startTime'],
+                    'endTime': time['endTime'],
+                    'active': True,
+                }
+                if old_timeslot:
+                    old_timeslot[0].sudo().write(value)
+                else:
+                    self.env['tt.activity.master.timeslot'].sudo().create(value)
+                self.env.cr.commit()
+
+        option_ids = []
+        if req['data']['options']['perBooking']:
+            for book in req['data']['options']['perBooking']:
+                value2 = {
+                    'uuid': book['uuid'],
+                    'name': book['name'],
+                    'description': book['description'],
+                    'required': book['required'],
+                    'formatRegex': book['formatRegex'],
+                    'inputType': book['inputType'],
+                    'price': book.get('price', 0),
+                    'type': 'perBooking',
+                }
+                temp2 = self.env['tt.activity.booking.option'].sudo().create(value2)
+                self.env.cr.commit()
+                if book.get('items'):
+                    for item in book['items']:
+                        value4 = {
+                            'booking_option_id': temp2.id,
+                            'label': item['label'],
+                            'value': item['value'],
+                            'price': item.get('price', 0),
+                            'currency_id': self.env['res.currency'].search([('name', '=', 'SGD')], limit=1).id,
+                        }
+                        self.env['tt.activity.booking.option.line'].sudo().create(value4)
+                        self.env.cr.commit()
+                option_ids.append(temp2.id)
+        if req['data']['options']['perPax']:
+            for pax in req['data']['options']['perPax']:
+                value3 = {
+                    'uuid': pax['uuid'],
+                    'name': pax['name'],
+                    'description': pax['description'],
+                    'required': pax['required'],
+                    'formatRegex': pax['formatRegex'],
+                    'inputType': pax['inputType'],
+                    'price': pax.get('price', 0),
+                    'type': 'perPax',
+                }
+                temp = self.env['tt.activity.booking.option'].sudo().create(value3)
+                self.env.cr.commit()
+                if pax.get('items'):
+                    for item in pax['items']:
+                        value5 = {
+                            'booking_option_id': temp.id,
+                            'label': item['label'],
+                            'value': item['value'],
+                            'price': item.get('price', 0),
+                            'currency_id': self.env['res.currency'].search([('name', '=', 'SGD')], limit=1).id,
+                        }
+                        self.env['tt.activity.booking.option.line'].sudo().create(value5)
+                        self.env.cr.commit()
+                option_ids.append(temp.id)
+        activity_obj.update({
+            'option_ids': [(6, 0, option_ids)],
+        })
         response = {
             'success': True
         }
