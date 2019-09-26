@@ -38,9 +38,9 @@ class PrintoutTicketForm(models.AbstractModel):
                     a[rec2.pax_type]['qty'] += 1
 
                 if rec2.charge_type.lower() == 'fare':
-                    a[rec2.pax_type]['fare'] += rec.amount
+                    a[rec2.pax_type]['fare'] += rec2.amount
                 elif rec2.charge_type.lower() in ['roc', 'tax']:
-                    a[rec2.pax_type]['tax'] += rec.amount
+                    a[rec2.pax_type]['tax'] += rec2.amount
             values[rec.id].append([a[new_a] for new_a in a])
         return {
             'doc_ids': data['context']['active_ids'],
@@ -196,9 +196,9 @@ class PrintoutIteneraryForm(models.AbstractModel):
                     a[rec2.pax_type]['qty'] += 1
 
                 if rec2.charge_type.lower() == 'fare':
-                    a[rec2.pax_type]['fare'] += rec.amount
+                    a[rec2.pax_type]['fare'] += rec2.amount
                 elif rec2.charge_type.lower() in ['roc', 'tax']:
-                    a[rec2.pax_type]['tax'] += rec.amount
+                    a[rec2.pax_type]['tax'] += rec2.amount
             values[rec.id].append([a[new_a] for new_a in a])
         return {
             'doc_ids': data['context']['active_ids'],
