@@ -74,7 +74,7 @@ class TtReservation(models.Model):
     total = fields.Monetary(string='Grand Total', default=0, compute='_compute_grand_total')
     total_discount = fields.Monetary(string='Total Discount', default=0, readonly=True)
     total_commission = fields.Monetary(string='Total Commission', default=0, compute='_compute_total_commission')
-    total_nta = fields.Monetary(string='NTA Amount',compute='_compute_total_nta', store=True)
+    total_nta = fields.Monetary(string='NTA Amount',compute='_compute_total_nta')
 
     # yang jual
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True,
