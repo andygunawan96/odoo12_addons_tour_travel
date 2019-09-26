@@ -17,7 +17,6 @@
                             <field name="process_type"/>
                         </group>
                         <group string="Document Information">
-<!--                            <field name="transport_type"/>-->
                             <field name="country_id"/>
                             <field name="duration"/>
                             <field name="description" string="Immigration"/>
@@ -86,7 +85,7 @@
         <field name="res_model">tt.reservation.passport.pricelist</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
-        <field name="domain"/>  <!--[('transport_type','=', 'passport')]-->
+        <field name="domain"/>
         <field name="context">
             {
                 'form_view_ref': 'tt_reservation_passport.tt_reservation_passport_pricelist_view_form',

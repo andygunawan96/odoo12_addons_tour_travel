@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="agent_report_visa">
+            <t t-call="web.html_container">
+                <t t-call="web.internal_layout">
+                    <div class="page">
+                        <!--========= TITLE & SUBTITLE ===========-->
+                        <div style="text-align:center;">
+                            <h4 >
+                                <span t-esc="data_form['title']"/>
+                            </h4>
+                        </div>
+                        <div style="text-align:center;">
+                            <strong>
+                                <span t-esc="data_form['subtitle']"/>
+                            </strong>
+                        </div>
+
+                        <table class="table table-condensed">
+                            <col width="100"/>
+                            <col width="250"/>
+                            <thead>
+                                <tr>
+                                    <th rowspan="2" style="padding: 2px">Order Number</th>
+                                    <th style="padding: 2px">Contact Person</th>
+                                    <th style="padding: 2px">Country</th>
+                                    <th style="padding: 2px">Visa Type</th>
+                                    <th style="padding: 2px">Departure Date</th>
+                                    <th style="padding: 2px">Immigration Consulate</th>
+                                    <th style="padding: 2px">Passenger Name</th>
+                                    <th style="padding: 2px">Passenger Age</th>
+                                    <th style="padding: 2px">Issued By</th>
+                                    <th style="padding: 2px">Issued Date</th>
+                                    <th style="padding: 2px">In Process Date</th>
+                                    <th style="padding: 2px">Ready Date</th>
+                                    <th style="padding: 2px">Done Date</th>
+                                    <th style="padding: 2px">Commission</th>
+                                    <th style="padding: 2px">Grand Total</th>
+                                    <th style="padding: 2px">NTA Amount</th>
+                                    <th style="padding: 2px">State</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="docs['lines']" t-as="line">
+                                    <td style="padding: 2px; font-weight: 200; font-size: 18px"><t t-esc="line['name']"/></td>
+                                    <td style="padding: 2px; font-weight: 200; font-size: 18px"><t t-esc="line['contact_person']"/></td>
+                                    <td style="padding: 2px; font-weight: 200; font-size: 18px"><t t-esc="line['country_name']"/></td>
+                                    <td style="padding: 2px; font-weight: 200; font-size: 18px"><t t-esc="line['visa_type']"/></td>
+                                    <td style="padding: 2px; font-weight: 200; font-size: 18px">
+                                        <t t-if="line['departure_date']">
+                                            <t t-esc="line['departure_date']"/>
+                                        </t>
+                                    </td>
+                                    <td style="padding: 2px; font-weight: 200; font-size: 18px"><t t-esc="line['immigration_consulate']"/></td>
+                                    <td style="padding: 2px; font-weight: 200; font-size: 18px"><t t-esc="line['pass_name']"/></td>
+                                    <td style="padding: 2px; font-weight: 200; font-size: 18px"><t t-esc="line['age']"/></td>
+                                    <td style="padding: 2px; font-weight: 200; font-size: 18px"><t t-esc="line['issued_name']"/></td>
+                                    <td style="padding: 2px; font-weight: 200; font-size: 18px">
+                                        <t t-if="line['issued_date']">
+                                            <t t-esc="line['issued_date'].strftime('%Y-%m-%d %H:%M:%S')"/>
+                                        </t>
+                                    </td>
+                                    <td style="padding: 2px; font-weight: 200; font-size: 18px">
+                                        <t t-if="line['in_process_date']">
+                                            <t t-esc="line['in_process_date'].strftime('%Y-%m-%d %H:%M:%S')"/>
+                                        </t>
+                                    </td>
+                                    <td style="padding: 2px; font-weight: 200; font-size: 18px">
+                                        <t t-if="line['ready_date']">
+                                            <t t-esc="line['ready_date'].strftime('%Y-%m-%d %H:%M:%S')"/>
+                                        </t>
+                                    </td>
+                                    <td style="padding: 2px; font-weight: 200; font-size: 18px">
+                                        <t t-if="line['done_date']">
+                                            <t t-esc="line['done_date'].strftime('%Y-%m-%d %H:%M:%S')"/>
+                                        </t>
+                                    </td>
+                                    <td style="padding: 2px; font-weight: 200; font-size: 18px"><t t-esc="line['commission']"/></td>
+                                    <td style="padding: 2px; font-weight: 200; font-size: 18px"><t t-esc="line['total']"/></td>
+                                    <td style="padding: 2px; font-weight: 200; font-size: 18px"><t t-esc="line['total_nta']"/></td>
+                                    <td style="padding: 2px; font-weight: 200; font-size: 18px"><t t-esc="line['state']"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

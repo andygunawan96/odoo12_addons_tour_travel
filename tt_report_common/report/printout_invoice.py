@@ -2,6 +2,56 @@ from odoo import models, fields, api
 import datetime
 
 
+class PrintoutTicketForm(models.AbstractModel):
+    _name = 'report.tt_report_common.printout_ticket'
+    _description = 'Rodex Model'
+
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        if not data.get('context'):
+            internal_model_id = docids.pop(0)
+            data['context'] = {}
+            if internal_model_id == 1:
+                data['context']['active_model'] = 'tt.reservation.airline'
+            elif internal_model_id == 2:
+                data['context']['active_model'] = 'tt.reservation.train'
+            elif internal_model_id == 3:
+                data['context']['active_model'] = 'tt.reservation.hotel'
+            elif internal_model_id == 4:
+                data['context']['active_model'] = 'tt.reservation.activity'
+            elif internal_model_id == 5:
+                data['context']['active_model'] = 'tt.reservation.tour'
+            data['context']['active_ids'] = docids
+        values = {}
+        for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            values[rec.id] = []
+            a = {}
+            for rec2 in rec.sale_service_charge_ids:
+                if rec2.pax_type not in a.keys():
+                    a[rec2.pax_type] = {
+                        'pax_type': rec2.pax_type,
+                        'fare': 0,
+                        'tax': 0,
+                        'qty': 1,
+                    }
+                else:
+                    a[rec2.pax_type]['qty'] += 1
+
+                if rec2.charge_type.lower() == 'fare':
+                    a[rec2.pax_type]['fare'] += rec.amount
+                elif rec2.charge_type.lower() in ['roc', 'tax']:
+                    a[rec2.pax_type]['tax'] += rec.amount
+            values[rec.id].append([a[new_a] for new_a in a])
+        return {
+            'doc_ids': data['context']['active_ids'],
+            'doc_model': data['context']['active_model'],
+            'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
+            'price_lines': values,
+            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'with_price': data.get('is_with_price') or False,
+        }
+
+
 class PrintoutInvoice(models.AbstractModel):
     _name = 'report.tt_report_common.printout_invoice'
     _description = 'Rodex Model'
@@ -133,24 +183,30 @@ class PrintoutIteneraryForm(models.AbstractModel):
         values = {}
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
-            for rec3 in rec.passenger_ids:
-                a = {'fare': 0, 'tax': 0, 'name': rec3.name, 'pax_type': 'ADT'}
-                for rec2 in rec3.cost_service_charge_ids:
-                    if rec2.charge_code == 'tax':
-                        a['tax'] += rec2.amount
-                    elif rec2.charge_type == 'RAC':
-                        pass
-                    else:
-                        a['fare'] += rec2.amount
-                    a['pax_type'] = rec2.pax_type
-                values[rec.id].append(a)
+            a = {}
+            for rec2 in rec.sale_service_charge_ids:
+                if rec2.pax_type not in a.keys():
+                    a[rec2.pax_type] = {
+                        'pax_type': rec2.pax_type,
+                        'fare': 0,
+                        'tax': 0,
+                        'qty': 1,
+                    }
+                else:
+                    a[rec2.pax_type]['qty'] += 1
+
+                if rec2.charge_type.lower() == 'fare':
+                    a[rec2.pax_type]['fare'] += rec.amount
+                elif rec2.charge_type.lower() in ['roc', 'tax']:
+                    a[rec2.pax_type]['tax'] += rec.amount
+            values[rec.id].append([a[new_a] for new_a in a])
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'doc_type': 'itin',
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
             'price_lines': values,
-            'date_now': fields.Date.today()
+            'date_now': fields.Date.today().strftime('%d %b %Y')
         }
 
 

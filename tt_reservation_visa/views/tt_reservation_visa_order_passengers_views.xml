@@ -41,6 +41,7 @@
                             <field name="name" readonly="1"/>
                             <field name="last_name" readonly="1"/>
                             <field name="birth_date" readonly="1"/>
+                            <field name="age" readonly="1"/>
                         </group>
                     </group>
                     <group>

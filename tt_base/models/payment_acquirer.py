@@ -65,7 +65,7 @@ class PaymentAcquirer(models.Model):
                 'fee': fee,
                 'unique_amount': uniq,
             },
-            'total_amount': amount + fee + uniq,
+            'total_amount': float(amount) + fee + uniq,
             'image': self.image or '',
             'return_url': '/payment/' + str(self.type) + '/feedback?acq_id=' + str(self.id)
         }
@@ -94,7 +94,7 @@ class PaymentAcquirer(models.Model):
             if util.get_without_empty(req,'order_number'):
                 amount = self.env['tt.reservation.%s' % req['provider_type']].search([('name','=',req['order_number'])],limit=1).total
             else:
-                amount = req.get('amount')
+                amount = req.get('amount', 0)
 
             dom = [('website_published', '=', True), ('company_id', '=', self.env.user.company_id.id)]
             # Ambil agent_id Parent nya (Citranya corpor tsb)

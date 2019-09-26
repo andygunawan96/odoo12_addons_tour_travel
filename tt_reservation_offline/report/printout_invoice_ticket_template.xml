@@ -11,15 +11,23 @@
         <div class="footer" style="position: absolute; left: 0; right: 0; background-image: url('/tt_reservation_offline/static/images/background footer airline.jpg');">
             <div class="box-footer" style="padding: 0px; width: 100%; height: 120px; background: rgba(39,62,84,0.82);">  <!--rgba(70,70,70,0.8);-->
                 <div class="row">
-                    <div class="col-2" style="margin-top:20px; margin-left: 15px;">
-                         <img t-if="o.agent_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(o.agent_id.logo)" height="200" border="1" width="300" style="max-height:80px; max-width:150px;"/>
-                    </div>
-                    <div class="col-4" style="margin-top:10px; margin-left: 15px;">
-                        <div>
-                            <span style="font-weight: 600; color: white">PT Roda Express Sukses Mandiri</span>
-                        </div>
-                        <div>
-                            <span style="color: white">Jl. Raya Darmo 177-B, Surabaya Indonesia, 60241</span>
+                    <div class="col-6" style="margin-top:15px; margin-left: 15px; ">
+                        <div class="row">
+                            <div class="col-1"/>
+                            <div class="col-10">
+                                <div>
+                                    <span style="font-weight: 600; color: white; font-size: 18px;">PT Roda Express Sukses Mandiri</span>
+                                </div>
+                                <div>
+                                    <div class="row">
+                                        <div class="col-9">
+                                            <span style="color: white">Jl. Raya Darmo 177-B, Surabaya Indonesia, 60241</span>
+                                        </div>
+                                        <div class="col-3"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-1"/>
                         </div>
                     </div>
                     <div class="col-5" style="margin-top:10px;">
@@ -32,7 +40,7 @@
                                     <span style="color: white"><img t-att-src="'/tt_reservation_offline/static/images/24-hours-phone-service.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/> <span style="color: white; font-size: 14px">031 - 5662000</span></span>
                                 </div>
                                 <div style="margin-top: 5px;">
-                                    <span style="font-size: 10px; color: white"><img t-att-src="'/tt_reservation_offline/static/images/mail.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/> <span style="color: white; font-size: 9px">reservasi@rodextravel.tours</span></span>
+                                    <span style="font-size: 10px; color: white"><img t-att-src="'/tt_reservation_offline/static/images/whatsapp.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/> <span style="color: white; font-size: 14px">081338000794</span></span>
                                 </div>
                             </div>
                             <div class="col-6">
@@ -56,7 +64,7 @@
             <div class="article" style="margin: 30px !important; padding: 0px !important">
                 <div class="row">
                     <div class="col-4">
-                        <img t-if="o.agent_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(o.agent_id.logo)" height="200" border="1" width="300" style="max-height:100px; max-width:165px; margin-bottom: 20px"/><br/>
+                        <img t-if="doc.agent_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(doc.agent_id.logo)" height="100" border="1" width="300" style="max-height:100px; max-width:165px; margin-bottom: 20px"/><br/>
                     </div>
                     <div class="col-3">
 
@@ -71,7 +79,7 @@
                             <div id="rectangle" style="width: 90%;height: 50px; bottom: 50px; background-image:  url('/tt_reservation_offline/static/images/background footer airline.jpg'); border-radius: 25px; position: absolute; z-index: 0;">
                                 <div style="padding-left: 60px; padding-bottom: 10px; vertical-align: middle; text-align: center; border-radius: 25px; background-color: rgba(39,62,84,0.76); padding-top: 5px;">
                                     <div style="vertical-align: middle; display: flex; letter-spacing: 0.05em; font-size: 24px; color: white; font-weight: 600; margin-top: 0px; margin-left: -10px;">
-                                        <span style="margin-top: 5px;"><span t-field="o.name"/></span>
+                                        <span style="margin-top: 5px;"><span t-field="doc.name"/></span>
                                     </div>
                                 </div>
                             </div>
@@ -100,7 +108,7 @@
                             <span style="color: white; font-weight: 600; font-size: 18px"><span t-esc="line['departure_date'].strftime('%a, %d %b %Y')"/></span>
                         </div>
                         <div class="row" style="width: 100.2%; margin-left: 0px; margin-right: 0px; margin-bottom: 40px">
-                            <div class="col-2" style="background: #F0F0F0; border-radius: 0 0 0px 20px; padding-right: 10px; padding-top: 10px; padding-bottom: 10px; padding-left: 10px; border-left: 1px solid #909090; border-bottom: 1px solid #909090;">
+                            <div class="col-2" style="background: #F0F0F0; border-radius: 0 0 0px 20px; padding-right: 10px; padding-top: 10px; padding-bottom: 10px; padding-left: 20px; border-left: 1px solid #909090; border-bottom: 1px solid #909090;">
                                 <div style="text-align: left; vertical-align: center">
 <!--                                    <span style="font-size: 15px; color: #DC5413">STATUS : CONFIRMED</span><br/>-->
                                     <span style="font-size: 15px; font-weight: bold;">PNR: <span t-esc="line_ids[pnr_index]['pnr']"/></span><br/>
@@ -139,7 +147,7 @@
                                 <span style="font-size: 18px; font-weight: 400">Transit : <span t-esc="transit_total"/></span><br/>
                                 <t t-foreach="range(transit_total)" t-as="index">
                                     <span style="font-size: 14px">SUB <img t-att-src="'/tt_reservation_offline/static/images/arrow-right.png'" style="max-height:20px; max-width:15px; margin-bottom: 4px;" /> SIN</span><br/>
-                                    <img t-att-src="'/tt_reservation_offline/static/images/clock-circular-outline.png'" style="max-height:20px; max-width:20px;" /> <span style="font-size: 14px; font-weight: 400;"><span t-esc="(line['return_date']-line['departure_date']).seconds // 3600"/>h:<span t-esc="((line['return_date']-line['departure_date']).seconds // 60) %60"/>m</span><br/>
+                                    <img t-att-src="'/tt_reservation_offline/static/images/clock-circular-outline.png'" style="max-height:15px; max-width:15px;" /> <span style="font-size: 14px; font-weight: 200;"><span t-esc="(line['return_date']-line['departure_date']).seconds // 3600"/>h:<span t-esc="((line['return_date']-line['departure_date']).seconds // 60) %60"/>m</span><br/>
                                     <t t-if="index+1 != transit_total">
                                         <div style="border-bottom: 1px solid #909090; margin-top: 3px; margin-bottom: 3px;"/>
                                     </t>
@@ -164,7 +172,7 @@
                         <t t-set="line_mod" t-value="0"/>
                     </t>
                     <t t-elif="line_mod%5 == 0">
-                        <div style="padding-bottom: 50px"/>
+                        <div style="padding-bottom: 20px"/>
                         <t t-set="line_mod" t-value="0"/>
                     </t>
                 </t>
@@ -194,7 +202,7 @@
                     <span style="font-size: 28px; font-weight: 730">PASSENGER DETAILS</span><br/>
                 </div>
 
-                <div class="box" style="margin: 20px 20px 20px 20px; border-style: solid; border-width: 1px; border-color: #BBB; border-radius: 20px">
+                <div class="box" style="margin: 20px 0px 20px 0px; border-style: solid; border-width: 1px; border-color: #BBB; border-radius: 20px">
                     <div class="row" style="margin-left: 0px; margin-right: 0px; margin-top: 5px; margin-bottom: 5px">
                         <div class="col-1" style="text-align: center; font-size:17px;">
                             No.
@@ -228,7 +236,7 @@
                                 </div>
                                 <div class="col-2" style="text-align: center">
                                     <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                        <img t-att-src="'/tt_reservation_offline/static/images/suitcase.png'" style="max-height:20px; max-width:20px; margin-bottom: 4px;" />
+                                        <img t-att-src="'/tt_reservation_offline/static/images/suitcase.png'" style="max-height:20px; max-width:20px; margin-bottom: 4px;" /><span style="color: #1A78AB; font-size: 10px; margin-top: 5px">20</span>
                                         <img t-att-src="'/tt_reservation_offline/static/images/wheelchair.png'" style="max-height:20px; max-width:20px; margin-bottom: 4px;" />
                                         <img t-att-src="'/tt_reservation_offline/static/images/menu.png'" style="max-height:20px; max-width:20px; margin-bottom: 4px;" />
                                     </label>
@@ -261,7 +269,7 @@
                     <span>* Passengers agree with Terms and Conditions of Carriage outlined by Carrier.</span>
                 </div>
             </div>
-            <t t-call="tt_reservation_offline.printout_ticket_airline_footer"/>
+            <t t-call="tt_report_common.external_layout_footer"/>
             <t t-set="pnr_index" t-value="pnr_index+1"/>
         </t>
     </template>
@@ -270,57 +278,61 @@
 <!--        <t t-call="tt_reservation_offline.report_rodex_e_tickettrain_logo"/>-->
         <t t-set="line_index" t-value="0"/>
         <t t-foreach="line_length" t-as="length">
-            <div class="article" style="margin-left: 40px; margin-right: 40px; margin-top: 60px;">
+            <div class="page" style="margin-left: 40px; margin-right: 40px; margin-top: 60px;">
                 <t t-call="tt_reservation_offline.report_rodex_e_tickettrain_logo"/>
                 <div class="row" style="border-top: 1px black solid; border-bottom: 1px black solid;">
                     <div class="col-2">
-                        <img src="/tt_reservation_offline/static/images/kai/logo_tors_small.png" style="max-height: 150px; max-width: 180px; height: 65px; width: 180px; margin-top: 9px;"/>
+                        <img src="/tt_reservation_offline/static/images/kai/logo_tors_small.png" style="margin-left: 4px; height: 60px; width: 185px; margin-top: 11px;"/>
                         <!--<img t-if="doc.agent_id.image" t-att-src="'data:image/png;base64,%s' % doc.agent_id.image" style="max-height: 56px; margin-top: 9px;"/>-->
                     </div>
-                    <div class="col-10" style="padding-left: 30px; font-size: 28px; font-weight: bold;">
-                        <span>BUKTI PEMBELIAN TIKET KERETA API</span><br/>
-                        <span>AGEN RESMI PT. KERETA API INDONESIA (PERSERO)</span>
+                    <div class="col-10" style="padding-left: 35px; font-size: 28px; font-weight: bold;">
+                        <div style="margin-top: 0px">
+                            <span>BUKTI PEMBELIAN TIKET KERETA API</span>
+                        </div>
+                        <div style="margin-bottom: 0px">
+                            <span>AGEN RESMI PT. KERETA API INDONESIA (PERSERO)</span>
+                        </div>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-9" style="font-size: 20px; padding-left: 0px;">
+                    <div class="col-9" style="font-size: 25px; padding-left: 0px;">
                         <div class="row" style="padding-top: 15px;">
-                            <div class="col-4" style="max-width: 30%;"><strong><span>Kode Booking</span></strong></div>
+                            <div class="col-3" style="max-width: 30%;"><strong><span>Kode Booking</span></strong></div>
                             <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
                             <t t-if="line_ids[line_index]['pnr']">
-                                <div class="col-7" style="padding: 0px; text-transform:uppercase"><strong><span t-esc="line_ids[line_index]['pnr']"/></strong></div><br/>
+                                <div class="col-8" style="padding: 0px; text-transform:uppercase;"><strong><span t-esc="line_ids[line_index]['pnr']"/></strong></div><br/>
                             </t>
                             <t t-if="not line_ids[line_index]['pnr']">
-                                <div class="col-7" style="padding: 0px; text-transform:uppercase"><span style="color: white;">kosong</span></div>
+                                <div class="col-8" style="padding: 0px; text-transform:uppercase;"><strong><span style="color: white;">kosong</span></strong></div>
                             </t>
                         </div>
                         <div class="row" style="padding: 0px;">
-                            <div class="col-4" style="max-width: 30%;"><span>Nama KA</span></div>
+                            <div class="col-3" style="max-width: 30%;"><span>Nama KA</span></div>
                             <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
                             <t t-if="line_ids[line_index]['carrier_name']">
-                                <div class="col-7" style="padding: 0px; text-transform:uppercase"><span t-esc="line_ids[line_index]['carrier_name']"/> (<span t-if="line_ids[line_index]['carrier_code']" t-esc="line_ids[line_index]['carrier_code']"/>)</div>
+                                <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300"><span t-esc="line_ids[line_index]['carrier_name']"/> (<span t-if="line_ids[line_index]['carrier_code']" t-esc="line_ids[line_index]['carrier_code']"/>)</div>
                             </t>
                             <t t-if="not line_ids[line_index]['carrier_name']">
-                                <div class="col-7" style="padding: 0px; text-transform:uppercase"><span style="color: white;">kosong</span></div>
+                                <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300"><span style="color: white;">kosong</span></div>
                             </t>
                         </div>
                         <div class="row" style="padding: 0px;">
-                            <div class="col-4" style="max-width: 30%;"><span>Tgl Berangkat</span></div>
+                            <div class="col-3" style="max-width: 30%;"><span>Tgl Berangkat</span></div>
                             <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
                             <t t-if="line_ids[line_index]['departure_date']">
-                                <div class="col-7" style="padding: 0px; text-transform:uppercase">
+                                <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300">
                                     <span t-esc="line_ids[line_index]['departure_date'].strftime('%d %B %Y')"/>
                                 </div>
                             </t>
                             <t t-if="not line_ids[line_index]['departure_date']">
-                                <div class="col-7" style="padding: 0px; text-transform:uppercase"><span style="color: white;">kosong</span></div>
+                                <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300"><span style="color: white;">kosong</span></div>
                             </t>
                         </div>
                         <div class="row" style="padding: 0px;">
-                            <div class="col-4" style="max-width: 30%;"><span>St. Asal</span></div>
+                            <div class="col-3" style="max-width: 30%;"><span>St. Asal</span></div>
                             <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
                             <t t-if="line_ids[line_index]['origin_name']">
-                                <div class="col-7" style="padding: 0px; text-transform:uppercase">
+                                <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300">
                                     <t t-if="line_ids[line_index]['origin_city'] == line_ids[line_index]['origin_name']">
                                         <span t-esc="line_ids[line_index]['origin_city']"/><br/>
                                     </t>
@@ -336,10 +348,10 @@
                             </t>
                         </div>
                         <div class="row" style="padding: 0px;">
-                            <div class="col-4" style="max-width: 30%;"><span>St. Tujuan</span></div>
+                            <div class="col-3" style="max-width: 30%;"><span>St. Tujuan</span></div>
                             <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
                             <t t-if="line_ids[line_index]['destination_name']">
-                                <div class="col-7" style="padding: 0px; text-transform:uppercase">
+                                <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300">
                                     <t t-if="line_ids[line_index]['destination_city'] == line_ids[line_index]['destination_name']">
                                         <span t-esc="line_ids[line_index]['destination_city']"/><br/>
                                     </t>
@@ -355,21 +367,21 @@
                             </t>
                         </div>
                         <div class="row" style="padding: 0px;">
-                            <div class="col-4" style="max-width: 30%;"><span>Kelas</span></div>
+                            <div class="col-3" style="max-width: 30%;"><span>Kelas</span></div>
                             <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
                             <t t-if="line_ids[line_index]['class_of_service']">
-                                <div class="col-7" style="padding: 0px; text-transform:uppercase"><span t-esc="line_ids[line_index]['class_of_service']"/>
+                                <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300"><span t-esc="line_ids[line_index]['class_of_service']"/>
                                     <span t-if="'' in line_ids[line_index]['class_of_service']">-</span></div>
                             </t>
                             <t t-if="not line_ids[line_index]['class_of_service']">
-                                <div class="col-7" style="padding: 0px; text-transform:uppercase"><span style="color: white;">kosong</span></div>
+                                <div class="col-8" style="padding: 0px; text-transform:uppercase"><span style="color: white;">kosong</span></div>
                             </t>
                         </div>
 
                         <div class="row" style="padding: 0px;">
-                            <div class="col-4" style="max-width: 30%;margin-bottom:10px"><span>Jml Penumpang</span></div>
+                            <div class="col-3" style="max-width: 30%;margin-bottom:10px"><span>Jml Penumpang</span></div>
                             <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
-                            <div class="col-7" style="padding: 0px; text-transform:uppercase">
+                            <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300">
                                 <span t-esc="passenger_amount['adult']"/><span style="color: white;">.</span>DEWASA,<span/>
                                 <span t-esc="passenger_amount['child']"/><span style="color: white;">.</span>ANAK,<span/>
                                 <span t-esc="passenger_amount['infant']"/><span style="color: white;">.</span><span/>BAYI<span/>
@@ -389,8 +401,8 @@
                                 <span>Seat</span>
                             </div>
                         </div>
-                        <t t-if="o.passenger_ids">
-                            <t t-foreach="o.passenger_ids" t-as="psg">
+                        <t t-if="doc.passenger_ids">
+                            <t t-foreach="doc.passenger_ids" t-as="psg">
                                 <div class="row">
                                     <div class="col-3">
                                         <span t-field="psg.ticket_number"/>
@@ -417,10 +429,10 @@
                         </t>
                     </div>
                     <div class="col-3 col-offset-1 text-right">
-                        <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('QR', line_ids[line_index]['pnr'], 180, 180)" style="width:200px;height:200px"/>
+                        <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('QR', line_ids[line_index]['pnr'], 180, 180)" style="width:250px;height:250px; margin-top: 25px;"/>
                     </div>
                 </div>
-                <div class="row" style="font-size: 20px; border-top: 1px black solid; border-bottom: 1px black solid; margin-top: 40px;">
+                <div class="row" style="font-size: 25px; border-top: 1px black solid; border-bottom: 1px black solid; margin-top: 40px; font-weight: 300">
                     <div class="col-12">
                         <ul>
                             <li style=" margin-top: 5px;">Bukti pemesanan ini harus ditukarkan dengan Boarding Pass mulai 7x24 jam sebelum keberangkatan KA pada mesin check-in counter di stasiun keberangkatan.</li>
@@ -428,10 +440,10 @@
                         </ul>
                     </div>
                 </div>
-                <div class="row" style="font-size: 19px; margin-top: 30px;">
+                <div class="row" style="font-size: 22px; margin-top: 30px; font-weight: 300">
                     <div class="col-12">
                         Syarat dan Ketentuan:
-                        <table style="width: 100%;">
+                        <table style="width: 100%; line-height: normal">
                             <tr>
                                 <td style="width: 4%;">
                                     1.
@@ -631,15 +643,15 @@
     </template>
 
     <template id="printout_invoice_ticket_template">
-        <t t-foreach="docs" t-as="o">
+        <t t-foreach="docs" t-as="doc">
             <t t-call="web.html_container">
-                <t t-if="o.provider_type_id_name == 'airline'">
+                <t t-if="doc.provider_type_id_name == 'airline'">
                     <t t-set="data_report_header_spacing" t-value="0"/>
-                    <t t-set="data_report_margin_top" t-value="0"/>
+                    <t t-set="data_report_margin_top" t-value="10"/>
                     <t t-set="data_report_margin_bottom" t-value="26"/>
                     <t t-call="tt_reservation_offline.printout_ticket_airline_template"/>
                 </t>
-                <t t-elif="o.provider_type_id_name == 'train'">
+                <t t-elif="doc.provider_type_id_name == 'train'">
                     <t t-set="data_report_header_spacing" t-value="15"/>
                     <t t-set="data_report_margin_top" t-value="10"/>
                     <t t-set="data_report_margin_bottom" t-value="0"/>
@@ -649,18 +661,18 @@
                     <div class="header">
                         <div class="row">
                             <div class="col-2">
-                                <img t-if="o.agent_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(o.agent_id.logo)" height="120" border="1" width="120" style="max-height:85px; max_width:110px"/>
+                                <img t-if="doc.agent_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(doc.agent_id.logo)" height="120" border="1" width="120" style="max-height:85px; max_width:110px"/>
                             </div>
                             <div class="col-10">
-                                <strong><span t-field="o.agent_id.name"/></strong>
+                                <strong><span t-field="doc.agent_id.name"/></strong>
                             </div>
                         </div>
                     </div>
                     <div class="article" style="margin-top:15px">
                         <strong><h3>
-                            <span t-if="o.state == 'draft'">Draft Invoice :</span>  <!--Jika state invoice = draft-->
-                            <span t-if="o.state not in ('draft', 'cancel')">Invoice :</span>
-                            <span t-field="o.name"/></h3>
+                            <span t-if="doc.state == 'draft'">Draft Invoice :</span>  <!--Jika state invoice = draft-->
+                            <span t-if="doc.state not in ('draft', 'cancel')">Invoice :</span>
+                            <span t-field="doc.name"/></h3>
                         </strong>
                         <br/>
                         <div class="row">
@@ -669,29 +681,29 @@
                             </div>
                             <div class="col-7">
                                 <p>
-                                    <span t-field="o.contact_id.name"/><br/>
-                                    <t t-if="o.contact_id.address_ids">
-                                        <span t-field="o.contact_id.address_ids[0].address"/>
+                                    <span t-field="doc.contact_id.name"/><br/>
+                                    <t t-if="doc.contact_id.address_ids">
+                                        <span t-field="doc.contact_id.address_ids[0].address"/>
                                     </t><br/>
-                                    <t t-if="o.contact_id.phone_ids">
-                                        <span t-field="o.contact_id.phone_ids[0].phone_number"/>
+                                    <t t-if="doc.contact_id.phone_ids">
+                                        <span t-field="doc.contact_id.phone_ids[0].phone_number"/>
                                     </t><br/>
                                 </p>
                             </div>
                             <div class="col-4">
                                 <p>
-                                    Booker : <span t-field="o.booker_id.name"/><br/>
-                                    Operator : <span t-field="o.issued_uid.name"/><br/>
+                                    Booker : <span t-field="doc.booker_id.name"/><br/>
+                                    Operator : <span t-field="doc.issued_uid.name"/><br/>
                                     Invoice Date : __/__/____<br/>
-                                    Status : <span t-field="o.state"/>
+                                    Status : <span t-field="doc.state"/>
                                 </p>
                             </div>
                         </div>
-                        <t t-if="o.provider_type_id_name == 'airline' or o.provider_type_id_name == 'train'">
-                            <t t-if="o.provider_type_id_name == 'airline'">
+                        <t t-if="doc.provider_type_id_name == 'airline' or doc.provider_type_id_name == 'train'">
+                            <t t-if="doc.provider_type_id_name == 'airline'">
                                 <strong><h3 style="margin-top:70px">Flight Information</h3></strong>
                             </t>
-                            <t t-if="o.provider_type_id_name == 'train'">
+                            <t t-if="doc.provider_type_id_name == 'train'">
                                 <strong><h3 style="margin-top:70px">Train Information</h3></strong>
                             </t>
                             <table class="table table-condensed">
@@ -701,10 +713,10 @@
                                         <th>Origin</th>
                                         <th>Destination</th>
                                         <th>Carrier</th>
-                                        <t t-if="o.provider_type_id_name == 'airline'">
+                                        <t t-if="doc.provider_type_id_name == 'airline'">
                                             <th>Flight</th>
                                         </t>
-                                        <t t-if="o.provider_type_id_name == 'train'">
+                                        <t t-if="doc.provider_type_id_name == 'train'">
                                             <th>Train</th>
                                         </t>
                                         <th>Departure Date</th>
@@ -724,7 +736,7 @@
                                 </tbody>
                             </table>
                         </t>
-                        <t t-if="o.provider_type_id_name == 'hotel'">
+                        <t t-if="doc.provider_type_id_name == 'hotel'">
                             <strong><h3 style="margin-top:70px">Hotel Information</h3></strong>
                             <table class="table table-condensed">
                                 <thead>
@@ -749,7 +761,7 @@
                                 </tbody>
                             </table>
                         </t>
-                        <t t-if="o.provider_type_id_name == 'activity'">
+                        <t t-if="doc.provider_type_id_name == 'activity'">
                             <strong><h3 style="margin-top:70px">Activity Information</h3></strong>
                             <table class="table table-condensed">
                                 <thead>

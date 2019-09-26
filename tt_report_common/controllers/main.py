@@ -12,11 +12,14 @@ class Main(http.Controller):
         data = {'context': {'active_model': model_name, 'active_ids': model_id}}
         model_obj = request.env[model_name].browse(model_id)
         if model_id and model_obj:
-            if model_name == 'tt.reservation.airline' and not report_mode:
+            if model_name == 'tt.reservation.airline' and report_mode == 1:
                 pdf = request.env.ref('tt_report_common.action_report_printout_reservation_airline')
-            elif model_name == 'tt.reservation.airline' and report_mode == 1:
-                pdf = request.env.ref('tt_report_common.action_printout_itinerary_airline')
             elif model_name == 'tt.reservation.airline' and report_mode == 2:
+                data.update({'is_with_price': True})
+                pdf = request.env.ref('tt_report_common.action_report_printout_reservation_airline')
+            elif model_name == 'tt.reservation.airline' and report_mode == 3:
+                pdf = request.env.ref('tt_report_common.action_printout_itinerary_airline')
+            elif model_name == 'tt.reservation.airline' and report_mode == 4:
                 line_ids = request.env['tt.agent.invoice.line'].search([('id', 'in', model_obj.invoice_line_ids.ids)]).ids
                 model_id = [rec.invoice_id.id for rec in line_ids]
                 model_obj = request.env['tt.agent.invoice'].browse(model_id)
