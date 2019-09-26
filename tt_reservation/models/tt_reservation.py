@@ -69,12 +69,12 @@ class TtReservation(models.Model):
     # total_commission = fields.Monetary(string='Total Commission', default=0, compute="_compute_total_booking", store=True)
     # total_nta = fields.Monetary(string='NTA Amount', compute="_compute_total_booking", store=True)
 
-    total_fare = fields.Monetary(string='Total Fare', default=0, compute="_compute_total_fare", store=True)
-    total_tax = fields.Monetary(string='Total Tax', default=0, compute='_compute_total_tax', store=True)
-    total = fields.Monetary(string='Grand Total', default=0, compute='_compute_grand_total', store=True)
-    total_discount = fields.Monetary(string='Total Discount', default=0, readonly=True, store=True)
-    total_commission = fields.Monetary(string='Total Commission', default=0, compute='_compute_total_commission', store=True)
-    total_nta = fields.Monetary(string='NTA Amount',compute='_compute_total_nta', store=True)
+    total_fare = fields.Monetary(string='Total Fare', default=0, compute="_compute_total_fare")
+    total_tax = fields.Monetary(string='Total Tax', default=0, compute='_compute_total_tax')
+    total = fields.Monetary(string='Grand Total', default=0, compute='_compute_grand_total')
+    total_discount = fields.Monetary(string='Total Discount', default=0, readonly=True)
+    total_commission = fields.Monetary(string='Total Commission', default=0, compute='_compute_total_commission')
+    total_nta = fields.Monetary(string='NTA Amount',compute='_compute_total_nta')
 
     # yang jual
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True,
@@ -262,48 +262,39 @@ class TtReservation(models.Model):
             list_passenger.append(passenger_obj.create(vals).id)
         return list_passenger
 
-    @api.depends('total')
     def _compute_total_fare(self):
-        for rec in self:
-            fare_total = 0
-            for sale in rec.sale_service_charge_ids:
-                if sale.charge_type == 'FARE' or sale.charge_type == 'fare':
-                    fare_total += sale.total
-            rec.total_fare = fare_total
+        fare_total = 0
+        for rec in self.sale_service_charge_ids:
+            if rec.charge_type == 'FARE':
+                fare_total += rec.total
+        self.total_fare = fare_total
 
-    @api.depends('total')
     def _compute_total_tax(self):
-        for rec in self:
-            tax_total = 0
-            for sale in rec.sale_service_charge_ids:
-                if sale.charge_type in ['ROC', 'roc', 'TAX', 'tax']:
-                    tax_total += sale.total
-            rec.total_tax = tax_total
+        tax_total = 0
+        for rec in self.sale_service_charge_ids:
+            if rec.charge_type in ['ROC','TAX']:
+                tax_total += rec.total
+        self.total_tax = tax_total
 
     def _compute_grand_total(self):
-        for rec in self:
-            grand_total = 0
-            for sale in rec.sale_service_charge_ids:
-                if sale.charge_type != 'RAC' or sale.charge_type != 'rac':
-                    grand_total += sale.total
-            rec.total = grand_total
+        grand_total = 0
+        for rec in self.sale_service_charge_ids:
+            if rec.charge_type != 'RAC':
+                grand_total += rec.total
+        self.total = grand_total
 
-    @api.depends('total')
     def _compute_total_commission(self):
-        for rec in self:
-            commission_total = 0
-            for sale in rec.sale_service_charge_ids:
-                if sale.charge_type == 'RAC' or sale.charge_type == 'rac':
-                    commission_total += abs(sale.total)
-            rec.total_commission = commission_total
+        commission_total = 0
+        for rec in self.sale_service_charge_ids:
+            if rec.charge_type == 'RAC':
+                commission_total += abs(rec.total)
+        self.total_commission = commission_total
 
-    @api.depends('total')
     def _compute_total_nta(self):
-        for rec in self:
-            nta_total = 0
-            for sale in rec.sale_service_charge_ids:
-                nta_total += sale.total
-            rec.total_nta = nta_total
+        nta_total = 0
+        for rec in self.sale_service_charge_ids:
+            nta_total += rec.total
+        self.total_nta = nta_total
 
     def to_dict(self):
         res = {
