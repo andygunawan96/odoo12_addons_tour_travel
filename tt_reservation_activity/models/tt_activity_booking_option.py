@@ -43,6 +43,7 @@ class MasterTimeslot(models.Model):
     uuid = fields.Char('Uuid')
     startTime = fields.Char('Start Time')
     endTime = fields.Char('End Time')
+    active = fields.Boolean('Active', default=True)
 
 
 class MasterLocations(models.Model):

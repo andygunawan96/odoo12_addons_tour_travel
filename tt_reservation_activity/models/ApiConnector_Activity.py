@@ -112,7 +112,7 @@ class ApiConnectorActivity:
             cookie = self.signin(co_uid).get('cookie', False)
             counter += 1
 
-        res = self.send_request('get_vouchers', req_post, cookie, timeout=60 * 10)
+        res = self.send_request('get_vouchers_provider', req_post, cookie, timeout=60 * 10)
         try:
             if res['http_code'] in [0, 200]:
                 res = json.loads(res['response'])['result']

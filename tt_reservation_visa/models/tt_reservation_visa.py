@@ -29,7 +29,7 @@ STATE_VISA = [
 
 class TtVisa(models.Model):
     _name = 'tt.reservation.visa'
-    _inherit = ['tt.reservation']
+    _inherit = 'tt.reservation'
     _order = 'name desc'
     _description = 'Rodex Model'
 

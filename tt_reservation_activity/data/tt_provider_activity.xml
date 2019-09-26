@@ -13,11 +13,11 @@
             <field name="active" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_activity"/>
         </record>
-        <record id="tt_provider_activity_globaltix" model="tt.provider">
-            <field name="name">Globaltix</field>
-            <field name="code">globaltix</field>
-            <field name="active" eval="True"/>
-            <field name="provider_type_id" ref="tt_provider_type_activity"/>
-        </record>
+<!--        <record id="tt_provider_activity_globaltix" model="tt.provider">-->
+<!--            <field name="name">Globaltix</field>-->
+<!--            <field name="code">globaltix</field>-->
+<!--            <field name="active" eval="True"/>-->
+<!--            <field name="provider_type_id" ref="tt_provider_type_activity"/>-->
+<!--        </record>-->
     </data>
 </odoo>
