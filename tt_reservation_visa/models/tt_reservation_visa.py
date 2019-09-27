@@ -1230,8 +1230,3 @@ class TtVisa(models.Model):
             print('Total Fare : ' + str(rec.total_fare))
             rec.total = rec.total_fare + rec.total_tax + rec.total_discount
             rec.total_nta = rec.total - rec.total_commission
-
-    @api.depends('sale_service_charge_ids')
-    def _compute_grand_total(self):
-        for rec in self:
-            rec.total = rec.total_fare + rec.total_tax + rec.total_discount

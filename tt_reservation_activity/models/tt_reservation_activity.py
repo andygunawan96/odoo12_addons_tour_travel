@@ -1180,6 +1180,10 @@ class ReservationActivity(models.Model):
                     'state': req.get('status') and req['status'] or 'pending',
                     'voucher_url': req.get('voucher_url') and req['voucher_url'] or ''
                 })
+        response = {
+            'success': True
+        }
+        return ERR.get_no_error(response)
 
     def send_notif_update_status_activity(self, activity_booking, state):
         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')

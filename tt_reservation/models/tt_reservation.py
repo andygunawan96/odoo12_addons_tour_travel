@@ -260,7 +260,6 @@ class TtReservation(models.Model):
             list_passenger.append(passenger_obj.create(vals).id)
         return list_passenger
 
-    @api.depends('total')
     def _compute_total_fare(self):
         for rec in self:
             fare_total = 0
@@ -269,7 +268,6 @@ class TtReservation(models.Model):
                     fare_total += sale.total
             rec.total_fare = fare_total
 
-    @api.depends('total')
     def _compute_total_tax(self):
         for rec in self:
             tax_total = 0
@@ -286,7 +284,6 @@ class TtReservation(models.Model):
                     grand_total += sale.total
             rec.total = grand_total
 
-    @api.depends('total')
     def _compute_total_commission(self):
         for rec in self:
             commission_total = 0
@@ -295,7 +292,6 @@ class TtReservation(models.Model):
                     commission_total += abs(sale.total)
             rec.total_commission = commission_total
 
-    @api.depends('total')
     def _compute_total_nta(self):
         for rec in self:
             nta_total = 0
