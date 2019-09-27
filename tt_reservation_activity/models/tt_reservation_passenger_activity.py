@@ -18,6 +18,17 @@ class TtReservationCustomer(models.Model):
     activity_sku_id = fields.Many2one('tt.master.activity.sku', 'Activity SKU')
     option_ids = fields.One2many('tt.reservation.passenger.activity.option', 'activity_passenger_id', 'Options')
 
+    def to_dict(self):
+        res = super(TtReservationCustomer, self).to_dict()
+        res.update({
+            'pax_type': self.pax_type and self.pax_type or '',
+            'sku_name': self.activity_sku_id and self.activity_sku_id.title or '',
+            'sale_service_charges': self.get_service_charges()
+        })
+        if len(self.channel_service_charge_ids.ids)>0:
+            res['channel_service_charges'] = self.get_channel_service_charges()
+        return res
+
 
 class TtActivityPassengerOption(models.Model):
     _name = 'tt.reservation.passenger.activity.option'

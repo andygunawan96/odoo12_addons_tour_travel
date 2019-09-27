@@ -102,7 +102,7 @@ class TtHistory(models.Model):
                                                  new_value,  # new value
                                                  rec.env.user.name))  # User that Changed the Value
                 else:
-                    rec.message_post(body=_("%s has been changed from %s to %s by %s.") %
+                    rec.message_post(body=_("{ %s } changed from [ %s ] to [ %s ] by < %s >.") %
                                            (rec.fields_get().get(key)['string'],  # Model String / Label
                                             old_value,  # Old Value
                                             # value[key],  # New Value

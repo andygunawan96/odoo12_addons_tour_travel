@@ -28,7 +28,7 @@
         'security/ir_rule_data.xml',
         'data/ir_sequence_data.xml',
         'data/ir_cron_data.xml',
-        'data/top_up_amount.xml',
+        # 'data/top_up_amount.xml',
         'views/tt_ledger_views.xml',
         'views/tt_agent_views.xml',
         'views/tt_top_up_views.xml',

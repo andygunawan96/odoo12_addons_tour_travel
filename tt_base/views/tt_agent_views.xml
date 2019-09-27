@@ -1,5 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <record id="tt_agent_view_search" model="ir.ui.view">
+        <field name="name">tt.agent.view.search</field>
+        <field name="model">tt.agent</field>
+        <field name="arch" type="xml">
+            <search string="Search Agent">
+                <field name="name"/>
+                <field name="agent_type_id"/>
+                <field name="parent_agent_id"/>
+                <group>
+                    <filter string="All" name="all"/>
+                    <filter string="Citra" name="citra" domain="[('agent_type_id','=',2)]"/>
+                    <filter string="Japro" name="japro" domain="[('agent_type_id','=',3)]"/>
+                    <filter string="BTBO" name="btbo" domain="[('agent_type_id','=',6)]"/>
+                    <filter string="BTBR" name="btbr" domain="[('agent_type_id','=',7)]"/>
+                </group>
+                <separator/>
+                <filter string="Today" name="today" domain="[('date','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>
+                <filter string="Yesterday" name="yesterday"
+                        domain="[
+                            ('date', '&lt;', (context_today()).strftime('%Y-%m-%d')),
+                            ('date', '&gt;=', (context_today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d'))
+                        ]"/>
+                <filter name="week" string="This Week"
+                    domain="[
+                            '&amp;',
+                            ('date', '>=', (context_today() + relativedelta(weeks=-1,days=1,weekday=0)).strftime('%Y-%m-%d')),
+                            ('date', '&lt;=', (context_today() + relativedelta(weekday=6)).strftime('%Y-%m-%d')),
+                        ]"/>
+                <filter string="This Month" name="thismonth" domain="[('date','&gt;=',time.strftime('%%Y-%%m-01'))]"/>
+                <filter string="This Year" name="thisyear" domain="[('date','&gt;=',time.strftime('%%Y-01-01'))]"/>
+
+                <group expand="0" string="Group By">
+                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <filter string="Parent Agent" name="parent_agent_id" domain="[]" context="{'group_by':'parent_agent_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <filter string="Email" name="email" domain="[]" context="{'group_by':'email'}" groups="tt_base.group_tt_tour_travel_operator"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
     <record id="tt_agent_form_view" model="ir.ui.view">
         <field name="name">tt.agent.form.view</field>
         <field name="model">tt.agent</field>
@@ -15,6 +55,9 @@
                                 class="oe_stat_button" icon="fa-archive">
                             <field name="active" widget="boolean_button"
                                    options='{"terminology": "archive"}'/>
+                        </button>
+                        <button name="action_create_user" type="object" string="Create User" icon="fa-user"
+                                class="oe_stat_button" groups="tt_base.group_tt_agent_user_supervisor,tt_base.group_tt_tour_travel_operator">
                         </button>
                         <button type="object" name="action_show_agent_target_history" class="oe_stat_button" icon="fa-dollar">
                             <div class="o_field_widget o_stat_info">
@@ -46,7 +89,6 @@
                         <group>
                             <field name="currency_id"/>
 <!--                            <field name="actual_balance"/>-->
-                            <field name="balance"/>
 <!--                            <field name="annual_revenue_target"/>-->
 <!--                            <field name="annual_profit_target"/>-->
 <!--                            <field name="credit_limit"/>-->
@@ -104,7 +146,6 @@
             <tree>
                 <field name="name"/>
                 <field name="reference"/>
-                <field name="balance"/>
             </tree>
         </field>
     </record>
@@ -119,7 +160,6 @@
                 <field name="name"/>
                 <field name="email"/>
                 <field name="est_date"/>
-                <field name="balance"/>
                 <templates>
                     <t t-name="kanban-box">
                         <div class="oe_kanban_global_click o_kanban_record_has_image_fill o_hr_kanban_record">
@@ -141,8 +181,7 @@
                                                 <field name="name"/>
                                             </h4>
                                         </strong>
-                                        <span class="o_kanban_record_subtitle">Email: <field name="email"/></span>
-                                        <span class="o_kanban_record_subtitle">Balance: <field name="balance"/></span>
+                                        <span class="o_kanban_record_subtitle" name="email_for_inh">Email: <field name="email"/></span>
                                     </div>
                                 </div>
                                 <!--options="{'color_field': 'color'}"-->
@@ -161,27 +200,131 @@
         </field>
     </record>
 
-    <record id="tt_agent_action_view" model="ir.actions.act_window">
+    <record id="tt_agent_all_action_view" model="ir.actions.act_window">
         <field name="name">Agent</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">tt.agent</field>
         <field name="view_type">form</field>
         <field name="view_mode">kanban,form</field>
+        <field name="search_view_id" ref="tt_agent_view_search"/>
         <field name="domain">[]</field>
         <field name="context">
             {
                 'form_view_ref': 'tt_base.tt_agent_form_view',
-                'kanban_view_ref': 'tt_base.tt_agent_kanban_view'
+                'kanban_view_ref': 'tt_base.tt_agent_kanban_view',
+                'search_default_all':1
             }
         </field>
     </record>
 
+    <record id="tt_agent_citra_action_view" model="ir.actions.act_window">
+        <field name="name">Agent Citra</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.agent</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">kanban,form</field>
+        <field name="search_view_id" ref="tt_agent_view_search"/>
+        <field name="context" eval="
+            {
+                'form_view_ref': 'tt_base.tt_agent_form_view',
+                'kanban_view_ref': 'tt_base.tt_agent_kanban_view',
+                'search_default_citra': 1,
+                'default_agent_type_id': ref('tt_base.agent_type_citra')
+            }
+        "/>
+    </record>
+
+    <record id="tt_agent_japro_action_view" model="ir.actions.act_window">
+        <field name="name">Agent Japro</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.agent</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">kanban,form</field>
+        <field name="search_view_id" ref="tt_agent_view_search"/>
+        <field name="context" eval="
+            {
+                'form_view_ref': 'tt_base.tt_agent_form_view',
+                'kanban_view_ref': 'tt_base.tt_agent_kanban_view',
+                'search_default_japro': 1,
+                'default_agent_type_id': ref('tt_base.agent_type_japro')
+            }
+        "/>
+    </record>
+
+    <record id="tt_agent_btbo_action_view" model="ir.actions.act_window">
+        <field name="name">Agent BTBO</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.agent</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">kanban,form</field>
+        <field name="search_view_id" ref="tt_agent_view_search"/>
+        <field name="context" eval="
+            {
+                'form_view_ref': 'tt_base.tt_agent_form_view',
+                'kanban_view_ref': 'tt_base.tt_agent_kanban_view',
+                'search_default_btbo': 1,
+                'default_agent_type_id': ref('tt_base.agent_type_btbo')
+            }
+        "/>
+    </record>
+
+    <record id="tt_agent_btbr_action_view" model="ir.actions.act_window">
+        <field name="name">Agent BTBR</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.agent</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">kanban,form</field>
+        <field name="search_view_id" ref="tt_agent_view_search"/>
+        <field name="context" eval="
+            {
+                'form_view_ref': 'tt_base.tt_agent_form_view',
+                'kanban_view_ref': 'tt_base.tt_agent_kanban_view',
+                'search_default_btbr': 1,
+                'default_agent_type_id': ref('tt_base.agent_type_btbr')
+            }
+        "/>
+    </record>
+
     <menuitem id="menu_tour_travel_agent"
-              parent="tt_base.top_tour_travel_customers"
-              groups="group_tt_tour_travel_operator"
-              name="Agent"
-              sequence="2"
-              action="tt_agent_action_view"/>
+                  parent="tt_base.top_tour_travel_customers"
+                  groups="group_tt_tour_travel_operator"
+                  name="Agent"
+                  sequence="2"/>
+
+        <menuitem id="submenu_tour_travel_all_agent"
+                  parent="tt_base.menu_tour_travel_agent"
+                  groups="group_tt_tour_travel_operator"
+                  name="All"
+                  sequence="1"
+                  action="tt_agent_all_action_view"/>
+
+        <menuitem id="submenu_tour_travel_citra_agent"
+                  parent="tt_base.menu_tour_travel_agent"
+                  groups="group_tt_tour_travel_operator"
+                  name="Citra"
+                  sequence="2"
+                  action="tt_agent_citra_action_view"/>
+
+        <menuitem id="submenu_tour_travel_japro_agent"
+                  parent="tt_base.menu_tour_travel_agent"
+                  groups="group_tt_tour_travel_operator"
+                  name="JaPro"
+                  sequence="3"
+                  action="tt_agent_japro_action_view"/>
+
+        <menuitem id="submenu_tour_travel_btbo_agent"
+                  parent="tt_base.menu_tour_travel_agent"
+                  groups="group_tt_tour_travel_operator"
+                  name="BTBO"
+                  sequence="4"
+                  action="tt_agent_btbo_action_view"/>
+
+        <menuitem id="submenu_tour_travel_btbr_agent"
+                  parent="tt_base.menu_tour_travel_agent"
+                  groups="group_tt_tour_travel_operator"
+                  name="BTBR"
+                  sequence="5"
+                  action="tt_agent_btbr_action_view"/>
 
     <record id="view_agent_target_form" model="ir.ui.view">
         <field name="name">view.tt.agent.target.form.view</field>

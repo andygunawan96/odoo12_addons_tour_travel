@@ -549,26 +549,29 @@ class AgentRegistration(models.Model):
         regis_doc = copy.deepcopy(self.param_regis_doc)  # data['regis_doc']
         registration_list = self.search([('name', '=', company['name'])], order='registration_date desc', limit=1)  # data['company']
         check = 0
+        response = {}
         for rec in registration_list:
             response = {
                 'name': rec.name,
-                'discount': rec.discount,
+                # 'discount': rec.discount,
                 'registration_number': rec.registration_num,
                 'registration_fee': int(rec.registration_fee),
                 'currency': rec.currency_id.name
             }
             break
         for rec in registration_list:
-            if datetime.now() >= rec.registration_date + timedelta(minutes=2):
+            if datetime.now() <= rec.registration_date + timedelta(minutes=2):
                 check = 1
 
         context.update({
             'co_uid': self.env.user.id
         })
 
-        if check == 1:
+        if check == 0:
             try:
                 agent_type = self.env['tt.agent.type'].sudo().search([('name', '=', other.get('agent_type'))], limit=1)
+                parent_agent_id = self.set_parent_agent_id_api(agent_type)
+                promotion_id = self.env['tt.agent.registration.promotion'].sudo().search([('id', '=', 5)], limit=1)
                 header = self.prepare_header(company, other, agent_type)
                 # contact_ids = self.prepare_contact(pic)
                 agent_registration_customer_ids = self.prepare_customer(pic)
@@ -578,6 +581,8 @@ class AgentRegistration(models.Model):
                     'address_ids': [(6, 0, address_ids)],
                     'registration_fee': agent_type.registration_fee,
                     'registration_date': datetime.now(),
+                    'promotion_id': promotion_id.id,
+                    'parent_agent_id': parent_agent_id.id,
                     'create_uid': self.env.user.id
                 })
                 create_obj = self.create(header)
@@ -612,6 +617,16 @@ class AgentRegistration(models.Model):
             'agent_type_id': agent_type.id,
         }
         return header
+
+    def set_parent_agent_id_api(self, agent_type_id):
+        if agent_type_id:
+            if agent_type_id.code == 'citra':
+                parent_agent_id = self.env['tt.agent'].sudo().search([('agent_type_id.code', '=', 'ho')], limit=1)
+            else:
+                parent_agent_id = self.env.user.agent_id
+        else:
+            parent_agent_id = self.env.user.agent_id
+        return parent_agent_id
 
     def get_config_api(self):
         try:

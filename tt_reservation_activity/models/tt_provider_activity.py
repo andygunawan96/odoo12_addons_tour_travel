@@ -16,6 +16,7 @@ class TtProviderActivity(models.Model):
     booking_id = fields.Many2one('tt.reservation.activity', 'Order Number', ondelete='cascade')
     balance_due = fields.Float('Balance Due')
     activity_id = fields.Many2one('tt.master.activity', 'Activity')
+    activity_product_id = fields.Many2one('tt.master.activity.lines', 'Activity Product')
     activity_product = fields.Char('Product Type')
     activity_product_uuid = fields.Char('Product Type Uuid')
     visit_date = fields.Datetime('Visit Date')

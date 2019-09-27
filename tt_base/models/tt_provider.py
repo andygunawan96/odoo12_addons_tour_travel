@@ -1,4 +1,5 @@
-from odoo import api, fields, models, _
+from odoo import api, fields, models
+import time
 
 
 class TtProvider(models.Model):
@@ -17,6 +18,16 @@ class TtProvider(models.Model):
     provider_destination_ids = fields.One2many('tt.provider.destination', 'provider_id', 'Destination')
     provider_currency_ids = fields.One2many('tt.provider.currency', 'provider_id', 'Rate(s)')
     active = fields.Boolean('Active', default=True)
+    balance = fields.Monetary('Balance', related="provider_ledger_ids.balance")
+    track_balance = fields.Boolean('Do balance tracking')
+
+    def sync_balance(self):
+        ##send request to gateway
+        #_send_request('sia')
+        if self.track_balance:
+            # self.balance = int(time.time())
+            pass
+
 
     def to_dict(self):
         return {
@@ -86,9 +97,11 @@ class TtProviderCurrency(models.Model):
 class TtProviderLedger(models.Model):
     _name = 'tt.provider.ledger'
     _description = 'Rodex Model'
+    _order = 'id DESC'
 
     provider_id = fields.Many2one('tt.provider', 'Provider')
-
+    currency_id = fields.Many2one('res.currency',related='provider_id.currency_id')
+    balance = fields.Monetary('Balance')
 
 class ResCity(models.Model):
     _inherit = "res.city"

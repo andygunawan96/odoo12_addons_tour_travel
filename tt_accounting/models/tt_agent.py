@@ -5,6 +5,7 @@ class TtAgent(models.Model):
     _inherit = 'tt.agent'
 
     ledger_ids = fields.One2many('tt.ledger', 'agent_id', 'Ledger(s)')
+    balance = fields.Monetary(string="Balance", related="ledger_ids.balance")
 
     def action_view_ledgers(self):
         return {

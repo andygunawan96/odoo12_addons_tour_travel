@@ -12,12 +12,14 @@
 							<field name="provider_code" invisible="1"/>
 						</group>
 						<group>
-							<field name="add_parameter" attrs="{'invisible': [('provider_code', 'not in', ['klook'])]}"/>
+							<field name="start_num"/>
+							<field name="end_num"/>
 						</group>
 					</group>
 					<footer>
 						<button string="Sync Products" name="sync_product" type="object" class="btn-primary" />
 						<button string="Configure Products" name="config_product" type="object" class="btn-primary" />
+						<button string="Generate JSON" name="generate_json" type="object" class="btn-primary" />
 						<button string="Deactivate Products" name="deactivate_product" type="object" class="btn-primary" />
 						<button string="Cancel" class="btn-default" special="cancel" />
 					</footer>

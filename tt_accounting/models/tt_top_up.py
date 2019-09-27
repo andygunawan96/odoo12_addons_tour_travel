@@ -8,56 +8,10 @@ import json,os
 
 _logger = logging.getLogger(__name__)
 
-
-class TopUpAmount(models.Model):
-    _name = 'tt.top.up.amount'
-    _description = 'Rodex Model'
-
-    seq_id = fields.Char('Sequence ID')
-    name = fields.Char('Description')
-    currency_id = fields.Many2one("res.currency", default=lambda self: self.env.user.company_id.currency_id,
-                                  string="Currency", readonly=True, required=True)
-    amount = fields.Monetary(string='Amount')
-    active = fields.Boolean('Active', default='True')
-
-    # API FUNCTION
-    def get_top_up_amount(self):
-        def compute_top_up_amount(rec):
-            return {
-                'seq_id': rec.seq_id,
-                'name': rec.name,
-                'amount': rec.amount,
-                'currency_code': rec.currency_id.name
-            }
-        return [compute_top_up_amount(rec) for rec in self.search([], order="amount")]
-
-    def get_top_up_amount_api(self):
-        try:
-            data = self.get_top_up_amount()
-            res = {
-                'error_code': 0,
-                'error_msg': '',
-                'response': data,
-            }
-        except Exception as e:
-            _logger.error(str(e)+traceback.format_exc())
-            res = {
-                'error_code': 500,
-                'error_msg': str(e),
-                'response': ''
-            }
-        return res
-
-    @api.model
-    def create(self, vals_list):
-        vals_list['seq_id'] = self.env['ir.sequence'].next_by_code('tt.top.up.amount')
-        return super(TopUpAmount, self).create(vals_list)
-
-
 class TtTopUp(models.Model):
     _name = 'tt.top.up'
     _order = 'id desc'
-    _description = 'Rodex Model'
+    _description = 'Top Up'
 
     name = fields.Char('Document Number', required='True', readonly=True,
                        index=True, default=lambda self: 'New')
@@ -75,10 +29,8 @@ class TtTopUp(models.Model):
                              ''')
 
     currency_id = fields.Many2one('res.currency', 'Currency', readonly=True,
-                                  related='amount_id.currency_id', store=True)
-    amount_id = fields.Many2one('tt.top.up.amount', 'Amount', required=False, states={'draft': [('readonly', False)]}, readonly=True)
-    amount_count = fields.Integer('TopUp Count', default=1, states={'draft': [('readonly', False)]}, readonly=True)
-    amount = fields.Monetary('Unit Amount', related='amount_id.amount', store=True)
+                                  default=lambda self: self.env.company_id.currency_id.id, store=True)
+    amount = fields.Monetary('Input Amount')
     unique_amount = fields.Monetary('Unique Amount', default=0,
                                  states={'draft': [('readonly', False)]},
                                     help='''Unique amount for identification agent top-up via wire transfer''')
@@ -100,7 +52,7 @@ class TtTopUp(models.Model):
         vals_list['due_date'] = datetime.now() + timedelta(hours=3)
         return super(TtTopUp, self).create(vals_list)
 
-    @api.depends('amount_id', 'amount', 'amount_count', 'unique_amount', 'fees')#'amount_fix_va'
+    @api.depends('amount', 'unique_amount', 'fees')#'amount_fix_va'
     def _compute_amount(self):
         for tp in self:
             # if tp.amount_fix_va:
@@ -110,8 +62,8 @@ class TtTopUp(models.Model):
             #     })
             # else:
             tp.update({
-                'total': tp.amount_count * tp.amount_id.amount + tp.unique_amount,
-                'total_with_fees': tp.amount_count * tp.amount_id.amount + tp.unique_amount + tp.fees,
+                'total': tp.amount + tp.unique_amount,
+                'total_with_fees': tp.amount + tp.unique_amount + tp.fees,
             })
 
     def action_reject_from_button(self):
@@ -188,7 +140,7 @@ class TtTopUp(models.Model):
                 'state': 'request',
                 'agent_id': agent_obj.id,
                 'currency_id': self.env['res.currency'].search([('name','=',data.pop('currency_code'))]).id,
-                'amount_id': self.env['tt.top.up.amount'].search([('seq_id','=',data.pop('amount_seq_id'))]).id,
+                # 'amount_id': self.env['tt.top.up.amount'].search([('seq_id','=',data.pop('amount_seq_id'))]).id,
                 'request_uid': context['co_uid'],
                 'request_date': datetime.now()
             })

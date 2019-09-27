@@ -1,5 +1,6 @@
 from odoo import api, fields, models, _
 from odoo.http import request
+import time
 
 LANGUAGE = [
     ('ID', 'Bahasa Indonesia'),
@@ -78,6 +79,8 @@ class ResUsers(models.Model):
 
     @api.model
     def create(self, vals):
+        vals['email'] = time.time()
+        vals['notification_type'] = 'inbox'
         new_user = super(ResUsers, self).create(vals)
         new_user.partner_id.parent_id = new_user.agent_id.id
         new_user.partner_id.parent_agent_id = False

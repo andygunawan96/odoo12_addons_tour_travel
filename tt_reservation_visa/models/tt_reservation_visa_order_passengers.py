@@ -1,5 +1,6 @@
-from odoo import models, fields, _
-from datetime import datetime
+from odoo import models, fields, api, _
+from datetime import datetime, date
+from dateutil.relativedelta import relativedelta
 from odoo.exceptions import UserError
 
 STATE = [
@@ -70,6 +71,7 @@ class VisaOrderPassengers(models.Model):
     pricelist_id = fields.Many2one('tt.reservation.visa.pricelist', 'Visa Pricelist', readonly=0)  # readonly=1
     passenger_type = fields.Selection(PASSENGER_TYPE, 'Pax Type', readonly=0)  # readonly=1
     title = fields.Selection(TITLE, 'Title', readonly=0)  # readonly=1
+    age = fields.Char('Age', readonly=1, compute="_compute_age", store=True)
     passport_number = fields.Char(string='Passport Number')
     passport_expdate = fields.Datetime(string='Passport Exp Date')
     passenger_domicile = fields.Char('Domicile', related='passenger_id.domicile', readonly=0)  # readonly=1
@@ -322,6 +324,16 @@ class VisaOrderPassengers(models.Model):
                 rec.write({
                     'to_requirement_ids': [(4, data)]
                 })
+
+    @api.depends('birth_date')
+    @api.onchange('birth_date')
+    def _compute_age(self):
+        for rec in self:
+            if rec.birth_date:
+                today = date.today()
+                range_date = relativedelta(today, rec.birth_date)
+                age = str(range_date.years) + 'y ' + str(range_date.months) + 'm ' + str(range_date.days) + 'd'
+                rec.age = age
 
     def check_requirement(self, req_id):
         for rec in self:

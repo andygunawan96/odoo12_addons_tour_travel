@@ -2,3 +2,10 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_tt_reservation,access_tt_reservation.tt_reservation,model_tt_reservation,,1,1,1,1
 access_tt_service_charge,access_tt_reservation.tt_service_charge,model_tt_service_charge,,1,1,1,1
 access_tt_reservation_err_history,access_tt_reservation.tt_reservation_err_history,model_tt_reservation_err_history,,1,1,1,1
+
+tt_limiter_rule_for_operator,tt.limiter.rule.for.operator,model_tt_limiter_rule,tt_base.group_tt_tour_travel_operator,1,0,0,0
+tt_limiter_rule_for_supervisor,tt.limiter.rule.for.supervisor,model_tt_limiter_rule,tt_base.group_tt_tour_travel_supervisor,1,1,1,1
+
+tt_whitelisted_name_for_operator,tt.whitelisted.name.for.operator,model_tt_whitelisted_name,tt_base.group_tt_tour_travel_operator,1,1,1,1
+
+tt_whitelisted_passport_for_operator,tt.whitelisted.passport.for.operator,model_tt_whitelisted_passport,tt_base.group_tt_tour_travel_operator,1,1,1,1

@@ -1,5 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <template id="itinerary_price_detail">
+        <br/>
+        <span style="font-size: 28px; font-weight: 730">Price Detail(s)</span><br/>
+        <table width="100%">
+            <thead style="border-bottom: 1px solid black; font-size:18px; text-align:center;">
+                <td><b>Pax Type</b></td>
+                <td><b>Base Fare</b></td>
+                <td><b>Tax</b></td>
+                <td><b>Qty</b></td>
+                <td><b>Total Per Pax</b></td>
+            </thead>
+            <t t-foreach="price_lines[doc.id]" t-as="price">
+                <t t-if="price">
+                    <tr style="border-bottom: 1px solid lightgray">
+                        <td style="border-right: 1px solid lightgray"><t t-esc="price['pax_type']"/></td>
+                        <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['fare']" t-esc-option="widget:monetary; currency_id:doc.currency_id"/></td>
+                        <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['tax']" t-esc-option="widget:monetary; currency_id:doc.currency_id"/></td>
+                        <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['qty']"/></td>
+                        <td style="text-align:right;"><t t-esc="(float(price['fare']) + float(price['tax'])) * price['qty']" t-esc-option="widget:monetary; currency_id:doc.currency_id"/></td>
+                    </tr>
+                </t>
+            </t>
+        </table>
+    </template>
+
+    <template id="price_ticket">
+        <span style="font-size: 28px; font-weight: 730">Fare Detail(s)</span><br/>
+        <div class="box" style="margin: 20px ; border: 1px solid #BBB; border-radius: 20px">
+            <div class="row" style="margin: 5px 0; text-align: center; font-size:17px;">
+                <div class="col-3">Pax Type</div>
+                <div class="col-3">Base Fare</div>
+                <div class="col-3">Total Tax</div>
+                <div class="col-3">Grand Total</div>
+            </div>
+            <div style="border: 1px solid #BBB; margin-bottom: 5px; margin-left: 15px; margin-right: 15px"/>
+            <div class="row" style="margin: 5px 0; text-align: center; font-size:17px;">
+                <div class="col-3"><span t-field="doc.total_fare"/></div>
+                <div class="col-3"><span t-field="doc.total_fare"/></div>
+                <div class="col-3"><span t-field="doc.total_tax"/></div>
+                <div class="col-3"><span t-field="doc.total"/></div>
+            </div>
+        </div>
+    </template>
+
     <template id="printout_ticket_airline_template">
         <t t-set="pnr_index" t-value="0"/>
         <t t-foreach="doc.provider_booking_ids" t-as="length">
@@ -30,7 +74,7 @@
                 </div>
                 <div style="border: 1px solid #BBB; margin-bottom: 10px; margin-top: 10px; position: absolute; left: 0; right: 0; width: 100%"/>
                 <div style="margin-bottom: 10px; margin-top: 20px;">
-                    <span style="font-size: 28px; font-weight: 730">FLIGHT DETAILS</span><br/>
+                    <span style="font-size: 28px; font-weight: 730">Flight Detail(s)</span><br/>
                 </div>
 
                 <!--loop through vals list-->
@@ -99,7 +143,7 @@
                 </t>
 
                 <div style="margin-top: -30px; margin-bottom: -10px;">
-                    <span style="font-size: 28px; font-weight: 730">PASSENGER DETAILS</span><br/>
+                    <span style="font-size: 28px; font-weight: 730">Passenger Detail(s)</span><br/>
                 </div>
 
                 <div class="box" style="margin: 20px 20px 20px 20px; border-style: solid; border-width: 1px; border-color: #BBB; border-radius: 20px">
@@ -147,7 +191,12 @@
                     <div style="margin-bottom: 5px"/>
                 </div>
 
-                <h4 style="margin-top: 30px; margin-bottom: 10px;">IMPORTANT NOTES</h4>
+                <t t-if="with_price">
+                    <!--<t t-call="tt_report_common.price_ticket"/>-->
+                    <t t-call="tt_report_common.itinerary_price_detail"/>
+                </t>
+
+                <h4 style="margin-top: 30px; margin-bottom: 10px;">Important Note(s)</h4>
                 <div>
                     <span>* Please arrive at the airport 90 minutes before domestic flight and 2 hours before international flight</span>
                 </div>
@@ -158,6 +207,28 @@
             <t t-call="tt_report_common.external_layout_footer"/>
             <!--<t t-call="tt_report_common.printout_ticket_airline_footer"/>-->
             <t t-set="pnr_index" t-value="pnr_index+1"/>
+        </t>
+    </template>
+
+    <template id="printout_ticket">
+        <t t-set="data_report_header_spacing" t-value="20"/>
+        <t t-set="data_report_margin_top" t-value="2"/>
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <div class="page">
+                    <t t-if="doc_model == 'tt.reservation.airline'">
+                        <t t-call="tt_report_common.printout_ticket_airline_template"/>
+                    </t>
+                    <t t-else="">
+                        <t t-call="tt_report_common.external_layout">
+                            <br/>
+                            <t t-if="doc_model == 'tt.reservation.train'">
+                                <t t-call="tt_report_common.reservation_train_content_view"/>
+                            </t>
+                        </t>
+                    </t>
+                </div>
+            </t>
         </t>
     </template>
 </odoo>

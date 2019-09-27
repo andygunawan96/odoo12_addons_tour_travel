@@ -19,6 +19,7 @@
         'security/ir_rule_data.xml',
         'data/ir_cron_data.xml',
         'views/tt_reservation_views.xml',
+        'views/tt_reservation_psg_limiter.xml',
         'views/tt_ledger.xml',
         'views/tt_service_charge_views.xml',
         'views/tt_reservation_passenger_views.xml'

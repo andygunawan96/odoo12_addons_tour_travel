@@ -65,7 +65,7 @@ class PaymentAcquirer(models.Model):
                 'fee': fee,
                 'unique_amount': uniq,
             },
-            'total_amount': amount + fee + uniq,
+            'total_amount': float(amount) + fee + uniq,
             'image': self.image or '',
             'return_url': '/payment/' + str(self.type) + '/feedback?acq_id=' + str(self.id)
         }

@@ -50,8 +50,7 @@
                         <group name="payment">
                             <field name="currency_id" groups="base.group_multi_currency"/>
 
-                            <field name="amount_id"/>
-                            <field name="amount_count"/>
+                            <field name="amount"/>
                             <field name="unique_amount" attrs="{'readonly': [('state', '!=', 'confirm')]}"/>
                             <field name="total"/>
                             <field name="fees"/>

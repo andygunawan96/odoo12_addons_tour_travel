@@ -24,7 +24,7 @@
                   parent="tt_base.main_tour_travel"
 
                   name="Customers"
-                  sequence="1"
+                  sequence="10"
                   groups="base.group_user"/>
 
 
@@ -42,65 +42,73 @@
                   name="Country"
                   groups="tt_base.group_tt_tour_travel_operator"
                   parent="tt_base.top_tour_travel_configuration"
-                  sequence="1"/>
+                  sequence="10"/>
 
         <!--Agent-->
         <menuitem id="menu_tour_travel_configuration_tt_agent"
                   name="Agent"
                   groups="tt_base.group_tt_tour_travel_operator"
                   parent="tt_base.top_tour_travel_configuration"
-                  sequence="2"/>
+                  sequence="20"/>
 
         <!--Social Media-->
         <menuitem id="menu_tour_travel_configuration_social_media"
                   name="Social Media"
                   groups="tt_base.group_tt_tour_travel_operator"
                   parent="tt_base.top_tour_travel_configuration"
-                  sequence="3"/>
+                  sequence="30"/>
+
+        <menuitem id="menu_tour_travel_configuration_reservation_limiter"
+                  name="Limiter"
+                  groups="tt_base.group_tt_tour_travel_operator"
+                  parent="tt_base.top_tour_travel_configuration"
+                  sequence="35"/>
 
         <!--Currency-->
         <menuitem id="menu_tour_travel_configuration_currency"
                   name="Currency"
                   groups="tt_base.group_tt_tour_travel_operator,account.group_account_user"
                   parent="tt_base.top_tour_travel_configuration"
-                  sequence="4"/>
+                  sequence="40"/>
 
         <!--Bank-->
         <menuitem id="menu_tour_travel_configuration_bank"
                   name="Bank"
                   groups="tt_base.group_tt_tour_travel_operator"
                   parent="tt_base.top_tour_travel_configuration"
-                  sequence="5"/>
+                  sequence="50"/>
 
         <!--Provider-->
         <menuitem id="menu_tour_travel_provider"
                   name="Provider"
                   groups="tt_base.group_tt_tour_travel_operator"
                   parent="tt_base.top_tour_travel_configuration"
-                  sequence="6"/>
+                  sequence="60"/>
 
         <menuitem id="menu_tour_travel_destination"
                   name="Destination"
                   groups="tt_base.group_tt_tour_travel_operator"
                   parent="tt_base.top_tour_travel_configuration"
-                  sequence="7"/>
+                  sequence="70"/>
 
         <menuitem id="menu_tour_travel_history_skip"
                   name="History Skip"
                   groups="tt_base.group_tt_tour_travel_operator"
                   parent="tt_base.top_tour_travel_configuration"
-                  sequence="8"/>
+                  sequence="80"/>
 
         <menuitem id="menu_tour_travel_pricing"
                   name="Pricing"
                   groups="tt_base.group_tt_tour_travel_operator"
                   parent="tt_base.top_tour_travel_configuration"
-                  sequence="9"/>
+                  sequence="90"/>
 
         <menuitem id="menu_tour_travel_carrier"
                   name="Carrier"
                   groups="tt_base.group_tt_tour_travel_operator"
                   parent="tt_base.top_tour_travel_configuration"
-                  sequence="10"/>
+                  sequence="100"/>
+
+
     </data>
 </odoo>

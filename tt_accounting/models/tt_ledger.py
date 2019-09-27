@@ -23,7 +23,7 @@ _logger = logging.getLogger(__name__)
 class Ledger(models.Model):
     _name = 'tt.ledger'
     _order = 'id DESC'
-    _description = 'Rodex Model'
+    _description = 'Ledger'
     # _order = 'date, id'
 
     name = fields.Char('Name', copy=False)

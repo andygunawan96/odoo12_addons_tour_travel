@@ -14,7 +14,7 @@ class ReservationAirline(models.Model):
     _name = "tt.reservation.airline"
     _inherit = "tt.reservation"
     _order = "id desc"
-    _description = 'Rodex Model'
+    _description = 'Reservation Airline'
 
     direction = fields.Selection(variables.JOURNEY_DIRECTION, string='Direction', default='OW', required=True, readonly=True, states={'draft': [('readonly', False)]})
     origin_id = fields.Many2one('tt.destinations', 'Origin', readonly=True, states={'draft': [('readonly', False)]})
@@ -88,7 +88,7 @@ class ReservationAirline(models.Model):
     def action_issued_api_airline(self,acquirer_id,customer_parent_id,context):
         self.action_issued_airline(context['co_uid'],customer_parent_id,acquirer_id)
 
-    def action_issued_airline(self,co_uid,customer_parent_id,acquirer_id):
+    def action_issued_airline(self,co_uid,customer_parent_id,acquirer_id = False):
         self.write({
             'state': 'issued',
             'issued_date': datetime.datetime.now(),
@@ -738,6 +738,17 @@ class ReservationAirline(models.Model):
         return self.env.ref('tt_report_common.action_report_printout_reservation_airline').report_action(self, data=datas)
 
     @api.multi
+    def print_eticket_with_price(self):
+        datas = {'ids': self.env.context.get('active_ids', [])}
+        # res = self.read(['price_list', 'qty1', 'qty2', 'qty3', 'qty4', 'qty5'])
+        res = self.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        datas['is_with_price'] = True
+        return self.env.ref('tt_report_common.action_report_printout_reservation_airline').report_action(self,
+                                                                                                         data=datas)
+
+    @api.multi
     def print_itinerary(self):
         datas = {'ids': self.env.context.get('active_ids', [])}
         res = self.read()
@@ -749,3 +760,58 @@ class ReservationAirline(models.Model):
         super(ReservationAirline, self).action_expired()
         for provider in self.provider_booking_ids:
             provider.action_expired()
+
+    # def psg_validator(self,book_obj):
+    #     for segment in book_obj.segment_ids:
+    #         rule = self.env['tt.limiter.rule'].sudo().search([('code', '=', segment.carrier_code)])
+    #
+    #         if rule:
+    #             limit = rule.rebooking_limit
+    #         else:
+    #             continue
+    #
+    #         for name in segment.booking_id.passenger_ids:
+    #             found_segments = self.env['tt.segment.airline'].search([('segment_code','=',segment.segment_code),
+    #                                                                '|',
+    #                                                                ('booking_id.passenger_ids.passport_number','ilike',name.passport_number),
+    #                                                                ('booking_id.passenger_ids.name','ilike',name.name)],order='id DESC')
+    #
+    #             valid_segments = []
+    #             for seg in found_segments:
+    #                 try:
+    #                     curr_state = seg.state
+    #                 except:
+    #                     curr_state = 'booked'
+    #                     print('cache miss error')
+    #
+    #                 if curr_state in ['booked', 'issued', 'cancel2', 'fail_issue']:
+    #                     valid_segments.append(seg)
+    #
+    #             safe = False
+    #
+    #             if len(valid_segments) < limit:
+    #                 safe = True
+    #             else:
+    #                 for idx,valid_segment in enumerate(valid_segments[:limit]):
+    #                     if valid_segment.booking_id.state == 'issued':
+    #                         safe=True
+    #                         break
+    #
+    #             if not safe:
+    #                 # whitelist di sini
+    #                 whitelist_name = self.env['tt.whitelisted.name'].sudo().search(
+    #                     [('name', 'ilike', name.name), ('chances_left', '>', 0)],limit=1)
+    #
+    #                 if whitelist_name:
+    #                     whitelist_name.chances_left -= 1
+    #                     return True
+    #
+    #                 whitelist_passport = self.env['tt.whitelisted.passport'].sudo().search(
+    #                     [('passport','=',name.passport_number),('chances_left','>',0)],limit=1)
+    #
+    #                 if whitelist_passport:
+    #                     whitelist_passport.chances_left -= 1
+    #                     return True
+    #
+    #                 raise Exception("Passenger validator failed on %s because of rebooking with same name and same route. %s will be charged for more addtional booking." % (name.name,rule.adm))
+    #             print('safe')

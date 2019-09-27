@@ -11,7 +11,23 @@
                     <field name="ledger_ids" widget="statinfo" string="Ledger(s)"/>
                 </button>
             </xpath>
+            <field name="currency_id" position="after">
+                <field name="balance"/>
+            </field>
         </field>
     </record>
 
+    <record id="tt_agent_kanban_view_inherit" model="ir.ui.view">
+        <field name="name">tt.agent.kanban.view.inherit</field>
+        <field name="model">tt.agent</field>
+        <field name="inherit_id" ref="tt_base.tt_agent_kanban_view"/>
+        <field name="arch" type="xml">
+            <field name="est_date" position="after">
+                <field name="balance"/>
+            </field>
+            <xpath expr="//span[@name='email_for_inh']" position="after">
+                <span class="o_kanban_record_subtitle">Balance: <field name="balance"/></span>
+            </xpath>
+        </field>
+    </record>
 </odoo>

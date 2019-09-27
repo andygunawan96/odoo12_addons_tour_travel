@@ -18,7 +18,8 @@ class TtAgent(models.Model):
 
     seq_id = fields.Char('Sequence ID')
     reference = fields.Many2one('tt.agent', 'Reference', help="Agent who Refers This Agent")
-    balance = fields.Monetary(string="Balance",  compute="_compute_balance_agent" )
+    # balance = fields.Monetary(string="Balance",  compute="_compute_balance_agent" )
+    balance = fields.Monetary(string="Balance", related="" )
     annual_revenue_target = fields.Monetary(string="Annual Revenue Target", default=0)
     annual_profit_target = fields.Monetary(string="Annual Profit Target", default=0)
     # target_ids = fields.One2many('tt.agent.target', 'agent_id', string='Target(s)')
@@ -38,7 +39,7 @@ class TtAgent(models.Model):
     customer_parent_walkin_id = fields.Many2one('tt.customer.parent','Walk In Parent')
     customer_ids = fields.One2many('tt.customer', 'agent_id', 'Customer')
 
-    parent_agent_id = fields.Many2one('tt.agent', string="Parent Agent")
+    parent_agent_id = fields.Many2one('tt.agent', string="Parent Agent", default=lambda self: self.set_default_agent())
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', required=True)
     history_ids = fields.Char(string="History", required=False, )  # tt_history
     user_ids = fields.One2many('res.users', 'agent_id', 'User')
@@ -100,12 +101,40 @@ class TtAgent(models.Model):
             'name': agent_name + ' FPO',
         }
 
+    def action_create_user(self):
+        # view_users_form
+        form_view_ref = self.env.ref('base.view_users_form', False)
+        user_dict = self.agent_type_id.user_template.read()
+        vals = {
+            'name': 'Create User',
+            'res_model': 'res.users',
+            'type': 'ir.actions.act_window',
+            'views': [(form_view_ref.id, 'form')],
+            'view_type': 'form',
+            'view_mode': 'form',
+            'target': '_blank',
+            'context': {
+                'default_agent_id': self.id,
+            },
+        }
+        if user_dict:
+            vals.update({
+                'default_groups_id': [(6, 0, user_dict[0]['groups_id'])]
+            })
+
+        return vals
+
     def _compute_balance_agent(self):
         for rec in self:
             if len(rec.ledger_ids)>0:
                 rec.balance = rec.ledger_ids[0].balance
             else:
                 rec.balance = 0
+
+    def set_default_agent(self):
+        print('Default Agent')
+        agent_type_ho = self.env['tt.agent.type'].search([('code', '=', 'ho')], limit=1).id
+        return self.env['tt.agent'].search([('agent_type_id', '=', agent_type_ho)], limit=1).id
 
     def get_balance_agent_api(self,context):
         agent_obj = self.browse(context['co_agent_id'])

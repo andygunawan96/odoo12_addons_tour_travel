@@ -29,7 +29,7 @@ STATE_VISA = [
 
 class TtVisa(models.Model):
     _name = 'tt.reservation.visa'
-    _inherit = ['tt.reservation', 'tt.history']
+    _inherit = 'tt.reservation'
     _order = 'name desc'
     _description = 'Rodex Model'
 
@@ -409,7 +409,7 @@ class TtVisa(models.Model):
                 sale_obj = self.env['tt.service.charge'].sudo().search([('visa_id', '=', data['order_number']), ('passenger_visa_ids', '=', pax.id)])
                 sale = {}
                 for ssc in sale_obj:
-                    if ssc['charge_code'] == 'r.ac':
+                    if ssc['charge_code'] == 'rac':
                         sale['RAC'] = {
                             'charge_code': 'rac',
                             'amount': ssc['amount'],
@@ -546,6 +546,7 @@ class TtVisa(models.Model):
 
             book_obj = self.sudo().create(header_val)
             book_obj.agent_id = self.env.user.agent_id  # kedepannya mungkin dihapus | contact['agent_id']
+            self._calc_grand_total()
 
             # book_obj.action_booked_visa(context)
             # book_obj.action_issued_visa(context)
@@ -838,7 +839,6 @@ class TtVisa(models.Model):
                 'name': psg_vals['first_name'] + ' ' + psg_vals['last_name'],
                 'customer_id': passenger_ids[idx][0].id,
                 'title': psg['title'],
-                # 'passenger_type': psg['passenger_type'],
                 'pricelist_id': pricelist_id,
                 'passenger_type': psg['pax_type'],
                 # Pada state request, pax akan diberi expired date dg durasi tergantung dari paket visa yang diambil
@@ -848,13 +848,6 @@ class TtVisa(models.Model):
             to_psg_obj = to_psg_env.create(psg_vals)
 
             to_req_list = []
-            # for req in pricelist_obj.requirement_ids:
-            #     req_vals = {
-            #         'to_passenger_id': to_psg_obj.id,
-            #         'requirement_id': req.id,
-            #     }
-            #     to_req_obj = to_req_env.create(req_vals)
-            #     to_req_list.append(to_req_obj.id)  # akan dipindah ke edit requirements
 
             if psg['required']:
                 for req in psg['required']:  # pricelist_obj.requirement_ids
@@ -866,19 +859,6 @@ class TtVisa(models.Model):
                     }
                     to_req_obj = to_req_env.create(req_vals)
                     to_req_list.append(to_req_obj.id)  # akan dipindah ke edit requirements
-
-            # jika ingin assign requirement_ids, edit disini
-            # jika cara ini digunakan dan memiliki banyak requirements, mungkin akan menyebabkan performance drop
-            # for req in psg['required']:
-            #     to_req_obj = to_req_env.browse(req['id'])
-            #     to_req_obj.update({
-            #         'to_passenger_id': psg.id,
-            #         'is_ori': req['is_ori'],
-            #         'is_copy': req['is_copy'],
-            #         'check_uid': req['check_uid'],
-            #         'check_date': req['check_date']
-            #     })
-            #     to_req_list.append(to_req_obj.id)
 
             to_psg_obj.write({
                 'to_requirement_ids': [(6, 0, to_req_list)]
@@ -942,7 +922,6 @@ class TtVisa(models.Model):
             self._create_ledger_visa()
             self._create_ho_ledger_visa()
             self._create_commission_ledger_visa()
-            self._calc_grand_total()
 
     def _create_ho_ledger_visa(self):
         ledger = self.env['tt.ledger']
@@ -1249,5 +1228,10 @@ class TtVisa(models.Model):
                     rec.total_commission += line.total
 
             print('Total Fare : ' + str(rec.total_fare))
-            rec.total = rec.total_fare + rec.total_tax + rec.total_disc
+            rec.total = rec.total_fare + rec.total_tax + rec.total_discount
             rec.total_nta = rec.total - rec.total_commission
+
+    @api.depends('sale_service_charge_ids')
+    def _compute_grand_total(self):
+        for rec in self:
+            rec.total = rec.total_fare + rec.total_tax + rec.total_discount

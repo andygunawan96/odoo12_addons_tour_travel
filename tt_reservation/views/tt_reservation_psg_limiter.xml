@@ -1,0 +1,84 @@
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="tt_limiter_rule_tree_views">
+            <field name="name">tt.limiter.rule.tree.view</field>
+            <field name="model">tt.limiter.rule</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="rebooking_limit"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="tt_whitelisted_name_tree_views">
+            <field name="name">tt.whitelisted.name.tree.view</field>
+            <field name="model">tt.whitelisted.name</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="chances_left"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="tt_whitelisted_passport_tree_views">
+            <field name="name">tt.whitelisted.passport.tree.view</field>
+            <field name="model">tt.whitelisted.passport</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="passport"/>
+                    <field name="chances_left"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="tt_limiter_rule_action_views" model="ir.actions.act_window">
+            <field name="name">Airline Rule</field>
+            <field name="res_model">tt.limiter.rule</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="tt_whitelisted_name_action_views" model="ir.actions.act_window">
+            <field name="name">Whitelisted Name</field>
+            <field name="res_model">tt.whitelisted.name</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="tt_whitelisted_passport_action_views" model="ir.actions.act_window">
+            <field name="name">Whitelisted Passport</field>
+            <field name="res_model">tt.whitelisted.passport</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+<!--        menu_tour_travel_configuration_reservation_limiter-->
+        <!--AIRLINE-->
+
+        <menuitem id="sub_menu_item_tour_travel_limiter_rule"
+                  parent="tt_base.menu_tour_travel_configuration_reservation_limiter"
+                  name="Rule"
+                  sequence="10"
+                  action="tt_limiter_rule_action_views"/>
+
+        <menuitem id="sub_menu_item_tour_travel_limiter_whitelist_name"
+                  parent="tt_base.menu_tour_travel_configuration_reservation_limiter"
+                  name="Whitelisted Name"
+                  sequence="20"
+                  action="tt_whitelisted_name_action_views"/>
+
+
+        <menuitem id="sub_menu_item_tour_travel_limiter_whitelist_passport"
+                  parent="tt_base.menu_tour_travel_configuration_reservation_limiter"
+                  name="Whitelisted Passport"
+                  sequence="30"
+                  action="tt_whitelisted_passport_action_views"/>
+
+        <!--    <menuitem id="sub_menu_tt_transport_booking_airline" parent="tt_base.menu_airline_main"-->
+        <!--              name="Booking" sequence="10" action="transport_booking_action_airlines"/>-->
+
+    </data>
+</odoo>

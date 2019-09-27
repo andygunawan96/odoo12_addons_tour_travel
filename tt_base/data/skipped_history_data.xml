@@ -10,5 +10,9 @@
             <field name="model_name">tt.agent</field>
             <field name="field_name">actual_balance</field>
         </record>
+        <record id="skip_tt_reservation_airline_sale_service_charge_actual_balance" model="tt.skipped.keys">
+            <field name="model_name">tt.reservation.airline</field>
+            <field name="field_name">sale_service_charge_ids</field>
+        </record>
     </data>
 </odoo>
