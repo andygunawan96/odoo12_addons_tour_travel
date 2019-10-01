@@ -4,7 +4,7 @@ from dateutil.relativedelta import relativedelta
 from odoo.tools import image
 from ...tools import variables,util,ERR
 import json
-import logging
+import logging,traceback
 
 _logger = logging.getLogger(__name__)
 
@@ -130,11 +130,14 @@ class TtCustomer(models.Model):
                 lower = date.today() - relativedelta(years=17)
                 upper = date.today() - relativedelta(years=200)
             for cust in customer_list_obj:
-                if not (upper <= cust.birth_date <= lower):
-                    continue
+                ###fixme kalau tidak pbirth_date gimana? di asumsikan adult?
+                if cust.birth_date:
+                    if not (upper <= cust.birth_date <= lower):
+                        continue
                 values = cust.to_dict()
                 customer_list.append(values)
             _logger.info(json.dumps(customer_list))
             return ERR.get_no_error(customer_list)
-        except:
+        except Exception as e:
+            _logger.error(traceback.format_exc())
             return ERR.get_error()

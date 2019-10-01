@@ -114,7 +114,7 @@ access_res_currency_for_tour_travel_operator,res.currency.for.tour.travel.operat
 access_res_currency_for_tour_travel_supervisor,res.currency.for.tour.travel.supervisor,model_res_currency,tt_base.group_tt_tour_travel_supervisor,1,0,1,0
 access_res_currency_for_tour_travel_manager,res.currency.for.tour.travel.manager,model_res_currency,tt_base.group_tt_tour_travel_manager,1,1,1,0
 
-access_tt_provider_ledger_for_public,tt.vendor.ledger.for.public,model_tt_provider_ledger,,1,0,0,0
+access_tt_provider_ledger_for_public,tt.provider.ledger.for.public,model_tt_provider_ledger,,1,0,0,0
 
 access_address_detail_for_public,address.detail.for.public,model_address_detail,,1,0,0,0
 access_address_detail_for_tour_travel_operator,address.detail.for.tour.travel.operator,model_address_detail,tt_base.group_tt_tour_travel_operator,1,0,0,0

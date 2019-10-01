@@ -74,7 +74,7 @@ def get_without_empty(dict,key,else_param=False):
     return else_param
 
 
-def send_request(url, data=None, headers=None, method=None, cookie=None, timeout=TIMEOUT):
+def send_request(url, data=None, headers=None, method=None, cookie=None, is_json=False, timeout=TIMEOUT):
     ses = requests.Session()
     cookie and [ses.cookies.set(key, val) for key, val in cookie.iteritems()]
 
@@ -88,8 +88,10 @@ def send_request(url, data=None, headers=None, method=None, cookie=None, timeout
             addons = ''
             if data and type(data) == dict:
                 temp = ['%s=%s' % (key, val) for key, val in data.items()]
-                if url[-1] != '/':
-                    addons += '/'
+                # August 30, 2019 - SAM
+                # FIXME comment untuk sementara karena ada error pada hotel
+                # if url[-1] != '/':
+                #     addons += '/'
                 if url.find('?') < 0:
                     addons += '?'
                 addons = '%s%s' % (addons, '&'.join(temp))
@@ -97,6 +99,8 @@ def send_request(url, data=None, headers=None, method=None, cookie=None, timeout
             response = ses.get(url=url, headers=headers, timeout=timeout)
         elif method == 'POST' and type(data) == dict:
             response = ses.post(url=url, headers=headers, json=data, timeout=timeout)
+        elif method == 'PUT' and type(data) == dict:
+            response = ses.put(url=url, headers=headers, json=data, timeout=timeout)
         else:
             response = ses.post(url=url, headers=headers, data=data, timeout=timeout)
         response.raise_for_status()
@@ -106,11 +110,16 @@ def send_request(url, data=None, headers=None, method=None, cookie=None, timeout
             'error_code': 500,
             'error_msg': str(e),
         }
-    values.update({
-        'http_code': getattr(response, 'status_code', ''),
-        'response': getattr(response, 'text', ''),
-        'url': url,
-        'cookies': response.cookies.get_dict() if getattr(response, 'cookies', '') else ''
-    })
-    res = Response(values).to_dict()
-    return res
+
+    content = response.json() if is_json else getattr(response, 'text', '')
+
+    return content['result']
+
+    # values.update({
+    #     'http_code': getattr(response, 'status_code', ''),
+    #     'response': content,
+    #     'url': url,
+    #     'cookies': response.cookies.get_dict() if getattr(response, 'cookies', '') else ''
+    # })
+    # res = Response(values).to_dict()
+    # return res

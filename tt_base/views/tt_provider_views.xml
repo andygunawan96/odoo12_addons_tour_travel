@@ -13,8 +13,8 @@
                                 <field name="active" widget="boolean_button"
                                        options='{"terminology": "archive"}'/>
                             </button>
-                            <button name="sync_balance" type="object" string="Sync Balance"
-                                    class="oe_stat_button" icon="fa-money" attrs="{'invisible':('track_balance','!=',True)}"/>
+                            <!--                            <button name="sync_balance" type="object" string="Sync Balance"-->
+                            <!--                                    class="oe_stat_button" icon="fa-money" attrs="{'invisible':('track_balance','!=',True)}"/>-->
                         </div>
                         <div class="oe_title">
                             <label for="name" class="oe_edit_only" string="Name"/>
@@ -82,21 +82,20 @@
                                 <field name="rate_ids"/>
                             </page>
 
-                        <page string="Payment Acquirers">
-                            <field name="payment_acquirer_ids">
-                                <tree>
-                                    <field name="id"/>
+                            <page string="Payment Acquirers">
+                                <field name="payment_acquirer_ids">
+                                    <tree>
+                                        <field name="id"/>
 
-                                </tree>
-                            </field>
-                        </page>
+                                    </tree>
+                                </field>
+                            </page>
 
                             <page string="Provider Ledgers" name="provider_ledger_page">
                                 <field name="provider_ledger_ids">
                                     <tree create="false">
-                                        <field name=""/>
-                                        <field name="id"/>
-                                        <field name="id"/>
+                                        <field name="create_date"/>
+                                        <field name="balance"/>
                                     </tree>
                                 </field>
                             </page>
@@ -136,12 +135,11 @@
             </field>
             <field name="context">
                 {
-                'form_view_ref': 'tt_base.tt_provider_form_view',
                 'tree_view_ref': 'tt_base.tt_provider_tree_view'
                 }
             </field>
         </record>
-
+<!--'form_view_ref': 'tt_base.tt_provider_form_view',-->
         <menuitem id="sub_menu_tour_travel_provider"
                   parent="tt_base.menu_tour_travel_provider"
                   groups="base.group_user"

@@ -116,23 +116,36 @@ class TtProviderAirline(models.Model):
                                                                            ('%s%s' % (psg.get('first_name', ''),
                                                                                       psg.get('last_name',
                                                                                               ''))).lower().replace(' ',''))
+
             if psg_obj:
+                if len(psg_obj.ids) > 1:
+                    for psg_o in psg_obj:
+                        if not psg_o.is_ticketed:
+                            psg_obj = psg_o
+                            break
                 ticket_list.append((0, 0, {
                     'pax_type': psg.get('pax_type'),
                     'ticket_number': psg.get('ticket_number'),
                     'passenger_id': psg_obj.id
                 }))
-                ticket_found.append(psg_obj.id)
+                psg_obj.is_ticketed = True
             else:
                 ticket_not_found.append(psg)
 
-        psg_with_no_ticket = self.booking_id.passenger_ids.filtered(lambda x: x.id not in ticket_found)
+        psg_with_no_ticket = self.booking_id.passenger_ids.filtered(lambda x: x.is_ticketed == False)
         for idx, psg in enumerate(ticket_not_found):
-            ticket_list.append((0, 0, {
-                'pax_type': psg.get('pax_type'),
-                'ticket_number': psg.get('ticket_number'),
-                'passenger_id': psg_with_no_ticket[idx].id
-            }))
+            if idx >= len(psg_with_no_ticket):
+                ticket_list.append((0, 0, {
+                    'pax_type': psg.get('pax_type'),
+                    'ticket_number': psg.get('ticket_number'),
+                }))
+            else:
+                ticket_list.append((0, 0, {
+                    'pax_type': psg.get('pax_type'),
+                    'ticket_number': psg.get('ticket_number'),
+                    'passenger_id': psg_with_no_ticket[idx].id
+                }))
+                psg_with_no_ticket[idx].is_ticketed = True
 
         self.write({
             'ticket_ids': ticket_list
@@ -144,11 +157,12 @@ class TtProviderAirline(models.Model):
             ticket_found = False
             for ticket in self.ticket_ids:
                 psg_name = ticket.passenger_id.name.replace(' ','').lower()
-                if ('%s%s' % (psg['first_name'], psg['last_name'])).replace(' ','').lower() in [psg_name, psg_name*2]:
+                if ('%s%s' % (psg['first_name'], psg['last_name'])).replace(' ','').lower() in [psg_name, psg_name*2] and not ticket.ticket_number:
                     ticket.write({
                         'ticket_number': psg.get('ticket_number','')
                     })
                     ticket_found = True
+                    ticket.passenger_id.is_ticketed = True
                     break
             if not ticket_found:
                 ticket_not_found.append(psg)

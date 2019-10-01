@@ -334,6 +334,14 @@ class ReservationAirline(models.Model):
                     #action issued dan create ticket number
                     provider_obj.action_issued_api_airline(context)
                     provider_obj.update_ticket_api(provider['passengers'])
+
+                    #get balance vendor
+                    if provider_obj.provider_id.track_balance:
+                        try:
+                            # print("GET BALANCE : "+str(self.env['tt.airline.api.con'].get_balance(provider_obj.provider_id.code)['response']['balance']))
+                            provider_obj.provider_id.sync_balance()
+                        except Exception as e:
+                            _logger.error(traceback.format_exc())
                 elif provider['status'] == 'FAIL_BOOKED':
                     provider_obj.action_failed_booked_api_airline(provider.get('error_code'),provider.get('error_msg'))
                 elif provider['status'] == 'FAIL_ISSUED':

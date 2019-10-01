@@ -160,6 +160,7 @@
                 <field name="name"/>
                 <field name="email"/>
                 <field name="est_date"/>
+<!--                <field name="currency_id"/>-->
                 <templates>
                     <t t-name="kanban-box">
                         <div class="oe_kanban_global_click o_kanban_record_has_image_fill o_hr_kanban_record">

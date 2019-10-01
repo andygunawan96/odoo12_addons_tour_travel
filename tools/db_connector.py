@@ -39,6 +39,7 @@ class DbConnector(object):
             return False
 
 
+
 class BackendConnector(DbConnector):
     def __init__(self):
         DbConnector.__init__(self)
@@ -87,3 +88,5 @@ class GatewayConnector(DbConnector):
     def telegram_notif_api(self, data, context):
         res = self.execute('tt.error.api', 'telegram_notif_api', [False, data, context])
         return res
+
+    # def g1 res = self.execute('tt.error.api', 'telegram_notif_api', [False, data, context])

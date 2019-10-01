@@ -26,7 +26,7 @@
                 <field name="balance"/>
             </field>
             <xpath expr="//span[@name='email_for_inh']" position="after">
-                <span class="o_kanban_record_subtitle">Balance: <field name="balance"/></span>
+                <span class="o_kanban_record_subtitle">Balance: <field name="balance" widget="float"/></span>
             </xpath>
         </field>
     </record>

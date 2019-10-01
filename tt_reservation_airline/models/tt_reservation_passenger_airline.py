@@ -13,6 +13,7 @@ class TtReservationCustomer(models.Model):
     booking_id = fields.Many2one('tt.reservation.airline')
     passport_number = fields.Char(string='Passport Number')
     passport_expdate = fields.Datetime(string='Passport Exp Date')
+    is_ticketed = fields.Boolean('Ticketed')
 
     def to_dict(self):
         res = super(TtReservationCustomer, self).to_dict()

@@ -25,8 +25,12 @@ class TtProvider(models.Model):
         ##send request to gateway
         #_send_request('sia')
         if self.track_balance:
-            # self.balance = int(time.time())
-            pass
+            self.sudo().write({
+                'provider_ledger_ids': [(0,0,{
+                    'balance': self.env['tt.%s.api.con' % (self.provider_type_id.code)].get_balance(self.code)['response']['balance'],
+                    'provider_id': self.id
+                })]
+            })
 
 
     def to_dict(self):
@@ -96,7 +100,7 @@ class TtProviderCurrency(models.Model):
 
 class TtProviderLedger(models.Model):
     _name = 'tt.provider.ledger'
-    _description = 'Rodex Model'
+    _description = 'Provider Balance Ledger'
     _order = 'id DESC'
 
     provider_id = fields.Many2one('tt.provider', 'Provider')

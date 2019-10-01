@@ -24,3 +24,6 @@ class TtAirlineApiCon(models.Model):
 
         return res
 
+    def get_balance(self,provider):
+        return self._send_request('%s/account/airline' % (self.url),{'provider': provider},'get_vendor_balance')
+
