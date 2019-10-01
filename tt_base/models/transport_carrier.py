@@ -52,18 +52,22 @@ class TransportCarrier(models.Model):
     def get_carrier_data(self):
         res = {
             'name': self.name,
-            'code': self.code,
-            'icao': self.icao,
-            'call_sign': self.call_sign,
+            'code': self.code and self.code or '',
+            'icao': self.icao and self.icao or '',
+            'call_sign': self.call_sign and self.call_sign or '',
+            'provider_type': self.provider_type_id and self.provider_type_id.code or '',
+            'active': self.active,
         }
         return res
 
-    def get_carrier_list_by_code(self, _provider_type):
+    def get_carrier_list_by_code(self, _provider_type, _is_all_data):
         provider_obj = self.env['tt.provider.type'].sudo().search([('code', '=', _provider_type)], limit=1)
         if not provider_obj:
             raise Exception('Provider type not found, %s' % _provider_type)
-
-        _obj = self.sudo().search([('provider_type_id', '=', provider_obj.id), ('active', '=', True)])
+        search_param = [('provider_type_id', '=', provider_obj.id)]
+        if not _is_all_data:
+            search_param = [('provider_type_id', '=', provider_obj.id), ('active', '=', True)]
+        _obj = self.sudo().with_context(active_test=False).search(search_param)
         res = {}
         for rec in _obj:
             code = rec.code
@@ -72,7 +76,7 @@ class TransportCarrier(models.Model):
 
     def get_carrier_list_api(self, data, context):
         try:
-            response = self.get_carrier_list_by_code(data['provider_type'])
+            response = self.get_carrier_list_by_code(data['provider_type'], data.get('is_all_data', False))
             res = Response().get_no_error(response)
         except Exception as e:
             _logger.error('Error Get Carrier List, %s, %s' % (str(e), traceback.format_exc()))
