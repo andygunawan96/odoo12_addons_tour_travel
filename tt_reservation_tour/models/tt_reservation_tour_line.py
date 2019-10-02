@@ -29,5 +29,5 @@ class TourBookingLine(models.Model):
     extra_bed_description = fields.Char('Extra Bed Description')
     bed_type = fields.Selection(BED_TYPE, 'Bed Type')
     description = fields.Char('Description')
-    tour_pricelist_id = fields.Many2one('tt.reservation.tour.pricelist', 'Pricelist ID')
+    tour_pricelist_id = fields.Many2one('tt.master.tour', 'Pricelist ID')
     state = fields.Selection([], related='tour_id.state')

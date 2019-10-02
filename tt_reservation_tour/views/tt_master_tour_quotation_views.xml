@@ -1,7 +1,7 @@
 <odoo>
-    <record model="ir.ui.view" id="tt_reservation_tour_package_quotation_view_form">
-        <field name="name">tt.reservation.tour.package.quotation.view.form</field>
-        <field name="model">tt.reservation.tour.package.quotation</field>
+    <record model="ir.ui.view" id="tt_master_tour_quotation_view_form">
+        <field name="name">tt.master.tour.quotation.view.form</field>
+        <field name="model">tt.master.tour.quotation</field>
         <field name="arch" type="xml">
             <form>
                 <header>
@@ -179,27 +179,27 @@
         </field>
     </record>
 
-    <record model="ir.ui.view" id="tt_reservation_tour_package_quotation_view_tree" >
-        <field name="name">tt.reservation.tour.package.quotation.view.tree</field>
-        <field name="model">tt.reservation.tour.package.quotation</field>
+    <record model="ir.ui.view" id="tt_master_tour_quotation_view_tree" >
+        <field name="name">tt.master.tour.quotation.view.tree</field>
+        <field name="model">tt.master.tour.quotation</field>
         <field name="arch" type="xml">
             <tree>
             </tree>
         </field>
     </record>
 
-    <record model="ir.ui.view" id="tt_reservation_tour_quotation_porter_view_tree" >
-        <field name="name">tt.reservation.tour.quotation.porter.view.tree</field>
-        <field name="model">tt.reservation.tour.quotation.porter</field>
+    <record model="ir.ui.view" id="tt_master_tour_quotation_porter_view_tree" >
+        <field name="name">tt.master.tour.quotation.porter.view.tree</field>
+        <field name="model">tt.master.tour.quotation.porter</field>
         <field name="arch" type="xml">
             <tree editable="bottom">
             </tree>
         </field>
     </record>
 
-    <record model="ir.ui.view" id="tt_reservation_tour_quotation_extra_view_tree" >
-        <field name="name">tt.reservation.tour.quotation.extra.view.tree</field>
-        <field name="model">tt.reservation.tour.quotation.extra</field>
+    <record model="ir.ui.view" id="tt_master_tour_quotation_extra_view_tree" >
+        <field name="name">tt.master.tour.quotation.extra.view.tree</field>
+        <field name="model">tt.master.tour.quotation.extra</field>
         <field name="arch" type="xml">
             <tree editable="bottom">
             </tree>

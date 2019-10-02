@@ -1895,7 +1895,7 @@ class MasterActivity(models.Model):
                         self.env['tt.activity.booking.option.line'].sudo().create(value5)
                         self.env.cr.commit()
                 option_ids.append(temp.id)
-        activity_obj.update({
+        activity_obj.sudo().update({
             'option_ids': [(6, 0, option_ids)],
         })
         response = {
@@ -1917,6 +1917,103 @@ class MasterActivity(models.Model):
             'success': True
         }
         return ERR.get_no_error(response)
+
+    # def test_webhook_product(self):
+    #     data = {
+    #         "type": "product_type_available",
+    #         "productUuid": "862a4a30-533f-57dc-94d0-dab9d59bacc5",
+    #         "data": {
+    #             "uuid": "e96a52d5-9488-5891-bf5a-ce60caec8d1f",
+    #             "title": "Fun Pass Play TEST",
+    #             "titleTranslated": "Fun Pass Play 3",
+    #             "description": "Choose Fun Pass Play 3 to play 3 out of 18 attractions",
+    #             "descriptionTranslated": "Choose Fun Pass Play 3 to play 3 out of 18 attractions",
+    #             "durationDays": 0,
+    #             "durationHours": 12,
+    #             "durationMinutes": 0,
+    #             "daysInAdvance": False,
+    #             "cutOffTime": False,
+    #             "firstAvailabilityDate": "2019-07-22",
+    #             "isNonRefundable": True,
+    #             "allowAdults": True,
+    #             "minPax": 1,
+    #             "maxPax": 60,
+    #             "minAdultAge": 13,
+    #             "maxAdultAge": 100,
+    #             "hasChildPrice": True,
+    #             "allowChildren": True,
+    #             "minChildren": 0,
+    #             "maxChildren": 20,
+    #             "minChildAge": 3,
+    #             "maxChildAge": 12,
+    #             "allowSeniors": False,
+    #             "minSeniors": False,
+    #             "maxSeniors": False,
+    #             "minSeniorAge": False,
+    #             "maxSeniorAge": False,
+    #             "allowInfant": False,
+    #             "minInfantAge": False,
+    #             "maxInfantAge": False,
+    #             "maxGroup": False,
+    #             "minGroup": False,
+    #             "instantConfirmation": True,
+    #             "nonInstantVoucher": True,
+    #             "directAdmission": False,
+    #             "voucherUse": "You will receive a voucher by email. It contains all the information for this activity. You will need to present this voucher.",
+    #             "voucherUseTranslated": "You will receive a voucher by email. It contains all the information for this activity. You will need to present this voucher.",
+    #             "voucherRedemptionAddress": "Sentosa Ticketing Counters\n- Beach Station (09:00 to 21:00)\n- Fort Siloso (10:00 to 17:30)\n- Imbiah Forecourt (09:00 to 18:00)\n- Imbiah Lookout (10:00 to 19:00)\n- Merlion Plaza (09:00 to 20:00)\n- Sentosa Boardwalk (09:00 to 17:00)\n- Sentosa Station, VivoCity, Lobby L, Level 3 (09:00 to 21:00) \n- Sentosa Merlion (10:00 to 19:30)\n- Waterfront Station (09:00 to 16:00)",
+    #             "voucherRedemptionAddressTranslated": "Sentosa Ticketing Counters\n- Beach Station (09:00 to 21:00)\n- Fort Siloso (10:00 to 17:30)\n- Imbiah Forecourt (09:00 to 18:00)\n- Imbiah Lookout (10:00 to 19:00)\n- Merlion Plaza (09:00 to 20:00)\n- Sentosa Boardwalk (09:00 to 17:00)\n- Sentosa Station, VivoCity, Lobby L, Level 3 (09:00 to 21:00) \n- Sentosa Merlion (10:00 to 19:30)\n- Waterfront Station (09:00 to 16:00)",
+    #             "voucherRequiresPrinting": False,
+    #             "meetingTime": False,
+    #             "meetingAddress": False,
+    #             "meetingLocation": "Make your own way\nto Sentosa Ticketing Counters",
+    #             "meetingLocationTranslated": "Make your own way\nto Sentosa Ticketing Counters",
+    #             "cancellationPolicies": [],
+    #             "recommendedMarkup": 6.67,
+    #             "childRecommendedMarkup": False,
+    #             "seniorRecommendedMarkup": False,
+    #             "adultParityPrice": False,
+    #             "childParityPrice": False,
+    #             "seniorParityPrice": False,
+    #             "adultGateRatePrice": 0,
+    #             "childGateRatePrice": 0,
+    #             "seniorGateRatePrice": False,
+    #             "validity": {
+    #                 "type": "after_issue_date",
+    #                 "days": 90,
+    #                 "date": False,
+    #                 "hasBatchValidityDate": False
+    #             },
+    #             "timeslots": [],
+    #             "options": {
+    #                 "perBooking": [],
+    #                 "perPax": []
+    #             },
+    #             "hasOptions": False,
+    #             "hasFileUploadOptions": False,
+    #             "hasPriceOptions": False,
+    #             "links": [
+    #                 {
+    #                     "method": "GET",
+    #                     "rel": "self",
+    #                     "href": "https://api.demo.bemyguest.com.sg/v2/product-types/e96a52d5-9488-5891-bf5a-ce60caec8d1f"
+    #                 },
+    #                 {
+    #                     "method": "GET",
+    #                     "rel": "product",
+    #                     "href": "https://api.demo.bemyguest.com.sg/v2/products/862a4a30-533f-57dc-94d0-dab9d59bacc5"
+    #                 },
+    #                 {
+    #                     "method": "GET",
+    #                     "rel": "priceLists",
+    #                     "href": "https://api.demo.bemyguest.com.sg/v2/product-types/e96a52d5-9488-5891-bf5a-ce60caec8d1f/price-lists"
+    #                 }
+    #             ]
+    #         },
+    #         "signature": "gdfhgy786g78dfg7d7f8gdfghgfhgk6786786868",
+    #         "timestamp": "2019-07-21 12:00:04 SGT"
+    #     }
+    #     self.env['tt.master.activity.api.con'].test_update_product_webhook(json.dumps(data))
 
 
 

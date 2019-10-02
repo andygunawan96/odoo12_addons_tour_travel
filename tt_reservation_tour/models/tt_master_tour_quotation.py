@@ -15,7 +15,7 @@ PAX_TYPE = [
 
 
 class TourPackageQuotation(models.Model):
-    _name = 'tt.reservation.tour.package.quotation'
+    _name = 'tt.master.tour.quotation'
     _description = 'Rodex Model'
 
     state = fields.Selection(STATE, 'State', default='draft')
@@ -25,7 +25,7 @@ class TourPackageQuotation(models.Model):
 
     airport_tax = fields.Monetary('Airport Tax', readonly=True, states={'draft': [('readonly', False)]}, default=0)
 
-    tour_pricelist_id = fields.Many2one('tt.reservation.tour.pricelist', 'Tour')
+    tour_pricelist_id = fields.Many2one('tt.master.tour', 'Tour')
 
     # PAX
     pax_type = fields.Selection(PAX_TYPE, 'Pax Type', default='adt')
@@ -97,7 +97,7 @@ class TourPackageQuotation(models.Model):
     visa = fields.Monetary('Visa', readonly=True, states={'draft': [('readonly', False)]}, default=0)
 
     # PORTER
-    porter_ids = fields.One2many('tt.reservation.tour.quotation.porter', 'tour_quotation_id', 'Porter(s)')
+    porter_ids = fields.One2many('tt.master.tour.quotation.porter', 'tour_quotation_id', 'Porter(s)')
     total_porter_cost = fields.Monetary('Total Porter Cost', readonly=True, states={'draft': [('readonly', False)]},
                                         default=0)
     total_porter_cost_rel = fields.Monetary('Total Porter Cost', related='total_porter_cost', readonly=True, default=0)
@@ -221,7 +221,7 @@ class TourPackageQuotation(models.Model):
                                                related='retail_price_include', readonly=True, default=0)
 
     # EXTRA
-    extra_ids = fields.One2many('tt.reservation.tour.quotation.extra', 'tour_quotation_id', 'Extra(s)')
+    extra_ids = fields.One2many('tt.master.tour.quotation.extra', 'tour_quotation_id', 'Extra(s)')
 
     total_extra_cost = fields.Monetary('Total Extra Cost', readonly=True,
                                        states={'draft': [('readonly', False)]}, default=0)

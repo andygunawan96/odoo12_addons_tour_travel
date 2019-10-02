@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <menuitem id="top_reservations_tour"
+                  parent="tt_reservation.main_reservations"
+                  name="Tour"
+                  sequence="23"/>
+
+        <menuitem id="menu_reservations_tour"
+                  parent="top_reservations_tour"
+                  name="Booking"
+                  sequence="1"/>
+
+        <!--    <menuitem id="menu_tour_booking" parent="tt_base.menu_tour_main" name="Order" sequence="30"/>-->
+        <!--    <menuitem id="menu_tour_booking_concept" parent="tt_base.menu_tour_main" name="Concept" sequence="40"/>-->
+        <!--    groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator,tt_base.group_tt_sub_agent_user_operator"-->
+
+        <!--Top Menu Tour & Travel Tour-->
+        <menuitem id="top_tour_travel_tour"
+                  parent="tt_base.main_tour_travel"
+                  name="Tour"
+                  sequence="5"
+                  groups="base.group_user"/>
+        <!--    action="tt_master_tour_view_action"-->
+
+        <!--Menu Tour-->
+        <menuitem id="menu_tour_travel_tour_master"
+                  name="Master"
+                  parent="top_tour_travel_tour"
+                  sequence="1"/>
+    </data>
+</odoo>

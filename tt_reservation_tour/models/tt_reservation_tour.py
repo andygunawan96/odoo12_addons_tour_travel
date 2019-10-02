@@ -5,12 +5,13 @@ import traceback
 import copy
 from dateutil.relativedelta import relativedelta
 from odoo.exceptions import UserError
+from ...tools.api import Response
 
 # from Ap
 _logger = logging.getLogger(__name__)
 
 PAYMENT_METHOD = [
-    ('cash', 'Cash'),
+    ('full', 'Full Payment'),
     ('installment', 'Installment')
 ]
 
@@ -20,24 +21,23 @@ class TourBooking(models.Model):
     _name = 'tt.reservation.tour'
     _description = 'Rodex Model'
 
-    tour_id = fields.Many2one('tt.reservation.tour.pricelist', 'Tour ID')
+    tour_id = fields.Many2one('tt.master.tour', 'Tour ID')
     # tour_id = fields.Char('Tour ID')
 
     line_ids = fields.One2many('tt.reservation.tour.line', 'tour_id', 'Line')  # Perlu tidak?
 
-    arrival_date = fields.Date('Arrival Date', readonly=True, states={'draft': [('readonly', False)]})
     next_installment_date = fields.Date('Next Due Date', compute='_next_installment_date', store=True)
 
-    sale_service_charge_ids = fields.One2many('tt.service.charge', 'tour_id', 'Service Charge',
+    arrival_date = fields.Date('Arrival Date')
+
+    sale_service_charge_ids = fields.One2many('tt.service.charge', 'booking_tour_id', 'Service Charge',
                                               readonly=True, states={'draft': [('readonly', False)]})
-
-    passenger_ids = fields.Many2many('tt.customer', 'tt_reservation_tour_passengers_rel', 'booking_id',
-                                     'passenger_id',
-                                     string='List of Passenger', readonly=True, states={'draft': [('readonly', False)]})
-    # agent_invoice_ids = fields.One2many('tt.agent.invoice', 'res_id', 'Agent Invoice')  # One2Many -> tt.agent.invoice
-
-    # provider_booking_ids = fields.One2many('tt.provider', 'booking_id', 'Provider Booking IDs')
-
+    ledger_ids = fields.One2many('tt.ledger', 'res_id', 'Ledger',
+                                 domain=[('res_model', '=', 'tt.reservation.tour')])
+    provider_booking_ids = fields.One2many('tt.provider.tour', 'booking_id', string='Provider Booking',
+                                           readonly=True, states={'draft': [('readonly', False)]})
+    passenger_ids = fields.One2many('tt.reservation.passenger.tour', 'booking_id', string='Passengers')
+    provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', default=lambda self: self.env.ref('tt_reservation_tour.tt_provider_type_tour'))
     payment_method = fields.Selection(PAYMENT_METHOD, 'Payment Method')
 
     # *STATE*
@@ -155,170 +155,8 @@ class TourBooking(models.Model):
     ############################################################################################################
     ############################################################################################################
 
-    param_contact_data = {
-        'first_name': 'Ivan',
-        'last_name': 'Suryajaya',
-        'home_phone': '6231-5606500',
-        'nationality_code': 'ID',
-        'title': 'MR',
-        'work_phone': '6231-5606500',
-        'gender': 'male',
-        'company_city_1': 'SURABAYA',
-        'company_phone_2': '62315662000',
-        'contact_id': False,
-        'company_phone_1': '62315662000',
-        'company_email_2': 'rodexbooking@gmail.com',
-        'mobile': '08217317232',
-        'company_email_1': 'booking@rodextravel.tours',
-        'company_postal_code': '60241',
-        'country_code': 'ID',
-        'company_country_1': 'ID',
-        'company_state_1': 'JTM',
-        'other_phone': '',
-        'email': 'Asndk@gmail.com',
-        'company_address_1': 'JL. RAYA DARMO 177B'
-    }
-
-    param_passengers = {
-
-    }
-
-    param_service_charge_summary = {
-
-    }
-
-    param_tour_data = {
-
-    }
-
-    param_search_request = {
-
-    }
-
-    param_context = {
-
-    }
-
-    param_kwargs = {
-
-    }
-
     # def test_booking(self):
     # self.create_booking(self.contact_data, self.passenger_data, self.option, self.search_request, '', self.context, self.kwargs)
-
-    def create_booking(self):
-        contact_data = copy.deepcopy(self.param_contact_data)
-        passengers = copy.deepcopy(self.param_passengers)
-        service_charge_summary = copy.deepcopy(self.param_service_charge_summary)
-        tour_data = copy.deepcopy(self.param_tour_data)
-        search_request = copy.deepcopy(self.param_search_request)
-        context = copy.deepcopy(self.param_context)
-        kwargs = copy.deepcopy(self.param_kwargs)
-
-        try:
-            self._validate_tour(context, 'context')
-            self._validate_tour(search_request, 'header')
-            context = self.update_api_context(int(contact_data.get('agent_id')), context)
-
-            # ========= Validasi agent_id ===========
-            # TODO : Security Issue VERY HIGH LEVEL
-            # 1. Jika BUKAN is_company_website, maka contact.contact_id DIABAIKAN
-            # 2. Jika ADA contact.contact_id MAKA agent_id = contact.contact_id.agent_id
-            # 3. Jika TIDAK ADA contact.contact_id MAKA agent_id = co_uid.agent_id
-
-            # PRODUCTION
-            # # self.validate_booking(api_context=context)
-            # user_obj = self.env['res.users'].sudo().browse(int(context['co_uid']))
-            # contact_data.update({
-            #     'agent_id': user_obj.agent_id.id,
-            #     'commercial_agent_id': user_obj.agent_id.id,
-            #     'booker_type': 'FPO',
-            #     'display_mobile': user_obj.mobile,
-            # })
-            # if user_obj.agent_id.agent_type_id.id in (
-            #         self.env.ref('tt_base_rodex.agent_type_cor').id, self.env.ref('tt_base_rodex.agent_type_por').id):
-            #     if user_obj.agent_id.parent_agent_id:
-            #         contact_data.update({
-            #             'commercial_agent_id': user_obj.agent_id.parent_agent_id.id,
-            #             'booker_type': 'COR/POR',
-            #             'display_mobile': user_obj.mobile,
-            #         })
-            #
-            # # header_val = self._prepare_booking(journeys_booking, tour_data, search_request, context, kwargs)
-            # header_val = self._tour_header_normalization(search_request)
-            # contact_obj = self._create_contact(contact_data, context)
-            #
-            # psg_ids = self._evaluate_passenger_info(passengers, contact_obj.id, context['agent_id'])
-            #
-            # header_val.update({
-            #     'contact_id': contact_obj.id,
-            #     'state': 'booked',
-            #     'agent_id': context['agent_id'],
-            #     'user_id': context['co_uid'],
-            #     'tour_id': tour_data['id'],
-            #     'departure_date': search_request['tour_departure_date'],
-            #     'arrival_date': search_request['tour_arrival_date'],
-            # })
-            #
-            # # create header & Update SUB_AGENT_ID
-            # book_obj = self.sudo().create(header_val)
-            #
-            # for psg in passengers:
-            #     # if psg['room_number'].is_integer():
-            #     is_int = isinstance(psg['room_number'], int)
-            #     if is_int:
-            #         room_number = psg['room_number'] + 1
-            #         room_index = psg['room_number']
-            #     else:
-            #         room_number = int(psg['room_number'][5:])
-            #         room_index = room_number - 1
-            #     vals = {
-            #         'tour_booking_id': book_obj.id,
-            #         'passenger_id': psg['passenger_id'],
-            #         'pax_type': psg['pax_type'],
-            #         'pax_mobile': psg.get('mobile'),
-            #         'room_number': 'Room ' + str(room_number),
-            #         'extra_bed_description': context['room_data'][room_index]['description'],
-            #         'room_id': psg['room_id'],
-            #         'description': context['room_data'][room_index]['notes'],
-            #         'pricelist_id': book_obj.tour_id.id
-            #     }
-            #     self.env['tt.reservation.tour.line'].sudo().create(vals)
-            #
-            # for rec in service_charge_summary:
-            #     rec.update({
-            #         'tour_booking_id': book_obj.id,
-            #     })
-            #     self.env['tt.reservation.tour.price'].sudo().create(rec)
-            # self._calc_grand_total()
-            #
-            # book_obj.sub_agent_id = contact_data['agent_id']
-            #
-            # book_obj.action_booked_tour(context)
-            # context['order_id'] = book_obj.id
-            # if kwargs.get('force_issued'):
-            #     book_obj.action_issued_tour(service_charge_summary, tour_data, kwargs, context)
-            #     book_obj.calc_next_installment_date()
-            #
-            # # self._create_passengers(passengers, book_obj, contact_obj.id, context)
-            #
-            # self.env.cr.commit()
-            # return {
-            #     'error_code': 0,
-            #     'error_msg': 'Success',
-            #     'response': {
-            #         'order_id': book_obj.id,
-            #         'order_number': book_obj.name,
-            #         'status': book_obj.state,
-            #     }
-            # }
-        except Exception as e:
-            self.env.cr.rollback()
-            _logger.error(msg=str(e) + '\n' + traceback.format_exc())
-            return {
-                'error_code': 1,
-                'error_msg': str(e)
-            }
 
     def _validate_tour(self, data, type):
         list_data = []
@@ -376,152 +214,654 @@ class TourBooking(models.Model):
             })
         return context
 
-    def create_ledger_tour(self):
-        ledger = self.env['tt.ledger']
-        total_order = 0
-        for rec in self:
-            desc = ''
+    def commit_booking_api(self, data, context, **kwargs):
+        try:
+            booking_data = data.get('booking_data')
+            price_itinerary = {}
+            tour_data = {}
+            pricelist_id = 0
+            if booking_data:
+                tour_data = booking_data.get('tour_data')
+                pricelist_id = tour_data.get('id') and int(tour_data['id']) or 0
+                price_itinerary = booking_data.get('price_itinerary')
+            force_issued = data.get('force_issued') and int(data['force_issued']) or 0
+            booker_id = data.get('booker_id') and data['booker_id'] or False
+            pax_ids_str = data.get('pax_ids') and data['pax_ids'] or '|'
+            book_line_ids_str = data.get('book_line_ids') and data['book_line_ids'] or '|'
+            temp = pax_ids_str.split('|')
+            temp2 = book_line_ids_str.split('|')
+            pax_ids = []
+            book_line_ids = []
+            service_charge = []
+            service_charge_ids = []
+            def_currency = self.env['res.currency'].search([('name', '=', 'IDR')])[0].id
 
-            for sc in rec.sale_service_charge_ids:
-                # if rec.transport_type == 'passport':
-                #     if not sc.pricelist_id.apply_type in doc_type:
-                #         doc_type.append(sc.pricelist_id.apply_type)
-                #     desc = sc.pricelist_id.passport_type.upper() + ' ' + sc.pricelist_id.apply_type.upper()
-                # else:
-                if sc.charge_code == 'fare':
-                    if rec.payment_method == 'cash':
-                        desc = 'Cash ' + rec.tour_id.name + ' ' + str(rec.departure_date) + ' | ' + str(rec.return_date)
-                    elif rec.payment_method == 'installment':
-                        desc = 'Down Payment ' + rec.tour_id.name + ' ' + str(rec.departure_date) + ' | ' + str(
-                            rec.return_date)
-                    total_order += sc.total
-                print('Total fare : ' + str(sc.total))
+            for rec in temp:
+                if rec:
+                    pax_ids.append(int(rec))
 
-            vals = ledger.prepare_vals('Order Tour : ' + rec.name, rec.name, rec.issued_date,
-                                       'tour', rec.currency_id.id, 0, total_order)
-            vals.update({
-                'res_id': rec.id,
-                'res_model': rec._name,
-                'agent_id': rec.agent_id.id,
-                'pnr': rec.pnr,
-                'provider_type_id': rec.provider_type_id.id,
-                'description': desc
+            for rec in temp2:
+                if rec:
+                    book_line_ids.append(int(rec))
+
+            if price_itinerary.get('adult_amount'):
+                service_charge.append({
+                    'pax_type': 'ADT',
+                    'charge_code': 'fare',
+                    'charge_type': 'fare',
+                    'amount': price_itinerary['adult_price'] / price_itinerary['adult_amount'],
+                    'pax_count': price_itinerary['adult_amount'],
+                    'currency_id': def_currency,
+                    'foreign_currency_id': def_currency,
+                    'foreign_amount': 0,
+                    'description': 'Adult Price',
+                })
+                service_charge.append({
+                    'pax_type': 'ADT',
+                    'charge_code': 'tax',
+                    'charge_type': 'tax',
+                    'amount': price_itinerary['airport_tax_total'] / (price_itinerary['adult_amount'] + price_itinerary['child_amount'] + price_itinerary['infant_amount']),
+                    'pax_count': price_itinerary['adult_amount'],
+                    'currency_id': def_currency,
+                    'foreign_currency_id': def_currency,
+                    'foreign_amount': 0,
+                    'description': 'Airport Tax',
+                })
+
+            if price_itinerary.get('adult_surcharge_amount'):
+                service_charge.append({
+                    'pax_type': 'ADT',
+                    'charge_code': 'tax',
+                    'charge_type': 'tax',
+                    'amount': price_itinerary['adult_surcharge_price'] / price_itinerary['adult_surcharge_amount'],
+                    'pax_count': price_itinerary['adult_surcharge_amount'],
+                    'currency_id': def_currency,
+                    'foreign_currency_id': def_currency,
+                    'foreign_amount': 0,
+                    'description': 'Adult Surcharge',
+                })
+
+            if price_itinerary.get('single_supplement_amount'):
+                service_charge.append({
+                    'pax_type': 'ADT',
+                    'charge_code': 'tax',
+                    'charge_type': 'tax',
+                    'amount': price_itinerary['single_supplement_price'] / price_itinerary['single_supplement_amount'],
+                    'pax_count': price_itinerary['single_supplement_amount'],
+                    'currency_id': def_currency,
+                    'foreign_currency_id': def_currency,
+                    'foreign_amount': 0,
+                    'description': 'Single Supplement',
+                })
+
+            if price_itinerary.get('tipping_guide_amount'):
+                service_charge.append({
+                    'pax_type': 'ADT',
+                    'charge_code': 'tax',
+                    'charge_type': 'tax',
+                    'amount': price_itinerary['tipping_guide_total'] / price_itinerary['tipping_guide_amount'],
+                    'pax_count': price_itinerary['tipping_guide_amount'],
+                    'currency_id': def_currency,
+                    'foreign_currency_id': def_currency,
+                    'foreign_amount': 0,
+                    'description': 'Tipping Tour Guide',
+                })
+
+            if price_itinerary.get('tipping_tour_leader_amount'):
+                service_charge.append({
+                    'pax_type': 'ADT',
+                    'charge_code': 'tax',
+                    'charge_type': 'tax',
+                    'amount': price_itinerary['tipping_tour_leader_total'] / price_itinerary['tipping_tour_leader_amount'],
+                    'pax_count': price_itinerary['tipping_tour_leader_amount'],
+                    'currency_id': def_currency,
+                    'foreign_currency_id': def_currency,
+                    'foreign_amount': 0,
+                    'description': 'Tipping Tour Leader',
+                })
+
+            if price_itinerary.get('tipping_driver_amount'):
+                service_charge.append({
+                    'pax_type': 'ADT',
+                    'charge_code': 'tax',
+                    'charge_type': 'tax',
+                    'amount': price_itinerary['tipping_driver_total'] / price_itinerary['tipping_driver_amount'],
+                    'pax_count': price_itinerary['tipping_driver_amount'],
+                    'currency_id': def_currency,
+                    'foreign_currency_id': def_currency,
+                    'foreign_amount': 0,
+                    'description': 'Tipping Driver',
+                })
+
+            if price_itinerary.get('additional_charge_amount'):
+                service_charge.append({
+                    'pax_type': 'ADT',
+                    'charge_code': 'tax',
+                    'charge_type': 'tax',
+                    'amount': price_itinerary['additional_charge_total'] / price_itinerary['additional_charge_amount'],
+                    'pax_count': price_itinerary['additional_charge_amount'],
+                    'currency_id': def_currency,
+                    'foreign_currency_id': def_currency,
+                    'foreign_amount': 0,
+                    'description': 'Additional Charge',
+                })
+
+            if price_itinerary.get('child_amount'):
+                service_charge.append({
+                    'pax_type': 'CHD',
+                    'charge_code': 'fare',
+                    'charge_type': 'fare',
+                    'amount': price_itinerary['child_price'] / price_itinerary['child_amount'],
+                    'pax_count': price_itinerary['child_amount'],
+                    'currency_id': def_currency,
+                    'foreign_currency_id': def_currency,
+                    'foreign_amount': 0,
+                    'description': 'Child Price',
+                })
+                service_charge.append({
+                    'pax_type': 'CHD',
+                    'charge_code': 'tax',
+                    'charge_type': 'tax',
+                    'amount': price_itinerary['airport_tax_total'] / (price_itinerary['adult_amount'] + price_itinerary['child_amount'] + price_itinerary['infant_amount']),
+                    'pax_count': price_itinerary['child_amount'],
+                    'currency_id': def_currency,
+                    'foreign_currency_id': def_currency,
+                    'foreign_amount': 0,
+                    'description': 'Airport Tax',
+                })
+
+            if price_itinerary.get('child_surcharge_amount'):
+                service_charge.append({
+                    'pax_type': 'CHD',
+                    'charge_code': 'tax',
+                    'charge_type': 'tax',
+                    'amount': price_itinerary['child_surcharge_price'] / price_itinerary['child_surcharge_amount'],
+                    'pax_count': price_itinerary['child_surcharge_amount'],
+                    'currency_id': def_currency,
+                    'foreign_currency_id': def_currency,
+                    'foreign_amount': 0,
+                    'description': 'Child Surcharge',
+                })
+
+            if price_itinerary.get('infant_amount'):
+                service_charge.append({
+                    'pax_type': 'INF',
+                    'charge_code': 'fare',
+                    'charge_type': 'fare',
+                    'amount': price_itinerary['infant_price'] / price_itinerary['infant_amount'],
+                    'pax_count': price_itinerary['infant_amount'],
+                    'currency_id': def_currency,
+                    'foreign_currency_id': def_currency,
+                    'foreign_amount': 0,
+                    'description': 'Infant Price',
+                })
+                service_charge.append({
+                    'pax_type': 'INF',
+                    'charge_code': 'tax',
+                    'charge_type': 'tax',
+                    'amount': price_itinerary['airport_tax_total'] / (price_itinerary['adult_amount'] + price_itinerary['child_amount'] + price_itinerary['infant_amount']),
+                    'pax_count': price_itinerary['infant_amount'],
+                    'currency_id': def_currency,
+                    'foreign_currency_id': def_currency,
+                    'foreign_amount': 0,
+                    'description': 'Airport Tax',
+                })
+
+            if price_itinerary.get('commission_total'):
+                service_charge.append({
+                    'pax_type': 'ADT',
+                    'charge_code': 'r.ac',
+                    'charge_type': 'r.ac',
+                    'amount': price_itinerary['commission_total'] * -1,
+                    'pax_count': 1,
+                    'currency_id': def_currency,
+                    'foreign_currency_id': def_currency,
+                    'foreign_amount': 0,
+                    'description': 'Commission',
+                })
+
+            if price_itinerary.get('commission_total'):
+                service_charge.append({
+                    'pax_type': 'ADT',
+                    'charge_code': 'r.oc',
+                    'charge_type': 'r.oc',
+                    'amount': price_itinerary['commission_total'],
+                    'pax_count': 1,
+                    'currency_id': def_currency,
+                    'foreign_currency_id': def_currency,
+                    'foreign_amount': 0,
+                    'description': 'Commission',
+                })
+
+            if price_itinerary.get('discount_total_itinerary_price'):
+                service_charge.append({
+                    'pax_type': 'ADT',
+                    'charge_code': 'disc',
+                    'charge_type': 'disc',
+                    'amount': price_itinerary['discount_total_itinerary_price'] * -1,
+                    'pax_count': 1,
+                    'currency_id': def_currency,
+                    'foreign_currency_id': def_currency,
+                    'foreign_amount': 0,
+                    'description': 'Discount',
+                })
+
+            for rec in service_charge:
+                sc_obj = self.env['tt.service.charge'].create(rec)
+
+                if sc_obj:
+                    service_charge_ids.append(sc_obj.id)
+
+            booking_obj = self.env['tt.reservation.tour'].sudo().create({
+                'contact_id': booker_id != 'false' and int(booker_id) or False,
+                'passenger_ids': [(6, 0, pax_ids)],
+                'tour_id': pricelist_id,
+                'agent_id': 2,
+                'line_ids': [(6, 0, book_line_ids)],
+                'sale_service_charge_ids': [(6, 0, service_charge_ids)],
             })
 
-            new_aml = ledger.sudo().create(vals)
+            if booking_obj:
+                booking_obj.action_confirm()
+                booking_obj.action_booked_tour()
 
-    def create_anti_ledger_tour(self):
-        ledger = self.env['tt.ledger']
-        total_order = 0
-        for rec in self:
-            desc = ''
+                if force_issued == 1:
+                    booking_obj.write({
+                        'payment_method': data.get('payment_method') and data['payment_method'] or 'cash'
+                    })
+                    booking_obj.action_issued()
 
-            for sc in rec.sale_service_charge_ids:
-                # if rec.transport_type == 'passport':
-                #     if not sc.pricelist_id.apply_type in doc_type:
-                #         doc_type.append(sc.pricelist_id.apply_type)
-                #     desc = sc.pricelist_id.passport_type.upper() + ' ' + sc.pricelist_id.apply_type.upper()
-                # else:
-                if sc.charge_code == 'fare':
-                    if rec.payment_method == 'cash':
-                        desc = 'Cash ' + rec.tour_id.name + ' ' + str(rec.departure_date) + ' | ' + str(rec.return_date)
-                    elif rec.payment_method == 'installment':
-                        desc = 'Down Payment ' + rec.tour_id.name + ' ' + str(rec.departure_date) + ' | ' + str(
-                            rec.return_date)
-                    total_order += sc.total
-                print('Total fare : ' + str(sc.total))
+                response = {
+                    'booking_num': booking_obj.name
+                }
 
-            vals = ledger.prepare_vals('Order Tour : ' + rec.name, rec.name, rec.issued_date,
-                                       'tour', rec.currency_id.id, total_order, 0)
-            vals.update({
-                'res_id': rec.id,
-                'res_model': rec._name,
-                'agent_id': rec.agent_id.id,
-                'pnr': rec.pnr,
-                'provider_type_id': rec.provider_type_id.id,
-                'description': desc
-            })
-            # vals['transport_type'] = rec.transport_type
-            # vals['display_provider_name'] = rec.display_provider_name
-
-            new_aml = ledger.sudo().create(vals)
-
-    def _calc_grand_total(self):
-        for rec in self:
-            rec.total = 0
-            rec.total_tax = 0
-            rec.total_disc = 0
-            rec.total_commission = 0
-            rec.total_fare = 0
-
-            for line in rec.sale_service_charge_ids:
-                if line.charge_code == 'fare':
-                    rec.total_fare += line.total
-                if line.charge_code == 'tax':
-                    rec.total_tax += line.total
-                if line.charge_code == 'disc':
-                    rec.total_disc += line.total
-                if line.charge_code == 'r.oc':
-                    rec.total_commission += line.total
-
-            rec.total = rec.total_fare + rec.total_tax + rec.total_disc
-            rec.total_nta = rec.total - rec.total_commission
-
-    def create_commission_ledger_tour(self):
-        ledger = self.env['tt.ledger']
-        self._calc_grand_total()
-        for rec in self:
-            total_commission = rec.total_commission
-
-            if rec.agent_type_id.id == self.env.ref('tt_base.agent_type_citra').id:
-                agent_commission = total_commission * 0.8
-                parent_commission = 0
-                ho_commission = total_commission * 0.2
-            elif rec.agent_type_id.id == self.env.ref('tt_base.agent_type_japro').id:
-                agent_commission = total_commission * 0.7
-                parent_commission = total_commission * 0.1
-                ho_commission = total_commission * 0.2
-            elif rec.agent_type_id.id == self.env.ref('tt_base.agent_type_btbo').id:
-                agent_commission = total_commission * 0.7
-                parent_commission = total_commission * 0.1
-                ho_commission = total_commission * 0.2
-            elif rec.agent_type_id.id == self.env.ref('tt_base.agent_type_btbr').id:
-                agent_commission = total_commission * 0.7
-                parent_commission = total_commission * 0.1
-                ho_commission = total_commission * 0.2
             else:
-                agent_commission = 0
-                parent_commission = 0
-                ho_commission = 0
+                response = {
+                    'booking_num': 0
+                }
+            res = Response().get_no_error(response)
+        except Exception as e:
+            res = Response().get_error(str(e), 500)
+        return res
 
-            desc = 'Agent Commission'
+    def get_booking_api(self, data, context, **kwargs):
+        try:
+            search_booking_num = data.get('order_number')
+            book_objs = self.env['tt.reservation.tour'].sudo().search([('name', '=', search_booking_num)])
+            book_obj = book_objs[0]
+            result = {
+                'id': book_obj.id,
+                'pnr': book_obj.pnr,
+                'state': book_obj.state,
+                'display_mobile': book_obj.display_mobile,
+                'elder': book_obj.elder,
+                'adult': book_obj.adult,
+                'child': book_obj.child,
+                'infant': book_obj.infant,
+                'departure_date': book_obj.departure_date,
+                'arrival_date': book_obj.arrival_date,
+                'name': book_obj.name,
+                'hold_date': book_obj.hold_date,
+            }
 
-            vals = ledger.prepare_vals('Commission Tour : ' + rec.name, rec.name, rec.issued_date,
-                                       'tour', rec.currency_id.id, agent_commission, 0)
-            vals.update({
-                'res_id': rec.id,
-                'res_model': rec._name,
-                'agent_id': rec.agent_id.id,
-                'pnr': rec.pnr,
-                'description': desc
+            if book_obj.contact_id:
+                contact_phone = self.env['phone.detail'].sudo().search([('customer_id', '=', book_obj.contact_id.id)])
+                result.update({
+                    'contact_first_name': book_obj.contact_id.first_name and book_obj.contact_id.first_name or '',
+                    'contact_last_name': book_obj.contact_id.last_name and book_obj.contact_id.last_name or '',
+                    'contact_title': book_obj.contact_id.title and book_obj.contact_id.title or '',
+                    'contact_email': book_obj.contact_id.email and book_obj.contact_id.email or '',
+                    'contact_phone': contact_phone[0].phone_number
+                })
+
+            tour_package = {
+                'id': book_obj.tour_id.id,
+                'name': book_obj.tour_id.name,
+                'duration': book_obj.tour_id.duration,
+                'departure_date': book_obj.tour_id.departure_date,
+                'arrival_date': book_obj.tour_id.arrival_date,
+                'departure_date_f': datetime.strptime(str(book_obj.tour_id.arrival_date), '%Y-%m-%d').strftime("%A, %d-%m-%Y") or '',
+                'arrival_date_f': datetime.strptime(str(book_obj.tour_id.arrival_date), '%Y-%m-%d').strftime("%A, %d-%m-%Y") or '',
+                'visa': book_obj.tour_id.visa,
+                'flight': book_obj.tour_id.flight,
+            }
+
+            passengers = []
+            rooms = []
+            room_id_list = []
+            for rec in book_obj.line_ids:
+                passengers.append({
+                    'pax_id': rec.passenger_id.id,
+                    'first_name': rec.passenger_id.first_name and rec.passenger_id.first_name or '',
+                    'last_name': rec.passenger_id.last_name and rec.passenger_id.last_name or '',
+                    'title': rec.passenger_id.title and rec.passenger_id.title or '',
+                    'pax_type': rec.pax_type,
+                    'birth_date': rec.passenger_id.birth_date,
+                    'room_id': rec.room_id.id,
+                    'room_name': rec.room_id.name,
+                    'room_bed_type': rec.room_id.bed_type,
+                    'room_hotel': rec.room_id.hotel,
+                    'room_number': rec.room_number,
+                })
+
+                if rec.room_id.id not in room_id_list:
+                    room_id_list.append(rec.room_id.id)
+                    rooms.append({
+                        'room_number': rec.room_number,
+                        'room_name': rec.room_id.name,
+                        'room_bed_type': rec.room_id.bed_type,
+                        'room_hotel': rec.room_id.hotel and rec.room_id.hotel or '-',
+                        'room_notes': rec.description and rec.description or '-',
+                    })
+
+            price_itinerary = {
+                'adult_amount': 0,
+                'adult_price': 0,
+                'adult_surcharge_amount': 0,
+                'adult_surcharge_price': 0,
+                'child_amount': 0,
+                'child_price': 0,
+                'child_surcharge_amount': 0,
+                'child_surcharge_price': 0,
+                'infant_amount': 0,
+                'infant_price': 0,
+                'single_supplement_amount': 0,
+                'single_supplement_price': 0,
+                'airport_tax_amount': 0,
+                'airport_tax_total': 0,
+                'tipping_guide_amount': 0,
+                'tipping_guide_total': 0,
+                'tipping_tour_leader_amount': 0,
+                'tipping_tour_leader_total': 0,
+                'additional_charge_amount': 0,
+                'additional_charge_total': 0,
+                'sub_total_itinerary_price': 0,
+                'discount_total_itinerary_price': 0,
+                'total_itinerary_price': 0,
+                'commission_total': 0,
+            }
+
+            grand_total = 0
+            for price in book_obj.sale_service_charge_ids:
+                if price.description == 'Adult Price':
+                    price_itinerary.update({
+                        'adult_amount': price.pax_count,
+                        'adult_price': int(price.total),
+                    })
+                    grand_total += int(price.total)
+                if price.description == 'Airport Tax':
+                    price_itinerary.update({
+                        'airport_tax_amount': price.pax_count,
+                        'airport_tax_total': int(price.total),
+                    })
+                    grand_total += int(price.total)
+                if price.description == 'Adult Surcharge':
+                    price_itinerary.update({
+                        'adult_surcharge_amount': price.pax_count,
+                        'adult_surcharge_price': int(price.total),
+                    })
+                    grand_total += int(price.total)
+                if price.description == 'Single Supplement':
+                    price_itinerary.update({
+                        'single_supplement_amount': price.pax_count,
+                        'single_supplement_price': int(price.total),
+                    })
+                    grand_total += int(price.total)
+                if price.description == 'Tipping Tour Guide':
+                    price_itinerary.update({
+                        'tipping_guide_amount': price.pax_count,
+                        'tipping_guide_total': int(price.total),
+                    })
+                    grand_total += int(price.total)
+                if price.description == 'Tipping Tour Leader':
+                    price_itinerary.update({
+                        'tipping_tour_leader_amount': price.pax_count,
+                        'tipping_tour_leader_total': int(price.total),
+                    })
+                    grand_total += int(price.total)
+                if price.description == 'Additional Charge':
+                    price_itinerary.update({
+                        'additional_charge_amount': price.pax_count,
+                        'additional_charge_total': int(price.total),
+                    })
+                    grand_total += int(price.total)
+                if price.description == 'Child Price':
+                    price_itinerary.update({
+                        'child_amount': price.pax_count,
+                        'child_price': int(price.total),
+                    })
+                    grand_total += int(price.total)
+                if price.description == 'Child Surcharge':
+                    price_itinerary.update({
+                        'child_surcharge_amount': price.pax_count,
+                        'child_surcharge_price': int(price.total),
+                    })
+                    grand_total += int(price.total)
+                if price.description == 'Infant Price':
+                    price_itinerary.update({
+                        'infant_amount': price.pax_count,
+                        'infant_price': int(price.total),
+                    })
+                    grand_total += int(price.total)
+                if price.description == 'Commission' and price.charge_code == 'r.oc':
+                    price_itinerary.update({
+                        'commission_total': int(price.total),
+                    })
+                if price.description == 'Discount':
+                    price_itinerary.update({
+                        'discount_total_itinerary_price': int(price.total),
+                    })
+                    grand_total -= int(price.total)
+
+            sub_total = grand_total + price_itinerary['discount_total_itinerary_price']
+
+            price_itinerary.update({
+                'total_itinerary_price': grand_total,
+                'sub_total_itinerary_price': sub_total,
             })
-            # vals['transport_type'] = rec.transport_type
-            # vals['display_provider_name'] = rec.display_provider_name
 
-            new_aml = ledger.sudo().create(vals)
+            response = {
+                'result': result,
+                'tour_package': tour_package,
+                'passengers': passengers,
+                'rooms': rooms,
+                'price_itinerary': price_itinerary,
+            }
+            res = Response().get_no_error(response)
+        except Exception as e:
+            res = Response().get_error(str(e), 500)
+        return res
 
-            desc = 'HO Commission'
+    def issued_by_api(self, data, context, **kwargs):
+        try:
+            search_booking_num = data.get('order_number')
+            book_objs = self.env['tt.reservation.tour'].sudo().search([('name', '=', search_booking_num)])
+            for book_obj in book_objs:
+                book_obj.action_issued()
 
-            vals = ledger.prepare_vals('Commission Tour : ' + rec.name, rec.name, rec.issued_date,
-                                       'tour', rec.currency_id.id, ho_commission, 0)
-            vals.update({
-                'res_id': rec.id,
-                'res_model': rec._name,
-                'agent_id': rec.agent_id.parent_agent_id.id,
-                'pnr': rec.pnr,
-                'description': desc
-            })
-            # vals['transport_type'] = rec.transport_type
-            # vals['display_provider_name'] = rec.display_provider_name
+            response = {
+                'order_number': book_objs[0].name,
+            }
+            res = Response().get_no_error(response)
+        except Exception as e:
+            res = Response().get_error(str(e), 500)
+        return res
 
-            new_aml = ledger.sudo().create(vals)
+    def update_passenger_api(self, data, context, **kwargs):
+        try:
+            sameBooker = False
+            if data['booking_data']['sameBooker'] == "yes":
+                sameBooker = True
+            else:
+                sameBooker = False
+
+            booker_obj = data['booking_data']['contact']
+            booker_id = booker_obj.get('booker_id')
+            res_booker_id = False
+            res_pax_list = []
+            book_line_list = []
+            contact_person = data['booking_data']['contact_person']
+            tour_data = data['booking_data']['tour_data']
+            if len(contact_person) > 0:
+                similar = self.check_pax_similarity(contact_person[0])
+                if not similar:
+                    cust_obj = self.env['tt.customer'].sudo().create({
+                        'title': contact_person[0].get('title'),
+                        'first_name': contact_person[0].get('first_name'),
+                        'last_name': contact_person[0].get('last_name'),
+                        'email': contact_person[0].get('email'),
+                        'agent_id': contact_person[0].get('agent_id') and contact_person[0]['agent_id'] or 2,
+                    })
+                    if contact_person[0].get('mobile'):
+                        self.env['phone.detail'].sudo().create({
+                            'customer_id': cust_obj.id,
+                            'type': 'work',
+                            'name': 'Work',
+                            'phone_number': contact_person[0]['mobile'],
+                        })
+                    res_booker_id = cust_obj.id
+                else:
+                    res_booker_id = similar.id
+            elif not sameBooker and not booker_id:
+                similar = self.check_pax_similarity(booker_obj)
+                if not similar:
+                    cust_obj = self.env['tt.customer'].sudo().create({
+                        'title': booker_obj.get('title'),
+                        'first_name': booker_obj.get('first_name'),
+                        'last_name': booker_obj.get('last_name'),
+                        'email': booker_obj.get('email'),
+                        'agent_id': booker_obj.get('agent_id') and booker_obj['agent_id'] or 2,
+                    })
+                    if booker_obj.get('mobile'):
+                        self.env['phone.detail'].sudo().create({
+                            'customer_id': cust_obj.id,
+                            'type': 'work',
+                            'name': 'Work',
+                            'phone_number': booker_obj['mobile'],
+                        })
+                    res_booker_id = cust_obj.id
+                else:
+                    res_booker_id = similar.id
+
+            elif booker_id and not sameBooker:
+                temp_booker = self.env['tt.customer'].browse(int(booker_id))
+                temp_booker.sudo().update({
+                    'title': booker_obj.get('title') and booker_obj['title'] or temp_booker.title,
+                    'first_name': booker_obj.get('first_name') and booker_obj['first_name'] or temp_booker.first_name,
+                    'last_name': booker_obj.get('last_name') and booker_obj['last_name'] or temp_booker.last_name,
+                    'email': booker_obj.get('email') and booker_obj['email'] or temp_booker.email,
+                    'agent_id': booker_obj.get('agent_id') and booker_obj['agent_id'] or temp_booker.agent_id,
+                })
+                if booker_obj.get('mobile'):
+                    found = False
+                    for ph in temp_booker.phone_ids:
+                        if ph.phone_number == booker_obj['mobile']:
+                            found = True
+                    if not found:
+                        self.env['phone.detail'].sudo().create({
+                            'customer_id': int(booker_id),
+                            'type': 'work',
+                            'name': 'Work',
+                            'phone_number': booker_obj['mobile'],
+                        })
+                res_booker_id = int(booker_id)
+
+            temp_idx = 0
+            for rec in data['booking_data']['all_pax']:
+                if not rec.get('passenger_id'):
+                    similar = self.check_pax_similarity(rec)
+                    if not similar:
+                        cust_obj = self.env['tt.customer'].sudo().create({
+                            'title': rec.get('title'),
+                            'first_name': rec.get('first_name'),
+                            'last_name': rec.get('last_name'),
+                            'email': rec.get('email'),
+                            'agent_id': rec.get('agent_id') and rec['agent_id'] or 2,
+                            'birth_date': rec.get('birth_date_f'),
+                            'passport_number': rec.get('passport_number'),
+                            'passport_exp_date': rec.get('passport_expdate_f'),
+                        })
+                        if rec.get('mobile'):
+                            self.env['phone.detail'].sudo().create({
+                                'customer_id': cust_obj.id,
+                                'type': 'work',
+                                'name': 'Work',
+                                'phone_number': rec['mobile'],
+                            })
+                        res_pax_list.append(cust_obj.id)
+                        if sameBooker and temp_idx == 0 and rec.get('pax_type') == 'ADT':
+                            cust_obj.update({
+                                'email': booker_obj.get('email'),
+                            })
+                            if booker_obj.get('mobile'):
+                                self.env['phone.detail'].sudo().create({
+                                    'customer_id': cust_obj.id,
+                                    'type': 'work',
+                                    'name': 'Work',
+                                    'phone_number': booker_obj['mobile'],
+                                })
+                            res_booker_id = cust_obj.id
+                            temp_idx += 1
+
+                        cust_line_obj = self.env['tt.reservation.tour.line'].sudo().create({
+                            'passenger_id': cust_obj.id,
+                            'room_id': rec.get('room_id') and rec['room_id'] or False,
+                            'room_number': rec.get('room_seq') and rec['room_seq'] or False,
+                            'pax_type': rec.get('pax_type') and rec['pax_type'] or False,
+                            'tour_pricelist_id': tour_data and tour_data['id'] or False,
+                        })
+                        book_line_list.append(cust_line_obj.id)
+                    else:
+                        cust_line_obj = self.env['tt.reservation.tour.line'].sudo().create({
+                            'passenger_id': similar.id,
+                            'room_id': rec.get('room_id') and rec['room_id'] or False,
+                            'room_number': rec.get('room_seq') and rec['room_seq'] or False,
+                            'pax_type': rec.get('pax_type') and rec['pax_type'] or False,
+                            'tour_pricelist_id': tour_data and tour_data['id'] or False,
+                        })
+                        book_line_list.append(cust_line_obj.id)
+
+                else:
+                    temp = self.env['tt.customer'].browse(int(rec['passenger_id']))
+                    temp.sudo().update({
+                        'title': rec.get('title') and rec['title'] or temp.title,
+                        'first_name': rec.get('first_name') and rec['first_name'] or temp.first_name,
+                        'last_name': rec.get('last_name') and rec['last_name'] or temp.last_name,
+                        'email': rec.get('email') and rec['email'] or temp.email,
+                        'agent_id': rec.get('agent_id') and rec['agent_id'] or temp.agent_id,
+                        'birth_date': rec.get('birth_date_f') and rec['birth_date_f'] or temp.birth_date,
+                        'passport_number': rec.get('passport_number') and rec['passport_number'] or temp.passport_number,
+                        'passport_exp_date': rec.get('passport_expdate_f') and rec['passport_expdate_f'] or temp.passport_exp_date,
+                    })
+                    if rec.get('mobile'):
+                        found = False
+                        for ph in temp.phone_ids:
+                            if ph.phone_number == rec['mobile']:
+                                found = True
+                        if not found:
+                            self.env['phone.detail'].sudo().create({
+                                'customer_id': int(rec['passenger_id']),
+                                'type': 'work',
+                                'name': 'Work',
+                                'phone_number': rec['mobile'],
+                            })
+                    res_pax_list.append(int(rec['passenger_id']))
+                    cust_line_obj = self.env['tt.reservation.tour.line'].sudo().create({
+                        'passenger_id': int(rec['passenger_id']),
+                        'room_id': rec.get('room_id') and rec['room_id'] or False,
+                        'room_number': rec.get('room_seq') and rec['room_seq'] or False,
+                        'pax_type': rec.get('pax_type') and rec['pax_type'] or False,
+                        'tour_pricelist_id': tour_data and tour_data['id'] or False,
+                    })
+                    book_line_list.append(cust_line_obj.id)
+
+            response = {
+                'booker_data': res_booker_id,
+                'pax_list': res_pax_list,
+                'book_line': book_line_list,
+            }
+            res = Response().get_no_error(response)
+        except Exception as e:
+            res = Response().get_error(str(e), 500)
+        return res
+

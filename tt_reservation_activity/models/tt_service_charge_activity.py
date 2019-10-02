@@ -1,7 +1,7 @@
 from odoo import api,models,fields
 
 
-class TtServiceChargeAirline(models.Model):
+class TtServiceChargeActivity(models.Model):
     _inherit = "tt.service.charge"
 
     provider_activity_booking_id = fields.Many2one('tt.provider.activity', 'Provider Booking ID')

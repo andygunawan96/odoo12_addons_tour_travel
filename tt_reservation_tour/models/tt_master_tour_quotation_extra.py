@@ -8,11 +8,11 @@ EXTRA_TYPE = [
 
 
 class TourQuotationExtra(models.Model):
-    _name = 'tt.reservation.tour.quotation.extra'
+    _name = 'tt.master.tour.quotation.extra'
     _description = 'Rodex Model'
 
     # tour_quotation_id = fields.Char('Tour Quotation')
-    tour_quotation_id = fields.Many2one('tt.reservation.tour.package.quotation', 'Tour Quotation')
+    tour_quotation_id = fields.Many2one('tt.master.tour.quotation', 'Tour Quotation')
 
     currency_id = fields.Many2one('res.currency', 'Currency', required=True,
                                   default=lambda self: self.env.user.company_id.currency_id)
