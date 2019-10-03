@@ -7,7 +7,7 @@ BED_TYPE = [
 
 
 class TourRooms(models.Model):
-    _name = 'tt.reservation.tour.rooms'
+    _name = 'tt.master.tour.rooms'
     _description = 'Rodex Model'
 
     name = fields.Char('Name', required=True, default='Standard')

@@ -2,7 +2,10 @@ from odoo import api, fields, models, _
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from ...tools.api import Response
+import logging, traceback
 import json
+
+_logger = logging.getLogger(__name__)
 
 DP_TYPE = [
     ('percentage', 'Percentage'),
@@ -114,11 +117,11 @@ class MasterTour(models.Model):
     # infant_citra_price = fields.Monetary('Infant Citra Price', default=0)
     # infant_sale_price = fields.Monetary('Infant Sale Price', default=0)
 
-    infant_fare = fields.Monetary('Child Fare', default=0)
-    infant_tax = fields.Monetary('Child Tax', default=0)
+    infant_fare = fields.Monetary('Infant Fare', default=0)
+    infant_tax = fields.Monetary('Infant Tax', default=0)
 
-    discount_ids = fields.One2many('tt.reservation.tour.discount.fit', 'tour_pricelist_id')
-    room_ids = fields.One2many('tt.reservation.tour.rooms', 'tour_pricelist_id', required=True)
+    discount_ids = fields.One2many('tt.master.tour.discount.fit', 'tour_pricelist_id')
+    room_ids = fields.One2many('tt.master.tour.rooms', 'tour_pricelist_id', required=True)
 
     dp = fields.Float('Down Payment Percent (%)')
     dp_type = fields.Selection(DP_TYPE, 'Down Payment Type')
@@ -132,10 +135,10 @@ class MasterTour(models.Model):
     # tour_leader_ids = fields.Many2many('res.employee', 'tour_leader_rel', 'pricelist_id', 'partner_id',
     #                                    string="Tour Leader")
     # tour_checklist_ids = fields.Char('Tour Checklist')
-    tour_checklist_ids = fields.One2many('tt.reservation.tour.checklist', 'tour_pricelist_id', string="Tour Checklist")
+    tour_checklist_ids = fields.One2many('tt.master.tour.checklist', 'tour_pricelist_id', string="Tour Checklist")
 
     requirements = fields.Html('Remarks')
-    images = fields.One2many('tt.reservation.tour.images', 'pricelist_id', 'Images')
+    images = fields.One2many('tt.master.tour.images', 'pricelist_id', 'Images')
     # images = fields.Many2many('ir.attachment', 'tour_images_rel',
     #                           'pricelist_id', 'image_id', domain=[('res_model', '=', 'tt.master.tour')],
     #                           string='Add Image', required=True)
@@ -145,7 +148,7 @@ class MasterTour(models.Model):
     #                                       domain=[('transport_type', '=', 'visa')], string='Visa Pricelist')
     passengers_ids = fields.One2many('tt.reservation.tour.line', 'tour_pricelist_id', string='Tour Participants', copy=False)
     sequence = fields.Integer('Sequence', default=3)
-    adjustment_ids = fields.One2many('tt.reservation.tour.adjustment', 'tour_pricelist_id', required=True)
+    adjustment_ids = fields.One2many('tt.master.tour.adjustment', 'tour_pricelist_id', required=True)
     survey_title_ids = fields.One2many('survey.survey', 'tour_id', string='Tour Surveys', copy=False)
     # quotation_ids = fields.One2many('tt.master.tour.quotation', 'tour_pricelist_id', 'Tour Quotation(s)')
 
@@ -334,29 +337,6 @@ class MasterTour(models.Model):
             result = ".%03d%s" % (r, result)
         return "%d%s" % (x, result)
 
-    def get_tour_countries_api(self, data, context, **kwargs):
-        try:
-            temp = []
-            self.env.cr.execute("""SELECT country_id FROM tour_country_rel""")
-            countries = self.env.cr.dictfetchall()
-            for country in countries:
-                if not country['country_id'] in temp:
-                    temp.append(country['country_id'])
-
-            countries = []
-            if temp:
-                self.env.cr.execute("""SELECT id, name, code, phone_code FROM res_country WHERE id in %s""",
-                                    (tuple(temp),))
-                countries = self.env.cr.dictfetchall()
-
-            response = {
-                'countries': countries,
-            }
-            res = Response().get_no_error(response)
-        except Exception as e:
-            res = Response().get_error(str(e), 500)
-        return res
-
     def search_tour_api(self, data, context, **kwargs):
         try:
             search_request = {
@@ -371,7 +351,7 @@ class MasterTour(models.Model):
                 'departure_date': str(search_request['departure_year']) + '-' + str(search_request['departure_month'])
             })
 
-            sql_query = "SELECT * FROM tt_master_tour tp LEFT JOIN tt_tour_location_rel tcr ON tp.id = tcr.product_id left join tt_tour_master_locations loc on loc.id = tcr.location_id WHERE tp.state_tour IN ('open', 'definite', 'sold') AND tp.active = True"
+            sql_query = "SELECT tp.* FROM tt_master_tour tp LEFT JOIN tt_tour_location_rel tcr ON tcr.product_id = tp.id left join tt_tour_master_locations loc on loc.id = tcr.location_id WHERE tp.state_tour IN ('open', 'definite', 'sold') AND tp.active = True"
 
             if search_request.get('tour_query'):
                 sql_query += " AND tp.name ILIKE '" + search_request['tour_query'] + "'"
@@ -394,6 +374,7 @@ class MasterTour(models.Model):
                 })
                 sql_query += " AND loc.city_id = " + search_request['city_id']
 
+            sql_query += ' group by tp.id'
             self.env.cr.execute(sql_query)
             result_temp = self.env.cr.dictfetchall()
 
@@ -429,7 +410,7 @@ class MasterTour(models.Model):
 
             for idx, rec in enumerate(result):
                 try:
-                    self.env.cr.execute("""SELECT * FROM tt_reservation_tour_images WHERE pricelist_id = %s;""", (rec['id'],))
+                    self.env.cr.execute("""SELECT * FROM tt_master_tour_images WHERE pricelist_id = %s;""", (rec['id'],))
                     images = self.env.cr.dictfetchall()
                 except Exception:
                     images = []
@@ -446,11 +427,17 @@ class MasterTour(models.Model):
                                 img_key: ''
                             })
 
+                adult_sale_price = int(rec['adult_fare']) + int(rec['adult_tax'])
+                child_sale_price = int(rec['child_fare']) + int(rec['child_tax'])
+                infant_sale_price = int(rec['infant_fare']) + int(rec['infant_tax'])
                 rec.update({
                     'name': rec['name'],
-                    'adult_sale_price_with_comma': self.int_with_commas(rec['adult_sale_price']),
-                    'child_sale_price_with_comma': self.int_with_commas(rec['child_sale_price']),
-                    'infant_sale_price_with_comma': self.int_with_commas(rec['infant_sale_price']),
+                    'adult_sale_price_with_comma': self.int_with_commas(adult_sale_price),
+                    'child_sale_price_with_comma': self.int_with_commas(child_sale_price),
+                    'infant_sale_price_with_comma': self.int_with_commas(infant_sale_price),
+                    'adult_sale_price': adult_sale_price,
+                    'child_sale_price': child_sale_price,
+                    'infant_sale_price': infant_sale_price,
                     'airport_tax_with_comma': self.int_with_commas(rec['airport_tax']),
                     'tipping_guide_with_comma': self.int_with_commas(rec['tipping_guide']),
                     'tipping_tour_leader_comma': self.int_with_commas(rec['tipping_tour_leader']),
@@ -480,6 +467,8 @@ class MasterTour(models.Model):
             response = {
                 'country_id': search_request['country_id'],
                 'country': search_request.get('country_name', ''),
+                'city_id': search_request['city_id'],
+                'city': search_request.get('city_name', ''),
                 'search_request': search_request,
                 # 'search_request_json': json.dumps(search_request),
                 'result': result,
@@ -571,12 +560,12 @@ class MasterTour(models.Model):
                 commission_agent_type = 'other'
 
             for idx, rec in enumerate(tour_list):
-                adult_commission = (rec['adult_sale_price'] - rec['adult_citra_price']) > 0 and rec['adult_sale_price'] - rec['adult_citra_price'] or '0'
-                child_commission = (rec['child_sale_price'] - rec['child_citra_price']) > 0 and rec['child_sale_price'] - rec['child_citra_price'] or '0'
-                infant_commission = (rec['infant_sale_price'] - rec['infant_citra_price']) > 0 and rec['infant_sale_price'] - rec['infant_citra_price'] or '0'
+                # adult_commission = (rec['adult_sale_price'] - rec['adult_citra_price']) > 0 and rec['adult_sale_price'] - rec['adult_citra_price'] or '0'
+                # child_commission = (rec['child_sale_price'] - rec['child_citra_price']) > 0 and rec['child_sale_price'] - rec['child_citra_price'] or '0'
+                # infant_commission = (rec['infant_sale_price'] - rec['infant_citra_price']) > 0 and rec['infant_sale_price'] - rec['infant_citra_price'] or '0'
 
                 try:
-                    self.env.cr.execute("""SELECT * FROM tt_reservation_tour_discount_fit WHERE tour_pricelist_id = %s;""", (rec['id'],))
+                    self.env.cr.execute("""SELECT * FROM tt_master_tour_discount_fit WHERE tour_pricelist_id = %s;""", (rec['id'],))
                     discount = self.env.cr.dictfetchall()
                 except Exception:
                     discount = []
@@ -592,7 +581,7 @@ class MasterTour(models.Model):
 
                 try:
                     self.env.cr.execute(
-                        """SELECT * FROM tt_reservation_tour_rooms WHERE tour_pricelist_id = %s;""", (rec['id'],))
+                        """SELECT * FROM tt_master_tour_rooms WHERE tour_pricelist_id = %s;""", (rec['id'],))
                     accommodation = self.env.cr.dictfetchall()
                 except Exception:
                     accommodation = []
@@ -619,7 +608,7 @@ class MasterTour(models.Model):
                     })
 
                 try:
-                    self.env.cr.execute("""SELECT * FROM tt_reservation_tour_images WHERE pricelist_id = %s;""", (rec['id'],))
+                    self.env.cr.execute("""SELECT * FROM tt_master_tour_images WHERE pricelist_id = %s;""", (rec['id'],))
                     images = self.env.cr.dictfetchall()
                 except Exception:
                     images = []
@@ -632,18 +621,22 @@ class MasterTour(models.Model):
                                 key: ''
                             })
 
+                adult_sale_price = int(rec['adult_fare']) + int(rec['adult_tax'])
+                child_sale_price = int(rec['child_fare']) + int(rec['child_tax'])
+                infant_sale_price = int(rec['infant_fare']) + int(rec['infant_tax'])
+
                 rec.update({
                     'name': rec['name'],
                     'accommodations': accommodation,
-                    'adult_sale_price_with_comma': self.int_with_commas(rec['adult_sale_price']),
-                    'child_sale_price_with_comma': self.int_with_commas(rec['child_sale_price']),
-                    'infant_sale_price_with_comma': self.int_with_commas(rec['infant_sale_price']),
-                    'adult_sale_price': rec['adult_sale_price'] <= 0 and '0' or rec['adult_sale_price'],
-                    'child_sale_price': rec['child_sale_price'] <= 0 and '0' or rec['child_sale_price'],
-                    'infant_sale_price': rec['infant_sale_price'] <= 0 and '0' or rec['infant_sale_price'],
-                    'adult_commission': adult_commission,
-                    'child_commission': child_commission,
-                    'infant_commission': infant_commission,
+                    'adult_sale_price_with_comma': self.int_with_commas(adult_sale_price),
+                    'child_sale_price_with_comma': self.int_with_commas(child_sale_price),
+                    'infant_sale_price_with_comma': self.int_with_commas(infant_sale_price),
+                    'adult_sale_price': adult_sale_price <= 0 and '0' or adult_sale_price,
+                    'child_sale_price': child_sale_price <= 0 and '0' or child_sale_price,
+                    'infant_sale_price': infant_sale_price <= 0 and '0' or infant_sale_price,
+                    # 'adult_commission': adult_commission,
+                    # 'child_commission': child_commission,
+                    # 'infant_commission': infant_commission,
                     'airport_tax_with_comma': self.int_with_commas(rec['airport_tax']),
                     'tipping_guide_with_comma': self.int_with_commas(rec['tipping_guide']),
                     'tipping_tour_leader_with_comma': self.int_with_commas(rec['tipping_tour_leader']),
@@ -737,3 +730,39 @@ class MasterTour(models.Model):
         except Exception as e:
             res = Response().get_error(str(e), 500)
         return res
+
+    def get_config_by_api(self):
+        try:
+            countries_list = []
+            country_objs = self.env['res.country'].sudo().search([('provider_city_ids', '!=', False)])
+            for country in country_objs:
+                # for rec in country.provider_city_ids:
+                #     if rec.provider_id.id == vendor_id:
+                city = self.get_cities_by_api(country.id)
+                countries_list.append({
+                    'name': country.name,
+                    'id': country.id,
+                    'city': city
+                })
+
+            values = {
+                'countries': countries_list,
+            }
+            return Response().get_no_error(values)
+        except Exception as e:
+            _logger.info('Tour Get Config Error')
+            return Response().get_error(str(e), 500)
+
+    def get_cities_by_api(self, id):
+        try:
+            result_objs = self.env['res.city'].sudo().search([('country_id', '=', int(id))])
+            cities = []
+            for rec in result_objs:
+                cities.append({
+                    'name': rec.name,
+                    'id': rec.id,
+                })
+            return Response().get_no_error(cities)
+        except Exception as e:
+            _logger.info('Tour Get Cities Error')
+            return Response().get_error(str(e), 500)

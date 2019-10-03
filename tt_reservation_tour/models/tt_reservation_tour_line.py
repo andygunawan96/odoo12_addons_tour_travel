@@ -23,8 +23,8 @@ class TourBookingLine(models.Model):
     pax_type = fields.Selection(PAX_TYPE, 'Pax Type')
     pax_mobile = fields.Char('Pax Mobile')
 
-    room_id = fields.Many2one('tt.reservation.tour.rooms', 'Room ID')
-    # room_id = fields.Many2one('tt.reservation.tour.rooms', 'Tour ID')
+    room_id = fields.Many2one('tt.master.tour.rooms', 'Room ID')
+    # room_id = fields.Many2one('tt.master.tour.rooms', 'Tour ID')
     room_number = fields.Char('Room Number')
     extra_bed_description = fields.Char('Extra Bed Description')
     bed_type = fields.Selection(BED_TYPE, 'Bed Type')
