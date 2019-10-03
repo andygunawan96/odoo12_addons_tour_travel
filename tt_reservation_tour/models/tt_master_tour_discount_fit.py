@@ -2,7 +2,7 @@ from odoo import api, fields, models, _
 
 
 class TourDiscountFit(models.Model):
-    _name = 'tt.reservation.tour.discount.fit'
+    _name = 'tt.master.tour.discount.fit'
     _description = 'Rodex Model'
 
     currency_id = fields.Many2one('res.currency', 'Currency', required=True,
