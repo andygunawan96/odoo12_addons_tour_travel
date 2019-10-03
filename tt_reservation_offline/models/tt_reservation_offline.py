@@ -19,6 +19,17 @@ STATE_OFFLINE = [
     ('cancel', 'Canceled')
 ]
 
+STATE_OFFLINE_STR = {
+    'draft': 'Draft',
+    'confirm': 'Confirm',
+    'sent': 'Sent',
+    'paid': 'Validate',
+    'posted': 'Done',
+    'refund': 'Refund',
+    'expired': 'Expired',
+    'cancel': 'Canceled'
+}
+
 TYPE = [
     ('airline', 'Airlines'),
     ('train', 'Train'),
@@ -86,8 +97,8 @@ class IssuedOffline(models.Model):
     # Monetary
     currency_id = fields.Many2one('res.currency', 'Currency', default=lambda self: self.env.user.company_id.currency_id,
                                   readonly=True, states={'draft': [('readonly', False)]})
-    total_sale_price = fields.Monetary('Total Sale Price', readonly=True,
-                                       states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
+    total = fields.Monetary('Total Sale Price', readonly=True, store=True,
+                            states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
     total_commission_amount = fields.Monetary('Total Commission Amount', readonly=True,
                                               states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
     # total_supplementary_price = fields.Monetary('Total Supplementary', compute='_get_total_supplement')
@@ -187,7 +198,7 @@ class IssuedOffline(models.Model):
     def action_confirm(self, kwargs={}):
         if not self.check_line_empty():
             if not self.check_passenger_empty():
-                if self.total_sale_price != 0:
+                if self.total != 0:
                     self.state = 'confirm'
                     self.confirm_date = fields.Datetime.now()
                     self.confirm_uid = kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
@@ -239,7 +250,7 @@ class IssuedOffline(models.Model):
     @api.one
     def action_paid(self, kwargs={}):
         # cek saldo sub agent
-        is_enough = self.agent_id.check_balance_limit_api(self.agent_id.id, self.total_sale_price)
+        is_enough = self.agent_id.check_balance_limit_api(self.agent_id.id, self.total)
         # jika saldo mencukupi
         if is_enough['error_code'] == 0:
             # self.validate_date = fields.Datetime.now()
@@ -275,6 +286,7 @@ class IssuedOffline(models.Model):
         if self.provider_type_id_name == 'airline' or self.provider_type_id_name == 'train' or \
                 self.provider_type_id_name == 'hotel' or self.provider_type_id_name == 'activity':
             if not self.check_provider_empty():
+                self.get_provider_name()
                 if self.provider_type_id_name == 'airline' or self.provider_type_id_name == 'train':
                     if self.check_pnr_empty():
                         raise UserError(_('PNR(s) can\'t be Empty'))
@@ -318,7 +330,7 @@ class IssuedOffline(models.Model):
 
     @api.one
     def action_quick_issued(self):
-        if self.total_sale_price > 0 and self.nta_price > 0:
+        if self.total > 0 and self.nta_price > 0:
             for rec in self.line_ids:
                 if not rec.pnr:
                     raise UserError(_('PNR can\'t be empty'))
@@ -494,7 +506,7 @@ class IssuedOffline(models.Model):
             pnr = self.get_pnr_list()
 
             vals = self.env['tt.ledger'].prepare_vals('Resv : ' + rec.name, rec.name, rec.validate_date,
-                                                      2, rec.currency_id.id, 0, rec.total_sale_price)
+                                                      2, rec.currency_id.id, 0, rec.total)
             vals = self.env['tt.ledger'].prepare_vals_for_resv(self, vals)
             vals.update({
                 'pnr': pnr,
@@ -604,7 +616,7 @@ class IssuedOffline(models.Model):
             pnr = self.get_pnr_list()
 
             vals = self.env['tt.ledger'].prepare_vals('Resv : ' + rec.name + ' - REVERSE', rec.name + ' - REVERSE',
-                                                      rec.validate_date, 2, rec.currency_id.id, rec.total_sale_price, 0)
+                                                      rec.validate_date, 2, rec.currency_id.id, rec.total, 0)
             vals = self.env['tt.ledger'].prepare_vals_for_resv(self, vals)
             vals.update({
                 'pnr': pnr,
@@ -691,16 +703,16 @@ class IssuedOffline(models.Model):
     # Set, Get & Compute
 
     @api.onchange('agent_commission', 'ho_commission')
-    @api.depends('agent_commission', 'ho_commission', 'total_sale_price')
+    @api.depends('agent_commission', 'ho_commission', 'total')
     def _get_nta_price(self):
         for rec in self:
-            rec.nta_price = rec.total_sale_price - rec.agent_commission - rec.ho_commission  # - rec.incentive_amount
+            rec.nta_price = rec.total - rec.agent_commission - rec.ho_commission  # - rec.incentive_amount
 
     @api.onchange('agent_commission')
-    @api.depends('agent_commission', 'total_sale_price')
+    @api.depends('agent_commission', 'total')
     def _get_agent_price(self):
         for rec in self:
-            rec.agent_nta_price = rec.total_sale_price - rec.agent_commission
+            rec.agent_nta_price = rec.total - rec.agent_commission
 
     @api.multi
     def get_segment_length(self):
@@ -788,6 +800,11 @@ class IssuedOffline(models.Model):
                 'customer_parent_id': [('customer_ids', 'in', self.contact_id.id)]
             }}
 
+    def get_provider_name(self):
+        self.provider_name = ''
+        for rec in self.line_ids:
+            self.provider_name += rec.provider_id.name + ' '
+
     ####################################################################################################
 
     # CRON
@@ -845,7 +862,7 @@ class IssuedOffline(models.Model):
                 'provider_type_id': self.env['tt.provider.type'].sudo()
                                         .search([('code', '=', data_reservation_offline.get('type'))], limit=1).id,
                 'description': data_reservation_offline.get('desc'),
-                'total_sale_price': data_reservation_offline['total_sale_price'],
+                'total': data_reservation_offline['total'],
                 "social_media_id": data_reservation_offline.get('social_media_id'),
                 "expired_date": data_reservation_offline.get('expired_date'),
                 'state': 'confirm',
@@ -1101,3 +1118,17 @@ class IssuedOffline(models.Model):
     def confirm_api(self, id):
         obj = self.sudo().browse(id)
         obj.action_confirm()
+
+    def randomizer_rec(self):
+        import random
+        list_agent_id = self.env['tt.agent'].sudo().search([]).ids
+        list_provider_id = self.env['tt.provider.type'].sudo().search([]).ids
+        for rec in self.sudo().search([], limit=1000):
+            new_rec = rec.sudo().copy()
+            new_rec.update({
+                'agent_id': list_agent_id[random.randrange(0, len(list_agent_id)-1, 1)],
+                'provider_type_id': list_provider_id[random.randrange(0, len(list_provider_id)-1, 1)],
+                'total': random.randrange(100000, 2000000, 5000),
+                'agent_commission': random.randrange(1000, 20000, 500),
+            })
+        return True

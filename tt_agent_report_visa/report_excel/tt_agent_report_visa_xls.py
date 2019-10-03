@@ -20,6 +20,7 @@ class AgentReportVisa(models.TransientModel):
 
         sheet_name = values['data_form']['subtitle']  # get subtitle
         sheet = workbook.add_worksheet(sheet_name)  # add a new worksheet to workbook
+        sheet.set_landscape()
         sheet.hide_gridlines(2)  # Hide screen and printed gridlines.
 
         # ======= TITLE & SUBTITLE ============
@@ -128,7 +129,7 @@ class AgentReportVisa(models.TransientModel):
         workbook.close()
 
         attach_id = self.env['tt.agent.report.excel.output.wizard'].create(
-            {'name': 'Visa Report.xlsx', 'file_output': base64.encodestring(stream.getvalue())})
+            {'name': 'Visa Report.xlsx', 'file_output': base64.encodebytes(stream.getvalue())})
         return {
             'context': self.env.context,
             'view_type': 'form',

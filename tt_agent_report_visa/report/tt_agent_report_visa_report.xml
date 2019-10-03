@@ -10,6 +10,7 @@
             report_type="qweb-html"
             name="tt_agent_report_visa.agent_report_visa"
             file="tt_agent_report_visa.agent_report_visa"
+            paperformat="tt_report_common.paperformat_A4_landscape"
         />
 
     </data>

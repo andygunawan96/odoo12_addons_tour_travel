@@ -82,6 +82,7 @@
                         <button string="Cancel" name="action_cancel" type="object" states="draft"/>
                         <button string="Print Invoice" name="print_invoice" type="object" states="paid,posted"/>
                         <button string="Print Invoice Ticket" name="print_invoice_ticket" type="object" states="paid,posted"/>
+                        <button string="Duplicate REC" name="randomizer_rec" type="object"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,confirm,sent,paid,posted"/>
                     </header>
                     <sheet>
@@ -100,12 +101,13 @@
                                 <!--<field name="customer_parent_type_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>-->
                                 <field name="provider_type_id" domain="[('code', 'not in', ['tour','visa','passport'])]"/>
                                 <field name="provider_type_id_name" invisible="1"/>
+                                <field name="provider_name"/>
                                 <field name="sector_type" attrs="{'invisible': [('provider_type_id', 'not in', 2)]}"/>
                                 <!--<field name="customer_id"/>-->
                                 <field name="cancel_message" states="cancel"
                                        attrs="{'readonly':[('cancel_can_edit','=',False)]}"/>
                                 <field name="cancel_can_edit" invisible="1"/>
-                                <field name="total_sale_price" required="1"/>
+                                <field name="total" required="1"/>
                                 <field name="total_commission_amount" invisible="1" attrs="{'invisible': [('state', '=', 'draft')]}"
                                        groups="tt_base.group_tt_tour_travel_operator"/>
                                 <field name="agent_commission" invisible="0"/>
@@ -355,26 +357,22 @@
             <field name="context">{'search_default_all':1}</field>
         </record>
 
-        <menuitem id="menu_issued_offline_top_menu" parent="tt_reservation.main_reservations"
-                  name="Issued Offline" sequence='80'
-                  groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
-
-        <menuitem id="menu_issued_offline_side_menu_all" parent="menu_issued_offline_top_menu"
+        <menuitem id="submenu_issued_offline_side_menu_all" parent="tt_reservation_offline.menu_offline_order"
                   name="ALL" sequence='1' action="issued_offline_all_action"/>
 
-        <menuitem id="menu_issued_offline_side_menu_draft" parent="menu_issued_offline_top_menu"
+        <menuitem id="submenu_issued_offline_side_menu_draft" parent="tt_reservation_offline.menu_offline_order"
                   name="Draft" sequence='2' action="issued_offline_draft_action"/>
 
-        <menuitem id="menu_issued_offline_side_menu_confirm" parent="menu_issued_offline_top_menu"
+        <menuitem id="submenu_issued_offline_side_menu_confirm" parent="tt_reservation_offline.menu_offline_order"
                   name="Confirm" sequence='3' action="issued_offline_confirm_action"/>
 
-        <menuitem id="menu_issued_offline_side_menu_paid" parent="menu_issued_offline_top_menu"
+        <menuitem id="submenu_issued_offline_side_menu_paid" parent="tt_reservation_offline.menu_offline_order"
                   name="Paid" sequence='4' action="issued_offline_paid_action"/>
 
-        <menuitem id="menu_issued_offline_side_menu_done" parent="menu_issued_offline_top_menu"
+        <menuitem id="submenu_issued_offline_side_menu_done" parent="tt_reservation_offline.menu_offline_order"
                   name="Done" sequence='5' action="issued_offline_done_action"/>
 
-        <menuitem id="menu_issued_offline_side_menu_cancel_expired_refund" parent="menu_issued_offline_top_menu"
+        <menuitem id="submenu_issued_offline_side_menu_cancel_expired_refund" parent="tt_reservation_offline.menu_offline_order"
                   name="Cancel/Expired/Refund" sequence='6' action="issued_offline_cancel_expired_refund_action"/>
 
     </data>

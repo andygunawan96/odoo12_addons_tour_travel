@@ -26,9 +26,8 @@
     'data': [
         'security/ir.model.access.csv',
         'security/tt_reservation_offline_security.xml',
-        # 'views/views.xml',
-        # 'views/templates.xml',
         'data/ir_sequence_data.xml',
+        'views/tt_reservation_offline_menuheader.xml',
         'views/issued_offline_views.xml',
         'views/tt_reservation_offline_lines_views.xml',
         'report/paperformat_A4.xml',
