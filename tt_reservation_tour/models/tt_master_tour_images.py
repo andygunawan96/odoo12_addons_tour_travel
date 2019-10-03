@@ -2,7 +2,7 @@ from odoo import models, fields
 
 
 class TourImages(models.Model):
-    _name = 'tt.reservation.tour.images'
+    _name = 'tt.master.tour.images'
     _description = 'Rodex Model'
 
     url = fields.Char('URL', required=True)
