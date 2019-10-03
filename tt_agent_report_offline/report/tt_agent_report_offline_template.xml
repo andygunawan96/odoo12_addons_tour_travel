@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="agent_report_offline">
+            <t t-call="web.html_container">
+                <t t-call="web.internal_layout">
+                    <div class="page">
+                        <!--========= TITLE & SUBTITLE ===========-->
+                        <div style="text-align:center;">
+                            <h5>
+                                <span t-esc="data_form['title']"/>
+                            </h5>
+                        </div>
+                        <div style="text-align:center;">
+                            <strong>
+                                <span t-esc="data_form['subtitle']"/>
+                            </strong>
+                        </div>
+
+                        <table class="table table-condensed">
+                            <col style="width: 100"/>
+                            <col style="width: 250"/>
+                            <thead>
+                                <tr>
+                                    <th rowspan="2" style="padding: 2px; font-size: 14px; text-align: center">Order Number</th>
+                                    <th style="padding: 2px; font-size: 14px; text-align: center">Agent</th>
+                                    <th style="padding: 2px; font-size: 14px; text-align: center">Contact Person</th>
+                                    <th style="padding: 2px; font-size: 14px; text-align: center">Provider Type</th>
+                                    <th style="padding: 2px; font-size: 14px; text-align: center">Provider</th>
+                                    <th style="padding: 2px; font-size: 14px; text-align: center">PNR</th>
+                                    <th style="padding: 2px; font-size: 14px; text-align: center">Description</th>
+                                    <th style="padding: 2px; font-size: 14px; text-align: center">Confirm Date</th>
+                                    <th style="padding: 2px; font-size: 14px; text-align: center">Confirm By</th>
+                                    <th style="padding: 2px; font-size: 14px; text-align: center">Issued Date</th>
+                                    <th style="padding: 2px; font-size: 14px; text-align: center">Issued By</th>
+                                    <th class="text-right" style="padding: 2px; font-size: 14px; text-align: center">Total</th>
+                                    <th class="text-right" style="padding: 2px; font-size: 14px; text-align: center">Commission</th>
+                                    <th class="text-right" style="padding: 2px; font-size: 14px; text-align: center">NTA Amount</th>
+                                    <th class="text-right" style="padding: 2px; font-size: 14px; text-align: center">State</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="docs['lines']" t-as="line">
+                                    <td style="padding: 2px; font-weight: 200; font-size: 14px"><t t-esc="line['name']"/></td>
+                                    <td style="padding: 2px; font-weight: 200; font-size: 14px"><t t-esc="line['agent_name']"/></td>
+                                    <td style="padding: 2px; font-weight: 200; font-size: 14px"><t t-esc="line['contact_person']"/></td>
+                                    <td style="padding: 2px; font-weight: 200; font-size: 14px"><t t-esc="line['provider_type']"/></td>
+                                    <td style="padding: 2px; font-weight: 200; font-size: 14px"><t t-esc="line['provider']"/></td>
+                                    <td style="padding: 2px; font-weight: 200; font-size: 14px"><t t-esc="line['pnr']"/></td>
+                                    <td style="padding: 2px; font-weight: 200; font-size: 14px"><t t-esc="line['description']"/></td>
+                                    <td style="padding: 2px; font-weight: 200; font-size: 14px"><t t-esc="line['confirm_date']"/></td>
+                                    <td style="padding: 2px; font-weight: 200; font-size: 14px"><t t-esc="line['confirm_by']"/></td>
+                                    <td style="padding: 2px; font-weight: 200; font-size: 14px"><t t-esc="line['issued_date']"/></td>
+                                    <td style="padding: 2px; font-weight: 200; font-size: 14px"><t t-esc="line['issued_by']"/></td>
+                                    <td class="text-right" style="padding: 2px; font-weight: 200; font-size: 14px">
+                                        <span t-esc="line['total']"/>
+                                    </td>
+                                    <td class="text-right" style="padding: 2px; font-weight: 200; font-size: 14px">
+                                        <span t-esc="line['commission']"/>
+                                    </td>
+                                    <td class="text-right" style="padding: 2px; font-weight: 200; font-size: 14px">
+                                        <span t-esc="line['nta_amount']"/>
+                                    </td>
+                                    <td style="padding: 2px; font-weight: 200; font-size: 14px"><t t-esc="line['state']"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="footer">
+                        <div class="text-right" style="margin-bottom: 5px">
+                             <span class="page"/> / <span class="topage"/>
+                         </div>
+                    </div>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

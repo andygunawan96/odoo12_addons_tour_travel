@@ -36,4 +36,4 @@ class FlightSegment(models.Model):
     arrival_date = fields.Datetime('Arrival Date')
 
     class_of_service = fields.Selection(CLASS_OF_SERVICE, 'Service Class')
-    tour_pricelist_id = fields.Many2one('tt.reservation.tour.pricelist', 'Pricelist ID', readonly=True)
+    tour_pricelist_id = fields.Many2one('tt.master.tour', 'Pricelist ID', readonly=True)

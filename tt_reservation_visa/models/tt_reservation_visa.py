@@ -1230,3 +1230,18 @@ class TtVisa(models.Model):
             print('Total Fare : ' + str(rec.total_fare))
             rec.total = rec.total_fare + rec.total_tax + rec.total_discount
             rec.total_nta = rec.total - rec.total_commission
+
+    def randomizer_rec(self):
+        import random
+        list_agent_id = self.env['tt.agent'].sudo().search([]).ids
+        country_id = self.env['res.country'].sudo().search([]).ids
+        for rec in self.sudo().search([], limit=1000):
+            new_rec = rec.sudo().copy()
+            new_rec.update({
+                'agent_id': list_agent_id[random.randrange(0, len(list_agent_id) - 1, 1)],
+                'adult': random.randrange(0, 5, 1),
+                'child': random.randrange(0, 5, 1),
+                'infant': random.randrange(0, 5, 1),
+                'country_id': country_id[random.randrange(0, len(country_id) - 1, 1)],
+            })
+        return True

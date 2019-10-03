@@ -130,7 +130,7 @@
                                     <t t-raw="rec.description"/>
                                 </td>
                                 <td class="text-right">
-                                    <span t-esc="rec.total_sale_price" t-esc-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                                    <span t-esc="rec.total" t-esc-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
                                 </td>
                             </tr>
                         </tbody>

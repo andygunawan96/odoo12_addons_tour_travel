@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="top_reservations_offline" parent="tt_reservation.main_reservations"
+                  name="Issued Offline" sequence='80'
+                  groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+
+        <menuitem id="menu_offline_order"
+                  parent="top_reservations_offline"
+                  name="Order"
+                  sequence="1"/>
+
+        <menuitem id="menu_offline_report"
+                  parent="top_reservations_offline"
+                  name="Report"
+                  sequence="2"/>
+</odoo>

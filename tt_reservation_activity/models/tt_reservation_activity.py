@@ -1073,17 +1073,17 @@ class ReservationActivity(models.Model):
             if activity_booking.provider_name in ['bemyguest', 'globaltix']:
                 attachments = self.env['ir.attachment'].search([('res_model', '=', 'tt.reservation.activity'), ('res_id', '=', activity_booking.id)]).ids
 
-                if not attachments:
-                    res2 = self.get_vouchers_button_api(activity_booking.id, self.env.user.id)
-                    if res2:
-                        attachments = res2
+                # if not attachments:
+                #     res2 = self.get_vouchers_button_api(activity_booking.id, self.env.user.id)
+                #     if res2:
+                #         attachments = res2
 
             if values.get('voucher_url') and not activity_booking.voucher_url:
                 activity_booking.sudo().write({
                     'voucher_url': values['voucher_url']
                 })
 
-            if activity_booking.state != 'done':
+            if activity_booking.state not in ['done', 'rejected', 'cancel', 'cancel2']:
                 activity_booking.sudo().write({
                     'state': values['status']
                 })
@@ -1117,7 +1117,7 @@ class ReservationActivity(models.Model):
                 'activity_details': activity_details,
                 'voucher_detail': voucher_detail,
                 'uuid': values.get('uuid') and values['uuid'] or '',
-                'status': values['status'],
+                'status': activity_booking.state,
                 'attachment_ids': attachments,
                 'booking_options': book_option_ids,
                 'voucher_url': values.get('voucher_url') and values['voucher_url'] or False

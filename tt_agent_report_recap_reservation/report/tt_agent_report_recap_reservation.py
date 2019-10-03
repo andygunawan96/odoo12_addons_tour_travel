@@ -1,0 +1,181 @@
+from odoo import models, fields, api, _
+from odoo.exceptions import UserError
+from ...tools.variables import BOOKING_STATE_STR
+from ...tt_reservation_offline.models.tt_reservation_offline import STATE_OFFLINE_STR
+
+import logging
+_logger = logging.getLogger(__name__)
+
+
+class AgentReportRecapReservation(models.Model):
+    _name = 'report.tt_agent_report_recap_reservation.agent_report_recap'
+    _description = 'Recap Reservation'
+
+    @staticmethod
+    def _select():
+        return """rsv.id, rsv.name as order_number, rsv.create_date, rsv.agent_id, agent.id agent_id, 
+        agent.name agent_name, tpt.name as provider_type, agent_type.name agent_type, rsv.total, 
+        rsv.provider_name provider, rsv.state 
+        """
+
+    @staticmethod
+    def _from_visa():
+        return """tt_reservation_visa rsv
+        LEFT JOIN tt_agent agent ON agent.id = rsv.agent_id 
+        LEFT JOIN tt_agent_type agent_type ON agent_type.id = agent.agent_type_id 
+        LEFT JOIN tt_provider_type tpt ON tpt.id = rsv.provider_type_id 
+        """
+
+    @staticmethod
+    def _from_passport():
+        return """tt_reservation_passport rsv
+        LEFT JOIN tt_agent agent ON agent.id = rsv.agent_id 
+        LEFT JOIN tt_agent_type agent_type ON agent_type.id = agent.agent_type_id 
+        LEFT JOIN tt_provider_type tpt ON tpt.id = rsv.provider_type_id
+        """
+
+    @staticmethod
+    def _from_offline():
+        return """tt_reservation_offline rsv
+        LEFT JOIN tt_agent agent ON agent.id = rsv.agent_id 
+        LEFT JOIN tt_agent_type agent_type ON agent_type.id = agent.agent_type_id 
+        LEFT JOIN tt_provider_type tpt ON tpt.id = rsv.provider_type_id
+        """
+
+    @staticmethod
+    def _where(date_from, date_to, agent_id, provider_type, state):
+        where = """rsv.create_date >= '%s' and rsv.create_date <= '%s'""" % (date_from, date_to)
+        # if state == 'failed':
+        #     where += """ AND rsv.state IN ('fail_booking', 'fail_issue')"""
+        if state == 'issued':
+            where += """ AND rsv.state IN ('partial_issued', 'issued')"""
+        elif state == 'booked':
+            where += """ AND rsv.state IN ('partial_booked', 'booked')"""
+        elif state == 'expired':
+            where += """ AND rsv.state IN ('cancel2')"""
+        elif state == 'others':
+            where += """ AND rsv.state IN ('draft')"""
+        if agent_id:
+            where += """ AND agent_id = %s""" % agent_id
+        if provider_type and provider_type != 'all':
+            where += """ AND tpt.code = '%s' """ % provider_type
+        return where
+
+    @staticmethod
+    def _where_offline(date_from, date_to, agent_id, provider_type, state):
+        where = """rsv.create_date >= '%s' and rsv.create_date <= '%s'""" % (date_from, date_to)
+        if state and state != 'all':
+            if state == 'issued':
+                where += """ AND rsv.state IN ('paid', 'posted')"""
+            elif state == 'booked':
+                where += """ AND rsv.state IN ('sent')"""
+            elif state == 'expired':
+                where += """ AND rsv.state IN ('cancel2')"""
+            elif state == 'others':
+                where += """ AND rsv.state IN ('cancel', 'refund', 'draft', 'confirm')"""
+        if agent_id:
+            where += """ AND agent_id = %s""" % agent_id
+        if provider_type != 'offline':
+            where += """ AND rsv.provider_type = '%s' """ % provider_type
+        return where
+
+    @staticmethod
+    def _group_by():
+        return ' '
+
+    @staticmethod
+    def _order_by():
+        return """
+        rsv.create_date, rsv.agent_id 
+        """
+
+    def _lines(self, date_from, date_to, agent_id, provider_type, state):
+        # SELECT
+        query = 'SELECT ' + self._select()
+
+        # FROM
+        if provider_type == 'visa':
+            query += 'FROM ' + self._from_visa()
+        elif provider_type == 'passport':
+            query += 'FROM ' + self._from_passport()
+        elif provider_type == 'offline':
+            query += 'FROM ' + self._from_offline()
+
+        # WHERE
+        if provider_type == 'offline':
+            query += 'WHERE ' + self._where_offline(date_from, date_to, agent_id, provider_type, state)
+        else:
+            query += 'WHERE ' + self._where(date_from, date_to, agent_id, provider_type, state)
+
+        # GROUP BY & ORDER BY
+        # 'GROUP BY' + self._group_by() + \
+        query += 'ORDER BY ' + self._order_by()
+
+        self.env.cr.execute(query)
+        _logger.info(query)
+        return self.env.cr.dictfetchall()
+
+    def _get_lines_data(self, date_from, date_to, agent_id, provider_type, state):
+        lines = []
+        if provider_type != 'all':
+            lines = self._lines(date_from, date_to, agent_id, provider_type, state)
+            lines = self._convert_data(lines, provider_type)
+        else:
+            lines_visa = self._lines(date_from, date_to, agent_id, 'visa', state)
+            lines_visa = self._convert_data(lines_visa, 'visa')
+            for line in lines_visa:
+                lines.append(line)
+            lines_passport = self._lines(date_from, date_to, agent_id, 'passport', state)
+            lines_passport = self._convert_data(lines_passport, 'passport')
+            for line in lines_passport:
+                lines.append(line)
+            lines_offline = self._lines(date_from, date_to, agent_id, 'offline', state)
+            lines_offline = self._convert_data(lines_offline, 'offline')
+            for line in lines_offline:
+                lines.append(line)
+        return lines
+
+    def _datetime_user_context(self, utc_datetime_string):
+        value = fields.Datetime.from_string(utc_datetime_string)
+        return fields.Datetime.context_timestamp(self, value).strftime('%Y-%m-%d %H:%M:%S')
+
+    def _convert_data(self, lines, provider_type):
+        for rec in lines:
+            rec['create_date'] = self._datetime_user_context(rec['create_date'])
+            if provider_type != 'offline':
+                rec['state'] = BOOKING_STATE_STR[rec['state']] if rec['state'] else ''
+            else:
+                rec['state'] = STATE_OFFLINE_STR[rec['state']] if rec['state'] else ''
+        return lines
+
+    @staticmethod
+    def _report_title(data_form):
+        data_form['title'] = 'Recap Reservation Report: ' + data_form['subtitle']
+
+    def _prepare_values(self, data_form):
+        date_from = data_form['date_from']
+        date_to = data_form['date_to']
+        if not data_form['state']:
+            data_form['state'] = 'all'
+        agent_id = data_form['agent_id']
+        state = data_form['state']
+        provider_type = data_form['provider_type']
+        lines = self._get_lines_data(date_from, date_to, agent_id, provider_type, state)
+        self._report_title(data_form)
+
+        return {
+            'lines': lines,
+            'data_form': data_form
+        }
+
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        if not data.get('data_form'):
+            raise UserError(_("Form content is missing, this report cannot be printed."))
+
+        docs = self._prepare_values(data['data_form'])
+        return {
+            'doc_ids': data['ids'],
+            'doc_model': data['model'],
+            'docs': docs
+        }

@@ -11,4 +11,4 @@ class PaymentRules(models.Model):
     description = fields.Char('Description')
     payment_percentage = fields.Float('Payment Percentage (%)', digits=dp.get_precision('Payment Terms'), required=True)
     due_date = fields.Date('Due Date', required=True)
-    pricelist_id = fields.Many2one('tt.reservation.tour.pricelist', 'Pricelist ID', readonly=True)
+    pricelist_id = fields.Many2one('tt.master.tour', 'Pricelist ID', readonly=True)

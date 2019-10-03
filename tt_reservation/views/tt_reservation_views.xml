@@ -4,7 +4,7 @@
         <field name="name">tt.reservation.form.view</field>
         <field name="model">tt.reservation</field>
         <field name="arch" type="xml">
-            <form>
+            <form create="false">
                 <header>
                     <button string="Set to Draft" name="action_set_as_draft" groups="tt_base.group_tt_tour_travel_operator" type="object"/>
                     <button string="Set to Booked" name="action_set_as_booked" groups="tt_base.group_tt_tour_travel_operator" type="object"/>

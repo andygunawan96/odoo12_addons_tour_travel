@@ -14,8 +14,9 @@ class AgentReportPassport(models.TransientModel):
                              'State', default='all')
 
     def _print_report(self, data):
-        data = {
+        records = {
             'ids': self.ids,
             'model': self._name,
+            'data_form': data['form']
         }
-        return self.env.ref('tt_agent_report_passport.agent_report_passport_model').report_action(self, data=data)
+        return self.env.ref('tt_agent_report_passport.action_agent_report_passport').report_action(self, data=records)

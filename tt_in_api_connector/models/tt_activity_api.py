@@ -69,3 +69,6 @@ class TtMasterActivityApiCon(models.Model):
 
         return res
 
+    def test_update_product_webhook(self, data):
+        return self._send_request('%s/webhook/activity/bemyguest' % (self.url), data, '')
+
