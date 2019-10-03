@@ -20,16 +20,16 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base'],
+    'depends': ['base', 'tt_base', 'tt_reservation_offline', 'tt_agent_report'],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
-        # 'views/views.xml',
-        # 'views/templates.xml',
+        'wizard/tt_agent_report_offline_view.xml',
+        'report/tt_agent_report_offline_menu.xml',
+        'report/tt_agent_report_offline_template.xml',
+        'report/tt_agent_report_offline_template_HO.xml',
     ],
     # only loaded in demonstration mode
-    'demo': [
-        'demo/demo.xml',
-    ],
+    'demo': [],
 }

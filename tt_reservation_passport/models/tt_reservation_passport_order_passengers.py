@@ -1,5 +1,6 @@
 from odoo import models, fields, api, _
-from datetime import datetime
+from datetime import datetime, date
+from dateutil.relativedelta import relativedelta
 from odoo.exceptions import UserError
 
 STATE = [
@@ -36,6 +37,14 @@ BOOKING_STATE = [
     ('done', 'Done')
 ]
 
+TITLE = [
+    ('MR', 'MR'),
+    ('MRS', 'MRS'),
+    ('MS', 'MS'),
+    ('MSTR', 'MSTR'),
+    ('MISS', 'MISS')
+]
+
 PASSENGER_TYPE = [
     ('ADT', 'Adult'),
     ('CHD', 'Child'),
@@ -61,6 +70,8 @@ class PassportOrderPassengers(models.Model):
     passenger_id = fields.Many2one('tt.customer', 'Passenger', readonly=0)  # readonly=1
     pricelist_id = fields.Many2one('tt.reservation.passport.pricelist', 'Passport Pricelist', readonly=0)  # readonly=1
     passenger_type = fields.Selection(PASSENGER_TYPE, 'Pax Type', readonly=0)  # readonly=1
+    title = fields.Selection(TITLE, 'Title', readonly=0)  # readonly=1
+    age = fields.Char('Age', readonly=1, compute="_compute_age", store=True)
     passenger_domicile = fields.Char('Domicile', related='passenger_id.domicile', readonly=0)  # readonly=1
     process_status = fields.Selection(PROCESS_STATUS, string='Process Result',
                                       readonly=0)  # readonly=1
@@ -304,6 +315,16 @@ class PassportOrderPassengers(models.Model):
                 rec.write({
                     'to_requirement_ids': [(4, data)]
                 })
+
+    @api.depends('birth_date')
+    @api.onchange('birth_date')
+    def _compute_age(self):
+        for rec in self:
+            if rec.birth_date:
+                today = date.today()
+                range_date = relativedelta(today, rec.birth_date)
+                age = str(range_date.years) + 'y ' + str(range_date.months) + 'm ' + str(range_date.days) + 'd'
+                rec.age = age
 
     def check_requirement(self, id):
         for rec in self:

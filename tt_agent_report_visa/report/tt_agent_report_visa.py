@@ -43,7 +43,7 @@ class AgentReportVisaModel(models.AbstractModel):
         where = """vs.create_date >= '%s' and vs.create_date <= '%s'
                  """ % (date_from, date_to)
         if state and state != 'all':
-            where += """ AND vs.state IN ('""" + state + """')"""
+            where += """ AND vs.state_visa IN ('""" + state + """')"""
         if agent_id:
             # todo: buat kondisi jika agent id null
             where += """ AND vs.agent_id = """ + str(agent_id)
@@ -83,11 +83,15 @@ class AgentReportVisaModel(models.AbstractModel):
             data_form['state'] = 'all'
         agent_id = data_form['agent_id']
         state = data_form['state']
-        lines = self._lines(date_from, date_to, agent_id, state)  # main data
+        line_list = []
+        for i in range(1000):
+            lines = self._lines(date_from, date_to, agent_id, state)  # main data
+            for line in lines:
+                line_list.append(line)
         self._report_title(data_form)
 
         return {
-            'lines': lines,
+            'lines': line_list,
             'data_form': data_form
         }
 
