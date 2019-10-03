@@ -9,7 +9,7 @@ class SplitInvoice(models.TransientModel):
     _description = 'Upload Center Wizard'
 
     filename = fields.Char('Filename',required=True, default='filename')
-    file_description = fields.Text('File Description',required=True)
+    file_reference = fields.Text('File Description',required=True)
     file = fields.Binary('File',required=True)
 
 
@@ -27,11 +27,14 @@ class SplitInvoice(models.TransientModel):
 
             self.env['tt.upload.center'].sudo().create({
                 'filename': self.filename,
-                'file_description': self.file_description,
+                'file_reference': self.file_reference,
                 'path': path,
                 'url': url
             })
+
+            _logger.info('Finish Upload')
         except Exception as e:
+            _logger.error('Exception Upload Center')
             _logger.error(traceback.format_exc())
 
     def create_directory_structure(self,filename):

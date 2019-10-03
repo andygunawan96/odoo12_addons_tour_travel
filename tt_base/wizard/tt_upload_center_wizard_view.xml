@@ -8,7 +8,7 @@
             <form string="Upload Center Wizard">
                 <group>
                     <field name="filename"/>
-                    <field name="file_description"/>
+                    <field name="file_reference"/>
                     <field name="file" filename="filename"/>
                 </group>
                 <footer>
