@@ -1,8 +1,7 @@
 from odoo import models,api,fields
-from ...tools import test_to_dict
 
 
-class AgentInvoice(models.Model,test_to_dict.ToDict):
+class AgentInvoice(models.Model):
 
     _name = 'tt.agent.invoice.line'
     _rec_name = 'name'

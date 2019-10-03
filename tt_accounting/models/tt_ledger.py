@@ -4,7 +4,6 @@ from ...tools.ERR import RequestException
 from dateutil.relativedelta import relativedelta
 from odoo.exceptions import UserError
 # from ...tools.telegram import TelegramInfoNotification
-from ...tools import test_to_dict
 import logging,json,traceback
 
 LEDGER_TYPE = [

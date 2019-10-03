@@ -30,3 +30,4 @@ from . import tt_customer_parent_type
 from . import error_api
 from . import tt_ssr
 from . import tt_cron_log
+from . import tt_upload_center

@@ -1,9 +1,8 @@
 from odoo import api, fields, models, _
 from .tt_reservation_train import BOOKING_STATE, JOURNEY_DIRECTION
 from datetime import datetime
-from ...tools import test_to_dict
 
-class TransportBookingProvider(models.Model,test_to_dict.ToDict):
+class TransportBookingProvider(models.Model):
     _name = 'tt.tb.provider.train'
     _rec_name = 'pnr'
     # _order = 'sequence'
