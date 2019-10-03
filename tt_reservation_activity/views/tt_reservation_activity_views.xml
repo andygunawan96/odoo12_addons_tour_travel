@@ -174,16 +174,19 @@
         <field name="name">tt.reservation.activity.tree.view</field>
         <field name="model">tt.reservation.activity</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree create="false">
                 <field name="name"/>
-                <field name="pnr"/>
-                <field name="visit_date"/>
-                <field name="activity_id"/>
-                <field name="contact_id"/>
                 <field name="agent_id"/>
                 <field name="agent_type_id"/>
                 <field name="customer_parent_id"/>
                 <field name="customer_parent_type_id"/>
+                <field name="booker_id"/>
+                <field name="provider_name" groups="tt_base.group_tt_tour_travel_operator"/>
+                <field name="activity_id"/>
+                <field name="pnr"/>
+                <field name="visit_date"/>
+                <field name="date"/>
+                <field name="issued_uid"/>
                 <field name="issued_date"/>
                 <field name="state"/>
             </tree>
@@ -191,7 +194,7 @@
     </record>
 
     <record model="ir.actions.act_window" id="tt_reservation_activity_view_action_all">
-        <field name="name">Activity Booking ALL</field>
+        <field name="name">Reservation Activity</field>
         <field name="res_model">tt.reservation.activity</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
@@ -206,7 +209,7 @@
     </record>
 
     <record model="ir.actions.act_window" id="tt_reservation_activity_view_action_issued">
-        <field name="name">Activity Booking Issued</field>
+        <field name="name">Reservation Activity (Issued)</field>
         <field name="res_model">tt.reservation.activity</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
@@ -221,7 +224,7 @@
     </record>
 
     <record model="ir.actions.act_window" id="tt_reservation_activity_view_action_failed_expired">
-        <field name="name">Activity Booking Failed Expired</field>
+        <field name="name">Reservation Activity (Failed/Expired)</field>
         <field name="res_model">tt.reservation.activity</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
@@ -236,7 +239,7 @@
     </record>
 
     <record model="ir.actions.act_window" id="tt_reservation_activity_view_action_approved_done">
-        <field name="name">Activity Booking Approved Done</field>
+        <field name="name">Reservation Activity (Approved/Done)</field>
         <field name="res_model">tt.reservation.activity</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
@@ -251,7 +254,7 @@
     </record>
 
     <record model="ir.actions.act_window" id="tt_reservation_activity_view_action_cancelled">
-        <field name="name">Activity Booking Cancelled Rejected Refunded</field>
+        <field name="name">Reservation Activity (Cancelled/Rejected/Refunded)</field>
         <field name="res_model">tt.reservation.activity</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>

@@ -7,4 +7,4 @@ class TourImages(models.Model):
 
     url = fields.Char('URL', required=True)
     description = fields.Text('Description')
-    pricelist_id = fields.Many2one('tt.reservation.tour.pricelist', 'Pricelist ID')
+    pricelist_id = fields.Many2one('tt.master.tour', 'Pricelist ID')

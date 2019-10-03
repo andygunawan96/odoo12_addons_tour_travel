@@ -1,7 +1,7 @@
 <odoo>
-    <record model="ir.ui.view" id="tt_reservation_tour_pricelist_view_form">
-        <field name="name">tt.reservation.tour.pricelist.view.form</field>
-        <field name="model">tt.reservation.tour.pricelist</field>
+    <record model="ir.ui.view" id="tt_master_tour_view_form">
+        <field name="name">tt.master.tour.view.form</field>
+        <field name="model">tt.master.tour</field>
         <field name="arch" type="xml">
             <form string="">
                 <header>
@@ -23,6 +23,14 @@
                     <!--                                attrs="{'invisible':[('state_tour','in',('draft','open'))]}"/>-->
                     <!--                    </div>-->
                     <!--TITLE-->
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object"
+                                class="oe_stat_button" icon="fa-archive"
+                                groups="tt_base.group_tt_tour_travel_supervisor">
+                            <field name="active" widget="boolean_button"
+                                   options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
                     <div class="oe_title">
                         <h1>
                             <field name="name" default_focus="1" placeholder="Tour Name"/>
@@ -30,9 +38,11 @@
                     </div>
                     <group>
                         <group>
-                            <field name="country_ids">
-                                <tree edit="false">
-                                    <field name="name"/>
+                            <field name="location_ids">
+                                <tree>
+                                    <field name="city_id"/>
+                                    <field name="state_id"/>
+                                    <field name="country_id"/>
                                 </tree>
                             </field>
                             <field name="tour_route"/>
@@ -127,48 +137,33 @@
                             <group col="3">
                                 <field name="currency_id" invisible="1"/>
                                 <group>
-                                    <field name="adult_nta_price" groups="tt_base.group_tt_tour_travel_operator" invisible="1"/>
-                                    <field name="adult_citra_price" groups="tt_base.group_tt_tour_travel_operator"  invisible="1"/>
-                                    <field name="adult_sale_price" invisible="1"/>
-
-                                    <field name="adult_nta_price_rel"/>  <!--groups="tt_base.group_tt_tour_travel_operator"-->
-                                    <field name="adult_citra_price_rel"/>  <!--groups="tt_base.group_tt_tour_travel_operator"-->
-                                    <field name="adult_sale_price_rel"/>
+                                    <field name="adult_fare" groups="tt_base.group_tt_tour_travel_operator"/>
+                                    <field name="adult_tax" groups="tt_base.group_tt_tour_travel_operator"/>
                                 </group>
                                 <group>
-                                    <field name="child_nta_price" groups="tt_base.group_tt_tour_travel_operator" invisible="1"/>
-                                    <field name="child_citra_price" groups="tt_base.group_tt_tour_travel_operator" invisible="1"/>
-                                    <field name="child_sale_price" invisible="1"/>
-
-                                    <field name="child_nta_price_rel"/>  <!--groups="tt_base.group_tt_tour_travel_operator"-->
-                                    <field name="child_citra_price_rel"/>  <!--groups="tt_base.group_tt_tour_travel_operator"-->
-                                    <field name="child_sale_price_rel"/>
+                                    <field name="child_fare" groups="tt_base.group_tt_tour_travel_operator"/>
+                                    <field name="child_tax" groups="tt_base.group_tt_tour_travel_operator"/>
                                 </group>
                                 <group>
-                                    <field name="infant_nta_price" groups="tt_base.group_tt_tour_travel_operator" invisible="1"/>
-                                    <field name="infant_citra_price" groups="tt_base.group_tt_tour_travel_operator" invisible="1"/>
-                                    <field name="infant_sale_price" invisible="1"/>
-
-                                    <field name="infant_nta_price_rel"/>  <!--groups="tt_base.group_tt_tour_travel_operator"-->
-                                    <field name="infant_citra_price_rel"/>  <!-- groups="tt_base.group_tt_tour_travel_operator"-->
-                                    <field name="infant_sale_price_rel"/>
+                                    <field name="infant_fare" groups="tt_base.group_tt_tour_travel_operator"/>
+                                    <field name="infant_tax" groups="tt_base.group_tt_tour_travel_operator"/>
                                 </group>
                             </group>
                         </page>
-                        <page string="Quotation">  <!--groups="tt_base.group_tt_tour_travel_operator"-->
-                            <field name="quotation_ids" context="">
-                                <tree edit="false">
-                                    <field name="tour_pricelist_id"/>
-                                    <field name="date"/>
-                                    <field name="code"/>
-                                    <field name="currency_id"/>
-                                    <field name="pax_type"/>
-                                    <field name="start_period"/>
-                                    <field name="end_period"/>
-                                    <field name="state"/>
-                                </tree>
-                            </field>
-                        </page>
+                        <!--                        <page string="Quotation">  &lt;!&ndash;groups="tt_base.group_tt_tour_travel_operator"&ndash;&gt;-->
+                        <!--                            <field name="quotation_ids" context="">-->
+                        <!--                                <tree edit="false">-->
+                        <!--                                    <field name="tour_pricelist_id"/>-->
+                        <!--                                    <field name="date"/>-->
+                        <!--                                    <field name="code"/>-->
+                        <!--                                    <field name="currency_id"/>-->
+                        <!--                                    <field name="pax_type"/>-->
+                        <!--                                    <field name="start_period"/>-->
+                        <!--                                    <field name="end_period"/>-->
+                        <!--                                    <field name="state"/>-->
+                        <!--                                </tree>-->
+                        <!--                            </field>-->
+                        <!--                        </page>-->
                         <page string="Additional Charge">
                             <group>
                                 <field name="airport_tax"/>
@@ -449,40 +444,40 @@
         </field>
     </record>
 
-    <record model="ir.ui.view" id="tt_reservation_tour_pricelist_view_tree" >
-        <field name="name">tt.reservation.tour.pricelist.view.tree</field>
-        <field name="model">tt.reservation.tour.pricelist</field>
+    <record model="ir.ui.view" id="tt_master_tour_view_tree" >
+        <field name="name">tt.master.tour.view.tree</field>
+        <field name="model">tt.master.tour</field>
         <field name="arch" type="xml">
             <tree>
                 <field name="name"/>
                 <field name="tour_type"/>
                 <field name="tour_route"/>
-                <field name="country_ids"/>
+                <field name="location_ids"/>
                 <field name="departure_date"/>
                 <field name="arrival_date"/>
                 <field name="commercial_duration"/>
                 <field name="seat" string="Seat Available"/>
-                <field name="adult_sale_price"/>
+                <!--                <field name="adult_sale_price"/>-->
                 <field name="state_tour"/>
                 <field name="create_uid"/>
             </tree>
         </field>
     </record>
 
-    <record model="ir.actions.act_window" id="tt_reservation_tour_pricelist_view_action">
+    <record model="ir.actions.act_window" id="tt_master_tour_view_action">
         <field name="name">Tour Packages</field>
-        <field name="res_model">tt.reservation.tour.pricelist</field>
+        <field name="res_model">tt.master.tour</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[]</field>
         <field name="context">
             {
-            'form_view_ref': 'tt_reservation_tour.tt_reservation_tour_pricelist_view_form',
-            'tree_view_ref': 'tt_reservation_tour.tt_reservation_tour_pricelist_view_tree',
+            'form_view_ref': 'tt_reservation_tour.tt_master_tour_view_form',
+            'tree_view_ref': 'tt_reservation_tour.tt_master_tour_view_tree',
             }
         </field>
     </record>
 
     <menuitem id="submenu_tour_pricelist" parent="tt_reservation_tour.menu_tour_travel_tour_master"
-              name="Tour" action="tt_reservation_tour_pricelist_view_action"/>
+              name="Tour" action="tt_master_tour_view_action"/>
 </odoo>

@@ -32,4 +32,4 @@ class TourRooms(models.Model):
     adult_limit = fields.Integer('Adult Limit', default=0, help="max adult in a room", required=True)
     extra_bed_limit = fields.Integer('Extra Bed Limit', default=0, help="max extra bed in a room", required=True)
 
-    tour_pricelist_id = fields.Many2one('tt.reservation.tour.pricelist', 'Pricelist ID', readonly=True)
+    tour_pricelist_id = fields.Many2one('tt.master.tour', 'Pricelist ID', readonly=True)
