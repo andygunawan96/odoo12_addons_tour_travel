@@ -8,8 +8,7 @@ class TtUploadFile(models.Model):
     filename = fields.Char('Filename', readonly=True)
     file_reference = fields.Text('File Reference',readonly=True)
     path = fields.Char('Path', readonly=True)
-    url = fields.Char('URL', readonly=True)
-    file_type = fields.Selection([],readonly=True)
+    url = fields.Char('URL')
 
     @api.model
     def create(self, vals_list):

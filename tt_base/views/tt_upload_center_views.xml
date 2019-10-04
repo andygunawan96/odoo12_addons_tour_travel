@@ -11,7 +11,7 @@
                     <field name="filename"/>
                     <field name="file_reference"/>
                     <field name="path"/>
-                    <field name="url"/>
+                    <field name="url" widget="url"/>
                 </group>
             </form>
         </field>
