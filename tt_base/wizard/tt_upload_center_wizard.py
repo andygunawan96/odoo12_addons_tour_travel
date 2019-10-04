@@ -14,6 +14,7 @@ class SplitInvoice(models.TransientModel):
     file = fields.Binary('File',required=True)
 
     def upload_from_button(self):
+        # self.upload(self.filename,self.file_reference,base64.b64decode(self.file))
         self.upload(self.filename,self.file_reference,self.file)
 
     def upload_file_api(self,data,context):
@@ -30,6 +31,7 @@ class SplitInvoice(models.TransientModel):
             # path = '/home/rodex-it-05/Documents/test/upload_odoo/%s' % (self.filename)
             new_file = open(path,'wb')
             new_file.write(base64.b64decode(file))
+            # new_file.write(file)
             new_file.close()
 
             self.env['tt.upload.center'].sudo().create({
@@ -40,7 +42,11 @@ class SplitInvoice(models.TransientModel):
             })
 
             _logger.info('Finish Upload')
-            return ERR.get_no_error()
+            return ERR.get_no_error({
+                'filename' : filename,
+                'file_reference': file_reference,
+                'url': url
+            })
         except Exception as e:
             _logger.error('Exception Upload Center')
             _logger.error(traceback.format_exc())

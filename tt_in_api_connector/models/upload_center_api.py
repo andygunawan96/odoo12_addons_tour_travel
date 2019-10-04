@@ -5,7 +5,7 @@ class TtAirlineApiCon(models.Model):
     _name = 'tt.upload.center.api.con'
     _inherit = 'tt.api.con'
 
-    table_name = 'tt.upload.center'
+    table_name = 'tt.upload.center.wizard'
 
     def action_call(self, table_obj, action, data, context):
 
