@@ -12,5 +12,7 @@ class TtUploadFile(models.Model):
 
     @api.model
     def create(self, vals_list):
-        vals_list['name'] = '%s %s' % (vals_list['filename'],vals_list['file_reference'])
-        super(TtUploadFile, self).create(vals_list)
+        if len(vals_list) <= 0:
+            return self.search([],limit=1)
+        vals_list['name'] = '%s %s' % (vals_list.get('filename'),vals_list.get('file_reference'))
+        return super(TtUploadFile, self).create(vals_list)
