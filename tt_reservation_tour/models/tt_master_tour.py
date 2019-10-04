@@ -25,7 +25,7 @@ class TourItineraryItem(models.Model):
     name = fields.Char('Title')
     description = fields.Text('Description')
     timeslot = fields.Char('Timeslot')
-    image = fields.Char('Image URL')
+    image_id = fields.Many2one('tt.upload.center', 'Image')
     itinerary_id = fields.Many2one('tt.reservation.tour.itinerary', 'Tour Itinerary')
 
 
@@ -138,10 +138,7 @@ class MasterTour(models.Model):
     tour_checklist_ids = fields.One2many('tt.master.tour.checklist', 'tour_pricelist_id', string="Tour Checklist")
 
     requirements = fields.Html('Remarks')
-    images = fields.One2many('tt.master.tour.images', 'pricelist_id', 'Images')
-    # images = fields.Many2many('ir.attachment', 'tour_images_rel',
-    #                           'pricelist_id', 'image_id', domain=[('res_model', '=', 'tt.master.tour')],
-    #                           string='Add Image', required=True)
+    image_ids = fields.Many2many('tt.upload.center', 'tour_images_rel', 'tour_id', 'image_id', 'Images')
 
     flight_segment_ids = fields.One2many('flight.segment', 'tour_pricelist_id', string="Flight Segment")
     # visa_pricelist_ids = fields.Many2many('tt.traveldoc.pricelist', 'tour_visa_rel', 'tour_id', 'visa_id',
@@ -410,7 +407,7 @@ class MasterTour(models.Model):
 
             for idx, rec in enumerate(result):
                 try:
-                    self.env.cr.execute("""SELECT * FROM tt_master_tour_images WHERE pricelist_id = %s;""", (rec['id'],))
+                    self.env.cr.execute("""SELECT tuc.* FROM tt_upload_center tuc LEFT JOIN tour_images_rel tir ON tir.image_id = tuc.id WHERE tir.tour_id = %s;""", (rec['id'],))
                     images = self.env.cr.dictfetchall()
                 except Exception:
                     images = []
@@ -529,7 +526,7 @@ class MasterTour(models.Model):
                     'name': item.name,
                     'description': item.description,
                     'timeslot': item.timeslot,
-                    'image': item.image,
+                    'image': item.image_id.url,
                 })
             vals = {
                 'name': itinerary.name,
@@ -560,9 +557,9 @@ class MasterTour(models.Model):
                 commission_agent_type = 'other'
 
             for idx, rec in enumerate(tour_list):
-                # adult_commission = (rec['adult_sale_price'] - rec['adult_citra_price']) > 0 and rec['adult_sale_price'] - rec['adult_citra_price'] or '0'
-                # child_commission = (rec['child_sale_price'] - rec['child_citra_price']) > 0 and rec['child_sale_price'] - rec['child_citra_price'] or '0'
-                # infant_commission = (rec['infant_sale_price'] - rec['infant_citra_price']) > 0 and rec['infant_sale_price'] - rec['infant_citra_price'] or '0'
+                adult_commission = int(rec['adult_tax']) > 0 and int(rec['adult_tax']) or 0
+                child_commission = int(rec['child_tax']) > 0 and int(rec['child_tax']) or 0
+                infant_commission = int(rec['infant_tax']) > 0 and int(rec['infant_tax']) or 0
 
                 try:
                     self.env.cr.execute("""SELECT * FROM tt_master_tour_discount_fit WHERE tour_pricelist_id = %s;""", (rec['id'],))
@@ -608,7 +605,7 @@ class MasterTour(models.Model):
                     })
 
                 try:
-                    self.env.cr.execute("""SELECT * FROM tt_master_tour_images WHERE pricelist_id = %s;""", (rec['id'],))
+                    self.env.cr.execute("""SELECT tuc.* FROM tt_upload_center tuc LEFT JOIN tour_images_rel tir ON tir.image_id = tuc.id WHERE tir.tour_id = %s;""", (rec['id'],))
                     images = self.env.cr.dictfetchall()
                 except Exception:
                     images = []
@@ -634,9 +631,9 @@ class MasterTour(models.Model):
                     'adult_sale_price': adult_sale_price <= 0 and '0' or adult_sale_price,
                     'child_sale_price': child_sale_price <= 0 and '0' or child_sale_price,
                     'infant_sale_price': infant_sale_price <= 0 and '0' or infant_sale_price,
-                    # 'adult_commission': adult_commission,
-                    # 'child_commission': child_commission,
-                    # 'infant_commission': infant_commission,
+                    'adult_commission': adult_commission,
+                    'child_commission': child_commission,
+                    'infant_commission': infant_commission,
                     'airport_tax_with_comma': self.int_with_commas(rec['airport_tax']),
                     'tipping_guide_with_comma': self.int_with_commas(rec['tipping_guide']),
                     'tipping_tour_leader_with_comma': self.int_with_commas(rec['tipping_tour_leader']),
