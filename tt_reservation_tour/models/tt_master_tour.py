@@ -570,12 +570,12 @@ class MasterTour(models.Model):
                 except Exception:
                     discount = []
 
-                self.env.cr.execute("""SELECT * FROM tt_master_tour tp LEFT JOIN tour_country_rel tcr ON tp.id = tcr.pricelist_id WHERE id=%s;""",(search_request['id'],))
-                country_ids = self.env.cr.dictfetchall()
+                self.env.cr.execute("""SELECT loc.* FROM tt_master_tour tp LEFT JOIN tt_tour_location_rel tcr ON tcr.product_id = tp.id LEFT JOIN tt_tour_master_locations loc ON loc.id = tcr.location_id WHERE tp.id=%s;""",(search_request['id'],))
+                location_ids = self.env.cr.dictfetchall()
                 country_names = []
-                for country in country_ids:
-                    if country != 0:
-                        self.env.cr.execute("""SELECT id, name FROM res_country WHERE id=%s""", (country['country_id'],))
+                for location in location_ids:
+                    if location != 0:
+                        self.env.cr.execute("""SELECT id, name FROM res_country WHERE id=%s""", (location['country_id'],))
                         temp = self.env.cr.dictfetchall()
                         country_names.append(temp[0]['name'])
 
