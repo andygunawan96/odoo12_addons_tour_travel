@@ -272,23 +272,24 @@ class TtVisa(models.Model):
     ######################################################################################################
 
     param_sell_visa = {
+        "total_cost": 25,
+        "provider": "skytors_visa",
         "pax": {
-            "adult": 3,
+            "adult": 1,
             "child": 0,
             "infant": 0,
             "elder": 0
-        },
-        "provider": "skytors_visa"
+        }
     }
 
     param_booker = {
         "title": "MR",
         "first_name": "ivan",
-        "last_name": "ivan",
+        "last_name": "suryajaya",
         "email": "asd@gmail.com",
-        "calling_code": "93",
-        "mobile": "8217312381",
-        "nationality_code": "ID",
+        "calling_code": "62",
+        "mobile": "81823812832",
+        "nationality_code": "Indonesia",
         "booker_id": ""
     }
 
@@ -296,85 +297,46 @@ class TtVisa(models.Model):
         {
             "title": "MR",
             "first_name": "ivan",
-            "last_name": "ivan",
+            "last_name": "suryajaya",
             "email": "asd@gmail.com",
-            "calling_code": "93",
-            "mobile": "8217312381",
-            "nationality_code": "ID",
-            "contact_id": ""
+            "calling_code": "62",
+            "mobile": "81823812832",
+            "nationality_code": "Indonesia",
+            "contact_id": "",
+            "is_booker": True
         }
     ]
 
     param_passenger = [
         {
             "pax_type": "ADT",
-            "first_name": "pax",
-            "last_name": "satu",
+            "first_name": "ivan",
+            "last_name": "suryajaya",
             "title": "MR",
-            "gender": "male",
-            "birth_date": "2002-03-20",
-            "nationality_code": "ID",
+            "birth_date": "2002-10-01",
+            "nationality_code": "Indonesia",
             "country_of_issued_code": "",
             "passport_expdate": "",
             "passport_number": "",
             "passenger_id": "",
+            "is_booker": False,
+            "is_contact": False,
+            "number": 1,
             "master_visa_Id": "1",
             "required": [
                 {
-                    "is_copy": True,
                     "is_original": False,
-                    "id": 2
-                }
-            ]
-        },
-        {
-            "pax_type": "ADT",
-            "first_name": "pax",
-            "last_name": "dua",
-            "title": "MR",
-            "gender": "female",
-            "birth_date": "2004-05-08",
-            "nationality_code": "ID",
-            "country_of_issued_code": "",
-            "passport_expdate": "",
-            "passport_number": "",
-            "passenger_id": "",
-            "master_visa_Id": "1",
-            "required": [
-                {
-                    "is_copy": True,
-                    "is_original": False,
-                    "id": 2
-                }
-            ]
-        },
-        {
-            "pax_type": "ADT",
-            "first_name": "pax",
-            "last_name": "tiga",
-            "title": "MR",
-            "gender": "male",
-            "birth_date": "2017-05-08",
-            "nationality_code": "ID",
-            "country_of_issued_code": "",
-            "passport_expdate": "",
-            "passport_number": "",
-            "passenger_id": "",
-            "master_visa_Id": "1",
-            "required": [
-                {
-                    "is_copy": True,
-                    "is_original": False,
-                    "id": 2
+                    "is_copy": False,
+                    "id": 1
                 }
             ]
         }
     ]
 
     param_search = {
-        "destination": "Japan",
+        "destination": "Albania",
         "consulate": "Jakarta",
-        "departure_date": "2019-06-28",
+        "departure_date": "2019-10-04",
         "provider": "skytors_visa"
     }
 
@@ -387,10 +349,15 @@ class TtVisa(models.Model):
         'force_issued': True
     }
 
-    def get_booking_visa_api(self, data):
+    param_payment = {
+        "member": False,
+        "seq_id": "PQR.0429001"
+    }
+
+    def get_booking_visa_api(self):  # , data
         res = {}
         for rec in self.search([('name', '=', self.name)]):  # data['order_number']
-            res_dict = self.to_dict()
+            res_dict = self.sudo().to_dict()
             print('Res Dict. : ' + str(res_dict))
             passenger = []
             # contact = []
@@ -406,7 +373,7 @@ class TtVisa(models.Model):
                 #             'amount': passenger[len(passenger) - 1]['visa']['price'][sale_price],
                 #             'currency': passenger[len(passenger) - 1]['visa']['price']['currency']
                 #         })
-                sale_obj = self.env['tt.service.charge'].sudo().search([('visa_id', '=', data['order_number']), ('passenger_visa_ids', '=', pax.id)])
+                sale_obj = self.env['tt.service.charge'].sudo().search([('visa_id', '=', self.name), ('passenger_visa_ids', '=', pax.id)])  # data['order_number']
                 sale = {}
                 for ssc in sale_obj:
                     if ssc['charge_code'] == 'rac':
@@ -503,14 +470,15 @@ class TtVisa(models.Model):
         print('Response : ' + str(json.dumps(res)))
         return Response().get_no_error(res)
 
-    def create_booking_visa_api(self):  # , data, context, kwargs
-        sell_visa = copy.deepcopy(self.param_sell_visa)  # data['sell_visa']
-        booker = copy.deepcopy(self.param_booker)  # data['booker']
-        contact = copy.deepcopy(self.param_contact)  # data['contact']
-        passengers = copy.deepcopy(self.param_passenger)  # data['passenger']
-        search = copy.deepcopy(self.param_search)  # data['search']
-        context = copy.deepcopy(self.param_context)  # context
-        kwargs = copy.deepcopy(self.param_kwargs)  # kwargs
+    def create_booking_visa_api(self, data, context, kwargs):  #
+        sell_visa = copy.deepcopy(data['sell_visa'])  # self.param_sell_visa
+        booker = copy.deepcopy(data['booker'])  # self.param_booker
+        contact = copy.deepcopy(data['contact'])  # self.param_contact
+        passengers = copy.deepcopy(data['passenger'])  # self.param_passenger
+        search = copy.deepcopy(data['search'])  # self.param_search
+        payment = copy.deepcopy(data['payment'])  # self.param_payment
+        context = copy.deepcopy(context)  # self.param_context
+        kwargs = copy.deepcopy(kwargs)  # self.param_kwargs
 
         try:
             user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
@@ -545,6 +513,16 @@ class TtVisa(models.Model):
             })
 
             book_obj = self.sudo().create(header_val)
+
+            if payment.get('member'):
+                customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', payment['seq_id'])])
+            else:
+                customer_parent_id = book_obj.agent_id.customer_parent_walkin_id.id
+
+            book_obj.sudo().write({
+                'customer_parent_id': customer_parent_id,
+            })
+
             book_obj.agent_id = self.env.user.agent_id  # kedepannya mungkin dihapus | contact['agent_id']
             self._calc_grand_total()
 
@@ -755,7 +733,7 @@ class TtVisa(models.Model):
             vals = {
                 'amount': pricelist_obj.sale_price,
                 'charge_code': 'fare',
-                'charge_type': 'fare',
+                'charge_type': 'FARE',
                 'passenger_visa_id': passenger_ids[idx],
                 'description': pricelist_obj.description,
                 'pax_type': pricelist_obj.pax_type,
@@ -774,7 +752,7 @@ class TtVisa(models.Model):
                 'total': int(pricelist_obj.commission_price) * -1,
                 'amount': int(pricelist_obj.commission_price) * -1,
                 'charge_code': 'rac',
-                'charge_type': 'rac'
+                'charge_type': 'RAC'
             })
             ssc_list.append(vals2)
             ssc_obj2 = passenger_obj.cost_service_charge_ids.create(vals2)
@@ -958,7 +936,7 @@ class TtVisa(models.Model):
             for sc in rec.sale_service_charge_ids:
                 if sc.pricelist_id.visa_type not in doc_type:
                     doc_type.append(sc.pricelist_id.visa_type)
-                if sc.charge_code == 'fare':
+                if sc.charge_code == 'FARE':
                     total_order += sc.total
                 if sc.pricelist_id.display_name:
                     desc = sc.pricelist_id.display_name.upper() + ' ' + sc.pricelist_id.entry_type.upper()
@@ -1216,15 +1194,15 @@ class TtVisa(models.Model):
             rec.total_fare = 0
 
             for line in rec.sale_service_charge_ids:
-                if line.charge_code == 'fare':
+                if line.charge_type == 'FARE':
                     rec.total_fare += line.total
-                if line.charge_code == 'tax':
+                if line.charge_type == 'tax':
                     rec.total_tax += line.total
-                if line.charge_code == 'disc':
+                if line.charge_type == 'disc':
                     rec.total_disc += line.total
-                if line.charge_code == 'r.oc':
+                if line.charge_type == 'ROC':
                     rec.total_commission += line.total
-                if line.charge_code == 'rac':
+                if line.charge_type == 'RAC':
                     rec.total_commission += line.total
 
             print('Total Fare : ' + str(rec.total_fare))

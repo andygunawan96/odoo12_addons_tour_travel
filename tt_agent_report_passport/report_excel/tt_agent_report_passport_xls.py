@@ -1,15 +1,14 @@
-from odoo import models, api, fields, _
+from odoo import models, _
 from odoo12_addons_tour_travel.tt_agent_report.report import tools_excel
-from io import StringIO, BytesIO
-import io
+from io import BytesIO
 import xlsxwriter
 import base64
 from datetime import datetime
 from ...tools.variables import BOOKING_STATE_STR
 
 
-class AgentReportVisa(models.TransientModel):
-    _inherit = 'tt.agent.report.visa.wizard'
+class AgentReportPassportXls(models.TransientModel):
+    _inherit = 'tt.agent.report.passport.wizard'
 
     def _print_report_excel(self, data):
         stream = BytesIO()
@@ -17,7 +16,7 @@ class AgentReportVisa(models.TransientModel):
         style = tools_excel.XlsxwriterStyle(workbook)  # set excel style
         row_height = 13
 
-        values = self.env['report.tt_agent_report_visa.agent_report_visa']._prepare_values(data['form'])  # get values
+        values = self.env['report.tt_agent_report_passport.agent_report_passport']._prepare_values(data['form'])  # get values
 
         sheet_name = values['data_form']['subtitle']  # get subtitle
         sheet = workbook.add_worksheet(sheet_name)  # add a new worksheet to workbook
@@ -30,14 +29,14 @@ class AgentReportVisa(models.TransientModel):
         sheet.write('Q5', 'Printing Date :' + values['data_form']['date_now'].strftime('%d-%b-%Y %H:%M'),
                     style.print_date)  # print date print
         sheet.write('A5', 'State : ' + values['data_form']['state'], style.table_data)  # print state
-        sheet.freeze_panes(9, 0)  # freeze panes mulai dari row 1-10
+        sheet.freeze_panes(10, 0)  # freeze panes mulai dari row 1-10
 
         # ======= TABLE HEAD ==========
         sheet.write('A9', 'No.', style.table_head_center)
         sheet.write('B9', 'Order Number', style.table_head_center)
         sheet.write('C9', 'Contact Person', style.table_head_center)
         sheet.write('D9', 'Country', style.table_head_center)
-        sheet.write('E9', 'Visa Type', style.table_head_center)
+        sheet.write('E9', 'Passport Type', style.table_head_center)
         sheet.write('F9', 'Departure Date', style.table_head_center)
         sheet.write('G9', 'Immigration Consulate', style.table_head_center)
         sheet.write('H9', 'Passenger Name', style.table_head_center)
@@ -98,13 +97,13 @@ class AgentReportVisa(models.TransientModel):
             sheet.write(row_data, 1, rec['name'], sty_table_data)  # Order Number
             sheet.write(row_data, 2, rec['contact_person'], sty_table_data_center)  # Contact Person
             sheet.write(row_data, 3, rec['country_name'], sty_table_data_center)  # Country
-            sheet.write(row_data, 4, rec['visa_type'], sty_table_data_center)  # Visa Type
+            sheet.write(row_data, 4, rec['passport_type'], sty_table_data_center)  # Passport Type
             sheet.write(row_data, 5,
-                        datetime.strptime(rec['departure_date'][:10], "%Y-%m-%d") if rec['departure_date'] else '',
+                        datetime.strptime(rec['departure_date'][:10], "%Y/%m/%d") if rec['departure_date'] else '',
                         sty_date)  # Departure Date
             sheet.write(row_data, 6, rec['immigration_consulate'], sty_table_data)  # Immigration Consulate
             sheet.write(row_data, 7, rec['pass_name'], sty_table_data)  # Passenger Name
-            sheet.write(row_data, 8, rec['age'], sty_table_data)  # Passenger Age
+            sheet.write(row_data, 8, rec['age'], sty_table_data)  # Passenger Age | rec['age']
             sheet.write(row_data, 9, rec['issued_name'], sty_table_data)  # Issued By
             if rec['issued_date']:  # Issued Date
                 sheet.write(row_data, 10, rec['issued_date'].strftime("%Y-%m-%d %H:%M:%S"), sty_datetime)
@@ -131,7 +130,7 @@ class AgentReportVisa(models.TransientModel):
         workbook.close()
 
         attach_id = self.env['tt.agent.report.excel.output.wizard'].create(
-            {'name': 'Visa Report.xlsx', 'file_output': base64.encodebytes(stream.getvalue())})
+            {'name': 'Passport Report.xlsx', 'file_output': base64.encodebytes(stream.getvalue())})
         return {
             'context': self.env.context,
             'view_type': 'form',

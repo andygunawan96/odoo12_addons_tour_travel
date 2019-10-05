@@ -17,8 +17,8 @@
                         <filter string="All" name="all"/>
                         <filter string="Draft" name="draft" domain="[('state','=','draft')]"/>
                         <filter string="Confirm" name="confirm" domain="[('state','=','confirm')]"/>
-                        <filter string="Paid" name="paid" domain="[('state','=','paid')]"/>
-                        <filter string="Done" name="done" domain="[('state','=','done')]"/>
+                        <filter string="Validate" name="paid" domain="[('state','=','paid')]"/>
+                        <filter string="Done" name="done" domain="[('state','=','posted')]"/>
                         <filter string="Canceled/Expired/Refund" name="canceled_expired_refund" domain="['|', '|', ('state','=','cancel'),('state','=','expired'),('state','=','refund')]"/>
                     </group>
                     <separator/>
@@ -102,7 +102,7 @@
                                 <field name="provider_type_id" domain="[('code', 'not in', ['tour','visa','passport'])]"/>
                                 <field name="provider_type_id_name" invisible="1"/>
                                 <field name="provider_name"/>
-                                <field name="sector_type" attrs="{'invisible': [('provider_type_id', 'not in', 2)]}"/>
+                                <field name="sector_type" attrs="{'invisible': [('provider_type_id_name', 'not in', 'airline')]}"/>
                                 <!--<field name="customer_id"/>-->
                                 <field name="cancel_message" states="cancel"
                                        attrs="{'readonly':[('cancel_can_edit','=',False)]}"/>
@@ -264,7 +264,7 @@
             <field name="model">tt.reservation.offline</field>
             <field name="arch" type="xml">
                 <tree>
-                    <button type="object" string="Create Issued Offline" name="create_booking_reservation_offline"/>
+                    <button type="object" string="Create Issued Offline" name="create_booking_reservation_offline_api"/>
                     <field name="name"/>
                     <field name="provider_type_id"/>
 <!--                    <field name="provider"/>-->

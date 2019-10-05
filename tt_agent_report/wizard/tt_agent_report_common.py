@@ -9,6 +9,9 @@ class AgentReportCommon(models.TransientModel):
     _name = "tt.agent.report.common.wizard"
     _description = "Agent Report Common"
 
+    def _check_ho_user(self):
+        return self.env.user.agent_id.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id
+
     company_id = fields.Many2one('res.company', string='Company', readonly=True,
                                  default=lambda self: self.env.user.company_id)
 
@@ -20,7 +23,7 @@ class AgentReportCommon(models.TransientModel):
     date_to = fields.Date(string='End Date')
 
     agent_id = fields.Many2one('tt.agent', string='Agent', default=lambda self: self.env.user.agent_id)
-    agent_type_id = fields.Many2one('tt.agent.type', string='Agent Type', related='agent_id.agent_type_id')
+    is_ho = fields.Boolean('Ho User', default=_check_ho_user)
 
     subtitle_report = fields.Char('Subtitle', help='This field use for report subtitle')
 
