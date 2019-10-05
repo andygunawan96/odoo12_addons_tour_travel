@@ -862,7 +862,7 @@ class IssuedOffline(models.Model):
                 'provider_type_id': self.env['tt.provider.type'].sudo()
                                         .search([('code', '=', data_reservation_offline.get('type'))], limit=1).id,
                 'description': data_reservation_offline.get('desc'),
-                'total': data_reservation_offline['total'],
+                'total': data_reservation_offline['total_sale_price'],
                 "social_media_id": data_reservation_offline.get('social_media_id'),
                 "expired_date": data_reservation_offline.get('expired_date'),
                 'state': 'confirm',

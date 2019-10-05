@@ -389,8 +389,8 @@ class TtVisa(models.Model):
 
     def get_booking_visa_api(self, data):
         res = {}
-        for rec in self.search([('name', '=', self.name)]):  # data['order_number']
-            res_dict = self.to_dict()
+        for rec in self.search([('name', '=', data['order_number'])]):
+            res_dict = rec.to_dict()
             print('Res Dict. : ' + str(res_dict))
             passenger = []
             # contact = []
@@ -503,14 +503,14 @@ class TtVisa(models.Model):
         print('Response : ' + str(json.dumps(res)))
         return Response().get_no_error(res)
 
-    def create_booking_visa_api(self):  # , data, context, kwargs
-        sell_visa = copy.deepcopy(self.param_sell_visa)  # data['sell_visa']
-        booker = copy.deepcopy(self.param_booker)  # data['booker']
-        contact = copy.deepcopy(self.param_contact)  # data['contact']
-        passengers = copy.deepcopy(self.param_passenger)  # data['passenger']
-        search = copy.deepcopy(self.param_search)  # data['search']
-        context = copy.deepcopy(self.param_context)  # context
-        kwargs = copy.deepcopy(self.param_kwargs)  # kwargs
+    def create_booking_visa_api(self, data, context, kwargs):  # , data, context, kwargs
+        sell_visa = copy.deepcopy(data['sell_visa'])  #
+        booker = copy.deepcopy(data['booker'])  # data['booker']
+        contact = copy.deepcopy(data['contact'])  #
+        passengers = copy.deepcopy(data['passenger'])  #
+        search = copy.deepcopy(data['search'])  #
+        context = copy.deepcopy(context)  #
+        kwargs = copy.deepcopy(kwargs)  #
 
         try:
             user_obj = self.env['res.users'].sudo().browse(context['co_uid'])

@@ -540,13 +540,13 @@ class AgentRegistration(models.Model):
         'co_uid': 7
     }
 
-    def create_agent_registration_api(self):  # , data, context, kwargs
-        company = copy.deepcopy(self.param_company)  # data['company']
-        pic = copy.deepcopy(self.param_pic)  # data['pic']
-        address = copy.deepcopy(self.param_address)  # data['address']
-        other = copy.deepcopy(self.param_other)  # data['other']
-        context = copy.deepcopy(self.param_context)  # context
-        regis_doc = copy.deepcopy(self.param_regis_doc)  # data['regis_doc']
+    def create_agent_registration_api(self, data, context, kwargs):  #
+        company = copy.deepcopy(data['company'])  #
+        pic = copy.deepcopy(data['pic'])  #
+        address = copy.deepcopy(data['address'])  #
+        other = copy.deepcopy(data['other'])  #
+        context = copy.deepcopy(context)  #
+        regis_doc = copy.deepcopy(data['regis_doc'])  #
         registration_list = self.search([('name', '=', company['name'])], order='registration_date desc', limit=1)  # data['company']
         check = 0
         response = {}
