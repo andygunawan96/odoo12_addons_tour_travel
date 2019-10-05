@@ -1,9 +1,10 @@
-from odoo import models, fields, api, _
+from odoo import models, fields, api
+from odoo.exceptions import UserError
 from datetime import datetime,date
 from dateutil.relativedelta import relativedelta
 from odoo.tools import image
 from ...tools import variables,util,ERR
-import json
+import json,time
 import logging,traceback
 
 _logger = logging.getLogger(__name__)
@@ -35,12 +36,14 @@ class TtCustomer(models.Model):
     identity_number = fields.Char('Identity Number')
     passport_number = fields.Char(string='Passport Number')
     passport_expdate = fields.Datetime(string='Passport Exp Date')
-    user_id = fields.One2many('res.users', 'customer_id', 'User')
+    user_ids = fields.One2many('res.users', 'customer_id', 'User')
     customer_bank_detail_ids = fields.One2many('customer.bank.detail', 'customer_id', 'Customer Bank Detail')
     agent_id = fields.Many2one('tt.agent', 'Agent')
-    customer_parent_ids = fields.Many2many('tt.customer.parent','tt_customer_customer_parent_rel','customer_id','customer_parent_id','Customer_parent')
+    customer_parent_ids = fields.Many2many('tt.customer.parent','tt_customer_customer_parent_rel','customer_id','customer_parent_id','Customer Parent')
 
     active = fields.Boolean('Active', default=True)
+
+    identity_ids = fields.One2many('tt.customer.identity','customer_id','Identity List')
 
     @api.depends('first_name', 'last_name')
     def _compute_name(self):
@@ -65,19 +68,6 @@ class TtCustomer(models.Model):
         util.pop_empty_key(vals_list)
         vals_list['seq_id'] = self.env['ir.sequence'].next_by_code('tt.customer')
         return super(TtCustomer, self).create(vals_list)
-
-    # @api.multi
-    # def write(self, value):
-    #     self_dict = self.read()
-    #     key_list = [key for key in value.keys()]
-    #     for key in key_list:
-    #         print(self.fields_get().get(key)['string'])
-    #         self.message_post(body=_("%s has been changed from %s to %s by %s.") %
-    #                                 (self.fields_get().get(key)['string'],  # Model String / Label
-    #                                  self_dict[0].get(key),  # Old Value
-    #                                  value[key],  # New Value
-    #                                  self.env.user.name))  # User that Changed the Value
-    #     return super(TtCustomer, self).write(value)
 
     def to_dict(self):
         phone_list = []
@@ -117,7 +107,6 @@ class TtCustomer(models.Model):
         }
         return res
 
-
     def get_customer_list_api(self,req,context):
         try:
             print("request teropong\n"+json.dumps((req))+json.dumps(context))
@@ -141,3 +130,57 @@ class TtCustomer(models.Model):
         except Exception as e:
             _logger.error(traceback.format_exc())
             return ERR.get_error()
+
+    def add_identity_button(self):
+        self.add_or_update_identity('ktp',time.time())
+
+    def add_or_update_identity(self,name,number):
+        not_exist =True
+
+        for identity in self.identity_ids:
+            if identity.name == name:
+                not_exist = False
+                exixting_identity = identity
+                break
+
+        if not_exist:
+            self.env['tt.customer.identity'].create({
+                'name': name,
+                'number': number,
+                'customer_id': self.id
+            })
+        else:
+            exixting_identity.update({
+                'number': number
+            })
+
+
+
+class TtCustomerIdentityNumber(models.Model):
+    _name = "tt.customer.identity"
+    _description = "Customer Identity Type"
+
+    name = fields.Selection([('ktp','KTP'),
+                             ('passport','Passport'),
+                             ('sim','SIM'),
+                             ('other','Other')],'Type',required=True)
+
+    number = fields.Char('Number',required=True)
+
+    customer_id = fields.Many2one('tt.customer','Owner',required=True)
+
+    def create(self, vals_list):
+        new_identity = super(TtCustomerIdentityNumber, self).create(vals_list)
+        ##validator tidak kembar
+        if len(new_identity.ids) >1:
+            identity = new_identity[0]
+        else:
+            identity = new_identity
+
+        identity_list = identity.customer_id.identity_ids
+        for id1 in identity_list:
+            for id2 in identity_list:
+                if id1.name == id2.name and id1.id != id2.id:
+                    raise UserError ('%s|%s Already Exists.' % (id1.id,id1.name))
+
+        return new_identity

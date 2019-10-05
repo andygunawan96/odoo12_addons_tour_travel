@@ -103,7 +103,6 @@ class PaymentAcquirer(models.Model):
             if req['transaction_type'] == 'top_up':
                 # Kalau top up Ambil agent_id HO
                 dom.append(('agent_id', '=', self.env['tt.agent'].sudo().search([('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id )], limit=1).id))
-                amount = self.env['tt.top.up'].sudo().search([('name','=',req['top_up_name'])]).total
             elif req['transaction_type'] == 'billing':
                 dom.append(('agent_id', '=', context['co_agent_id']))
 
