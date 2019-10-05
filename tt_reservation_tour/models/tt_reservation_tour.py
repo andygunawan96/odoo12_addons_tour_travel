@@ -695,12 +695,12 @@ class TourBooking(models.Model):
             else:
                 sameBooker = False
 
-            booker_obj = data['booking_data']['contact']
+            booker_obj = data['booking_data']['booker']
             booker_id = booker_obj.get('booker_id')
             res_booker_id = False
             res_pax_list = []
             book_line_list = []
-            contact_person = data['booking_data']['contact_person']
+            contact_person = data['booking_data']['contact']
             tour_data = data['booking_data']['tour_data']
             if len(contact_person) > 0:
                 similar = self.check_pax_similarity(contact_person[0])

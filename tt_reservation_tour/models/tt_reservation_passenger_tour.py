@@ -15,7 +15,7 @@ class TtReservationCustomer(models.Model):
     booking_id = fields.Many2one('tt.reservation.tour', 'Tour Booking')
     pax_type = fields.Selection([('ADT', 'Adult'), ('YCD', 'Senior'), ('CHD', 'Child'), ('INF', 'Infant')],
                                 string='Pax Type')
-    option_ids = fields.One2many('tt.reservation.passenger.tour.option', 'tour_passenger_id', 'Options')
+    tour_room_id = fields.Many2one('tt.master.tour.rooms', 'Room')
 
     def to_dict(self):
         res = super(TtReservationCustomer, self).to_dict()
@@ -27,13 +27,5 @@ class TtReservationCustomer(models.Model):
             res['channel_service_charges'] = self.get_channel_service_charges()
         return res
 
-
-class TtTourPassengerOption(models.Model):
-    _name = 'tt.reservation.passenger.tour.option'
-    _description = 'Rodex Model'
-
-    name = fields.Char('Information')
-    value = fields.Char('Value')
-    tour_passenger_id = fields.Many2one('tt.reservation.passenger.tour', 'Tour Passenger')
 
 
