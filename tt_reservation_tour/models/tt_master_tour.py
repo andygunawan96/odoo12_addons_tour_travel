@@ -143,7 +143,7 @@ class MasterTour(models.Model):
     flight_segment_ids = fields.One2many('flight.segment', 'tour_pricelist_id', string="Flight Segment")
     # visa_pricelist_ids = fields.Many2many('tt.traveldoc.pricelist', 'tour_visa_rel', 'tour_id', 'visa_id',
     #                                       domain=[('transport_type', '=', 'visa')], string='Visa Pricelist')
-    passengers_ids = fields.One2many('tt.reservation.tour.line', 'tour_pricelist_id', string='Tour Participants', copy=False)
+    passengers_ids = fields.One2many('tt.reservation.passenger.tour', 'master_tour_id', string='Tour Participants', copy=False)
     sequence = fields.Integer('Sequence', default=3)
     adjustment_ids = fields.One2many('tt.master.tour.adjustment', 'tour_pricelist_id', required=True)
     survey_title_ids = fields.One2many('survey.survey', 'tour_id', string='Tour Surveys', copy=False)
