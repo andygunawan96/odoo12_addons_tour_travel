@@ -13,9 +13,9 @@ class AgentReportPassportModel(models.AbstractModel):
     def _select():
         return """
         ps.name, tcd.first_name || ' ' || tcd.last_name as contact_person, ps.contact_name, rc.name as country_name,
-        top.title || ' ' || top.first_name || ' ' || top.last_name as pass_name, ps.departure_date, ps.issued_date, 
-        ps.in_process_date, ps.ready_date, ps.done_date, ps.state, rp.name as issued_name, tpp.immigration_consulate, 
-        tpp.passport_type, tl.debit as commission, ps.total, ps.total_nta
+        top.title || ' ' || top.first_name || ' ' || top.last_name as pass_name, top.age age, ps.departure_date, 
+        ps.issued_date, ps.in_process_date, ps.ready_date, ps.done_date, ps.state, rp.name as issued_name, 
+        tpp.immigration_consulate, tpp.passport_type, tl.debit as commission, ps.total, ps.total_nta
         """
 
     @staticmethod
@@ -46,8 +46,8 @@ class AgentReportPassportModel(models.AbstractModel):
     @staticmethod
     def _group_by():
         return """
-            ps.id, rp.id, rp.name, ru.id, ps.state, tpp.passport_type, tcd.first_name, tcd.last_name, top.title, 
-            top.first_name, top.last_name, rc.name, tpp.immigration_consulate, tl.debit
+            ps.id, rp.id, rp.name, ru.id, ps.state, tpp.passport_type, tcd.first_name, tcd.last_name, top.age,
+            top.title, top.first_name, top.last_name, rc.name, tpp.immigration_consulate, tl.debit
             """
 
     @staticmethod

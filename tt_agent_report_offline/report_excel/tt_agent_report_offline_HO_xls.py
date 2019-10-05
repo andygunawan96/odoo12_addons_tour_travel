@@ -4,6 +4,7 @@ from io import BytesIO
 import xlsxwriter
 import base64
 from datetime import datetime
+from ...tt_reservation_offline.models.tt_reservation_offline import STATE_OFFLINE_STR
 
 
 class AgentReportOfflineXls(models.TransientModel):
@@ -28,29 +29,29 @@ class AgentReportOfflineXls(models.TransientModel):
         sheet.write('Q5', 'Printing Date :' + values['data_form']['date_now'].strftime('%d-%b-%Y %H:%M'),
                     style.print_date)  # print date print
         sheet.write('A5', 'State : ' + values['data_form']['state'], style.table_data)  # print state
-        sheet.freeze_panes(10, 0)  # freeze panes mulai dari row 1-10
+        sheet.freeze_panes(9, 0)  # freeze panes mulai dari row 1-10
 
         # ======= TABLE HEAD ==========
-        sheet.merge_range('A9:A10', 'No.', style.table_head_center)
-        sheet.merge_range('B9:B10', 'Date', style.table_head_center)
-        sheet.merge_range('C9:C10', 'Order Number', style.table_head_center)
-        sheet.merge_range('D9:D10', 'Agent Name', style.table_head_center)
-        sheet.merge_range('E9:E10', 'Contact Person', style.table_head_center)
-        sheet.merge_range('F9:F10', 'Provider Type', style.table_head_center)
-        sheet.merge_range('G9:G10', 'Provider', style.table_head_center)
-        sheet.merge_range('H9:H10', 'PNR', style.table_head_center)
-        sheet.merge_range('I9:I10', 'Description', style.table_head_center)
-        sheet.merge_range('J9:J10', 'Confirm Date', style.table_head_center)
-        sheet.merge_range('K9:K10', 'Confirm By', style.table_head_center)
-        sheet.merge_range('L9:L10', 'Issued Date', style.table_head_center)
-        sheet.merge_range('M9:M10', 'Issued By', style.table_head_center)
-        sheet.merge_range('N9:N10', 'Total', style.table_head_center)
-        sheet.merge_range('O9:O10', 'Agent Commission', style.table_head_center)
-        sheet.merge_range('P9:P10', 'Parent Commission', style.table_head_center)
-        sheet.merge_range('Q9:Q10', 'HO Commission', style.table_head_center)
-        sheet.merge_range('R9:R10', 'Total Commission', style.table_head_center)
-        sheet.merge_range('S9:S10', 'NTA Amount', style.table_head_center)
-        sheet.merge_range('T9:T10', 'State', style.table_head_center)
+        sheet.write('A9', 'No.', style.table_head_center)
+        sheet.write('B9', 'Date', style.table_head_center)
+        sheet.write('C9', 'Order Number', style.table_head_center)
+        sheet.write('D9', 'Agent Name', style.table_head_center)
+        sheet.write('E9', 'Contact Person', style.table_head_center)
+        sheet.write('F9', 'Provider Type', style.table_head_center)
+        sheet.write('G9', 'Provider', style.table_head_center)
+        sheet.write('H9', 'PNR', style.table_head_center)
+        sheet.write('I9', 'Description', style.table_head_center)
+        sheet.write('J9', 'Confirm Date', style.table_head_center)
+        sheet.write('K9', 'Confirm By', style.table_head_center)
+        sheet.write('L9', 'Issued Date', style.table_head_center)
+        sheet.write('M9', 'Issued By', style.table_head_center)
+        sheet.write('N9', 'Total', style.table_head_center)
+        sheet.write('O9', 'Agent Commission', style.table_head_center)
+        sheet.write('P9', 'Parent Commission', style.table_head_center)
+        sheet.write('Q9', 'HO Commission', style.table_head_center)
+        sheet.write('R9', 'Total Commission', style.table_head_center)
+        sheet.write('S9', 'NTA Amount', style.table_head_center)
+        sheet.write('T9', 'State', style.table_head_center)
 
         # ====== SET WIDTH AND HEIGHT ==========
         sheet.set_row(0, row_height)  # set_row(row, height) -> row 0-4 (1-5)
@@ -58,7 +59,8 @@ class AgentReportOfflineXls(models.TransientModel):
         sheet.set_row(2, row_height)
         sheet.set_row(3, row_height)
         sheet.set_row(4, row_height)
-        sheet.set_column('A:A', 3)
+        sheet.set_row(8, 30)
+        sheet.set_column('A:A', 4)
         sheet.set_column('B:B', 8)
         sheet.set_column('C:C', 10)
         sheet.set_column('D:D', 15)
@@ -69,7 +71,7 @@ class AgentReportOfflineXls(models.TransientModel):
         sheet.set_column('N:S', 9)
         sheet.set_column('T:T', 6)
 
-        row_data = 9
+        row_data = 8
         for rec in values['lines']:
             row_data += 1
             sty_table_data_center = style.table_data_center
@@ -84,7 +86,7 @@ class AgentReportOfflineXls(models.TransientModel):
                 sty_date = style.table_data_date_even
                 sty_amount = style.table_data_amount_even
 
-            sheet.write(row_data, 0, row_data - 9, sty_table_data_center)
+            sheet.write(row_data, 0, row_data - 8, sty_table_data_center)
             sheet.write(row_data, 1,
                         datetime.strptime(rec['create_date'], "%Y-%m-%d %H:%M:%S") if rec['create_date'] else '',
                         sty_date)

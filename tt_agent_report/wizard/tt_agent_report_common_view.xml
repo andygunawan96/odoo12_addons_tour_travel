@@ -13,8 +13,8 @@
                         <field name="date_to" attrs="{'invisible': [('period', '!=', 'custom')]}"/>
                     </group>
                     <group>
-                        <field name="agent_type_id" invisible="1"/>
-                        <field name="agent_id" attrs="{'invisible': [('agent_type_id', 'not in', [%(tt_base.agent_type_ho)d,])]}"/>  <!--attrs="{'invisible': [('is_ho_user', '=', False)]}"-->
+                        <field name="is_ho" invisible="1"/>
+                        <field name="agent_id" attrs="{'invisible': [('is_ho', '=', False)]}"/>  <!--attrs="{'invisible': [('is_ho_user', '=', False)]}"-->
                     </group>
                 </group>
                 <footer>

@@ -73,7 +73,7 @@ class IssuedOffline(models.Model):
                                        states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
     parent_agent_commission = fields.Monetary('Parent Agent Commission', readonly=True)  # , compute='_get_agent_commission'
     ho_commission = fields.Monetary('HO Commission', readonly=True,   # , compute='_get_agent_commission'
-                                    states={'confirm': [('readonly', False)], 'confirm': [('readonly', False)]})
+                                    states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
     nta_price = fields.Monetary('NTA Price', readonly=True, compute='_get_nta_price', store=True)
     agent_nta_price = fields.Monetary('Agent Price', readonly=True, compute='_get_agent_price', store=True)
 
@@ -284,7 +284,8 @@ class IssuedOffline(models.Model):
     @api.one
     def action_sent(self):
         if self.provider_type_id_name == 'airline' or self.provider_type_id_name == 'train' or \
-                self.provider_type_id_name == 'hotel' or self.provider_type_id_name == 'activity':
+                self.provider_type_id_name == 'hotel' or self.provider_type_id_name == 'activity'\
+                or self.provider_type_id_name == 'cruise':
             if not self.check_provider_empty():
                 self.get_provider_name()
                 if self.provider_type_id_name == 'airline' or self.provider_type_id_name == 'train':
@@ -815,6 +816,77 @@ class IssuedOffline(models.Model):
 
     ####################################################################################################
 
+    param_issued_offline_data = {
+        "type": "airline",
+        "total_sale_price": 100000,
+        "desc": "amdaksd",
+        "pnr": "10020120",
+        "social_media_id": "Facebook",
+        "expired_date": "2019-10-04 02:29",
+        "line_ids": [
+            {
+                "origin": "SUB",
+                "destination": "SIN",
+                "provider": "Singapore Airlines",
+                "departure": "2019-10-04 02:30",
+                "arrival": "2019-10-04 02:30",
+                "carrier_code": "SQ",
+                "carrier_number": "a123",
+                "sub_class": "B",
+                "class_of_service": "eco"
+            }
+        ],
+        "provider": "skytors_issued_offline",
+        "sector_type": "domestic"
+    }
+
+    param_booker = {
+        "title": "MR",
+        "first_name": "ivan",
+        "last_name": "suryajaya",
+        "email": "asd@gmail.com",
+        "calling_code": "62",
+        "mobile": "81283182321",
+        "nationality_code": "Indonesia",
+        "booker_id": ""
+    }
+
+    param_contact = [
+        {
+            "title": "MR",
+            "first_name": "ivan",
+            "last_name": "suryajaya",
+            "email": "asd@gmail.com",
+            "calling_code": "62",
+            "mobile": "81283182321",
+            "nationality_code": "Indonesia",
+            "contact_id": "",
+            "is_booker": True
+        }
+    ]
+
+    param_passenger = [
+        {
+            "pax_type": "INF",
+            "first_name": "ivan",
+            "last_name": "suryajaya",
+            "title": "MR",
+            "birth_date": "2019-08-25",
+            "nationality_code": "Indonesia",
+            "country_of_issued_code": "Indonesia",
+            "passport_expdate": "2019-10-04",
+            "passport_number": "1231312323",
+            "passenger_id": "",
+            "is_booker": True,
+            "is_contact": False
+        }
+    ]
+
+    param_context = {
+        'co_uid': 2,
+        'co_agent_id': 2
+    }
+
     def get_config_api(self):
         try:
             res = {
@@ -830,13 +902,13 @@ class IssuedOffline(models.Model):
             res = Response().get_error(str(e), 500)
         return res
 
-    def create_booking_reservation_offline_api(self, data, context, kwargs):
-        booker = data['booker']
-        data_reservation_offline = data['issued_offline_data']
-        passenger = data['passenger']
-        contact = data['contact']
-        context = context
-        lines = data['issued_offline_data']['line_ids']
+    def create_booking_reservation_offline_api(self, data, context, kwargs):  #
+        booker = copy.deepcopy(data['booker'])  # self.param_booker
+        data_reservation_offline = copy.deepcopy(data['issued_offline_data'])  # self.param_issued_offline_data
+        passenger = copy.deepcopy(data['passenger'])  # self.param_passenger
+        contact = copy.deepcopy(data['contact'])  # self.param_contact
+        context = copy.deepcopy(context)  # self.param_context
+        lines = copy.deepcopy(data['issued_offline_data']['line_ids'])  # data_reservation_offline['line_ids']
 
         try:
             user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
@@ -862,9 +934,10 @@ class IssuedOffline(models.Model):
                 'provider_type_id': self.env['tt.provider.type'].sudo()
                                         .search([('code', '=', data_reservation_offline.get('type'))], limit=1).id,
                 'description': data_reservation_offline.get('desc'),
-                'total': data_reservation_offline['total'],
-                "social_media_id": data_reservation_offline.get('social_media_id'),
-                "expired_date": data_reservation_offline.get('expired_date'),
+                'vendor': data_reservation_offline.get('provider'),
+                'total': data_reservation_offline['total_sale_price'],
+                'social_media_id': self._get_social_media_id_by_name(data_reservation_offline.get('social_media_id')),
+                'expired_date': data_reservation_offline.get('expired_date'),
                 'state': 'confirm',
                 'agent_id': context['co_agent_id'],
                 'user_id': context['co_uid'],
@@ -1058,18 +1131,21 @@ class IssuedOffline(models.Model):
         line_list = []
         destination_env = self.env['tt.destinations'].sudo()
         line_env = self.env['tt.reservation.offline.lines'].sudo()
+        provider_env = self.env['tt.transport.carrier'].sudo()
         provider_type = data_reservation_offline['type']
         print('Provider_type : ' + provider_type)
         if provider_type in ['airline', 'train']:
             for line in lines:
                 print('Origin: ' + str(destination_env.search([('code', '=', line.get('origin'))], limit=1).name))
                 print('Destination: ' + str(destination_env.search([('code', '=', line.get('destination'))], limit=1).name))
+                print('Carrier : ' + str(provider_env.search([('name', '=', line.get('provider'))], limit=1).name))
                 line_tmp = {
                     "origin_id": destination_env.search([('code', '=', line.get('origin'))], limit=1).id,
                     "destination_id": destination_env.search([('code', '=', line.get('destination'))], limit=1).id,
                     "provider": line.get('provider'),
                     "departure_date": line.get('departure'),
                     "return_date": line.get('arrival'),
+                    "carrier_id": provider_env.search([('name', '=', line.get('provider'))], limit=1).id,
                     "carrier_code": line.get('carrier_code'),
                     "carrier_number": line.get('carrier_number'),
                     "subclass": line.get('sub_class'),
@@ -1114,6 +1190,10 @@ class IssuedOffline(models.Model):
             iss_off_psg_obj = iss_off_psg_env.create(psg_vals)
             iss_off_pas_list.append(iss_off_psg_obj.id)
         return iss_off_pas_list
+
+    def _get_social_media_id_by_name(self, name):
+        social_media_id = self.env['social.media.detail'].search([('name', '=', name)], limit=1).id
+        return social_media_id
 
     def confirm_api(self, id):
         obj = self.sudo().browse(id)

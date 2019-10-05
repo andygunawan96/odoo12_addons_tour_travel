@@ -100,6 +100,7 @@
                     <group>
                         <group>
                             <field name="agent_id"/>
+                            <field name="customer_parent_id"/>
 <!--                            <field name="sub_agent_id"/>-->
                             <field name="currency_id" invisible="1"/>
 <!--                            <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>-->
@@ -161,9 +162,9 @@
                         <group string="Booker Information">
                             <field name="booker_id"/>
                             <field name="contact_id"/>
-                            <field name="contact_name" readonly="0"/>  <!--readonly="1"-->
-                            <field name="contact_email" readonly="0"/>  <!--readonly="1"-->
-                            <field name="contact_phone" readonly="0"/>  <!--readonly="1"-->
+                            <field name="contact_name" readonly="1"/>  <!--readonly="1"-->
+                            <field name="contact_email" readonly="1"/>  <!--readonly="1"-->
+                            <field name="contact_phone" readonly="1"/>  <!--readonly="1"-->
                         </group>
                     </group>
                     <notebook colspan="4">
@@ -189,6 +190,7 @@
                             <field name="sale_service_charge_ids" context="{'form_view_ref': 'tt_reservation_visa.tt_service_charge_visa_inherit_form_view'}">
                                 <tree>
                                     <field name="charge_code"/>
+                                    <field name="charge_type"/>
                                     <field name="pax_type"/>
                                     <field name="pax_count"/>
                                     <field name="amount"/>

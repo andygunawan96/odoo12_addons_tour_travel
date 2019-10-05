@@ -528,7 +528,7 @@ class TtPassport(models.Model):
             vals = {
                 'amount': pricelist_obj.sale_price,
                 'charge_code': 'fare',
-                'charge_type': 'fare',
+                'charge_type': 'FARE',
                 'passenger_visa_id': passenger_ids[idx],
                 'description': pricelist_obj.description,
                 'pax_type': pricelist_obj.pax_type,
@@ -547,7 +547,7 @@ class TtPassport(models.Model):
                 'total': int(pricelist_obj.commission_price) * -1,
                 'amount': int(pricelist_obj.commission_price) * -1,
                 'charge_code': 'rac',
-                'charge_type': 'rac'
+                'charge_type': 'RAC'
             })
             ssc_list.append(vals2)
             ssc_obj2 = passenger_obj.cost_service_charge_ids.create(vals2)
@@ -617,15 +617,15 @@ class TtPassport(models.Model):
             rec.total_fare = 0
 
             for line in rec.sale_service_charge_ids:
-                if line.charge_code == 'fare':
+                if line.charge_type == 'FARE':
                     rec.total_fare += line.total
-                if line.charge_code == 'tax':
+                if line.charge_type == 'TAX':
                     rec.total_tax += line.total
-                if line.charge_code == 'disc':
+                if line.charge_type == 'DISC':
                     rec.total_disc += line.total
-                if line.charge_code == 'r.oc':
+                if line.charge_type == 'ROC':
                     rec.total_commission += line.total
-                if line.charge_code == 'rac':
+                if line.charge_type == 'RAC':
                     rec.total_commission += line.total
 
             print('Total Fare : ' + str(rec.total_fare))

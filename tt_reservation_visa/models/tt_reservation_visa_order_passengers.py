@@ -66,17 +66,17 @@ class VisaOrderPassengers(models.Model):
     to_requirement_ids = fields.One2many('tt.reservation.visa.order.requirements', 'to_passenger_id', 'Requirements',
                                          readonly=0, states={'ready': [('readonly', True)],
                                                              'done': [('readonly', True)]})
-    visa_id = fields.Many2one('tt.reservation.visa', 'Visa', readonly=0)  # readonly=1
-    passenger_id = fields.Many2one('tt.customer', 'Passenger', readonly=0)  # readonly=1
-    pricelist_id = fields.Many2one('tt.reservation.visa.pricelist', 'Visa Pricelist', readonly=0)  # readonly=1
-    passenger_type = fields.Selection(PASSENGER_TYPE, 'Pax Type', readonly=0)  # readonly=1
-    title = fields.Selection(TITLE, 'Title', readonly=0)  # readonly=1
+    visa_id = fields.Many2one('tt.reservation.visa', 'Visa', readonly=1)  # readonly=1
+    passenger_id = fields.Many2one('tt.customer', 'Passenger', readonly=1)  # readonly=1
+    pricelist_id = fields.Many2one('tt.reservation.visa.pricelist', 'Visa Pricelist', readonly=1)  # readonly=1
+    passenger_type = fields.Selection(PASSENGER_TYPE, 'Pax Type', readonly=1)  # readonly=1
+    title = fields.Selection(TITLE, 'Title', readonly=1)  # readonly=1
     age = fields.Char('Age', readonly=1, compute="_compute_age", store=True)
     passport_number = fields.Char(string='Passport Number')
     passport_expdate = fields.Datetime(string='Passport Exp Date')
-    passenger_domicile = fields.Char('Domicile', related='passenger_id.domicile', readonly=0)  # readonly=1
+    passenger_domicile = fields.Char('Domicile', related='passenger_id.domicile', readonly=1)  # readonly=1
     process_status = fields.Selection(PROCESS_STATUS, string='Process Result',
-                                      readonly=0)  # readonly=1
+                                      readonly=1)  # readonly=1
     sequence = fields.Integer('Sequence')
     biometrics_interview = fields.Boolean('Biometrics / Interview')
 
