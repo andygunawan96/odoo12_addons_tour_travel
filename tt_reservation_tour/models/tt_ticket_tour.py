@@ -8,6 +8,7 @@ class TtTicketTour(models.Model):
     provider_id = fields.Many2one('tt.provider.tour', 'Provider')
     passenger_id = fields.Many2one('tt.reservation.passenger.tour', 'Passenger')
     pax_type = fields.Selection(variables.PAX_TYPE,'Pax Type')
+    tour_room_id = fields.Many2one('tt.master.tour.rooms', 'Room')
 
     def to_dict(self):
         res = {

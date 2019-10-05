@@ -91,7 +91,6 @@ class ReservationTour(models.Model):
             'pay_amount': inv_line_obj.total,
         })
 
-
     # # ## CREATED by Samvi 2018/07/24
     # @api.multi
     # def action_check_provider_state(self, api_context=None):
