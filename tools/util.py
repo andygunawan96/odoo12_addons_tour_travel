@@ -117,6 +117,7 @@ def send_request(url, data=None, headers=None, method=None, cookie=None, is_json
             'error_msg': str(e),
         }
 
+    _logger.info(json.dumps(values))
     content = response.json() if is_json else getattr(response, 'text', '')
 
     return content['result']
