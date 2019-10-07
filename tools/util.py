@@ -99,15 +99,15 @@ def send_request(url, data=None, headers=None, method=None, cookie=None, is_json
             url = '%s%s' % (url, addons)
             response = ses.get(url=url, headers=headers, timeout=timeout)
         elif method == 'POST' and type(data) == dict:
-            response = ses.post(url=url, headers=headers, json=data, timeout=timeout)
-        elif method == 'PUT' and type(data) == dict:
-            response = ses.put(url=url, headers=headers, json=data, timeout=timeout)
-        else:
             _logger.info("#####################")
             _logger.info(json.dumps(headers))
             _logger.info(json.dumps(data))
             _logger.info(url)
             _logger.info("#####################")
+            response = ses.post(url=url, headers=headers, json=data, timeout=timeout)
+        elif method == 'PUT' and type(data) == dict:
+            response = ses.put(url=url, headers=headers, json=data, timeout=timeout)
+        else:
             response = ses.post(url=url, headers=headers, data=data, timeout=timeout)
         response.raise_for_status()
         values = {'error_code': 0}
