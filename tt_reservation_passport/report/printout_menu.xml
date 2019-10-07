@@ -5,7 +5,7 @@
         <report
             string="Passport HO"
             id="action_report_printout_passport_ho"
-            model="tt.reservation_passport"
+            model="tt.reservation.passport"
             report_type="qweb-html"
             name="tt_reservation_passport.printout_passport_ho"
             file="tt_reservation_passport.printout_passport_ho"
@@ -16,10 +16,21 @@
         <report
             string="Passport Customer"
             id="action_report_printout_passport_cust"
-            model="tt.reservation_passport"
+            model="tt.reservation.passport"
             report_type="qweb-html"
             name="tt_reservation_passport.printout_passport_cust"
             file="tt_reservation_passport.printout_passport_cust"
+            paperformat="tt_report_common.paperformat_A4"
+            menu = "False"
+        />
+
+        <report
+            string="Proforma Invoice Passport"
+            id="action_report_printout_proforma_invoice_passport"
+            model="tt.reservation.passport"
+            report_type="qweb-html"
+            name="tt_reservation_passport.printout_proforma_passport"
+            file="tt_reservation_passport.printout_proforma_passport"
             paperformat="tt_report_common.paperformat_A4"
             menu = "False"
         />

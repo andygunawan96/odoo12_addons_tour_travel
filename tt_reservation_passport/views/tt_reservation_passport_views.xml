@@ -66,6 +66,7 @@
                     <button string="In Process" name="action_in_process_passport" type="object" attrs="{'invisible': [('state_passport', 'not in', ['validate'])]}" groups="tt_base.group_tt_tour_travel_operator"/>  <!--,'vendor_process'-->
                     <button string="Process to Immigration" name="action_in_process2_passport" type="object" attrs="{'invisible': [('state_passport', '!=', 'payment')]}" groups="tt_base.group_tt_tour_travel_operator"/>
                     <button string="Cancel All" name="action_cancel_passport" type="object" attrs="{'invisible': [('state_passport', 'in', ['cancel'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <button string="Proforma Invoice" name="action_proforma_invoice_passport" type="object"/>
                     <button string="Calc. Prices" name="action_calc_prices" type="object"/>
                 </header>
                 <sheet>

@@ -35,6 +35,7 @@
         'report/printout_menu.xml',
         'report/printout_passport_customer_template.xml',
         'report/printout_passport_ho_template.xml',
+        'report/printout_proforma_invoice_passport_template.xml',
     ],
     # only loaded in demonstration mode
     'demo': [],

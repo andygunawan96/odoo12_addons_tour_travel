@@ -6,6 +6,8 @@ import traceback
 import copy
 import json
 from ...tools.api import Response
+from ...tools import util,variables,ERR
+from ...tools.ERR import RequestException
 
 _logger = logging.getLogger(__name__)
 
@@ -97,6 +99,8 @@ class TtVisa(models.Model):
     to_vendor_date = fields.Datetime('Send To Vendor Date', readonly=1)
     vendor_process_date = fields.Datetime('Vendor Process Date', readonly=1)
     in_process_date = fields.Datetime('In Process Date', readonly=1)
+
+    acquirer_id = fields.Char('Payment Method', readonly=True)
 
     immigration_consulate = fields.Char('Immigration Consulate', readonly=1, compute="_compute_immigration_consulate")
 
@@ -354,16 +358,16 @@ class TtVisa(models.Model):
         "seq_id": "PQR.0429001"
     }
 
-    def get_booking_visa_api(self):  # , data
+    def get_booking_visa_api(self, data):  #
         res = {}
-        for rec in self.search([('name', '=', self.name)]):  # data['order_number']
+        for rec in self.search([('name', '=', data['order_number'])]):  # self.name
             res_dict = self.sudo().to_dict()
             print('Res Dict. : ' + str(res_dict))
             passenger = []
             # contact = []
             # sale = {}
             type = []
-            for idx, pax in enumerate(rec.passenger_ids,1):
+            for idx, pax in enumerate(rec.passenger_ids, 1):
                 requirement = []
                 # sale[pax.passenger_id.first_name + ' ' + pax.passenger_id.last_name] = []
                 # for sale_price in passenger[len(passenger) - 1]['visa']['price']:
@@ -373,7 +377,7 @@ class TtVisa(models.Model):
                 #             'amount': passenger[len(passenger) - 1]['visa']['price'][sale_price],
                 #             'currency': passenger[len(passenger) - 1]['visa']['price']['currency']
                 #         })
-                sale_obj = self.env['tt.service.charge'].sudo().search([('visa_id', '=', self.name), ('passenger_visa_ids', '=', pax.id)])  # data['order_number']
+                sale_obj = self.env['tt.service.charge'].sudo().search([('visa_id', '=', data['order_number']), ('passenger_visa_ids', '=', pax.id)])  # self.name
                 sale = {}
                 for ssc in sale_obj:
                     if ssc['charge_code'] == 'rac':
@@ -518,6 +522,10 @@ class TtVisa(models.Model):
                 customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', payment['seq_id'])])
             else:
                 customer_parent_id = book_obj.agent_id.customer_parent_walkin_id.id
+            if payment.get('seq_id'):
+                acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', payment['seq_id'])], limit=1).id
+                if not acquirer_id:
+                    raise RequestException(1017)
 
             book_obj.sudo().write({
                 'customer_parent_id': customer_parent_id,
@@ -1121,6 +1129,14 @@ class TtVisa(models.Model):
             'model': self._name,
         }
         return self.env.ref('tt_reservation_visa.action_report_printout_tt_visa_cust').report_action(self, data=data)
+
+    def action_proforma_invoice_visa(self):
+        self.ensure_one()
+        data = {
+            'ids': self.ids,
+            'model': self._name,
+        }
+        return self.env.ref('tt_reservation_visa.action_report_printout_proforma_invoice_visa').report_action(self, data=data)
 
     ######################################################################################################
     # CRON
