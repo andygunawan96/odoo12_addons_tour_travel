@@ -1,7 +1,6 @@
 from odoo import api, fields, models
 from odoo.http import request
 from ...tools import util,variables,ERR
-from .ApiConnector_Activity import ApiConnectorActivity
 import logging, traceback
 import json
 import base64
@@ -152,11 +151,6 @@ class MasterActivity(models.Model):
 
     def action_get_bemyguest_json(self):
         provider = 'bemyguest'
-        cookie = None
-        res = ApiConnectorActivity().signin()
-        if res.get('response'):
-            cookie = res['response']['signature']
-
         req_post = {
             'query': '',
             'type': '',
@@ -170,7 +164,7 @@ class MasterActivity(models.Model):
         }
 
         file = {}
-        res = ApiConnectorActivity().search(req_post, cookie)
+        res = self.env['tt.master.activity.api.con'].search_provider(req_post)
         if res['error_code'] == 0:
             file = res['response']
         if file:
@@ -180,10 +174,6 @@ class MasterActivity(models.Model):
 
     def write_bmg_json(self, provider=None, data=None, page=None):
         file = False
-        cookie = None
-        res = ApiConnectorActivity().signin()
-        if res.get('response'):
-            cookie = res['response']['signature']
         req_post = {
             'query': '',
             'type': '',
@@ -197,7 +187,7 @@ class MasterActivity(models.Model):
         }
 
         temp = []
-        res = ApiConnectorActivity().search(req_post, cookie)
+        res = self.env['tt.master.activity.api.con'].search_provider(req_post)
         if res['error_code'] == 0:
             temp = res['response']
 
@@ -209,17 +199,12 @@ class MasterActivity(models.Model):
     def action_sync_globaltix(self, start, end):
         provider = 'globaltix'
 
-        cookie = None
-        res = ApiConnectorActivity().signin()
-        if res.get('response'):
-            cookie = res['response']['signature']
-
         req_post = {
             'provider': provider
         }
 
         file = []
-        res = ApiConnectorActivity().get_countries(req_post, cookie)
+        res = self.env['tt.master.activity.api.con'].get_countries(req_post)
         if res['error_code'] == 0:
             file = res['response']
 
@@ -237,7 +222,7 @@ class MasterActivity(models.Model):
             }
 
             file2 = []
-            res2 = ApiConnectorActivity().search(req_post, cookie)
+            res2 = self.env['tt.master.activity.api.con'].search_provider(req_post)
             if res2['error_code'] == 0:
                 file2 = res2['response']
 
@@ -257,11 +242,6 @@ class MasterActivity(models.Model):
 
     def action_sync_klook(self, start, end):
         provider = 'klook'
-
-        cookie = None
-        res = ApiConnectorActivity().signin()
-        if res.get('response'):
-            cookie = res['response']['signature']
 
         activity_id_list = []
         for i in range(int(start), int(end) + 1):
@@ -283,7 +263,7 @@ class MasterActivity(models.Model):
             'data_size': len(activity_id_list),
         }
 
-        res = ApiConnectorActivity().search(req_post, cookie)
+        res = self.env['tt.master.activity.api.con'].search_provider(req_post)
         if res['error_code'] == 0:
             file = res['response']
             self.sync_products(provider, file)
@@ -291,19 +271,14 @@ class MasterActivity(models.Model):
             _logger.error('ERROR Sync Activity %s: %s, %s' % (request.session.sid, res['error_code'], res['error_msg']))
 
     def sync_config(self, provider):
-        cookie = None
-        res = ApiConnectorActivity().signin()
-        if res.get('response'):
-            cookie = res['response']['signature']
-
         req_post = {
             'provider': provider
         }
 
         file = {}
-        res = ApiConnectorActivity().get_config(req_post, cookie)
+        res = self.env['tt.master.activity.api.con'].get_config(req_post)
         if res['error_code'] == 0:
-            file = res['response']
+            file = json.loads(res['response'])
 
         if file:
             try:
@@ -320,7 +295,7 @@ class MasterActivity(models.Model):
                                     state_id = self.env['res.country.state'].update_provider_data(state['name'], state['uuid'], vendor_id, country_id)
                                 if state.get('cities'):
                                     for city in state['cities']:
-                                        self.env['res.city'].update_provider_data(city['name'], city['uuid'], vendor_id, state_id)
+                                        self.env['res.city'].update_provider_data(city['name'], city['uuid'], vendor_id, state_id, country_id)
                 if provider == 'bemyguest':
                     type_lib = {
                         'categories': 'category',
@@ -537,7 +512,7 @@ class MasterActivity(models.Model):
                                 'environment': 'live',
                                 'platform': 'web',
                             }
-                            res = ApiConnectorActivity().send_product_analytics(product_an_req, cookie)
+                            res = self.env['tt.master.activity.api.con'].send_product_analytics(product_an_req)
                         except Exception as e:
                             _logger.error('Error: Failed send Product Analytics. \n %s : %s' % (traceback.format_exc(), str(e)))
                     self.env.cr.commit()
@@ -569,24 +544,19 @@ class MasterActivity(models.Model):
                     getattr(self.env['tt.master.activity'], def_name)(rec, product_obj.id, provider)
 
     def sync_type_products_bemyguest(self, result, product_id, provider):
-        cookie = None
-        res = ApiConnectorActivity().signin()
-        if res.get('response'):
-            cookie = res['response']['signature']
-
         req_post = {
             'product_uuid': result['product']['uuid'],
             'provider': provider
         }
-        res = ApiConnectorActivity().get_details(req_post, cookie)
+        res = self.env['tt.master.activity.api.con'].get_details(req_post)
         if res['error_code'] == 0:
-            activity_old_obj = self.env['tt.master.activity.lines'].search([('activity_id', '=', product_id)])
+            activity_old_obj = self.env['tt.master.activity.lines'].sudo().search([('activity_id', '=', product_id)])
             for temp_old in activity_old_obj:
                 temp_old.sudo().write({
                     'active': False
                 })
             for rec in res['response']:
-                activity_type_exist = self.env['tt.master.activity.lines'].search([('activity_id', '=', product_id), ('uuid', '=', rec['type_details']['data']['uuid']), '|', ('active', '=', False), ('active', '=', True)])
+                activity_type_exist = self.env['tt.master.activity.lines'].sudo().search([('activity_id', '=', product_id), ('uuid', '=', rec['type_details']['data']['uuid']), '|', ('active', '=', False), ('active', '=', True)])
                 cancellationPolicies = ''
                 if rec['type_details']['data']['cancellationPolicies']:
                     for cancel in rec['type_details']['data']['cancellationPolicies']:
@@ -624,7 +594,7 @@ class MasterActivity(models.Model):
                     activity_obj = self.env['tt.master.activity.lines'].sudo().create(vals)
                 self.env.cr.commit()
 
-                old_adult_sku = self.env['tt.master.activity.sku'].search([('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Adult'), '|', ('active', '=', False), ('active', '=', True)])
+                old_adult_sku = self.env['tt.master.activity.sku'].sudo().search([('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Adult'), '|', ('active', '=', False), ('active', '=', True)])
                 sku_vals = {
                     'activity_line_id': activity_obj.id,
                     'sku_id': 'Adult',
@@ -642,7 +612,7 @@ class MasterActivity(models.Model):
                     self.env['tt.master.activity.sku'].sudo().create(sku_vals)
                 self.env.cr.commit()
 
-                old_child_sku = self.env['tt.master.activity.sku'].search([('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Child'), '|', ('active', '=', False), ('active', '=', True)])
+                old_child_sku = self.env['tt.master.activity.sku'].sudo().search([('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Child'), '|', ('active', '=', False), ('active', '=', True)])
                 if rec['type_details']['data']['allowChildren']:
                     sku_vals = {
                         'activity_line_id': activity_obj.id,
@@ -666,7 +636,7 @@ class MasterActivity(models.Model):
                             'active': False
                         })
 
-                old_senior_sku = self.env['tt.master.activity.sku'].search([('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Senior'), '|', ('active', '=', False), ('active', '=', True)])
+                old_senior_sku = self.env['tt.master.activity.sku'].sudo().search([('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Senior'), '|', ('active', '=', False), ('active', '=', True)])
                 if rec['type_details']['data']['allowSeniors']:
                     sku_vals = {
                         'activity_line_id': activity_obj.id,
@@ -690,7 +660,7 @@ class MasterActivity(models.Model):
                             'active': False
                         })
 
-                old_infant_sku = self.env['tt.master.activity.sku'].search([('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Infant'), '|', ('active', '=', False), ('active', '=', True)])
+                old_infant_sku = self.env['tt.master.activity.sku'].sudo().search([('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Infant'), '|', ('active', '=', False), ('active', '=', True)])
                 if rec['type_details']['data']['allowInfant']:
                     sku_vals = {
                         'activity_line_id': activity_obj.id,
@@ -714,7 +684,7 @@ class MasterActivity(models.Model):
                             'active': False
                         })
 
-                old_timeslot = self.env['tt.activity.master.timeslot'].search([('product_type_id', '=', activity_obj.id)])
+                old_timeslot = self.env['tt.activity.master.timeslot'].sudo().search([('product_type_id', '=', activity_obj.id)])
                 for old_time in old_timeslot:
                     old_time.sudo().write({
                         'active': False
@@ -722,7 +692,7 @@ class MasterActivity(models.Model):
 
                 if rec['type_details']['data']['timeslots']:
                     for time in rec['type_details']['data']['timeslots']:
-                        old_timeslot = self.env['tt.activity.master.timeslot'].search([('product_type_id', '=', activity_obj.id), ('uuid', '=', time['uuid']), '|', ('active', '=', False), ('active', '=', True)])
+                        old_timeslot = self.env['tt.activity.master.timeslot'].sudo().search([('product_type_id', '=', activity_obj.id), ('uuid', '=', time['uuid']), '|', ('active', '=', False), ('active', '=', True)])
                         value = {
                             'product_type_id': activity_obj.id,
                             'uuid': time['uuid'],

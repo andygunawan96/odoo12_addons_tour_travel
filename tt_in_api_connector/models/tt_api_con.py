@@ -33,7 +33,7 @@ class TtApiCon(models.Model):
         pass
 
     #call to gateway as webservice not as xmlrpc
-    def _send_request(self,url,data,service_name):
+    def _send_request(self,url,data,service_name,is_json=True, timeout=30):
         try:
             authorization = tools.config.get('backend_authorization', '')
             credential = util.decode_authorization(authorization)
@@ -46,7 +46,7 @@ class TtApiCon(models.Model):
         try:
             signature = self._gateway_sign_in()
             print('send request')
-            res = util.send_request(url,data,self._get_header(service_name,signature),is_json=True)
+            res = util.send_request(url,data,self._get_header(service_name,signature),is_json=is_json, timeout=timeout)
             return res
         except Exception as e:
             _logger.error(traceback.format_exc())

@@ -6,7 +6,6 @@ from odoo.exceptions import UserError
 from ...tools import util,variables,ERR
 from ...tools.ERR import RequestException
 from ...tools.db_connector import GatewayConnector
-from .ApiConnector_Activity import ApiConnectorActivity
 
 try:
     from cStringIO import StringIO
@@ -53,7 +52,7 @@ class ActivityResendVoucher(models.TransientModel):
             'order_id': self.pnr,
             'user_email_address': self.user_email_add
         }
-        res = ApiConnectorActivity().resend_voucher(req, '')
+        res = self.env['tt.activity.api.con'].resend_voucher(req)
         if res['response'].get('success'):
             # self.env['msg.wizard'].raise_msg("The Voucher has been Resent Successfully!")
             context = self.env.context
@@ -159,7 +158,7 @@ class ReservationActivity(models.Model):
             'order_id': self.id,
             'pnr': self.pnr,
         }
-        ApiConnectorActivity().update_booking(req, '')
+        res = self.env['tt.activity.api.con'].update_booking(req)
 
     def action_waiting(self):
         self.write({
@@ -180,7 +179,7 @@ class ReservationActivity(models.Model):
         }
         if req['uuid'] or req['pnr']:
             if req['provider']:
-                res = ApiConnectorActivity().get_booking(req, cookie)
+                res = self.env['tt.activity.api.con'].get_booking(req)
                 if res.get('response'):
                     values = res['response']
                     print(values)
@@ -191,7 +190,7 @@ class ReservationActivity(models.Model):
                         'provider': self.provider_name,
                     }
 
-                    res2 = ApiConnectorActivity().get_pricing(search_request, cookie)
+                    res2 = self.env['tt.activity.api.con'].get_pricing(search_request)
                     if res2['error_code'] != 0:
                         error = {
                             'error_msg': res2['error_msg'],
@@ -863,7 +862,7 @@ class ReservationActivity(models.Model):
             'pnr': obj.pnr,
             'provider': obj.provider_name
         }
-        res2 = ApiConnectorActivity().get_vouchers_api(req, co_uid, '')
+        res2 = self.env['tt.activity.api.con'].get_vouchers(req)
 
         try:
             ids = []
@@ -923,7 +922,7 @@ class ReservationActivity(models.Model):
             'pnr': self.pnr,
             'provider': self.provider_name
         }
-        res2 = ApiConnectorActivity().get_vouchers(req, '')
+        res2 = self.env['tt.activity.api.con'].get_vouchers(req)
 
         for rec in res2['response']['ticket']:
             if res2['response']['provider'] == 'klook':
@@ -1228,7 +1227,7 @@ class ReservationActivity(models.Model):
                 }
                 if req['uuid'] or req['pnr']:
                     if req['provider']:
-                        res = ApiConnectorActivity().get_booking(req, cookie)
+                        res = self.env['tt.activity.api.con'].get_booking(req)
                         if res['response']:
                             values = res['response']
                             method_name = 'action_%s' % values['status']
