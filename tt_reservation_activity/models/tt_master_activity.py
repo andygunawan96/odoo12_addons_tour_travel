@@ -108,6 +108,8 @@ class MasterActivity(models.Model):
         self.provider_code = self.provider_id.code
 
     def reprice_currency(self, req, context):
+        _logger.info('REPRICE CURRENCY ACTIVITY')
+        _logger.info(json.dumps(req))
         provider = req['provider']
         from_currency = req['from_currency']
         base_amount = req['base_amount']
