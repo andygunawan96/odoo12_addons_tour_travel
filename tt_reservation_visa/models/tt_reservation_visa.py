@@ -354,10 +354,10 @@ class TtVisa(models.Model):
         "seq_id": "PQR.0429001"
     }
 
-    def get_booking_visa_api(self):  # , data
+    def get_booking_visa_api(self, data):  # , data
         res = {}
-        for rec in self.search([('name', '=', self.name)]):  # data['order_number']
-            res_dict = self.sudo().to_dict()
+        for rec in self.search([('name', '=', data['order_number'])]):
+            res_dict = rec.to_dict()
             print('Res Dict. : ' + str(res_dict))
             passenger = []
             # contact = []
