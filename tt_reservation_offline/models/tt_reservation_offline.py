@@ -836,7 +836,6 @@ class IssuedOffline(models.Model):
                 "class_of_service": "eco"
             }
         ],
-        "provider": "skytors_issued_offline",
         "sector_type": "domestic"
     }
 

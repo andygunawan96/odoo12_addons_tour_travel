@@ -508,6 +508,14 @@ class TtPassport(models.Model):
         }
         return self.env.ref('tt_reservation_passport.action_report_printout_passport_cust').report_action(self, data=data)
 
+    def action_proforma_invoice_passport(self):
+        self.ensure_one()
+        data = {
+            'ids': self.ids,
+            'model': self._name,
+        }
+        return self.env.ref('tt_reservation_passport.action_report_printout_proforma_invoice_passport').report_action(self,data=data)
+
     ######################################################################################################
     # CREATE
     ######################################################################################################

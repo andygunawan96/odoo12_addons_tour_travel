@@ -24,5 +24,16 @@
             menu = "False"
         />
 
+        <report
+            string="Proforma Invoice Visa"
+            id="action_report_printout_proforma_invoice_visa"
+            model="tt.reservation_visa"
+            report_type="qweb-html"
+            name="tt_reservation_visa.printout_proforma_invoice_visa"
+            file="tt_reservation_visa.printout_proforma_invoice_visa"
+            paperformat="tt_report_common.paperformat_A4"
+            menu = "False"
+        />
+
     </data>
 </odoo>
