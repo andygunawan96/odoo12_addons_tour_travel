@@ -94,7 +94,7 @@ class PaymentAcquirer(models.Model):
             if util.get_without_empty(req,'order_number'):
                 amount = self.env['tt.reservation.%s' % req['provider_type']].search([('name','=',req['order_number'])],limit=1).total
             else:
-                amount = req.get('total_cost',0)
+                amount = req.get('amount',0)
 
             dom = [('website_published', '=', True), ('company_id', '=', self.env.user.company_id.id)]
             # Ambil agent_id Parent nya (Citranya corpor tsb)
@@ -103,7 +103,6 @@ class PaymentAcquirer(models.Model):
             if req['transaction_type'] == 'top_up':
                 # Kalau top up Ambil agent_id HO
                 dom.append(('agent_id', '=', self.env['tt.agent'].sudo().search([('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id )], limit=1).id))
-                amount = self.env['tt.top.up'].sudo().search([('name','=',req['top_up_name'])]).total
             elif req['transaction_type'] == 'billing':
                 dom.append(('agent_id', '=', context['co_agent_id']))
 

@@ -6,7 +6,7 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                        <button string="Test Message" name="set_history_message" type="object"
+                        <button string="Add Identity" name="add_identity_button" type="object"
                                 groups="base.group_user"/>
                 </header>
                 <sheet>
@@ -31,7 +31,6 @@
                         </div>
                         <group>
                             <field name="agent_id" readonly="False"/>
-                            <field name="customer_parent_ids"/>
                             <field name="name" readonly="True"/>
                             <field name="nickname"/>
                             <field name="email"/>
@@ -42,11 +41,20 @@
                             <field name="birth_date"/>
                             <field name="passport_number"/>
                             <field name="passport_expdate"/>
-                            <field name="user_id"/>
-                            <field name="customer_bank_detail_ids"/>
                         </group>
 
                         <notebook colspan="2">
+                            <page string="Identity">
+                                <field name="identity_ids">
+                                    <tree editable="bottom">
+                                        <field name="name"/>
+                                        <field name="number"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Customer Parent">
+                                <field name="customer_parent_ids"/>
+                            </page>
                             <page string="Addresses">
                                 <field name="address_ids"/>
                             </page>
@@ -55,6 +63,12 @@
                             </page>
                             <page string="Social Media">
                                 <field name="social_media_ids"/>
+                            </page>
+                            <page string="Bank Detail">
+                                <field name="customer_bank_detail_ids"/>
+                            </page>
+                            <page string="Users">
+                                <field name="user_ids"/>
                             </page>
                         </notebook>
                     </div></div>
