@@ -103,6 +103,11 @@ def send_request(url, data=None, headers=None, method=None, cookie=None, is_json
         elif method == 'PUT' and type(data) == dict:
             response = ses.put(url=url, headers=headers, json=data, timeout=timeout)
         else:
+            _logger.info("#####################")
+            _logger.info(json.dumps(headers))
+            _logger.info(json.dumps(data))
+            _logger.info(url)
+            _logger.info("#####################")
             response = ses.post(url=url, headers=headers, data=data, timeout=timeout)
         response.raise_for_status()
         values = {'error_code': 0}
@@ -111,8 +116,6 @@ def send_request(url, data=None, headers=None, method=None, cookie=None, is_json
             'error_code': 500,
             'error_msg': str(e),
         }
-
-    _logger.info(json.dumps(response))
 
     content = response.json() if is_json else getattr(response, 'text', '')
 
