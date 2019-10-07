@@ -548,6 +548,8 @@ class ReservationActivity(models.Model):
     def update_pnr_data(self, book_id, pnr):
         provider_objs = self.env['tt.provider.activity'].search([('booking_id', '=', book_id)])
         for rec in provider_objs:
+            _logger.info("FOR REC IN PROVIDER OBJS")
+            _logger.info(str(pnr)+" "+str(book_id))
             rec.sudo().write({
                 'pnr': pnr
             })
@@ -559,12 +561,17 @@ class ReservationActivity(models.Model):
 
         ledger_objs = self.env['tt.ledger'].search([('res_id', '=', book_id)])
         for rec in ledger_objs:
+            _logger.info("FOR REC IN LEDGER OBJS")
+            _logger.info(str(pnr)+" "+str(book_id))
+            _logger.info(rec.name)
             rec.sudo().write({
                 'pnr': pnr
             })
 
     def update_booking_by_api(self, req, api_context):
         try:
+            _logger.info('Update Booking Activity')
+            _logger.info(json.dumps(req))
             booking_id = req['order_id'],
             prices = req['prices']
             book_info = req['book_info']
