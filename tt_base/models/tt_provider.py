@@ -124,11 +124,11 @@ class ResCity(models.Model):
         b = self.env['res.country'].get_provider_code(country_id, provider_id)
         return {'city_id': a, 'country_id': b}
 
-    def update_provider_data(self, city_name, provider_uid, provider_id, state_id=False):
-        city_id = self.search([('name', '=', city_name)], limit=1)
+    def update_provider_data(self, city_name, provider_uid, provider_id, state_id=False, country_id=False):
+        city_id = self.search([('name', '=ilike', city_name)], limit=1)
         if not city_id:
-            city_id = self.create({'name': city_name, 'state_id': state_id,})
-        provider_code_id = self.env['tt.provider.code'].search([('city_id', '=', city_id.id), ('provider_id', '=', provider_id)], limit= 1)
+            city_id = self.create({'name': city_name, 'state_id': state_id, 'country_id': country_id})
+        provider_code_id = self.env['tt.provider.code'].search([('city_id', '=', city_id.id), ('provider_id', '=', provider_id)], limit=1)
         if provider_code_id:
             provider_code_id.code = provider_uid
         else:
@@ -150,12 +150,12 @@ class ResCountry(models.Model):
         return a.code
 
     def update_provider_data(self, country_name, provider_uid, provider_id, continent_id=False):
-        country_id = self.search([('name', '=', country_name)], limit=1)
+        country_id = self.search([('name', '=ilike', country_name)], limit=1)
         if not country_id:
             # TODO: Persiapan Continent disini
             country_id = self.create({'name': country_name,})
-        if country_id.id == 101:
-            pass
+        # if country_id.id == 101:
+        #     pass
         provider_code_id = self.env['tt.provider.code'].search([('country_id', '=', country_id.id), ('provider_id', '=', provider_id)], limit= 1)
         if provider_code_id:
             provider_code_id.code = provider_uid

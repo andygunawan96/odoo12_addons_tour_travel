@@ -59,7 +59,7 @@ tt_activity_booking_option_line_for_tour_travel_manager,tt.activity.booking.opti
 ,,,,,,,
 tt_master_activity_lines_for_tour_travel_operator,tt.master.activity.lines.for.tour.travel.operator,model_tt_master_activity_lines,tt_base.group_tt_tour_travel_operator,1,0,0,0
 tt_master_activity_lines_for_tour_travel_supervisor,tt.master.activity.lines.for.tour.travel.supervisor,model_tt_master_activity_lines,tt_base.group_tt_tour_travel_supervisor,1,0,0,0
-tt_master_activity_lines_for_tour_travel_manager,tt.master.activity.lines.for.tour.travel.manager,model_tt_master_activity_lines,tt_base.group_tt_tour_travel_manager,1,0,0,0
+tt_master_activity_lines_for_tour_travel_manager,tt.master.activity.lines.for.tour.travel.manager,model_tt_master_activity_lines,tt_base.group_tt_tour_travel_manager,1,1,1,1
 ,,,,,,,
 tt_master_activity_sku_for_tour_travel_operator,tt.master.activity.sku.for.tour.travel.operator,model_tt_master_activity_sku,tt_base.group_tt_tour_travel_operator,1,0,0,0
 tt_master_activity_sku_for_tour_travel_supervisor,tt.master.activity.sku.for.tour.travel.supervisor,model_tt_master_activity_sku,tt_base.group_tt_tour_travel_supervisor,1,0,0,0
