@@ -1477,7 +1477,7 @@ class MasterActivity(models.Model):
 
             return ERR.get_no_error(result_list)
         except Exception as e:
-            _logger.info('Activity Search Error')
+            _logger.error(traceback.format_exc())
             return ERR.get_error(500)
 
     def get_details_by_api(self, req, context):
