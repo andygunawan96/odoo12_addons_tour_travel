@@ -1,7 +1,7 @@
 from odoo import api, fields, models, _
 from ...tools import variables
 from datetime import datetime
-import  json
+import json
 
 
 class TtProviderAirline(models.Model):
