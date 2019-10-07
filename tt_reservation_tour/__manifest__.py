@@ -23,16 +23,17 @@
 
     # always loaded
     'data': [
+        'data/ir_sequence_data.xml',
+        'data/tt_provider_type_data.xml',
+        'data/tt_provider_tour.xml',
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
         'views/menu_item_base.xml',
         'views/tt_reservation_tour_views.xml',
-        # 'views/tour_booking_views_concept.xml',
         'views/tt_master_tour_quotation_views.xml',
         'views/tt_master_tour_views.xml',
-        'data/ir_sequence_data.xml',
-        'data/tt_provider_type_data.xml',
-        'data/tt_provider_tour.xml',
+        'views/tt_provider_views.xml',
+        'views/tt_service_charge_views.xml'
     ],
     # only loaded in demonstration mode
     'demo': [],

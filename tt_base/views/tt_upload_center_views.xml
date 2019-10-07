@@ -6,18 +6,28 @@
         <field name="model">tt.upload.center</field>
         <field name="arch" type="xml">
             <form string="Upload Center">
-                <group>
+                <group name="info">
                     <field name="name"/>
                     <field name="filename"/>
                     <field name="file_reference"/>
                     <field name="path"/>
-                    <field name="url"/>
+                    <field name="url" widget="url"/>
                 </group>
             </form>
         </field>
     </record>
 
-        <record id="tt_upload_center_tree_view" model="ir.ui.view">
+    <record id="tt_upload_center_create_form_view" model="ir.ui.view">
+        <field name="name">tt.upload.center.create.form.view</field>
+        <field name="model">tt.upload.center</field>
+        <field name="arch" type="xml">
+            <form>
+                <button name="%(tt_base.tt_upload_center_wizard_action_view)d" type="action" string="Upload"/>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_upload_center_tree_view" model="ir.ui.view">
         <field name="name">tt.upload.center.tree.view</field>
         <field name="model">tt.upload.center</field>
         <field name="arch" type="xml">
@@ -34,7 +44,26 @@
         <field name="name">Upload Center</field>
         <field name="res_model">tt.upload.center</field>
         <field name="view_type">form</field>
+        <field name="priority">16</field>
         <field name="view_mode">tree,form</field>
+        <field name="context">
+            {
+            'form_view_ref':'tt_base.tt_upload_center_form_view',
+            }
+        </field>
+    </record>
+
+    <record id="tt_upload_center_with_upload_btn_action_view" model="ir.actions.act_window">
+        <field name="name">Upload Center</field>
+        <field name="res_model">tt.upload.center</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="priority">10</field>
+        <field name="context">
+            {
+                'form_view_ref':'tt_base.tt_upload_center_inh_form_view',
+            }
+        </field>
     </record>
 
     <menuitem id="sub_menu_tour_travel_upload_center"
