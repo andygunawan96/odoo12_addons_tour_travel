@@ -134,7 +134,7 @@ class TtCustomer(models.Model):
     def add_identity_button(self):
         self.add_or_update_identity('ktp',time.time())
 
-    def add_or_update_identity(self,name,number):
+    def add_or_update_identity(self,name,number,issued_code):
         not_exist =True
 
         for identity in self.identity_ids:
@@ -147,11 +147,13 @@ class TtCustomer(models.Model):
             self.env['tt.customer.identity'].create({
                 'name': name,
                 'number': number,
+                'country_of_issued_id': self.env['res.country'].search([('code','=',issued_code)],limit=1).id,
                 'customer_id': self.id
             })
         else:
             exixting_identity.update({
-                'number': number
+                'number': number,
+                'country_of_issued_id': self.env['res.country'].search([('code','=',issued_code)],limit=1).id
             })
 
 
@@ -164,8 +166,8 @@ class TtCustomerIdentityNumber(models.Model):
                              ('passport','Passport'),
                              ('sim','SIM'),
                              ('other','Other')],'Type',required=True)
-
     number = fields.Char('Number',required=True)
+    country_of_issued_id = fields.Many2one('res.country','Issued  Country')
 
     customer_id = fields.Many2one('tt.customer','Owner',required=True)
 

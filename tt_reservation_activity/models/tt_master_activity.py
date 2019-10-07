@@ -108,6 +108,8 @@ class MasterActivity(models.Model):
         self.provider_code = self.provider_id.code
 
     def reprice_currency(self, req, context):
+        _logger.info('REPRICE CURRENCY ACTIVITY')
+        _logger.info(json.dumps(req))
         provider = req['provider']
         from_currency = req['from_currency']
         base_amount = req['base_amount']
@@ -1481,7 +1483,7 @@ class MasterActivity(models.Model):
 
             return ERR.get_no_error(result_list)
         except Exception as e:
-            _logger.info('Activity Search Error')
+            _logger.error(traceback.format_exc())
             return ERR.get_error(500)
 
     def get_details_by_api(self, req, context):

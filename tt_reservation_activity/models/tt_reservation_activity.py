@@ -557,7 +557,7 @@ class ReservationActivity(models.Model):
                     'description': pnr
                 })
 
-        ledger_objs = self.env['tt.ledger'].search([('res_id', '=', book_id)])
+        ledger_objs = self.env['tt.ledger'].search([('res_id', '=', book_id),('res_model','=',self._name)])
         for rec in ledger_objs:
             rec.sudo().write({
                 'pnr': pnr
