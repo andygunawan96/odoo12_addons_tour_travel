@@ -112,9 +112,9 @@ class MasterActivity(models.Model):
         from_currency = req['from_currency']
         base_amount = req['base_amount']
         to_currency = req.get('to_currency') and req['to_currency'] or 'IDR'
+        from_currency_id = self.env['res.currency'].sudo().search([('name', '=', from_currency)], limit=1)
+        from_currency_id = from_currency_id and from_currency_id[0] or False
         try:
-            from_currency_id = self.env['res.currency'].sudo().search([('name', '=', from_currency)], limit=1)
-            from_currency_id = from_currency_id and from_currency_id[0] or False
             provider_id = self.env['tt.provider'].sudo().search([('code', '=', provider)], limit=1)
             provider_id = provider_id[0]
             multiplier = self.env['tt.provider.rate'].sudo().search([('provider_id', '=', provider_id.id), ('date', '<=', datetime.now()), ('currency_id', '=', from_currency_id.id)], limit=1)
