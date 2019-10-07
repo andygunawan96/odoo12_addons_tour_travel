@@ -9,7 +9,7 @@ class ReservationOffline(models.Model):
                                      'Invoice Status', help="Agent Invoice status", default='wait',
                                      readonly=True)  # , compute='set_agent_invoice_state'
 
-    invoice_line_ids = fields.One2many('tt.agent.invoice.line', 'res_id_resv', 'Invoice')
+    invoice_line_ids = fields.One2many('tt.agent.invoice.line', 'res_id_resv', 'Invoice', domain=[('res_model_resv','=', 'tt.reservation.offline')])
 
     @api.depends('invoice_line_ids')
     def set_agent_invoice_state(self):
@@ -58,7 +58,7 @@ class ReservationOffline(models.Model):
                 inv_line_obj.write({
                     'invoice_line_detail_ids': [(0, 0, {
                         'desc': desc_text,
-                        'price_unit': self.total_sale_price / qty,
+                        'price_unit': self.total / qty,
                         'quantity': 1,
                         'invoice_line_id': invoice_line_id,
                     })]
@@ -74,7 +74,7 @@ class ReservationOffline(models.Model):
                 inv_line_obj.write({
                     'invoice_line_detail_ids': [(0, 0, {
                         'desc': desc_text,
-                        'price_unit': self.total_sale_price / len(self.passenger_ids),
+                        'price_unit': self.total / len(self.passenger_ids),
                         'quantity': 1,
                         'invoice_line_id': invoice_line_id,
                     })]

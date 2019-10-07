@@ -27,6 +27,8 @@ access_tt_customer_for_tour_travel_operator,tt_customer.for.tour.travel.operator
 access_tt_customer_for_tour_travel_supervisor,tt_customer.for.tour.travel.supervisor,model_tt_customer,tt_base.group_tt_tour_travel_supervisor,1,1,1,0
 access_tt_customer_for_tour_travel_manager,tt_customer.for.tour.travel.manager,model_tt_customer,tt_base.group_tt_tour_travel_manager,1,1,1,0
 
+access_tt_customer_identity_for_public,tt.customer.identity.for.public,model_tt_customer_identity,,1,1,1,1
+
 access_res_employee_for_public,res_employee_for_public,model_res_employee,,1,0,0,0
 access_res_employee_for_agent_management_operator,res_employee_for_agent_management_operator,model_res_employee,group_tt_agent_management_operator,1,1,1,0
 access_res_employee_for_tour_travel_operator,res_employee_for_tour_travel_operator,model_res_employee,tt_base.group_tt_tour_travel_operator,1,0,0,0
@@ -211,3 +213,5 @@ access_tt_destination_alias_for_public,tt.destination.alias.for.public,model_tt_
 access_tt_destination_alias_for_tour_travel_operator,tt.destination.alias.for.tour_travel_operator,model_tt_destination_alias,group_tt_tour_travel_operator,1,1,1,0
 
 access_tt_frontend_security_for_public,tt.frontend.security.for.public,model_tt_frontend_security,,1,1,1,1
+
+access_tt_upload_center_for_tour_travel_operator,tt.upload.center.for.tour.travel.operator,model_tt_upload_center,,1,1,1,1

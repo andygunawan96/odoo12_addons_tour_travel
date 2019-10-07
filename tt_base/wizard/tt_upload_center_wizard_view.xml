@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="tt_upload_center_wizard_form_view" model="ir.ui.view">
+        <field name="name">tt.upload.center.wizard.form.view</field>
+        <field name="model">tt.upload.center.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Upload Center Wizard">
+                <group>
+                    <field name="filename"/>
+                    <field name="file_reference"/>
+                    <field name="file" filename="filename"/>
+                </group>
+                <footer>
+                    <button name="upload_from_button" string="Upload" type="object" default_focus="1" class="oe_highlight"/>
+                    or
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="tt_upload_center_wizard_action_view" model="ir.actions.act_window">
+        <field name="name">tt.upload.center.wizard.action.view</field>
+        <field name="res_model">tt.upload.center.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <record id="tt_upload_center_wizard_action_view_temp" model="ir.actions.act_window">
+        <field name="name">tt.upload.center.wizard.action.view.temp</field>
+        <field name="res_model">tt.upload.center.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+    </record>
+
+    <menuitem id="sub_menu_tour_travel_upload_center_wizard"
+              name="Upload Wizard"
+              groups="tt_base.group_tt_tour_travel_operator"
+              parent="tt_base.top_tour_travel_upload"
+              sequence = "50"
+              action="tt_upload_center_wizard_action_view"
+              />
+    <menuitem id="sub_menu_tour_travel_upload_center_wizard_temp"
+              name="Upload Wizard Temp"
+              groups="tt_base.group_tt_tour_travel_operator"
+              parent="tt_base.top_tour_travel_upload"
+              sequence = "50"
+              action="tt_upload_center_wizard_action_view_temp"
+              />
+</odoo>

@@ -322,7 +322,7 @@
                                                             </group>
                                                             <group>
                                                                 <field name="timeslot"/>
-                                                                <field name="image"/>
+                                                                <field name="image_id"/>
                                                             </group>
                                                         </group>
 
@@ -338,27 +338,7 @@
                             <field name="requirements"/>
                         </page>
                         <page string="Images">
-                            <field name="images">
-                                <tree>
-                                    <field name="url"/>  <!--widget="many2many_binary"-->
-                                    <field name="description"/>  <!--widget="many2many_binary"-->
-                                </tree>
-                                <form>
-                                    <sheet>
-                                        <group>
-                                            <group>
-                                                <field name="url"/>
-                                                <field name="description"/>
-                                                <field name="pricelist_id"/>
-                                            </group>
-                                            <group>
-
-                                            </group>
-                                        </group>
-
-                                    </sheet>
-                                </form>
-                            </field>
+                            <field name="image_ids"/>
                         </page>
                     </notebook>
 
@@ -366,16 +346,14 @@
                     <separator string="Tour Participants"/>  <!--groups="tt_base.group_tt_tour_travel_operator"-->
                     <field name="passengers_ids">  <!--groups="tt_base.group_tt_tour_travel_operator"-->
                         <tree create="false">  <!--Diisi dari frontend-->
-                            <field name="passenger_id"/>
-                            <field name="pax_type"/>
-                            <field name="pax_mobile"/>
-                            <field name="room_number"/>
-                            <field name="extra_bed_description"/>
-                            <field name="room_id"/>
-                            <field name="bed_type"/>
-                            <field name="description"/>
-                            <field name="tour_id"/>
-                            <field name="state"/>
+                            <field name="title"/>
+                            <field name="first_name"/>
+                            <field name="last_name"/>
+                            <field name="gender"/>
+                            <field name="birth_date"/>
+                            <field name="nationality_id"/>
+                            <field name="tour_room_id"/>
+                            <field name="booking_id"/>
                         </tree>
                     </field>
 

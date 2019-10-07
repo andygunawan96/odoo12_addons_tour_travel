@@ -541,12 +541,12 @@ class AgentRegistration(models.Model):
     }
 
     def create_agent_registration_api(self, data, context, kwargs):  #
-        company = copy.deepcopy(data['company'])  #
-        pic = copy.deepcopy(data['pic'])  #
-        address = copy.deepcopy(data['address'])  #
-        other = copy.deepcopy(data['other'])  #
-        context = copy.deepcopy(context)  #
-        regis_doc = copy.deepcopy(data['regis_doc'])  #
+        company = copy.deepcopy(data['company'])  # self.param_company
+        pic = copy.deepcopy(data['pic'])  # self.param_pic
+        address = copy.deepcopy(data['address'])  # self.param_address
+        other = copy.deepcopy(data['other'])  # self.param_other
+        context = copy.deepcopy(context)  # self.param_context
+        regis_doc = copy.deepcopy(data['regis_doc'])  # self.param_regis_doc
         registration_list = self.search([('name', '=', company['name'])], order='registration_date desc', limit=1)  # data['company']
         check = 0
         response = {}

@@ -1,5 +1,4 @@
 from odoo import api, fields, models, _
-from ...tools import test_to_dict
 from ...tools.api import Response
 import logging, traceback
 
@@ -16,7 +15,7 @@ class DestinationAlias(models.Model):
     country_id = fields.Many2one('res.country', 'Country')
 
 
-class Country(models.Model, test_to_dict.ToDict):
+class Country(models.Model):
     _inherit = 'res.country'
     _description = 'Tour & Travel - Res Country'
 
@@ -59,7 +58,7 @@ class Country(models.Model, test_to_dict.ToDict):
         return res
 
 
-class CountryState(models.Model,test_to_dict.ToDict):
+class CountryState(models.Model):
     _inherit = "res.country.state"
     _description = 'Tour & Travel - Res Country State'
 
@@ -70,7 +69,7 @@ class CountryState(models.Model,test_to_dict.ToDict):
     address_detail_ids = fields.One2many('address.detail', 'state_id', string='Addresses')
 
 
-class CountryCity(models.Model,test_to_dict.ToDict):
+class CountryCity(models.Model):
     _inherit = 'res.city'
     _description = 'Tour & Travel - Res City'
 

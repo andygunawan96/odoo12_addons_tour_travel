@@ -5,9 +5,8 @@ from .tt_reservation_train import BOOKING_STATE
 import json
 from .tb_journey_train import JOURNEY_TYPE
 from datetime import datetime
-from ...tools import test_to_dict
 
-class TransportSegment(models.Model,test_to_dict.ToDict):
+class TransportSegment(models.Model):
     _name = 'tt.tb.segment.train'
     _order = 'sequence'
 

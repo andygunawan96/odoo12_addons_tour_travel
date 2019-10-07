@@ -1,6 +1,7 @@
 from odoo import api, fields, models, _
 from ...tools import variables
 from datetime import datetime
+import  json
 
 
 class TtProviderAirline(models.Model):
@@ -106,6 +107,12 @@ class TtProviderAirline(models.Model):
         ticket_list = []
         ticket_found = []
         ticket_not_found = []
+
+        #################
+        for passenger in self.booking_id.passenger_ids:
+            passenger.is_ticketed = False
+        #################
+
         for psg in passengers:
             psg_obj = self.booking_id.passenger_ids.filtered(lambda x: x.name.replace(' ', '').lower() ==
                                                                 ('%s%s' % (psg.get('first_name', ''),
@@ -118,11 +125,14 @@ class TtProviderAirline(models.Model):
                                                                                               ''))).lower().replace(' ',''))
 
             if psg_obj:
+                print(psg_obj.ids)
                 if len(psg_obj.ids) > 1:
                     for psg_o in psg_obj:
                         if not psg_o.is_ticketed:
                             psg_obj = psg_o
                             break
+
+                print(str(psg_obj))
                 ticket_list.append((0, 0, {
                     'pax_type': psg.get('pax_type'),
                     'ticket_number': psg.get('ticket_number'),

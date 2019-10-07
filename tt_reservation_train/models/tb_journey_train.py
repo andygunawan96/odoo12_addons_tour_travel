@@ -1,10 +1,9 @@
 from odoo import api,models,fields
 from .tt_reservation_train import BOOKING_STATE
-from ...tools import test_to_dict
 
 JOURNEY_TYPE = [('DP', 'Depart'), ('RT', 'Return'), ('MC', 'Multi City')]
 
-class TransportJourney(models.Model,test_to_dict.ToDict):
+class TransportJourney(models.Model):
     _name = 'tt.tb.journey.train'
     _rec_name = 'pnr'
     # _order = 'sequence'
