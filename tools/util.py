@@ -3,6 +3,7 @@ from .api import Response
 from datetime import datetime, timedelta
 import logging
 import copy
+import json
 import requests
 
 _logger = logging.getLogger(__name__)
@@ -110,6 +111,8 @@ def send_request(url, data=None, headers=None, method=None, cookie=None, is_json
             'error_code': 500,
             'error_msg': str(e),
         }
+
+    _logger.info(json.dumps(response))
 
     content = response.json() if is_json else getattr(response, 'text', '')
 
