@@ -7,6 +7,7 @@ import base64
 import pickle
 from datetime import datetime
 import csv
+import os
 
 _logger = logging.getLogger(__name__)
 
@@ -192,6 +193,9 @@ class MasterActivity(models.Model):
             temp = res['response']
 
         if temp.get('product_detail'):
+            folder_path = '/var/log/tour_travel/bemyguest_master_data'
+            if not os.path.exists(folder_path):
+                os.mkdir(folder_path)
             file = open('/var/log/tour_travel/bemyguest_master_data/bemyguest_master_data' + str(page) + '.json', 'w')
             file.write(json.dumps(temp))
             file.close()
