@@ -14,10 +14,8 @@ class ApiConnectorHotels:
         authorization = tools.config.get('gateway_authorization', '')
         credential = util.decode_authorization(authorization)
         self.credetial = {
-            # "user": credential.get('uid', -1),
-            # "user": credential.get('username', -1),
             "user": 'mob.it@rodextravel.tours',
-            "password": credential.get('password', ''),
+            "password": '123',
             "api_key": '208413e7-3dee-4bed-9e16-5cfb9ce555a5',
             "co_uid": credential.get('uid', -1),
             "url_api": tools.config.get('gateway_url', ''),
@@ -30,12 +28,10 @@ class ApiConnectorHotels:
         req_post.pop('url_api')
         res = self.send_request('signin', req_post)
         try:
-            if res['http_code'] == 0:
-                cookie = res['cookie']
+            if res['http_code'] == 200:
                 res = json.loads(res['response'])['result']
                 if not res['error_code']:
-                    res['cookie'] = cookie
-                    self.cookie = cookie
+                    self.cookie = res['response']['signature']
                 else:
                     res['error_code'] = res['error_code']
             else:
@@ -76,10 +72,9 @@ class ApiConnectorHotels:
     def check_booking_status_by_api(self, req_post, api_context=None):
         self.credetial['co_uid'] = request.env.user.id
         self.signin()
-        credential = self.credetial.copy()
         # Fixme: Auto sign if session expire
         res = self.send_request('check_booking_status', req_post, timeout=60*5)
-        if res['http_code'] != 0:
+        if res['http_code'] != 200:
             raise Exception('%s %s' % (res['http_code'], res['error_msg']))
         res = json.loads(res['response'])['result']
         if res['error_code'] != 0:
@@ -91,7 +86,7 @@ class ApiConnectorHotels:
         self.signin()
         # Fixme: Auto sign if session expire
         res = self.send_request('check_booking_policy', req_post, timeout=60*5)
-        if res['http_code'] != 0:
+        if res['http_code'] != 200:
             raise Exception('%s %s' % (res['http_code'], res['error_msg']))
         res = json.loads(res['response'])['result']
         if res['error_code'] != 0:
@@ -103,7 +98,7 @@ class ApiConnectorHotels:
         self.signin()
         # Fixme: Auto sign if session expire
         res = self.send_request('cancel_booking', req_post, timeout=60*5)
-        if res['http_code'] != 0:
+        if res['http_code'] != 200:
             raise Exception('%s %s' % (res['http_code'], res['error_msg']))
         res = json.loads(res['response'])['result']
         if res['error_code'] != 0:

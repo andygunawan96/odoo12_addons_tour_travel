@@ -163,7 +163,7 @@ class TransportBookingProvider(models.Model):
     def action_create_ledger(self):
         if not self.is_ledger_created:
             self.write({'is_ledger_created': True})
-            self.env['tt.ledger'].action_create_ledger(self,'reservation_train_id')
+            self.env['tt.ledger'].action_create_ledger(self)
             self.env.cr.commit()
 
     def action_create_ledger_api(self, provider_id, res_model):

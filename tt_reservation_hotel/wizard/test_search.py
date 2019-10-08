@@ -111,6 +111,8 @@ class TestSearch(models.Model):
             return 'A7'
         elif provider == 'dida':
             return 'A8'
+        elif provider == 'tbo':
+            return 'A9'
         else:
             return provider
 
@@ -131,6 +133,8 @@ class TestSearch(models.Model):
             return 'hotelbeds'
         elif provider == 'A8':
             return 'dida'
+        elif provider == 'A9':
+            return 'tbo'
         else:
             return provider
 
@@ -538,6 +542,7 @@ class TestSearch(models.Model):
         context['agent_id'] = self.sudo().env['res.users'].browse(context['co_uid']).agent_id.id
 
         booker_obj = self.env['tt.reservation.hotel'].create_booker_api(booker_detail, context)
+        booker_detail = isinstance(booker_detail, list) and booker_detail[0] or booker_detail
         booker_detail['contact_id'] = booker_obj.id
         cust_partner_obj = booker_obj
         # try:
@@ -553,7 +558,7 @@ class TestSearch(models.Model):
             'sid_booked': context['sid'],
             'sid_issued': context['sid']
         })
-        passenger_objs = self.env['tt.reservation.hotel'].create_customer_api(cust_names, context, booker_obj, cust_partner_obj)  # create passenger
+        passenger_objs = self.env['tt.reservation.hotel'].create_customer_api(cust_names, context, booker_obj.id, cust_partner_obj.id)  # create passenger
 
         resv_id = self.env['tt.reservation.hotel'].sudo().create(vals)
         resv_id.write({'passenger_ids': [(6, 0, [rec[0].id for rec in passenger_objs])]})
