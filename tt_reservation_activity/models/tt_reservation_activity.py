@@ -170,310 +170,6 @@ class ReservationActivity(models.Model):
     def action_calc_prices(self):
         self._calc_grand_total()
 
-    def force_update_booking(self):
-        cookie = ''
-        req = {
-            'provider': self.provider_name,
-            'uuid': self.booking_uuid,
-            'pnr': self.pnr
-        }
-        if req['uuid'] or req['pnr']:
-            if req['provider']:
-                res = self.env['tt.activity.api.con'].get_booking(req)
-                if res.get('response'):
-                    values = res['response']
-                    print(values)
-                    search_request = {
-                        'product_type_uuid': values['productTypeUuid'],
-                        'date_start': datetime.strptime(self.visit_date[:10], "%Y-%m-%d").strftime('%Y-%m-%d'),
-                        'date_end': (datetime.strptime(self.visit_date[:10], "%Y-%m-%d") + relativedelta(days=365)).strftime('%Y-%m-%d'),
-                        'provider': self.provider_name,
-                    }
-
-                    res2 = self.env['tt.activity.api.con'].get_pricing(search_request)
-                    if res2['error_code'] != 0:
-                        error = {
-                            'error_msg': res2['error_msg'],
-                            'error_code': res2['error_code'],
-                        }
-                    else:
-                        error = {
-                            'error_msg': '',
-                            'error_code': 0,
-                        }
-                        prices = res2['response']
-
-                    temp_co_uid = self.booked_uid.id
-
-                    sale_service_charge_summary = values['amountBreakdown']
-                    service_chg_obj = self.env['tt.service.charge']
-                    pax_lib = {
-                        'senior': 'YCD',
-                        'adult': 'ADT',
-                        'child': 'CHD',
-                        'infant': 'INF',
-                    }
-
-                    from_currency = self.env['res.currency'].search([('name', '=', values['currencyCode'])])
-                    agent_type = self.env['res.users'].browse(temp_co_uid).agent_id.agent_type_id.id
-                    if agent_type == self.env.ref('tt_base_rodex.agent_type_ho').id:
-                        agent_type = self.agent_type_id.id
-
-                    if agent_type in [self.env.ref('tt_base_rodex.agent_type_citra').id,
-                                      self.env.ref('tt_base_rodex.agent_type_btbo').id]:
-                        multiplier = 1
-                        parent_multiplier = 0
-                        ho_multiplier = 0
-                    elif agent_type in [self.env.ref('tt_base_rodex.agent_type_japro').id,
-                                        self.env.ref('tt_base_rodex.agent_type_btbr').id]:
-                        multiplier = 0.8
-                        parent_multiplier = 0.17
-                        ho_multiplier = 0.03
-                    elif agent_type in [self.env.ref('tt_base_rodex.agent_type_fipro').id]:
-                        multiplier = 0.6
-                        parent_multiplier = 0.35
-                        ho_multiplier = 0.05
-                    else:
-                        multiplier = 0
-                        parent_multiplier = 1
-                        ho_multiplier = 0
-
-                    commission_ho = 0
-                    total_commission_price = 0
-                    total_parent_commission_price = 0
-                    total_ho_commission_price = 0
-
-                    for service_charge in self.sale_service_charge_ids:
-                        service_charge.sudo().unlink()
-
-                    for val in sale_service_charge_summary:
-                        pax_type_string = ''
-                        if val.get('name'):
-                            if val['name'] == 'senior':
-                                pax_type_string = 'seniors'
-                            elif val['name'] == 'adult':
-                                pax_type_string = 'adults'
-                            elif val['name'] == 'child':
-                                pax_type_string = 'children'
-                            else:
-                                pax_type_string = 'adults'
-
-                        if val.get('price'):
-                            to_currency = self.env['res.currency']._compute(from_currency,
-                                                                            self.env.user.company_id.currency_id,
-                                                                            float(val['price']))
-
-                            # break down coding ini kalo mau min price berdasarkan masing2 max type
-                            pax = values['adults'] + values['children'] + values['seniors']
-                            for price in prices:
-                                for price_temp in price:
-                                    if values.get('event_id') and price_temp.get('id'):
-                                        if price_temp['id'] == values['event_id']:
-                                            min_currency = price_temp['prices'][pax_type_string][str(pax)]
-                                    else:
-                                        if price_temp['date'] == values['arrivalDate']:
-                                            min_currency = price_temp['prices'][pax_type_string][str(pax)]
-                            ############################################################
-
-                            if to_currency:
-                                final_price = to_currency + 10000
-                                commission_ho += 10000 * val['quantity']
-                            else:
-                                final_price = 0
-
-                            sale_price = int(final_price * 1.03)
-                            min_currency2 = self.env['res.currency']._compute(from_currency,
-                                                                              self.env.user.company_id.currency_id,
-                                                                              float(min_currency))
-
-                            if sale_price < min_currency2:
-                                sale_price = int(min_currency2)
-
-                            commission_price = int((sale_price - final_price) * multiplier)
-
-                            final_sale_price = 0
-                            # pembulatan sale price keatas
-                            for idx in range(10):
-                                if (sale_price % 100) == 0:
-                                    final_sale_price = sale_price
-                                    break
-                                if idx == 9 and ((sale_price % 1000) < int(str(idx + 1) + '00')) and sale_price > 0:
-                                    final_sale_price = str(int(sale_price / 1000) + 1) + '000'
-                                    break
-                                elif (sale_price % 1000) < int(str(idx + 1) + '00') and sale_price > 0:
-                                    if int(sale_price / 1000) == 0:
-                                        final_sale_price = str(idx + 1) + '00'
-                                    else:
-                                        final_sale_price = str(int(sale_price / 1000)) + str(idx + 1) + '00'
-                                    break
-
-                            final_commission_price = 0
-                            # pembulatan commission price kebawah
-                            for idx in range(10):
-                                if not commission_price > 0:
-                                    break
-                                if int(commission_price % 1000) < int(str(idx + 1) + '00'):
-                                    if int(commission_price / 1000) == 0:
-                                        final_commission_price = str(idx) + '00'
-                                    else:
-                                        final_commission_price = str(int(commission_price / 1000)) + str(idx) + '00'
-                                    break
-
-                            total_commission_price += int(final_commission_price) * val['quantity']
-                            parent_commission_price = int((int(final_sale_price) - final_price) * parent_multiplier)
-                            total_parent_commission_price += parent_commission_price * val['quantity']
-                            ho_commission_price = int((int(final_sale_price) - final_price) * ho_multiplier)
-                            total_ho_commission_price += ho_commission_price * val['quantity']
-
-                            val.update({
-                                'activity_id': self.id,
-                                'charge_code': 'fare',
-                                'charge_type': 'fare',
-                                'pax_type': pax_lib[val['name']],
-                                'currency_id': self.env['res.currency'].browse(
-                                    self.env.user.company_id.currency_id.id).id,
-                                'pax_count': val['quantity'],
-                                'amount': int(final_sale_price),
-                                'foreign_amount': val['price'],
-                                'foreign_currency_id': self.env['res.currency'].search(
-                                    [('name', '=', values['currencyCode'])], limit=1).id,
-                                'description': self.provider_name,
-                            })
-                            val.pop('price')
-                            val.pop('name')
-                            val.pop('quantity')
-                            service_chg_obj.create(val)
-                            self.env.cr.commit()
-
-                            commission_val = {
-                                'activity_id': self.id,
-                                'charge_code': 'r.ac',
-                                'charge_type': 'r.ac',
-                                'pax_type': val['pax_type'],
-                                'currency_id': self.env['res.currency'].browse(
-                                    self.env.user.company_id.currency_id.id).id,
-                                'pax_count': val['pax_count'],
-                                'amount': int(final_commission_price) * -1,
-                                'foreign_amount': 0,
-                                'foreign_currency_id': self.env['res.currency'].search(
-                                    [('name', '=', values['currencyCode'])], limit=1).id,
-                                'description': self.provider_name,
-                            }
-                            service_chg_obj.create(commission_val)
-                            self.env.cr.commit()
-
-                            commission_val = {
-                                'activity_id': self.id,
-                                'charge_code': 'r.ac1',
-                                'charge_type': 'r.ac1',
-                                'pax_type': val['pax_type'],
-                                'currency_id': self.env['res.currency'].browse(
-                                    self.env.user.company_id.currency_id.id).id,
-                                'pax_count': val['pax_count'],
-                                'amount': parent_commission_price * -1,
-                                'foreign_amount': 0,
-                                'foreign_currency_id': self.env['res.currency'].search(
-                                    [('name', '=', values['currencyCode'])], limit=1).id,
-                                'description': self.provider_name,
-                            }
-                            service_chg_obj.create(commission_val)
-                            self.env.cr.commit()
-
-                            commission_val = {
-                                'activity_id': self.id,
-                                'charge_code': 'r.ac2',
-                                'charge_type': 'r.ac2',
-                                'pax_type': val['pax_type'],
-                                'currency_id': self.env['res.currency'].browse(
-                                    self.env.user.company_id.currency_id.id).id,
-                                'pax_count': val['pax_count'],
-                                'amount': ho_commission_price * -1,
-                                'foreign_amount': 0,
-                                'foreign_currency_id': self.env['res.currency'].search(
-                                    [('name', '=', values['currencyCode'])], limit=1).id,
-                                'description': self.provider_name,
-                            }
-                            service_chg_obj.create(commission_val)
-                            self.env.cr.commit()
-
-                            commission_val = {
-                                'activity_id': self.id,
-                                'charge_code': 'r.oc',
-                                'charge_type': 'r.oc',
-                                'pax_type': val['pax_type'],
-                                'currency_id': self.env['res.currency'].browse(
-                                    self.env.user.company_id.currency_id.id).id,
-                                'pax_count': val['pax_count'],
-                                'amount': int(final_commission_price),
-                                'foreign_amount': 0,
-                                'foreign_currency_id': self.env['res.currency'].search(
-                                    [('name', '=', values['currencyCode'])], limit=1).id,
-                                'description': self.provider_name,
-                            }
-                            service_chg_obj.create(commission_val)
-                            self.env.cr.commit()
-
-                            commission_val = {
-                                'activity_id': self.id,
-                                'charge_code': 'r.oc1',
-                                'charge_type': 'r.oc1',
-                                'pax_type': val['pax_type'],
-                                'currency_id': self.env['res.currency'].browse(
-                                    self.env.user.company_id.currency_id.id).id,
-                                'pax_count': val['pax_count'],
-                                'amount': parent_commission_price,
-                                'foreign_amount': 0,
-                                'foreign_currency_id': self.env['res.currency'].search(
-                                    [('name', '=', values['currencyCode'])], limit=1).id,
-                                'description': self.provider_name,
-                            }
-                            service_chg_obj.create(commission_val)
-                            self.env.cr.commit()
-
-                            commission_val = {
-                                'activity_id': self.id,
-                                'charge_code': 'r.oc2',
-                                'charge_type': 'r.oc2',
-                                'pax_type': val['pax_type'],
-                                'currency_id': self.env['res.currency'].browse(
-                                    self.env.user.company_id.currency_id.id).id,
-                                'pax_count': val['pax_count'],
-                                'amount': ho_commission_price,
-                                'foreign_amount': 0,
-                                'foreign_currency_id': self.env['res.currency'].search(
-                                    [('name', '=', values['currencyCode'])], limit=1).id,
-                                'description': self.provider_name,
-                            }
-                            service_chg_obj.create(commission_val)
-                            self.env.cr.commit()
-
-                            self.action_calc_prices()
-
-                    self.action_confirm(total_commission_price, total_parent_commission_price, total_ho_commission_price)
-                    vals = self.env['tt.ledger'].prepare_vals('Commission & Profit : ' + self.name,
-                                                              'HO: ' + self.name, str(fields.Datetime.now()),
-                                                              'commission', self.currency_id.id, commission_ho,
-                                                              0)
-                    vals.update({
-                        'agent_id': self.env['res.partner'].sudo().search(
-                            [('is_HO', '=', True), ('parent_id', '=', False)], limit=1).id,
-                        'booking_id': self.id,
-                    })
-                    commission_aml = self.env['tt.ledger'].create(vals)
-                    commission_aml.action_done()
-
-                    from_currency = self.env['res.currency'].search([('name', '=', values['currencyCode'])], limit=1)
-                    temp1 = 0
-                    for rec in self.sale_service_charge_ids:
-                        if rec['charge_code'] == 'fare':
-                            temp1 += rec['foreign_amount'] * rec['pax_count']
-                    temp2 = self.env['res.currency']._compute(from_currency, self.env.user.company_id.currency_id,
-                                                              temp1)
-
-                    temp3 = self.env['tt.vendor.ledger'].search([('description', '=', self.name)])
-                    for temp4 in temp3:
-                        temp4.sudo().unlink()
-
     def action_approved(self):
         self.write({
             'state': 'approved',
@@ -524,6 +220,7 @@ class ReservationActivity(models.Model):
             'state': 'fail_issued',
             'error_msg': error_msg
         })
+        self.send_push_notif('failed')
         return {
             'error_code': 0,
             'error_msg': False,
@@ -535,12 +232,14 @@ class ReservationActivity(models.Model):
             'state': 'fail_issued',
         })
         self.message_post(body='Order FAILED')
+        self.send_push_notif('failed')
 
     def action_done(self):
         self.write({
             'state': 'done',
         })
         self.message_post(body='Order DONE')
+        self.send_push_notif('done')
 
     def call_create_invoice(self, acquirer_id):
         _logger.info('Creating Invoice for ' + self.name)
@@ -597,13 +296,20 @@ class ReservationActivity(models.Model):
             res = ERR.get_no_error(response)
             return res
 
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            try:
+                booking_obj.notes += traceback.format_exc()+'\n'
+            except:
+                _logger.error('Creating Notes Error')
+            return e.error_dict()
         except Exception as e:
-            self.env.cr.rollback()
-            _logger.error(msg=str(e) + '\n' + traceback.format_exc())
-            return {
-                'error_code': 1,
-                'error_msg': str(e) + '\nUpdate PNR and prices failure'
-            }
+            _logger.error(traceback.format_exc())
+            try:
+                booking_obj.notes += traceback.format_exc()+'\n'
+            except:
+                _logger.error('Creating Notes Error')
+            return ERR.get_error(1005)
 
     def update_booking_by_api2(self, booking_id, book_info):
         booking_obj = self.browse(booking_id)
@@ -620,6 +326,10 @@ class ReservationActivity(models.Model):
         url = base_url + '/web#id=' + obj_id + '&view_type=form&model=' + model
         if type == 'issued':
             desc = 'Activity Issued ' + self.name + ' From ' + self.agent_id.name
+        elif type == 'failed':
+            desc = 'FAILED Activity Issued ' + self.name + ' From ' + self.agent_id.name
+        elif type == 'done':
+            desc = 'Activity CONFIRMED BY VENDOR ' + self.name + ' From ' + self.agent_id.name
         else:
             desc = 'Activity Booking ' + self.name + ' From ' + self.agent_id.name
 
@@ -707,8 +417,9 @@ class ReservationActivity(models.Model):
 
             if req['force_issued']:
                 is_enough = self.env['tt.agent'].check_balance_limit_api(agent_obj.id, req['amount'])
-                if not is_enough['error_code'] == 0:
-                    raise Exception('BALANCE not enough')
+                if is_enough['error_code'] != 0:
+                    _logger.error('Balance not enough')
+                    raise RequestException(1007)
 
             header_val = search_request
             booker_obj = self.create_booker_api(booker_data, context)
@@ -843,10 +554,20 @@ class ReservationActivity(models.Model):
             }
 
             return ERR.get_no_error(response)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            try:
+                book_obj.notes += traceback.format_exc()+'\n'
+            except:
+                _logger.error('Creating Notes Error')
+            return e.error_dict()
         except Exception as e:
-            self.env.cr.rollback()
-            _logger.error(msg=str(e) + '\n' + traceback.format_exc())
-            return ERR.get_error(500)
+            _logger.error(traceback.format_exc())
+            try:
+                book_obj.notes += traceback.format_exc()+'\n'
+            except:
+                _logger.error('Creating Notes Error')
+            return ERR.get_error(1004)
 
     def _get_pricelist_ids(self, service_charge_summary):
         res = []
@@ -1015,15 +736,16 @@ class ReservationActivity(models.Model):
                     'no_order_number': True
                 }
             result = ERR.get_no_error(req)
+            return result
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
         except Exception as e:
-            self.env.cr.rollback()
-            _logger.error(msg=str(e) + '\n' + traceback.format_exc())
-            result = ERR.get_error(500)
-        return result
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1013)
 
     def get_booking_by_api(self, res, req, context):
         try:
-            values = res['response']
             order_number = req['order_number']
 
             activity_booking = self.env['tt.reservation.activity'].search([('name', '=', order_number)])
@@ -1077,18 +799,18 @@ class ReservationActivity(models.Model):
                 #     if res2:
                 #         attachments = res2
 
-            if values.get('voucher_url') and not activity_booking.voucher_url:
+            if res.get('voucher_url') and not activity_booking.voucher_url:
                 activity_booking.sudo().write({
-                    'voucher_url': values['voucher_url']
+                    'voucher_url': res['voucher_url']
                 })
 
             if activity_booking.state not in ['done', 'rejected', 'cancel', 'cancel2']:
                 activity_booking.sudo().write({
-                    'state': values['status']
+                    'state': res['status']
                 })
                 self.env.cr.commit()
                 if attachments:
-                    values.update({
+                    res.update({
                         'status': 'done',
                     })
 
@@ -1110,23 +832,25 @@ class ReservationActivity(models.Model):
                 'pnr': activity_booking.pnr,
                 'visit_date': str(activity_booking.visit_date)[:10],
                 'timeslot': activity_booking.timeslot and activity_booking.timeslot or False,
-                'currencyCode': values['currencyCode'],
+                'currencyCode': res['currencyCode'],
                 'passengers': passengers,
                 'name': order_number,
                 'activity_details': activity_details,
                 'voucher_detail': voucher_detail,
-                'uuid': values.get('uuid') and values['uuid'] or '',
+                'uuid': res.get('uuid') and res['uuid'] or '',
                 'status': activity_booking.state,
                 'attachment_ids': attachments,
                 'booking_options': book_option_ids,
-                'voucher_url': values.get('voucher_url') and values['voucher_url'] or False
+                'voucher_url': res.get('voucher_url') and res['voucher_url'] or False
             }
             result = ERR.get_no_error(response)
+            return result
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
         except Exception as e:
-            self.env.cr.rollback()
-            _logger.error(msg=str(e) + '\n' + traceback.format_exc())
-            result = ERR.get_error(500)
-        return result
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1013)
 
     def action_booked_activity(self, api_context=None):
         if not api_context:  # Jika dari call from backend
@@ -1141,7 +865,6 @@ class ReservationActivity(models.Model):
             'hold_date': datetime.now() + relativedelta(days=1),
         }
         self.write(vals)
-        self.send_push_notif('booked')
 
     def action_issued_activity(self, api_context=None):
         if not api_context:  # Jika dari call from backend
@@ -1214,41 +937,6 @@ class ReservationActivity(models.Model):
             'provider': self.provider_name,
         }
         GatewayConnector().telegram_notif_api(data, {})
-
-    def cron_update_status_booking(self):
-        try:
-            cookie = ''
-            booking_objs = self.env['tt.reservation.activity'].search([('state', 'not in', ['rejected', 'cancel', 'done', 'cancel2', 'refund'])])
-            for rec in booking_objs:
-                req = {
-                    'provider': rec['provider_name'],
-                    'uuid': rec['booking_uuid'],
-                    'pnr': rec['pnr']
-                }
-                if req['uuid'] or req['pnr']:
-                    if req['provider']:
-                        res = self.env['tt.activity.api.con'].get_booking(req)
-                        if res['response']:
-                            values = res['response']
-                            method_name = 'action_%s' % values['status']
-                            if hasattr(rec, method_name):
-                                getattr(rec, method_name)()
-                        else:
-                            rec.action_failed_sync()
-                            values = {
-                                'status': 'failed',
-                            }
-                        if rec['state'] != values['status']:
-                            self.send_notif_update_status_activity(rec, values['status'])
-                    else:
-                        pass
-                else:
-                    if rec['state'] != 'failed':
-                        rec.action_failed_sync()
-                        self.send_notif_update_status_activity(rec, 'failed')
-
-        except Exception as e:
-            _logger.error('Cron Error: Update Status Booking' + '\n' + traceback.format_exc())
 
     def action_activity_print_invoice(self):
         self.ensure_one()

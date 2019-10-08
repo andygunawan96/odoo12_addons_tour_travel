@@ -1,6 +1,7 @@
 from odoo import api, fields, models
 from odoo.http import request
 from ...tools import util,variables,ERR
+from ...tools.ERR import RequestException
 import logging, traceback
 import json
 import base64
@@ -520,7 +521,7 @@ class MasterActivity(models.Model):
                             }
                             res = self.env['tt.master.activity.api.con'].send_product_analytics(product_an_req)
                         except Exception as e:
-                            _logger.error('Error: Failed send Product Analytics. \n %s : %s' % (traceback.format_exc(), str(e)))
+                            _logger.error('Error: Failed to send Product Analytics. \n %s : %s' % (traceback.format_exc(), str(e)))
                     self.env.cr.commit()
 
                 images = self.env['tt.activity.master.images'].search([('activity_id', '=', product_obj.id)])
@@ -1227,9 +1228,12 @@ class MasterActivity(models.Model):
                 'countries': countries_list,
             }
             return ERR.get_no_error(values)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
         except Exception as e:
-            _logger.info('Activity Get Config Error')
-            return ERR.get_error(500)
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1021)
 
     def get_cities_by_api(self, id):
         try:
@@ -1241,9 +1245,12 @@ class MasterActivity(models.Model):
                     'id': rec.id,
                 })
             return ERR.get_no_error(cities)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
         except Exception as e:
-            _logger.info('Activity Get Cities Error')
-            return ERR.get_error(500)
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1021)
 
     def search_by_api(self, req, context):
         try:
@@ -1482,9 +1489,12 @@ class MasterActivity(models.Model):
                 result_list.append(result)
 
             return ERR.get_no_error(result_list)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
         except Exception as e:
             _logger.error(traceback.format_exc())
-            return ERR.get_error(500)
+            return ERR.get_error(1022)
 
     def get_details_by_api(self, req, context):
         try:
@@ -1638,9 +1648,12 @@ class MasterActivity(models.Model):
                 })
                 temp.append(result)
             return ERR.get_no_error(temp)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
         except Exception as e:
-            _logger.info('Activity Search Detail Error')
-            return ERR.get_error(500)
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1022)
 
     def product_update_webhook(self, req, context):
         provider = req.get('provider') and req['provider'] or ''
