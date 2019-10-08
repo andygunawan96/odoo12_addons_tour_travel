@@ -1,0 +1,48 @@
+<odoo>
+    <record model="ir.ui.view" id="tt_tour_master_locations_view_form">
+        <field name="name">tt.tour.master.locations.view.form</field>
+        <field name="model">tt.tour.master.locations</field>
+        <field name="arch" type="xml">
+            <form string="">
+                <group>
+                    <group>
+                        <field name="city_id"/>
+                        <field name="state_id"/>
+                        <field name="country_id"/>
+                    </group>
+                    <group>
+                        <field name="city_name"/>
+                        <field name="state_name"/>
+                        <field name="country_name"/>
+                    </group>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tt_tour_master_locations_view_tree" >
+        <field name="name">tt.tour.master.locations.view.tree</field>
+        <field name="model">tt.tour.master.locations</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="city_id"/>
+                <field name="state_id"/>
+                <field name="country_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_tour_master_locations_view_action">
+        <field name="name">Tour Locations</field>
+        <field name="res_model">tt.tour.master.locations</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_tour.tt_tour_master_locations_view_form',
+            'tree_view_ref': 'tt_reservation_tour.tt_tour_master_locations_view_tree',
+            }
+        </field>
+    </record>
+</odoo>
