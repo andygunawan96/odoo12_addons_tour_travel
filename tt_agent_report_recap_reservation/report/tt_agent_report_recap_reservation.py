@@ -1,6 +1,6 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
-from ...tools.variables import BOOKING_STATE_STR
+from ...tools import variables, util
 from ...tt_reservation_offline.models.tt_reservation_offline import STATE_OFFLINE_STR
 
 import logging
@@ -13,9 +13,9 @@ class AgentReportRecapReservation(models.Model):
 
     @staticmethod
     def _select():
-        return """rsv.id, rsv.name as order_number, rsv.create_date, rsv.agent_id, agent.id agent_id, 
-        agent.name agent_name, tpt.name as provider_type, agent_type.name agent_type, rsv.total, 
-        rsv.provider_name provider, rsv.state 
+        return """rsv.name as order_number, rsv.create_date,
+        agent.name agent_name, tpt.name as provider_type, agent_type.name agent_type, 
+        SUM(ssc.total) total, rsv.provider_name provider, rsv.state
         """
 
     @staticmethod
@@ -41,6 +41,33 @@ class AgentReportRecapReservation(models.Model):
         LEFT JOIN tt_agent_type agent_type ON agent_type.id = agent.agent_type_id 
         LEFT JOIN tt_provider_type tpt ON tpt.id = rsv.provider_type_id
         """
+
+    @staticmethod
+    def _from(provider_type):
+        def selected_field(provider_type):
+            if provider_type == 'airline':
+                return 'booking_airline_id'
+            elif provider_type == 'hotel':
+                return 'resv_hotel_id'
+            elif provider_type == 'tour':
+                return 'booking_tour_id'
+            elif provider_type == 'activity':
+                return 'booking_activity_id'
+            elif provider_type == 'visa':
+                return 'visa_id'
+            elif provider_type == 'passport':
+                return 'passport_id'
+            elif provider_type == 'cruise':
+                return 'booking_cruise_id'
+            else:
+                return 'booking_offline_id'
+
+        query = """tt_reservation_""" + provider_type + """ rsv"""
+        query += """ LEFT JOIN tt_service_charge ssc ON rsv.id = ssc.%s
+        LEFT JOIN tt_agent agent ON agent.id = rsv.agent_id 
+        LEFT JOIN tt_agent_type agent_type ON agent_type.id = agent.agent_type_id 
+        LEFT JOIN tt_provider_type tpt ON tpt.id = rsv.provider_type_id """ % (selected_field(provider_type), )
+        return query
 
     @staticmethod
     def _where(date_from, date_to, agent_id, provider_type, state):
@@ -81,12 +108,12 @@ class AgentReportRecapReservation(models.Model):
 
     @staticmethod
     def _group_by():
-        return ' '
+        return 'rsv.name, rsv.create_date, rsv.state, rsv.provider_name, agent.name, tpt.id, agent_type.id '
 
     @staticmethod
     def _order_by():
         return """
-        rsv.create_date, rsv.agent_id 
+        rsv.create_date, rsv.name 
         """
 
     def _lines(self, date_from, date_to, agent_id, provider_type, state):
@@ -94,12 +121,7 @@ class AgentReportRecapReservation(models.Model):
         query = 'SELECT ' + self._select()
 
         # FROM
-        if provider_type == 'visa':
-            query += 'FROM ' + self._from_visa()
-        elif provider_type == 'passport':
-            query += 'FROM ' + self._from_passport()
-        elif provider_type == 'offline':
-            query += 'FROM ' + self._from_offline()
+        query += 'FROM ' + self._from(provider_type)
 
         # WHERE
         if provider_type == 'offline':
@@ -108,6 +130,8 @@ class AgentReportRecapReservation(models.Model):
             query += 'WHERE ' + self._where(date_from, date_to, agent_id, provider_type, state)
 
         # GROUP BY & ORDER BY
+        query += 'GROUP BY ' + self._group_by()
+
         # 'GROUP BY' + self._group_by() + \
         query += 'ORDER BY ' + self._order_by()
 
@@ -115,21 +139,88 @@ class AgentReportRecapReservation(models.Model):
         _logger.info(query)
         return self.env.cr.dictfetchall()
 
+    @staticmethod
+    def _get_search(date_from, date_to, agent_id, state):
+        line = []
+        if state and state != 'all':
+            line.append(('state', '=', state),)
+        if agent_id:
+            line.append(('agent_id', '=', agent_id),)
+        line.append(('create_date', '<=', date_to),)
+        line.append(('create_date', '>=', date_from),)
+        return line
+
+    @staticmethod
+    def _get_service_charge(provider_type, booking_id):
+        ssc = []
+        if provider_type == 'airline':
+            ssc.append(('booking_airline_id', '=', booking_id))
+        elif provider_type == 'hotel':
+            ssc.append(('resv_hotel_id', '=', booking_id))
+        elif provider_type == 'tour':
+            ssc.append(('booking_tour_id', '=', booking_id))
+        elif provider_type == 'activity':
+            ssc.append(('booking_activity_id', '=', booking_id))
+        elif provider_type == 'visa':
+            ssc.append(('visa_id', '=', booking_id))
+        elif provider_type == 'passport':
+            ssc.append(('passport_id', '=', booking_id))
+        elif provider_type == 'offline':
+            ssc.append(('booking_offline_id', '=', booking_id))
+        return ssc
+
+    def _lines_search(self, date_from, date_to, agent_id, provider_type, state):
+        lines_env = self.env['tt.reservation.%s' % (provider_type)].search(self._get_search(date_from, date_to, agent_id, state), order='name asc')
+        lines = []
+        for line in lines_env:
+            service_charge_env = self.env['tt.service.charge'].search(self._get_service_charge(provider_type, line.id))
+            total = 0
+            for ssc in service_charge_env:
+                total += ssc.total
+            lines.append({
+                'create_date': line.create_date,
+                'order_number': line.name,
+                'agent_name': line.agent_id.name,
+                'agent_type': line.agent_id.agent_type_id.name,
+                'provider': line.provider_name,
+                'total': total,
+                'state': line.state,
+                'provider_type': line.provider_type_id.name
+            })
+        return lines
+
     def _get_lines_data(self, date_from, date_to, agent_id, provider_type, state):
         lines = []
         if provider_type != 'all':
             lines = self._lines(date_from, date_to, agent_id, provider_type, state)
             lines = self._convert_data(lines, provider_type)
         else:
-            lines_visa = self._lines(date_from, date_to, agent_id, 'visa', state)
-            lines_visa = self._convert_data(lines_visa, 'visa')
-            for line in lines_visa:
-                lines.append(line)
-            lines_passport = self._lines(date_from, date_to, agent_id, 'passport', state)
-            lines_passport = self._convert_data(lines_passport, 'passport')
-            for line in lines_passport:
-                lines.append(line)
+            provider_types = variables.PROVIDER_TYPE
+            for provider_type in provider_types:
+                report_lines = self._lines(date_from, date_to, agent_id, provider_type, state)
+                report_lines = self._convert_data(report_lines, provider_type)
+                for line in report_lines:
+                    lines.append(line)
             lines_offline = self._lines(date_from, date_to, agent_id, 'offline', state)
+            lines_offline = self._convert_data(lines_offline, 'offline')
+            for line in lines_offline:
+                lines.append(line)
+        return lines
+
+    def _get_lines_data_search(self, date_from, date_to, agent_id, provider_type, state):
+        lines = []
+        if provider_type != 'all':
+            lines = self._lines_search(date_from, date_to, agent_id, provider_type, state)
+            lines = self._convert_data(lines, provider_type)
+        else:
+            # for i in range(500):
+            provider_types = variables.PROVIDER_TYPE
+            for provider_type in provider_types:
+                report_lines = self._lines_search(date_from, date_to, agent_id, provider_type, state)
+                report_lines = self._convert_data(report_lines, provider_type)
+                for line in report_lines:
+                    lines.append(line)
+            lines_offline = self._lines_search(date_from, date_to, agent_id, 'offline', state)
             lines_offline = self._convert_data(lines_offline, 'offline')
             for line in lines_offline:
                 lines.append(line)
@@ -143,7 +234,7 @@ class AgentReportRecapReservation(models.Model):
         for rec in lines:
             rec['create_date'] = self._datetime_user_context(rec['create_date'])
             if provider_type != 'offline':
-                rec['state'] = BOOKING_STATE_STR[rec['state']] if rec['state'] else ''
+                rec['state'] = variables.BOOKING_STATE_STR[rec['state']] if rec['state'] else ''
             else:
                 rec['state'] = STATE_OFFLINE_STR[rec['state']] if rec['state'] else ''
         return lines
@@ -160,6 +251,7 @@ class AgentReportRecapReservation(models.Model):
         agent_id = data_form['agent_id']
         state = data_form['state']
         provider_type = data_form['provider_type']
+        # lines = self._get_lines_data_search(date_from, date_to, agent_id, provider_type, state)
         lines = self._get_lines_data(date_from, date_to, agent_id, provider_type, state)
         self._report_title(data_form)
 

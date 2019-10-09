@@ -105,12 +105,12 @@
                         <group string="Documents">
                             <notebook>
                                 <page string="Registration Document">
-                                    <field name="registration_document_ids">
-                                        <tree editable="bottom" create="false">
+                                    <field name="registration_document_ids" widget="one2many">
+                                        <tree editable="bottom" create="false">  <!-- editable="bottom"-->
                                             <field name="document_id"/>
                                             <field name="schedule_date"/>
                                             <field name="receive_date"/>
-                                            <field name="attachment_ids" widget="many2many_binary" string="Attach a File" class="oe_inline"/>
+                                            <field name="document_attach_ids" string="Attach a File" widget="many2many_tags"/>
                                             <field name="qty"/>
                                             <field name="description"/>
                                             <field name="state"/>
@@ -118,7 +118,7 @@
                                         <form>
                                             <group>
                                                 <field name="description"/>
-                                                <field name="attachment_ids" string="Attachments"/>
+                                                <field name="document_attach_ids" string="Attachments"/>
                                             </group>
                                             <group>
                                                 <group>
@@ -167,12 +167,12 @@
                                     </field>
                                 </page>
                                 <page string="Opening Document">
-                                    <field name="open_document_ids">
-                                        <tree editable="bottom" create="true">
+                                    <field name="open_document_ids" widget="one2many">
+                                        <tree editable="bottom" create="true">  <!-- editable="bottom"-->
                                             <field name="document_id"/>
                                             <field name="schedule_date"/>
                                             <field name="receive_date"/>
-                                            <field name="attachment_ids" string="Attach a File"/>
+                                            <field name="document_attach_ids" string="Attach a File" widget="many2many_tags"/>
                                             <field name="qty"/>
                                             <field name="receive_qty"/>
                                             <field name="description"/>
@@ -181,7 +181,7 @@
                                         <form>
                                             <group>
                                                 <field name="description"/>
-                                                <field name="attachment_ids" string="Attachments"/>
+                                                <field name="document_attach_ids" string="Attachments"/>
                                             </group>
                                             <group>
                                                 <group>

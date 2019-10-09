@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+tt_reservation_cruise,tt.reservation.cruise,model_tt_reservation_cruise,,1,1,1,1
