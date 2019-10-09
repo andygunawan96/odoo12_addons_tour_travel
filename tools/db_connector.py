@@ -39,7 +39,6 @@ class DbConnector(object):
             return False
 
 
-
 class BackendConnector(DbConnector):
     def __init__(self):
         DbConnector.__init__(self)

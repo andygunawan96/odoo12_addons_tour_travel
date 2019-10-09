@@ -737,7 +737,7 @@ class TestSearch(models.Model):
                 'room_rate': room.sale_price,
                 'person': room.room_info_id and room.room_info_id.max_guest or 2,
                 'guests': guests,
-                'currency_id': room.currency_id and room.currency_id.id,
+                'currency': room.currency_id and room.currency_id.name,
                 'meal_type': room.room_info_id.meal_type,
             }
             vals.append(data)
@@ -752,9 +752,15 @@ class TestSearch(models.Model):
             'birth_date': cust['birth_date'],
         } for cust in customers]
 
-
-    def get_booking_result(self, resv_id):
-        resv_obj = self.env['tt.reservation.hotel'].sudo().browse(resv_id)
+    def get_booking_result(self, resv_id, context=False):
+        if isinstance(resv_id, int):
+            resv_obj = self.env['tt.reservation.hotel'].browse(resv_id)
+        else:
+            resv_obj = self.env['tt.reservation.hotel'].search([('name', '=ilike', resv_id)], limit=1)
+        if not resv_obj:
+            return 'Not Found'
+        else:
+            resv_obj = resv_obj[0]
         rooms = self.sudo().prepare_booking_room(resv_obj.room_detail_ids, resv_obj.passenger_ids)
         passengers = self.sudo().prepare_passengers(resv_obj.passenger_ids)
         vals = {
@@ -762,10 +768,10 @@ class TestSearch(models.Model):
             'booking_name': resv_obj.name,
             'os_res_no': resv_obj.name, #resv_obj.number,
             'status': resv_obj.state,
-            'total_rate': float(resv_obj.total),
+            'total': resv_obj.total,
             'currency': resv_obj.currency_id.name,
             'voucher_no': '',
-            'commission': float(resv_obj.total_commission_amount),
+            'commission': resv_obj.total_commission_amount,
             'issued_date': resv_obj.issued_date,
             'from_date': resv_obj.checkin_date,
             'to_date': resv_obj.checkout_date,
@@ -777,7 +783,12 @@ class TestSearch(models.Model):
             'hotel_city_name': resv_obj.hotel_city,
             'hotel_rooms': rooms,
             'passengers': passengers,
-            # 'agent_inv_ids': resv_obj.agent_invoice_ids.ids,
+
+            'hotel_rating': 0,
+            'images': [],
+            'cancellation_policy': [],
+            'lat': '',
+            'long': '',
         }
         return vals
 
