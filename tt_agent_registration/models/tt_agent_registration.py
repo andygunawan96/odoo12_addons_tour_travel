@@ -489,7 +489,7 @@ class AgentRegistration(models.Model):
         self.state = 'draft'
 
     param_company = {
-        "company_type": "company",
+        "company_type": "individual",
         "business_license": "01/2019/04/0100-02",
         "npwp": "109358973180",
         "name": "suryajaya",

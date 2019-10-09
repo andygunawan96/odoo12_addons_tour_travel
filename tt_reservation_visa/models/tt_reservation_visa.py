@@ -102,6 +102,8 @@ class TtVisa(models.Model):
 
     acquirer_id = fields.Char('Payment Method', readonly=True)
 
+    proof_of_consulate = fields.Many2many('ir.attachment', string="Proof of Consulate")
+
     immigration_consulate = fields.Char('Immigration Consulate', readonly=1, compute="_compute_immigration_consulate")
 
     ######################################################################################################
@@ -361,7 +363,7 @@ class TtVisa(models.Model):
     def get_booking_visa_api(self, data):  #
         res = {}
         for rec in self.search([('name', '=', data['order_number'])]):  # self.name
-            res_dict = self.sudo().to_dict()
+            res_dict = rec.sudo().to_dict()
             print('Res Dict. : ' + str(res_dict))
             passenger = []
             # contact = []
@@ -531,7 +533,6 @@ class TtVisa(models.Model):
                 'customer_parent_id': customer_parent_id,
             })
 
-            book_obj.agent_id = self.env.user.agent_id  # kedepannya mungkin dihapus | contact['agent_id']
             self._calc_grand_total()
 
             # book_obj.action_booked_visa(context)

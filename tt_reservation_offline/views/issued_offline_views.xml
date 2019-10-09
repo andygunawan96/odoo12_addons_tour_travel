@@ -124,7 +124,7 @@
                                 <field name="segment" invisible="1"/>
                                 <!--171121 CANDY: add field pnr-->
 <!--                                <field name="pnr" states="paid, done" attrs="{'required': [('state', '=', 'validate')]}"/>  &lt;!&ndash;, 'invisible': ['|', ('state', '=', 'draft'), ('state', '=' , 'confirm'), ('state', '=' , 'sent')]&ndash;&gt;-->
-                                <field name="vendor" groups="tt_base.group_tt_tour_travel_operator"/>
+<!--                                <field name="vendor" groups="tt_base.group_tt_tour_travel_operator"/>-->
                                 <field name="social_media_id" attrs="{'required': [('state', '=', 'confirm')]}"/>
                                 <field name="expired_date" required="1"/>
                                 <field name="currency_id" invisible="1"/>
