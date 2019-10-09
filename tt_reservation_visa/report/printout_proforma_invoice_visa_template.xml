@@ -2,23 +2,21 @@
 <odoo>
     <template id="printout_proforma_invoice_visa_template">
         <t t-foreach="docs" t-as="o">
-            <t t-foreach="o.passenger_ids" t-as="p">
-                <t t-call="web.html_container">
-                    <div class="article" style="font-family: Times New Roman, Georgia, Serif; font-size: 16px;">
-                        <div class="oe_structure"/>
-                        <div id="header" class="row" style="">
-                            <div class="col-2">
+            <t t-call="web.html_container">
+                <div class="article" style="font-family: Times New Roman, Georgia, Serif; font-size: 16px;">
+                    <div class="oe_structure"/>
+                    <div id="header" class="row" style="">
+                        <div class="col-2">
 
-                            </div>
-                            <div class="col-8 text-center" style="padding:0; margin-top: 22px;">
-                                <h2>PROFORMA INVOICE VISA</h2>
-                            </div>
-                            <div class="col-2">
+                        </div>
+                        <div class="col-8 text-center" style="padding:0; margin-top: 22px;">
+                            <h2>PROFORMA INVOICE VISA</h2>
+                        </div>
+                        <div class="col-2">
 
-                            </div>
                         </div>
                     </div>
-                </t>
+                </div>
             </t>
         </t>
     </template>

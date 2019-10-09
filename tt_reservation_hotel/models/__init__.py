@@ -14,7 +14,7 @@ from . import tt_banner
 from . import landmark
 from . import hotel_compare
 from . import res_country
-from . import tt_master_vendor
+# from . import tt_master_vendor
 from . import provider_code
 from . import hotel_provider_data
 
