@@ -26,8 +26,6 @@ class ReservationTour(models.Model):
 
     next_installment_date = fields.Date('Next Due Date', compute='_next_installment_date', store=True)
 
-    arrival_date = fields.Date('Arrival Date')
-
     sale_service_charge_ids = fields.One2many('tt.service.charge', 'booking_tour_id', 'Service Charge',
                                               readonly=True, states={'draft': [('readonly', False)]})
     ledger_ids = fields.One2many('tt.ledger', 'res_id', 'Ledger',
@@ -427,12 +425,21 @@ class ReservationTour(models.Model):
             if provider_id:
                 provider_id = provider_id[0]
 
+            contact_data = self.env['tt.customer'].browse(int(contact_id))
+            contact_phones = []
+            for pho in contact_data.phone_ids:
+                contact_phones.append(pho.phone_number)
             booking_obj = self.env['tt.reservation.tour'].sudo().create({
                 'contact_id': contact_id,
+                'contact_name': contact_data.name,
+                'contact_email': contact_data.email,
+                'contact_phone': contact_phones[0],
                 'booker_id': booker_id,
                 'passenger_ids': [(6, 0, pax_ids)],
+                'agent_id': context['co_agent_id'],
+                'user_id': context['co_uid'],
                 'tour_id': pricelist_id,
-                'agent_id': agent_obj.id,
+                'transport_type': 'tour',
                 'sale_service_charge_ids': [(6, 0, service_charge_ids)],
             })
 
@@ -443,7 +450,7 @@ class ReservationTour(models.Model):
                     'tour_id': pricelist_id,
                     'provider_id': provider_id.id,
                     'departure_date': tour_data['departure_date'],
-                    'arrival_date': tour_data['arrival_date'],
+                    'return_date': tour_data['return_date'],
                     # 'balance_due': req['amount'],
                 }
 
@@ -494,7 +501,7 @@ class ReservationTour(models.Model):
                 'child': book_obj.child,
                 'infant': book_obj.infant,
                 'departure_date': book_obj.departure_date,
-                'arrival_date': book_obj.arrival_date,
+                'return_date': book_obj.return_date,
                 'name': book_obj.name,
                 'hold_date': book_obj.hold_date,
             }
@@ -514,9 +521,9 @@ class ReservationTour(models.Model):
                 'name': book_obj.tour_id.name,
                 'duration': book_obj.tour_id.duration,
                 'departure_date': book_obj.tour_id.departure_date,
-                'arrival_date': book_obj.tour_id.arrival_date,
-                'departure_date_f': datetime.strptime(str(book_obj.tour_id.arrival_date), '%Y-%m-%d').strftime("%A, %d-%m-%Y") or '',
-                'arrival_date_f': datetime.strptime(str(book_obj.tour_id.arrival_date), '%Y-%m-%d').strftime("%A, %d-%m-%Y") or '',
+                'return_date': book_obj.tour_id.return_date,
+                'departure_date_f': datetime.strptime(str(book_obj.tour_id.return_date), '%Y-%m-%d').strftime("%A, %d-%m-%Y") or '',
+                'return_date_f': datetime.strptime(str(book_obj.tour_id.return_date), '%Y-%m-%d').strftime("%A, %d-%m-%Y") or '',
                 'visa': book_obj.tour_id.visa,
                 'flight': book_obj.tour_id.flight,
             }
@@ -667,7 +674,7 @@ class ReservationTour(models.Model):
             res = Response().get_error(str(e), 500)
         return res
 
-    def issued_by_api(self, data, context, **kwargs):
+    def update_booking_api(self, data, context, **kwargs):
         try:
             search_booking_num = data.get('order_number')
             book_objs = self.env['tt.reservation.tour'].sudo().search([('name', '=', search_booking_num)])
