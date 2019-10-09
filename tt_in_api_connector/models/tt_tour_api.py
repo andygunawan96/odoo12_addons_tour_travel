@@ -4,7 +4,29 @@ from ...tools.ERR import RequestException
 import logging,traceback
 
 
-class TtMasterActivityApiCon(models.Model):
+class TtTourApiCon(models.Model):
+    _name = 'tt.tour.tour.api.con'
+    _inherit = 'tt.api.con'
+
+    table_name = 'tt.reservation.tour'
+
+    def action_call(self,table_obj,action,data,context):
+
+        if action == 'update_passenger':
+            res = table_obj.update_passenger_api(data,context)
+        elif action == 'get_booking':
+            res = table_obj.get_booking_api(data,context)
+        elif action == 'commit_booking':
+            res = table_obj.commit_booking_api(data,context)
+        elif action == 'update_booking':
+            res = table_obj.update_booking_api(data,context)
+        else:
+            raise RequestException(999)
+
+        return res
+
+
+class TtMasterTourApiCon(models.Model):
     _name = 'tt.master.tour.api.con'
     _inherit = 'tt.api.con'
 
@@ -14,6 +36,10 @@ class TtMasterActivityApiCon(models.Model):
 
         if action == 'get_config':
             res = table_obj.get_config_by_api()
+        elif action == 'search':
+            res = table_obj.search_tour_api(data,context)
+        elif action == 'get_details':
+            res = table_obj.get_tour_details_api(data,context)
         else:
             raise RequestException(999)
 

@@ -55,7 +55,7 @@ class MasterTour(models.Model):
     tour_type = fields.Selection([('series', 'Series (With Tour Leader)'), ('sic', 'SIC (Without Tour Leader)'), ('land', 'Land Only'), ('city', 'City Tour'), ('private', 'Private Tour')], 'Tour Type', default='series')
 
     departure_date = fields.Date('Departure Date')
-    arrival_date = fields.Date('Arrival Date')
+    return_date = fields.Date('Arrival Date')
     duration = fields.Integer('Duration (days)', help="in day(s)", readonly=True,
                               compute='_compute_duration', store=True)
 
@@ -167,7 +167,7 @@ class MasterTour(models.Model):
             if rec.tour_category == 'private':
                 rec.tour_type = 'private'
                 rec.departure_date = False
-                rec.arrival_date = False
+                rec.return_date = False
             if rec.tour_category == 'group':
                 rec.start_period = False
                 rec.end_period = False
@@ -245,22 +245,22 @@ class MasterTour(models.Model):
             for passenger in rec.passengers_ids:
                 self.action_send_email(passenger.id)
 
-    @api.depends('departure_date', 'arrival_date')
-    @api.onchange('departure_date', 'arrival_date')
+    @api.depends('departure_date', 'return_date')
+    @api.onchange('departure_date', 'return_date')
     def _compute_survey_date(self):
         for rec in self:
-            if rec.departure_date and rec.arrival_date:
-                diff = (datetime.strptime(str(rec.arrival_date), '%Y-%m-%d') - datetime.strptime(str(rec.departure_date),'%Y-%m-%d')).days
+            if rec.departure_date and rec.return_date:
+                diff = (datetime.strptime(str(rec.return_date), '%Y-%m-%d') - datetime.strptime(str(rec.departure_date),'%Y-%m-%d')).days
                 mod = diff % 2
                 mod += int(diff / 2)
                 rec.survey_date = str(datetime.strptime(str(rec.departure_date), '%Y-%m-%d') + relativedelta(days=mod))
 
-    @api.depends('departure_date', 'arrival_date')
-    @api.onchange('departure_date', 'arrival_date')
+    @api.depends('departure_date', 'return_date')
+    @api.onchange('departure_date', 'return_date')
     def _compute_duration(self):
         for rec in self:
-            if rec.departure_date and rec.arrival_date:
-                diff = (datetime.strptime(str(rec.arrival_date), '%Y-%m-%d') - datetime.strptime(
+            if rec.departure_date and rec.return_date:
+                diff = (datetime.strptime(str(rec.return_date), '%Y-%m-%d') - datetime.strptime(
                     str(rec.departure_date), '%Y-%m-%d')).days
                 rec.duration = str(diff)
 
@@ -441,12 +441,12 @@ class MasterTour(models.Model):
                     'tipping_driver_with_comma': self.int_with_commas(rec['tipping_driver']),
                     'images_obj': images,
                     'departure_date_f': rec['departure_date'] and datetime.strptime(str(rec['departure_date']), '%Y-%m-%d').strftime("%A, %d-%m-%Y") or '',
-                    'arrival_date_f': rec['arrival_date'] and datetime.strptime(str(rec['arrival_date']), '%Y-%m-%d').strftime("%A, %d-%m-%Y") or '',
+                    'return_date_f': rec['return_date'] and datetime.strptime(str(rec['return_date']), '%Y-%m-%d').strftime("%A, %d-%m-%Y") or '',
                     'start_period_f': rec['start_period'] and datetime.strptime(str(rec['start_period']), '%Y-%m-%d').strftime('%B') or '',
                     'end_period_f': rec['end_period'] and datetime.strptime(str(rec['end_period']), '%Y-%m-%d').strftime('%B') or '',
                     'departure_date': rec['departure_date'] and datetime.strptime(str(rec['departure_date']), '%Y-%m-%d').strftime('%d %b %Y') or '',
                     'departure_date_ori': rec['departure_date'] and rec['departure_date'] or '',
-                    'arrival_date': rec['arrival_date'] and datetime.strptime(str(rec['arrival_date']), '%Y-%m-%d').strftime('%d %b %Y') or '',
+                    'return_date': rec['return_date'] and datetime.strptime(str(rec['return_date']), '%Y-%m-%d').strftime('%d %b %Y') or '',
                     'start_period': rec['start_period'] and datetime.strptime(str(rec['start_period']), '%Y-%m-%d').strftime('%B') or '',
                     'start_period_ori': rec['start_period'] and rec['start_period'] or '',
                     'end_period': rec['end_period'] and datetime.strptime(str(rec['end_period']), '%Y-%m-%d').strftime('%B') or '',
@@ -503,12 +503,12 @@ class MasterTour(models.Model):
                 'departure_date_fmt': context_timestamp(segment.departure_date).strftime('%d-%b-%Y %H:%M'),
                 'destination_id': segment.destination_id.display_name,
                 'destination_terminal': segment.destination_terminal,
-                'arrival_date': segment.arrival_date,
-                'arrival_date_fmt': context_timestamp(segment.arrival_date).strftime('%d-%b-%Y %H:%M'),
+                'return_date': segment.return_date,
+                'return_date_fmt': context_timestamp(segment.return_date).strftime('%d-%b-%Y %H:%M'),
                 'delay': 'None',
             }
             if old_vals and old_vals['journey_type'] == segment.journey_type:
-                time_delta = segment.departure_date - old_vals['arrival_date']
+                time_delta = segment.departure_date - old_vals['return_date']
                 day = time_delta.days
                 hours = time_delta.seconds/3600
                 minute = time_delta.seconds % 60
@@ -641,8 +641,8 @@ class MasterTour(models.Model):
                     'discount': json.dumps(discount),
                     'departure_date_clean': rec['departure_date'] and datetime.strptime(str(rec['departure_date']),'%Y-%m-%d').strftime('%d %b %Y') or '',
                     'departure_date_f': rec['departure_date'] and datetime.strptime(str(rec['departure_date']), '%Y-%m-%d').strftime("%A, %d-%m-%Y") or '',
-                    'arrival_date_clean': rec['arrival_date'] and datetime.strptime(str(rec['arrival_date']), '%Y-%m-%d').strftime('%d %b %Y') or '',
-                    'arrival_date_f': rec['arrival_date'] and datetime.strptime(str(rec['arrival_date']), '%Y-%m-%d').strftime("%A, %d-%m-%Y") or '',
+                    'return_date_clean': rec['return_date'] and datetime.strptime(str(rec['return_date']), '%Y-%m-%d').strftime('%d %b %Y') or '',
+                    'return_date_f': rec['return_date'] and datetime.strptime(str(rec['return_date']), '%Y-%m-%d').strftime("%A, %d-%m-%Y") or '',
                     'start_period_f': rec['start_period'] and datetime.strptime(str(rec['start_period']), '%Y-%m-%d').strftime('%B') or '',
                     'end_period_f': rec['end_period'] and datetime.strptime(str(rec['end_period']), '%Y-%m-%d').strftime('%B') or '',
                     'country_names': country_names,

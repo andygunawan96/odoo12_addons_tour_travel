@@ -62,8 +62,9 @@ Key Features
         'views/error_api_views.xml',
         'views/tt_ssr_views.xml',
         'views/tt_frontend_security.xml',
+
+        'wizard/tt_upload_center_wizard_view.xml',
         'views/tt_upload_center_views.xml',
-        'wizard/tt_upload_center_wizard_view.xml'
     ],
     'demo': [],
     'qweb': [],

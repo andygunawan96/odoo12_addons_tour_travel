@@ -557,7 +557,8 @@ class HotelReservation(models.Model):
         api_context = {
             'co_uid': self.env.user.agent_id.id
         }
-        res = API_CN_HOTEL.check_booking_status_by_api({'name': self.name, 'issued_name': self.room_detail_ids[0].issued_name, 'provider': self.room_detail_ids[0].provider_id.provider_code}, api_context)
+        res = API_CN_HOTEL.check_booking_status_by_api({'name': self.name, 'issued_name': self.room_detail_ids[0].issued_name,
+                                                        'provider': self.room_detail_ids[0].provider_id.code}, api_context)
         if res['error_code'] != 0:
             raise ('Error')
         else:
@@ -568,7 +569,7 @@ class HotelReservation(models.Model):
             'co_uid': self.env.user.agent_id.id
         }
         res = API_CN_HOTEL.check_booking_policy_by_api({'name': self.name, 'issued_name': self.room_detail_ids[0].issued_name,
-                                                        'provider': self.room_detail_ids[0].provider_id.provider_code
+                                                            'provider': self.room_detail_ids[0].provider_id.code
                                                         }, api_context)
         if res['error_code'] != 0:
             raise ('Error')
@@ -593,5 +594,5 @@ class HotelReservation(models.Model):
 class ServiceCharge(models.Model):
     _inherit = "tt.service.charge"
 
-    provider_hotel_booking_id = fields.Many2one('tt.tb.provider.hotel', 'Provider Booking ID')
+    provider_hotel_booking_id = fields.Many2one('tt.hotel.reservation.details', 'Resv. Detail')
     resv_hotel_id = fields.Many2one('tt.reservation.hotel', 'Hotel', ondelete='cascade', index=True, copy=False)

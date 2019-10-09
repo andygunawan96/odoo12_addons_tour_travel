@@ -1,6 +1,7 @@
 from odoo import api, fields, models
 from odoo.http import request
 from ...tools import util,variables,ERR
+from ...tools.ERR import RequestException
 import logging, traceback
 import json
 import base64
@@ -114,9 +115,9 @@ class MasterActivity(models.Model):
         from_currency = req['from_currency']
         base_amount = req['base_amount']
         to_currency = req.get('to_currency') and req['to_currency'] or 'IDR'
+        from_currency_id = self.env['res.currency'].sudo().search([('name', '=', from_currency)], limit=1)
+        from_currency_id = from_currency_id and from_currency_id[0] or False
         try:
-            from_currency_id = self.env['res.currency'].sudo().search([('name', '=', from_currency)], limit=1)
-            from_currency_id = from_currency_id and from_currency_id[0] or False
             provider_id = self.env['tt.provider'].sudo().search([('code', '=', provider)], limit=1)
             provider_id = provider_id[0]
             multiplier = self.env['tt.provider.rate'].sudo().search([('provider_id', '=', provider_id.id), ('date', '<=', datetime.now()), ('currency_id', '=', from_currency_id.id)], limit=1)
@@ -520,7 +521,7 @@ class MasterActivity(models.Model):
                             }
                             res = self.env['tt.master.activity.api.con'].send_product_analytics(product_an_req)
                         except Exception as e:
-                            _logger.error('Error: Failed send Product Analytics. \n %s : %s' % (traceback.format_exc(), str(e)))
+                            _logger.error('Error: Failed to send Product Analytics. \n %s : %s' % (traceback.format_exc(), str(e)))
                     self.env.cr.commit()
 
                 images = self.env['tt.activity.master.images'].search([('activity_id', '=', product_obj.id)])
@@ -1227,9 +1228,12 @@ class MasterActivity(models.Model):
                 'countries': countries_list,
             }
             return ERR.get_no_error(values)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
         except Exception as e:
-            _logger.info('Activity Get Config Error')
-            return ERR.get_error(500)
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1021)
 
     def get_cities_by_api(self, id):
         try:
@@ -1241,9 +1245,12 @@ class MasterActivity(models.Model):
                     'id': rec.id,
                 })
             return ERR.get_no_error(cities)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
         except Exception as e:
-            _logger.info('Activity Get Cities Error')
-            return ERR.get_error(500)
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1021)
 
     def search_by_api(self, req, context):
         try:
@@ -1482,9 +1489,12 @@ class MasterActivity(models.Model):
                 result_list.append(result)
 
             return ERR.get_no_error(result_list)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
         except Exception as e:
             _logger.error(traceback.format_exc())
-            return ERR.get_error(500)
+            return ERR.get_error(1022)
 
     def get_details_by_api(self, req, context):
         try:
@@ -1522,12 +1532,11 @@ class MasterActivity(models.Model):
                 if result_id.voucher_validity_type == 'only_visit_date':
                     voucher_validity = 'Valid only on the stated visit date'
                 elif result_id.voucher_validity_type == 'from_travel_date':
-                    voucher_validity = 'Valid until ' + str(
-                        result_id.voucher_validity_days) + ' days after from the stated visit date'
+                    voucher_validity = 'Valid until ' + str(result_id.voucher_validity_days) + ' days after from the stated visit date'
                 elif result_id.voucher_validity_type == 'after_issue_date':
                     voucher_validity = 'Valid until ' + str(result_id.voucher_validity_days) + ' days after issued date'
                 elif result_id.voucher_validity_type == 'until_date':
-                    voucher_validity = 'Valid until ' + result_id.voucher_validity_date
+                    voucher_validity = 'Valid until ' + str(result_id.voucher_validity_date)
                 else:
                     voucher_validity = '-'
 
@@ -1638,9 +1647,12 @@ class MasterActivity(models.Model):
                 })
                 temp.append(result)
             return ERR.get_no_error(temp)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
         except Exception as e:
-            _logger.info('Activity Search Detail Error')
-            return ERR.get_error(500)
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1022)
 
     def product_update_webhook(self, req, context):
         provider = req.get('provider') and req['provider'] or ''
