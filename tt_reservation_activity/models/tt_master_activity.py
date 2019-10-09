@@ -1532,12 +1532,11 @@ class MasterActivity(models.Model):
                 if result_id.voucher_validity_type == 'only_visit_date':
                     voucher_validity = 'Valid only on the stated visit date'
                 elif result_id.voucher_validity_type == 'from_travel_date':
-                    voucher_validity = 'Valid until ' + str(
-                        result_id.voucher_validity_days) + ' days after from the stated visit date'
+                    voucher_validity = 'Valid until ' + str(result_id.voucher_validity_days) + ' days after from the stated visit date'
                 elif result_id.voucher_validity_type == 'after_issue_date':
                     voucher_validity = 'Valid until ' + str(result_id.voucher_validity_days) + ' days after issued date'
                 elif result_id.voucher_validity_type == 'until_date':
-                    voucher_validity = 'Valid until ' + result_id.voucher_validity_date
+                    voucher_validity = 'Valid until ' + str(result_id.voucher_validity_date)
                 else:
                     voucher_validity = '-'
 
