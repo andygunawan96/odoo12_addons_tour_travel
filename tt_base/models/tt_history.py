@@ -80,6 +80,10 @@ class TtHistory(models.Model):
                 new_value = new_self[0].get(key) and (isinstance(new_self[0].get(key), tuple) and new_self[0].get(key)[1] or new_self[0].get(key)) or 'None'
                 # print(key + ' : ' + str(new_value))
 
+                #kalau value sama skip tidak usah di print
+                if old_value == new_value:
+                    continue
+
                 # Print History
                 if rec.fields_get().get(key)['type'] == 'binary':
                     rec.message_post(body=_("%s has been changed.") %

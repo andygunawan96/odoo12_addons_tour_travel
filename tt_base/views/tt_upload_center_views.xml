@@ -6,13 +6,20 @@
         <field name="model">tt.upload.center</field>
         <field name="arch" type="xml">
             <form string="Upload Center">
-                <group name="info">
-                    <field name="name"/>
-                    <field name="filename"/>
-                    <field name="file_reference"/>
-                    <field name="path"/>
-                    <field name="url" widget="url"/>
-                </group>
+                <sheet>
+                    <group name="info">
+                        <div class="oe_title">
+                            <h1>
+                                <field name="seq_id"/>
+                            </h1>
+                        </div>
+                        <field name="name"/>
+                        <field name="filename"/>
+                        <field name="file_reference"/>
+                        <field name="path" groups="base.user_admin"/>
+                        <field name="url" widget="url"/>
+                    </group>
+                </sheet>
             </form>
         </field>
     </record>
@@ -32,8 +39,9 @@
         <field name="model">tt.upload.center</field>
         <field name="arch" type="xml">
             <tree>
+                <field name="seq_id"/>
                 <field name="name"/>
-                <field name="path"/>
+                <field name="path" groups="base.user_admin"/>
                 <field name="url"/>
                 <field name="create_date"/>
             </tree>

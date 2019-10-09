@@ -248,7 +248,10 @@ class ReservationAirline(models.Model):
             values = self._prepare_booking_api(search_RQ,context)
             booker_obj = self.create_booker_api(booker,context)
             contact_obj = self.create_contact_api(contacts[0],booker_obj,context)
-            list_customer_obj = self.create_customer_api(passengers,context,booker_obj.seq_id,contact_obj.seq_id,['title','sequence'])
+            list_customer_obj = self.create_customer_api(passengers,context,booker_obj.seq_id,contact_obj.seq_id,
+                                                         ['title','sequence',
+                                                          'identity_type','identity_number',
+                                                          'identity_country_of_issued_id','identity_expdate'])
             list_passenger_id = self.create_passenger_api(list_customer_obj,self.env['tt.reservation.passenger.airline'])
 
             values.update({

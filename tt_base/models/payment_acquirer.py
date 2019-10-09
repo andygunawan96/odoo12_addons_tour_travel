@@ -97,9 +97,7 @@ class PaymentAcquirer(models.Model):
                 amount = req.get('amount',0)
 
             dom = [('website_published', '=', True), ('company_id', '=', self.env.user.company_id.id)]
-            # Ambil agent_id Parent nya (Citranya corpor tsb)
-            # if agent_obj.agent_type_id.id in (self.env.ref('tt_base_rodex.agent_type_cor').id,
-            #                                   self.env.ref('tt_base_rodex.agent_type_por').id):
+
             if req['transaction_type'] == 'top_up':
                 # Kalau top up Ambil agent_id HO
                 dom.append(('agent_id', '=', self.env['tt.agent'].sudo().search([('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id )], limit=1).id))

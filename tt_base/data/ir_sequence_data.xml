@@ -33,5 +33,12 @@
             <field name="number_next">100</field>
         </record>
 
+        <record id="seq_upload_center" model="ir.sequence">
+            <field name="name">Upload Center</field>
+            <field name="code">tt.upload.center</field>
+            <field name="prefix">UPC.%(day)s%(sec)s</field>
+            <field name="padding">3</field>
+        </record>
+
     </data>
 </odoo>

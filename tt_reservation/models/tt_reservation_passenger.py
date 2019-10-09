@@ -14,9 +14,10 @@ class TtReservationCustomer(models.Model):
     title = fields.Selection(variables.TITLE, string='Title')
     birth_date = fields.Date('Birth Date')
     nationality_id = fields.Many2one('res.country', 'Nationality')
-    identity_type = fields.Selection(variables.IDENTITY_TYPE, 'Identity Type')
+    identity_type = fields.Selection(variables.IDENTITY_TYPE,'Identity Type')
     identity_number = fields.Char('Identity Number')
-    country_of_issued_id = fields.Many2one('res.country', 'Country of Issued')  # for passport
+    identity_expdate = fields.Date('Identity Expire Date')
+    identity_country_of_issued_id = fields.Many2one('res.country','Identity Issued  Country')
     customer_id = fields.Many2one('tt.customer','Customer Reference')
     sequence = fields.Integer('Sequence')
 
@@ -29,9 +30,10 @@ class TtReservationCustomer(models.Model):
             'title': self.title,
             'birth_date': self.birth_date.strftime('%Y-%m-%d'),
             'nationality_code': self.nationality_id.code and self.nationality_id.code or '',
-            'country_of_issued_code': self.country_of_issued_id.code and self.country_of_issued_id.code or '',
+            'identity_country_of_issued_code': self.identity_country_of_issued_id and self.identity_country_of_issued_id.code or '',
             'identity_type': self.identity_type and self.identity_type or '',
             'identity_number': self.identity_number and self.identity_number or '',
+            'identity_expdate': self.identity_expdate and self.identity_expdate.strftime('%Y-%m-%d'),
             'sequence': self.sequence
         }
         return res

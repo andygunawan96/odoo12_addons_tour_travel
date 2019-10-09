@@ -51,7 +51,8 @@
                             <field name="gender"/>
                             <field name="birth_date"/>
                             <field name="nationality_id"/>
-                            <field name="passport_number"/>
+                            <field name="identity_type"/>
+                            <field name="identity_number"/>
                         </tree>
                     </field>
                 </page>

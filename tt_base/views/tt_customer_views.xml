@@ -8,6 +8,9 @@
                 <header>
                         <button string="Add Identity" name="add_identity_button" type="object"
                                 groups="base.group_user"/>
+
+                        <button string="Update Identity" name="test_vals_cleaner" type="object"
+                                groups="base.group_user"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
@@ -39,16 +42,16 @@
                             <field name="nationality_id"/>
                             <field name="religion"/>
                             <field name="birth_date"/>
-                            <field name="passport_number"/>
-                            <field name="passport_expdate"/>
                         </group>
 
                         <notebook colspan="2">
                             <page string="Identity">
                                 <field name="identity_ids">
                                     <tree editable="bottom">
-                                        <field name="name"/>
-                                        <field name="number"/>
+                                        <field name="identity_type"/>
+                                        <field name="identity_number"/>
+                                        <field name="identity_expdate"/>
+                                        <field name="identity_country_of_issued_id"/>
                                     </tree>
                                 </field>
                             </page>

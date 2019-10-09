@@ -846,7 +846,7 @@ class IssuedOffline(models.Model):
         "email": "asd@gmail.com",
         "calling_code": "62",
         "mobile": "81283182321",
-        "nationality_code": "Indonesia",
+        "nationality_name": "Indonesia",
         "booker_id": ""
     }
 

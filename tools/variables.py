@@ -118,7 +118,9 @@ RELIGION = [
 
 IDENTITY_TYPE = [
     ('ktp', 'KTP'),
+    ('sim', 'SIM'),
     ('passport', 'Passport'),
+    ('other', 'Other'),
 ]
 
 PAX_TYPE = [

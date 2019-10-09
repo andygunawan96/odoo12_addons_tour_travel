@@ -122,7 +122,7 @@ class TtReservation(models.Model):
                 booker_rec.update(update_value)
                 return booker_rec
 
-        country = self.env['res.country'].sudo().search([('code', '=', vals.pop('nationality_code'))])
+        country = self.env['res.country'].sudo().search([('name', '=ilike', vals.pop('nationality_name'))])
         agent_obj = self.env['tt.agent'].sudo().browse(context['co_agent_id'])
 
 
@@ -177,7 +177,7 @@ class TtReservation(models.Model):
                 contact_rec.update(update_value)
                 return contact_rec
 
-        country = self.env['res.country'].sudo().search([('code', '=', vals.pop('nationality_code'))])
+        country = self.env['res.country'].sudo().search([('name', '=ilike', vals.pop('nationality_name'))])
         agent_obj = self.env['tt.agent'].sudo().browse(context['co_agent_id'])
 
         vals.update({
@@ -206,17 +206,11 @@ class TtReservation(models.Model):
         res_ids = []
 
         for psg in passengers:
-            country = country_obj.search([('code', '=', psg.pop('nationality_code'))])
+            country = country_obj.search([('name', '=', psg.pop('nationality_name'))])
             psg['nationality_id'] = country and country[0].id or False
-            if psg.get('country_of_issued_code'):
-                country = country_obj.search([('code', '=', psg.pop('country_of_issued_code'))])
-                psg['country_of_issued_id'] = country and country[0].id or False
-
-            vals_for_update = {}
-            update_list = ['passport_number', 'passport_expdate', 'nationality_id', 'country_of_issued_id', 'passport_issued_date', 'identity_type', 'birth_date']
-            [vals_for_update.update({
-                key: psg[key]
-            }) for key in update_list if psg.get(key)]
+            if psg.get('identity_country_of_issued_name'):
+                country = country_obj.search([('name', '=ilike', psg.pop('identity_country_of_issued_name'))])
+                psg['identity_country_of_issued_id'] = country and country[0].id or False
 
             booker_contact_seq_id = ''
             if psg.get('is_also_booker'):
@@ -231,10 +225,20 @@ class TtReservation(models.Model):
                 if key in extra_list:
                     extra[key] = value
             if (get_psg_seq_id or booker_contact_seq_id) != '':
-
                 current_passenger = passenger_obj.search([('seq_id','=',get_psg_seq_id or booker_contact_seq_id)])
                 if current_passenger:
+                    vals_for_update = {}
+                    update_list = ['nationality_id', 'birth_date']
+
+                    [vals_for_update.update({
+                        key: psg[key]
+                    }) for key in update_list if psg.get(key)]
+
                     current_passenger.update(vals_for_update)
+                    current_passenger.add_or_update_identity(psg.get('identity_type'),
+                                                             psg.get('identity_number'),
+                                                             psg.get('identity_country_of_issued_id'),
+                                                             psg.get('identity_expdate'))
                     res_ids.append((current_passenger,extra))
                     continue
 
@@ -246,6 +250,10 @@ class TtReservation(models.Model):
                 'marital_status': 'married' if psg.get('title') == 'MRS' else '',
             })
             psg_obj = passenger_obj.create(psg)
+            psg_obj.add_or_update_identity(psg.get('identity_type'),
+                                            psg.get('identity_number'),
+                                           psg.get('identity_country_of_issued_id'),
+                                           psg.get('identity_expdate'))
             res_ids.append((psg_obj,extra))
 
         return res_ids

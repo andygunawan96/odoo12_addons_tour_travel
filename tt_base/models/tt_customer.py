@@ -27,15 +27,10 @@ class TtCustomer(models.Model):
     religion = fields.Selection(variables.RELIGION, 'Religion')
     birth_date = fields.Date('Birth Date')
     nationality_id = fields.Many2one('res.country', 'Nationality')
-    country_of_issued_id = fields.Many2one('res.country', 'Country of Issued')
     address_ids = fields.One2many('address.detail', 'customer_id', 'Address Detail')
     phone_ids = fields.One2many('phone.detail', 'customer_id', 'Phone Detail')
     social_media_ids = fields.One2many('social.media.detail', 'customer_id', 'Social Media Detail')
     email = fields.Char('Email')
-    identity_type = fields.Selection(variables.IDENTITY_TYPE, 'Identity Type')
-    identity_number = fields.Char('Identity Number')
-    passport_number = fields.Char(string='Passport Number')
-    passport_expdate = fields.Datetime(string='Passport Exp Date')
     user_ids = fields.One2many('res.users', 'customer_id', 'User')
     customer_bank_detail_ids = fields.One2many('customer.bank.detail', 'customer_id', 'Customer Bank Detail')
     agent_id = fields.Many2one('tt.agent', 'Agent')
@@ -62,7 +57,11 @@ class TtCustomer(models.Model):
         for rec in self:
             body = "Message has been approved on %s", datetime.now()
             rec.message_post(body=body)
-
+    
+    def write(self, vals):
+        # util.vals_cleaner(vals,self)
+        super(TtCustomer, self).write(vals)
+        
     @api.model
     def create(self, vals_list):
         util.pop_empty_key(vals_list)
@@ -73,22 +72,21 @@ class TtCustomer(models.Model):
         phone_list = []
         for rec in self.phone_ids:
             phone_list.append(rec.to_dict())
+        identity_dict = {}
+        for rec in self.identity_ids:
+            identity_dict.update(rec.to_dict())
         res = {
             'name': self.name,
             'first_name': self.first_name,
             'last_name': self.last_name and self.last_name or '',
             'gender': self.gender and self.gender or '',
             'birth_date': self.birth_date and self.birth_date.strftime('%Y-%m-%d') or '',
-            'nationality_code': self.nationality_id and self.nationality_id.code or '',
             'nationality_name': self.nationality_id and self.nationality_id.name or '',
-            'country_of_issued_code': self.country_of_issued_id and self.country_of_issued_id.code or '',
-            'country_of_issued_name': self.country_of_issued_id and self.country_of_issued_id.name or '',
-            'passport_expdate': self.passport_expdate and self.passport_expdate.strftime('%Y-%m-%d') or '',
-            'passport_number': self.passport_number and self.passport_number or '',
             'marital_status': self.marital_status and self.marital_status or '',
             'phones': phone_list,
             'email': self.email and self.email or '',
-            'seq_id': self.seq_id
+            'seq_id': self.seq_id,
+            'identities': identity_dict
         }
         return res
 
@@ -99,10 +97,7 @@ class TtCustomer(models.Model):
             'last_name': self.last_name,
             'gender': self.gender,
             'birth_date': self.birth_date.strftime('%Y-%m-%d'),
-            'nationality_code': self.nationality_id.id,
-            'country_of_issued_id': self.country_of_issued_id.id,
-            'identity_type': self.identity_type,
-            'identity_number': self.identity_number,
+            'nationality_id': self.nationality_id.id,
             'customer_id': self.id,
         }
         return res
@@ -116,12 +111,15 @@ class TtCustomer(models.Model):
                 lower = date.today() - relativedelta(years=req.get('lower'))
                 upper = date.today() - relativedelta(years=req.get('upper'))
             else:
-                lower = date.today() - relativedelta(years=17)
+                lower = date.today() - relativedelta(years=12)
                 upper = date.today() - relativedelta(years=200)
             for cust in customer_list_obj:
                 ###fixme kalau tidak pbirth_date gimana? di asumsikan adult?
                 if cust.birth_date:
                     if not (upper <= cust.birth_date <= lower):
+                        continue
+                else:
+                    if req.get('type') == 'psg' and req['lower']<12:
                         continue
                 values = cust.to_dict()
                 customer_list.append(values)
@@ -132,28 +130,38 @@ class TtCustomer(models.Model):
             return ERR.get_error()
 
     def add_identity_button(self):
-        self.add_or_update_identity('ktp',time.time())
+        self.add_or_update_identity('sim',time.time(),157,'2024-09-01')
 
-    def add_or_update_identity(self,name,number,issued_code):
+    def test_vals_cleaner(self):
+        self.write({
+            'nationality_id': 101,
+            'gender': 'male',
+            'email': 'twesting@gmail.com'
+        })
+        # self.add_or_update_identity('sim','BBBBB',157,'2024-09-01')
+
+    def add_or_update_identity(self,type,number,c_issued_id,expdate):
         not_exist =True
 
         for identity in self.identity_ids:
-            if identity.name == name:
+            if identity.identity_type == type:
                 not_exist = False
                 exixting_identity = identity
                 break
-
+        expdate = expdate if expdate != '' else False
         if not_exist:
             self.env['tt.customer.identity'].create({
-                'name': name,
-                'number': number,
-                'country_of_issued_id': self.env['res.country'].search([('code','=',issued_code)],limit=1).id,
+                'identity_type': type,
+                'identity_number': number,
+                'identity_country_of_issued_id': c_issued_id,
+                'identity_expdate': expdate,
                 'customer_id': self.id
             })
         else:
-            exixting_identity.update({
-                'number': number,
-                'country_of_issued_id': self.env['res.country'].search([('code','=',issued_code)],limit=1).id
+            exixting_identity.write({
+                'identity_number': number,
+                'identity_country_of_issued_id': c_issued_id,
+                'identity_expdate': expdate
             })
 
 
@@ -161,13 +169,12 @@ class TtCustomer(models.Model):
 class TtCustomerIdentityNumber(models.Model):
     _name = "tt.customer.identity"
     _description = "Customer Identity Type"
+    _rec_name = "identity_type"
 
-    name = fields.Selection([('ktp','KTP'),
-                             ('passport','Passport'),
-                             ('sim','SIM'),
-                             ('other','Other')],'Type',required=True)
-    number = fields.Char('Number',required=True)
-    country_of_issued_id = fields.Many2one('res.country','Issued  Country')
+    identity_type = fields.Selection(variables.IDENTITY_TYPE,'Type',required=True)
+    identity_number = fields.Char('Number',required=True)
+    identity_expdate = fields.Date('Expire Date', required=True)
+    identity_country_of_issued_id = fields.Many2one('res.country','Issued  Country')
 
     customer_id = fields.Many2one('tt.customer','Owner',required=True)
 
@@ -182,7 +189,20 @@ class TtCustomerIdentityNumber(models.Model):
         identity_list = identity.customer_id.identity_ids
         for id1 in identity_list:
             for id2 in identity_list:
-                if id1.name == id2.name and id1.id != id2.id:
-                    raise UserError ('%s|%s Already Exists.' % (id1.id,id1.name))
+                if id1.identity_type == id2.identity_type and id1.id != id2.id:
+                    raise UserError ('%s|%s Already Exists.' % (id1.id,id1.identity_type))
 
         return new_identity
+    
+    def write(self, vals):
+        # util.vals_cleaner(vals,self)
+        super(TtCustomerIdentityNumber, self).write(vals)
+        
+    def to_dict(self):
+        return {
+            self.identity_type:{
+                'identity_number': self.identity_number,
+                'identity_expdate': self.identity_expdate and self.identity_expdate.strftime('%Y-%m-%d') or '',
+                'identity_country_of_issued_name': self.identity_country_of_issued_id and self.identity_country_of_issued_id.name or ''
+            }
+        }

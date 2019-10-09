@@ -4,6 +4,7 @@ class TtUploadFile(models.Model):
     _name = 'tt.upload.center'
     _description = 'Upload Center'
 
+    seq_id = fields.Char('Sequence Code')
     name = fields.Char('Reference Name')
     filename = fields.Char('Filename', readonly=True)
     file_reference = fields.Text('File Reference',readonly=True)
@@ -15,4 +16,5 @@ class TtUploadFile(models.Model):
         if len(vals_list) <= 0:
             return self.search([],limit=1)
         vals_list['name'] = '%s %s' % (vals_list.get('filename'),vals_list.get('file_reference'))
+        vals_list['seq_id'] = self.env['ir.sequence'].next_by_code('tt.upload.center')
         return super(TtUploadFile, self).create(vals_list)

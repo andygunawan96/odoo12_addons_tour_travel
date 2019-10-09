@@ -114,12 +114,27 @@
                     <field name="code"/>
                     <field name="currency_id"/>
                     <field name="provider_type_id"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="tt_provider_tree_with_balance_view" model="ir.ui.view">
+            <field name="name">tt.provider.tree.view</field>
+            <field name="model">tt.provider</field>
+            <field name="arch" type="xml">
+                <tree string="Provider">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="currency_id"/>
+                    <field name="provider_type_id"/>
                     <field name="balance"/>
                     <field name="track_balance"/>
                     <field name="active"/>
                 </tree>
             </field>
         </record>
+
 
         <record id="tt_provider_action_view" model="ir.actions.act_window">
             <field name="name">Provider</field>
@@ -135,7 +150,7 @@
             </field>
             <field name="context">
                 {
-                'tree_view_ref': 'tt_base.tt_provider_tree_view'
+                'tree_view_ref': 'tt_base.tt_provider_tree_with_balance_view'
                 }
             </field>
         </record>

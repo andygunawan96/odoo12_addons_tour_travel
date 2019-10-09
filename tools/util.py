@@ -124,3 +124,19 @@ def send_request(url, data=None, headers=None, method=None, cookie=None, is_json
     # })
     # res = Response(values).to_dict()
     # return res
+
+def vals_cleaner(vals,obj):
+    pop_list = []
+    for key,value in vals.items():
+        if hasattr(obj,key):
+            field = getattr(obj,key)
+            if obj._fields[key].type == 'many2one':
+                field = field.id
+
+            if field == value:
+                pop_list.append(key)
+
+    for key in pop_list:
+        del vals[key]
+
+

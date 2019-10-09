@@ -293,7 +293,7 @@ class TtVisa(models.Model):
         "email": "asd@gmail.com",
         "calling_code": "62",
         "mobile": "81823812832",
-        "nationality_code": "Indonesia",
+        "nationality_name": "Indonesia",
         "booker_id": ""
     }
 
@@ -305,7 +305,7 @@ class TtVisa(models.Model):
             "email": "asd@gmail.com",
             "calling_code": "62",
             "mobile": "81823812832",
-            "nationality_code": "Indonesia",
+            "nationality_name": "Indonesia",
             "contact_id": "",
             "is_booker": True
         }
@@ -318,7 +318,7 @@ class TtVisa(models.Model):
             "last_name": "suryajaya",
             "title": "MR",
             "birth_date": "2002-10-01",
-            "nationality_code": "Indonesia",
+            "nationality_name": "Indonesia",
             "country_of_issued_code": "",
             "passport_expdate": "",
             "passport_number": "",

@@ -4,6 +4,7 @@ from datetime import datetime
 
 class TtCronLog(models.Model):
     _name = 'tt.cron.log'
+    _description = 'Base Cron Log Model'
 
     ##run only once
     def create_cron_log_folder(self):
