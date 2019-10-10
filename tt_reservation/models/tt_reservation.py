@@ -227,10 +227,10 @@ class TtReservation(models.Model):
 
             get_psg_seq_id = util.get_without_empty(psg, 'passenger_seq_id')
 
-            extra = {}
-            for key,value in psg.items():
-                if key in extra_list:
-                    extra[key] = value
+            # extra = {}
+            # for key,value in psg.items():
+            #     if key in extra_list:
+            #         extra[key] = value
 
             if (get_psg_seq_id or booker_contact_seq_id) != '':
                 current_passenger = passenger_obj.search([('seq_id','=',get_psg_seq_id or booker_contact_seq_id)])
@@ -245,7 +245,7 @@ class TtReservation(models.Model):
                     current_passenger.update(vals_for_update)
                     if psg.get('identity'):
                         current_passenger.add_or_update_identity(psg['identity'])
-                    res_ids.append((current_passenger,extra))
+                    res_ids.append(current_passenger)
                     continue
 
             util.pop_empty_key(psg)
@@ -261,7 +261,7 @@ class TtReservation(models.Model):
                                                 psg.get('identity_number'),
                                                 psg.get('identity_country_of_issued_id'),
                                                 psg.get('identity_expdate'))
-            res_ids.append((psg_obj,extra))
+            res_ids.append(psg_obj)
 
         return res_ids
 
@@ -275,13 +275,13 @@ class TtReservation(models.Model):
             list_passenger.append(passenger_obj.create(vals).id)
         return list_passenger
 
-    def create_passenger_api_test(self,passenger):
-        list_passenger = []
+    def create_passenger_value_api_test(self,passenger):
+        list_passenger_value = []
         country_obj  = self.env['res.country'].sudo()
         for rec in passenger:
-            nationality_id = country_obj.search([('code','=',rec['nationality_code'])])
+            nationality_id = country_obj.search([('code','=',rec['nationality_code'])],limit=1).id
             identity = rec.get('identity')
-            list_passenger.append((0,0,{
+            list_passenger_value.append((0,0,{
                 'name': "%s %s" % (rec['first_name'],rec['last_name']),
                 'first_name': rec['first_name'],
                 'last_name': rec['last_name'],
@@ -292,12 +292,11 @@ class TtReservation(models.Model):
                 'identity_type': identity and identity['identity_type'] or '',
                 'identity_number': identity and identity['identity_number'] or '',
                 'identity_expdate': identity and identity['identity_expdate'] or False,
-                'identity_country_of_issued_id': identity and country_obj.search([('code','=',identity['identity_country_of_issued_code'])]) or False,
+                'identity_country_of_issued_id': identity and country_obj.search([('code','=',identity['identity_country_of_issued_code'])],limit=1).id or False,
                 'sequence': rec['sequence']
             }))
-        return self.write({
-            'passenger_ids': list_passenger
-        })
+
+        return list_passenger_value
 
     def _compute_total_fare(self):
         for rec in self:

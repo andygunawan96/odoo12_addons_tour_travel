@@ -109,12 +109,9 @@ class TtCustomer(models.Model):
             print("request teropong\n"+json.dumps((req))+json.dumps(context))
             customer_list_obj = self.search([('agent_id','=',context['co_agent_id']),('name','ilike',req['name'])])
             customer_list = []
-            if req.get('lower') and req.get('upper'):
-                lower = date.today() - relativedelta(years=req.get('lower'))
-                upper = date.today() - relativedelta(years=req.get('upper'))
-            else:
-                lower = date.today() - relativedelta(years=12)
-                upper = date.today() - relativedelta(years=200)
+            lower = date.today() - relativedelta(years=req.get('lower',12))
+            upper = date.today() - relativedelta(years=req.get('upper',200))
+
             for cust in customer_list_obj:
                 ###fixme kalau tidak pbirth_date gimana? di asumsikan adult?
                 if cust.birth_date:

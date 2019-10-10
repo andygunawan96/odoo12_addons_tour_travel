@@ -63,7 +63,7 @@ class TtHistory(models.Model):
 
         for rec in self:
             old_self = self.update_ids_only(rec.read(), key_list)
-            a = super(TtHistory, rec).write(value)
+            return super(TtHistory, rec).write(value)
             new_self = self.update_ids_only(rec.read(), key_list)
             # rec_dict = rec.read()
 
@@ -112,7 +112,6 @@ class TtHistory(models.Model):
                                             # value[key],  # New Value
                                             new_value,  # new value
                                             rec.env.user.name))  # User that Changed the Value
-        return a
 
 # For Debug Purposes
 # print(key)
