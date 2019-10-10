@@ -15,8 +15,8 @@ class AgentRegistrationDocument(models.Model):
     state = fields.Selection(STATE, 'State', default='draft')
     description = fields.Text('Description')
     # attachment_ids = fields.One2many('ir.attachment')
-    attachment_ids = fields.Many2many('ir.attachment', 'document_ir_attachments_rel', 'document_id',
-                                      'attachment_id', string='Attachments')
+    document_attach_ids = fields.Many2many('tt.upload.center', 'document_ir_attachments_rel', 'document_id',
+                                           'attachment_id', string='Attachments')
     # attachment_ids = fields.Char('Attachments')
     schedule_date = fields.Datetime('Schedule Date')
     receive_date = fields.Datetime('Receive Date')

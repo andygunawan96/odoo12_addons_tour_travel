@@ -118,7 +118,7 @@ class TtAgent(models.Model):
             },
         }
         if user_dict:
-            vals.update({
+            vals['context'].update({
                 'default_groups_id': [(6, 0, user_dict[0]['groups_id'])]
             })
 
