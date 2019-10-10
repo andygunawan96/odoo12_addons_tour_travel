@@ -28,6 +28,8 @@ class Main(http.Controller):
                 pdf = request.env.ref('tt_report_common.action_report_printout_reservation_hotel')
             elif model_name == 'tt.reservation.train':
                 pdf = request.env.ref('tt_report_common.action_report_printout_reservation_hotel')
+            elif model_name == 'tt.reservation.activity':
+                pdf = request.env.ref('tt_report_common.action_printout_itinerary_activity')
             else:
                 pdf = request.env.ref('tt_report_common.action_report_printout_invoice')
 

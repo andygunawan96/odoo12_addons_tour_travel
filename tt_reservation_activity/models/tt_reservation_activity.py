@@ -688,29 +688,36 @@ class ReservationActivity(models.Model):
         self.action_done()
 
     def get_vouchers_by_api2(self, req, ctx):
-        booking_obj = self.env['tt.reservation.activity'].search([('name', '=', req['order_number'])])
-        temp = self.env['ir.attachment'].search([('res_model', '=', 'tt.reservation.activity'), ('res_id', '=', booking_obj[0]['id'])]).ids
+        try:
+            booking_obj = self.env['tt.reservation.activity'].search([('name', '=', req['order_number'])])
+            temp = self.env['ir.attachment'].search([('res_model', '=', 'tt.reservation.activity'), ('res_id', '=', booking_obj[0]['id'])]).ids
 
-        if not ctx or ctx['co_uid'] == 1:
-            ctx['co_uid'] = booking_obj.booked_uid.id
+            if not ctx or ctx['co_uid'] == 1:
+                ctx['co_uid'] = booking_obj.booked_uid.id
 
-        if not temp:
-            temp = self.get_vouchers_button_api(booking_obj[0]['id'], ctx['co_uid'])
+            if not temp:
+                temp = self.get_vouchers_button_api(booking_obj[0]['id'], ctx['co_uid'])
 
-        result = []
-        for tmp in temp:
-            attachment = self.env['ir.attachment'].browse(tmp)
-            if booking_obj.provider_name == 'globaltix':
-                url = attachment.url
-                r = requests.get(url, stream=True)
-                if r.status_code == 200:
-                    pdf_data = r.content.encode('base64')
-                    result.append(pdf_data.replace('\n', ''))
-            elif booking_obj.provider_name == 'bemyguest':
-                pdf_data = attachment.datas
-                result.append(pdf_data.replace('\n', ''))
-
-        return result
+            result = []
+            if temp:
+                for tmp in temp:
+                    attachment = self.env['ir.attachment'].browse(tmp)
+                    if booking_obj.provider_name == 'globaltix':
+                        url = attachment.url
+                        r = requests.get(url, stream=True)
+                        if r.status_code == 200:
+                            pdf_data = r.content.encode('base64')
+                            result.append(pdf_data.replace('\n', ''))
+                    elif booking_obj.provider_name == 'bemyguest':
+                        pdf_data = attachment.datas
+                        result.append(pdf_data.replace('\n', ''))
+            return ERR.get_no_error(result)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1013)
 
     def get_booking_for_vendor_by_api(self, data, context):
         try:

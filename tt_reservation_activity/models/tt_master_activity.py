@@ -1257,8 +1257,10 @@ class MasterActivity(models.Model):
             query = req.get('query') and '%' + req['query'] + '%' or ''
             country = req.get('country') and req['country'] or ''
             city = req.get('city') and req['city'] or ''
-
-            type_id = req['type_id'] != '0' and self.env['tt.activity.category'].sudo().search([('id', '=', req['type_id']), ('type', '=', 'type')]).id or ''
+            type_id = 0
+            if req.get('type_id'):
+                temp_type_id = req['type_id'] != '0' and self.env['tt.activity.category'].sudo().search([('id', '=', req['type_id']), ('type', '=', 'type')]) or ''
+                type_id = temp_type_id and temp_type_id[0].id or 0
             # sub_category = sub_category != '0' and sub_category or ''
 
             get_cat_instead = 0
@@ -1293,25 +1295,25 @@ class MasterActivity(models.Model):
             sql_query += "where "
 
             if query:
-                sql_query += "themes.name ilike '" + query + "' "
+                sql_query += "themes.name ilike '" + str(query) + "' "
             else:
                 sql_query += "themes.active = True "
 
             if type_id:
-                sql_query += 'and typerel.type_id = ' + type_id + ' '
+                sql_query += 'and typerel.type_id = ' + str(type_id) + ' '
 
             if category:
-                sql_query += 'and catrel.category_id = ' + category + ' '
+                sql_query += 'and catrel.category_id = ' + str(category) + ' '
 
             if req.get('country') and not req.get('city'):
-                sql_query += "and (loc.country_id = " + country + ") "
+                sql_query += "and (loc.country_id = " + str(country) + ") "
 
             if req.get('city'):
-                sql_query += "and (loc.country_id = " + country + " and loc.city_id = " + city + ") "
+                sql_query += "and (loc.country_id = " + str(country) + " and loc.city_id = " + str(city) + ") "
 
             if provider in ['globaltix', 'bemyguest', 'klook']:
                 if provider_id:
-                    sql_query += "and themes.provider_id = '" + provider_id.id + "' "
+                    sql_query += "and themes.provider_id = '" + str(provider_id.id) + "' "
 
             if query:
                 sql_query += 'and themes.active = True '
