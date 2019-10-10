@@ -53,10 +53,11 @@ def get_no_error(response=''):
 
 
 class RequestException(Exception):
-    def __init__(self, code):
+    def __init__(self, code, additional_message=''):
+        add_msg = ', %s' % additional_message if additional_message else ''
         err_dict = get_error(code)
         self.code = err_dict['error_code']
-        self.message = err_dict['error_msg']
+        self.message = '%s%s' % (err_dict['error_msg'], add_msg)
         super(RequestException, self).__init__(err_dict['error_msg'])
 
     def __str__(self):

@@ -4,6 +4,7 @@ from datetime import datetime,date
 from dateutil.relativedelta import relativedelta
 from odoo.tools import image
 from ...tools import variables,util,ERR
+from ...tools.ERR import RequestException
 import json,time
 import logging,traceback
 
@@ -141,15 +142,27 @@ class TtCustomer(models.Model):
         })
         # self.add_or_update_identity('sim','BBBBB',157,'2024-09-01')
 
-    def add_or_update_identity(self,type,number,c_issued_id,expdate):
+    def add_or_update_identity(self,data):
         not_exist =True
+        try:
+            number = data['identity_number']
+            type = data['identity_type']
+            expdate = data['identity_expdate']
+            c_issued_id = data['identity_country_of_issued_code']
+        except:
+            raise RequestException(1023,additional_message="Missing key.")
 
         for identity in self.identity_ids:
             if identity.identity_type == type:
                 not_exist = False
                 exixting_identity = identity
                 break
-        expdate = expdate if expdate != '' else False
+
+        country = self.env['res.country'].search([('code', '=', c_issued_id)])
+        c_issued_id = country and country[0].id or False
+        if not c_issued_id:
+            raise RequestException(1023,additional_message="Country not found.")
+
         if not_exist:
             self.env['tt.customer.identity'].create({
                 'identity_type': type,
