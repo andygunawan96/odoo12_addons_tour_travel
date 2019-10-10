@@ -1,5 +1,6 @@
 from odoo import api, fields, models, _
 from ...tools import variables, util, ERR
+from ...tools.ERR import RequestException
 import logging, traceback
 
 _logger = logging.getLogger(__name__)
@@ -122,7 +123,7 @@ class TtReservation(models.Model):
                 booker_rec.update(update_value)
                 return booker_rec
 
-        country = self.env['res.country'].sudo().search([('name', '=ilike', vals.pop('nationality_name'))])
+        country = self.env['res.country'].sudo().search([('code', '=', vals.pop('nationality_code'))])
         agent_obj = self.env['tt.agent'].sudo().browse(context['co_agent_id'])
 
 
@@ -177,7 +178,7 @@ class TtReservation(models.Model):
                 contact_rec.update(update_value)
                 return contact_rec
 
-        country = self.env['res.country'].sudo().search([('name', '=ilike', vals.pop('nationality_name'))])
+        country = self.env['res.country'].sudo().search([('code', '=', vals.pop('nationality_code'))])
         agent_obj = self.env['tt.agent'].sudo().browse(context['co_agent_id'])
 
         vals.update({
@@ -204,9 +205,10 @@ class TtReservation(models.Model):
         passenger_obj = self.env['tt.customer'].sudo()
 
         res_ids = []
+        identity_req = ['identity_number','identity_country_of_issued_id','identity_expdate','identity_type']
 
         for psg in passengers:
-            country = country_obj.search([('name', '=', psg.pop('nationality_name'))])
+            country = country_obj.search([('code', '=', psg.pop('nationality_code'))])
             psg['nationality_id'] = country and country[0].id or False
             if psg.get('identity_country_of_issued_name'):
                 country = country_obj.search([('name', '=ilike', psg.pop('identity_country_of_issued_name'))])
@@ -218,12 +220,22 @@ class TtReservation(models.Model):
             elif psg.get('is_also_contact'):
                 booker_contact_seq_id = contact_seq_id
 
+
+            status_req = [psg.get(k) and psg[k] != '' or False for k in identity_req]
+
+            print(status_req)
+            if any(status_req):
+                if not all(status_req):
+                    raise RequestException(1023)
+
+
             get_psg_seq_id = util.get_without_empty(psg, 'passenger_seq_id')
 
             extra = {}
             for key,value in psg.items():
                 if key in extra_list:
                     extra[key] = value
+            util.pop_empty_key(extra)
             if (get_psg_seq_id or booker_contact_seq_id) != '':
                 current_passenger = passenger_obj.search([('seq_id','=',get_psg_seq_id or booker_contact_seq_id)])
                 if current_passenger:
@@ -235,10 +247,11 @@ class TtReservation(models.Model):
                     }) for key in update_list if psg.get(key)]
 
                     current_passenger.update(vals_for_update)
-                    current_passenger.add_or_update_identity(psg.get('identity_type'),
-                                                             psg.get('identity_number'),
-                                                             psg.get('identity_country_of_issued_id'),
-                                                             psg.get('identity_expdate'))
+                    if psg.get('identity_number'):
+                        current_passenger.add_or_update_identity(psg.get('identity_type'),
+                                                                 psg.get('identity_number'),
+                                                                 psg.get('identity_country_of_issued_id'),
+                                                                 psg.get('identity_expdate'))
                     res_ids.append((current_passenger,extra))
                     continue
 
@@ -250,10 +263,11 @@ class TtReservation(models.Model):
                 'marital_status': 'married' if psg.get('title') == 'MRS' else '',
             })
             psg_obj = passenger_obj.create(psg)
-            psg_obj.add_or_update_identity(psg.get('identity_type'),
-                                            psg.get('identity_number'),
-                                           psg.get('identity_country_of_issued_id'),
-                                           psg.get('identity_expdate'))
+            if psg.get('identity_number'):
+                psg_obj.add_or_update_identity(psg.get('identity_type'),
+                                                psg.get('identity_number'),
+                                                psg.get('identity_country_of_issued_id'),
+                                                psg.get('identity_expdate'))
             res_ids.append((psg_obj,extra))
 
         return res_ids

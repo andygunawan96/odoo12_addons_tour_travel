@@ -81,6 +81,7 @@ class TtCustomer(models.Model):
             'last_name': self.last_name and self.last_name or '',
             'gender': self.gender and self.gender or '',
             'birth_date': self.birth_date and self.birth_date.strftime('%Y-%m-%d') or '',
+            'nationality_code': self.nationality_id and self.nationality_id.code or '',
             'nationality_name': self.nationality_id and self.nationality_id.name or '',
             'marital_status': self.marital_status and self.marital_status or '',
             'phones': phone_list,
@@ -203,6 +204,7 @@ class TtCustomerIdentityNumber(models.Model):
             self.identity_type:{
                 'identity_number': self.identity_number,
                 'identity_expdate': self.identity_expdate and self.identity_expdate.strftime('%Y-%m-%d') or '',
-                'identity_country_of_issued_name': self.identity_country_of_issued_id and self.identity_country_of_issued_id.name or ''
+                'identity_country_of_issued_name': self.identity_country_of_issued_id and self.identity_country_of_issued_id.name or '',
+                'identity_country_of_issued_code': self.identity_country_of_issued_id and self.identity_country_of_issued_id.code or ''
             }
         }
