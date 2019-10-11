@@ -63,7 +63,7 @@ class TtHistory(models.Model):
 
         for rec in self:
             old_self = self.update_ids_only(rec.read(), key_list)
-            return super(TtHistory, rec).write(value)
+            super(TtHistory, rec).write(value)
             new_self = self.update_ids_only(rec.read(), key_list)
             # rec_dict = rec.read()
 
