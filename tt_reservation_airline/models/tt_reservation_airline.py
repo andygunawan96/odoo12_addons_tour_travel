@@ -254,8 +254,7 @@ class ReservationAirline(models.Model):
             # list_passenger_id = self.create_passenger_api(list_customer_obj,self.env['tt.reservation.passenger.airline'])
 
             list_passenger_value = self.create_passenger_value_api_test(passengers)
-            list_customer_id = self.create_customer_api(passengers,context,booker_obj.seq_id,contact_obj.seq_id,
-                                                         ['title','sequence','identity'])
+            list_customer_id = self.create_customer_api(passengers,context,booker_obj.seq_id,contact_obj.seq_id)
 
             #fixme diasumsikan idxny sama karena sama sama looping by rec['psg']
             for idx,rec in enumerate(list_passenger_value):

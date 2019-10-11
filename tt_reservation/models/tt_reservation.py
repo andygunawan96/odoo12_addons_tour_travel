@@ -200,7 +200,7 @@ class TtReservation(models.Model):
 
         return contact_obj.create(vals)
 
-    def create_customer_api(self,passengers,context,booker_seq_id=False,contact_seq_id=False,extra_list=[]):
+    def create_customer_api(self,passengers,context,booker_seq_id=False,contact_seq_id=False):
         country_obj = self.env['res.country'].sudo()
         passenger_obj = self.env['tt.customer'].sudo()
 
@@ -217,20 +217,7 @@ class TtReservation(models.Model):
             elif psg.get('is_also_contact'):
                 booker_contact_seq_id = contact_seq_id
 
-            # status_req = [psg.get(k) and psg[k] != '' or False for k in identity_req]
-            #
-            # print(status_req)
-            # if any(status_req):
-            #     if not all(status_req):
-            #         raise RequestException(1023)
-
-
             get_psg_seq_id = util.get_without_empty(psg, 'passenger_seq_id')
-
-            # extra = {}
-            # for key,value in psg.items():
-            #     if key in extra_list:
-            #         extra[key] = value
 
             if (get_psg_seq_id or booker_contact_seq_id) != '':
                 current_passenger = passenger_obj.search([('seq_id','=',get_psg_seq_id or booker_contact_seq_id)])
@@ -279,7 +266,7 @@ class TtReservation(models.Model):
         list_passenger_value = []
         country_obj  = self.env['res.country'].sudo()
         for rec in passenger:
-            nationality_id = country_obj.search([('code','=',rec['nationality_code'])],limit=1).id
+            nationality_id = country_obj.search([('code','=ilike',rec['nationality_code'])],limit=1).id
             identity = rec.get('identity')
             list_passenger_value.append((0,0,{
                 'name': "%s %s" % (rec['first_name'],rec['last_name']),
@@ -292,7 +279,7 @@ class TtReservation(models.Model):
                 'identity_type': identity and identity['identity_type'] or '',
                 'identity_number': identity and identity['identity_number'] or '',
                 'identity_expdate': identity and identity['identity_expdate'] or False,
-                'identity_country_of_issued_id': identity and country_obj.search([('code','=',identity['identity_country_of_issued_code'])],limit=1).id or False,
+                'identity_country_of_issued_id': identity and country_obj.search([('code','=ilike',identity['identity_country_of_issued_code'])],limit=1).id or False,
                 'sequence': rec['sequence']
             }))
 

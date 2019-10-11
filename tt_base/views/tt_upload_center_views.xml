@@ -18,6 +18,7 @@
                         <field name="file_reference"/>
                         <field name="path" groups="base.user_admin"/>
                         <field name="url" widget="url"/>
+                        <field name="agent_id"/>
                     </group>
                 </sheet>
             </form>

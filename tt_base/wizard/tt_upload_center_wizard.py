@@ -15,13 +15,13 @@ class SplitInvoice(models.TransientModel):
 
     def upload_from_button(self):
         # self.upload(self.filename,self.file_reference,base64.b64decode(self.file))
-        self.upload(self.filename,self.file_reference,self.file)
+        self.upload(self.filename,self.file_reference,self.file,{'co_agent_id': self.env.user.agent_id.id})
 
     def upload_file_api(self,data,context):
-        return self.upload(data['filename'],data['file_reference'],data['file'])
+        return self.upload(data['filename'],data['file_reference'],data['file'],context)
 
     #file is encoded in base64
-    def upload(self,filename,file_reference,file):
+    def upload(self,filename,file_reference,file,context):
         pattern = re.compile('^[a-zA-Z0-9](?:[a-zA-Z0-9 ._-]*[a-zA-Z0-9])?\.[a-zA-Z0-9_-]+$')
         if not pattern.match(filename):
             raise UserError('Filename Is Not Valid')
@@ -31,14 +31,14 @@ class SplitInvoice(models.TransientModel):
             # path = '/home/rodex-it-05/Documents/test/upload_odoo/%s' % (self.filename)
             new_file = open(path,'wb')
             new_file.write(base64.b64decode(file))
-            # new_file.write(file)
             new_file.close()
 
             self.env['tt.upload.center'].sudo().create({
                 'filename': filename,
                 'file_reference': file_reference,
                 'path': path,
-                'url': url
+                'url': url,
+                'agent_id': context['co_agent_id']
             })
 
             _logger.info('Finish Upload')

@@ -10,6 +10,7 @@ class TtUploadFile(models.Model):
     file_reference = fields.Text('File Reference',readonly=True)
     path = fields.Char('Path', readonly=True)
     url = fields.Char('URL')
+    agent_id = fields.Many2one('tt.agent','Owner')
 
     @api.model
     def create(self, vals_list):
