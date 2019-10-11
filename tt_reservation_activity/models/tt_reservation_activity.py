@@ -437,12 +437,35 @@ class ReservationActivity(models.Model):
             if provider_id:
                 provider_id = provider_id[0]
 
+            list_passenger_value = self.create_passenger_value_api_test(passengers)
+            pax_ids = self.create_customer_api(passengers, context, booker_obj.seq_id, contact_obj.seq_id, [])
+
+            for idx, temp_pax in enumerate(passengers):
+                pax_options = []
+                if temp_pax.get('api_data'):
+                    for temp_psg_opt in temp_pax['api_data']:
+                        pax_opt_vals = {
+                            'name': temp_psg_opt['name'],
+                            'value': temp_psg_opt['value'],
+                        }
+                        pax_opt_obj = self.env['tt.reservation.passenger.activity.option'].sudo().create(pax_opt_vals)
+                        pax_options.append(pax_opt_obj.id)
+                list_passenger_value[idx][2].update({
+                    'customer_id': pax_ids[idx].id,
+                    'title': temp_pax['title'],
+                    'pax_type': temp_pax['pax_type'],
+                    'activity_sku_id': temp_pax.get('sku_real_id', 0),
+                    'option_ids': [(6, 0, pax_options)],
+                })
+
             header_val.update({
                 'contact_id': contact_obj.id,
                 'booker_id': booker_obj.id,
+                'passenger_ids': list_passenger_value,
                 'contact_name': contact_data['first_name'] + ' ' + contact_data['last_name'],
                 'contact_email': contact_data.get('email') and contact_data['email'] or '',
-                'contact_phone': contact_data.get('mobile') and str(contact_data['calling_code']) + str(contact_data['mobile']),
+                'contact_phone': contact_data.get('mobile') and str(contact_data['calling_code']) + str(
+                    contact_data['mobile']),
                 'state': 'booked',
                 'date': datetime.now(),
                 'agent_id': context['co_agent_id'],
@@ -464,7 +487,8 @@ class ReservationActivity(models.Model):
 
             if search_request.get('timeslot'):
                 header_val.update({
-                    'timeslot': str(search_request['timeslot']['startTime']) + ' - ' + str(search_request['timeslot']['endTime']),
+                    'timeslot': str(search_request['timeslot']['startTime']) + ' - ' + str(
+                        search_request['timeslot']['endTime']),
                 })
 
             if not activity_type_id.instantConfirmation:
@@ -492,30 +516,6 @@ class ReservationActivity(models.Model):
                         'booking_id': book_obj.id
                     })
 
-            pax_ids = self.create_customer_api(passengers, context, booker_obj.seq_id, contact_obj.seq_id, ['title', 'pax_type', 'api_data', 'sku_real_id'])
-
-            for idx, psg in enumerate(pax_ids):
-                temp_obj = psg[0]
-                extra_dict = psg[1]
-                vals = temp_obj.copy_to_passenger()
-                vals.update({
-                    'booking_id': book_obj.id,
-                    'title': extra_dict['title'],
-                    'pax_type': extra_dict['pax_type'],
-                    'activity_sku_id': extra_dict.get('sku_real_id', 0),
-                    'sequence': idx + 1,
-                })
-                psg_obj = self.env['tt.reservation.passenger.activity'].sudo().create(vals)
-                if extra_dict.get('api_data'):
-                    for temp_psg_opt in extra_dict['api_data']:
-                        pax_opt_vals = {
-                            'name': temp_psg_opt['name'],
-                            'value': temp_psg_opt['value'],
-                            'activity_passenger_id': psg_obj.id
-                        }
-                        self.env['tt.reservation.passenger.activity.option'].sudo().create(pax_opt_vals)
-
-            # book_obj.customer_parent_id = booker_obj.customer_parent_id.id
             provider_activity_vals = {
                 'booking_id': book_obj.id,
                 'activity_id': activity_type_id.activity_id.id,
@@ -588,17 +588,6 @@ class ReservationActivity(models.Model):
         try:
             ids = []
             for rec in res2['response']['ticket']:
-                if res2['response']['provider'] == 'globaltix':
-                    attachment_value = {
-                        'name': 'Ticket.pdf',
-                        'datas_fname': 'Ticket.pdf',
-                        'res_model': 'tt.reservation.activity',
-                        'res_id': obj.id,
-                        'type': 'url',
-                        'mimetype': res2['response']['format'],
-                        'url': rec,
-                    }
-
                 if res2['response']['provider'] == 'bemyguest':
                     pdf_data = pickle.loads(rec.encode())
                     if not pdf_data:
@@ -618,8 +607,12 @@ class ReservationActivity(models.Model):
                 self.env.cr.commit()
                 ids.append(attachment_obj.id)
             return ids
-        except Exception:
-            return False
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1013)
 
     def resend_voucher_button(self):
         view = self.env.ref('tt_reservation_activity.activity_voucher_wizard')
@@ -646,28 +639,6 @@ class ReservationActivity(models.Model):
         res2 = self.env['tt.activity.api.con'].get_vouchers(req)
 
         for rec in res2['response']['ticket']:
-            if res2['response']['provider'] == 'klook':
-                attachment_value = {
-                    'name': 'Ticket.pdf',
-                    'datas_fname': 'Ticket.pdf',
-                    'res_model': 'tt.reservation.activity',
-                    'res_id': self.id,
-                    'type': 'url',
-                    'mimetype': res2['response']['format'],
-                    'url': rec,
-                }
-
-            if res2['response']['provider'] == 'globaltix':
-                attachment_value = {
-                    'name': 'Ticket.pdf',
-                    'datas_fname': 'Ticket.pdf',
-                    'res_model': 'tt.reservation.activity',
-                    'res_id': self.id,
-                    'type': 'url',
-                    'mimetype': res2['response']['format'],
-                    'url': rec,
-                }
-
             if res2['response']['provider'] == 'bemyguest':
                 pdf_data = pickle.loads(rec)
                 if not pdf_data:
