@@ -1027,8 +1027,8 @@ class TestSearch(models.Model):
             }
 
     def get_top_facility(self, limit):
-        return [{'facility_id': facility.id, 'facility_name': facility.name, 'sequence': facility.sequence,
-                 'image_url': facility.image_url, 'image_url2': facility.image_url2} for
+        return [{'facility_id': facility.facility_id.id, 'facility_name': facility.name, 'sequence': facility.sequence,
+                 'image_url': facility.image_url, 'image_url2': facility.image_url2, 'internal_code': facility.internal_code,} for
                 facility in self.env['tt.hotel.top.facility'].search([], limit=limit)]
 
 

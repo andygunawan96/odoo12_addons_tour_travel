@@ -29,4 +29,5 @@ class HotelTopFacility(models.Model):
     image_url2 = fields.Char('Image URL #2')
     image_url3 = fields.Char('Image URL #3')
     sequence = fields.Integer('Sequence')
+    internal_code = fields.Integer('Internal Code')
     active = fields.Boolean('Active', default=True)
