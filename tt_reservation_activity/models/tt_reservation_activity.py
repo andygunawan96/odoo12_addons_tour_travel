@@ -103,6 +103,7 @@ class ReservationActivity(models.Model):
     information = fields.Text('Additional Information')
     file_upload = fields.Text('File Upload')
     voucher_url = fields.Text('Voucher URL')
+    voucher_url_ids = fields.Many2many('tt.upload.center', 'activity_voucher_rel', 'activity_id', 'voucher_id', 'Voucher URLs')
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', default=lambda self: self.env.ref('tt_reservation_activity.tt_provider_type_activity'))
     option_ids = fields.One2many('tt.reservation.activity.option', 'booking_id', 'Options')
 
@@ -438,7 +439,7 @@ class ReservationActivity(models.Model):
                 provider_id = provider_id[0]
 
             list_passenger_value = self.create_passenger_value_api_test(passengers)
-            pax_ids = self.create_customer_api(passengers, context, booker_obj.seq_id, contact_obj.seq_id, [])
+            pax_ids = self.create_customer_api(passengers, context, booker_obj.seq_id, contact_obj.seq_id)
 
             for idx, temp_pax in enumerate(passengers):
                 pax_options = []
@@ -575,7 +576,7 @@ class ReservationActivity(models.Model):
             res.append(rec['activity_id'])
         return res
 
-    def get_vouchers_button_api(self, obj_id, co_uid):
+    def get_vouchers_button_api(self, obj_id, context):
         obj = self.env['tt.reservation.activity'].browse(obj_id)
         req = {
             'order_number': obj.name,
@@ -586,27 +587,20 @@ class ReservationActivity(models.Model):
         res2 = self.env['tt.activity.api.con'].get_vouchers(req)
 
         try:
-            ids = []
-            for rec in res2['response']['ticket']:
+            attachment_objs = []
+            for idx, rec in enumerate(res2['response']['ticket']):
                 if res2['response']['provider'] == 'bemyguest':
-                    pdf_data = pickle.loads(rec.encode())
-                    if not pdf_data:
-                        return False
+                    # pdf_data = pickle.loads(rec.encode())
 
                     attachment_value = {
-                        'name': 'Ticket.pdf',
-                        'datas': base64.encodebytes(pdf_data),
-                        'datas_fname': 'Ticket.pdf',
-                        'res_model': 'tt.reservation.activity',
-                        'res_id': obj.id,
-                        'type': 'binary',
-                        'mimetype': 'application/x-pdf',
+                        'filename': 'Activity_Ticket.pdf',
+                        'file_reference': str(obj.name) + ' ' + str(idx+1),
+                        'file': base64.b64encode(rec.encode()),
                     }
-
-                attachment_obj = self.env['ir.attachment'].sudo().create(attachment_value)
-                self.env.cr.commit()
-                ids.append(attachment_obj.id)
-            return ids
+                    attachment_obj = self.env['tt.upload.center.wizard'].upload_file_api(attachment_value, context)
+                    if attachment_obj['error_code'] == 0:
+                        attachment_objs.append(attachment_obj['response'])
+            return attachment_objs
         except RequestException as e:
             _logger.error(traceback.format_exc())
             return e.error_dict()
@@ -667,21 +661,21 @@ class ReservationActivity(models.Model):
                 ctx['co_uid'] = booking_obj.booked_uid.id
 
             if not temp:
-                temp = self.get_vouchers_button_api(booking_obj[0]['id'], ctx['co_uid'])
+                temp = self.get_vouchers_button_api(booking_obj[0]['id'], ctx)
 
             result = []
-            if temp:
-                for tmp in temp:
-                    attachment = self.env['ir.attachment'].browse(tmp)
-                    if booking_obj.provider_name == 'globaltix':
-                        url = attachment.url
-                        r = requests.get(url, stream=True)
-                        if r.status_code == 200:
-                            pdf_data = r.content.encode('base64')
-                            result.append(pdf_data.replace('\n', ''))
-                    elif booking_obj.provider_name == 'bemyguest':
-                        pdf_data = attachment.datas
-                        result.append(pdf_data.replace('\n', ''))
+            # if temp:
+            #     for tmp in temp:
+            #         attachment = self.env['ir.attachment'].browse(tmp)
+            #         if booking_obj.provider_name == 'globaltix':
+            #             url = attachment.url
+            #             r = requests.get(url, stream=True)
+            #             if r.status_code == 200:
+            #                 pdf_data = r.content.encode('base64')
+            #                 result.append(pdf_data.replace('\n', ''))
+            #         elif booking_obj.provider_name == 'bemyguest':
+            #             pdf_data = attachment.datas
+            #             result.append(pdf_data.replace('\n', ''))
             return ERR.get_no_error(result)
         except RequestException as e:
             _logger.error(traceback.format_exc())
