@@ -11,7 +11,7 @@ class TtCronLogInhResv(models.Model):
     def cron_update_status_booking(self):
         try:
             cookie = ''
-            booking_objs = self.env['tt.reservation.activity'].search([('state', 'not in', ['rejected', 'cancel', 'done', 'cancel2', 'refund'])])
+            booking_objs = self.env['tt.reservation.activity'].search([('state', 'not in', ['rejected', 'cancel', 'done', 'cancel2', 'refund', 'fail_issued'])])
             for rec in booking_objs:
                 req = {
                     'provider': rec['provider_name'],
@@ -29,7 +29,7 @@ class TtCronLogInhResv(models.Model):
                         else:
                             rec.action_failed_sync()
                             values = {
-                                'status': 'failed',
+                                'status': 'fail_issued',
                             }
                         if rec['state'] != values['status']:
                             self.env['tt.reservation.activity'].send_notif_update_status_activity(rec, values['status'])
