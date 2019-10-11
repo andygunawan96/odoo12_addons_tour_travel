@@ -18,7 +18,7 @@ COMPANY_TYPE = [
 STATE = [
     ('draft', 'Draft'),
     ('confirm', 'Confirm'),
-    ('progress', 'Progress'),
+    ('progress', 'Surveying'),
     ('payment', 'Payment'),
     ('validate', 'Validate'),
     ('done', 'Done'),
@@ -43,7 +43,9 @@ class AgentRegistration(models.Model):
     active = fields.Boolean('Active', default=True)
     parent_agent_id = fields.Many2one('tt.agent', string="Parent Agent", Help="Agent who became Parent of This Agent",
                                       readonly=True)
-    agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', required=True)
+    agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', required=True, readonly=True,
+                                    states={'draft': [('readonly', False)],
+                                            'confirm': [('readonly', False)]})
     agent_id = fields.Many2one('tt.agent', 'Agent ID', readonly=True)
     currency_id = fields.Many2one('res.currency', string='Currency')
     company_type = fields.Selection(COMPANY_TYPE, 'Company Type', default='individual')
@@ -102,7 +104,7 @@ class AgentRegistration(models.Model):
                                         states={'validate': [('readonly', False)]},
                                         help='''Checklist dokumen untuk agent, seperti seragam, banner, kartu nama, dll''')
 
-    tac = fields.Text('Terms and Conditions', readonly=True, states={'draft': [('readonly', False)],
+    tac = fields.Html('Terms and Conditions', readonly=True, states={'draft': [('readonly', False)],
                                                                      'confirm': [('readonly', False)]})
 
     def print_agent_registration_invoice(self):
@@ -137,13 +139,14 @@ class AgentRegistration(models.Model):
     def set_parent_agent_id(self):
         for rec in self:
             if rec.agent_type_id:
-                if rec.agent_type_id.code == 'citra':
-                    rec.parent_agent_id = rec.env['tt.agent'].sudo().search([('agent_type_id.code', '=', 'ho')],
+                if rec.agent_type_id.id == self.env.ref('tt_base.agent_type_citra').id:
+                    rec.parent_agent_id = rec.env['tt.agent'].sudo().search([('agent_type_id.id', '=', self.env.ref('tt_base.agent_type_ho').id)],
                                                                             limit=1)
                 else:
                     rec.parent_agent_id = rec.env.user.agent_id
             else:
                 rec.parent_agent_id = rec.env.user.agent_id
+            rec.tac = rec.agent_type_id.terms_and_condition
 
     @api.depends('agent_type_id')
     @api.onchange('agent_type_id')
@@ -206,17 +209,72 @@ class AgentRegistration(models.Model):
     def check_opening_documents(self):
         for rec in self.open_document_ids:
             if rec.state != 'done':
-                raise UserError(_('You have to Confirmed all The Opening Documents first.'))
+                raise UserError(_('You have to confirmed all the opening documents first.'))
 
     def set_agent_address(self):
-        print('Set Agent Address')
-        print(self.env.user.agent_id.id)
         if self.address_ids:
-            for rec in self:
+            for rec in self.address_ids:
                 if rec.env.user.agent_id.id is False or '':
-                    rec.address_ids.agent_id = False
+                    rec.agent_id = False
                 else:
-                    rec.address_ids.agent_id = rec.env.user.agent_id
+                    rec.agent_id = rec.env.user.agent_id
+
+    def get_all_users(self):
+        query = "SELECT * FROM res_users"
+        self.env.cr.execute(query)
+        _logger.info(query)
+        return self.env.cr.dictfetchall()
+
+    def get_all_registration_documents(self):
+        regis_doc_env = self.env['tt.document.type']
+        regis_doc_ids = regis_doc_env.search([])
+
+        agent_type_list = []
+        agent_type_env = self.env['tt.agent.type']
+        agent_type_ids = agent_type_env.search([])
+
+        for agent_type in agent_type_ids:
+            val = {
+                'id': agent_type.id,
+                'name': agent_type.name,
+                'code': agent_type.code,
+                'docs': []
+            }
+            agent_type_list.append(val)
+
+        for rec in regis_doc_ids:
+            if rec.document_type == 'registration':
+                agent_types = []
+                for agent_type in rec['agent_type_ids']:
+                    agent_type_vals = {
+                        'id': agent_type['id'],
+                        'name': agent_type['name'],
+                        'code': agent_type['code']
+                    }
+                    agent_types.append(agent_type_vals)
+
+                val = {
+                    'id': rec.id,
+                    'document_type': rec.document_type,
+                    'display_name': rec.display_name,
+                    'description': rec.description
+                }
+
+                for agent_type in agent_type_list:
+                    for doc_agent_type in agent_types:
+                        if doc_agent_type['id'] == agent_type['id']:
+                            agent_type['docs'].append(val)
+        return agent_type_list
+
+    def check_user_contact(self):
+        users = self.get_all_users()
+        if self.agent_registration_customer_ids:
+            for rec in self.agent_registration_customer_ids:
+                for user in users:
+                    if rec.email in user.get('login'):
+                        raise UserError(_('Contact with email : ' + rec.email + ' already exists. Please use another email.'))
+        else:
+            raise UserError(_('Please input contact information.'))
 
     def check_tac(self):
         if self.state == 'confirm':
@@ -224,7 +282,7 @@ class AgentRegistration(models.Model):
                 raise UserError('Terms and Conditions is Empty')
 
     def get_parent_citra(self, parent_agent_id):
-        if parent_agent_id.parent_agent_id.agent_type_id.code == 'citra':
+        if parent_agent_id.parent_agent_id.agent_type_id.id == self.env.ref('tt_base.agent_type_citra').id:
             return parent_agent_id.parent_agent_id
         else:
             return self.get_parent_citra(parent_agent_id.parent_agent_id)
@@ -233,26 +291,31 @@ class AgentRegistration(models.Model):
         self.calc_ledger()
         line_obj = self.env['tt.agent.registration.promotion.agent.type'].search(
             [('promotion_id', '=', self.promotion_id.id), ('agent_type_id', '=', self.agent_type_id.id)])
-        if self.reference_id.agent_type_id.code == 'japro':
+        # if self.reference_id.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id:
+        #     self.calc_commission_ho(line_obj)
+        if self.reference_id.agent_type_id.id == self.env.ref('tt_base.agent_type_japro').id:
             self.calc_commission_japro(line_obj)
-        elif self.reference_id.agent_type_id.code == 'citra':
+        elif self.reference_id.agent_type_id.id == self.env.ref('tt_base.agent_type_citra').id:
             self.calc_commission_citra(line_obj)
 
     def calc_ledger(self):
         ledger = self.env['tt.ledger']
 
         agent_comm_vals = ledger.prepare_vals('Recruit Fee : ' + self.name, 'Recruit Fee : ' + self.name,
-                                              datetime.now(), 3, self.currency_id.id, 0, self.total_fee)
+                                              datetime.now(), 2, self.currency_id.id, 0, self.total_fee)
         agent_comm_vals = ledger.prepare_vals_for_agent_regis(self, agent_comm_vals)
         agent_comm_vals.update({
             'agent_id': self.parent_agent_id.id
         })
         self.env['tt.ledger'].create(agent_comm_vals)
 
+    def calc_commission_ho(self, line_obj):
+        pass
+
     def calc_commission_citra(self, line_obj):
         amount_remaining = self.total_fee
         for line in line_obj.line_ids:
-            if line.agent_type_id.code == 'citra':
+            if line.agent_type_id.id == self.env.ref('tt_base.agent_type_citra').id:
                 ledger = self.env['tt.ledger']
 
                 agent_comm_vals = ledger.prepare_vals('Recruit Comm. : ' + self.name, 'Recruit Comm. : ' + self.name,
@@ -279,7 +342,7 @@ class AgentRegistration(models.Model):
         citra_parent_agent = self.get_parent_citra(self.parent_agent_id)
         amount_remaining = self.total_fee
         for line in line_obj.line_ids:
-            if line.agent_type_id.code == 'citra':
+            if line.agent_type_id.id == self.env.ref('tt_base.agent_type_citra').id:
                 ledger = self.env['tt.ledger']
 
                 agent_comm_vals = ledger.prepare_vals('Recruit Comm. Parent : ' + self.name, 'Recruit Comm. Parent : ' +
@@ -290,7 +353,7 @@ class AgentRegistration(models.Model):
                 })
                 self.env['tt.ledger'].create(agent_comm_vals)
                 amount_remaining -= line.amount
-            elif line.agent_type_id.code == 'japro':
+            elif line.agent_type_id.id == self.env.ref('tt_base.agent_type_japro').id:
                 ledger = self.env['tt.ledger']
 
                 agent_comm_vals = ledger.prepare_vals('Recruit Comm. : ' + self.name, 'Recruit Comm. : ' + self.name,
@@ -316,16 +379,16 @@ class AgentRegistration(models.Model):
         ledger = self.env['tt.ledger']
 
         vals_credit = self.env['tt.ledger'].prepare_vals('Opening Balance : ' + self.name,
-                                                         'Opening Balance : ' + self.name, datetime.now(), 3,
+                                                         'Opening Balance : ' + self.name, datetime.now(), 0,
                                                          self.currency_id.id, 0, self.opening_balance)
         vals_credit = ledger.prepare_vals_for_agent_regis(self, vals_credit)
         vals_credit.update({
-            'agent_id': self.reference_id.id,
+            'agent_id': self.parent_agent_id.id,
         })
         self.env['tt.ledger'].create(vals_credit)
 
         vals_debit = self.env['tt.ledger'].prepare_vals('Opening Balance', 'Opening Balance', datetime.now(),
-                                                        3, self.currency_id.id, self.opening_balance, 0)
+                                                        0, self.currency_id.id, self.opening_balance, 0)
         vals_debit = ledger.prepare_vals_for_agent_regis(self, vals_debit)
         vals_debit.update({
             'agent_id': agent_id.id
@@ -338,9 +401,6 @@ class AgentRegistration(models.Model):
         social_media_ids = []
         for address in self.address_ids:
             address_ids.append(address.id)
-        if self.social_media_ids:
-            for social_media in self.social_media_ids:
-                social_media_ids.append(social_media.id)
         vals = {
             'name': self.name,
             'balance': self.opening_balance,
@@ -362,6 +422,11 @@ class AgentRegistration(models.Model):
             })
         partner_obj = self.env['tt.agent'].create(vals)
         self.agent_id = partner_obj.id
+        if self.social_media_ids:
+            for social_media in self.social_media_ids:
+                social_media.agent_id = partner_obj.id
+                social_media_ids.append(social_media.id)
+        self.agent_id.social_media_ids = [(6, 0, social_media_ids)]
         return partner_obj
 
     def create_customers_contact(self, agent_id):
@@ -432,6 +497,7 @@ class AgentRegistration(models.Model):
     def action_confirm(self):
         self.check_address()
         self.set_agent_address()
+        self.check_user_contact()
         self.set_parent_agent_id()
         if not self.registration_num:
             self.registration_num = self.env['ir.sequence'].next_by_code(self._name)
@@ -495,7 +561,7 @@ class AgentRegistration(models.Model):
         "company_type": "individual",
         "business_license": "01/2019/04/0100-02",
         "npwp": "109358973180",
-        "name": "suryajaya",
+        "name": "Amrozi Tour and Travel",
     }
 
     param_pic = [
@@ -548,7 +614,7 @@ class AgentRegistration(models.Model):
 
     param_other = {
         "social_media": "Telegram",
-        "agent_type": "Agent Citra"
+        "agent_type": "Agent JaPro"
     }
 
     param_context = {
@@ -586,7 +652,8 @@ class AgentRegistration(models.Model):
             try:
                 agent_type = self.env['tt.agent.type'].sudo().search([('name', '=', other.get('agent_type'))], limit=1)
                 parent_agent_id = self.set_parent_agent_id_api(agent_type)
-                promotion_id = self.env['tt.agent.registration.promotion'].sudo().search([('id', '=', 5)], limit=1)
+                social_media_ids = self.create_social_media_agent_regis(other)
+                promotion_id = self.env['tt.agent.registration.promotion'].sudo().search([('id', '=', 10)], limit=1)
                 header = self.prepare_header(company, other, agent_type)
                 # contact_ids = self.prepare_contact(pic)
                 agent_registration_customer_ids = self.prepare_customer(pic)
@@ -594,14 +661,16 @@ class AgentRegistration(models.Model):
                 header.update({
                     'agent_registration_customer_ids': [(6, 0, agent_registration_customer_ids)],
                     'address_ids': [(6, 0, address_ids)],
+                    'social_media_ids': [(6, 0, social_media_ids)],
                     'registration_fee': agent_type.registration_fee,
                     'registration_date': datetime.now(),
                     'promotion_id': promotion_id.id,
                     'parent_agent_id': parent_agent_id.id,
+                    'tac': agent_type.terms_and_condition,
                     'create_uid': self.env.user.id
                 })
                 create_obj = self.create(header)
-                create_obj.get_registration_fee()
+                create_obj.get_registration_fee_api()
                 create_obj.compute_total_fee()
                 if not create_obj.registration_num:
                     create_obj.registration_num = self.env['ir.sequence'].next_by_code(self._name)
@@ -635,8 +704,8 @@ class AgentRegistration(models.Model):
 
     def set_parent_agent_id_api(self, agent_type_id):
         if agent_type_id:
-            if agent_type_id.code == 'citra':
-                parent_agent_id = self.env['tt.agent'].sudo().search([('agent_type_id.code', '=', 'ho')], limit=1)
+            if agent_type_id.id == self.env.ref('tt_base.agent_type_citra').id:
+                parent_agent_id = self.env['tt.agent'].sudo().search([('agent_type_id.id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
             else:
                 parent_agent_id = self.env.user.agent_id
         else:
@@ -704,18 +773,6 @@ class AgentRegistration(models.Model):
                 # check jika doc name sama dengan loop rec regis doc
                 if doc_name == rec_regis_doc['type'] or doc_name.lower() == rec_regis_doc['type']:
                     upload_center_ids.append(rec_regis_doc['id'])
-                    # attachment_value = {
-                    #     'name': rec_regis_doc['type'] + '.png',
-                    #     'datas': rec_regis_doc.get('data'),
-                    #     'datas_fname': doc_name + '.png',
-                    #     'res_model': self._name,
-                    #     'res_id': self.id,
-                    #     'type': 'binary',
-                    #     'url': 'localhost:8069/web/content',
-                    #     'mimetype': rec_regis_doc.get('content_type'),
-                    # }
-                    # attachment_obj = self.env['ir.attachment'].sudo().create(attachment_value)
-                    # attachment_list.append(attachment_obj.id)
                     break
             vals = {
                 'state': 'draft',
@@ -731,3 +788,18 @@ class AgentRegistration(models.Model):
             doc_ids.append(doc_obj.id)
         self.registration_document_ids = [(6, 0, doc_ids)]
         self.state = 'confirm'
+
+    def get_registration_fee_api(self):
+        for rec in self:
+            rec.registration_fee = rec.agent_type_id.registration_fee
+
+    def create_social_media_agent_regis(self, other):
+        social_media_ids = []
+        if other.get('social_media'):
+            social_media = self.env['social.media.detail']
+            val = {
+                'name': other['social_media'],
+            }
+            new_social_media = social_media.create(val)
+            social_media_ids.append(new_social_media.id)
+        return social_media_ids

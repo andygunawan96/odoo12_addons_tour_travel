@@ -29,6 +29,7 @@ class TtAgentType(models.Model):
     recruitment_commission_ids = fields.One2many('tt.commission.rule', 'agent_type2_id',
                                                  'Recruitment Commission Rule(s)')
     seq_prefix = fields.Char('Sequence Prefix', size=2, required=True)
+    terms_and_condition = fields.Html('Terms and Condition')
 
     @api.model
     def create(self, vals_list):
