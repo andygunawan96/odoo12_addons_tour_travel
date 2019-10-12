@@ -1096,7 +1096,6 @@ class ReservationAirline(models.Model):
                 'provider_id': provider_id,
                 'booking_id': self.id,
                 'sequence': sequence,
-                'direction': provider_direction,
                 'origin_id': provider_origin,
                 'destination_id': provider_destination,
                 'departure_date': provider_departure_date,

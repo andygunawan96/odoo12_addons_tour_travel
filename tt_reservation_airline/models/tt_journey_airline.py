@@ -29,7 +29,6 @@ class TtJourneyAirline(models.Model):
             segment_list.append(rec.to_dict())
         res ={
             'sequence': self.sequence,
-            'journey_type': self.journey_type,
             'origin': self.origin_id.code,
             'destination': self.destination_id.code,
             'departure_date': self.departure_date,

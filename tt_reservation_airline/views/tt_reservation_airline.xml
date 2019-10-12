@@ -99,7 +99,6 @@
 <!--                <field name="segment_ids">-->
 <!--                    <tree>-->
 <!--                        <field name="pnr"/>-->
-<!--                        <field name="journey_type"/>-->
 <!--                        <field name="carrier_id"/>-->
 <!--                        <field name="carrier_name"/>-->
 <!--                        <field name="origin_id"/>-->

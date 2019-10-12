@@ -11,8 +11,6 @@ class TtLegAirline(models.Model):
     _description = 'Rodex Model'
 
     leg_code = fields.Char('Leg Code')
-    journey_type = fields.Selection(variables.JOURNEY_TYPE, string='Journey Type', default='DEP',
-                                    states={'draft': [('readonly', False)]})
 
     provider_id = fields.Many2one('tt.provider','Provider')
 
@@ -37,7 +35,6 @@ class TtLegAirline(models.Model):
     def to_dict(self):
         res = {
             'leg_code': self.leg_code,
-            'journey_type': self.journey_type,
             'origin': self.origin_id.code,
             'destination': self.destination_id.code,
             'departure_date': self.departure_date,
