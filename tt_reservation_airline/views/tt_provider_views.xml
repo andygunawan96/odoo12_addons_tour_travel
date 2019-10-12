@@ -46,7 +46,6 @@
                             <field name="destination_id"/>
                             <field name="departure_date"/>
                             <field name="return_date"/>
-                            <field name="direction"/>
                         </group>
                         <group>
                             <field name="currency_id"/>
@@ -98,7 +97,6 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="pnr"/>
-                <field name="direction"/>
                 <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
                 <field name="origin_id"/>
                 <field name="destination_id"/>

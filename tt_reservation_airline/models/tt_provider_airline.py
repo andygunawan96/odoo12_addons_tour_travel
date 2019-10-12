@@ -252,7 +252,6 @@ class TtProviderAirline(models.Model):
             'state_description': variables.BOOKING_STATE_STR[self.state],
             'sequence': self.sequence,
             'balance_due': self.balance_due,
-            'direction': self.direction,
             'origin': self.origin_id.code,
             'destination': self.destination_id.code,
             'departure_date': self.departure_date,
