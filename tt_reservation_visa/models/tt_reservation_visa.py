@@ -477,14 +477,14 @@ class TtVisa(models.Model):
         return Response().get_no_error(res)
 
     def create_booking_visa_api(self, data, context, kwargs):  #
-        sell_visa = copy.deepcopy(data['sell_visa'])  # self.param_sell_visa
-        booker = copy.deepcopy(data['booker'])  # self.param_booker
-        contact = copy.deepcopy(data['contact'])  # self.param_contact
-        passengers = copy.deepcopy(data['passenger'])  # self.param_passenger
-        search = copy.deepcopy(data['search'])  # self.param_search
-        payment = copy.deepcopy(data['payment'])  # self.param_payment
-        context = copy.deepcopy(context)  # self.param_context
-        kwargs = copy.deepcopy(kwargs)  # self.param_kwargs
+        sell_visa = data['sell_visa'] # self.param_sell_visa
+        booker = data['booker']  # self.param_booker
+        contact = data['contact']  # self.param_contact
+        passengers = data['passenger']  # self.param_passenger
+        search = data['search']  # self.param_search
+        payment = data['payment']  # self.param_payment
+        context = context  # self.param_context
+        kwargs = kwargs  # self.param_kwargs
 
         try:
             user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
