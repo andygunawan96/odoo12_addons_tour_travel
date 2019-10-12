@@ -902,12 +902,12 @@ class IssuedOffline(models.Model):
         return res
 
     def create_booking_reservation_offline_api(self, data, context, kwargs):  #
-        booker = copy.deepcopy(data['booker'])  # self.param_booker
-        data_reservation_offline = copy.deepcopy(data['issued_offline_data'])  # self.param_issued_offline_data
-        passenger = copy.deepcopy(data['passenger'])  # self.param_passenger
-        contact = copy.deepcopy(data['contact'])  # self.param_contact
-        context = copy.deepcopy(context)  # self.param_context
-        lines = copy.deepcopy(data['issued_offline_data']['line_ids'])  # data_reservation_offline['line_ids']
+        booker = data['booker']  # self.param_booker
+        data_reservation_offline = data['issued_offline_data']  # self.param_issued_offline_data
+        passenger = data['passenger']  # self.param_passenger
+        contact = data['contact']  # self.param_contact
+        context = context  # self.param_context
+        lines = data['issued_offline_data']['line_ids']  # data_reservation_offline['line_ids']
 
         try:
             user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
