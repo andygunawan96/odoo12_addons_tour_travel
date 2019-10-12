@@ -90,6 +90,9 @@
                                 </field>
                             </page>
                         </notebook>
+                        <group>
+                            <field name="terms_and_condition"/>
+                        </group>
                     </sheet>
                     <div class="oe_chatter">
                         <field name="message_follower_ids" widget="mail_followers"/>
