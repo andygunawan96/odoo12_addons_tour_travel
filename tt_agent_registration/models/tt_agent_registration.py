@@ -225,7 +225,7 @@ class AgentRegistration(models.Model):
         _logger.info(query)
         return self.env.cr.dictfetchall()
 
-    def get_all_registration_documents(self):
+    def get_all_registration_documents_api(self):
         regis_doc_env = self.env['tt.document.type']
         regis_doc_ids = regis_doc_env.search([])
 
@@ -264,7 +264,7 @@ class AgentRegistration(models.Model):
                     for doc_agent_type in agent_types:
                         if doc_agent_type['id'] == agent_type['id']:
                             agent_type['docs'].append(val)
-        return agent_type_list
+        return Response().get_no_error(agent_type_list)
 
     def check_user_contact(self):
         users = self.get_all_users()
