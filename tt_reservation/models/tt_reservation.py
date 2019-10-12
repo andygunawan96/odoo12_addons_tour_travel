@@ -243,11 +243,8 @@ class TtReservation(models.Model):
                 'marital_status': 'married' if psg.get('title') == 'MRS' else '',
             })
             psg_obj = passenger_obj.create(psg)
-            if psg.get('identity_number'):
-                psg_obj.add_or_update_identity(psg.get('identity_type'),
-                                                psg.get('identity_number'),
-                                                psg.get('identity_country_of_issued_id'),
-                                                psg.get('identity_expdate'))
+            if psg.get('identity'):
+                psg_obj.add_or_update_identity(psg['identity'])
             res_ids.append(psg_obj)
 
         return res_ids
