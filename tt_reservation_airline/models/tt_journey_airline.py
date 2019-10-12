@@ -16,7 +16,6 @@ class TtJourneyAirline(models.Model):
     booking_id = fields.Many2one('tt.reservation.airline', related='provider_booking_id.booking_id', string='Order Number',
                                  store=True)
     sequence = fields.Integer('Sequence')
-    journey_type = fields.Selection(variables.JOURNEY_TYPE, string='Type')
     origin_id = fields.Many2one('tt.destinations', 'Origin')
     destination_id = fields.Many2one('tt.destinations', 'Destination')
     departure_date = fields.Char('Departure Date')

@@ -33,7 +33,7 @@ class SplitInvoice(models.TransientModel):
             new_file.write(base64.b64decode(file))
             new_file.close()
 
-            self.env['tt.upload.center'].sudo().create({
+            new_uploaded_data = self.env['tt.upload.center'].sudo().create({
                 'filename': filename,
                 'file_reference': file_reference,
                 'path': path,
@@ -43,9 +43,10 @@ class SplitInvoice(models.TransientModel):
 
             _logger.info('Finish Upload')
             return ERR.get_no_error({
-                'filename' : filename,
-                'file_reference': file_reference,
-                'url': url
+                'filename' : new_uploaded_data.filename,
+                'file_reference': new_uploaded_data.file_reference,
+                'url': new_uploaded_data.url,
+                'seq_id': new_uploaded_data.seq_id
             })
         except Exception as e:
             _logger.error('Exception Upload Center')

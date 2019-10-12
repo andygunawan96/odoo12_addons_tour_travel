@@ -235,14 +235,370 @@ class ReservationAirline(models.Model):
         #         self.hold_date = hold_date
         pass
 
+    # def create_booking_airline_api(self, req, context):
+    #     # req = copy.deepcopy(self.param_global)
+    #     _logger.info("Create\n" + json.dumps(req))
+    #     search_RQ = req['searchRQ']
+    #     booker = req['booker']
+    #     contacts = req['contacts']
+    #     passengers = req['passengers']
+    #     journeys = req['providers_booking_data']
+    #
+    #     try:
+    #         values = self._prepare_booking_api(search_RQ,context)
+    #         booker_obj = self.create_booker_api(booker,context)
+    #         contact_obj = self.create_contact_api(contacts[0],booker_obj,context)
+    #
+    #         #                                               # 'identity_type','identity_number',
+    #         #                                               # 'identity_country_of_issued_id','identity_expdate'])
+    #         # list_passenger_id = self.create_passenger_api(list_customer_obj,self.env['tt.reservation.passenger.airline'])
+    #
+    #         list_passenger_value = self.create_passenger_value_api_test(passengers)
+    #         list_customer_id = self.create_customer_api(passengers,context,booker_obj.seq_id,contact_obj.seq_id)
+    #
+    #         #fixme diasumsikan idxny sama karena sama sama looping by rec['psg']
+    #         for idx,rec in enumerate(list_passenger_value):
+    #             rec[2].update({
+    #                 'customer_id': list_customer_id[idx].id
+    #             })
+    #
+    #         values.update({
+    #             'user_id': context['co_uid'],
+    #             'sid_booked': context['signature'],
+    #             'booker_id': booker_obj.id,
+    #             'contact_id': contact_obj.id,
+    #             'contact_name': contact_obj.name,
+    #             'contact_email': contact_obj.email,
+    #             'contact_phone': contact_obj.phone_ids[0].phone_number,
+    #             'passenger_ids': list_passenger_value
+    #         })
+    #
+    #         book_obj = self.create(values)
+    #         provider_ids,name_ids = book_obj._create_provider_api(journeys,context)
+    #         response_provider_ids = []
+    #         for provider in provider_ids:
+    #             response_provider_ids.append({
+    #                 'id': provider.id,
+    #                 'code': provider.provider_id.code,
+    #             })
+    #
+    #         book_obj.write({
+    #             'provider_name': ','.join(name_ids['provider']),
+    #             'carrier_name': ','.join(name_ids['carrier'])
+    #         })
+    #
+    #         response = {
+    #             'book_id': book_obj.id,
+    #             'order_number': book_obj.name,
+    #             'provider_ids': response_provider_ids
+    #         }
+    #         return ERR.get_no_error(response)
+    #     except RequestException as e:
+    #         _logger.error(traceback.format_exc())
+    #         try:
+    #             book_obj.notes += traceback.format_exc()+'\n'
+    #         except:
+    #             _logger.error('Creating Notes Error')
+    #         return e.error_dict()
+    #     except Exception as e:
+    #         _logger.error(traceback.format_exc())
+    #         try:
+    #             book_obj.notes += traceback.format_exc()+'\n'
+    #         except:
+    #             _logger.error('Creating Notes Error')
+    #         return ERR.get_error(1004)
+
+    hardcode_context = {
+        "uid": 6,
+        "user_name": "sam.api",
+        "user_login": "sam.api",
+        "agent_id": 5,
+        "agent_name": "Japro B",
+        "agent_type_id": 3,
+        "agent_type_name": "Agent JaPro",
+        "agent_type_code": "japro",
+        "agent_frontend_security": [
+            "top_up",
+            "admin",
+            "login"
+        ],
+        "api_role": "admin",
+        "device_type": "general",
+        "host_ips": [],
+        "configs": {
+            "airline": {
+                "provider_access": "all",
+                "providers": {}
+            }
+        },
+        "co_uid": 6,
+        "co_user_name": "sam.api",
+        "co_user_login": "sam.api",
+        "co_agent_id": 5,
+        "co_agent_name": "Japro B",
+        "co_agent_type_id": 3,
+        "co_agent_type_name": "Agent JaPro",
+        "co_agent_type_code": "japro",
+        "co_agent_frontend_security": [
+            "top_up",
+            "admin",
+            "login"
+        ],
+        "sid": "5f48018a03b0ef3f81300fe51bcbdc4c6a474353",
+        "signature": "722ac4521e9c47d8bea6559bea793532",
+        "expired_date": "2019-10-11 07:38:16"
+    }
+
+    hardcode_req_cr8_booking =  {
+                "force_issued": False,
+                "booker": {
+                    "title": "MR",
+                    "first_name": "Rino",
+                    "last_name": "Siantar",
+                    "email": "rino.siantar@gmail.com",
+                    "calling_code": "62",
+                    "mobile": "83154813548",
+                    "nationality_code": "ID",
+                    "is_also_booker": True,
+                    "gender": "male"
+                },
+                "contacts": [
+                    {
+                        "title": "MR",
+                        "first_name": "Rino",
+                        "last_name": "Siantar",
+                        "email": "rino.siantar@gmail.com",
+                        "calling_code": "62",
+                        "mobile": "83154813548",
+                        "nationality_code": "ID",
+                        "is_also_booker": True,
+                        "contact_id": "CTC_1",
+                        "sequence": 1,
+                        "gender": "male"
+                    },
+                    {
+                        "title": "MR",
+                        "first_name": "Putih",
+                        "last_name": "Dalton",
+                        "email": "rommie@gmail.com",
+                        "calling_code": "62",
+                        "mobile": "8139634586",
+                        "nationality_code": "ID",
+                        "is_also_booker": False,
+                        "contact_id": "CTC_2",
+                        "sequence": 2,
+                        "gender": "male"
+                    }
+                ],
+                "passengers": [
+                    {
+                        "title": "MR",
+                        "first_name": "Hyiin",
+                        "last_name": "Xia",
+                        "birth_date": "1991-04-21",
+                        "pax_type": "ADT",
+                        "nationality_code": "ID",
+                        "passport_number": "BG4874",
+                        "passport_expdate": "2022-04-21",
+                        "country_of_issued_code": "ID",
+                        "is_also_booker": False,
+                        "is_also_contact": False,
+                        "sequence": 1,
+                        "passenger_id": "PSG_1",
+                        "gender": "male"
+                    },
+                    {
+                        "title": "MRS",
+                        "first_name": "Lio",
+                        "last_name": "Dalton",
+                        "birth_date": "1992-06-15",
+                        "pax_type": "ADT",
+                        "nationality_code": "ID",
+                        "passport_number": "GF6135",
+                        "passport_expdate": "2022-06-15",
+                        "country_of_issued_code": "ID",
+                        "is_also_booker": False,
+                        "is_also_contact": False,
+                        "sequence": 2,
+                        "passenger_id": "PSG_2",
+                        "gender": "female"
+                    },
+                    {
+                        "title": "MSTR",
+                        "first_name": "Tony Christian",
+                        "last_name": "Sutanto",
+                        "birth_date": "2010-10-10",
+                        "pax_type": "CHD",
+                        "nationality_code": "ID",
+                        "passport_number": "BF5936",
+                        "passport_expdate": "2022-10-10",
+                        "country_of_issued_code": "ID",
+                        "is_also_booker": False,
+                        "is_also_contact": False,
+                        "sequence": 3,
+                        "passenger_id": "PSG_3",
+                        "gender": "male"
+                    },
+                    {
+                        "title": "MISS",
+                        "first_name": "Ella",
+                        "last_name": "",
+                        "birth_date": "2010-02-14",
+                        "pax_type": "CHD",
+                        "nationality_code": "ID",
+                        "passport_number": "GA5135",
+                        "passport_expdate": "2022-02-14",
+                        "country_of_issued_code": "ID",
+                        "is_also_booker": False,
+                        "is_also_contact": False,
+                        "sequence": 4,
+                        "passenger_id": "PSG_4",
+                        "gender": "female"
+                    },
+                    {
+                        "title": "MSTR",
+                        "first_name": "Leo",
+                        "last_name": "Dalton",
+                        "birth_date": "2018-10-16",
+                        "pax_type": "INF",
+                        "nationality_code": "ID",
+                        "passport_number": "WT51153",
+                        "passport_expdate": "2022-10-16",
+                        "country_of_issued_code": "ID",
+                        "is_also_booker": False,
+                        "is_also_contact": False,
+                        "sequence": 5,
+                        "passenger_id": "PSG_5",
+                        "gender": "male"
+                    },
+                    {
+                        "title": "MISS",
+                        "first_name": "Livi",
+                        "last_name": "Mary",
+                        "birth_date": "2018-11-13",
+                        "pax_type": "INF",
+                        "nationality_code": "ID",
+                        "passport_number": "GW4315",
+                        "passport_expdate": "2022-11-13",
+                        "country_of_issued_code": "ID",
+                        "is_also_booker": False,
+                        "is_also_contact": False,
+                        "sequence": 6,
+                        "passenger_id": "PSG_6",
+                        "gender": "female"
+                    }
+                ],
+                "searchRQ": {
+                    "journey_list": [
+                        {
+                            "origin": "SUB",
+                            "destination": "PEK",
+                            "departure_date": "2020-03-01"
+                        },
+                        {
+                            "origin": "PVG",
+                            "destination": "SUB",
+                            "departure_date": "2020-03-08"
+                        }
+                    ],
+                    "adult": 2,
+                    "child": 2,
+                    "infant": 2,
+                    "cabin_class": "Y",
+                    "carrier_codes": [
+                        "SQ",
+                        "CX",
+                        "BI"
+                    ],
+                    "is_combo_price": True,
+                    "provider": "amadeus",
+                    "direction": "MC"
+                },
+                "provider_type": "airline",
+                "adult": 2,
+                "child": 2,
+                "infant": 2,
+                "schedules": [
+                    {
+                        "journeys": [
+                            {
+                                "segments": [
+                                    {
+                                        "segment_code": "CX,780,SUB,2,2020-03-01 08:30:00,HKG,1,2020-03-01 14:25:00,amadeus",
+                                        "fare_code": "0-0-O",
+                                        "carrier_code": "CX",
+                                        "carrier_number": "780",
+                                        "origin": "SUB",
+                                        "origin_terminal": "2",
+                                        "departure_date": "2020-03-01 08:30:00",
+                                        "destination": "HKG",
+                                        "destination_terminal": "1",
+                                        "arrival_date": "2020-03-01 14:25:00",
+                                        "provider": "amadeus"
+                                    },
+                                    {
+                                        "segment_code": "CX,5974,HKG,1,2020-03-01 16:40:00,PEK,3,2020-03-01 20:10:00,amadeus",
+                                        "fare_code": "0-0-O",
+                                        "carrier_code": "CX",
+                                        "carrier_number": "5974",
+                                        "origin": "HKG",
+                                        "origin_terminal": "1",
+                                        "departure_date": "2020-03-01 16:40:00",
+                                        "destination": "PEK",
+                                        "destination_terminal": "3",
+                                        "arrival_date": "2020-03-01 20:10:00",
+                                        "provider": "amadeus"
+                                    },
+                                    {
+                                        "segment_code": "CX,365,PVG,2,2020-03-08 09:35:00,HKG,1,2020-03-08 12:30:00,amadeus",
+                                        "fare_code": "0-1-O",
+                                        "carrier_code": "CX",
+                                        "carrier_number": "365",
+                                        "origin": "PVG",
+                                        "origin_terminal": "2",
+                                        "departure_date": "2020-03-08 09:35:00",
+                                        "destination": "HKG",
+                                        "destination_terminal": "1",
+                                        "arrival_date": "2020-03-08 12:30:00",
+                                        "provider": "amadeus"
+                                    },
+                                    {
+                                        "segment_code": "CX,781,HKG,1,2020-03-08 13:45:00,SUB,2,2020-03-08 17:40:00,amadeus",
+                                        "fare_code": "0-1-O",
+                                        "carrier_code": "CX",
+                                        "carrier_number": "781",
+                                        "origin": "HKG",
+                                        "origin_terminal": "1",
+                                        "departure_date": "2020-03-08 13:45:00",
+                                        "destination": "SUB",
+                                        "destination_terminal": "2",
+                                        "arrival_date": "2020-03-08 17:40:00",
+                                        "provider": "amadeus"
+                                    }
+                                ]
+                            }
+                        ],
+                        "provider": "amadeus",
+                        "paxs": {
+                            "ADT": 2,
+                            "CHD": 2,
+                            "INF": 2
+                        }
+                    }
+                ]
+            }
+
     def create_booking_airline_api(self, req, context):
         # req = copy.deepcopy(self.param_global)
+        # req = self.hardcode_req_cr8_booking
+        # context = self.hardcode_context
+
         _logger.info("Create\n" + json.dumps(req))
         search_RQ = req['searchRQ']
         booker = req['booker']
         contacts = req['contacts']
         passengers = req['passengers']
-        journeys = req['providers_booking_data']
+        schedules = req['schedules']
 
         try:
             values = self._prepare_booking_api(search_RQ,context)
@@ -274,7 +630,7 @@ class ReservationAirline(models.Model):
             })
 
             book_obj = self.create(values)
-            provider_ids,name_ids = book_obj._create_provider_api(journeys,context)
+            provider_ids,name_ids = book_obj._create_provider_api(schedules,context)
             response_provider_ids = []
             for provider in provider_ids:
                 response_provider_ids.append({
@@ -525,12 +881,21 @@ class ReservationAirline(models.Model):
     def _prepare_booking_api(self, searchRQ, context_gateway):
         dest_obj = self.env['tt.destinations']
         provider_type_id = self.env.ref('tt_reservation_airline.tt_provider_type_airline')
+
+        dest1= searchRQ['journey_list'][0]['origin']
+        dest_idx = 0
+        dest2=dest1
+        while(dest1 == dest2):
+            dest_idx -= 1
+            dest2 = searchRQ['journey_list'][dest_idx]['destination']
+
+
         booking_tmp = {
             'direction': searchRQ.get('direction'),
             'departure_date': searchRQ['journey_list'][0]['departure_date'],
             'return_date': searchRQ['journey_list'][-1]['departure_date'],
             'origin_id': dest_obj.get_id(searchRQ['journey_list'][0]['origin'], provider_type_id),
-            'destination_id': dest_obj.get_id(searchRQ['journey_list'][-1]['destination'], provider_type_id),
+            'destination_id': dest_obj.get_id(searchRQ['journey_list'][dest_idx]['destination'], provider_type_id),
             'provider_type_id': provider_type_id.id,
             'adult': searchRQ['adult'],
             'child': searchRQ['child'],
@@ -541,7 +906,112 @@ class ReservationAirline(models.Model):
 
         return booking_tmp
 
-    def _create_provider_api(self, providers, api_context):
+    # def _create_provider_api(self, providers, api_context):
+    #     dest_obj = self.env['tt.destinations']
+    #     provider_airline_obj = self.env['tt.provider.airline']
+    #     carrier_obj = self.env['tt.transport.carrier']
+    #     provider_obj = self.env['tt.provider']
+    #
+    #     _destination_type = self.provider_type_id
+    #
+    #     #lis of providers ID
+    #     res = []
+    #     name = {'provider':[],'carrier':[]}
+    #     for provider_name, provider_value in providers.items():
+    #         provider_id = provider_obj.get_provider_id(provider_name,_destination_type)
+    #         name['provider'].append(provider_name)
+    #         _logger.info(provider_name)
+    #         for sequence, pnr in provider_value.items():
+    #             _logger.info(sequence)
+    #             journey_sequence = 0
+    #             this_pnr_journey = []
+    #
+    #             for journey_type, journey_value in pnr['journey_codes'].items():
+    #                 ###Create Journey
+    #                 _logger.info(journey_type)
+    #
+    #                 if len(journey_value) < 1:
+    #                     continue
+    #
+    #                 this_journey_seg = []
+    #                 this_journey_seg_sequence = 0
+    #
+    #                 for segment in journey_value:
+    #                     ###Create Segment
+    #                     carrier_id = carrier_obj.get_id(segment['carrier_code'],_destination_type)
+    #                     org_id = dest_obj.get_id(segment['origin'],_destination_type)
+    #                     dest_id = dest_obj.get_id(segment['destination'],_destination_type)
+    #
+    #                     name['carrier'].append(segment['carrier_code'])
+    #
+    #                     this_journey_seg_sequence += 1
+    #                     this_journey_seg.append((0,0,{
+    #                         'segment_code': segment['segment_code'],
+    #                         'fare_code': segment.get('fare_code', ''),
+    #                         'journey_type': journey_type,
+    #                         'carrier_id': carrier_id,
+    #                         'carrier_code': segment['carrier_code'],
+    #                         'carrier_number': segment['carrier_number'],
+    #                         'provider_id': provider_id,
+    #                         'origin_id': org_id,
+    #                         'origin_terminal': segment['origin_terminal'],
+    #                         'destination_id': dest_id,
+    #                         'destination_terminal': segment['destination_terminal'],
+    #                         'departure_date': segment['departure_date'],
+    #                         'arrival_date': segment['arrival_date'],
+    #                         'sequence': this_journey_seg_sequence
+    #                     }))
+    #
+    #                 ###journey_type DEP or RET
+    #
+    #                 journey_sequence+=1
+    #                 this_pnr_journey.append((0,0, {
+    #                     'provider_id': provider_id,
+    #                     'sequence': journey_sequence,
+    #                     'journey_type': journey_type,
+    #                     'origin_id': this_journey_seg[0][2]['origin_id'],
+    #                     'destination_id': this_journey_seg[-1][2]['destination_id'],
+    #                     'departure_date': this_journey_seg[0][2]['departure_date'],
+    #                     'arrival_date': this_journey_seg[-1][2]['arrival_date'],
+    #                     'segment_ids': this_journey_seg
+    #                 }))
+    #
+    #             JRN_len = len(this_pnr_journey)
+    #             _logger.info("JRNlen : %s" % (JRN_len))
+    #             if JRN_len > 1:
+    #                 provider_direction = 'RT'
+    #                 provider_origin = this_pnr_journey[0][2]['origin_id']
+    #                 provider_destination = this_pnr_journey[0][2]['destination_id']
+    #                 provider_departure_date = this_pnr_journey[0][2]['departure_date']
+    #                 provider_return_date = this_pnr_journey[-1][2]['departure_date']
+    #             else:
+    #                 provider_direction = 'OW'
+    #                 provider_origin = this_pnr_journey[0][2]['origin_id']
+    #                 provider_destination = this_pnr_journey[0][2]['destination_id']
+    #                 provider_departure_date = this_pnr_journey[0][2]['departure_date']
+    #                 provider_return_date = False
+    #
+    #             values = {
+    #                 'provider_id': provider_id,
+    #                 'booking_id': self.id,
+    #                 'sequence': sequence,
+    #                 'direction': provider_direction,
+    #                 'origin_id': provider_origin,
+    #                 'destination_id': provider_destination,
+    #                 'departure_date': provider_departure_date,
+    #                 'return_date': provider_return_date,
+    #
+    #                 'booked_uid': api_context['co_uid'],
+    #                 'booked_date': datetime.datetime.now(),
+    #                 'journey_ids': this_pnr_journey
+    #             }
+    #
+    #             res.append(provider_airline_obj.create(values))
+    #     name['provider'] = list(set(name['provider']))
+    #     name['carrier'] = list(set(name['carrier']))
+    #     return res,name
+
+    def _create_provider_api(self, schedules, api_context):
         dest_obj = self.env['tt.destinations']
         provider_airline_obj = self.env['tt.provider.airline']
         carrier_obj = self.env['tt.transport.carrier']
@@ -552,96 +1022,92 @@ class ReservationAirline(models.Model):
         #lis of providers ID
         res = []
         name = {'provider':[],'carrier':[]}
-        for provider_name, provider_value in providers.items():
-            provider_id = provider_obj.get_provider_id(provider_name,_destination_type)
-            name['provider'].append(provider_name)
-            _logger.info(provider_name)
-            for sequence, pnr in provider_value.items():
-                _logger.info(sequence)
-                journey_sequence = 0
-                this_pnr_journey = []
+        sequence = 0
+        for schedule in schedules:
+            provider_id = provider_obj.get_provider_id(schedule['provider'],_destination_type)
+            name['provider'].append(schedule['provider'])
+            _logger.info(schedule['provider'])
+            this_pnr_journey = []
+            journey_sequence = 0
+            for journey in schedule['journeys']:
+                ##create journey
+                this_journey_seg = []
+                this_journey_seg_sequence = 0
+                for segment in journey['segments']:
+                    ###create segment
+                    carrier_id = carrier_obj.get_id(segment['carrier_code'],_destination_type)
+                    org_id = dest_obj.get_id(segment['origin'],_destination_type)
+                    dest_id = dest_obj.get_id(segment['destination'],_destination_type)
 
-                for journey_type, journey_value in pnr['journey_codes'].items():
-                    ###Create Journey
-                    _logger.info(journey_type)
+                    name['carrier'].append(segment['carrier_code'])
 
-                    if len(journey_value) < 1:
-                        continue
-
-                    this_journey_seg = []
-                    this_journey_seg_sequence = 0
-
-                    for segment in journey_value:
-                        ###Create Segment
-                        carrier_id = carrier_obj.get_id(segment['carrier_code'],_destination_type)
-                        org_id = dest_obj.get_id(segment['origin'],_destination_type)
-                        dest_id = dest_obj.get_id(segment['destination'],_destination_type)
-
-                        name['carrier'].append(segment['carrier_code'])
-
-                        this_journey_seg_sequence += 1
-                        this_journey_seg.append((0,0,{
-                            'segment_code': segment['segment_code'],
-                            'fare_code': segment.get('fare_code', ''),
-                            'journey_type': journey_type,
-                            'carrier_id': carrier_id,
-                            'carrier_code': segment['carrier_code'],
-                            'carrier_number': segment['carrier_number'],
-                            'provider_id': provider_id,
-                            'origin_id': org_id,
-                            'origin_terminal': segment['origin_terminal'],
-                            'destination_id': dest_id,
-                            'destination_terminal': segment['destination_terminal'],
-                            'departure_date': segment['departure_date'],
-                            'arrival_date': segment['arrival_date'],
-                            'sequence': this_journey_seg_sequence
-                        }))
-
-                    ###journey_type DEP or RET
-
-                    journey_sequence+=1
-                    this_pnr_journey.append((0,0, {
+                    this_journey_seg_sequence += 1
+                    this_journey_seg.append((0,0,{
+                        'segment_code': segment['segment_code'],
+                        'fare_code': segment.get('fare_code', ''),
+                        'carrier_id': carrier_id,
+                        'carrier_code': segment['carrier_code'],
+                        'carrier_number': segment['carrier_number'],
                         'provider_id': provider_id,
-                        'sequence': journey_sequence,
-                        'journey_type': journey_type,
-                        'origin_id': this_journey_seg[0][2]['origin_id'],
-                        'destination_id': this_journey_seg[-1][2]['destination_id'],
-                        'departure_date': this_journey_seg[0][2]['departure_date'],
-                        'arrival_date': this_journey_seg[-1][2]['arrival_date'],
-                        'segment_ids': this_journey_seg
+                        'origin_id': org_id,
+                        'origin_terminal': segment['origin_terminal'],
+                        'destination_id': dest_id,
+                        'destination_terminal': segment['destination_terminal'],
+                        'departure_date': segment['departure_date'],
+                        'arrival_date': segment['arrival_date'],
+                        'sequence': this_journey_seg_sequence
                     }))
+                journey_sequence+=1
 
-                JRN_len = len(this_pnr_journey)
-                _logger.info("JRNlen : %s" % (JRN_len))
-                if JRN_len > 1:
-                    provider_direction = 'RT'
-                    provider_origin = this_pnr_journey[0][2]['origin_id']
-                    provider_destination = this_pnr_journey[0][2]['destination_id']
-                    provider_departure_date = this_pnr_journey[0][2]['departure_date']
-                    provider_return_date = this_pnr_journey[-1][2]['departure_date']
-                else:
-                    provider_direction = 'OW'
-                    provider_origin = this_pnr_journey[0][2]['origin_id']
-                    provider_destination = this_pnr_journey[0][2]['destination_id']
-                    provider_departure_date = this_pnr_journey[0][2]['departure_date']
-                    provider_return_date = False
+                dest_idx = self.pick_destination(this_journey_seg)
 
-                values = {
+                this_pnr_journey.append((0,0, {
                     'provider_id': provider_id,
-                    'booking_id': self.id,
-                    'sequence': sequence,
-                    'direction': provider_direction,
-                    'origin_id': provider_origin,
-                    'destination_id': provider_destination,
-                    'departure_date': provider_departure_date,
-                    'return_date': provider_return_date,
+                    'sequence': journey_sequence,
+                    'origin_id': this_journey_seg[0][2]['origin_id'],
+                    'destination_id': this_journey_seg[dest_idx][2]['destination_id'],
+                    'departure_date': this_journey_seg[0][2]['departure_date'],
+                    'arrival_date': this_journey_seg[-1][2]['arrival_date'],
+                    'segment_ids': this_journey_seg
+                }))
 
-                    'booked_uid': api_context['co_uid'],
-                    'booked_date': datetime.datetime.now(),
-                    'journey_ids': this_pnr_journey
-                }
+            JRN_len = len(this_pnr_journey)
+            _logger.info("JRNlen : %s" % (JRN_len))
+            # if JRN_len > 1:
+            #     provider_direction = 'RT'
+            #     provider_origin = this_pnr_journey[0][2]['origin_id']
+            #     provider_destination = this_pnr_journey[0][2]['destination_id']
+            #     provider_departure_date = this_pnr_journey[0][2]['departure_date']
+            #     provider_return_date = this_pnr_journey[-1][2]['departure_date']
+            # else:
+            #     provider_direction = 'OW'
+            #     provider_origin = this_pnr_journey[0][2]['origin_id']
+            #     provider_destination = this_pnr_journey[0][2]['destination_id']
+            #     provider_departure_date = this_pnr_journey[0][2]['departure_date']
+            #     provider_return_date = False
+            dest_idx = self.pick_destination(this_pnr_journey)
+            provider_origin = this_pnr_journey[0][2]['origin_id']
+            provider_destination = this_pnr_journey[dest_idx][2]['destination_id']
+            provider_departure_date = this_pnr_journey[0][2]['departure_date']
+            provider_return_date = this_pnr_journey[-1][2]['departure_date']
 
-                res.append(provider_airline_obj.create(values))
+            sequence+=1
+            values = {
+                'provider_id': provider_id,
+                'booking_id': self.id,
+                'sequence': sequence,
+                'direction': provider_direction,
+                'origin_id': provider_origin,
+                'destination_id': provider_destination,
+                'departure_date': provider_departure_date,
+                'return_date': provider_return_date,
+
+                'booked_uid': api_context['co_uid'],
+                'booked_date': datetime.datetime.now(),
+                'journey_ids': this_pnr_journey
+            }
+
+            res.append(provider_airline_obj.create(values))
         name['provider'] = list(set(name['provider']))
         name['carrier'] = list(set(name['carrier']))
         return res,name
@@ -780,6 +1246,17 @@ class ReservationAirline(models.Model):
         for provider in self.provider_booking_ids:
             provider.action_expired()
 
+    def pick_destination(self,data):
+        dest1 = data[0][2]['origin_id']
+        if len(data) == 1:
+            return 0
+        else:
+            dest2 = dest1
+            count = 0
+            while(dest1 == dest2):
+                count -=1
+                dest2 = data[count][2]['destination_id']
+            return count
     # def psg_validator(self,book_obj):
     #     for segment in book_obj.segment_ids:
     #         rule = self.env['tt.limiter.rule'].sudo().search([('code', '=', segment.carrier_code)])

@@ -128,7 +128,7 @@ class Ledger(models.Model):
                 amount += sc.total
 
         booking_obj = provider_obj.booking_id
-        ledger_values = self.prepare_vals('Order : ' + booking_obj.name, booking_obj.name, datetime.now(),
+        ledger_values = self.prepare_vals('Order : ' + booking_obj.name, booking_obj.name, datetime.now()+relativedelta(hours=7),
                                           2, booking_obj.currency_id.id, 0, amount)
 
         ledger_values = self.prepare_vals_for_resv(booking_obj,ledger_values)
@@ -150,7 +150,7 @@ class Ledger(models.Model):
                 agent_commission[agent_id] += amount
 
         for agent_id, amount in agent_commission.items():
-            ledger_values = self.prepare_vals('Commission : ' + booking_obj.name, booking_obj.name, datetime.now(),
+            ledger_values = self.prepare_vals('Commission : ' + booking_obj.name, booking_obj.name, datetime.now()+relativedelta(hours=7),
                                        3, booking_obj.currency_id.id, amount, 0)
             ledger_values.update({
                 'agent_id': abs(agent_id),

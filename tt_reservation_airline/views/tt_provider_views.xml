@@ -17,18 +17,16 @@
                     <!--&lt;!&ndash;<field name="state" widget="statusbar" statusbar_visible="draft,booked,issued" clickable="1"/>&ndash;&gt;-->
                     <!--<field name="state" widget="statusbar" statusbar_visible="draft,booked,issued"/>-->
                 <!--</header>-->
-                <field name="state" widget="status_bar"/>
+                <field name="state" widget="statusbar" statusbar_visible="draft,booked,issued"/>
                 <sheet>
                     <group>
                         <group>
-                            <field name="is_ledger_created"/>
+                            <field name="is_ledger_created" groups="base.user_admin"/>
                             <field name="sequence"/>
                             <field name="booking_id"/>
                             <field name="pnr"/>
                             <field name="pnr2"/>
                             <field name="provider_id"/>
-<!--                            <field name="notes"/>-->
-<!--                            <field name="error_msg"/>-->
                             <field name="balance_due"/>
                         </group>
                         <group>
