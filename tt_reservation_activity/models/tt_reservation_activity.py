@@ -595,7 +595,7 @@ class ReservationActivity(models.Model):
                     attachment_value = {
                         'filename': 'Activity_Ticket.pdf',
                         'file_reference': str(obj.name) + ' ' + str(idx+1),
-                        'file': base64.b64encode(rec.encode()),
+                        'file': base64.b64encode(rec.encode().replace('\n', '')),
                     }
                     attachment_obj = self.env['tt.upload.center.wizard'].upload_file_api(attachment_value, context)
                     if attachment_obj['error_code'] == 0:
