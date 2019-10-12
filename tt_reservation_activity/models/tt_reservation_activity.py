@@ -71,6 +71,14 @@ class TtReservationActivityOption(models.Model):
     booking_id = fields.Many2one('tt.reservation.activity', 'Activity Booking')
 
 
+class TtReservationActivityVouchers(models.Model):
+    _name = 'tt.reservation.activity.vouchers'
+    _description = 'Rodex Model'
+
+    name = fields.Char('URL')
+    booking_id = fields.Many2one('tt.reservation.activity', 'Reservation')
+
+
 class ReservationActivity(models.Model):
     _inherit = ['tt.reservation']
     _name = 'tt.reservation.activity'
@@ -103,7 +111,7 @@ class ReservationActivity(models.Model):
     information = fields.Text('Additional Information')
     file_upload = fields.Text('File Upload')
     voucher_url = fields.Text('Voucher URL')
-    voucher_url_ids = fields.Many2many('tt.upload.center', 'activity_voucher_rel', 'activity_id', 'voucher_id', 'Voucher URLs')
+    voucher_url_ids = fields.One2many('tt.reservation.activity.vouchers', 'booking_id', 'Voucher URLs')
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', default=lambda self: self.env.ref('tt_reservation_activity.tt_provider_type_activity'))
     option_ids = fields.One2many('tt.reservation.activity.option', 'booking_id', 'Options')
 
@@ -578,35 +586,50 @@ class ReservationActivity(models.Model):
 
     def get_vouchers_button_api(self, obj_id, context):
         obj = self.env['tt.reservation.activity'].browse(obj_id)
-        req = {
-            'order_number': obj.name,
-            'uuid': obj.booking_uuid,
-            'pnr': obj.pnr,
-            'provider': obj.provider_name
-        }
-        res2 = self.env['tt.activity.api.con'].get_vouchers(req)
+        activity_voucher_urls = self.env['tt.reservation.activity.vouchers'].sudo().search([('booking_id', '=', int(obj.id))])
+        if not activity_voucher_urls:
+            req = {
+                'order_number': obj.name,
+                'uuid': obj.booking_uuid,
+                'pnr': obj.pnr,
+                'provider': obj.provider_name
+            }
+            res2 = self.env['tt.activity.api.con'].get_vouchers(req)
 
-        try:
-            attachment_objs = []
-            for idx, rec in enumerate(res2['response']['ticket']):
-                if res2['response']['provider'] == 'bemyguest':
-                    # pdf_data = pickle.loads(rec.encode())
+            try:
+                attachment_objs = []
+                for idx, rec in enumerate(res2['response']['ticket']):
+                    if res2['response']['provider'] == 'bemyguest':
+                        attachment_value = {
+                            'filename': 'Activity_Ticket.pdf',
+                            'file_reference': str(obj.name) + ' ' + str(idx+1),
+                            'file': rec,
+                        }
+                        attachment_obj = self.env['tt.upload.center.wizard'].upload_file_api(attachment_value, context)
+                        if attachment_obj['error_code'] == 0:
+                            attachment_objs.append(attachment_obj['response'])
 
-                    attachment_value = {
-                        'filename': 'Activity_Ticket.pdf',
-                        'file_reference': str(obj.name) + ' ' + str(idx+1),
-                        'file': base64.b64encode(rec.encode().replace('\n', '')),
-                    }
-                    attachment_obj = self.env['tt.upload.center.wizard'].upload_file_api(attachment_value, context)
-                    if attachment_obj['error_code'] == 0:
-                        attachment_objs.append(attachment_obj['response'])
-            return attachment_objs
-        except RequestException as e:
-            _logger.error(traceback.format_exc())
-            return e.error_dict()
-        except Exception as e:
-            _logger.error(traceback.format_exc())
-            return ERR.get_error(1013)
+                new_vouch_objs = []
+                for rec in attachment_objs:
+                    new_vouch_objs.append(self.env['tt.reservation.activity.vouchers'].sudo().create({
+                        'name': rec['url'],
+                        'booking_id': obj.id
+                    }))
+                return ERR.get_no_error(new_vouch_objs)
+            except RequestException as e:
+                _logger.error(traceback.format_exc())
+                return e.error_dict()
+            except Exception as e:
+                _logger.error(traceback.format_exc())
+                return ERR.get_error(1013)
+        else:
+            new_vouch_objs = []
+            for rec in activity_voucher_urls:
+                new_vouch_objs.append({
+                    'name': rec.name,
+                    'booking_id': rec.booking_id.id
+                })
+            return ERR.get_no_error(new_vouch_objs)
 
     def resend_voucher_button(self):
         view = self.env.ref('tt_reservation_activity.activity_voucher_wizard')
@@ -683,6 +706,14 @@ class ReservationActivity(models.Model):
         except Exception as e:
             _logger.error(traceback.format_exc())
             return ERR.get_error(1013)
+
+    @api.multi
+    def print_itinerary(self):
+        datas = {'ids': self.env.context.get('active_ids', [])}
+        res = self.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        return self.env.ref('tt_report_common.action_printout_itinerary_activity').report_action(self, data=datas)
 
     def get_booking_for_vendor_by_api(self, data, context):
         try:
@@ -762,29 +793,23 @@ class ReservationActivity(models.Model):
                 'voucherRedemptionAddress': master_line.voucherRedemptionAddress,
                 'cancellationPolicies': master_line.cancellationPolicies,
             }
-            attachments = False
-            if activity_booking.provider_name in ['bemyguest', 'globaltix']:
-                attachments = self.env['ir.attachment'].search([('res_model', '=', 'tt.reservation.activity'), ('res_id', '=', activity_booking.id)]).ids
 
-                # if not attachments:
-                #     res2 = self.get_vouchers_button_api(activity_booking.id, self.env.user.id)
-                #     if res2:
-                #         attachments = res2
+            voucher_url_parsed = ''
+            activity_voucher_urls = self.env['tt.reservation.activity.vouchers'].sudo().search([('booking_id', '=', int(activity_booking.id))])
+            if res.get('voucher_url') and not activity_voucher_urls:
+                new_vouch_obj = self.env['tt.reservation.activity.vouchers'].sudo().create({
+                                    'name': res['voucher_url'],
+                                    'booking_id': activity_booking.id
+                                })
+                voucher_url_parsed = new_vouch_obj.name
+            elif activity_voucher_urls:
+                voucher_url_parsed = activity_voucher_urls[0].name
 
-            if res.get('voucher_url') and not activity_booking.voucher_url:
-                activity_booking.sudo().write({
-                    'voucher_url': res['voucher_url']
-                })
-
-            if activity_booking.state not in ['done', 'rejected', 'cancel', 'cancel2']:
+            if activity_booking.state not in ['done', 'rejected', 'cancel', 'cancel2', 'fail_issued']:
                 activity_booking.sudo().write({
                     'state': res['status']
                 })
                 self.env.cr.commit()
-                if attachments:
-                    res.update({
-                        'status': 'done',
-                    })
 
             response = {
                 'contacts': {
@@ -811,9 +836,8 @@ class ReservationActivity(models.Model):
                 'voucher_detail': voucher_detail,
                 'uuid': res.get('uuid') and res['uuid'] or '',
                 'status': activity_booking.state,
-                'attachment_ids': attachments,
                 'booking_options': book_option_ids,
-                'voucher_url': res.get('voucher_url') and res['voucher_url'] or False
+                'voucher_url': voucher_url_parsed and voucher_url_parsed or False
             }
             result = ERR.get_no_error(response)
             return result
