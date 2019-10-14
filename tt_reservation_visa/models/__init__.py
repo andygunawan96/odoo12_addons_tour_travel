@@ -8,3 +8,4 @@ from . import tt_reservation_visa_requirements
 from . import tt_reservation_visa_vendor
 from . import tt_reservation_visa
 from . import tt_reservation_visa_pricelist
+from . import tt_provider_visa

@@ -86,6 +86,9 @@ class TtVisa(models.Model):
     sale_service_charge_ids = fields.One2many('tt.service.charge', 'visa_id', 'Service Charge',
                                               readonly=True, states={'draft': [('readonly', False)]})
 
+    provider_booking_ids = fields.One2many('tt.provider.visa', 'booking_id', string='Provider Booking',
+                                           readonly=True, states={'cancel2': [('readonly', False)]})
+
     done_date = fields.Datetime('Done Date', readonly=1)
     ready_date = fields.Datetime('Ready Date', readonly=1)
 

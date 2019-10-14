@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_provider_visa_form_view" model="ir.ui.view">
+        <field name="name">tt.provider.visa.form.view</field>
+        <field name="model">tt.provider.visa</field>
+        <field name="arch" type="xml">
+            <form>
+                <field name="state"/>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="is_ledger_created"/>
+                            <field name="booking_id"/>
+                            <field name="provider_id"/>
+                            <field name="use_vendor"/>
+                        </group>
+                        <group>
+                            <label for="confirmed_uid" string="Confirmed"/>
+                            <div>
+                                <field name="confirmed_uid" readonly="1" class="oe_inline"/> -
+                                <field name="confirmed_date" readonly="1" class="oe_inline"/>
+                            </div>
+
+                            <label for="validate_uid" string="Validated"/>
+                            <div>
+                                <field name="validate_uid" readonly="1" class="oe_inline"/> -
+                                <field name="validate_date" readonly="1" class="oe_inline"/>
+                            </div>
+
+                            <field name="in_process_date"/>
+                            <field name="ready_date"/>
+                            <field name="done_date"/>
+                        </group>
+                    </group>
+                    <group string="Visa Information">
+                        <group>
+                            <field name="country_id"/>
+                        </group>
+                        <group>
+                            <field name="departure_date"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="vendor_ids">
+                            <tree>
+                                <field name="vendor_id"/>
+                                <field name="reference_number"/>
+                                <field name="amount"/>
+                                <field name="payment_date"/>
+                            </tree>
+                        </field>
+                        <field name="passenger_ids">
+                            <tree>
+                                <field name="passenger_id"/>
+                                <field name="pax_type"/>
+                            </tree>
+                        </field>
+                    </group>
+                    <group>
+                        <field name="cost_service_charge_ids">
+                            <tree>
+                                <field name="charge_code"/>
+                                <field name="charge_type"/>
+                                <field name="pax_type"/>
+                                <field name="pax_count"/>
+                                <field name="currency_id" invisible="1"/>
+                                <field name="amount"/>
+                                <field name="total"/>
+                                <field name="provider_visa_booking_id"/>
+                            </tree>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_provider_visa_tree_view" model="ir.ui.view">
+        <field name="name">tt.provider.visa.tree.view</field>
+        <field name="model">tt.provider.visa</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
+            </tree>
+        </field>
+    </record>
+</odoo>

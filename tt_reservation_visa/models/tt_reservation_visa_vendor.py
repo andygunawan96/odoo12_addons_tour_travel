@@ -13,6 +13,7 @@ class VisaVendorLines(models.Model):
     _name = 'tt.reservation.visa.vendor.lines'
     _description = 'Rodex Model'
 
+    provider_id = fields.Many2one('tt.provider.visa', 'Provider')
     visa_id = fields.Many2one('tt.reservation.visa', 'Visa ID')
     vendor_id = fields.Many2one('tt.reservation.visa.vendor', 'Vendor')
     reference_number = fields.Char('Reference Number')

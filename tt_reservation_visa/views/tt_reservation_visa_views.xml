@@ -109,6 +109,7 @@
                             <field name="payment_date" attrs="{'readonly': [('state_visa', '!=', 'in_process')]}"/>
                             <field name="expired_date"/>
                             <field name="use_vendor"/>
+                            <field name="state" string="State (debug)"/>  <!--Debug-->
                             <field name="proof_of_consulate" widget="many2many_binary"/>
                             <field name="vendor_ids" attrs="{'required': [('use_vendor', '=', True)], 'readonly': [('state_visa', 'in', ['delivered','ready','done'])]}" groups="tt_base.group_tt_tour_travel_operator,account.group_account_user">
                                 <tree editable="bottom">
@@ -199,6 +200,13 @@
                                     <field name="total"/>
                                     <field name="currency_id" invisible="1"/>
                                     <field name="description"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Vendor" name="Vendor">
+                            <field name="provider_booking_ids">
+                                <tree>
+                                    <field name="provider_id"/>
                                 </tree>
                             </field>
                         </page>
