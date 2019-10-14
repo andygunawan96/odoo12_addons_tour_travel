@@ -359,6 +359,70 @@
             <field name="is_hotel_facility" eval="False"/>
             <field name="currency_id" ref="base.IDR"/>
         </record>
+        <record id="hotel_facility_air_conditioner" model="tt.hotel.facility">
+            <field name="name">Air Conditioner</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_room"/>
+            <field name="description">Air Conditioner</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="False"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_shop" model="tt.hotel.facility">
+            <field name="name">Shop / Minimarket</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Shop / Minimarket</field>
+            <field name="is_room_facility" eval="False"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_lounge" model="tt.hotel.facility">
+            <field name="name">Lounge Room</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Lounge Room</field>
+            <field name="is_room_facility" eval="False"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_hotel_bar" model="tt.hotel.facility">
+            <field name="name">Bar</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">In Hotel Bar</field>
+            <field name="is_room_facility" eval="False"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_gym" model="tt.hotel.facility">
+            <field name="name">Gym / Sport Center</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Gym / Sport Center</field>
+            <field name="is_room_facility" eval="False"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_spa" model="tt.hotel.facility">
+            <field name="name">Spa</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Spa and Massage</field>
+            <field name="is_room_facility" eval="False"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_atm" model="tt.hotel.facility">
+            <field name="name">Cash Machine / ATM</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Cash Machine / ATM</field>
+            <field name="is_room_facility" eval="False"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+        <record id="hotel_facility_pet" model="tt.hotel.facility">
+            <field name="name">Pet Allowed by Request</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Pet Allowed by Request</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
 
         <record id="hotel_no_refund_policy" model="cancellation.policy">
             <field name="name">The Reservation in non-refundable.</field>
