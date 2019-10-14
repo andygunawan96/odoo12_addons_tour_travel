@@ -33,8 +33,11 @@ class ReservationActivity(models.Model):
 
     def get_activity_description(self):
         tmp = ''
-        tmp += '%s(%s),' % (self.activity_id.name, self.activity_product,)
-        tmp += '%s\n ' % (self.visit_date,)
+        tmp += '%s (%s), ' % (self.activity_id.name, self.activity_product,)
+        tmp += '%s ' % (self.visit_date,)
+        if self.timeslot:
+            tmp += '(%s) ' % (self.timeslot,)
+        tmp += '\n '
         return tmp
 
     def action_create_invoice(self, acquirer_id):

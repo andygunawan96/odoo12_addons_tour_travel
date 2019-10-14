@@ -49,12 +49,6 @@
         <field name="mode">primary</field>
         <field name="inherit_id" ref="tt_reservation.tt_reservation_form_views"/>
         <field name="arch" type="xml">
-            <!--            <header>-->
-            <!--                <button string="Sync Status Booking" name="cron_update_status_booking" type="object"/>-->
-            <!--                <button string="Reverse Ledger" name="action_cancelled" type="object" attrs="{'invisible': [('state', 'in', ['cancelled', 'done'])]}" groups="tt_base.group_tt_tour_travel_supervisor"/>-->
-            <!--                <button string="Force Update Booking" name="force_update_booking" type="object" groups="base.group_no_one"/>-->
-            <!--                <button string="Generate Ledger PNR" name="generate_ledger_pnr" type="object" groups="base.group_no_one"/>-->
-            <!--            </header>-->
             <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
                 <div class="oe_button_box" name="button_box">
                     <button name="get_vouchers_button"
@@ -62,18 +56,16 @@
                             type="object"
                             class="oe_stat_button"
                             icon="fa-print"
-                            attrs="{'invisible': ['|', ('state', '!=', 'approved'), ('provider_name', '=', 'klook')]}"/>
-                    <button name="action_activity_print_invoice"
-                            string="Print Invoice"
-                            type="object"
-                            class="oe_stat_button"
-                            icon="fa-print"/>
+                            attrs="{'invisible': ['|', ('state', '!=', 'done'), ('provider_name', '=', 'klook')]}"/>
                     <button name="resend_voucher_button"
-                            string="Resend Voucher"
+                            string="Resend Voucher Email"
                             type="object"
                             class="oe_stat_button"
                             icon="fa-print"
-                            attrs="{'invisible': ['|', '&amp;', ('state', '!=', 'approved'), ('state', '!=', 'done'), ('provider_name', '!=', 'klook')]}"/>
+                            attrs="{'invisible': ['|', ('state', '!=', 'done'), ('provider_name', '!=', 'klook')]}"/>
+                    <button name="print_itinerary"
+                            class="oe_stat_button" states="issued,done"
+                            string="Print Itinerary" type="object" icon="fa-print"/>
                 </div>
             </xpath>
             <field name="adult" position="after">
@@ -82,7 +74,11 @@
             </field>
             <xpath expr="//group[@name='paxgroup']" position="before">
                 <group>
-                    <field name="voucher_url" attrs="{'invisible': [('provider_name', '!=', 'klook')]}"/>
+                    <field name="voucher_url_ids">
+                        <tree>
+                            <field name="name"/>
+                        </tree>
+                    </field>
                 </group>
                 <separator string="Activity Information"/>
                 <group>
