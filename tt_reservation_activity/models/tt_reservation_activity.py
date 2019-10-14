@@ -611,10 +611,14 @@ class ReservationActivity(models.Model):
 
                 new_vouch_objs = []
                 for rec in attachment_objs:
-                    new_vouch_objs.append(self.env['tt.reservation.activity.vouchers'].sudo().create({
+                    temp_vouch_obj = self.env['tt.reservation.activity.vouchers'].sudo().create({
                         'name': rec['url'],
                         'booking_id': obj.id
-                    }))
+                    })
+                    new_vouch_objs.append({
+                        'name': temp_vouch_obj.name,
+                        'booking_id': temp_vouch_obj.booking_id.id
+                    })
                 return ERR.get_no_error(new_vouch_objs)
             except RequestException as e:
                 _logger.error(traceback.format_exc())
@@ -678,28 +682,23 @@ class ReservationActivity(models.Model):
     def get_vouchers_by_api2(self, req, ctx):
         try:
             booking_obj = self.env['tt.reservation.activity'].search([('name', '=', req['order_number'])])
-            temp = self.env['ir.attachment'].search([('res_model', '=', 'tt.reservation.activity'), ('res_id', '=', booking_obj[0]['id'])]).ids
+            vouch_objs = self.env['tt.reservation.activity.vouchers'].sudo().search([('booking_id', '=', int(booking_obj.id))])
 
             if not ctx or ctx['co_uid'] == 1:
                 ctx['co_uid'] = booking_obj.booked_uid.id
 
-            if not temp:
+            if vouch_objs:
+                vouch_arr = []
+                for rec in vouch_objs:
+                    vouch_arr.append({
+                        'name': rec.name,
+                        'booking_id': rec.booking_id.id
+                    })
+                temp = ERR.get_no_error(vouch_arr)
+            else:
                 temp = self.get_vouchers_button_api(booking_obj[0]['id'], ctx)
 
-            result = []
-            # if temp:
-            #     for tmp in temp:
-            #         attachment = self.env['ir.attachment'].browse(tmp)
-            #         if booking_obj.provider_name == 'globaltix':
-            #             url = attachment.url
-            #             r = requests.get(url, stream=True)
-            #             if r.status_code == 200:
-            #                 pdf_data = r.content.encode('base64')
-            #                 result.append(pdf_data.replace('\n', ''))
-            #         elif booking_obj.provider_name == 'bemyguest':
-            #             pdf_data = attachment.datas
-            #             result.append(pdf_data.replace('\n', ''))
-            return ERR.get_no_error(result)
+            return ERR.get_no_error(temp['response'])
         except RequestException as e:
             _logger.error(traceback.format_exc())
             return e.error_dict()
@@ -798,9 +797,9 @@ class ReservationActivity(models.Model):
             activity_voucher_urls = self.env['tt.reservation.activity.vouchers'].sudo().search([('booking_id', '=', int(activity_booking.id))])
             if res.get('voucher_url') and not activity_voucher_urls:
                 new_vouch_obj = self.env['tt.reservation.activity.vouchers'].sudo().create({
-                                    'name': res['voucher_url'],
-                                    'booking_id': activity_booking.id
-                                })
+                    'name': res['voucher_url'],
+                    'booking_id': activity_booking.id
+                })
                 voucher_url_parsed = new_vouch_obj.name
             elif activity_voucher_urls:
                 voucher_url_parsed = activity_voucher_urls[0].name
