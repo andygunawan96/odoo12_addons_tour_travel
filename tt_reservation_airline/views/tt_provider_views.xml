@@ -17,7 +17,12 @@
                     <!--&lt;!&ndash;<field name="state" widget="statusbar" statusbar_visible="draft,booked,issued" clickable="1"/>&ndash;&gt;-->
                     <!--<field name="state" widget="statusbar" statusbar_visible="draft,booked,issued"/>-->
                 <!--</header>-->
-                <field name="state" widget="statusbar" statusbar_visible="draft,booked,issued"/>
+                <header>
+                    <button string="Force Issued (Create Ledger)" states="booked"/>
+                    <button string="Set To Issued (No Create Ledger)" name="action_set_to_issued_from_button"/>
+                    <button string="Reverse Ledger" states="issued"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,booked,issued"/>
+                </header>
                 <sheet>
                     <group>
                         <group>

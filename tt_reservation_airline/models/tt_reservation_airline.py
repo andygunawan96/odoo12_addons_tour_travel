@@ -871,13 +871,6 @@ class ReservationAirline(models.Model):
         book_obj.calculate_service_charge()
         return ERR.get_no_error()
 
-    def validate_booking(self, api_context=None):
-        user_obj = self.env['res.users'].browse(api_context['co_uid'])
-        if not user_obj:
-            raise Exception('User NOT FOUND...')
-
-        return ERR.get_error()
-
     def _prepare_booking_api(self, searchRQ, context_gateway):
         dest_obj = self.env['tt.destinations']
         provider_type_id = self.env.ref('tt_reservation_airline.tt_provider_type_airline')
@@ -1129,6 +1122,7 @@ class ReservationAirline(models.Model):
                 param_segment = segment_dict[segment.segment_code]
                 if segment.segment_code == param_segment['segment_code']:
                     this_segment_legs = []
+                    this_segment_fare_details = []
                     for idx2, leg in enumerate(param_segment['legs']):
                         leg_org = self.env['tt.destinations'].get_id(leg['origin'], provider_type)
                         leg_dest = self.env['tt.destinations'].get_id(leg['destination'], provider_type)
@@ -1145,14 +1139,20 @@ class ReservationAirline(models.Model):
                             'provider_id': leg_prov
                         }))
 
+                    for fare in param_segment['fares']:
+                        provider_obj.create_service_charge(fare['service_charges'])
+                        for addons in fare['fare_details']:
+                            addons['description'] = json.dumps(addons['description'])
+                            addons['segment_id'] = segment.id
+                            this_segment_fare_details.append((0,0,addons))
+
                     segment.write({
                         'leg_ids': this_segment_legs,
                         'cabin_class': param_segment.get('fares')[0].get('cabin_class',''),
-                        'class_of_service': param_segment.get('fares')[0].get('class_of_service','')
+                        'class_of_service': param_segment.get('fares')[0].get('class_of_service',''),
+                        'segment_addons_ids': this_segment_fare_details
                     })
 
-                    for fare in param_segment['fares']:
-                        provider_obj.create_service_charge(fare['service_charges'])
 
     #to generate sale service charge
     def calculate_service_charge(self):

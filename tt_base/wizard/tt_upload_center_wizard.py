@@ -22,7 +22,7 @@ class SplitInvoice(models.TransientModel):
 
     #file is encoded in base64
     def upload(self,filename,file_reference,file,context):
-        pattern = re.compile('^[a-zA-Z0-9](?:[a-zA-Z0-9 ._-]*[a-zA-Z0-9])?\.[a-zA-Z0-9_-]+$')
+        pattern = re.compile('^[a-zA-Z0-9](?:[a-zA-Z0-9 ()._-]*[a-zA-Z0-9)])?\.[a-zA-Z0-9_-]+$')
         if not pattern.match(filename):
             raise UserError('Filename Is Not Valid')
         try:

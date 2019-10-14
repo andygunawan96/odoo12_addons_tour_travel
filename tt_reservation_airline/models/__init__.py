@@ -7,3 +7,4 @@ from . import tt_leg_airline
 from . import tt_reservation_airline
 from . import tt_seat_airline
 from . import tt_reservation_passenger_airline
+from . import tt_segment_addons_airline

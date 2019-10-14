@@ -54,6 +54,13 @@ class TtProviderAirline(models.Model):
     error_history_ids = fields.One2many('tt.reservation.err.history','res_id','Error History')
     # , domain = [('res_model', '=', 'tt.provider.airline')]
 
+    ##button function
+    def action_set_to_issued_from_button(self):
+        self.write({
+            'state': 'issued'
+        })
+
+    ###
     def action_booked_api_airline(self, provider_data, api_context):
         for rec in self:
             rec.write({
