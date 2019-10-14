@@ -16,6 +16,7 @@ tt_provider_activity_for_all,tt.provider.activity.for.all,model_tt_provider_acti
 tt_ticket_activity_for_all,tt.ticket.activity.for.all,model_tt_ticket_activity,,1,0,0,0
 tt_reservation_activity_option_for_all,tt.reservation.activity.option.for.all,model_tt_reservation_activity_option,,1,0,0,0
 tt_reservation_passenger_activity_option_for_all,tt.reservation.passenger.activity.option.for.all,model_tt_reservation_passenger_activity_option,,1,0,0,0
+tt_reservation_activity_vouchers_for_all,tt.reservation.activity.vouchers.for.all,model_tt_reservation_activity_vouchers,,1,0,0,0
 ,,,,,,,
 tt_master_activity_for_tour_travel_operator,tt.master.activity.for.tour.travel.operator,model_tt_master_activity,tt_base.group_tt_tour_travel_operator,1,0,0,0
 tt_master_activity_for_tour_travel_supervisor,tt.master.activity.for.tour.travel.supervisor,model_tt_master_activity,tt_base.group_tt_tour_travel_supervisor,1,0,0,0

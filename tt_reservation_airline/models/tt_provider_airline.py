@@ -17,7 +17,6 @@ class TtProviderAirline(models.Model):
     booking_id = fields.Many2one('tt.reservation.airline', 'Order Number', ondelete='cascade')
     sequence = fields.Integer('Sequence')
     balance_due = fields.Float('Balance Due')
-    direction = fields.Selection(variables.JOURNEY_DIRECTION, string='Direction')
     origin_id = fields.Many2one('tt.destinations', 'Origin')
     destination_id = fields.Many2one('tt.destinations', 'Destination')
     departure_date = fields.Char('Departure Date')
@@ -50,11 +49,7 @@ class TtProviderAirline(models.Model):
 
     ticket_ids = fields.One2many('tt.ticket.airline', 'provider_id', 'Ticket Number')
 
-    error_msg = fields.Text('Message Error', readonly=True, states={'draft': [('readonly', False)]})
-
     is_ledger_created = fields.Boolean('Ledger Created', default=False, readonly=True, states={'draft': [('readonly', False)]})
-
-    notes = fields.Text('Notes', readonly=True, states={'draft': [('readonly', False)]})
 
     error_history_ids = fields.One2many('tt.reservation.err.history','res_id','Error History')
     # , domain = [('res_model', '=', 'tt.provider.airline')]
@@ -257,7 +252,6 @@ class TtProviderAirline(models.Model):
             'state_description': variables.BOOKING_STATE_STR[self.state],
             'sequence': self.sequence,
             'balance_due': self.balance_due,
-            'direction': self.direction,
             'origin': self.origin_id.code,
             'destination': self.destination_id.code,
             'departure_date': self.departure_date,

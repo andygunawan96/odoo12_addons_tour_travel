@@ -14,8 +14,6 @@ class TtSegmentAirline(models.Model):
     name = fields.Char('Name', compute='_fill_name')
     segment_code = fields.Char('Segment Code')
     fare_code = fields.Char('Fare Code')
-    journey_type = fields.Selection(variables.JOURNEY_TYPE, string='Journey Type', default='DEP',
-                                    states={'draft': [('readonly', False)]})
 
     pnr = fields.Char('PNR', related='journey_id.pnr', store=True)
 
@@ -61,7 +59,6 @@ class TtSegmentAirline(models.Model):
         res = {
             'segment_code': self.segment_code,
             'fare_code': self.fare_code,
-            'journey_type': self.journey_type,
             'pnr': self.pnr,
             'carrier_name': self.carrier_id.name,
             'carrier_code': self.carrier_code,
