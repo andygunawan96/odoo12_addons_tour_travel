@@ -585,9 +585,8 @@ class ReservationActivity(models.Model):
         return res
 
     def get_vouchers_button_api(self, obj_id, context):
-        obj = self.env['tt.reservation.activity'].browse(obj_id)
-        activity_voucher_urls = self.env['tt.reservation.activity.vouchers'].sudo().search([('booking_id', '=', int(obj.id))])
-        if not activity_voucher_urls:
+        try:
+            obj = self.env['tt.reservation.activity'].browse(obj_id)
             req = {
                 'order_number': obj.name,
                 'uuid': obj.booking_uuid,
@@ -595,45 +594,35 @@ class ReservationActivity(models.Model):
                 'provider': obj.provider_name
             }
             res2 = self.env['tt.activity.api.con'].get_vouchers(req)
+            attachment_objs = []
+            for idx, rec in enumerate(res2['response']['ticket']):
+                if res2['response']['provider'] == 'bemyguest':
+                    attachment_value = {
+                        'filename': 'Activity_Ticket.pdf',
+                        'file_reference': str(obj.name) + ' ' + str(idx+1),
+                        'file': rec,
+                    }
+                    attachment_obj = self.env['tt.upload.center.wizard'].upload_file_api(attachment_value, context)
+                    if attachment_obj['error_code'] == 0:
+                        attachment_objs.append(attachment_obj['response'])
 
-            try:
-                attachment_objs = []
-                for idx, rec in enumerate(res2['response']['ticket']):
-                    if res2['response']['provider'] == 'bemyguest':
-                        attachment_value = {
-                            'filename': 'Activity_Ticket.pdf',
-                            'file_reference': str(obj.name) + ' ' + str(idx+1),
-                            'file': rec,
-                        }
-                        attachment_obj = self.env['tt.upload.center.wizard'].upload_file_api(attachment_value, context)
-                        if attachment_obj['error_code'] == 0:
-                            attachment_objs.append(attachment_obj['response'])
-
-                new_vouch_objs = []
-                for rec in attachment_objs:
-                    temp_vouch_obj = self.env['tt.reservation.activity.vouchers'].sudo().create({
-                        'name': rec['url'],
-                        'booking_id': obj.id
-                    })
-                    new_vouch_objs.append({
-                        'name': temp_vouch_obj.name,
-                        'booking_id': temp_vouch_obj.booking_id.id
-                    })
-                return ERR.get_no_error(new_vouch_objs)
-            except RequestException as e:
-                _logger.error(traceback.format_exc())
-                return e.error_dict()
-            except Exception as e:
-                _logger.error(traceback.format_exc())
-                return ERR.get_error(1013)
-        else:
             new_vouch_objs = []
-            for rec in activity_voucher_urls:
+            for rec in attachment_objs:
+                temp_vouch_obj = self.env['tt.reservation.activity.vouchers'].sudo().create({
+                    'name': rec['url'],
+                    'booking_id': obj.id
+                })
                 new_vouch_objs.append({
-                    'name': rec.name,
-                    'booking_id': rec.booking_id.id
+                    'name': temp_vouch_obj.name,
+                    'booking_id': temp_vouch_obj.booking_id.id
                 })
             return ERR.get_no_error(new_vouch_objs)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1013)
 
     def resend_voucher_button(self):
         view = self.env.ref('tt_reservation_activity.activity_voucher_wizard')
@@ -652,32 +641,31 @@ class ReservationActivity(models.Model):
         }
 
     def get_vouchers_button(self):
-        req = {
-            'uuid': self.booking_uuid,
-            'pnr': self.pnr,
-            'provider': self.provider_name
-        }
-        res2 = self.env['tt.activity.api.con'].get_vouchers(req)
+        vouch_objs = self.env['tt.reservation.activity.vouchers'].sudo().search([('booking_id', '=', int(self.id))])
 
-        for rec in res2['response']['ticket']:
-            if res2['response']['provider'] == 'bemyguest':
-                pdf_data = pickle.loads(rec)
-                if not pdf_data:
-                    return False
-
-                attachment_value = {
-                    'name': 'Ticket.pdf',
-                    'datas': base64.encodestring(pdf_data),
-                    'datas_fname': 'Ticket.pdf',
-                    'res_model': 'tt.reservation.activity',
-                    'res_id': self.id,
-                    'type': 'binary',
-                    'mimetype': 'application/x-pdf',
-                }
-
-            self.env['ir.attachment'].sudo().create(attachment_value)
-            self.env.cr.commit()
-        self.action_done()
+        if vouch_objs:
+            vouch_arr = []
+            for rec in vouch_objs:
+                vouch_arr.append({
+                    'name': rec.name,
+                    'booking_id': rec.booking_id.id
+                })
+            temp = ERR.get_no_error(vouch_arr)
+        else:
+            ctx = {
+                'co_uid': self.booked_uid.id,
+                'agent_id': self.booked_uid.agent_id.id,
+                'co_agent_id': self.booked_uid.agent_id.id,
+            }
+            temp = self.get_vouchers_button_api(self[0]['id'], ctx)
+        if temp:
+            return {
+                'name': 'Activity Voucher',
+                'res_model': 'ir.actions.act_url',
+                'type': 'ir.actions.act_url',
+                'target': 'current',
+                'url': temp['response'][0]['name']
+            }
 
     def get_vouchers_by_api2(self, req, ctx):
         try:
@@ -685,7 +673,11 @@ class ReservationActivity(models.Model):
             vouch_objs = self.env['tt.reservation.activity.vouchers'].sudo().search([('booking_id', '=', int(booking_obj.id))])
 
             if not ctx or ctx['co_uid'] == 1:
-                ctx['co_uid'] = booking_obj.booked_uid.id
+                ctx.update({
+                    'co_uid': self.booked_uid.id,
+                    'agent_id': self.booked_uid.agent_id.id,
+                    'co_agent_id': self.booked_uid.agent_id.id,
+                })
 
             if vouch_objs:
                 vouch_arr = []
