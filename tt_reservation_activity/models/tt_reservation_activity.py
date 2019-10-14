@@ -698,7 +698,7 @@ class ReservationActivity(models.Model):
             else:
                 temp = self.get_vouchers_button_api(booking_obj[0]['id'], ctx)
 
-            return ERR.get_no_error(temp['response'])
+            return temp['error_code'] == 0 and ERR.get_no_error(temp['response']) or temp
         except RequestException as e:
             _logger.error(traceback.format_exc())
             return e.error_dict()
