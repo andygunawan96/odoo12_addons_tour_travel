@@ -882,7 +882,7 @@ class ReservationActivity(models.Model):
     def confirm_booking_webhook(self, req):
         if req.get('order_id'):
             order_id = req['order_id']
-            book_obj = self.sudo().search([('pnr', '=', order_id)], limit=1)
+            book_obj = self.sudo().search([('pnr', '=', order_id), ('provider_name', '=', req['provider'])], limit=1)
             book_obj = book_obj[0]
             if book_obj.state not in ['done', 'cancel', 'cancel2', 'refund']:
                 book_obj.sudo().write({
