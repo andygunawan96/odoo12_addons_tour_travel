@@ -895,7 +895,7 @@ class ReservationActivity(models.Model):
                 })
         elif req.get('booking_uuid'):
             booking_uuid = req['booking_uuid']
-            book_obj = self.sudo().search([('booking_uuid', '=', booking_uuid)], limit=1)
+            book_obj = self.sudo().search([('booking_uuid', '=', booking_uuid), ('provider_name', '=', req['provider'])], limit=1)
             book_obj = book_obj[0]
             if book_obj.state not in ['done', 'cancel', 'cancel2', 'refund']:
                 book_obj.sudo().write({
