@@ -17,6 +17,7 @@
                             <field name="facility_type_id"/>
                             <field name="description"/>
                             <field name="css_class"/>
+                            <field name="internal_code"/>
                             <field name="is_room_facility"/>
                             <field name="is_hotel_facility"/>
                             <field name="currency_id"/>
@@ -47,9 +48,8 @@
                 <field name="is_room_facility"/>
                 <field name="is_hotel_facility"/>
                 <field name="name"/>
-                <field name="css_class"/>
-                <field name="facility_type_id"/>
-                <field name="description"/>
+                <field name="image_url"/>
+                <field name="image_url2"/>
             </tree>
         </field>
     </record>

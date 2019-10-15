@@ -263,7 +263,7 @@ class TtReservation(models.Model):
 
     def create_passenger_value_api_test(self,passenger):
         list_passenger_value = []
-        country_obj  = self.env['res.country'].sudo()
+        country_obj = self.env['res.country'].sudo()
         for rec in passenger:
             nationality_id = country_obj.search([('code','=ilike',rec['nationality_code'])],limit=1).id
             identity = rec.get('identity')
