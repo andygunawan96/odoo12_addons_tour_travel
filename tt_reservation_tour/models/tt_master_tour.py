@@ -1,9 +1,12 @@
 from odoo import api, fields, models, _
 from datetime import datetime
+from ...tools import util,variables,ERR
+from ...tools.ERR import RequestException
 from dateutil.relativedelta import relativedelta
 from ...tools.api import Response
 import logging, traceback
 import json
+import pytz
 
 _logger = logging.getLogger(__name__)
 
@@ -473,10 +476,13 @@ class MasterTour(models.Model):
                 'search_value': 2,
                 'currency_id': self.env.user.company_id.currency_id.id
             }
-            res = Response().get_no_error(response)
+            return ERR.get_no_error(response)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
         except Exception as e:
-            res = Response().get_error(str(e), 500)
-        return res
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1022)
 
     def get_delay(self, day, hour, minute):
         delay_str = str(day)
@@ -490,7 +496,7 @@ class MasterTour(models.Model):
     def get_flight_segment(self, id):
         list_obj = []
         old_vals = {}
-        context_timestamp = lambda t: fields.Datetime.context_timestamp(self, t)
+        user_tz = pytz.timezone(self.env.context.get('tz') or self.env.user.tz or 'UTC')
         for segment in self.env['tt.master.tour'].sudo().browse(int(id)).flight_segment_ids:
             vals = {
                 'journey_type': segment.journey_type,
@@ -499,12 +505,12 @@ class MasterTour(models.Model):
                 'carrier_number': segment.carrier_number,
                 'origin_id': segment.origin_id.display_name,
                 'origin_terminal': segment.origin_terminal,
-                'departure_date': segment.departure_date,
-                'departure_date_fmt': context_timestamp(segment.departure_date).strftime('%d-%b-%Y %H:%M'),
+                'departure_date': user_tz.localize(segment.departure_date),
+                'departure_date_fmt': user_tz.localize(segment.departure_date).strftime('%d-%b-%Y %H:%M'),
                 'destination_id': segment.destination_id.display_name,
                 'destination_terminal': segment.destination_terminal,
                 'return_date': segment.return_date,
-                'return_date_fmt': context_timestamp(segment.return_date).strftime('%d-%b-%Y %H:%M'),
+                'return_date_fmt': segment.return_date.strftime('%d-%b-%Y %H:%M'),
                 'delay': 'None',
             }
             if old_vals and old_vals['journey_type'] == segment.journey_type:
@@ -673,10 +679,13 @@ class MasterTour(models.Model):
                 # 'is_agent': is_agent,
             }
 
-            res = Response().get_no_error(response)
+            return ERR.get_no_error(response)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
         except Exception as e:
-            res = Response().get_error(str(e), 500)
-        return res
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1022)
 
     def check_pax_similarity(self, vals):
         result = []
@@ -723,10 +732,13 @@ class MasterTour(models.Model):
             response = {
                 'payment_rules': payment_rules
             }
-            res = Response().get_no_error(response)
+            return ERR.get_no_error(response)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
         except Exception as e:
-            res = Response().get_error(str(e), 500)
-        return res
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1022)
 
     def get_config_by_api(self):
         try:
@@ -745,10 +757,13 @@ class MasterTour(models.Model):
             values = {
                 'countries': countries_list,
             }
-            return Response().get_no_error(values)
+            return ERR.get_no_error(values)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
         except Exception as e:
-            _logger.info('Tour Get Config Error')
-            return Response().get_error(str(e), 500)
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1021)
 
     def get_cities_by_api(self, id):
         try:
@@ -759,7 +774,23 @@ class MasterTour(models.Model):
                     'name': rec.name,
                     'id': rec.id,
                 })
-            return Response().get_no_error(cities)
+            return ERR.get_no_error(cities)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
         except Exception as e:
-            _logger.info('Tour Get Cities Error')
-            return Response().get_error(str(e), 500)
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1021)
+
+    def get_pricing_api(self):
+        try:
+            price_itinerary = {
+
+            }
+            return ERR.get_no_error(price_itinerary)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1022)

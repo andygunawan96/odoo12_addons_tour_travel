@@ -880,14 +880,26 @@ class ReservationActivity(models.Model):
         return row.id
 
     def confirm_booking_webhook(self, req):
-        order_id = req.get('order_id')
-        if order_id:
+        if req.get('order_id'):
+            order_id = req['order_id']
             book_obj = self.sudo().search([('pnr', '=', order_id)], limit=1)
             book_obj = book_obj[0]
             if book_obj.state not in ['done', 'cancel', 'cancel2', 'refund']:
                 book_obj.sudo().write({
                     'state': req.get('status') and req['status'] or 'pending',
-                    'voucher_url': req.get('voucher_url') and req['voucher_url'] or ''
+                })
+            if req.get('voucher_url'):
+                self.env['tt.reservation.activity.vouchers'].sudo().create({
+                    'name': req['voucher_url'],
+                    'booking_id': book_obj.id
+                })
+        elif req.get('booking_uuid'):
+            booking_uuid = req['booking_uuid']
+            book_obj = self.sudo().search([('booking_uuid', '=', booking_uuid)], limit=1)
+            book_obj = book_obj[0]
+            if book_obj.state not in ['done', 'cancel', 'cancel2', 'refund']:
+                book_obj.sudo().write({
+                    'state': req.get('status') and req['status'] or 'pending',
                 })
         response = {
             'success': True
