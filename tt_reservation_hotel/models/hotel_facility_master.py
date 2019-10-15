@@ -13,6 +13,7 @@ class HotelFacility(models.Model):
     currency_id = fields.Many2one('res.currency', 'Currency')
     is_paid = fields.Boolean('Need Payment', default="False")
     css_class = fields.Char('Website CSS Class')
+    internal_code = fields.Integer('Internal Code')
 
     image_url = fields.Char('Image URL #1')
     image_url2 = fields.Char('Image URL #2')

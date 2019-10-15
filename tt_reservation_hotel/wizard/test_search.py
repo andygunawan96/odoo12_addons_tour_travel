@@ -1031,6 +1031,10 @@ class TestSearch(models.Model):
                  'image_url': facility.image_url, 'image_url2': facility.image_url2, 'internal_code': facility.internal_code,} for
                 facility in self.env['tt.hotel.top.facility'].search([], limit=limit)]
 
+    def get_facility_img(self, limit=99):
+        return [{'facility_id': facility.id, 'internal_code': facility.internal_code, 'facility_image': facility.image_url3, }
+                for facility in self.env['tt.hotel.facility'].search([], limit=limit)]
+
 
 class TestSearchLine(models.Model):
     _name = 'test.search.line'
