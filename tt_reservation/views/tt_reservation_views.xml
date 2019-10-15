@@ -66,6 +66,11 @@
                                 <field name="issued_uid" readonly="1" class="oe_inline"/> -
                                 <field name="issued_date" readonly="1" class="oe_inline"/>
                             </div>
+                            <label for="issued_uid" string="Refund By"/>
+                            <div>
+                                <field name="refund_uid" readonly="1" class="oe_inline"/> -
+                                <field name="refund_date" readonly="1" class="oe_inline"/>
+                            </div>
                             <field name="sid_booked"/>
                         </group>
                     </group>

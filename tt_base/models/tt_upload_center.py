@@ -1,4 +1,5 @@
 from odoo import api, fields, models, _
+import os
 
 class TtUploadFile(models.Model):
     _name = 'tt.upload.center'
@@ -19,3 +20,10 @@ class TtUploadFile(models.Model):
         vals_list['name'] = '%s %s' % (vals_list.get('filename'),vals_list.get('file_reference'))
         vals_list['seq_id'] = self.env['ir.sequence'].next_by_code('tt.upload.center')
         return super(TtUploadFile, self).create(vals_list)
+
+    @api.multi
+    def unlink(self):
+        for rec in self:
+            ##remove the real file
+            if os.path.exists(rec.path):
+                os.remove(rec.path)

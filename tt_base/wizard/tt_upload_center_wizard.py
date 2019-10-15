@@ -53,8 +53,6 @@ class SplitInvoice(models.TransientModel):
             _logger.error(traceback.format_exc())
             return ERR.get_error()
 
-
-
     def create_directory_structure(self,filename):
         base_dir = '/src/static/'
         base_url = 'https://static.rodextrip.com/'

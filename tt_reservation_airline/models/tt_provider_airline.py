@@ -1,4 +1,5 @@
-from odoo import api, fields, models, _
+from odoo import api, fields, models
+from odoo.exceptions import UserError
 from ...tools import variables
 from datetime import datetime
 import json
@@ -44,8 +45,8 @@ class TtProviderAirline(models.Model):
     hold_date = fields.Char('Hold Date')
     expired_date = fields.Datetime('Expired Date')
     #
-    # refund_uid = fields.Many2one('res.users', 'Refund By')
-    # refund_date = fields.Datetime('Refund Date')
+    refund_uid = fields.Many2one('res.users', 'Refund By')
+    refund_date = fields.Datetime('Refund Date')
 
     ticket_ids = fields.One2many('tt.ticket.airline', 'provider_id', 'Ticket Number')
 
@@ -56,9 +57,46 @@ class TtProviderAirline(models.Model):
 
     ##button function
     def action_set_to_issued_from_button(self):
+        if self.state == 'issued':
+            raise UserError("Has been Issued.")
         self.write({
-            'state': 'issued'
+            'state': 'issued',
+            'issued_uid': self.env.user.id,
+            'issued_date': datetime.now()
         })
+        self.booking_id.check_provider_state({'co_uid': self.env.user.id})
+
+
+    def action_force_issued_from_button(self):
+        if self.state == 'issued':
+            raise UserError("Has been Issued.")
+
+        balance_res = self.env['tt.agent'].check_balance_limit_api(self.booking_id.agent_id.id,self.booking_id.total_nta)
+        if balance_res['error_code'] != 0:
+            raise UserError("Balance not enough.")
+
+        self.action_create_ledger()
+        self.action_set_to_issued_from_button()
+
+    def action_reverse_ledger_from_button(self):
+        if self.state == 'fail_refunded':
+            raise UserError("Cannot refund, this PNR has been refunded.")
+
+        if not self.is_ledger_created:
+            raise UserError("This Provider Ledger is not Created.")
+
+        for rec in self.booking_id.ledger_ids:
+            if rec.pnr == self.pnr and not rec.is_reversed:
+                rec.reverse_ledger()
+
+        self.write({
+            'state': 'fail_refunded',
+            'is_ledger_created': False,
+            'refund_uid': self.env.user.id,
+            'refund_date': datetime.now()
+        })
+
+        self.booking_id.check_provider_state({'co_uid':self.env.user.id})
 
     ###
     def action_booked_api_airline(self, provider_data, api_context):
@@ -242,6 +280,8 @@ class TtProviderAirline(models.Model):
         if not self.is_ledger_created:
             self.write({'is_ledger_created': True})
             self.env['tt.ledger'].action_create_ledger(self)
+        else:
+            raise UserError("Cannot create ledger, ledger has been created before.")
 
     def to_dict(self):
         journey_list = []

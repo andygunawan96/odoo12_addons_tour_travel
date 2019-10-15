@@ -25,6 +25,7 @@ Key Features
         'data/ir_sequence_data.xml',
         'data/ir_cron_data.xml',
         'data/res.social.media.type.csv',
+        'data/tt_agent_ho_data.xml',
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
 

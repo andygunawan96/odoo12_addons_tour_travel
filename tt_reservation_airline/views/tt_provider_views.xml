@@ -18,9 +18,9 @@
                     <!--<field name="state" widget="statusbar" statusbar_visible="draft,booked,issued"/>-->
                 <!--</header>-->
                 <header>
-                    <button string="Force Issued (Create Ledger)" states="booked"/>
-                    <button string="Set To Issued (No Create Ledger)" name="action_set_to_issued_from_button"/>
-                    <button string="Reverse Ledger" states="issued"/>
+                    <button string="Force Issued (Create Ledger)" name="action_force_issued_from_button" states="booked" type="object"/>
+                    <button string="Set To Issued (No Create Ledger)" name="action_set_to_issued_from_button" type="object"/>
+                    <button string="Reverse Ledger" name="action_reverse_ledger_from_button" states="issued" type="object"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,booked,issued"/>
                 </header>
                 <sheet>
@@ -41,8 +41,8 @@
                             <field name="booked_date"/>
                             <field name="issued_uid"/>
                             <field name="issued_date"/>
-                            <!--<field name="refund_uid"/>-->
-                            <!--<field name="refund_date"/>-->
+                            <field name="refund_uid"/>
+                            <field name="refund_date"/>
                         </group>
                     </group>
                     <group string="Itinerary Info">

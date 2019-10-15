@@ -31,13 +31,14 @@ class TtAgent(models.Model):
     # mou_ids = fields.One2many('tt.agent.mou', 'agent_id', string='MOU(s)')
     website = fields.Char(string="Website", required=False, )
     email = fields.Char(string="Email", required=False, )
-    currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.user.company_id)
+    currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.user.company_id.currency_id)
     address_ids = fields.One2many('address.detail', 'agent_id', string='Addresses')
     phone_ids = fields.One2many('phone.detail', 'agent_id', string='Phones')
     social_media_ids = fields.One2many('social.media.detail', 'agent_id', 'Social Media')
     customer_parent_ids = fields.One2many('tt.customer.parent', 'parent_agent_id', 'Customer Parent')
     customer_parent_walkin_id = fields.Many2one('tt.customer.parent','Walk In Parent')
     customer_ids = fields.One2many('tt.customer', 'agent_id', 'Customer')
+    default_acquirer_id = fields.Many2one('payment.acquirer','Default Acquirer')
 
     parent_agent_id = fields.Many2one('tt.agent', string="Parent Agent", default=lambda self: self.set_default_agent())
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', required=True)
@@ -80,7 +81,7 @@ class TtAgent(models.Model):
 
         walkin_obj = self.env['tt.customer.parent'].create(walkin_obj_val)
 
-        self.env['payment.acquirer'].create({
+        new_acquirer = self.env['payment.acquirer'].create({
             'name': '%s Cash' % (new_agent.name),
             'provider': 'manual',
             'agent_id': new_agent.id,
@@ -90,7 +91,8 @@ class TtAgent(models.Model):
 
         new_agent.write({
             'customer_parent_walkin_id': walkin_obj.id,
-            'seq_id': self.env['ir.sequence'].next_by_code('tt.agent.type.%s' % (new_agent.agent_type_id.code))
+            'seq_id': self.env['ir.sequence'].next_by_code('tt.agent.type.%s' % (new_agent.agent_type_id.code)),
+            'default_acquirer_id': new_acquirer.id
         })
         return new_agent
 
@@ -292,7 +294,6 @@ class AgentTarget(models.Model):
     annual_profit_target = fields.Monetary("Annual Profit Target")
 
     currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.user.company_id.currency_id.id)
-
 
 class AgentMOU(models.Model):
     _inherit = ['tt.history']
