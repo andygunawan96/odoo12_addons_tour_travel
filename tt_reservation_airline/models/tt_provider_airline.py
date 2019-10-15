@@ -75,8 +75,13 @@ class TtProviderAirline(models.Model):
         if balance_res['error_code'] != 0:
             raise UserError("Balance not enough.")
 
-        self.action_create_ledger()
+        self.action_create_ledger(self.env.user.id)
         self.action_set_to_issued_from_button()
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
 
     def action_reverse_ledger_from_button(self):
         if self.state == 'fail_refunded':
@@ -97,6 +102,11 @@ class TtProviderAirline(models.Model):
         })
 
         self.booking_id.check_provider_state({'co_uid':self.env.user.id})
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
 
     ###
     def action_booked_api_airline(self, provider_data, api_context):
@@ -276,10 +286,10 @@ class TtProviderAirline(models.Model):
     #             'total_orig': total_orig
     #         })
 
-    def action_create_ledger(self):
+    def action_create_ledger(self,issued_uid):
         if not self.is_ledger_created:
             self.write({'is_ledger_created': True})
-            self.env['tt.ledger'].action_create_ledger(self)
+            self.env['tt.ledger'].action_create_ledger(self,issued_uid)
         else:
             raise UserError("Cannot create ledger, ledger has been created before.")
 

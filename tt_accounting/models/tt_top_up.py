@@ -99,7 +99,7 @@ class TtTopUp(models.Model):
             raise UserWarning('Can only validate [request] state Top Up.')
 
         ledger_obj = self.env['tt.ledger']
-        vals = ledger_obj.prepare_vals('Top Up : %s' % (self.name),self.name,datetime.now(),1,self.currency_id.id,self.get_total_amount())
+        vals = ledger_obj.prepare_vals(self._name,self.id,'Top Up : %s' % (self.name),self.name,datetime.now(),1,self.currency_id.id,self.env.user.id,self.get_total_amount(),description='Top Up Ledger for %s' % self.name)
         vals['agent_id'] = self.agent_id.id
         new_aml = ledger_obj.create(vals)
         self.write({
