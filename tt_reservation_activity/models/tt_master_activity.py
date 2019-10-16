@@ -1482,11 +1482,12 @@ class MasterActivity(models.Model):
                             sale_price = str(int(converted_price / 1000)) + str(idx + 1) + '00'
                         break
 
+                result.pop('basePrice')
                 result.update({
-                    'converted_price': int(sale_price),
-                    'currency_code': from_currency.name,
+                    'activity_price': int(sale_price),
                     'provider_id': result['provider_id'],
                     'provider': res_provider.code,
+                    'currency_code': 'IDR'
                 })
                 result_list.append(result)
 

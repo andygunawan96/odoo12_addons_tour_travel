@@ -497,6 +497,7 @@ class MasterTour(models.Model):
         list_obj = []
         old_vals = {}
         user_tz = pytz.timezone(self.env.context.get('tz') or self.env.user.tz or 'UTC')
+        utc_tz = pytz.timezone('UTC')
         for segment in self.env['tt.master.tour'].sudo().browse(int(id)).flight_segment_ids:
             vals = {
                 'journey_type': segment.journey_type,
@@ -505,16 +506,16 @@ class MasterTour(models.Model):
                 'carrier_number': segment.carrier_number,
                 'origin_id': segment.origin_id.display_name,
                 'origin_terminal': segment.origin_terminal,
-                'departure_date': user_tz.localize(segment.departure_date),
-                'departure_date_fmt': user_tz.localize(segment.departure_date).strftime('%d-%b-%Y %H:%M'),
+                'departure_date': utc_tz.localize(segment.departure_date).astimezone(user_tz),
+                'departure_date_fmt': utc_tz.localize(segment.departure_date).astimezone(user_tz).strftime('%d-%b-%Y %H:%M'),
                 'destination_id': segment.destination_id.display_name,
                 'destination_terminal': segment.destination_terminal,
-                'return_date': segment.return_date,
-                'return_date_fmt': segment.return_date.strftime('%d-%b-%Y %H:%M'),
+                'return_date': utc_tz.localize(segment.return_date).astimezone(user_tz),
+                'return_date_fmt': utc_tz.localize(segment.return_date).astimezone(user_tz).strftime('%d-%b-%Y %H:%M'),
                 'delay': 'None',
             }
             if old_vals and old_vals['journey_type'] == segment.journey_type:
-                time_delta = segment.departure_date - old_vals['return_date']
+                time_delta = utc_tz.localize(segment.departure_date).astimezone(user_tz) - old_vals['return_date']
                 day = time_delta.days
                 hours = time_delta.seconds/3600
                 minute = time_delta.seconds % 60
