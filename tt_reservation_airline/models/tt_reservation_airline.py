@@ -717,53 +717,13 @@ class ReservationAirline(models.Model):
             for rec in book_obj.provider_booking_ids:
                 pnr_list.append(rec.pnr)
 
-            if all(rec == 'BOOKED' for rec in book_status):
-                #booked
-                book_obj.calculate_service_charge()
-                book_obj.action_booked_api_airline(context,pnr_list,hold_date)
-            elif all(rec == 'ISSUED' for rec in book_status):
-                #issued
-                ##get payment acquirer
-                if req.get('seq_id'):
-                    acquirer_id = self.env['payment.acquirer'].search([('seq_id','=',req['seq_id'])])
-                    if not acquirer_id:
-                        raise RequestException(1017)
-                else:
-                    raise RequestException(1017)
-
-                if req.get('member'):
-                    customer_parent_id = acquirer_id.agent_id.id
-                else:
-                    customer_parent_id = book_obj.agent_id.customer_parent_walkin_id.id
-
-                if req.get('force_issued'):
-                    book_obj.calculate_service_charge()
-                    book_obj.action_booked_api_airline(context, pnr_list, hold_date)
-                    self.payment_airline_api({'book_id': req['book_id']}, context)
-
-                book_obj.action_issued_api_airline(acquirer_id.id,customer_parent_id,context)
-            elif any(rec == 'ISSUED' for rec in book_status):
-                #partial issued
-                book_obj.action_partial_issued_api_airline()
-            elif any(rec == 'BOOKED' for rec in book_status):
-                #partial booked
-                book_obj.calculate_service_charge()
-                book_obj.action_partial_booked_api_airline(context,pnr_list,hold_date)
-            elif all(rec == 'FAIL_ISSUED' for rec in book_status):
-                #failed issue
-                book_obj.action_failed_issue()
-            elif all(rec == 'FAIL_BOOKED' for rec in book_status):
-                #failed book
-                book_obj.action_failed_book()
-            else:
-                #entah status apa
-                _logger.error('Entah status apa')
-                raise RequestException(1006)
+            book_obj.check_provider_state(context,pnr_list,hold_date,req)
 
             return ERR.get_no_error({
                 'order_number': book_obj.name,
                 'book_id': book_obj.id
             })
+
         except RequestException as e:
             _logger.error(traceback.format_exc())
             try:
@@ -832,7 +792,7 @@ class ReservationAirline(models.Model):
                     raise RequestException(1007)
 
                 for provider in book_obj.provider_booking_ids:
-                    provider.action_create_ledger()
+                    provider.action_create_ledger(context['co_uid'])
 
                 return ERR.get_no_error()
             else:
@@ -870,13 +830,6 @@ class ReservationAirline(models.Model):
         book_obj = self.get_book_obj(req.get('book_id'),req.get('order_number'))
         book_obj.calculate_service_charge()
         return ERR.get_no_error()
-
-    def validate_booking(self, api_context=None):
-        user_obj = self.env['res.users'].browse(api_context['co_uid'])
-        if not user_obj:
-            raise Exception('User NOT FOUND...')
-
-        return ERR.get_error()
 
     def _prepare_booking_api(self, searchRQ, context_gateway):
         dest_obj = self.env['tt.destinations']
@@ -1011,6 +964,59 @@ class ReservationAirline(models.Model):
     #     name['carrier'] = list(set(name['carrier']))
     #     return res,name
 
+    def check_provider_state(self,context,pnr_list=[],hold_date=False,req={}):
+        if all(rec.state == 'booked' for rec in self.provider_booking_ids):
+            # booked
+            self.calculate_service_charge()
+            self.action_booked_api_airline(context, pnr_list, hold_date)
+        elif all(rec.state == 'issued' for rec in self.provider_booking_ids):
+            # issued
+            ##get payment acquirer
+            if req.get('seq_id'):
+                acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', req['seq_id'])])
+                if not acquirer_id:
+                    raise RequestException(1017)
+            # ini harusnya ada tetapi di comment karena rusak ketika force issued from button di tt.provider.airlines
+            else:
+                # raise RequestException(1017)
+                acquirer_id = self.agent_id.default_acquirer_id
+
+            if req.get('member'):
+                customer_parent_id = acquirer_id.agent_id.id
+            else:
+                customer_parent_id = self.agent_id.customer_parent_walkin_id.id
+
+            if req.get('force_issued'):
+                self.calculate_service_charge()
+                self.action_booked_api_airline(context, pnr_list, hold_date)
+                self.payment_airline_api({'book_id': req['book_id']}, context)
+
+            self.action_issued_api_airline(acquirer_id.id, customer_parent_id, context)
+        elif all(rec.state == 'fail_refunded' for rec in self.provider_booking_ids):
+            self.write({
+                'state':  'fail_refunded',
+                'refund_uid': context['co_uid'],
+                'refund_date': datetime.datetime.now()
+            })
+        elif any(rec.state == 'issued' for rec in self.provider_booking_ids):
+            # partial issued
+            self.action_partial_issued_api_airline()
+        elif any(rec.state == 'booked' for rec in self.provider_booking_ids):
+            # partial booked
+            self.calculate_service_charge()
+            self.action_partial_booked_api_airline(context, pnr_list, hold_date)
+        elif all(rec.state == 'fail_issued' for rec in self.provider_booking_ids):
+            # failed issue
+            self.action_failed_issue()
+        elif all(rec.state == 'fail_booked' for rec in self.provider_booking_ids):
+            # failed book
+            self.action_failed_book()
+        else:
+            # entah status apa
+            _logger.error('Entah status apa')
+            raise RequestException(1006)
+
+
     def _create_provider_api(self, schedules, api_context):
         dest_obj = self.env['tt.destinations']
         provider_airline_obj = self.env['tt.provider.airline']
@@ -1129,6 +1135,7 @@ class ReservationAirline(models.Model):
                 param_segment = segment_dict[segment.segment_code]
                 if segment.segment_code == param_segment['segment_code']:
                     this_segment_legs = []
+                    this_segment_fare_details = []
                     for idx2, leg in enumerate(param_segment['legs']):
                         leg_org = self.env['tt.destinations'].get_id(leg['origin'], provider_type)
                         leg_dest = self.env['tt.destinations'].get_id(leg['destination'], provider_type)
@@ -1145,14 +1152,20 @@ class ReservationAirline(models.Model):
                             'provider_id': leg_prov
                         }))
 
+                    for fare in param_segment['fares']:
+                        provider_obj.create_service_charge(fare['service_charges'])
+                        for addons in fare['fare_details']:
+                            addons['description'] = json.dumps(addons['description'])
+                            addons['segment_id'] = segment.id
+                            this_segment_fare_details.append((0,0,addons))
+
                     segment.write({
                         'leg_ids': this_segment_legs,
                         'cabin_class': param_segment.get('fares')[0].get('cabin_class',''),
-                        'class_of_service': param_segment.get('fares')[0].get('class_of_service','')
+                        'class_of_service': param_segment.get('fares')[0].get('class_of_service',''),
+                        'segment_addons_ids': this_segment_fare_details
                     })
 
-                    for fare in param_segment['fares']:
-                        provider_obj.create_service_charge(fare['service_charges'])
 
     #to generate sale service charge
     def calculate_service_charge(self):

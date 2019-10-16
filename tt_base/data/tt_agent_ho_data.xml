@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data noupdate="1">
+        <record id="rodex_ho" model="tt.agent">
+            <field name="name">Rodextrip.com</field>
+            <field name="agent_type_id" ref="agent_type_ho"/>
+        </record>
+    </data>
+</odoo>

@@ -46,6 +46,8 @@ class TtSegmentAirline(models.Model):
     seat_ids = fields.One2many('tt.seat.airline', 'segment_id', 'Seat')
     leg_ids = fields.One2many('tt.leg.airline', 'segment_id', 'Legs')
 
+    segment_addons_ids = fields.One2many('tt.segment.addons.airline','segment_id','Addons')
+
     @api.multi
     @api.depends('carrier_id')
     def _fill_name(self):

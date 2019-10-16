@@ -5,29 +5,6 @@ class tt_ledger(models.Model):
     _inherit = 'tt.ledger'
 
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
-    res_model = fields.Char(
-        'Related Reservation Name', index=True)
-    res_id = fields.Integer(
-        'Related Reservation ID', index=True, help='Id of the followed resource')
-
-    def open_reservation(self):
-        try:
-            form_id = self.env[self.res_model].get_form_id()
-        except:
-            form_id = self.env['ir.ui.view'].search([('type', '=', 'form'), ('model', '=', self.res_model)], limit=1)
-            form_id = form_id[0] if form_id else False
-
-        return {
-            'type': 'ir.actions.act_window',
-            'name': 'Reservation',
-            'res_model': self.res_model,
-            'res_id': self.res_id,
-            'view_type': 'form',
-            'view_mode': 'form',
-            'view_id': form_id.id,
-            'context': {},
-            'target': 'current',
-        }
 
     def prepare_vals_for_resv(self, resv_obj, vals):
         vals.update({
@@ -36,9 +13,6 @@ class tt_ledger(models.Model):
             'display_provider_name': resv_obj.provider_name,
             'provider_type_id': resv_obj.provider_type_id.id,
             'description': 'Ledger for ' + resv_obj.name,
-            'res_id': resv_obj.id,
-            'res_model': resv_obj._name,
-            'issued_uid': resv_obj.sudo().issued_uid.id,
             'agent_id': vals.get('agent_id') or resv_obj.agent_id.id,
         })
         return vals
@@ -59,6 +33,7 @@ class tt_ledger(models.Model):
             'res_model': self.res_model,
             'res_id': self.res_id,
             'is_reversed': True,
+            'description': 'Reverse for '
         }])
         self.update({
             'reverse_id': reverse_id.id,

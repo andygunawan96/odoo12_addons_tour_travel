@@ -22,7 +22,7 @@ class SplitInvoice(models.TransientModel):
 
     #file is encoded in base64
     def upload(self,filename,file_reference,file,context):
-        pattern = re.compile('^[a-zA-Z0-9](?:[a-zA-Z0-9 ._-]*[a-zA-Z0-9])?\.[a-zA-Z0-9_-]+$')
+        pattern = re.compile('^[a-zA-Z0-9](?:[a-zA-Z0-9 ()._-]*[a-zA-Z0-9)])?\.[a-zA-Z0-9_-]+$')
         if not pattern.match(filename):
             raise UserError('Filename Is Not Valid')
         try:
@@ -52,8 +52,6 @@ class SplitInvoice(models.TransientModel):
             _logger.error('Exception Upload Center')
             _logger.error(traceback.format_exc())
             return ERR.get_error()
-
-
 
     def create_directory_structure(self,filename):
         base_dir = '/src/static/'

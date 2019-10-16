@@ -5,6 +5,8 @@ import traceback
 import copy
 from dateutil.relativedelta import relativedelta
 from odoo.exceptions import UserError
+from ...tools import util,variables,ERR
+from ...tools.ERR import RequestException
 from ...tools.api import Response
 
 # from Ap
@@ -129,81 +131,41 @@ class ReservationTour(models.Model):
     ############################################################################################################
     ############################################################################################################
 
-    # def test_booking(self):
-    # self.create_booking(self.contact_data, self.passenger_data, self.option, self.search_request, '', self.context, self.kwargs)
-
-    def _validate_tour(self, data, type):
-        list_data = []
-        if type == 'context':
-            list_data = ['co_uid', 'is_company_website']
-        elif type == 'header':
-            list_data = ['adult', 'child', 'infant']
-
-        keys_data = []
-        for rec in data.iterkeys():
-            keys_data.append(str(rec))
-
-        for ls in list_data:
-            if not ls in keys_data:
-                raise Exception('ERROR Validate %s, key : %s' % (type, ls))
-        return True
-
-    def update_api_context(self, customer_parent_id, context):
-        context['co_uid'] = int(context['co_uid'])
-        user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
-        if context['is_company_website']:
-            # ============================================
-            # ====== Context dari WEBSITE/FRONTEND =======
-            # ============================================
-            if user_obj.agent_id.agent_type_id.id in \
-                    (self.env.ref('tt_base_rodex.agent_type_cor').id, self.env.ref('tt_base_rodex.agent_type_por').id):
-                # ===== COR/POR User =====
-                context.update({
-                    'agent_id': user_obj.agent_id.parent_agent_id.id,
-                    'customer_parent_id': user_obj.agent_id.id,
-                    'booker_type': 'COR/POR',
-                })
-            elif customer_parent_id:
-                # ===== COR/POR in Contact =====
-                context.update({
-                    'agent_id': user_obj.agent_id.id,
-                    'customer_parent_id': customer_parent_id,
-                    'booker_type': 'COR/POR',
-                })
-            else:
-                # ===== FPO in Contact =====
-                context.update({
-                    'agent_id': user_obj.agent_id.id,
-                    'customer_parent_id': user_obj.agent_id.id,
-                    'booker_type': 'FPO',
-                })
-        else:
-            # ===============================================
-            # ====== Context dari API Client ( BTBO ) =======
-            # ===============================================
-            context.update({
-                'agent_id': user_obj.agent_id.id,
-                'customer_parent_id': user_obj.agent_id.id,
-                'booker_type': 'FPO',
-            })
-        return context
-
     def commit_booking_api(self, data, context, **kwargs):
         try:
             booking_data = data.get('booking_data')
-            price_itinerary = {}
-            tour_data = {}
-            pricelist_id = 0
-            if booking_data:
-                tour_data = booking_data.get('tour_data')
-                pricelist_id = tour_data.get('id') and int(tour_data['id']) or 0
-                price_itinerary = booking_data.get('price_itinerary')
+
+            price_itinerary = booking_data.get('price_itinerary')
+
             force_issued = data.get('force_issued') and int(data['force_issued']) or 0
-            booker_id = data.get('booker_id') and data['booker_id'] or False
-            contact_id = data.get('contact_id') and data['contact_id'] or False
-            pax_ids = data.get('pax_ids') and data['pax_ids'] or []
+            booker_data = booking_data.get('booker') and booking_data['booker'] or False
+            contacts_data = booking_data.get('contact') and booking_data['contact'] or False
+            passengers = booking_data.get('all_pax') and booking_data['all_pax'] or False
+            tour_data = booking_data.get('tour_data') and booking_data['tour_data'] or False
+            pricelist_id = tour_data.get('id') and int(tour_data['id']) or 0
+
+            booker_obj = self.create_booker_api(booker_data, context)
+            contact_data = contacts_data[0]
+            contact_objs = []
+            for con in contacts_data:
+                contact_objs.append(self.create_contact_api(con, booker_obj, context))
+
+            contact_obj = contact_objs[0]
+
+            list_passenger_value = self.create_passenger_value_api_test(passengers)
+            pax_ids = self.create_customer_api(passengers, context, booker_obj.seq_id, contact_obj.seq_id)
+
+            for idx, temp_pax in enumerate(passengers):
+                list_passenger_value[idx][2].update({
+                    'customer_id': pax_ids[idx].id,
+                    'title': temp_pax['title'],
+                    'pax_type': temp_pax['pax_type'],
+                    'tour_room_id': temp_pax.get('tour_room_id', 0),
+                    'master_tour_id': tour_data and tour_data['id'] or False,
+                })
+
             try:
-                agent_obj = self.env['tt.customer'].browse(int(booker_id)).agent_id
+                agent_obj = self.env['tt.customer'].browse(int(booker_obj.id)).agent_id
                 if not agent_obj:
                     agent_obj = self.env['res.users'].browse(int(context['co_uid'])).agent_id
             except Exception:
@@ -425,22 +387,18 @@ class ReservationTour(models.Model):
             if provider_id:
                 provider_id = provider_id[0]
 
-            contact_data = self.env['tt.customer'].browse(int(contact_id))
-            contact_phones = []
-            for pho in contact_data.phone_ids:
-                contact_phones.append(pho.phone_number)
             booking_obj = self.env['tt.reservation.tour'].sudo().create({
-                'contact_id': contact_id,
-                'contact_name': contact_data.name,
-                'contact_email': contact_data.email,
-                'contact_phone': contact_phones[0],
-                'booker_id': booker_id,
-                'passenger_ids': [(6, 0, pax_ids)],
+                'contact_id': contact_obj.id,
+                'booker_id': booker_obj.id,
+                'passenger_ids': list_passenger_value,
+                'contact_name': contact_data['first_name'] + ' ' + contact_data['last_name'],
+                'contact_email': contact_data.get('email') and contact_data['email'] or '',
+                'contact_phone': contact_data.get('mobile') and str(contact_data['calling_code']) + str(
+                    contact_data['mobile']),
                 'agent_id': context['co_agent_id'],
                 'user_id': context['co_uid'],
                 'tour_id': pricelist_id,
                 'transport_type': 'tour',
-                'sale_service_charge_ids': [(6, 0, service_charge_ids)],
             })
 
             if booking_obj:
@@ -471,20 +429,31 @@ class ReservationTour(models.Model):
                     booking_obj.write({
                         'payment_method': data.get('payment_method') and data['payment_method'] or 'cash'
                     })
-                    booking_obj.action_issued()
+                    booking_obj.action_issued_tour()
 
                 response = {
-                    'booking_num': booking_obj.name
+                    'order_number': booking_obj.name
                 }
 
             else:
                 response = {
-                    'booking_num': 0
+                    'order_number': 0
                 }
-            res = Response().get_no_error(response)
+            return ERR.get_no_error(response)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            try:
+                booking_obj.notes += traceback.format_exc()+'\n'
+            except:
+                _logger.error('Creating Notes Error')
+            return e.error_dict()
         except Exception as e:
-            res = Response().get_error(str(e), 500)
-        return res
+            _logger.error(traceback.format_exc())
+            try:
+                booking_obj.notes += traceback.format_exc()+'\n'
+            except:
+                _logger.error('Creating Notes Error')
+            return ERR.get_error(1004)
 
     def get_booking_api(self, data, context, **kwargs):
         try:
@@ -669,66 +638,40 @@ class ReservationTour(models.Model):
                 'rooms': rooms,
                 'price_itinerary': price_itinerary,
             }
-            res = Response().get_no_error(response)
+            return ERR.get_no_error(response)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
         except Exception as e:
-            res = Response().get_error(str(e), 500)
-        return res
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1013)
 
     def update_booking_api(self, data, context, **kwargs):
         try:
-            search_booking_num = data.get('order_number')
-            book_objs = self.env['tt.reservation.tour'].sudo().search([('name', '=', search_booking_num)])
-            for book_obj in book_objs:
-                book_obj.action_issued_tour()
+            book_objs = self.env['tt.reservation.tour'].sudo().search([('name', '=', data['order_number'])])
+            book_obj = book_objs[0]
+            book_obj.sudo().write({
+                'payment_method': data.get('payment_method') and data['payment_method'] or 'cash'
+            })
+            book_obj.action_issued_tour()
 
             response = {
-                'order_number': book_objs[0].name,
+                'order_number': book_obj.name,
             }
-            res = Response().get_no_error(response)
+            return ERR.get_no_error(response)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            try:
+                book_obj.notes += traceback.format_exc()+'\n'
+            except:
+                _logger.error('Creating Notes Error')
+            return e.error_dict()
         except Exception as e:
-            res = Response().get_error(str(e), 500)
-        return res
+            _logger.error(traceback.format_exc())
+            try:
+                book_obj.notes += traceback.format_exc()+'\n'
+            except:
+                _logger.error('Creating Notes Error')
+            return ERR.get_error(1005)
 
-    def update_passenger_api(self, data, context, **kwargs):
-        try:
-            booker_data = data['booking_data'].get('booker') and data['booking_data']['booker'] or False
-            contacts_data = data['booking_data'].get('contact') and data['booking_data']['contact'] or False
-            passengers = data['booking_data'].get('all_pax') and data['booking_data']['all_pax'] or False
-            tour_data = data['booking_data'].get('tour_data') and data['booking_data']['tour_data'] or False
-            res_pax_ids = []
-
-            booker_obj = self.create_booker_api(booker_data, context)
-            contact_data = contacts_data[0]
-            contact_objs = []
-            for con in contacts_data:
-                contact_objs.append(self.create_contact_api(con, booker_obj, context))
-
-            contact_obj = contact_objs[0]
-
-            pax_ids = self.create_customer_api(passengers, context, booker_obj.seq_id, contact_obj.seq_id,
-                                               ['title', 'pax_type', 'tour_room_id'])
-
-            for idx, psg in enumerate(pax_ids):
-                temp_obj = psg[0]
-                extra_dict = psg[1]
-                vals = temp_obj.copy_to_passenger()
-                vals.update({
-                    'title': extra_dict['title'],
-                    'pax_type': extra_dict['pax_type'],
-                    'tour_room_id': extra_dict.get('tour_room_id', 0),
-                    'master_tour_id': tour_data and tour_data['id'] or False,
-                    'sequence': idx + 1,
-                })
-                psg_obj = self.env['tt.reservation.passenger.tour'].sudo().create(vals)
-                res_pax_ids.append(psg_obj.id)
-
-            response = {
-                'booker_id': booker_obj.id,
-                'contact_id': contact_data.id,
-                'pax_ids': res_pax_ids,
-            }
-            res = Response().get_no_error(response)
-        except Exception as e:
-            res = Response().get_error(str(e), 500)
-        return res
 

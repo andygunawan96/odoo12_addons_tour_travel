@@ -4,9 +4,6 @@
         <field name="model">tt.leg.airline</field>
         <field name="arch" type="xml">
             <form>
-                <!--<header>-->
-                    <!--<field name="state" widget="statusbar"/>-->
-                <!--</header>-->
                 <sheet>
                     <group>
                         <group>
@@ -53,17 +50,19 @@
         </field>
     </record>
 
-    <!--<record id="transport_info_tree_view" model="ir.ui.view">-->
-        <!--<field name="name">transport.info.tree.view</field>-->
-        <!--<field name="model">tt.transport.info</field>-->
-        <!--<field name="arch" type="xml">-->
-            <!--<tree>-->
-                <!--<field name="name"/>-->
-                <!--<field name="transport_number"/>-->
-                <!--<field name="state"/>-->
-            <!--</tree>-->
-        <!--</field>-->
-    <!--</record>-->
+    <record id="tt_reservation_airline_leg_tree_view" model="ir.ui.view">
+        <field name="name">transport.info.tree.view</field>
+        <field name="model">tt.leg.airline</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="provider_id"/>
+                <field name="origin_id"/>
+                <field name="destination_id"/>
+                <field name="departure_date"/>
+                <field name="arrival_date"/>
+            </tree>
+        </field>
+    </record>
 
     <record id="tt_reservation_airline_leg_action" model="ir.actions.act_window">
         <field name="name">Transport Leg</field>
@@ -73,5 +72,5 @@
     </record>
 
     <!--<menuitem id="sub_menu_tt_transport_segment" parent="tt_base.menu_transportation_main" groups="tt_base.group_tt_agent_user_manager"-->
-              <!--name="Transport segment" sequence="1" action="tt_transport.transport_segment_action"/>-->
+    <!--name="Transport segment" sequence="1" action="tt_transport.transport_segment_action"/>-->
 </odoo>

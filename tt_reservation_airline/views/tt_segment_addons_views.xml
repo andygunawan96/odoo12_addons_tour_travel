@@ -1,0 +1,45 @@
+<odoo>
+    <record id="tt_reservation_airline_segment_addons_form_view" model="ir.ui.view">
+        <field name="name">tt.transport.airline.segment.addons.form.view</field>
+        <field name="model">tt.segment.addons.airline</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="detail_code"/>
+                            <field name="detail_type"/>
+                            <field name="detail_name"/>
+                        </group>
+                        <group>
+                            <label for="amount" string="Amount"/>
+                            <div>
+                                <field name="amount" class="oe_inline"/>&#160;
+                                <field name="unit" class="oe_inline"/>
+                            </div>
+                            <field name="sequence"/>
+                            <field name="segment_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field  name="description"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_reservation_airline_segment_addons_tree_view" model="ir.ui.view">
+        <field name="name">tt.reservation.airline.segment.addons.tree.view</field>
+        <field name="model">tt.segment.addons.airline</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="detail_code"/>
+                <field name="detail_type"/>
+                <field name="detail_name"/>
+                <field name="amount"/>
+                <field name="unit"/>
+            </tree>
+        </field>
+    </record>
+</odoo>

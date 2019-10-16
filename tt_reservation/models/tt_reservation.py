@@ -25,6 +25,8 @@ class TtReservation(models.Model):
     booked_date = fields.Datetime('Booked Date', readonly=True)
     issued_uid = fields.Many2one('res.users', 'Issued by', readonly=True)
     issued_date = fields.Datetime('Issued Date', readonly=True)
+    refund_uid = fields.Many2one('res.users', 'Refund by', readonly=True)
+    refund_date = fields.Datetime('Refund Date', readonly=True)
     user_id = fields.Many2one('res.users', 'Create by', readonly=True)  # create_uid
 
     sid_booked = fields.Char('SID Booked', readonly=True)  # Signature generate sendiri
@@ -261,7 +263,7 @@ class TtReservation(models.Model):
 
     def create_passenger_value_api_test(self,passenger):
         list_passenger_value = []
-        country_obj  = self.env['res.country'].sudo()
+        country_obj = self.env['res.country'].sudo()
         for rec in passenger:
             nationality_id = country_obj.search([('code','=ilike',rec['nationality_code'])],limit=1).id
             identity = rec.get('identity')
