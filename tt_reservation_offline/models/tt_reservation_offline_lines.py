@@ -183,17 +183,17 @@ class IssuedOfflineLines(models.Model):
 
     def get_line_hotel_description(self, line):
         vals = ''
-        vals += 'Hotel : ' + line.hotel_name + '\n' + 'Room : ' + line.room + ' (' + line.get_meal_type() + ') ' \
+        vals += 'Hotel : ' + line.hotel_name or ' ' + '\n' + 'Room : ' + line.room or ' ' + ' (' + line.get_meal_type() or ' ' + ') ' \
                 + str(line.obj_qty) + 'x\n' + 'Date : ' + str(line.check_in) + ' - ' + str(line.check_out) + '\n' + \
-                'Passengers : \n' + str(self.get_passengers_list()) + 'Description : ' + line.description
+                'Passengers : \n' + str(self.get_passengers_list()) + 'Description : ' + line.description or ''
         return vals
 
     def get_all_line_hotel_description(self):
         vals = ''
         for line in self.booking_id.line_ids:
-            vals += 'Hotel : ' + line.hotel_name + '\n' + 'Room : ' + line.room + ' (' + line.get_meal_type() + \
+            vals += 'Hotel : ' + line.hotel_name or '' + '\n' + 'Room : ' + line.room or '' + ' (' + line.get_meal_type() or '' + \
                     ') ' + str(line.obj_qty) + 'x\n' + 'Date : ' + str(line.check_in) + ' - ' + str(line.check_out) + \
-                    '\n' + 'Passengers : \n' + str(self.get_passengers_list()) + 'Description : ' + line.description
+                    '\n' + 'Passengers : \n' + str(self.get_passengers_list()) + 'Description : ' + line.description or ''
         return vals
 
     def get_line_activity_description(self, line):
@@ -230,7 +230,8 @@ class IssuedOfflineLines(models.Model):
         if self.booking_id.provider_type_id_name == 'airline' or self.booking_id.provider_type_id_name == 'train':
             vals = self.get_all_line_airline_train_description()
         elif self.booking_id.provider_type_id_name == 'hotel':
-            vals = 'Description : ' + self.booking_id.description
+            if self.booking_id.description:
+                vals = 'Description : ' + self.booking_id.description
         elif self.booking_id.provider_type_id_name == 'activity':
             vals = self.get_all_line_activity_description()
         elif self.booking_id.provider_type_id_name == 'cruise':

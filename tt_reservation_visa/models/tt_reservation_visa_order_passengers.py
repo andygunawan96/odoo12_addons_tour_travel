@@ -43,14 +43,6 @@ PASSENGER_TYPE = [
     ('INF', 'Infant')
 ]
 
-TITLE = [
-    ('MR', 'MR'),
-    ('MRS', 'MRS'),
-    ('MS', 'MS'),
-    ('MSTR', 'MSTR'),
-    ('MISS', 'MISS')
-]
-
 PROCESS_STATUS = [
     ('accepted', 'Accepted'),
     ('rejected', 'Rejected')
@@ -62,7 +54,6 @@ class VisaOrderPassengers(models.Model):
     _name = 'tt.reservation.visa.order.passengers'
     _description = 'Tour & Travel - Visa Order Passengers'
 
-    name = fields.Char('Name', related='passenger_id.first_name', readonly=1)  # readonly=1
     to_requirement_ids = fields.One2many('tt.reservation.visa.order.requirements', 'to_passenger_id', 'Requirements',
                                          readonly=0, states={'ready': [('readonly', True)],
                                                              'done': [('readonly', True)]})
@@ -70,14 +61,12 @@ class VisaOrderPassengers(models.Model):
     passenger_id = fields.Many2one('tt.customer', 'Passenger', readonly=1)  # readonly=1
     pricelist_id = fields.Many2one('tt.reservation.visa.pricelist', 'Visa Pricelist', readonly=1)  # readonly=1
     passenger_type = fields.Selection(PASSENGER_TYPE, 'Pax Type', readonly=1)  # readonly=1
-    title = fields.Selection(TITLE, 'Title', readonly=1)  # readonly=1
     age = fields.Char('Age', readonly=1, compute="_compute_age", store=True)
     passport_number = fields.Char(string='Passport Number')
     passport_expdate = fields.Datetime(string='Passport Exp Date')
     passenger_domicile = fields.Char('Domicile', related='passenger_id.domicile', readonly=1)  # readonly=1
     process_status = fields.Selection(PROCESS_STATUS, string='Process Result',
                                       readonly=1)  # readonly=1
-    sequence = fields.Integer('Sequence')
     biometrics_interview = fields.Boolean('Biometrics / Interview')
 
     in_process_date = fields.Datetime('In Process Date', readonly=1)  # readonly=1
@@ -89,9 +78,6 @@ class VisaOrderPassengers(models.Model):
     to_agent_date = fields.Datetime('Send to Agent Date', readonly=1)
     ready_date = fields.Datetime('Ready Date', readonly=1)
     expired_date = fields.Date('Expired Date', readonly=1)
-
-    service_charge_ids = fields.Many2many('tt.service.charge', 'tt_reservation_visa_charge_rel', 'passenger_id',
-                                          'service_charge_id', 'Service Charges')
 
     cost_service_charge_ids = fields.Many2many('tt.service.charge', 'tt_reservation_visa_cost_charge_rel',
                                                'passenger_id', 'service_charge_id', 'Cost Service Charges')

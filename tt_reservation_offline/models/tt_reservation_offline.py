@@ -219,7 +219,13 @@ class IssuedOffline(models.Model):
                 # # cancel setiap invoice
                 # for invoice in self.invoice_ids:
                 #     invoice.action_cancel()
-                self.create_reverse_ledger_offline()
+                # self.create_reverse_ledger_offline()
+                for rec in self.ledger_ids:
+                    rec.reverse_ledger()
+                    # ledger_obj.update({
+                    #     'transaction_type': self.provider_type_id_name,
+                    #     'description': rec.description
+                    # })
             self.state = 'cancel'
             self.cancel_date = fields.Datetime.now()
             self.cancel_uid = self.env.user.id

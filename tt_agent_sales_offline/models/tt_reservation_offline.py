@@ -32,8 +32,10 @@ class ReservationOffline(models.Model):
 
         if not invoice_id:
             invoice_id = self.env['tt.agent.invoice'].create({
-                'contact_id': self.contact_id.id,
+                'booker_id': self.booker_id.id,
                 'agent_id': self.agent_id.id,
+                'customer_parent_id': self.customer_parent_id.id,
+                'customer_parent_type_id': self.customer_parent_type_id.id
             })
 
         inv_line_obj = self.env['tt.agent.invoice.line'].create({
@@ -52,7 +54,7 @@ class ReservationOffline(models.Model):
         if self.provider_type_id_name == 'hotel':
             qty = 0
             for line in self.line_ids:
-                qty += line.qty
+                qty += line.obj_qty
             for line in self.line_ids:
                 desc_text = line.get_line_hotel_description(line)
                 inv_line_obj.write({
@@ -79,3 +81,24 @@ class ReservationOffline(models.Model):
                         'invoice_line_id': invoice_line_id,
                     })]
                 })
+
+        ##membuat payment dalam draft
+        payment_obj = self.env['tt.payment'].create({
+            'agent_id': self.agent_id.id,
+            'real_total_amount': inv_line_obj.total,
+            'customer_parent_id': self.customer_parent_id.id
+        })
+        # if self.acquirer_id:
+        #     payment_obj.update({
+        #         'acquirer_id': self.acquirer_id.id,
+        #     })
+
+        self.env['tt.payment.invoice.rel'].create({
+            'invoice_id': invoice_id.id,
+            'payment_id': payment_obj.id,
+            'pay_amount': inv_line_obj.total,
+        })
+
+    def action_issued_backend(self):
+        super(ReservationOffline, self).action_issued_backend()
+        self.action_create_invoice()
