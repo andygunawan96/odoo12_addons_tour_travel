@@ -8,3 +8,4 @@ from . import tt_reservation_passport_requirements
 from . import tt_reservation_passport_vendor
 from . import tt_reservation_passport_order_passengers
 from . import tt_reservation_passport_pricelist
+from . import tt_provider_passport

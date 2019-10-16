@@ -59,10 +59,10 @@
                     <br/>
                     <br/>
                     <br/>
-                    <t t-if="o.booked_uid.name">
-                        (<span t-field="o.booked_uid.name"/>)
+                    <t t-if="vals['booked_name']">
+                        (<span t-esc="vals['booked_name']"/>)
                     </t>
-                    <t t-if="not o.booked_uid.name">
+                    <t t-if="not vals['booked_name']">
                         (<span style="color: white;">_____________</span>)
                     </t>
                 </div>
@@ -72,10 +72,10 @@
                     <br/>
                     <br/>
                     <br/>
-                    <t t-if="o.validate_uid.name">
-                        (<span t-field="o.validate_uid.name"/>)
+                    <t t-if="vals['validate_name']">
+                        (<span t-esc="vals['validate_name']"/>)
                     </t>
-                    <t t-if="o.validate_uid.name">
+                    <t t-if="not vals['validate_name']">
                         (<span style="color: white;">_____________</span>)
                     </t>
                 </div>

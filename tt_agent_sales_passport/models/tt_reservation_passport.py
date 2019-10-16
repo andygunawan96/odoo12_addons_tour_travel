@@ -26,6 +26,15 @@ class ReservationPassport(models.Model):
         elif any(state != 'draft' for state in states):
             self.state_invoice = 'partial'
 
+    def get_all_passengers_desc(self):
+        desc_text = ''
+        for psg in self.passenger_ids:
+            desc_text += psg.first_name + ' ' + psg.last_name + ', ' + psg.title + ' (' + psg.passenger_type + ') ' + \
+                        psg.pricelist_id.entry_type.capitalize() + ' ' + psg.pricelist_id.passport_type.capitalize() + ' ' \
+                        + psg.pricelist_id.process_type.capitalize() + ' (' + str(psg.pricelist_id.duration) + ' days)'\
+                        + '\n'
+        return desc_text
+
     def action_create_invoice(self):
         invoice_id = self.env['tt.agent.invoice'].search(
             [('booker_id', '=', self.contact_id.id), ('state', '=', 'draft')])
@@ -40,14 +49,14 @@ class ReservationPassport(models.Model):
             'res_model_resv': self._name,
             'res_id_resv': self.id,
             'invoice_id': invoice_id.id,
-            'desc': 'Testing Visa Invoice'
+            'desc': self.get_all_passengers_desc()
         })
 
         invoice_line_id = inv_line_obj.id
 
         for psg in self.passenger_ids:
             desc_text = psg.first_name + ' ' + psg.last_name + ', ' + psg.title + ' (' + psg.passenger_type + ') ' + \
-                        psg.pricelist_id.entry_type.capitalize() + ' ' + psg.pricelist_id.visa_type.capitalize() + ' ' \
+                        psg.pricelist_id.entry_type.capitalize() + ' ' + psg.pricelist_id.passport_type.capitalize() + ' ' \
                         + psg.pricelist_id.process_type.capitalize() + ' (' + str(psg.pricelist_id.duration) + ' days)'
             price = 0
             for srvc in psg['cost_service_charge_ids']:

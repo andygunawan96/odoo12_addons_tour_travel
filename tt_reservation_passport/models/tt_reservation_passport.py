@@ -94,6 +94,11 @@ class TtPassport(models.Model):
     contact_ids = fields.One2many('tt.customer', 'passport_id', 'Contacts', readonly=True)
     booker_id = fields.Many2one('tt.customer', 'Booker', ondelete='restrict', readonly=True)
 
+    acquirer_id = fields.Char('Payment Method', readonly=True)  # dipake di agent invoice
+
+    provider_booking_ids = fields.One2many('tt.provider.passport', 'booking_id', string='Provider Booking',
+                                           readonly=True, states={'cancel2': [('readonly', False)]})
+
     immigration_consulate = fields.Char('Immigration Consulate', readonly=1, compute="_compute_immigration_consulate")
 
     ######################################################################################################

@@ -11,3 +11,5 @@ class ServiceChargePassport(models.Model):
     passenger_passport_ids = fields.Many2many('tt.reservation.passport.order.passengers',
                                               'tt_reservation_passport_charge_rel', 'service_charge_id', 'passenger_id',
                                               'Passenger Passport', readonly=False)
+
+    provider_passport_booking_id = fields.Many2one('tt.provider.passport', 'Booking')

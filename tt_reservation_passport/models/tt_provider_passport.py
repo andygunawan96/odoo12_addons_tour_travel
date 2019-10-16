@@ -3,14 +3,14 @@ from ...tools import variables
 from datetime import datetime
 
 
-class ProviderVisaPassengers(models.Model):
-    _name = 'tt.provider.visa.passengers'
+class ProviderPassportPassengers(models.Model):
+    _name = 'tt.provider.passport.passengers'
     _description = 'Rodex Model'
 
-    provider_id = fields.Many2one('tt.provider.visa', 'Provider')
-    passenger_id = fields.Many2one('tt.reservation.visa.order.passengers', 'Passenger')
+    provider_id = fields.Many2one('tt.provider.passport', 'Provider')
+    passenger_id = fields.Many2one('tt.reservation.passport.order.passengers', 'Passenger')
     pax_type = fields.Selection(variables.PAX_TYPE, 'Pax Type')
-    pricelist_id = fields.Many2one('tt.reservation.visa.pricelist', 'Visa Pricelist')
+    pricelist_id = fields.Many2one('tt.reservation.passport.pricelist', 'Passport Pricelist')
 
     def to_dict(self):
         res = {
@@ -20,8 +20,8 @@ class ProviderVisaPassengers(models.Model):
         return res
 
 
-class TtProviderVisa(models.Model):
-    _name = 'tt.provider.visa'
+class TtProviderPassport(models.Model):
+    _name = 'tt.provider.passport'
     _rec_name = 'pnr'
     _description = 'Rodex Model'
 
@@ -30,7 +30,7 @@ class TtProviderVisa(models.Model):
     booking_id = fields.Many2one('tt.reservation.visa', 'Order Number', ondelete='cascade')
     visa_id = fields.Many2one('tt.reservation.visa.pricelist', 'Visa Pricelist')
     state = fields.Selection(variables.BOOKING_STATE, 'Status', default='draft')
-    cost_service_charge_ids = fields.One2many('tt.service.charge', 'provider_visa_booking_id', 'Cost Service Charges')
+    cost_service_charge_ids = fields.One2many('tt.service.charge', 'provider_passport_booking_id', 'Cost Service Charges')
 
     country_id = fields.Many2one('res.country', 'Country', ondelete="cascade", readonly=True,
                                  states={'draft': [('readonly', False)]})
@@ -44,23 +44,12 @@ class TtProviderVisa(models.Model):
     issued_uid = fields.Many2one('res.users', 'Issued By')
     issued_date = fields.Datetime('Issued Date')
 
-    to_vendor_date = fields.Datetime('Send To Vendor Date', readonly=1)
-    vendor_process_date = fields.Datetime('Vendor Process Date', readonly=1)
-    in_process_date = fields.Datetime('In Process Date', readonly=1)
-
-    done_date = fields.Datetime('Done Date', readonly=1)
-    ready_date = fields.Datetime('Ready Date', readonly=1)
-
-    expired_date = fields.Datetime('Expired Date', readonly=True)
-
     is_ledger_created = fields.Boolean('Ledger Created', default=False, readonly=True,
                                        states={'draft': [('readonly', False)]})
 
-    vendor_ids = fields.One2many('tt.reservation.visa.vendor.lines', 'provider_id', 'Expenses')
+    passenger_ids = fields.One2many('tt.provider.passport.passengers', 'provider_id', 'Passengers')
 
-    passenger_ids = fields.One2many('tt.provider.visa.passengers', 'provider_id', 'Passengers')
-
-    def action_booked_api_visa(self, provider_data, api_context):
+    def action_booked_api_passport(self, provider_data, api_context):
         for rec in self:
             rec.write({
                 'pnr': provider_data['pnr'],
@@ -70,7 +59,7 @@ class TtProviderVisa(models.Model):
                 # 'hold_date': datetime.strptime(provider_data['hold_date'],"%Y-%m-%d %H:%M:%S"),
             })
 
-    def action_issued_api_visa(self,context):
+    def action_issued_api_passport(self,context):
         for rec in self:
             rec.write({
                 'state': 'issued',
@@ -131,3 +120,4 @@ class TtProviderVisa(models.Model):
             'vendors': vendor_list
         }
         return res
+
