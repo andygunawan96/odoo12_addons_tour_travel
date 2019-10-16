@@ -24,6 +24,9 @@ class TtUploadFile(models.Model):
     @api.multi
     def unlink(self):
         for rec in self:
+            print("UNLINK OVERRIDE")
             ##remove the real file
-            if os.path.exists(rec.path):
-                os.remove(rec.path)
+            if rec.path:
+                if os.path.exists(rec.path):
+                    os.remove(rec.path)
+            return super(TtUploadFile, self).unlink()

@@ -46,6 +46,10 @@
                             </div>
                             <field name="payment_date"/>
                             <field name="reference"/>
+                            <field name="payment_image_id"/>
+                            <field name="payment_image_ids"/>
+                            <button name="unlink_image" string="Unlink Image" type="object"/>
+                            <button name="unlink_image_ids" string="Unlink Images" type="object"/>
                         </group>
                         <group string="Amount">
                             <field name="total_amount"/>

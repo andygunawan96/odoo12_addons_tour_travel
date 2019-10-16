@@ -1,6 +1,6 @@
-from odoo import api, fields, models, _
+from odoo import api, fields, models
 from ...tools.api import Response
-import base64,hashlib,time,os,traceback,logging,re
+import traceback,logging
 from ...tools import ERR
 import json
 
@@ -29,7 +29,6 @@ class FrontendBanner(models.Model):
             elif data['type'] == 'files_promotionbanner':
                 image_objs = self.env.ref('tt_frontend_banner.promotion')
 
-            # image_objs = self.env.ref()['tt.image'].sudo().search([('type', '=', type)])[0]
             image_objs.write({
                 'image_ids': [(4, self.env['tt.upload.center'].search([('seq_id', '=', upload['response']['seq_id'])],limit=1)[0].id)]
             })
@@ -39,7 +38,7 @@ class FrontendBanner(models.Model):
             return ERR.get_error()
         return ERR.get_no_error('success')
 
-    def set_inactive_delete_banner_api(self, data, context):
+    def set_inactive_delete_banner_api(self, data):
         #
         try:
             _logger.info("delete or inactive Banner\n" + json.dumps(data))
@@ -57,19 +56,11 @@ class FrontendBanner(models.Model):
             if data['action'] == 'active':
                 pass # ganti inactive
             elif data['action'] == 'delete':
-                banner_objs.image_ids[0].unlink()
-                # for img in image_objs.image_ids:
-                #     if img.seq_id == data['seq_id']:
-                #         img.unlink()
+                for img in banner_objs.image_ids:
+                    if img.seq_id == data['seq_id']:
+                        img.unlink()
+                        break
 
-                        # break
-            # image_objs.write({
-            #     'image_ids': [(2, self.env['tt.upload.center'].search([('seq_id', '=', data['seq_id'])], limit=1)[0].id)]
-            # })
-            #delete fungsi jos
-            # upload = self.env['tt.upload.center.wizard']
-            # # KASIH TRY EXCEPT
-            # upload = upload.upload_file_api(data, context)
         except Exception as e:
             _logger.error('Exception Upload Center')
             _logger.error(traceback.format_exc())
@@ -94,4 +85,4 @@ class FrontendBanner(models.Model):
                 'seq_id': img['seq_id']
             })
 
-        return Response().get_no_error(imgs)
+        return ERR.get_no_error(imgs)
