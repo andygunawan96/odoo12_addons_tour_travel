@@ -1,5 +1,7 @@
 from odoo import api,models,fields
 from ...tools.ERR import RequestException
+import os
+
 
 class TtAirlineApiCon(models.Model):
     _name = 'tt.upload.center.api.con'
@@ -15,3 +17,10 @@ class TtAirlineApiCon(models.Model):
             raise RequestException(999)
 
         return res
+
+    @api.multi
+    def unlink(self):
+        for rec in self:
+            ##remove the real file
+            if os.path.exists(rec.path):
+                os.remove(rec.path)

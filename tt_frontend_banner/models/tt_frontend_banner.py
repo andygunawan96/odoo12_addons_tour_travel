@@ -47,16 +47,25 @@ class FrontendBanner(models.Model):
             # UPLOAD IMAGE IVAN
             type = ''
             if data['type'] == 'big_banner':
-                image_objs = self.env.ref('tt_frontend_banner.big_banner')
+                banner_objs = self.env.ref('tt_frontend_banner.big_banner')
             elif data['type'] == 'small_banner':
-                image_objs = self.env.ref('tt_frontend_banner.small_banner')
+                banner_objs = self.env.ref('tt_frontend_banner.small_banner')
             elif data['type'] == 'promotion_banner':
-                image_objs = self.env.ref('tt_frontend_banner.promotion')
+                banner_objs = self.env.ref('tt_frontend_banner.promotion')
 
             # image_objs = self.env.ref()['tt.image'].sudo().search([('type', '=', type)])[0]
-            image_objs.write({
-                'image_ids': [(2, self.env['tt.upload.center'].search([('seq_id', '=', data['seq_id'])], limit=1)[0].id)]
-            })
+            if data['action'] == 'active':
+                pass # ganti inactive
+            elif data['action'] == 'delete':
+                banner_objs.image_ids[0].unlink()
+                # for img in image_objs.image_ids:
+                #     if img.seq_id == data['seq_id']:
+                #         img.unlink()
+
+                        # break
+            # image_objs.write({
+            #     'image_ids': [(2, self.env['tt.upload.center'].search([('seq_id', '=', data['seq_id'])], limit=1)[0].id)]
+            # })
             #delete fungsi jos
             # upload = self.env['tt.upload.center.wizard']
             # # KASIH TRY EXCEPT
