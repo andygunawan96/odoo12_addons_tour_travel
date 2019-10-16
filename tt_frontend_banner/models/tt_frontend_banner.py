@@ -11,7 +11,7 @@ class FrontendBanner(models.Model):
     _description = 'Rodextrip Frontend Banner'
 
     type = fields.Selection([('big_banner', 'Big Banner'), ('small_banner', 'Small Banner'), ('promotion', 'Promotion')], default='big_banner')
-    image_ids = fields.Many2many('tt.upload.center', 'tt_frontend_banner_tt_upload_center_rel' 'banner_id', 'image_id', string = 'Image')
+    image_ids = fields.Many2many('tt.upload.center', 'tt_frontend_banner_tt_upload_center_rel' 'banner_id', 'image_id', string = 'Image', context={'active_test': False})
 
     def add_banner_api(self,data,context):
         #
@@ -52,14 +52,13 @@ class FrontendBanner(models.Model):
             elif data['type'] == 'promotion_banner':
                 banner_objs = self.env.ref('tt_frontend_banner.promotion')
 
-            # image_objs = self.env.ref()['tt.image'].sudo().search([('type', '=', type)])[0]
-            if data['action'] == 'active':
-                pass # ganti inactive
-            elif data['action'] == 'delete':
-                for img in banner_objs.image_ids:
-                    if img.seq_id == data['seq_id']:
+            for img in banner_objs.image_ids:
+                if img.seq_id == data['seq_id']:
+                    if data['action'] == 'active':
+                        img.toggle_active()
+                    elif data['action'] == 'delete':
                         img.unlink()
-                        break
+                    break
 
         except Exception as e:
             _logger.error('Exception Upload Center')
@@ -78,10 +77,10 @@ class FrontendBanner(models.Model):
         elif data['type'] == 'promotion':
             image_objs = self.env.ref('tt_frontend_banner.promotion')
 
-        for img in image_objs['image_ids']:
+        for img in image_objs.image_ids:
             imgs.append({
                 'url': img['url'],
-                # 'url': img['path'],
+                'active': img['active'],
                 'seq_id': img['seq_id']
             })
 

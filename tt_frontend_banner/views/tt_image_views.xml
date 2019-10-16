@@ -11,12 +11,11 @@
                             <field name="type" nolabel='1' readonly="1" />
                         </h1>
                     </div>
-
                     <group>
                         <notebook>
                             <page string="Images">
-                                <field name="image_ids" context="{'form_view_ref':'tt_base.tt_upload_center_form_view'}"/>
-
+                                <field name="image_ids"
+                                       context="{'form_view_ref':'tt_base.tt_upload_center_form_view'"/>
                             </page>
                         </notebook>
                     </group>
@@ -41,7 +40,6 @@
         <field name="res_model">tt.frontend.banner</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
-<!--        <field name="domain">[]</field>-->
         <field name="context">
             {
             'form_view_ref': 'tt_frontend_banner.tt_frontend_banner_form_view',
