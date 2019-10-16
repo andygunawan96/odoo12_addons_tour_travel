@@ -870,7 +870,7 @@ class ReservationActivity(models.Model):
         }
         self.sudo().write(vals)
         for rec in self.provider_booking_ids:
-            rec.action_create_ledger()
+            rec.action_create_ledger(vals['issued_uid'])
         self.send_push_notif('issued')
 
     def get_id(self, booking_number):
