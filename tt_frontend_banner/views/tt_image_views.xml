@@ -14,8 +14,7 @@
                     <group>
                         <notebook>
                             <page string="Images">
-                                <field name="image_ids"
-                                       context="{'form_view_ref':'tt_base.tt_upload_center_form_view'"/>
+                                <field name="image_ids"/>
                             </page>
                         </notebook>
                     </group>
