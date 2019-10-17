@@ -40,6 +40,8 @@ class TtMasterTourApiCon(models.Model):
             res = table_obj.search_tour_api(data,context)
         elif action == 'get_details':
             res = table_obj.get_tour_details_api(data,context)
+        elif action == 'get_pricing':
+            res = table_obj.get_pricing_api(data)
         else:
             raise RequestException(999)
 

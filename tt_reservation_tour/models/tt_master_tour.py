@@ -47,6 +47,10 @@ class MasterTour(models.Model):
     _name = 'tt.master.tour'
     _order = 'sequence'
 
+    def get_domain(self):
+        domain_id = self.env.ref('tt_reservation_tour.tt_provider_type_tour').id
+        return [('provider_type_id.id', '=', int(domain_id))]
+
     name = fields.Char('Name', required=True, default='Tour', size=40)
     description = fields.Text('Description')
 
@@ -154,6 +158,7 @@ class MasterTour(models.Model):
 
     country_name = fields.Char('Country Name')
     itinerary_ids = fields.One2many('tt.reservation.tour.itinerary', 'tour_pricelist_id', 'Itinerary')
+    provider_id = fields.Many2one('tt.provider', 'Provider', domain=get_domain, required=True)
     active = fields.Boolean('Active', default=True)
 
     @api.onchange('payment_rules_ids')
@@ -430,18 +435,12 @@ class MasterTour(models.Model):
                 adult_sale_price = int(rec['adult_fare']) + int(rec['adult_tax'])
                 child_sale_price = int(rec['child_fare']) + int(rec['child_tax'])
                 infant_sale_price = int(rec['infant_fare']) + int(rec['infant_tax'])
+                res_provider = rec.get('provider_id') and self.env['tt.provider'].browse(rec['provider_id']) or None
                 rec.update({
                     'name': rec['name'],
-                    'adult_sale_price_with_comma': self.int_with_commas(adult_sale_price),
-                    'child_sale_price_with_comma': self.int_with_commas(child_sale_price),
-                    'infant_sale_price_with_comma': self.int_with_commas(infant_sale_price),
                     'adult_sale_price': adult_sale_price,
                     'child_sale_price': child_sale_price,
                     'infant_sale_price': infant_sale_price,
-                    'airport_tax_with_comma': self.int_with_commas(rec['airport_tax']),
-                    'tipping_guide_with_comma': self.int_with_commas(rec['tipping_guide']),
-                    'tipping_tour_leader_comma': self.int_with_commas(rec['tipping_tour_leader']),
-                    'tipping_driver_with_comma': self.int_with_commas(rec['tipping_driver']),
                     'images_obj': images,
                     'departure_date_f': rec['departure_date'] and datetime.strptime(str(rec['departure_date']), '%Y-%m-%d').strftime("%A, %d-%m-%Y") or '',
                     'return_date_f': rec['return_date'] and datetime.strptime(str(rec['return_date']), '%Y-%m-%d').strftime("%A, %d-%m-%Y") or '',
@@ -453,6 +452,8 @@ class MasterTour(models.Model):
                     'start_period': rec['start_period'] and datetime.strptime(str(rec['start_period']), '%Y-%m-%d').strftime('%B') or '',
                     'start_period_ori': rec['start_period'] and rec['start_period'] or '',
                     'end_period': rec['end_period'] and datetime.strptime(str(rec['end_period']), '%Y-%m-%d').strftime('%B') or '',
+                    'provider_id': rec.get('provider_id') and rec['provider_id'] or '',
+                    'provider': res_provider and res_provider.code or '',
                     'create_date': '',
                     'write_date': '',
                 })
@@ -596,20 +597,21 @@ class MasterTour(models.Model):
                         if acc['hotel'] not in hotel_names:
                             hotel_names.append(acc['hotel'])
 
+                    if acc.get('adult_surcharge'):
+                        acc.pop('adult_surcharge')
+                    if acc.get('child_surcharge'):
+                        acc.pop('child_surcharge')
+                    if acc.get('single_supplement'):
+                        acc.pop('single_supplement')
+                    if acc.get('additional_charge'):
+                        acc.pop('additional_charge')
+
                     acc_key_list = [key for key in acc.keys()]
                     for key in acc_key_list:
                         if acc[key] is None:
                             acc.update({
                                 key: ''
                             })
-
-                for acc in accommodation:
-                    acc.update({
-                        'additional_charge_with_comma': self.int_with_commas(acc['additional_charge']),
-                        # 'extra_bed_charge_with_comma': self.int_with_commas(rec['extra_bed_charge']),
-                        'adult_surcharge_with_comma': self.int_with_commas(acc['adult_surcharge']),
-                        'child_surcharge_with_comma': self.int_with_commas(acc['child_surcharge']),
-                    })
 
                 try:
                     self.env.cr.execute("""SELECT tuc.* FROM tt_upload_center tuc LEFT JOIN tour_images_rel tir ON tir.image_id = tuc.id WHERE tir.tour_id = %s;""", (rec['id'],))
@@ -632,19 +634,12 @@ class MasterTour(models.Model):
                 rec.update({
                     'name': rec['name'],
                     'accommodations': accommodation,
-                    'adult_sale_price_with_comma': self.int_with_commas(adult_sale_price),
-                    'child_sale_price_with_comma': self.int_with_commas(child_sale_price),
-                    'infant_sale_price_with_comma': self.int_with_commas(infant_sale_price),
                     'adult_sale_price': adult_sale_price <= 0 and '0' or adult_sale_price,
                     'child_sale_price': child_sale_price <= 0 and '0' or child_sale_price,
                     'infant_sale_price': infant_sale_price <= 0 and '0' or infant_sale_price,
                     'adult_commission': adult_commission,
                     'child_commission': child_commission,
                     'infant_commission': infant_commission,
-                    'airport_tax_with_comma': self.int_with_commas(rec['airport_tax']),
-                    'tipping_guide_with_comma': self.int_with_commas(rec['tipping_guide']),
-                    'tipping_tour_leader_with_comma': self.int_with_commas(rec['tipping_tour_leader']),
-                    'tipping_driver_with_comma': self.int_with_commas(rec['tipping_driver']),
                     'discount': json.dumps(discount),
                     'departure_date_clean': rec['departure_date'] and datetime.strptime(str(rec['departure_date']),'%Y-%m-%d').strftime('%d %b %Y') or '',
                     'departure_date_f': rec['departure_date'] and datetime.strptime(str(rec['departure_date']), '%Y-%m-%d').strftime("%A, %d-%m-%Y") or '',
@@ -783,11 +778,63 @@ class MasterTour(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1021)
 
-    def get_pricing_api(self):
+    def get_tour_pricing_api(self, req, context):
         try:
+            tour_id = req['id']
+            tour_data_list = self.env['tt.master.tour'].sudo().search([('id', '=', tour_id)], limit=1)
+            tour_data = tour_data_list[0]
             price_itinerary = {
-
+                'adult_fare': tour_data.adult_fare,
+                'adult_tax': tour_data.adult_tax,
+                'child_fare': tour_data.child_fare,
+                'child_tax': tour_data.child_tax,
+                'infant_fare': tour_data.infant_fare,
+                'infant_tax': tour_data.infant_tax,
+                'airport_tax': tour_data.infant_tax,
+                'adult_tipping_guide': tour_data.tipping_guide,
+                'adult_tipping_tour_leader': tour_data.tipping_tour_leader,
+                'adult_tipping_driver': tour_data.tipping_driver,
+                'child_tipping_guide': 0,
+                'child_tipping_tour_leader': 0,
+                'child_tipping_driver': 0,
+                'infant_tipping_guide': 0,
+                'infant_tipping_tour_leader': 0,
+                'infant_tipping_driver': 0,
+                'accommodations': []
             }
+            if tour_data.tipping_guide_child:
+                price_itinerary.update({
+                    'child_tipping_guide': tour_data.tipping_guide,
+                })
+            if tour_data.tipping_tour_leader_child:
+                price_itinerary.update({
+                    'child_tipping_tour_leader': tour_data.tipping_tour_leader,
+                })
+            if tour_data.tipping_driver_child:
+                price_itinerary.update({
+                    'child_tipping_driver': tour_data.tipping_driver,
+                })
+            if tour_data.tipping_guide_infant:
+                price_itinerary.update({
+                    'infant_tipping_guide': tour_data.tipping_guide,
+                })
+            if tour_data.tipping_tour_leader_infant:
+                price_itinerary.update({
+                    'infant_tipping_tour_leader': tour_data.tipping_tour_leader,
+                })
+            if tour_data.tipping_driver_infant:
+                price_itinerary.update({
+                    'infant_tipping_driver': tour_data.tipping_driver,
+                })
+            tour_accommodations = self.env['tt.master.tour.rooms'].sudo().search([('tour_pricelist_id', '=', tour_data.id)])
+            for rec in tour_accommodations:
+                price_itinerary['accommodations'].append({
+                    'room_id': rec.id,
+                    'adult_surcharge': rec.adult_surcharge,
+                    'child_surcharge': rec.child_surcharge,
+                    'single_supplement': rec.single_supplement,
+                    'additional_charge': rec.additional_charge,
+                })
             return ERR.get_no_error(price_itinerary)
         except RequestException as e:
             _logger.error(traceback.format_exc())

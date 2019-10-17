@@ -1501,9 +1501,11 @@ class MasterActivity(models.Model):
 
     def get_details_by_api(self, req, context):
         try:
-            activity_id = self.search([('uuid', '=', req['uuid']), ('provider_id', '=', int(req['provider_id']))], limit=1)
+            provider_id = self.env['tt.provider'].sudo().search([('code', '=', req['provider'])], limit=1)
+            provider_id = provider_id[0]
+            activity_id = self.search([('uuid', '=', req['uuid']), ('provider_id', '=', provider_id.id)], limit=1)
             activity_id = activity_id and activity_id[0] or None
-            provider = activity_id.provider_id.code
+            provider = provider_id.code
             result_id_list = self.env['tt.master.activity.lines'].search([('activity_id', '=', activity_id.id)])
             temp = []
             for result_id in result_id_list:
