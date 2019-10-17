@@ -143,6 +143,14 @@ class HotelReservation(models.Model):
         datas['form'] = res
         return self.env.ref('tt_report_common.action_report_printout_reservation_hotel').report_action([], data=datas)
 
+    @api.multi
+    def print_itinerary(self):
+        datas = {'ids': self.env.context.get('active_ids', [])}
+        res = self.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        return self.env.ref('tt_report_common.action_printout_itinerary_hotel').report_action(self, data=datas)
+
     # @api.depends('room_detail_ids.commission_amount', 'room_detail_ids.qty')
     def _compute_total_commission_amount(self):
         total = 0
