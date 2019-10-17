@@ -531,8 +531,8 @@ class TtPassport(models.Model):
     def create_sale_service_charge_value(self, passenger, passenger_ids):
         ssc_list = []
         ssc_list_final = []
-        pricelist_env = self.env['tt.reservation.visa.pricelist'].sudo()
-        passenger_env = self.env['tt.reservation.visa.order.passengers']
+        pricelist_env = self.env['tt.reservation.passport.pricelist'].sudo()
+        passenger_env = self.env['tt.reservation.passport.order.passengers']
         for idx, psg in enumerate(passenger):
             ssc = []
             pricelist_id = int(psg['master_visa_Id'])
