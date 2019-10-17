@@ -51,12 +51,17 @@ class Ledger(models.Model):
     reverse_id = fields.Many2one('tt.ledger', 'Reverse')
     is_reversed = fields.Boolean('Already Reversed', default=False)
 
+    res_model = fields.Char(
+        'Related Reservation Name', index=True)
+    res_id = fields.Integer(
+        'Related Reservation ID', index=True, help='Id of the followed resource')
+
     def calc_balance(self, vals):
         # Pertimbangkan Multi Currency Ledger
         balance = self.env['tt.agent'].browse(vals['agent_id']).balance
         return (balance + vals['debit']) - vals['credit']
 
-    def prepare_vals(self, name, ref, date, ledger_type, currency_id, debit=0, credit=0):
+    def prepare_vals(self, res_model,res_id,name, ref, date, ledger_type, currency_id, issued_uid, debit=0, credit=0,description = ''):
         return {
                 'name': name,
                 'debit': debit,
@@ -65,6 +70,10 @@ class Ledger(models.Model):
                 'currency_id': currency_id,
                 'date': date,
                 'transaction_type': ledger_type,
+                'res_model': res_model,
+                'res_id': res_id,
+                'description': description,
+                'issued_uid': issued_uid
             }
 
     def reverse_ledger(self):
@@ -96,6 +105,25 @@ class Ledger(models.Model):
     #         vals['balance'] = self.calc_balance(vals)
     #     return super(Ledger, self).create(vals_list)
 
+    def open_reference(self):
+        try:
+            form_id = self.env[self.res_model].get_form_id()
+        except:
+            form_id = self.env['ir.ui.view'].search([('type', '=', 'form'), ('model', '=', self.res_model)], limit=1)
+            form_id = form_id[0] if form_id else False
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Reservation',
+            'res_model': self.res_model,
+            'res_id': self.res_id,
+            'view_type': 'form',
+            'view_mode': 'form',
+            'view_id': form_id.id,
+            'context': {},
+            'target': 'current',
+        }
+
     def get_allowed_list(self):
         return {
             'is_reversed': ['is_reversed', 'reverse_id']
@@ -120,7 +148,7 @@ class Ledger(models.Model):
 
 
     # API START #####################################################################
-    def create_ledger(self, provider_obj):
+    def create_ledger(self, provider_obj,issued_uid):
         amount = 0
 
         for sc in provider_obj.cost_service_charge_ids:
@@ -128,13 +156,13 @@ class Ledger(models.Model):
                 amount += sc.total
 
         booking_obj = provider_obj.booking_id
-        ledger_values = self.prepare_vals('Order : ' + booking_obj.name, booking_obj.name, datetime.now()+relativedelta(hours=7),
-                                          2, booking_obj.currency_id.id, 0, amount)
+        ledger_values = self.prepare_vals(booking_obj._name,booking_obj.id,'Order : ' + booking_obj.name, booking_obj.name, datetime.now()+relativedelta(hours=7),
+                                          2, booking_obj.currency_id.id, issued_uid, 0, amount)
 
         ledger_values = self.prepare_vals_for_resv(booking_obj,ledger_values)
         self.create(ledger_values)
 
-    def create_commission_ledger(self, provider_obj):
+    def create_commission_ledger(self, provider_obj,issued_uid):
         booking_obj = provider_obj.booking_id
 
         agent_commission = {}
@@ -150,8 +178,8 @@ class Ledger(models.Model):
                 agent_commission[agent_id] += amount
 
         for agent_id, amount in agent_commission.items():
-            ledger_values = self.prepare_vals('Commission : ' + booking_obj.name, booking_obj.name, datetime.now()+relativedelta(hours=7),
-                                       3, booking_obj.currency_id.id, amount, 0)
+            ledger_values = self.prepare_vals(booking_obj._name,booking_obj.id,'Commission : ' + booking_obj.name, booking_obj.name, datetime.now()+relativedelta(hours=7),
+                                       3, booking_obj.currency_id.id,issued_uid, amount, 0)
             ledger_values.update({
                 'agent_id': abs(agent_id),
             })
@@ -159,9 +187,9 @@ class Ledger(models.Model):
             _logger.info('Create Ledger Comission\n')
             self.create(values)
 
-    def action_create_ledger(self, provider_obj):
-        self.create_commission_ledger(provider_obj)
-        self.create_ledger(provider_obj)
+    def action_create_ledger(self, provider_obj,issued_uid):
+        self.create_commission_ledger(provider_obj,issued_uid)
+        self.create_ledger(provider_obj,issued_uid)
 
     # api_context : ['type', 'agent_id', 'amount', 'pnr', 'ref_name', 'order']
     # def get_agent_ledger(self, start_date=False, end_date=False, limit=10, offset=1, api_context=None):

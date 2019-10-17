@@ -792,7 +792,7 @@ class ReservationAirline(models.Model):
                     raise RequestException(1007)
 
                 for provider in book_obj.provider_booking_ids:
-                    provider.action_create_ledger()
+                    provider.action_create_ledger(context['co_uid'])
 
                 return ERR.get_no_error()
             else:

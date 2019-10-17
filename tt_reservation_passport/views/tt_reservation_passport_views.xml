@@ -175,9 +175,7 @@
                                 </tree>
                             </field>
                         </page>
-                        <page string="Prices" name="prices" >
-                            <!--<field name="sale_service_charge_ids" readonly="1">-->
-<!--                            groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"-->
+                        <page string="Prices" name="prices">
                             <field name="sale_service_charge_ids" context="{'form_view_ref': 'tt_reservation_passport.tt_service_charge_passport_inherit_form_view'}">
                                 <tree>
                                     <field name="charge_code"/>
@@ -189,6 +187,9 @@
                                     <field name="description"/>
                                 </tree>
                             </field>
+                        </page>
+                        <page string="Vendor" name="Vendor" groups="tt_base.group_tt_tour_travel_operator">
+                            <field name="provider_booking_ids"/>
                         </page>
                         <page string="Ledgers" name="ledger_page">
 <!--                            groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"-->

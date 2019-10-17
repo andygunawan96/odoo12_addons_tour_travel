@@ -30,9 +30,17 @@ class PaymentTransaction(models.Model):
                               ('validated','Validated by Operator'),
                               ('validated2','Validated by Supervisor'),
                               ('cancel','Cancelled')], 'State', default='draft', help='Draft: New payment can be edited,'
-                                                                                         'Confirm: Agent Confirmed the payment'
-                                                                                         'Validate by Operator'
-                                                                                         'Validate by Supervisor')
+                                                                                      'Confirm: Agent Confirmed the payment'                                                                                  'Validate by Operator'
+                                                                                      'Validate by Supervisor')
+
+    payment_image_id = fields.Many2one('tt.upload.center','Image ID')
+    payment_image_ids = fields.Many2many('tt.upload.center','rel_test_image','payment_id','image_id','Image IDs')
+
+    def unlink_image(self):
+        self.payment_image_id.unlink()
+
+    def unlink_image_ids(self):
+        self.payment_image_ids[0].unlink()
 
     def _get_c_parent_domain(self):
         # if self.agent_id:

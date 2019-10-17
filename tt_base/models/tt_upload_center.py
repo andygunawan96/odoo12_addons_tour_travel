@@ -1,6 +1,7 @@
 from odoo import api, fields, models, _
 import os
 
+
 class TtUploadFile(models.Model):
     _name = 'tt.upload.center'
     _description = 'Upload Center'
@@ -12,6 +13,7 @@ class TtUploadFile(models.Model):
     path = fields.Char('Path', readonly=True)
     url = fields.Char('URL')
     agent_id = fields.Many2one('tt.agent','Owner')
+    active = fields.Boolean('Active',default=True)
 
     @api.model
     def create(self, vals_list):
@@ -24,6 +26,9 @@ class TtUploadFile(models.Model):
     @api.multi
     def unlink(self):
         for rec in self:
+            print("UNLINK OVERRIDE")
             ##remove the real file
-            if os.path.exists(rec.path):
-                os.remove(rec.path)
+            if rec.path:
+                if os.path.exists(rec.path):
+                    os.remove(rec.path)
+            return super(TtUploadFile, self).unlink()
