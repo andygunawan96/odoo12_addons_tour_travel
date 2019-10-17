@@ -24,6 +24,10 @@ class Main(http.Controller):
                 model_id = [rec.invoice_id.id for rec in line_ids]
                 model_obj = request.env['tt.agent.invoice'].browse(model_id)
                 pdf = request.env.ref('tt_report_common.action_report_printout_invoice')
+                data['context'].update({
+                    'active_model': 'tt.agent.invoice',
+                    'active_ids': model_id,
+                })
             elif model_name == 'tt.reservation.hotel':
                 pdf = request.env.ref('tt_report_common.action_report_printout_reservation_hotel')
             elif model_name == 'tt.reservation.train':

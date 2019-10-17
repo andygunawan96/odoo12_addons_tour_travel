@@ -172,9 +172,8 @@
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="do_print_voucher"
-                                class="oe_stat_button" states="issued,done"
-                                string="Voucher" type="object" icon="fa-print"/>
+                        <button name="do_print_voucher" class="oe_stat_button" states="issued,done" string="Voucher" type="object" icon="fa-print"/>
+                        <button name="print_itinerary" class="oe_stat_button" states="issued,done" string="Print Itinerary" type="object" icon="fa-print"/>
                     </div>
                     <div class="oe_title">
                         <label for="name">Reservation</label>
