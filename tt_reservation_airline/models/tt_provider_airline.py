@@ -289,9 +289,9 @@ class TtProviderAirline(models.Model):
     def action_create_ledger(self,issued_uid):
         if not self.is_ledger_created:
             self.write({'is_ledger_created': True})
-            self.env['tt.ledger'].action_create_ledger(self,issued_uid)
-        else:
-            raise UserError("Cannot create ledger, ledger has been created before.")
+            self.env['tt.ledger'].action_create_ledger(self)
+        # else:
+        #     raise UserError("Cannot create ledger, ledger has been created before.")
 
     def to_dict(self):
         journey_list = []
