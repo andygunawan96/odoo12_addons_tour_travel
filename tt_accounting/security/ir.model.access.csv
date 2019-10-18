@@ -4,6 +4,4 @@ access_tt_ledger_for_admin,access_tt_accounting.tt_ledger_for_admin,model_tt_led
 
 access_tt_top_up_for_agent_user,access_tt_accounting.tt_top_up_for_agent_user,model_tt_top_up,base.group_user,1,1,1,0
 
-access_tt_top_up_amount,access_tt_accounting.tt_top_up_amount,model_tt_top_up_amount,,1,1,1,1
-
 access_tt_adjustment,access_tt_accounting.tt_adjustment,model_tt_adjustment,,1,1,1,1
