@@ -18,6 +18,7 @@ Key Features
         'data/frontend_security.xml',
         'data/res_groups_data.xml',
         'data/agent_type_rodex_data.xml',
+        'data/tt_agent_ho_data.xml',
         'data/skipped_history_data.xml',
         'data/customer_parent_type_rodex_data.xml',
         'data/tt.bank.csv',
@@ -25,7 +26,6 @@ Key Features
         'data/ir_sequence_data.xml',
         'data/ir_cron_data.xml',
         'data/res.social.media.type.csv',
-        'data/tt_agent_ho_data.xml',
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
 
