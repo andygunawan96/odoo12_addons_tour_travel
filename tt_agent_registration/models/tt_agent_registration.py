@@ -140,8 +140,7 @@ class AgentRegistration(models.Model):
         for rec in self:
             if rec.agent_type_id:
                 if rec.agent_type_id.id == self.env.ref('tt_base.agent_type_citra').id:
-                    rec.parent_agent_id = rec.env['tt.agent'].sudo().search([('agent_type_id.id', '=', self.env.ref('tt_base.agent_type_ho').id)],
-                                                                            limit=1)
+                    rec.parent_agent_id = rec.env.ref('tt_base.rodex_ho').id
                 else:
                     rec.parent_agent_id = rec.env.user.agent_id
             else:
@@ -705,7 +704,7 @@ class AgentRegistration(models.Model):
     def set_parent_agent_id_api(self, agent_type_id):
         if agent_type_id:
             if agent_type_id.id == self.env.ref('tt_base.agent_type_citra').id:
-                parent_agent_id = self.env['tt.agent'].sudo().search([('agent_type_id.id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
+                parent_agent_id = self.env.ref('tt_base.rodex_ho').id
             else:
                 parent_agent_id = self.env.user.agent_id
         else:

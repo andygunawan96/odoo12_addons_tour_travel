@@ -26,7 +26,7 @@
     'data': [
         'data/tt_frontend_banner_data.xml',
         'security/ir.model.access.csv',
-        'views/tt_image_views.xml',
+        'views/tt_frontend_banner_views.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

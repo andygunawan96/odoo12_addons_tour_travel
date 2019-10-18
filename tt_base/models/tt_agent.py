@@ -135,8 +135,7 @@ class TtAgent(models.Model):
 
     def set_default_agent(self):
         print('Default Agent')
-        agent_type_ho = self.env['tt.agent.type'].search([('code', '=', 'ho')], limit=1).id
-        return self.env['tt.agent'].search([('agent_type_id', '=', agent_type_ho)], limit=1).id
+        return self.env.ref('tt_base.rodex_ho').id
 
     def get_balance_agent_api(self,context):
         agent_obj = self.browse(context['co_agent_id'])

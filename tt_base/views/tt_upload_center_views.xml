@@ -27,6 +27,7 @@
                         <field name="path" groups="base.user_admin"/>
                         <field name="url" widget="url"/>
                         <field name="agent_id"/>
+                        <field name="will_be_deleted_date"/>
                     </group>
                 </sheet>
             </form>
@@ -76,7 +77,7 @@
         <field name="res_model">tt.upload.center</field>
         <field name="view_type">form</field>
         <field name="view_mode">form</field>
-        <field name="priority">10</field>
+        <field name="priority">1</field>
         <field name="context">
             {
                 'form_view_ref':'tt_base.tt_upload_center_create_form_view'
