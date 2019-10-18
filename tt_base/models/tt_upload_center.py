@@ -1,6 +1,7 @@
 from odoo import api, fields, models, _
 import os
 
+
 class TtUploadFile(models.Model):
     _name = 'tt.upload.center'
     _description = 'Upload Center'

@@ -27,8 +27,8 @@ class TtProviderPassport(models.Model):
 
     pnr = fields.Char('PNR')  # di isi aja order number
     provider_id = fields.Many2one('tt.provider', 'Provider')
-    booking_id = fields.Many2one('tt.reservation.visa', 'Order Number', ondelete='cascade')
-    visa_id = fields.Many2one('tt.reservation.visa.pricelist', 'Visa Pricelist')
+    booking_id = fields.Many2one('tt.reservation.passport', 'Order Number', ondelete='cascade')
+    visa_id = fields.Many2one('tt.reservation.passport.pricelist', 'Visa Pricelist')
     state = fields.Selection(variables.BOOKING_STATE, 'Status', default='draft')
     cost_service_charge_ids = fields.One2many('tt.service.charge', 'provider_passport_booking_id', 'Cost Service Charges')
 

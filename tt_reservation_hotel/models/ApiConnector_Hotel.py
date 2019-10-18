@@ -56,7 +56,7 @@ class ApiConnectorHotels:
             'signature': self.cookie or 'None',
             'action': action,
         }
-        return util.send_request(url, data=post, headers=headers, timeout=timeout)
+        return util.send_request(url, data=post, headers=headers, timeout=timeout, is_json=True)
 
     def get_record_by_api(self, req_post, api_context=None):
         self.credetial['co_uid'] = request.env.user.id

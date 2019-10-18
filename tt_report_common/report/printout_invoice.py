@@ -86,9 +86,9 @@ class PrintoutInvoice(models.AbstractModel):
         return a
 
     def get_terbilang(self, amount, separator_index=0, separator_index2=0):
-        angka = ["", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan", "Sepuluh", "Sebelas"]
-        separator1 = ['', 'Puluh', 'Ratus']
-        separator2 = ['', 'Ribu', 'Juta', 'Miliar', 'Triliun']
+        angka = ["", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas"]
+        separator1 = ['', 'puluh', 'ratus']
+        separator2 = ['', 'ribu', 'juta', 'miliar', 'triliun']
 
         n = int(amount)
         a = int(n / 10)
@@ -108,7 +108,7 @@ class PrintoutInvoice(models.AbstractModel):
             amount_to_str = self.get_terbilang(a, separator_index, separator_index2) + ' ' + amount_to_str
         return amount_to_str
 
-    def compute_terbilang(self, recs, currency_str='Rupiah'):
+    def compute_terbilang(self, recs, currency_str='rupiah'):
         a = {}
         for rec2 in recs:
             terbilang = self.get_terbilang(rec2.total)
@@ -118,21 +118,21 @@ class PrintoutInvoice(models.AbstractModel):
             for idx, rec in enumerate(ongoing_list):
                 if idx in skip_idx:
                     continue
-                if rec == 'Satu':
+                if rec == 'satu':
                     if idx >= len(ongoing_list)-1:
                         continue
-                    if ongoing_list[idx + 1] == 'Puluh':
-                        if ongoing_list[idx + 2] in ["Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan"]:
+                    if ongoing_list[idx + 1] == 'puluh':
+                        if ongoing_list[idx + 2] in ["dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan"]:
                             new_list.append(ongoing_list[idx + 2])
-                            new_list.append('Belas')
+                            new_list.append('belas')
                             skip_idx.append(idx + 2)
-                        elif ongoing_list[idx + 2] == 'Satu':
-                            new_list.append('Sebelas')
+                        elif ongoing_list[idx + 2] == 'satu':
+                            new_list.append('sebelas')
                         else:
-                            new_list.append('Se' + ongoing_list[idx + 1].lower())
+                            new_list.append('se' + ongoing_list[idx + 1].lower())
                         skip_idx.append(idx + 1)
-                    elif ongoing_list[idx + 1] in ['Ratus', 'Ribu']:
-                        new_list.append('Se' + ongoing_list[idx + 1].lower() )
+                    elif ongoing_list[idx + 1] in ['ratus', 'ribu']:
+                        new_list.append('se' + ongoing_list[idx + 1].lower() )
                         skip_idx.append(idx + 1)
                 else:
                     new_list.append(rec)
@@ -287,9 +287,9 @@ class PrintoutBilling(models.AbstractModel):
         return a
 
     def get_terbilang(self, amount, separator_index=0, separator_index2=0):
-        angka = ["", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan", "Sepuluh", "Sebelas"]
-        separator1 = ['', 'Puluh', 'Ratus']
-        separator2 = ['', 'Ribu', 'Juta', 'Miliar', 'Triliun']
+        angka = ["", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas"]
+        separator1 = ['', 'puluh', 'ratus']
+        separator2 = ['', 'ribu', 'juta', 'miliar', 'triliun']
 
         n = int(amount)
         a = int(n / 10)
@@ -309,7 +309,7 @@ class PrintoutBilling(models.AbstractModel):
             amount_to_str = self.get_terbilang(a, separator_index, separator_index2) + ' ' + amount_to_str
         return amount_to_str
 
-    def compute_terbilang(self, recs, currency_str='Rupiah'):
+    def compute_terbilang(self, recs, currency_str='rupiah'):
         a = {}
         for rec2 in recs:
             terbilang = self.get_terbilang(rec2.amount_total)
@@ -319,21 +319,21 @@ class PrintoutBilling(models.AbstractModel):
             for idx, rec in enumerate(ongoing_list):
                 if idx in skip_idx:
                     continue
-                if rec == 'Satu':
+                if rec == 'satu':
                     if idx >= len(ongoing_list)-1:
                         continue
-                    if ongoing_list[idx + 1] == 'Puluh':
-                        if ongoing_list[idx + 2] in ["Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan"]:
+                    if ongoing_list[idx + 1] == 'puluh':
+                        if ongoing_list[idx + 2] in ["dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan"]:
                             new_list.append(ongoing_list[idx + 2])
-                            new_list.append('Belas')
+                            new_list.append('belas')
                             skip_idx.append(idx + 2)
-                        elif ongoing_list[idx + 2] == 'Satu':
-                            new_list.append('Sebelas')
+                        elif ongoing_list[idx + 2] == 'satu':
+                            new_list.append('sebelas')
                         else:
                             new_list.append('Se' + ongoing_list[idx + 1].lower())
                         skip_idx.append(idx + 1)
-                    elif ongoing_list[idx + 1] in ['Ratus', 'Ribu']:
-                        new_list.append('Se' + ongoing_list[idx + 1].lower() )
+                    elif ongoing_list[idx + 1] in ['ratus', 'ribu']:
+                        new_list.append('se' + ongoing_list[idx + 1].lower() )
                         skip_idx.append(idx + 1)
                 else:
                     new_list.append(rec)
@@ -366,9 +366,9 @@ class PrintoutTopUp(models.AbstractModel):
     _description = 'Rodex Model'
 
     def get_terbilang(self, amount, separator_index=0, separator_index2=0):
-        angka = ["", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan", "Sepuluh", "Sebelas"]
-        separator1 = ['', 'Puluh', 'Ratus']
-        separator2 = ['', 'Ribu', 'Juta', 'Miliar', 'Triliun']
+        angka = ["", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas"]
+        separator1 = ['', 'puluh', 'ratus']
+        separator2 = ['', 'ribu', 'juta', 'miliar', 'triliun']
 
         n = int(amount)
         a = int(n / 10)
@@ -388,7 +388,7 @@ class PrintoutTopUp(models.AbstractModel):
             amount_to_str = self.get_terbilang(a, separator_index, separator_index2) + ' ' + amount_to_str
         return amount_to_str
 
-    def compute_terbilang(self, recs, currency_str='Rupiah'):
+    def compute_terbilang(self, recs, currency_str='rupiah'):
         a = {}
         for rec2 in recs:
             terbilang = self.get_terbilang(rec2.total_with_fees)
@@ -398,21 +398,21 @@ class PrintoutTopUp(models.AbstractModel):
             for idx, rec in enumerate(ongoing_list):
                 if idx in skip_idx:
                     continue
-                if rec == 'Satu':
+                if rec == 'satu':
                     if idx >= len(ongoing_list)-1:
                         continue
-                    if ongoing_list[idx + 1] == 'Puluh':
-                        if ongoing_list[idx + 2] in ["Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan"]:
+                    if ongoing_list[idx + 1] == 'puluh':
+                        if ongoing_list[idx + 2] in ["dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan"]:
                             new_list.append(ongoing_list[idx + 2])
-                            new_list.append('Belas')
+                            new_list.append('belas')
                             skip_idx.append(idx + 2)
-                        elif ongoing_list[idx + 2] == 'Satu':
-                            new_list.append('Sebelas')
+                        elif ongoing_list[idx + 2] == 'satu':
+                            new_list.append('sebelas')
                         else:
-                            new_list.append('Se' + ongoing_list[idx + 1].lower())
+                            new_list.append('se' + ongoing_list[idx + 1].lower())
                         skip_idx.append(idx + 1)
-                    elif ongoing_list[idx + 1] in ['Ratus', 'Ribu']:
-                        new_list.append('Se' + ongoing_list[idx + 1].lower() )
+                    elif ongoing_list[idx + 1] in ['ratus', 'ribu']:
+                        new_list.append('se' + ongoing_list[idx + 1].lower() )
                         skip_idx.append(idx + 1)
                 else:
                     new_list.append(rec)

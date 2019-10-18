@@ -294,6 +294,7 @@ class AgentTarget(models.Model):
 
     currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.user.company_id.currency_id.id)
 
+
 class AgentMOU(models.Model):
     _inherit = ['tt.history']
     _name = 'tt.agent.mou'
