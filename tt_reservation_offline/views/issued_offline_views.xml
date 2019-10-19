@@ -17,6 +17,7 @@
                         <filter string="All" name="all"/>
                         <filter string="Draft" name="draft" domain="[('state','=','draft')]"/>
                         <filter string="Confirm" name="confirm" domain="[('state','=','confirm')]"/>
+                        <filter string="Sent" name="sent" domain="[('state','=','sent')]"/>
                         <filter string="Validate" name="paid" domain="[('state','=','paid')]"/>
                         <filter string="Done" name="done" domain="[('state','=','posted')]"/>
                         <filter string="Canceled/Expired/Refund" name="canceled_expired_refund" domain="['|', '|', ('state','=','cancel'),('state','=','expired'),('state','=','refund')]"/>
@@ -110,7 +111,8 @@
                                 <field name="total" required="1"/>
                                 <field name="total_commission_amount" invisible="1" attrs="{'invisible': [('state', '=', 'draft')]}"
                                        groups="tt_base.group_tt_tour_travel_operator"/>
-                                <field name="agent_commission" invisible="0"/>
+                                <field name="agent_commission" groups="tt_base.group_tt_agent_user_operator" readonly="1"/>
+                                <field name="agent_commission" groups="tt_base.group_tt_tour_travel_operator" readonly="0"/>
                                 <field name="parent_agent_commission" groups="tt_base.group_tt_agent_user_operator" invisible="1"/>
                                 <field name="ho_commission" groups="tt_base.group_tt_tour_travel_operator" invisible="0"/>
                                 <field name="incentive_amount" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible': [('state', '=', 'draft')]}"/>
@@ -247,7 +249,8 @@
 <!--                                </group>-->
 <!--                            </page>-->
                             <page name="attachment" string="Attachment">
-                                <field name="attachment_ids" widget="many2many_binary" />
+<!--                                <field name="attachment_ids" widget="many2many_binary" />-->
+                                <field name="attachment_ids" string="Attach a File" widget="many2many_tags"/>
                             </page>
                         </notebook>
                     </sheet>
@@ -274,7 +277,7 @@
         </record>
 
         <record model="ir.actions.act_window" id="issued_offline_all_action">
-            <field name="name">Issued Offline All</field>
+            <field name="name">Reservation Offline All</field>
             <field name="res_model">tt.reservation.offline</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
@@ -289,7 +292,22 @@
         </record>
 
         <record model="ir.actions.act_window" id="issued_offline_draft_action">
-            <field name="name">Issued Offline Draft</field>
+            <field name="name">Reservation Offline Draft</field>
+            <field name="res_model">tt.reservation.offline</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="issued_offline_view_search"/>
+            <field name="context">
+                {
+                    'form_view_ref': 'tt_reservation_offline.issued_offline_view_form',
+                    'tree_view_ref': 'tt_reservation_offline.issued_offline_view_tree',
+                    'search_default_draft':1
+                }
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="issued_offline_confirm_action">
+            <field name="name">Reservation Offline Confirm</field>
             <field name="res_model">tt.reservation.offline</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
@@ -303,8 +321,23 @@
             </field>
         </record>
 
-        <record model="ir.actions.act_window" id="issued_offline_confirm_action">
-            <field name="name">Issued Offline Confirm</field>
+        <record model="ir.actions.act_window" id="issued_offline_sent_action">
+            <field name="name">Reservation Offline Sent</field>
+            <field name="res_model">tt.reservation.offline</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="issued_offline_view_search"/>
+            <field name="context">
+                {
+                    'form_view_ref': 'tt_reservation_offline.issued_offline_view_form',
+                    'tree_view_ref': 'tt_reservation_offline.issued_offline_view_tree',
+                    'search_default_sent':1
+                }
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="issued_offline_paid_action">
+            <field name="name">Reservation Offline Paid</field>
             <field name="res_model">tt.reservation.offline</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
@@ -318,8 +351,8 @@
             </field>
         </record>
 
-        <record model="ir.actions.act_window" id="issued_offline_paid_action">
-            <field name="name">Issued Offline Paid</field>
+        <record model="ir.actions.act_window" id="issued_offline_done_action">
+            <field name="name">Reservation Offline Done</field>
             <field name="res_model">tt.reservation.offline</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
@@ -333,8 +366,8 @@
             </field>
         </record>
 
-        <record model="ir.actions.act_window" id="issued_offline_done_action">
-            <field name="name">Issued Offline Done</field>
+        <record model="ir.actions.act_window" id="issued_offline_cancel_expired_refund_action">
+            <field name="name">Reservation Offline Cancel Expired Refund</field>
             <field name="res_model">tt.reservation.offline</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
@@ -348,15 +381,6 @@
             </field>
         </record>
 
-        <record model="ir.actions.act_window" id="issued_offline_cancel_expired_refund_action">
-            <field name="name">Issued Offline Cancel Expired Refund</field>
-            <field name="res_model">tt.reservation.offline</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
-            <field name="search_view_id" ref="issued_offline_view_search"/>
-            <field name="context">{'search_default_all':1}</field>
-        </record>
-
         <menuitem id="submenu_issued_offline_side_menu_all" parent="tt_reservation_offline.menu_offline_order"
                   name="ALL" sequence='1' action="issued_offline_all_action"/>
 
@@ -366,14 +390,17 @@
         <menuitem id="submenu_issued_offline_side_menu_confirm" parent="tt_reservation_offline.menu_offline_order"
                   name="Confirm" sequence='3' action="issued_offline_confirm_action"/>
 
+        <menuitem id="submenu_issued_offline_side_menu_sent" parent="tt_reservation_offline.menu_offline_order"
+                  name="Sent" sequence='4' action="issued_offline_sent_action"/>
+
         <menuitem id="submenu_issued_offline_side_menu_paid" parent="tt_reservation_offline.menu_offline_order"
-                  name="Paid" sequence='4' action="issued_offline_paid_action"/>
+                  name="Paid" sequence='5' action="issued_offline_paid_action"/>
 
         <menuitem id="submenu_issued_offline_side_menu_done" parent="tt_reservation_offline.menu_offline_order"
-                  name="Done" sequence='5' action="issued_offline_done_action"/>
+                  name="Done" sequence='6' action="issued_offline_done_action"/>
 
         <menuitem id="submenu_issued_offline_side_menu_cancel_expired_refund" parent="tt_reservation_offline.menu_offline_order"
-                  name="Cancel/Expired/Refund" sequence='6' action="issued_offline_cancel_expired_refund_action"/>
+                  name="Cancel/Expired/Refund" sequence='7' action="issued_offline_cancel_expired_refund_action"/>
 
     </data>
 </odoo>

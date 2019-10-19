@@ -66,7 +66,7 @@ class TtPassport(models.Model):
     vendor_ids = fields.One2many('tt.reservation.passport.vendor.lines', 'passport_id', 'Expenses')
 
     passenger_ids = fields.One2many('tt.reservation.passport.order.passengers', 'passport_id',
-                                    'Travel Document Order Passengers')
+                                    'Passport Order Passengers')
     commercial_state = fields.Char('Payment Status', readonly=1, compute='_compute_commercial_state')
     confirmed_date = fields.Datetime('Confirmed Date', readonly=1)
     confirmed_uid = fields.Many2one('res.users', 'Confirmed By', readonly=1)
@@ -232,6 +232,12 @@ class TtPassport(models.Model):
         self.message_post(body='Order PROCEED')
 
     def action_delivered_passport(self):
+        """ Expenses wajib di isi untuk mencatat pengeluaran HO """
+        if not self.vendor_ids:
+            raise UserError(
+                _('You have to Fill Expenses.'))
+        if self.state_passport != 'delivered':
+            self.calc_passport_vendor()
         self.write({
             'state_passport': 'delivered'
         })
@@ -266,6 +272,62 @@ class TtPassport(models.Model):
             'done_date': datetime.now()
         })
         self.message_post(body='Order DONE')
+
+    def calc_passport_vendor(self):
+        """ Mencatat expenses ke dalam ledger passport """
+
+        """ Hitung total expenses (pengeluaran) """
+        total_expenses = 0
+        for rec in self.vendor_ids:
+            total_expenses += rec.amount
+
+        """ Hitung total nta per pax """
+        nta_price = 0
+        for pax in self.passenger_ids:
+            if pax.state != 'cancel':
+                nta_price += pax.pricelist_id.nta_price
+
+        """ hitung profit HO dg mengurangi harga NTA dg total pengeluaran """
+        ho_profit = nta_price - total_expenses
+
+        """ Jika profit HO > 0 (untung) """
+        if ho_profit > 0:
+            ledger = self.env['tt.ledger']
+            for rec in self:
+                doc_type = []
+                for sc in rec.sale_service_charge_ids:
+                    if not sc.pricelist_id.passport_type in doc_type:
+                        doc_type.append(sc.pricelist_id.passport_type)
+
+                doc_type = ','.join(str(e) for e in doc_type)
+
+                vals = ledger.prepare_vals(self._name, self.id, 'Profit ' + doc_type + ' : ' + rec.name, rec.name,
+                                           datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 3,
+                                           rec.currency_id.id, self.env.user.id, ho_profit, 0)
+                vals['agent_id'] = rec.env.ref('tt_base.rodex_ho').id
+
+                new_aml = ledger.create(vals)
+                # new_aml.action_done()
+                rec.ledger_id = new_aml
+        """ Jika profit HO < 0 (rugi) """
+        if ho_profit < 0:
+            ledger = self.env['tt.ledger']
+            for rec in self:
+                doc_type = []
+                for sc in rec.sale_service_charge_ids:
+                    if not sc.pricelist_id.passport_type in doc_type:
+                        doc_type.append(sc.pricelist_id.passport_type)
+
+                doc_type = ','.join(str(e) for e in doc_type)
+
+                vals = ledger.prepare_vals(self._name, self.id, 'Additional Charge ' + doc_type + ' : ' + rec.name,
+                                           rec.name, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 3,
+                                           rec.currency_id.id, self.env.user.id, 0, ho_profit)
+                vals['agent_id'] = rec.env.ref('tt_base.rodex_ho').id
+
+                new_aml = ledger.create(vals)
+                # new_aml.action_done()
+                rec.ledger_id = new_aml
 
     def action_booked_passport(self, api_context=None):
         if not api_context:  # Jika dari call from backend

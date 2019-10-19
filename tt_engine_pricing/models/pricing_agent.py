@@ -104,18 +104,37 @@ class PricingAgent(models.Model):
         else:
             return hierarchy
 
-    def get_commission(self, amount, agent_id, provider_type_id, provider_ids=[]):
+    def get_commission(self, input_commission, agent_id, provider_type_id, provider_ids=[]):
+        """ Fungsi untuk membagi commisison berdasarkan jenis provider type dan agent type """
+
+        """ Search object pricing agent berdasarkan provider type dan agent type """
         price_obj = self.search([('agent_type_id', '=', agent_id.agent_type_id.id),
-                 ('provider_type_id', '=', provider_type_id.id)], limit=1)
-        vals_list = []
-        remaining_diff = 0
+                                 ('provider_type_id', '=', provider_type_id.id)], limit=1)
+        vals_list = []  # output list of pricing
+        remaining_diff = 0  # sisa diff yang jika masih ada sisa, akan dimasukkan ke HO
 
-        if price_obj.basic_amount_type == 'percentage':
+        ho_agent = self.env['tt.agent'].sudo().search([('agent_type_id.id', '=', self.env.ref('tt_base.agent_type_ho').id)],limit=1)
+
+        """ kurangi input amount dengan fee amount. masukkan fee amount ke dalam service charge HOC """
+        # if price_obj.fee_amount != 0:
+        #     input_amount -= price_obj.fee_amount
+        #     vals = {
+        #         'agent_id': ho_agent.id,
+        #         'agent_name': ho_agent.name,
+        #         'agent_type_id': ho_agent.agent_type_id.id,
+        #         'amount': price_obj.fee_amount,
+        #         'type': 'HOC',
+        #         'code': 'hoc'
+        #     }
+        #     vals_list.append(vals)
+
+        """ Jika tipe amount = percentage """
+        if price_obj.basic_amount_type == 'percentage':  # -> masih hardcode
             perc_remaining = 100
-            comm = amount * price_obj.basic_amount / 100
+            comm = input_commission * price_obj.basic_amount / 100  # nilai komisi yang diterima agent yang pesan
             rac_count = 0
-            diff_count = 0
 
+            """ Set pricing untuk agent yang pesan """
             vals = {
                 'agent_id': agent_id.id,
                 'agent_name': agent_id.name,
@@ -127,33 +146,39 @@ class PricingAgent(models.Model):
             vals_list.append(vals)
             rac_count += 1
 
-            perc_remaining -= price_obj.basic_amount
-            remaining_diff = amount - comm
+            perc_remaining -= price_obj.basic_amount  # sisa percentage dikurangi dg basic amount
+            remaining_diff = input_commission - comm  # sisa diff = input komisi awal - komisi agent yang pesan
 
-            # find hierarchy agent
+            """ list agents hierarchy (list of dict mulai dari agent yang pesan hingga HO) """
             agent_hierarchy = self.get_agent_hierarchy(agent_id, hierarchy=[])
             curr_rule = {}
 
+            """ Looping uplines """
             for line in self.line_ids:
+                """ jika amount type dari upline = percentage """
                 if line.basic_amount_type == 'percentage':
-                    curr_rule[line.agent_type_id.code] = amount * line.basic_amount / 100
+                    curr_rule[line.agent_type_id.code] = input_commission * line.basic_amount / 100  # set amount agent type
 
-                    perc_remaining -= line.basic_amount
-                    remaining_diff -= curr_rule[line.agent_type_id.code]
+                    perc_remaining -= line.basic_amount  # kurangi perc_remaining dg basic amount dari line
+                    remaining_diff -= curr_rule[line.agent_type_id.code]  # kurangi nilai diff sejumlah amount dari agent type
+                # TODO : bagaimana jika amount type = amount
+                    """ jika amount type dari upline = amount """
+                elif line.basic_amount_type == 'amount':
+                    pass
             if self.loop_level:
-                curr_rule[self.agent_type_id.code] = (amount * perc_remaining / 100) / self.loop_level
+                curr_rule[self.agent_type_id.code] = (input_commission * perc_remaining / 100) / self.loop_level
 
             agent_type_count = {}
             agent_type_src = ''
+            """ Loop agent hierarchy """
             for idx, rec in enumerate(agent_hierarchy):
-                if idx == 0:
-                    agent_type_src = rec['code']  # src = yang pesan
+                if idx == 0:  # 0 = index agent yang pesan
                     continue
 
-                vals = {}
-                agent_type_rec = rec['code']
+                vals = {}  # vals service charge
+                agent_type_rec = rec['code']  # code ex: citra, japro
                 if not agent_type_count.get(agent_type_rec):  # jika agent_type_rec empty
-                    agent_type_count[agent_type_rec] = 0
+                    agent_type_count[agent_type_rec] = 0  # agent_type_count['japro'] = 0
                 agent_type_count[agent_type_rec] += 1
 
                 # agent type harus sama, dan count harus lebih kecil dr loop level
@@ -174,13 +199,12 @@ class PricingAgent(models.Model):
                 })
                 vals_list.append(vals)
                 rac_count += 1
+            """ kalau masih ada sisa saldo, masukkan ke HO """
             if remaining_diff > 0:
-                ho_agent_type_id = self.env['tt.agent.type'].search([('code', '=', 'ho')], limit=1).id
-                ho_agent = self.env['tt.agent'].search([('agent_type_id', '=', ho_agent_type_id)], limit=1)
                 for vals in vals_list:
-                    if vals['agent_id'] == ho_agent.id:
+                    if vals['agent_id'] == ho_agent.id and vals['code'] != 'hoc':
                         vals.update({
-                            'amount': amount + remaining_diff
+                            'amount': vals['amount'] + remaining_diff
                         })
         elif self.basic_amount_type == 'amount':
             vals = {
