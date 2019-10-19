@@ -79,7 +79,8 @@ class ResUsers(models.Model):
 
     @api.model
     def create(self, vals):
-        vals['email'] = time.time()
+        if not vals.get('email'):
+            vals['email'] = time.time()
         vals['notification_type'] = 'inbox'
         new_user = super(ResUsers, self).create(vals)
         new_user.partner_id.parent_id = new_user.agent_id.id
