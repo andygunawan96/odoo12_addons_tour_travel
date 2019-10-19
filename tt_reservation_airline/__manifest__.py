@@ -16,7 +16,7 @@ TT_TRANSPORT
         'data/ir_sequence_data.xml',
         'data/tt_provider_type_data.xml',
         'data/tt_provider_airline.xml',
-        'data/tt_destination_airline.xml',
+        #'data/tt_destination_airline.xml',
         'data/tt_transport_carrier_airline.xml',
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
