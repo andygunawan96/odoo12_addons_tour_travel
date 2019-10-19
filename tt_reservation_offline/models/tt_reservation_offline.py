@@ -70,10 +70,10 @@ class IssuedOffline(models.Model):
 
     # 171121 CANDY: add field pnr, commission 80%, nta, nta 80%
     agent_commission = fields.Monetary('Agent Commission', readonly=True,  # , compute='_get_agent_commission')
-                                       states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
+                                       states={'confirm': [('readonly', False)]})
     parent_agent_commission = fields.Monetary('Parent Agent Commission', readonly=True)  # , compute='_get_agent_commission'
-    ho_commission = fields.Monetary('HO Commission', readonly=True,   # , compute='_get_agent_commission'
-                                    states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
+    ho_commission = fields.Monetary('HO Commission', readonly=True, compute='_get_ho_commission')   # , compute='_get_agent_commission'
+    # states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
     nta_price = fields.Monetary('NTA Price', readonly=True, compute='_get_nta_price', store=True)
     agent_nta_price = fields.Monetary('Agent Price', readonly=True, compute='_get_agent_price', store=True)
 
@@ -113,9 +113,11 @@ class IssuedOffline(models.Model):
     ledger_ids = fields.One2many('tt.ledger', 'res_id', 'Ledger(s)', domain=[('res_model', '=', 'tt.reservation.offline')])
 
     # Attachment
-    attachment_ids = fields.Many2many('ir.attachment', 'tt_reservation_offline_rel',
-                                      'tt_issued_id', 'attachment_id', domain=[('res_model', '=', 'tt.reservation.offline')]
-                                      , string='Attachments', readonly=True, states={'paid': [('readonly', False)]})
+    # attachment_ids = fields.Many2many('ir.attachment', 'tt_reservation_offline_rel',
+    #                                   'tt_issued_id', 'attachment_id', domain=[('res_model', '=', 'tt.reservation.offline')]
+    #                                   , string='Attachments', readonly=True, states={'paid': [('readonly', False)]})
+    attachment_ids = fields.Many2many('tt.upload.center', 'offline_ir_attachments_rel', 'tt_issued_id',
+                                      'attachment_id', string='Attachments')
     guest_ids = fields.Many2many('tt.customer', 'tt_issued_guest_rel', 'resv_issued_id', 'tt_product_id',
                                  'Guest(s)', readonly=True, states={'draft': [('readonly', False)]})
     # passenger_qty = fields.Integer('Passenger Qty', default=1)
@@ -158,6 +160,10 @@ class IssuedOffline(models.Model):
     #                              readonly=True, states={'draft': [('readonly', False)]})
     # refund_id = fields.Many2one('tt.refund', 'Refund')
 
+    ####################################################################################################
+    # REPORT
+    ####################################################################################################
+
     def print_invoice(self):
         data = {
             'ids': self.ids,
@@ -176,23 +182,9 @@ class IssuedOffline(models.Model):
         else:
             return self.env.ref('tt_reservation_offline.action_report_printout_invoice_ticket').report_action(self, data=data)
 
-    def check_line_empty(self):
-        empty = True
-        if self.provider_type_id_name != 'airline' and self.provider_type_id_name != 'train' and self.provider_type_id_name != 'hotel' and self.provider_type_id_name != 'activity':
-            empty = False
-        else:
-            if len(self.line_ids) > 0:
-                empty = False
-        return empty
-
-    def check_passenger_empty(self):
-        empty = True
-        for rec in self.passenger_ids:
-            if rec.passenger_id is not empty or rec.pax_type is not empty:
-                empty = False
-        return empty
-
+    ####################################################################################################
     # STATE
+    ####################################################################################################
 
     @api.one
     def action_confirm(self, kwargs={}):
@@ -264,7 +256,7 @@ class IssuedOffline(models.Model):
             self.issued_date = fields.Datetime.now()
             self.issued_uid = kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
             # create prices
-            self.sudo().create_ssc_ledger()
+            self.create_ssc_ledger()
             # create ledger
             # self.sudo().create_ledger()
             # set state = paid
@@ -283,7 +275,7 @@ class IssuedOffline(models.Model):
     def check_provider_empty(self):
         empty = False
         for rec in self.line_ids:
-            if rec.provider_id is False:
+            if not rec.provider_id or rec.provider_id.id is False:
                 empty = True
         return empty
 
@@ -292,7 +284,7 @@ class IssuedOffline(models.Model):
         if self.provider_type_id_name == 'airline' or self.provider_type_id_name == 'train' or \
                 self.provider_type_id_name == 'hotel' or self.provider_type_id_name == 'activity'\
                 or self.provider_type_id_name == 'cruise':
-            if not self.check_provider_empty():
+            if self.check_provider_empty() is False:
                 self.get_provider_name()
                 if self.provider_type_id_name == 'airline' or self.provider_type_id_name == 'train':
                     if self.check_pnr_empty():
@@ -346,8 +338,8 @@ class IssuedOffline(models.Model):
             raise UserError(_('Sale Price or NTA Price can\'t be 0 (Zero)'))
 
     #################################################################################################
-
     # LEDGER & PRICES
+    ####################################################################################################
 
     def create_ssc_ledger(self):
         provider_obj = self.env['tt.reservation.offline.lines'].search([('booking_id', '=', self.id)])
@@ -363,8 +355,8 @@ class IssuedOffline(models.Model):
                     service_charge_list.append((self.get_service_charge_summary_hotel(total_line)))
             service_charge_list = self.sudo().get_service_charge_list_offline(service_charge_list)
             self.sudo().create_service_charge_new(service_charge_list)
-            self.sudo().create_ledger(provider_obj)
-            self.sudo().create_ledger_commission(provider_obj)
+            self.create_ledger(provider_obj)
+            self.create_ledger_commission(provider_obj)
         except Exception as e:
             self.env.cr.rollback()
             _logger.error(msg=str(e) + '\n' + traceback.format_exc())
@@ -512,13 +504,12 @@ class IssuedOffline(models.Model):
             # Agent Ledger
             pnr = self.get_pnr_list()
 
-            vals = self.env['tt.ledger'].prepare_vals('Resv : ' + rec.name, rec.name, rec.validate_date,
-                                                      2, rec.currency_id.id, 0, rec.total)
+            vals = self.env['tt.ledger'].prepare_vals(self._name, self.id, 'Resv : ' + rec.name, rec.name, rec.validate_date,
+                                                      2, rec.currency_id.id, self.env.user.id, 0, rec.total)
             vals = self.env['tt.ledger'].prepare_vals_for_resv(self, vals)
             vals.update({
                 'pnr': pnr,
                 'display_provider_name': self.get_display_provider_name(),
-                'issued_uid': self.env.user.id,
             })
             new_aml = rec.env['tt.ledger'].create(vals)
 
@@ -542,9 +533,11 @@ class IssuedOffline(models.Model):
                             if ssc.charge_type == 'RAC' or ssc.charge_type == 'rac':
                                 # komisi HO
                                 if ssc.charge_code == 'hoc':
-                                    vals1 = self.env['tt.ledger'].prepare_vals('Commission : ' + rec.name,
+                                    vals1 = self.env['tt.ledger'].prepare_vals(self._name, self.id,
+                                                                               'Commission : ' + rec.name,
                                                                                'HO: ' + rec.name, rec.validate_date, 3,
-                                                                               rec.currency_id.id, ssc.total, 0)
+                                                                               rec.currency_id.id, self.env.user.id,
+                                                                               ssc.total, 0)
 
                                     vals1 = self.env['tt.ledger'].prepare_vals_for_resv(self, vals1)
                                     vals1.update({
@@ -557,9 +550,11 @@ class IssuedOffline(models.Model):
                                     vals_list.append(vals1)
                                 else:
                                     if ssc.charge_code == 'rac':
-                                        vals1 = self.env['tt.ledger'].prepare_vals('Commission : ' + rec.name, rec.name,
+                                        vals1 = self.env['tt.ledger'].prepare_vals(self._name, self.id,
+                                                                                   'Commission : ' + rec.name, rec.name,
                                                                                    rec.validate_date, 3,
-                                                                                   rec.currency_id.id, ssc.total, 0)
+                                                                                   rec.currency_id.id, self.env.user.id,
+                                                                                   ssc.total, 0)
                                         vals1 = self.env['tt.ledger'].prepare_vals_for_resv(self, vals1)
                                         vals1.update({
                                             'agent_id': ssc.commission_agent_id.id,
@@ -570,10 +565,12 @@ class IssuedOffline(models.Model):
                                         })
                                         vals_list.append(vals1)
                                     else:
-                                        vals1 = self.env['tt.ledger'].prepare_vals('Commission : ' + rec.name,
+                                        vals1 = self.env['tt.ledger'].prepare_vals(self._name, self.id,
+                                                                                   'Commission : ' + rec.name,
                                                                                    'PA: ' + rec.name,
                                                                                    rec.validate_date, 3,
-                                                                                   rec.currency_id.id, ssc.total, 0)
+                                                                                   rec.currency_id.id, self.env.user.id,
+                                                                                   ssc.total, 0)
                                         vals1 = self.env['tt.ledger'].prepare_vals_for_resv(self, vals1)
                                         vals1.update({
                                             'agent_id': ssc.commission_agent_id.id,
@@ -593,14 +590,14 @@ class IssuedOffline(models.Model):
             # Agent Ledger
             pnr = self.get_pnr_list()
 
-            vals = self.env['tt.ledger'].prepare_vals('Resv : ' + rec.name, 'Profit&Loss: ' + rec.name,
-                                                      rec.validate_date, 3, rec.currency_id.id, rec.ho_final_amount, 0)
+            vals = self.env['tt.ledger'].prepare_vals(self._name, self.id, 'Resv : ' + rec.name, 'Profit&Loss: ' + rec.name,
+                                                      rec.validate_date, 3, rec.currency_id.id, self.env.user.id,
+                                                      rec.ho_final_amount, 0)
             vals = self.env['tt.ledger'].prepare_vals_for_resv(self, vals)
             vals.update({
                 'pnr': pnr,
                 'provider_type_id': self.provider_type_id,
                 'display_provider_name': self.get_display_provider_name(),
-                'issued_uid': self.env.user.id,
             })
             new_aml = rec.env['tt.ledger'].create(vals)
 
@@ -622,8 +619,9 @@ class IssuedOffline(models.Model):
         for rec in self:
             pnr = self.get_pnr_list()
 
-            vals = self.env['tt.ledger'].prepare_vals('Resv : ' + rec.name + ' - REVERSE', rec.name + ' - REVERSE',
-                                                      rec.validate_date, 2, rec.currency_id.id, rec.total, 0)
+            vals = self.env['tt.ledger'].prepare_vals(self._name, self.id, 'Resv : ' + rec.name + ' - REVERSE', rec.name + ' - REVERSE',
+                                                      rec.validate_date, 2, rec.currency_id.id, self.env.user.id,
+                                                      rec.total, 0)
             vals = self.env['tt.ledger'].prepare_vals_for_resv(self, vals)
             vals.update({
                 'pnr': pnr,
@@ -654,10 +652,11 @@ class IssuedOffline(models.Model):
                             if ssc.charge_type == 'RAC' or ssc.charge_type == 'rac':
                                 # komisi HO
                                 if ssc.charge_code == 'hoc':
-                                    vals1 = self.env['tt.ledger'].prepare_vals('Commission : ' + rec.name,
+                                    vals1 = self.env['tt.ledger'].prepare_vals(self._name, self.id,
+                                                                               'Commission : ' + rec.name,
                                                                                'HO: ' + rec.name + ' - REVERSE',
-                                                                               rec.validate_date, 3, rec.currency_id.id,
-                                                                               0, ssc.total)
+                                                                               rec.validate_date, self.env.user.id,
+                                                                               3, rec.currency_id.id, 0, ssc.total)
 
                                     vals1 = self.env['tt.ledger'].prepare_vals_for_resv(self, vals1)
                                     vals1.update({
@@ -671,10 +670,12 @@ class IssuedOffline(models.Model):
                                     vals_list.append(vals1)
                                 else:
                                     if ssc.charge_code == 'rac':
-                                        vals1 = self.env['tt.ledger'].prepare_vals('Commission : ' + rec.name,
+                                        vals1 = self.env['tt.ledger'].prepare_vals(self._name, self.id,
+                                                                                   'Commission : ' + rec.name,
                                                                                    rec.name + ' - REVERSE',
                                                                                    rec.validate_date, 3,
-                                                                                   rec.currency_id.id, 0, ssc.total)
+                                                                                   rec.currency_id.id, self.env.user.id,
+                                                                                   0, ssc.total)
                                         vals1 = self.env['tt.ledger'].prepare_vals_for_resv(self, vals1)
                                         vals1.update({
                                             'agent_id': ssc.commission_agent_id.id,
@@ -686,10 +687,12 @@ class IssuedOffline(models.Model):
                                         })
                                         vals_list.append(vals1)
                                     else:
-                                        vals1 = self.env['tt.ledger'].prepare_vals('Commission : ' + rec.name,
+                                        vals1 = self.env['tt.ledger'].prepare_vals(self._name, self.id,
+                                                                                   'Commission : ' + rec.name,
                                                                                    'PA: ' + rec.name + ' - REVERSE',
                                                                                    rec.validate_date, 3,
-                                                                                   rec.currency_id.id, 0, ssc.total)
+                                                                                   rec.currency_id.id, self.env.user.id,
+                                                                                   0, ssc.total)
                                         vals1 = self.env['tt.ledger'].prepare_vals_for_resv(self, vals1)
                                         vals1.update({
                                             'agent_id': ssc.commission_agent_id.id,
@@ -706,8 +709,8 @@ class IssuedOffline(models.Model):
         print(vals_list)
 
     ####################################################################################################
-
     # Set, Get & Compute
+    ####################################################################################################
 
     @api.onchange('agent_commission', 'ho_commission')
     @api.depends('agent_commission', 'ho_commission', 'total')
@@ -789,6 +792,19 @@ class IssuedOffline(models.Model):
         else:
             return ''
 
+    @api.onchange('agent_commission', 'ho_commission')
+    @api.depends('agent_commission', 'ho_commission')
+    def _get_ho_commission(self):
+        for rec in self:
+            rec.ho_commission = 0
+            pricing_obj = rec.env['tt.pricing.agent'].search([('agent_type_id', '=', rec.agent_type_id.id),
+                                                              ('provider_type_id', '=', rec.provider_type_id.id)],
+                                                             limit=1)
+            commission_list = pricing_obj.get_commission(rec.agent_commission, rec.agent_id, rec.provider_type_id)
+            for comm in commission_list:
+                if comm.get('agent_type_id') == rec.env.ref('tt_base.rodex_ho').agent_type_id.id:
+                    rec.ho_commission += comm.get('amount')
+
     # Hitung harga final / Agent NTA Price
     @api.onchange('vendor_amount', 'nta_price')
     def compute_final_ho(self):
@@ -810,16 +826,35 @@ class IssuedOffline(models.Model):
     def get_provider_name(self):
         self.provider_name = ''
         for rec in self.line_ids:
-            self.provider_name += rec.provider_id.name + ' '
+            if rec.provider_id:
+                self.provider_name += rec.provider_id.name + ' '
+
+    def check_line_empty(self):
+        empty = True
+        if self.provider_type_id_name != 'airline' and self.provider_type_id_name != 'train' and self.provider_type_id_name != 'hotel' and self.provider_type_id_name != 'activity':
+            empty = False
+        else:
+            if len(self.line_ids) > 0:
+                empty = False
+        return empty
+
+    def check_passenger_empty(self):
+        empty = True
+        for rec in self.passenger_ids:
+            if rec.passenger_id is not empty or rec.pax_type is not empty:
+                empty = False
+        return empty
 
     ####################################################################################################
-
     # CRON
+    ####################################################################################################
 
     @api.multi
     def cron_set_expired(self):
         self.search([('expired_date', '>', fields.Datetime.now())])
 
+    ####################################################################################################
+    # CREATE
     ####################################################################################################
 
     param_issued_offline_data = {

@@ -32,6 +32,7 @@
                                             <field name="agent_type_id"/>
                                             <field name="discount_amount_type"/>
                                             <field name="discount_amount"/>
+                                            <field name="preview_price"/>
                                             <field name="line_ids">
                                                 <form>
                                                     <sheet>
@@ -55,6 +56,7 @@
                                     <field name="discount_amount"/>
                                 </tree>
                             </field>
+                            <field name="default"/>
                             <field name="description"/>
                             <field name="sequence"/>
                         </group>

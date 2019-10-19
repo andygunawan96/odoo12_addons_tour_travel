@@ -20,6 +20,7 @@ class AgentRegistrationPromotion(models.Model):
                                      'Agent2 Type yang akan Direkrut',
                                      help='''Agent Type yang berhak untuk mendapatkan promo.''')
     description = fields.Char('Description')
+    default = fields.Boolean('Default Commission')
     sequence = fields.Integer('Sequence')
 
     def get_name(self):
@@ -46,7 +47,19 @@ class AgentRegistrationPromotionAgentType(models.Model):
     currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.user.company_id)
     discount_amount_type = fields.Selection(AMOUNT_TYPE, 'Discount Amount Type')
     discount_amount = fields.Float('Discount Amount')
+    preview_price = fields.Monetary('Preview Price', default=0, compute='set_preview_price')
     line_ids = fields.One2many('tt.agent.registration.promotion.line', 'res_id', 'Lines')
+
+    @api.depends('agent_type_id', 'discount_amount', 'discount_amount_type')
+    @api.onchange('agent_type_id', 'discount_amount', 'discount_amount_type')
+    def set_preview_price(self):
+        for rec in self:
+            if rec.agent_type_id and rec.discount_amount:
+                if rec.discount_amount_type:
+                    if rec.discount_amount_type == 'amount':
+                        rec.preview_price = rec.agent_type_id.registration_fee - rec.discount_amount
+                    elif rec.discount_amount_type == 'percentage':
+                        rec.preview_price = rec.agent_type_id.registration_fee - (rec.agent_type_id.registration_fee / 100 * rec.discount_amount)
 
 
 class AgentRegistrationPromotionLine(models.Model):
