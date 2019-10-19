@@ -2,6 +2,7 @@ from odoo import api, fields, models, _
 import base64,hashlib,time,os,traceback,logging,re
 from odoo.exceptions import UserError
 from ...tools import ERR
+import odoo.tools as tools
 
 _logger = logging.getLogger(__name__)
 
@@ -57,7 +58,7 @@ class SplitInvoice(models.TransientModel):
 
     def create_directory_structure(self,filename):
         base_dir = '/src/static/'
-        base_url = 'https://static.rodextrip.com/'
+        base_url = tools.config.get('static_url','')
         valid_path = False
 
         while (not valid_path):
