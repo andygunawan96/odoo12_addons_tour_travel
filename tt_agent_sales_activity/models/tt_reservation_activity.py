@@ -85,7 +85,7 @@ class ReservationActivity(models.Model):
             'agent_id': self.agent_id.id,
             'acquirer_id': acquirer_id.id,
             'real_total_amount': inv_line_obj.total,
-            # 'customer_parent_id': acquirer_id.agent_id.id
+            'customer_parent_id': self.customer_parent_id.id
         })
 
         self.env['tt.payment.invoice.rel'].create({
