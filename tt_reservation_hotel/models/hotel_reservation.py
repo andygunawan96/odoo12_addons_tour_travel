@@ -200,19 +200,19 @@ class HotelReservation(models.Model):
             })
         return True
 
-    def create_commission_ledger(self):
+    def create_commission_ledger(self, uid):
         # Create Commission
-        vals = self.env['tt.ledger'].prepare_vals('Commission : ' + self.name, self.name, self.issued_date, 3,
-                                                  self.currency_id.id, self.total_commission_amount, 0)
+        vals = self.env['tt.ledger'].prepare_vals(self._name,self.id,'Commission : ' + self.name, self.name, self.issued_date, 3,
+                                                  self.currency_id.id, uid.id, self.total_commission_amount, 0)
         vals = self.env['tt.ledger'].prepare_vals_for_resv(self, vals)
         self.create_agent_ledger(vals)
 
     @api.multi
-    def create_ledger(self):
+    def create_ledger(self, uid):
         for rec in self:
-            rec.create_commission_ledger()
+            rec.create_commission_ledger(uid)
 
-            vals = self.env['tt.ledger'].prepare_vals('Reservation : '+ rec.name, rec.name, rec.issued_date, 2, rec.currency_id.id, 0, rec.total)
+            vals = self.env['tt.ledger'].prepare_vals(self._name, self.id, 'Reservation : '+ rec.name, rec.name, rec.issued_date, 2, rec.currency_id.id, uid.id, 0, rec.total)
             vals = self.env['tt.ledger'].prepare_vals_for_resv(rec, vals)
             rec.create_agent_ledger(vals)
 
@@ -253,7 +253,7 @@ class HotelReservation(models.Model):
     def action_draft(self):
         self.state = 'draft'
 
-    def create_agent_invoice(self):
+    def create_agent_invoice(self, acquirer_id, customer_parent_id):
         return True
 
     def action_issued_backend(self):
@@ -277,7 +277,7 @@ class HotelReservation(models.Model):
         self.state = 'fail_issued'
 
     @api.one
-    def action_issued(self, kwargs=False):
+    def action_issued(self, acquirer_id, customer_parent_id, kwargs=False):
         if not self.ensure_one():
             return False
         # 1. Ledger
@@ -288,12 +288,12 @@ class HotelReservation(models.Model):
             self.issued_date = fields.Datetime.now()
             self.issued_uid = kwargs and kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
             # 1. Create Ledger, Commission Ledger
-            self.sudo().create_ledger()
+            self.sudo().create_ledger(self.issued_uid)
             # self.sudo().create_vendor_ledger()
             # 2. Jika Hotel CMS apakah kamar yg dipesan auto validation / perlu operator
             # self.check_auto_approved()
             # TODO 3. Kirim E-Ticket
-            self.create_agent_invoice()
+            self.create_agent_invoice(acquirer_id, customer_parent_id)
             self.state = 'issued'
             self.calc_voucher_name()
         return is_enough
@@ -325,8 +325,8 @@ class HotelReservation(models.Model):
 
         pnr_list = ','.join([rec['issued_code'] for rec in issued_response.values()])
         self.update_ledger_pnr(pnr_list)
-        if state == 'done':
-            self.action_create_invoice()
+        # if state == 'done':
+        #     self.action_create_invoice()
 
     def _prepare_invoice(self):
         a = {

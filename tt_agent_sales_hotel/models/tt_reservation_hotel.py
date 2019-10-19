@@ -36,7 +36,8 @@ class ReservationHotel(models.Model):
             tmp += 'Special Request: ' + spc + '\n'
         return tmp
 
-    def action_create_invoice(self):
+    def create_agent_invoice(self, acquirer_id, customer_parent_id):
+        super(ReservationHotel, self).create_agent_invoice(acquirer_id, customer_parent_id)
         invoice_id = self.env['tt.agent.invoice'].search([('booker_id','=',self.contact_id.id), ('state','=','draft')])
         if not invoice_id:
             invoice_id = self.env['tt.agent.invoice'].create({
@@ -61,3 +62,17 @@ class ReservationHotel(models.Model):
                 'discount': 0,
                 'quantity': 1,
             })
+
+        ##membuat payment dalam draft
+        payment_obj = self.env['tt.payment'].create({
+            'agent_id': self.agent_id.id,
+            'acquirer_id': self.env['payment.acquirer'].search([('seq_id','=', acquirer_id['seq_id'])]).id,
+            'real_total_amount': inv_line_obj.total,
+            'customer_parent_id': customer_parent_id
+        })
+
+        self.env['tt.payment.invoice.rel'].create({
+            'invoice_id': invoice_id.id,
+            'payment_id': payment_obj.id,
+            'pay_amount': inv_line_obj.total,
+        })
