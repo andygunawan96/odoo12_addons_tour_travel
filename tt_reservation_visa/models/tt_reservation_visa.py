@@ -230,6 +230,13 @@ class TtVisa(models.Model):
         self.message_post(body='Order PARTIAL PROCEED')
 
     def action_delivered_visa(self):
+        """ Expenses wajib di isi untuk mencatat pengeluaran HO """
+        if not self.vendor_ids:
+            raise UserError(
+                _('You have to Fill Expenses.'))
+        if self.state_visa != 'delivered':
+            self.calc_visa_vendor()
+
         self.write({
             'state_visa': 'delivered'
         })
@@ -276,6 +283,62 @@ class TtVisa(models.Model):
             'done_date': datetime.now()
         })
         self.message_post(body='Order DONE')
+
+    def calc_visa_vendor(self):
+        """ Mencatat expenses ke dalam ledger visa """
+
+        """ Hitung total expenses (pengeluaran) """
+        total_expenses = 0
+        for rec in self.vendor_ids:
+            total_expenses += rec.amount
+
+        """ Hitung total nta per pax """
+        nta_price = 0
+        for pax in self.passenger_ids:
+            if pax.state != 'cancel':
+                nta_price += pax.pricelist_id.nta_price
+
+        """ hitung profit HO dg mengurangi harga NTA dg total pengeluaran """
+        ho_profit = nta_price - total_expenses
+
+        """ Jika profit HO > 0 (untung) """
+        if ho_profit > 0:
+            ledger = self.env['tt.ledger']
+            for rec in self:
+                doc_type = []
+                for sc in rec.sale_service_charge_ids:
+                    if not sc.pricelist_id.visa_type in doc_type:
+                        doc_type.append(sc.pricelist_id.visa_type)
+
+                doc_type = ','.join(str(e) for e in doc_type)
+
+                vals = ledger.prepare_vals(self._name, self.id, 'Profit ' + doc_type + ' : ' + rec.name, rec.name,
+                                           datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 3,
+                                           rec.currency_id.id, self.env.user.id, ho_profit, 0)
+                vals['agent_id'] = rec.env.ref('tt_base.rodex_ho').id
+
+                new_aml = ledger.create(vals)
+                # new_aml.action_done()
+                rec.ledger_id = new_aml
+        """ Jika profit HO < 0 (rugi) """
+        if ho_profit < 0:
+            ledger = self.env['tt.ledger']
+            for rec in self:
+                doc_type = []
+                for sc in rec.sale_service_charge_ids:
+                    if not sc.pricelist_id.visa_type in doc_type:
+                        doc_type.append(sc.pricelist_id.visa_type)
+
+                doc_type = ','.join(str(e) for e in doc_type)
+
+                vals = ledger.prepare_vals(self._name, self.id, 'Additional Charge ' + doc_type + ' : ' + rec.name,
+                                           rec.name, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 3,
+                                           rec.currency_id.id, self.env.user.id, 0, ho_profit)
+                vals['agent_id'] = rec.env.ref('tt_base.rodex_ho').id
+
+                new_aml = ledger.create(vals)
+                # new_aml.action_done()
+                rec.ledger_id = new_aml
 
     ######################################################################################################
     # CREATE
@@ -483,15 +546,15 @@ class TtVisa(models.Model):
         print('Response : ' + str(json.dumps(res)))
         return Response().get_no_error(res)
 
-    def create_booking_visa_api(self):  # , data, context, kwargs
-        sell_visa = copy.deepcopy(self.param_sell_visa)  # data['sell_visa']
-        booker = copy.deepcopy(self.param_booker)  # data['booker']
-        contact = copy.deepcopy(self.param_contact)  # data['contact']
-        passengers = copy.deepcopy(self.param_passenger)  # data['passenger']
-        search = copy.deepcopy(self.param_search)  # data['search']
-        payment = copy.deepcopy(self.param_payment)  # data['payment']
-        context = copy.deepcopy(self.param_context)  # context
-        kwargs = copy.deepcopy(self.param_kwargs)  # kwargs
+    def create_booking_visa_api(self, data, context, kwargs):  #
+        sell_visa = copy.deepcopy(data['sell_visa'])  # self.param_sell_visa
+        booker = copy.deepcopy(data['booker'])  # self.param_booker
+        contact = copy.deepcopy(data['contact'])  # self.param_contact
+        passengers = copy.deepcopy(data['passenger'])  # self.param_passenger
+        search = copy.deepcopy(data['search'])  # self.param_search
+        payment = copy.deepcopy(data['payment'])  # self.param_payment
+        context = copy.deepcopy(context)  # self.param_context
+        kwargs = copy.deepcopy(kwargs)  # self.param_kwargs
 
         try:
             user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
@@ -1144,7 +1207,7 @@ class TtVisa(models.Model):
 
             doc_type = ','.join(str(e) for e in doc_type)
 
-            vals = ledger.prepare_vals('Order ' + doc_type + ' : ' + rec.name, rec.name, rec.issued_date,
+            vals = ledger.prepare_vals(self._name, self.id, 'Order ' + doc_type + ' : ' + rec.name, rec.name, rec.issued_date,
                                        2, rec.currency_id.id, rec.total, 0)
             vals = ledger.prepare_vals_for_resv(self, vals)
             # vals['transport_type'] = rec.transport_type

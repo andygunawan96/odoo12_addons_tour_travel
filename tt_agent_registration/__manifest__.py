@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 {
     'name': "tt_agent_registration",
-
-    'summary': """
-        Short (1 phrase/line) summary of the module's purpose, used as
-        subtitle on modules listing or apps.openerp.com""",
-
+    'version': 'beta',
+    'summary': 'Agent Registration',
+    'sequence': 2,
     'description': """
-        Long description of module's purpose
+        Module for Agent Registration
     """,
 
     'author': "My Company",
@@ -17,7 +15,6 @@
     # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.1',
 
     # any module necessary for this one to work correctly
     'depends': ['base', 'tt_base', 'tt_accounting', 'web'],
@@ -29,7 +26,7 @@
         'data/ir_sequence_data.xml',
         'data/ir_cron_data.xml',
         'data/ir_send_email.xml',
-        'data/tt_provider_type_data.xml',
+        # 'data/tt_provider_type_data.xml',
         'data/param_data.xml',
         'views/tt_agent_registration_views.xml',
         'views/tt_agent_registration_menuheader.xml',

@@ -83,7 +83,12 @@ class ResUsers(models.Model):
             vals['email'] = time.time()
         vals['notification_type'] = 'inbox'
         new_user = super(ResUsers, self).create(vals)
-        new_user.partner_id.parent_id = new_user.agent_id.id
+        # masalahnya : parent id akan di set berdasarkan id dari agent id
+        # parent id memiliki foreign key ke partner id. setelah di set
+        # parent id akan mencari id yang ada di dalam partner id
+        # jika id dari agent id tidak ada di dalam partner id, akan menyebabkan error foreign key parent id
+        # note : partner id tidak kepake
+        # new_user.partner_id.parent_id = new_user.agent_id.id
         new_user.partner_id.parent_agent_id = False
         return new_user
 
