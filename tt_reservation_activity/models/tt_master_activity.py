@@ -1659,6 +1659,31 @@ class MasterActivity(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1022)
 
+    def get_autocomplete_api(self, req, context):
+        try:
+            query = req.get('name') and '%' + req['name'] + '%' or False
+            sql_query = 'select * from tt_master_activity where active = True'
+            if query:
+                sql_query += ' and name ilike %'+query+'%'
+            self.env.cr.execute(sql_query)
+
+            result_id_list = self.env.cr.dictfetchall()
+            result_list = []
+
+            for result in result_id_list:
+                result = {
+                    'name': result.get('name') and result['name'] or '',
+                }
+                result_list.append(result)
+
+            return ERR.get_no_error(result_list)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1022)
+
     def product_update_webhook(self, req, context):
         provider = req.get('provider') and req['provider'] or ''
         self.sync_products(provider, req)
