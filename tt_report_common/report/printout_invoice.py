@@ -77,7 +77,9 @@ class PrintoutInvoice(models.AbstractModel):
         elif rec._name == 'tt.reservation.activity':
             if not a.get(rec.pnr):
                 a[rec.pnr] = {'paxs': paxs, 'descs': [], 'total': rec.total}
-            temp_desc = rec.activity_id.name + ' - ' + rec.activity_product_id.name + '; ' + str(rec.visit_date)
+            temp_desc = (rec.activity_id.name if rec.activity_id.name else '') + ' - ' + \
+                        (rec.activity_product_id.name if rec.activity_product_id.name else '') + '; ' + \
+                        (str(rec.visit_date) if rec.visit_date else '')
             if rec.timeslot:
                 temp_desc += ' ' + str(rec.timeslot) + '; '
             else:

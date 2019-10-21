@@ -3,7 +3,7 @@
     'name': "tt_agent_registration",
     'version': 'beta',
     'summary': 'Agent Registration',
-    'sequence': 2,
+    'sequence': 5,
     'description': """
         Module for Agent Registration
     """,
