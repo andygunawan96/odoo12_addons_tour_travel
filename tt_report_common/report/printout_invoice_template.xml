@@ -6,7 +6,9 @@
                 <t t-call="tt_report_common.external_layout_header"/>
                 <t t-raw="0"/>
                 <t t-if="doc_model == 'tt.agent.invoice'">
+                    <div style="margin: 0 20px">
                     <t t-call="tt_report_common.price_and_sign"/>
+                    </div>
                 </t>
                 <t t-call="tt_report_common.external_layout_footer"/>
             </div>
@@ -223,7 +225,7 @@
 
     <template id="external_layout_header">
         <div class="row" style="height:100px;">
-            <div class="col-4">
+            <div class="col-4" style="margin-left: 30px">
                 <img t-if="doc.agent_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(doc.agent_id.logo)" height="200" border="1" width="300" style="max-height:100px; max-width:165px; margin-bottom: 20px"/><br/>
                 <!--<span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">eTicket Itinerary</span>-->
             </div>
@@ -270,7 +272,7 @@
                 </div>
             </div>
         </div>
-        <div style="width: 100%; border-bottom: 1px solid black; margin:0 -15px;"/>
+        <div style="width: 100%; border-bottom: 1px solid black; margin:20px 0px 0px 0px;"/>  <!---15px -15px-->
     </template>
 
     <template id="external_layout_footer">
@@ -340,6 +342,7 @@
 
     <template id="price_and_sign">
         <br/>
+        <div style="width: 100%; border-bottom: 1px solid black; margin:20px 0px 0px 0px;"/>  <!---15px -15px-->
         <div class="row">
             <!--No Rekening-->
             <div class="col-11">
@@ -526,14 +529,20 @@
     </template>
 
     <template id="printout_invoice">
-        <t t-set="data_report_header_spacing" t-value="20"/>
-        <t t-set="data_report_margin_top" t-value="2"/>
+<!--        <t t-set="data_report_header_spacing" t-value="20"/>-->
+<!--        <t t-set="data_report_margin_top" t-value="2"/>-->
+        <t t-set="data_report_header_spacing" t-value="0"/>
+        <t t-set="data_report_margin_top" t-value="10"/>
+        <t t-set="data_report_margin_bottom" t-value="26"/>
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
                 <div class="page">
                     <t t-call="tt_report_common.external_layout">
                         <br/>
-                        <t t-call="tt_report_common.agent_invoice_content_view"/>
+                        <div style="margin: 0 20px">
+                            <t t-call="tt_report_common.agent_invoice_content_view"/>
+                        </div>
+
                     </t>
                 </div>
             </t>

@@ -1,25 +1,16 @@
 # -*- coding: utf-8 -*-
 {
     'name': "tt_reservation_offline",
-
-    'summary': """
-        Short (1 phrase/line) summary of the module's purpose, used as
-        subtitle on modules listing or apps.openerp.com""",
-
+    'version': 'beta',
+    'summary': 'transport dummy offline',
+    'sequence': 2,
     'description': """
-        Long description of module's purpose
+        Module for Reservation Offline
     """,
-
-    'author': "My Company",
-    'website': "http://www.yourcompany.com",
-
-    # Categories can be used to filter modules in modules listing
-    # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
-    # for the full list
-    'category': 'Uncategorized',
-    'version': '0.1',
-
-    # any module necessary for this one to work correctly
+    'category': 'booking',
+    'author': "Rodextrip",
+    'website': 'www.rodextrip.com',
+    'images': [],
     'depends': ['base', 'tt_base', 'tt_accounting', 'tt_agent_sales', 'tt_engine_pricing', 'tt_reservation', 'tt_report_common'],
 
     # always loaded
@@ -37,4 +28,8 @@
     ],
     # only loaded in demonstration mode
     'demo': [],
+    'qweb': [],
+    'installable': True,
+    'application': True,
+    'auto_install': False,
 }
