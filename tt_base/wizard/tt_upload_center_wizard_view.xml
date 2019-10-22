@@ -9,6 +9,7 @@
                 <group>
                     <field name="filename"/>
                     <field name="file_reference"/>
+                    <field name="delete_date"/>
                     <field name="file" filename="filename"/>
                 </group>
                 <footer>
@@ -40,12 +41,5 @@
               parent="tt_base.top_tour_travel_upload"
               sequence = "50"
               action="tt_upload_center_wizard_action_view"
-              />
-    <menuitem id="sub_menu_tour_travel_upload_center_wizard_temp"
-              name="Upload Wizard Temp"
-              groups="tt_base.group_tt_tour_travel_operator"
-              parent="tt_base.top_tour_travel_upload"
-              sequence = "50"
-              action="tt_upload_center_wizard_action_view_temp"
               />
 </odoo>

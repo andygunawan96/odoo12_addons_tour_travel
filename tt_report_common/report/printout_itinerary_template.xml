@@ -110,14 +110,16 @@
                                 <th>PNR</th>
                                 <th>Visit Date</th>
                                 <th>Time Slot</th>
-                                <th>Activity Tittle</th>
+                                <th>Activity Title</th>
                                 <th>Product Type</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td><span t-field="provider_itin_id.pnr"/></td>
-                                <td><span t-field="provider_itin_id.visit_date[:10]"/></td>
+                                <!--Jadi nya MM/DD/YYYY-->
+                                <!--<td><span t-field="provider_itin_id.visit_date" t-options="{'widget': 'date'}"/></td> -->
+                                <td><span t-esc="provider_itin_id.visit_date.strftime('%d %B %Y')"/></td>
                                 <td><t t-if="doc.timeslot"><span t-field="doc.timeslot"/></t><t t-else=""><span>-</span></t></td>
                                 <td><span t-field="provider_itin_id.activity_id.name"/><br/></td>
                                 <td><span t-field="provider_itin_id.activity_product_id.name"/></td>
@@ -296,7 +298,7 @@
                 <div class="page">
                     <t t-call="tt_report_common.external_layout">
                         <t t-call="tt_report_common.activity_itinerary_view"/>
-                        <!--<t t-call="tt_report_common.itinerary_price_detail"/>-->
+                        <t t-call="tt_report_common.itinerary_price_detail"/>
                         <br/>
                         <t t-call="tt_report_common.itinerary_signature"/>
                     </t>

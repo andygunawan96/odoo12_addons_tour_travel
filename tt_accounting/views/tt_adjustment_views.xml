@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="tt_adjustment_form_view" model="ir.ui.view">
+        <field name="name">tt.adjustment.form.view</field>
+        <field name="model">tt.adjustment</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="Name" class="oe_edit_only" string="Name"/>
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <field name="agent_id"/>
+                        <field name="agent_type_id"/>
+                        <field name="currency_id"/>
+                        <field name="adj_type"/>
+                        <field name="res_model"/>
+                        <field name="res_id"/>
+                        <field name="component_amount"/>
+                        <field name="amount"/>
+                        <field name="agent_commission"/>
+                        <field name="parent_agent_commission"/>
+                        <field name="ho_commission"/>
+                        <field name="final_amount"/>
+                        <field name="description"/>
+                        <field name="ledger_ids"/>
+                        <field name="final_amount"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Page ada Current Balance agent nya-->
+    <record id="tt_ledger_tree_view_page" model="ir.ui.view">
+        <field name="name">tt.adjustment.tree.view.page</field>
+        <field name="model">tt.adjustment</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_adjustment_action" model="ir.actions.act_window">
+        <field name="name">Adjustment</field>
+        <field name="res_model">tt.adjustment</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">
+            {
+                'form_view_ref': 'tt_accounting.tt_adjustment_form_view',
+                'tree_view_ref': 'tt_accounting.tt_adjustment_tree_view'
+            }
+        </field>
+    </record>
+
+    <menuitem id="top_transaction_adjustment" parent="tt_base.main_transaction"
+              name="Adjustment" sequence="20"/>
+
+    <menuitem id="menu_transaction_adjustment" parent="tt_accounting.top_transaction_adjustment"
+              name="Adjustment" action="tt_adjustment_action" sequence="10"/>
+
+</odoo>

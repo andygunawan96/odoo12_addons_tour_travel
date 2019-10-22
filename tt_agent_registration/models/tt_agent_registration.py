@@ -140,8 +140,7 @@ class AgentRegistration(models.Model):
         for rec in self:
             if rec.agent_type_id:
                 if rec.agent_type_id.id == self.env.ref('tt_base.agent_type_citra').id:
-                    rec.parent_agent_id = rec.env['tt.agent'].sudo().search([('agent_type_id.id', '=', self.env.ref('tt_base.agent_type_ho').id)],
-                                                                            limit=1)
+                    rec.parent_agent_id = rec.env.ref('tt_base.rodex_ho').id
                 else:
                     rec.parent_agent_id = rec.env.user.agent_id
             else:
@@ -152,8 +151,10 @@ class AgentRegistration(models.Model):
     @api.onchange('agent_type_id')
     def get_registration_fee(self):
         for rec in self:
-            rec.promotion_id = False
-            rec.registration_fee = rec.agent_type_id.registration_fee
+            if rec.agent_type_id:
+                promotion_obj = self.env['tt.agent.registration.promotion'].search([('default', '=', True), ('agent_type_id', '=', rec.env.user.agent_id.agent_type_id.id)], order="sequence desc", limit=1)
+                rec.promotion_id = promotion_obj.id
+                rec.registration_fee = rec.agent_type_id.registration_fee
 
     @api.depends('registration_fee', 'discount')
     @api.onchange('registration_fee', 'discount')
@@ -301,8 +302,9 @@ class AgentRegistration(models.Model):
     def calc_ledger(self):
         ledger = self.env['tt.ledger']
 
-        agent_comm_vals = ledger.prepare_vals('Recruit Fee : ' + self.name, 'Recruit Fee : ' + self.name,
-                                              datetime.now(), 2, self.currency_id.id, 0, self.total_fee)
+        agent_comm_vals = ledger.prepare_vals(self._name, self.id, 'Recruit Fee : ' + self.name,
+                                              'Recruit Fee : ' + self.name, datetime.now(), 2, self.currency_id.id,
+                                              self.env.user.id, 0, self.total_fee)
         agent_comm_vals = ledger.prepare_vals_for_agent_regis(self, agent_comm_vals)
         agent_comm_vals.update({
             'agent_id': self.parent_agent_id.id
@@ -318,8 +320,9 @@ class AgentRegistration(models.Model):
             if line.agent_type_id.id == self.env.ref('tt_base.agent_type_citra').id:
                 ledger = self.env['tt.ledger']
 
-                agent_comm_vals = ledger.prepare_vals('Recruit Comm. : ' + self.name, 'Recruit Comm. : ' + self.name,
-                                                      datetime.now(), 3, self.currency_id.id, line.amount, 0)
+                agent_comm_vals = ledger.prepare_vals(self._name, self.id, 'Recruit Comm. : ' + self.name,
+                                                      'Recruit Comm. : ' + self.name, datetime.now(), 3,
+                                                      self.currency_id.id, self.env.user.id, line.amount, 0)
                 agent_comm_vals = ledger.prepare_vals_for_agent_regis(self, agent_comm_vals)
                 agent_comm_vals.update({
                     'agent_id': self.reference_id.id
@@ -345,8 +348,9 @@ class AgentRegistration(models.Model):
             if line.agent_type_id.id == self.env.ref('tt_base.agent_type_citra').id:
                 ledger = self.env['tt.ledger']
 
-                agent_comm_vals = ledger.prepare_vals('Recruit Comm. Parent : ' + self.name, 'Recruit Comm. Parent : ' +
-                                                      self.name, datetime.now(), 3, self.currency_id.id, line.amount, 0)
+                agent_comm_vals = ledger.prepare_vals(self._name, self.id, 'Recruit Comm. Parent : ' + self.name, 'Recruit Comm. Parent : ' +
+                                                      self.name, datetime.now(), 3, self.currency_id.id,
+                                                      self.env.user.id, line.amount, 0)
                 agent_comm_vals = ledger.prepare_vals_for_agent_regis(self, agent_comm_vals)
                 agent_comm_vals.update({
                     'agent_id': citra_parent_agent.id
@@ -356,8 +360,9 @@ class AgentRegistration(models.Model):
             elif line.agent_type_id.id == self.env.ref('tt_base.agent_type_japro').id:
                 ledger = self.env['tt.ledger']
 
-                agent_comm_vals = ledger.prepare_vals('Recruit Comm. : ' + self.name, 'Recruit Comm. : ' + self.name,
-                                                      datetime.now(), 3, self.currency_id.id, line.amount, 0)
+                agent_comm_vals = ledger.prepare_vals(self._name, self.id, 'Recruit Comm. : ' + self.name,
+                                                      'Recruit Comm. : ' + self.name, datetime.now(), 3,
+                                                      self.env.user.id, self.currency_id.id, line.amount, 0)
                 agent_comm_vals = ledger.prepare_vals_for_agent_regis(self, agent_comm_vals)
                 agent_comm_vals.update({
                     'agent_id': self.reference_id.id
@@ -367,8 +372,8 @@ class AgentRegistration(models.Model):
         # HO
         ledger = self.env['tt.ledger']
 
-        agent_comm_vals = ledger.prepare_vals('Recruit Comm. HO : ' + self.name, 'Recruit Comm. HO : ' +
-                                              self.name, datetime.now(), 3, self.currency_id.id, amount_remaining, 0)
+        agent_comm_vals = ledger.prepare_vals(self._name, self.id, 'Recruit Comm. HO : ' + self.name, 'Recruit Comm. HO : ' +
+                                              self.name, datetime.now(), 3, self.env.user.id, self.currency_id.id, amount_remaining, 0)
         agent_comm_vals = ledger.prepare_vals_for_agent_regis(self, agent_comm_vals)
         agent_comm_vals.update({
             'agent_id': self.env['tt.agent'].sudo().search([('agent_type_id.name', '=', 'HO')], limit=1).id
@@ -378,16 +383,16 @@ class AgentRegistration(models.Model):
     def create_opening_balance_ledger(self, agent_id):
         ledger = self.env['tt.ledger']
 
-        vals_credit = self.env['tt.ledger'].prepare_vals('Opening Balance : ' + self.name,
+        vals_credit = self.env['tt.ledger'].prepare_vals(self._name, self.id, 'Opening Balance : ' + self.name,
                                                          'Opening Balance : ' + self.name, datetime.now(), 0,
-                                                         self.currency_id.id, 0, self.opening_balance)
+                                                         self.currency_id.id, self.env.user.id, 0, self.opening_balance)
         vals_credit = ledger.prepare_vals_for_agent_regis(self, vals_credit)
         vals_credit.update({
             'agent_id': self.parent_agent_id.id,
         })
         self.env['tt.ledger'].create(vals_credit)
 
-        vals_debit = self.env['tt.ledger'].prepare_vals('Opening Balance', 'Opening Balance', datetime.now(),
+        vals_debit = self.env['tt.ledger'].prepare_vals(self._name, self.id, 'Opening Balance', 'Opening Balance', datetime.now(),
                                                         0, self.currency_id.id, self.opening_balance, 0)
         vals_debit = ledger.prepare_vals_for_agent_regis(self, vals_debit)
         vals_debit.update({
@@ -476,7 +481,9 @@ class AgentRegistration(models.Model):
         return customer_id
 
     def create_agent_user(self):
-        user_dict = self.agent_type_id.user_template.read()
+        user_dict = {}
+        if self.agent_type_id.user_template:
+            user_dict = self.agent_type_id.user_template.read()
 
         user_list = []
         for rec in self:
@@ -487,8 +494,11 @@ class AgentRegistration(models.Model):
                     'name': name,
                     'login': con.email,
                     'password': '123456',
-                    'groups_id': [(6, 0, user_dict[0]['groups_id'])]
                 }
+                if user_dict:
+                    vals.update({
+                        'groups_id': [(6, 0, user_dict[0]['groups_id'])]
+                    })
                 user_id = self.env['res.users'].create(vals)
                 user_list.append(user_id.id)
         user_ids = [(6, 0, user_list)]
@@ -705,7 +715,7 @@ class AgentRegistration(models.Model):
     def set_parent_agent_id_api(self, agent_type_id):
         if agent_type_id:
             if agent_type_id.id == self.env.ref('tt_base.agent_type_citra').id:
-                parent_agent_id = self.env['tt.agent'].sudo().search([('agent_type_id.id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
+                parent_agent_id = self.env.ref('tt_base.rodex_ho').id
             else:
                 parent_agent_id = self.env.user.agent_id
         else:

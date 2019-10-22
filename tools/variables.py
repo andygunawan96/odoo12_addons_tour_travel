@@ -34,6 +34,7 @@ AMOUNT_TYPE = [
     ("amount", "Amount"),
     ("percentage", "Percentage"),
     ]
+
 BOOKING_STATE = [
     ('draft', 'New'),
     ('cancel', 'Cancelled'),
@@ -131,3 +132,5 @@ PAX_TYPE = [
 ]
 
 PROVIDER_TYPE = []##akan di isi saat run oleh tt_provider_type.py
+
+ADJUSTMENT_TYPE = []

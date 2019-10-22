@@ -35,12 +35,15 @@
                             <field name="title" readonly="0"/>  <!--readonly="1"-->
                             <field name="first_name" readonly="0"/>  <!--readonly="1"-->
                             <field name="gender" readonly="0"/>  <!--readonly="1"-->
+                            <field name="passport_number" readonly="0"/>  <!--readonly="1"-->
+                            <field name="passport_expdate" readonly="0"/>  <!--readonly="1"-->
                         </group>
                         <group>
                             <field name="customer_id" readonly="0"/>  <!--readonly="1"-->
                             <field name="name" readonly="0"/>  <!--readonly="1"-->
                             <field name="last_name" readonly="0"/>  <!--readonly="1"-->
                             <field name="birth_date" readonly="0"/>  <!--readonly="1"-->
+                            <field name="age" readonly="0"/>  <!--readonly="1"-->
                         </group>
                     </group>
                     <group>
@@ -50,6 +53,7 @@
                             <field name="passenger_type"/>
                             <field name="passenger_domicile"/>
                             <field name="pricelist_id"/>
+                            <field name="biometrics_interview"/>
                         </group>
                         <group>
                             <field name="process_status"/>
@@ -117,7 +121,7 @@
     </record>
 
     <record model="ir.actions.act_window" id="tt_reservation_passport_order_passengers_view_action">
-        <field name="name">passport Order Passengers</field>
+        <field name="name">Passport Order Passengers</field>
         <field name="res_model">tt.reservation.passport.order.passengers</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
