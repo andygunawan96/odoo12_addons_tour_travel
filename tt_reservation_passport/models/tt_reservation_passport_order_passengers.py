@@ -72,9 +72,12 @@ class PassportOrderPassengers(models.Model):
     passenger_type = fields.Selection(PASSENGER_TYPE, 'Pax Type', readonly=0)  # readonly=1
     title = fields.Selection(TITLE, 'Title', readonly=0)  # readonly=1
     age = fields.Char('Age', readonly=1, compute="_compute_age", store=True)
+    passport_number = fields.Char(string='Passport Number')
+    passport_expdate = fields.Datetime(string='Passport Exp Date')
     passenger_domicile = fields.Char('Domicile', related='passenger_id.domicile', readonly=0)  # readonly=1
     process_status = fields.Selection(PROCESS_STATUS, string='Process Result',
                                       readonly=0)  # readonly=1
+    biometrics_interview = fields.Boolean('Biometrics / Interview')
 
     in_process_date = fields.Datetime('In Process Date', readonly=0)  # readonly=1
     payment_date = fields.Datetime('Payment Date', readonly=0)  # readonly=1
@@ -222,7 +225,7 @@ class PassportOrderPassengers(models.Model):
             })
             rec.message_post(body='Passenger PROCEED')
             is_proceed = True
-            for psg in rec.visa_id.passenger_ids:
+            for psg in rec.passport_id.passenger_ids:
                 if psg.state not in ['proceed', 'cancel']:
                     is_proceed = False
             # jika ada sebagian state passenger yang belum proceed -> partial proceed

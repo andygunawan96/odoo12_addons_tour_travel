@@ -18,12 +18,15 @@ class ProviderType(models.Model):
     def fill_provider_type(self):
         provider_type_obj = self.search([])
         variables.PROVIDER_TYPE = []
+        variables.ADJUSTMENT_TYPE = []
         for rec in provider_type_obj:
             variables.PROVIDER_TYPE.append(rec.code)
+            variables.ADJUSTMENT_TYPE.append((rec.code,rec.code.capitalize()))
 
     def _register_hook(self):
         self.fill_provider_type()
         print(variables.PROVIDER_TYPE)
+        print(variables.ADJUSTMENT_TYPE)
 
     def to_dict(self):
         res = {

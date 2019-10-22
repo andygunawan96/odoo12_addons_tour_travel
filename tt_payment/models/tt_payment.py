@@ -60,7 +60,7 @@ class PaymentTransaction(models.Model):
         # if self.customer_parent_id:
         #     return [('agent_id','=',self.agent_id.id)]
         else:
-            ho_id = self.env['tt.agent'].sudo().search([('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id )], limit=1).id
+            ho_id = self.env.ref('tt_base.rodex_ho').id
             return [('agent_id','=', ho_id )]
 
     @api.onchange('customer_parent_id')

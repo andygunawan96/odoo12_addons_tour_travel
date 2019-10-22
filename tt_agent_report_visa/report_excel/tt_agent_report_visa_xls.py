@@ -1,5 +1,5 @@
 from odoo import models, api, fields, _
-from odoo12_addons_tour_travel.tt_agent_report.report import tools_excel
+from ...tools import tools_excel
 from io import StringIO, BytesIO
 import io
 import xlsxwriter

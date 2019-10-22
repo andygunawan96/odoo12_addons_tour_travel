@@ -1,6 +1,6 @@
 from odoo import api,models,fields
 import os,traceback
-from datetime import datetime
+from datetime import datetime,date
 
 class TtCronLog(models.Model):
     _name = 'tt.cron.log'
@@ -26,3 +26,12 @@ class TtCronLog(models.Model):
         except Exception as e:
             self.create_cron_log_folder()
             self.write_cron_log('auto-reset payment unique amount')
+
+    def cron_delete_expired_file(self):
+        try:
+            files = self.env['tt.upload.center'].with_context({'active_test':False}).search([('will_be_deleted_date','<=',date.today())])
+            for rec in files:
+                rec.unlink()
+        except:
+            self.create_cron_log_folder()
+            self.write_cron_log('auto-delete expired file')

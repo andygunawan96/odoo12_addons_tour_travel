@@ -48,9 +48,9 @@
     </record>
 
     <menuitem id="sub_menu_tt_frontend_banner"
-              parent="tt_base.main_tour_travel"
+              parent="tt_base.top_tour_travel_upload"
               action="tt_frontend_banner.tt_frontend_banner_action_view"
               name="Image"
-              sequence="1"
+              sequence="50"
               groups="base.group_user"/>
 </odoo>

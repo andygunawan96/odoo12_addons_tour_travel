@@ -2,6 +2,7 @@ from odoo import api, fields, models, _
 import base64,hashlib,time,os,traceback,logging,re
 from odoo.exceptions import UserError
 from ...tools import ERR
+import odoo.tools as tools
 
 _logger = logging.getLogger(__name__)
 
@@ -11,17 +12,18 @@ class SplitInvoice(models.TransientModel):
 
     filename = fields.Char('Filename',required=True, default='filename')
     file_reference = fields.Text('File Description',required=True)
+    delete_date = fields.Date('Delete Date')
     file = fields.Binary('File',required=True)
 
     def upload_from_button(self):
         # self.upload(self.filename,self.file_reference,base64.b64decode(self.file))
-        self.upload(self.filename,self.file_reference,self.file,{'co_agent_id': self.env.user.agent_id.id})
+        self.upload(self.filename,self.file_reference,self.file,{'co_agent_id': self.env.user.agent_id.id},self.delete_date)
 
     def upload_file_api(self,data,context):
-        return self.upload(data['filename'],data['file_reference'],data['file'],context)
+        return self.upload(data['filename'],data['file_reference'],data['file'],context,data.get('delete_date'))
 
     #file is encoded in base64
-    def upload(self,filename,file_reference,file,context):
+    def upload(self,filename,file_reference,file,context,delete_date=False):
         pattern = re.compile('^[a-zA-Z0-9](?:[a-zA-Z0-9 ()._-]*[a-zA-Z0-9)])?\.[a-zA-Z0-9_-]+$')
         if not pattern.match(filename):
             raise UserError('Filename Is Not Valid')
@@ -38,7 +40,8 @@ class SplitInvoice(models.TransientModel):
                 'file_reference': file_reference,
                 'path': path,
                 'url': url,
-                'agent_id': context['co_agent_id']
+                'agent_id': context['co_agent_id'],
+                'will_be_deleted_date': delete_date
             })
 
             _logger.info('Finish Upload')
@@ -55,7 +58,7 @@ class SplitInvoice(models.TransientModel):
 
     def create_directory_structure(self,filename):
         base_dir = '/src/static/'
-        base_url = 'https://static.rodextrip.com/'
+        base_url = tools.config.get('static_url','')
         valid_path = False
 
         while (not valid_path):

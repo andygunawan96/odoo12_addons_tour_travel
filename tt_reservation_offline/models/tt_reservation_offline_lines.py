@@ -166,7 +166,7 @@ class IssuedOfflineLines(models.Model):
         psg_count = 0
         for rec in self.booking_id.passenger_ids:
             psg_count += 1
-            passengers += str(psg_count) + '. ' + rec.passenger_id.name + ' \n'
+            passengers += str(psg_count) + '. ' + (rec.passenger_id.name if rec.passenger_id else '') + ' \n'
         return passengers
 
     def get_meal_type(self):
@@ -176,53 +176,74 @@ class IssuedOfflineLines(models.Model):
     def get_all_line_airline_train_description(self):
         vals = ''
         for rec in self.booking_id.line_ids:
-            vals += rec.origin_id.name + ' - ' + rec.destination_id.name + ' \n' + str(rec.departure_date) + ' ' + \
-                    str(rec.return_date) + ' \n' + rec.carrier_id.name + ' ' + rec.carrier_code + ' ' + \
-                    rec.carrier_number + ' \n'
+            vals += rec.origin_id.name + ' - ' if rec.origin_id else ' - '
+            vals += rec.destination_id.name + ' \n' if rec.destination_id else ' \n'
+            vals += str(rec.departure_date) + ' - ' if rec.departure_date else ' - '
+            vals += str(rec.return_date) + ' \n' if rec.return_date else ' \n'
+            vals += rec.carrier_id.name + ' ' if rec.carrier_id else ' '
+            vals += rec.carrier_code + ' ' if rec.carrier_code else ' '
+            vals += rec.carrier_number + ' \n' if rec.carrier_number else ' \n'
         return vals
 
     def get_line_hotel_description(self, line):
         vals = ''
-        vals += 'Hotel : ' + line.hotel_name or ' ' + '\n' + 'Room : ' + line.room or ' ' + ' (' + line.get_meal_type() or ' ' + ') ' \
-                + str(line.obj_qty) + 'x\n' + 'Date : ' + str(line.check_in) + ' - ' + str(line.check_out) + '\n' + \
-                'Passengers : \n' + str(self.get_passengers_list()) + 'Description : ' + line.description or ''
+        vals += 'Hotel : ' + line.hotel_name + '\n' if line.hotel_name else 'Hotel : ' + '\n'
+        vals += 'Room : ' + line.room + ' (' + line.get_meal_type() + ') ' + str(line.obj_qty) + 'x\n' if line.room else 'Room : ' + '\n'
+        vals += 'Date : ' + str(line.check_in) + ' - ' if line.check_in else 'Date : - '
+        vals += str(line.check_out) + '\n' if line.check_out else '\n'
+        vals += 'Passengers : \n' + str(self.get_passengers_list())
+        vals += 'Description : ' + line.description if line.description else 'Description : '
         return vals
 
     def get_all_line_hotel_description(self):
         vals = ''
         for line in self.booking_id.line_ids:
-            vals += 'Hotel : ' + line.hotel_name or '' + '\n' + 'Room : ' + line.room or '' + ' (' + line.get_meal_type() or '' + \
-                    ') ' + str(line.obj_qty) + 'x\n' + 'Date : ' + str(line.check_in) + ' - ' + str(line.check_out) + \
-                    '\n' + 'Passengers : \n' + str(self.get_passengers_list()) + 'Description : ' + line.description or ''
+            vals += 'Hotel : ' + line.hotel_name + '\n' if line.hotel_name else 'Hotel : ' + '\n'
+            vals += 'Room : ' + line.room + ' (' + line.get_meal_type() + ') ' + str(line.obj_qty) + 'x\n' if line.room else 'Room : ' + '\n'
+            vals += 'Date : ' + str(line.check_in) + ' - ' if line.check_in else 'Date : - '
+            vals += str(line.check_out) + '\n' if line.check_out else '\n'
+            vals += 'Passengers : \n' + str(self.get_passengers_list())
+            vals += 'Description : ' + line.description if line.description else 'Description : '
         return vals
 
     def get_line_activity_description(self, line):
         vals = ''
-        vals += 'Activity : ' + line.activity_name + '\n' + 'Package : ' + line.activity_package + \
-                ' ' + str(line.obj_qty) + 'x\n' + 'Date : ' + str(line.check_in) + '\n' \
-                + 'Passengers : \n' + str(self.get_passengers_list()) + 'Description : ' + (line.description or '')
+        vals += 'Activity : ' + line.activity_name.name + '\n' if line.activity_name else 'Activity : ' + '\n'
+        vals += 'Package : ' + line.activity_package.name + str(line.obj_qty) + 'x\n' if line.activity_package else 'Package : ' + '\n'
+        vals += 'Date : ' + str(line.check_in) + '\n' if line.check_in else 'Date : ' + '\n'
+        vals += 'Passengers : \n' + str(self.get_passengers_list())
+        vals += 'Description : ' + line.description if line.description else 'Description : '
         return vals
 
     def get_all_line_activity_description(self):
         vals = ''
         for line in self.booking_id.line_ids:
-            vals += 'Activity : ' + line.activity_name.name + '\n' + 'Package : ' + line.activity_package.name + \
-                    ' ' + str(line.obj_qty) + 'x\n' + 'Date : ' + str(line.check_in) + '\n' \
-                    + 'Passengers : \n' + str(self.get_passengers_list()) + 'Description : ' + (line.description or '')
+            vals += 'Activity : ' + line.activity_name.name + '\n' if line.activity_name else 'Activity : ' + '\n'
+            vals += 'Package : ' + line.activity_package.name + str(line.obj_qty) + 'x\n' if line.activity_package else 'Package : ' + '\n'
+            vals += 'Date : ' + str(line.check_in) + '\n' if line.check_in else 'Date : ' + '\n'
+            vals += 'Passengers : \n' + str(self.get_passengers_list())
+            vals += 'Description : ' + line.description if line.description else 'Description : '
         return vals
 
     def get_line_cruise_description(self, line):
         vals = ''
-        vals += 'Cruise : ' + line.cruise_name + '\n' + 'Room : ' + line.room + ' ' + str(line.obj_qty) + 'x\n' + \
-                'Date : ' + str(line.check_in) + ' - ' + str(line.check_out) + '\n' + 'Passengers : \n' + \
-                str(self.get_passengers_list()) + 'Description : ' + (line.description or '')
+        vals += 'Cruise : ' + line.cruise_name + '\n' if line.cruise_name else 'Cruise : ' + '\n'
+        vals += 'Room : ' + line.room + ' ' + str(line.obj_qty) + 'x\n' if line.room else 'Room : ' + '\n'
+        vals += 'Date : ' + str(line.check_in) + ' - ' if line.check_in else 'Date : ' + ' - '
+        vals += str(line.check_out) + '\n' if line.check_out else '' + '\n'
+        vals += 'Passengers : \n' + str(self.get_passengers_list())
+        vals += 'Description : ' + line.description if line.description else 'Description : '
 
     def get_all_line_cruise_description(self):
         vals = ''
         for line in self.booking_id.line_ids:
-            vals += 'Cruise : ' + line.cruise_name + '\n' + 'Room : ' + line.room + ' ' + str(line.obj_qty) + 'x\n' + \
-                    'Date : ' + str(line.check_in) + ' - ' + str(line.check_out) + '\n' + 'Passengers : \n' + \
-                    str(self.get_passengers_list()) + 'Description : ' + (line.description or '')
+            vals += 'Cruise : ' + line.cruise_name + '\n' if line.cruise_name else 'Cruise : ' + '\n'
+            vals += 'Room : ' + line.room + ' ' if line.room else 'Room : '
+            vals += str(line.obj_qty) + 'x\n' if line.obj_qty else '0x\n'
+            vals += 'Date : ' + str(line.check_in) + ' - ' if line.check_in else 'Date : ' + ' - '
+            vals += str(line.check_out) + '\n' if line.check_out else '' + '\n'
+            vals += 'Passengers : \n' + str(self.get_passengers_list())
+            vals += 'Description : ' + line.description if line.description else 'Description : '
         return vals
 
     def get_line_description(self):

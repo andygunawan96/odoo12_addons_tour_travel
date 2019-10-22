@@ -536,13 +536,13 @@ class TestSearch(models.Model):
     # Todo cek apakah detail guest sdah ada kumpul kan
 
     def create_reservation(self, hotel_obj, provider_name, cust_names, check_in, check_out, room_rates,
-                           booker_detail, provider_data='', special_req='', cancellation_policy='', context={}):
+                           booker_detail, acquirer_id, provider_data='', special_req='', cancellation_policy='', context={}):
         total_rate = 0
         total_commision = 0
         context['agent_id'] = self.sudo().env['res.users'].browse(context['co_uid']).agent_id.id
 
-        booker_obj = self.env['tt.reservation.hotel'].create_booker_api(booker_detail, context)
         booker_detail = isinstance(booker_detail, list) and booker_detail[0] or booker_detail
+        booker_obj = self.env['tt.reservation.hotel'].create_booker_api(booker_detail, context)
         booker_detail['contact_id'] = booker_obj.id
         cust_partner_obj = booker_obj
         # try:
@@ -599,11 +599,12 @@ class TestSearch(models.Model):
             total_rate += float(room_rate['price_total_currency'])
             total_commision += float(room_rate['commission'])
 
-        resv_id.total_sale_price = total_rate
+        resv_id.total = total_rate
         resv_id.total_commission_amount = total_commision
+        resv_id.total_nta = total_rate - total_commision
 
         # resv_id.action_confirm()
-        if resv_id.action_issued():
+        if resv_id.action_issued(acquirer_id, booker_obj.customer_parent_ids.ids[0]):
             # resv_id.action_done()
             return self.get_booking_result(resv_id.id)
         else:
@@ -1032,7 +1033,7 @@ class TestSearch(models.Model):
                 facility in self.env['tt.hotel.top.facility'].search([], limit=limit)]
 
     def get_facility_img(self, limit=99):
-        return [{'facility_id': facility.id, 'internal_code': facility.internal_code, 'facility_image': facility.image_url3, }
+        return [{'facility_id': facility.id, 'facility_name': facility.name, 'internal_code': facility.internal_code, 'facility_image': facility.image_url3, }
                 for facility in self.env['tt.hotel.facility'].search([], limit=limit)]
 
 

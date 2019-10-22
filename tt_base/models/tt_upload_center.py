@@ -1,4 +1,4 @@
-from odoo import api, fields, models, _
+from odoo import api, fields, models
 import os
 
 
@@ -14,6 +14,8 @@ class TtUploadFile(models.Model):
     url = fields.Char('URL')
     agent_id = fields.Many2one('tt.agent','Owner')
     active = fields.Boolean('Active',default=True)
+    will_be_deleted_date = fields.Date('Will be deleted on')
+
 
     @api.model
     def create(self, vals_list):
@@ -32,3 +34,4 @@ class TtUploadFile(models.Model):
                 if os.path.exists(rec.path):
                     os.remove(rec.path)
             return super(TtUploadFile, self).unlink()
+
