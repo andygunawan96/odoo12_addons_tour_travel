@@ -602,6 +602,10 @@ class MasterActivity(models.Model):
                 self.env.cr.commit()
 
                 old_adult_sku = self.env['tt.master.activity.sku'].sudo().search([('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Adult'), '|', ('active', '=', False), ('active', '=', True)])
+
+                chd_min_age = 0
+                adt_min_age = rec['type_details']['data'].get('minAdultAge') and rec['type_details']['data']['minAdultAge'] or 0
+                adt_max_age = rec['type_details']['data'].get('maxAdultAge') and rec['type_details']['data']['maxAdultAge'] or 200
                 sku_vals = {
                     'activity_line_id': activity_obj.id,
                     'sku_id': 'Adult',
@@ -609,8 +613,8 @@ class MasterActivity(models.Model):
                     'pax_type': 'adult',
                     'minPax': rec['type_details']['data']['minPax'],
                     'maxPax': rec['type_details']['data']['maxPax'],
-                    'minAge': rec['type_details']['data']['minAdultAge'],
-                    'maxAge': rec['type_details']['data']['maxAdultAge'],
+                    'minAge': adt_min_age,
+                    'maxAge': adt_max_age,
                     'active': True,
                 }
                 if old_adult_sku:
@@ -621,6 +625,8 @@ class MasterActivity(models.Model):
 
                 old_child_sku = self.env['tt.master.activity.sku'].sudo().search([('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Child'), '|', ('active', '=', False), ('active', '=', True)])
                 if rec['type_details']['data']['allowChildren']:
+                    chd_min_age = rec['type_details']['data'].get('minChildAge') and rec['type_details']['data']['minChildAge'] or 0
+                    chd_max_age = rec['type_details']['data'].get('maxChildAge') and rec['type_details']['data']['maxChildAge'] or (adt_min_age - 1 >= 0 and adt_min_age or 0)
                     sku_vals = {
                         'activity_line_id': activity_obj.id,
                         'sku_id': 'Child',
@@ -628,8 +634,8 @@ class MasterActivity(models.Model):
                         'pax_type': 'child',
                         'minPax': rec['type_details']['data']['minChildren'],
                         'maxPax': rec['type_details']['data']['maxChildren'],
-                        'minAge': rec['type_details']['data']['minChildAge'],
-                        'maxAge': rec['type_details']['data']['maxChildAge'],
+                        'minAge': chd_min_age,
+                        'maxAge': chd_max_age,
                         'active': True,
                     }
                     if old_child_sku:
@@ -645,6 +651,8 @@ class MasterActivity(models.Model):
 
                 old_senior_sku = self.env['tt.master.activity.sku'].sudo().search([('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Senior'), '|', ('active', '=', False), ('active', '=', True)])
                 if rec['type_details']['data']['allowSeniors']:
+                    ycd_min_age = rec['type_details']['data'].get('minSeniorAge') and rec['type_details']['data']['minSeniorAge'] or adt_max_age + 1
+                    ycd_max_age = rec['type_details']['data'].get('maxSeniorAge') and rec['type_details']['data']['maxSeniorAge'] or 200
                     sku_vals = {
                         'activity_line_id': activity_obj.id,
                         'sku_id': 'Senior',
@@ -652,8 +660,8 @@ class MasterActivity(models.Model):
                         'pax_type': 'senior',
                         'minPax': rec['type_details']['data']['minSeniors'],
                         'maxPax': rec['type_details']['data']['maxSeniors'],
-                        'minAge': rec['type_details']['data']['minSeniorAge'],
-                        'maxAge': rec['type_details']['data']['maxSeniorAge'],
+                        'minAge': ycd_min_age,
+                        'maxAge': ycd_max_age,
                         'active': True,
                     }
                     if old_senior_sku:
@@ -669,6 +677,8 @@ class MasterActivity(models.Model):
 
                 old_infant_sku = self.env['tt.master.activity.sku'].sudo().search([('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Infant'), '|', ('active', '=', False), ('active', '=', True)])
                 if rec['type_details']['data']['allowInfant']:
+                    inf_min_age = rec['type_details']['data'].get('minInfantAge') and rec['type_details']['data']['minInfantAge'] or 0
+                    inf_max_age = rec['type_details']['data'].get('maxInfantAge') and rec['type_details']['data']['maxInfantAge'] or (chd_min_age and (chd_min_age - 1 >= 0 and chd_min_age or 0) or (adt_min_age - 1 >= 0 and adt_min_age or 0))
                     sku_vals = {
                         'activity_line_id': activity_obj.id,
                         'sku_id': 'Infant',
@@ -676,8 +686,8 @@ class MasterActivity(models.Model):
                         'pax_type': 'infant',
                         'minPax': 0,
                         'maxPax': 5,
-                        'minAge': rec['type_details']['data']['minInfantAge'],
-                        'maxAge': rec['type_details']['data']['maxInfantAge'],
+                        'minAge': inf_min_age,
+                        'maxAge': inf_max_age,
                         'active': True,
                     }
                     if old_infant_sku:
@@ -1738,9 +1748,11 @@ class MasterActivity(models.Model):
             activity_obj = self.env['tt.master.activity.lines'].sudo().create(vals)
         self.env.cr.commit()
 
-        old_adult_sku = self.env['tt.master.activity.sku'].search(
-            [('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Adult'), '|', ('active', '=', False),
-             ('active', '=', True)])
+        old_adult_sku = self.env['tt.master.activity.sku'].search([('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Adult'), '|', ('active', '=', False), ('active', '=', True)])
+
+        chd_min_age = 0
+        adt_min_age = req['data'].get('minAdultAge') and req['data']['minAdultAge'] or 0
+        adt_max_age = req['data'].get('maxAdultAge') and req['data']['maxAdultAge'] or 200
         sku_vals = {
             'activity_line_id': activity_obj.id,
             'sku_id': 'Adult',
@@ -1748,8 +1760,8 @@ class MasterActivity(models.Model):
             'pax_type': 'adult',
             'minPax': req['data']['minPax'],
             'maxPax': req['data']['maxPax'],
-            'minAge': req['data']['minAdultAge'],
-            'maxAge': req['data']['maxAdultAge'],
+            'minAge': adt_min_age,
+            'maxAge': adt_max_age,
             'active': True,
         }
         if old_adult_sku:
@@ -1762,6 +1774,8 @@ class MasterActivity(models.Model):
             [('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Child'), '|', ('active', '=', False),
              ('active', '=', True)])
         if req['data']['allowChildren']:
+            chd_min_age = req['data'].get('minChildAge') and req['data']['minChildAge'] or 0
+            chd_max_age = req['data'].get('maxChildAge') and req['data']['maxChildAge'] or (adt_min_age - 1 >= 0 and adt_min_age or 0)
             sku_vals = {
                 'activity_line_id': activity_obj.id,
                 'sku_id': 'Child',
@@ -1769,8 +1783,8 @@ class MasterActivity(models.Model):
                 'pax_type': 'child',
                 'minPax': req['data']['minChildren'],
                 'maxPax': req['data']['maxChildren'],
-                'minAge': req['data']['minChildAge'],
-                'maxAge': req['data']['maxChildAge'],
+                'minAge': chd_min_age,
+                'maxAge': chd_max_age,
                 'active': True,
             }
             if old_child_sku:
@@ -1788,6 +1802,8 @@ class MasterActivity(models.Model):
             [('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Senior'), '|', ('active', '=', False),
              ('active', '=', True)])
         if req['data']['allowSeniors']:
+            ycd_min_age = req['data'].get('minSeniorAge') and req['data']['minSeniorAge'] or adt_max_age + 1
+            ycd_max_age = req['data'].get('maxSeniorAge') and req['data']['maxSeniorAge'] or 200
             sku_vals = {
                 'activity_line_id': activity_obj.id,
                 'sku_id': 'Senior',
@@ -1795,8 +1811,8 @@ class MasterActivity(models.Model):
                 'pax_type': 'senior',
                 'minPax': req['data']['minSeniors'],
                 'maxPax': req['data']['maxSeniors'],
-                'minAge': req['data']['minSeniorAge'],
-                'maxAge': req['data']['maxSeniorAge'],
+                'minAge': ycd_min_age,
+                'maxAge': ycd_max_age,
                 'active': True,
             }
             if old_senior_sku:
@@ -1814,6 +1830,8 @@ class MasterActivity(models.Model):
             [('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Infant'), '|', ('active', '=', False),
              ('active', '=', True)])
         if req['data']['allowInfant']:
+            inf_min_age = req['data'].get('minInfantAge') and req['data']['minInfantAge'] or 0
+            inf_max_age = req['data'].get('maxInfantAge') and req['data']['maxInfantAge'] or (chd_min_age and (chd_min_age - 1 >= 0 and chd_min_age or 0) or (adt_min_age - 1 >= 0 and adt_min_age or 0))
             sku_vals = {
                 'activity_line_id': activity_obj.id,
                 'sku_id': 'Infant',
@@ -1821,8 +1839,8 @@ class MasterActivity(models.Model):
                 'pax_type': 'infant',
                 'minPax': 0,
                 'maxPax': 5,
-                'minAge': req['data']['minInfantAge'],
-                'maxAge': req['data']['maxInfantAge'],
+                'minAge': inf_min_age,
+                'maxAge': inf_max_age,
                 'active': True,
             }
             if old_infant_sku:
