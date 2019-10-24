@@ -942,7 +942,7 @@ class IssuedOffline(models.Model):
             res = Response().get_error(str(e), 500)
         return res
 
-    def create_booking_reservation_offline_api(self, data, context, kwargs):  #
+    def create_booking_reservation_offline_api(self, data, context):  #
         booker = data['booker']  # self.param_booker
         data_reservation_offline = data['issued_offline_data']  # self.param_issued_offline_data
         passenger = data['passenger']  # self.param_passenger

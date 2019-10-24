@@ -442,7 +442,7 @@ class ReservationActivity(models.Model):
             activity_type_id = self.env['tt.master.activity.lines'].sudo().search([('uuid', '=', search_request['product_type_uuid'])])
             if activity_type_id:
                 activity_type_id = activity_type_id[0]
-            provider_id = self.env['tt.provider'].sudo().search([('code', '=', search_request['provider'])])
+            provider_id = self.env['tt.provider'].sudo().search([('code', '=', provider)])
             if provider_id:
                 provider_id = provider_id[0]
 
