@@ -21,6 +21,9 @@
             </xpath>
             <field name="provider_name" position="after">
                 <field name="carrier_name"/>
+<!--                ### SPACE FOR DEFAULT VALUE-->
+                    <field name="id" invisible="1"/>
+<!--                ###-->
             </field>
             <field name="adult" position="after">
                 <field name="child"/>

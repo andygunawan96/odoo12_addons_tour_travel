@@ -45,6 +45,7 @@
                             <field name="display_provider_name"/>
                             <field name="is_reversed"/>
                             <field name="reverse_id"/>
+                            <field name="adjustment_id"/>
                         </group>
                     </group>
                     <group>

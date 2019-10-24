@@ -48,6 +48,7 @@ class Ledger(models.Model):
     issued_uid = fields.Many2one('res.users', 'Issued UID')
     display_provider_name = fields.Char('Provider', help='Display Provider Name')
 
+    adjustment_id = fields.Many2one('tt.adjustment','Adjustment')
     reverse_id = fields.Many2one('tt.ledger', 'Reverse')
     is_reversed = fields.Boolean('Already Reversed', default=False)
 
@@ -68,6 +69,7 @@ class Ledger(models.Model):
                 'credit': credit,
                 'ref': ref,
                 'currency_id': currency_id,
+
                 'date': date,
                 'transaction_type': ledger_type,
                 'res_model': res_model,
@@ -75,6 +77,19 @@ class Ledger(models.Model):
                 'description': description,
                 'issued_uid': issued_uid
             }
+
+
+    def create_ledger_vanilla(self, res_model,res_id,name, ref, date, ledger_type, currency_id, issued_uid,agent_id, debit=0, credit=0,description = '',**kwargs):
+        vals = self.prepare_vals(res_model,
+                          res_id,name, ref,
+                          date, ledger_type,
+                          currency_id, issued_uid,
+                          debit, credit,description)
+        vals['agent_id'] = agent_id
+        if kwargs:
+            vals.update(kwargs)
+        self.create(vals)
+
 
     def reverse_ledger(self):
         reverse_id = self.env['tt.ledger'].create([{
