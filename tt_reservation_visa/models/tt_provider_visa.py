@@ -108,7 +108,7 @@ class TtProviderVisa(models.Model):
     def action_create_ledger(self):
         if not self.is_ledger_created:
             self.write({'is_ledger_created': True})
-            self.env['tt.ledger'].action_create_ledger(self)
+            self.env['tt.ledger'].action_create_ledger(self, self.env.user.id)
 
     def to_dict(self):
         passenger_list = []

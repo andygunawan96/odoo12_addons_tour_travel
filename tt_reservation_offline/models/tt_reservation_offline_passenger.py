@@ -31,6 +31,8 @@ class IssuedOfflinePassenger(models.Model):
     seat = fields.Char('Seat', readonly=True, states={'draft': [('readonly', False)],
                                                       'confirm': [('readonly', False)]})
     state = fields.Selection(STATE, string='State', default='draft', related='booking_id.state')
+    first_name = fields.Char('First Name', related='passenger_id.first_name')
+    last_name = fields.Char('Last Name', related='passenger_id.last_name')
 
     # def compute_agent_id(self):
     #     self.agent_id = self.booking_id.sub_agent_id
