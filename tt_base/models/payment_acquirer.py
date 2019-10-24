@@ -100,7 +100,7 @@ class PaymentAcquirer(models.Model):
 
             if req['transaction_type'] == 'top_up':
                 # Kalau top up Ambil agent_id HO
-                dom.append(('agent_id', '=', self.env.ref('tt_base.rodex_ho')))
+                dom.append(('agent_id', '=', self.env.ref('tt_base.rodex_ho').id))
             elif req['transaction_type'] == 'billing':
                 dom.append(('agent_id', '=', context['co_agent_id']))
 

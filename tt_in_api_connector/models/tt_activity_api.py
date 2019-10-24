@@ -86,6 +86,8 @@ class TtMasterActivityApiCon(models.Model):
             res = table_obj.get_details_by_api(data,context)
         elif action == 'reprice_currency':
             res = table_obj.reprice_currency(data,context)
+        elif action == 'get_autocomplete':
+            res = table_obj.get_autocomplete_api(data,context)
         elif action == 'product_update_webhook':
             res = table_obj.product_update_webhook(data,context)
         elif action == 'product_type_update_webhook':
