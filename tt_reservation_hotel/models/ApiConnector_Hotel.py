@@ -28,14 +28,14 @@ class ApiConnectorHotels:
         req_post.pop('url_api')
         res = self.send_request('signin', req_post)
         try:
-            if res['http_code'] == 200:
-                res = json.loads(res['response'])['result']
-                if not res['error_code']:
-                    self.cookie = res['response']['signature']
-                else:
-                    res['error_code'] = res['error_code']
+            if res.get('error_code') == 0:
+                self.cookie = res['response']['signature']
             else:
-                res['error_code'] = res['http_code']
+                res = {
+                    'error_code': res['error_code'],
+                    'error_msg': res['error_msg'],
+                    'response': ''
+                }
         except Exception:
             err = 3010
             res = {

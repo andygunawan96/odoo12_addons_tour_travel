@@ -29,6 +29,9 @@ class TtReservation(models.Model):
     refund_date = fields.Datetime('Refund Date', readonly=True)
     user_id = fields.Many2one('res.users', 'Create by', readonly=True)  # create_uid
 
+    #utk adjustment
+    res_model = fields.Char('Res Model', invisible=1, readonly=True)
+
     sid_booked = fields.Char('SID Booked', readonly=True)  # Signature generate sendiri
 
     booker_id = fields.Many2one('tt.customer','Booker', ondelete='restrict', readonly=True, states={'draft':[('readonly',False)]})
@@ -53,7 +56,7 @@ class TtReservation(models.Model):
 
     provider_type_id = fields.Many2one('tt.provider.type','Provider Type',readonly=True)
 
-    adjustment_ids = fields.Char('Adjustment',readonly=True)  # One2Many -> tt.adjustment
+    adjustment_ids = fields.One2many('tt.adjustment','res_id','Adjustment',readonly=True)  # domain=[('res_model','=',lambda self: self._name)]
     error_msg = fields.Char('Error Message')
     notes = fields.Text('Notes for IT',default='')
 
@@ -93,6 +96,7 @@ class TtReservation(models.Model):
     def create(self, vals_list):
         try:
             vals_list['name'] = self.env['ir.sequence'].next_by_code(self._name)
+            vals_list['res_model'] = self._name
         except:
             pass
         return super(TtReservation, self).create(vals_list)

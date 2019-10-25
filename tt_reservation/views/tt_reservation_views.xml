@@ -11,6 +11,16 @@
                     <button string="Set to Issued" name="action_set_as_issued" groups="tt_base.group_tt_tour_travel_operator" type="object"/>
                     <button string="Set Booking State" name="action_check_provider_state" groups="tt_base.group_tt_tour_travel_operator" type="object"/>
                     <button string="Cancel" name="action_cancel" states="booked,issued" groups="tt_base.group_tt_tour_travel_operator" type="object"/>
+                    <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action"
+                                       context="{
+                        'default_res_model': res_model,
+                        'default_res_id': id,
+                        'default_agent_id': agent_id,
+                        'default_referenced_document': name,
+                        'default_currency_id': currency_id,
+                        'default_adj_type': provider_type_id
+                   }"/>
+
 
 <!--                    <button string="Issued" name="action_issued_from_button" type="object"-->
 <!--                            states="booked,fail_booking,fail_issue"-->
@@ -44,6 +54,11 @@
                             <field name="customer_parent_type_id"/>
                             <field name="provider_type_id"/>
                             <field name="provider_name"/>
+                            <field name="currency_id" invisible="1"/>
+
+<!--                        ### untuk default value adjustment -->
+                            <field name="id" invisible="1"/>
+                            <field name="res_model"/>
                         </group>
                         <group>
                             <field name="date"/>
@@ -101,6 +116,9 @@
                         <page string="Ledgers" name="ledger_page">
                             <field name="ledger_ids"
                                    context="{'tree_view_ref': 'tt_accounting.tt_ledger_tree_view'}"/>
+                        </page>
+                        <page string="Adjustment">
+                            <field name="adjustment_ids"/>
                         </page>
                     </notebook>
                     <footer>

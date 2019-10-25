@@ -449,12 +449,19 @@ class ReservationActivity(models.Model):
             list_passenger_value = self.create_passenger_value_api_test(passengers)
             pax_ids = self.create_customer_api(passengers, context, booker_obj.seq_id, contact_obj.seq_id)
 
+            sku_ids_dict = {}
+            adult = 0
+            senior = 0
+            child = 0
+            infant = 0
             for idx, temp_pax in enumerate(passengers):
                 pax_options = []
-                if temp_pax.get('api_data'):
-                    for temp_psg_opt in temp_pax['api_data']:
+                if temp_pax.get('per_pax_data'):
+                    for temp_psg_opt in temp_pax['per_pax_data']:
+                        temp_opt_obj = self.env['tt.activity.booking.option'].sudo().search([('uuid', '=', temp_psg_opt['uuid']), ('type', '=', 'perPax')], limit=1)
+                        temp_opt_obj = temp_opt_obj[0]
                         pax_opt_vals = {
-                            'name': temp_psg_opt['name'],
+                            'name': temp_opt_obj.name,
                             'value': temp_psg_opt['value'],
                         }
                         pax_opt_obj = self.env['tt.reservation.passenger.activity.option'].sudo().create(pax_opt_vals)
@@ -466,6 +473,35 @@ class ReservationActivity(models.Model):
                     'activity_sku_id': temp_pax.get('sku_real_id', 0),
                     'option_ids': [(6, 0, pax_options)],
                 })
+
+                if not sku_ids_dict.get(str(temp_pax['sku_id'])):
+                    sku_ids_dict.update({
+                        str(temp_pax['sku_id']): 1,
+                    })
+                else:
+                    temp_sku_val = sku_ids_dict[str(temp_pax['sku_id'])]
+                    sku_ids_dict.update({
+                        str(temp_pax['sku_id']): temp_sku_val + 1,
+                    })
+
+                if temp_pax['pax_type'] == 'ADT':
+                    adult += 1
+                elif temp_pax['pax_type'] == 'CHD':
+                    child += 1
+                elif temp_pax['pax_type'] == 'YCD':
+                    senior += 1
+                elif temp_pax['pax_type'] == 'INF':
+                    infant += 1
+
+            skus = []
+            for temp_sku in activity_type_id.sku_ids:
+                for key, val in sku_ids_dict.items():
+                    if str(key) == str(temp_sku.sku_id) and val > 0:
+                        skus.append({
+                            'sku_id': str(key),
+                            'amount': val,
+                            'pax_type': temp_sku.pax_type,
+                        })
 
             header_val.update({
                 'contact_id': contact_obj.id,
@@ -485,19 +521,20 @@ class ReservationActivity(models.Model):
                 'activity_name': activity_type_id.activity_id.name,
                 'activity_product': activity_type_id.name,
                 'activity_product_uuid': search_request['product_type_uuid'],
-                'senior': search_request['senior'],
-                'adult': search_request['adult'],
-                'child': search_request['child'],
-                'infant': search_request['infant'],
+                'senior': senior,
+                'adult': adult,
+                'child': child,
+                'infant': infant,
                 'transport_type': 'activity',
                 'provider_name': activity_type_id.activity_id.provider_id.code,
                 'file_upload': file_upload,
             })
 
             if search_request.get('timeslot'):
+                timeslot_obj = self.env['tt.activity.master.timeslot'].sudo().search([('uuid', '=', search_request['timeslot']), ('product_type_id', '=', int(activity_type_id.id))], limit=1)
+                timeslot_obj = timeslot_obj[0]
                 header_val.update({
-                    'timeslot': str(search_request['timeslot']['startTime']) + ' - ' + str(
-                        search_request['timeslot']['endTime']),
+                    'timeslot': str(timeslot_obj.startTime) + ' - ' + str(timeslot_obj.endTime),
                 })
 
             if not activity_type_id.instantConfirmation:
@@ -519,8 +556,10 @@ class ReservationActivity(models.Model):
 
             if option['perBooking']:
                 for rec in option['perBooking']:
+                    temp_opt_obj = self.env['tt.activity.booking.option'].sudo().search([('uuid', '=', rec['uuid']), ('type', '=', 'perBooking')], limit=1)
+                    temp_opt_obj = temp_opt_obj[0]
                     self.env['tt.reservation.activity.option'].sudo().create({
-                        'name': rec['name'],
+                        'name': temp_opt_obj.name,
                         'value': str(rec['value']),
                         'booking_id': book_obj.id
                     })
@@ -560,6 +599,18 @@ class ReservationActivity(models.Model):
                 'order_id': book_obj.id,
                 'order_number': book_obj.name,
                 'status': book_obj.state,
+                'order_data': {
+                    'activity_uuid': activity_type_id.activity_id.uuid,
+                    'activity_name': activity_type_id.activity_id.name,
+                    'product_type_uuid': activity_type_id.uuid,
+                    'product_type_title': activity_type_id.name,
+                    'visit_date': book_obj.visit_date,
+                    'adult': book_obj.adult,
+                    'senior': book_obj.senior,
+                    'child': book_obj.child,
+                    'infant': book_obj.infant,
+                    'skus': skus,
+                }
             }
 
             return ERR.get_no_error(response)

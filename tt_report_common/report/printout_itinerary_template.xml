@@ -244,6 +244,88 @@
         </div>
     </template>
 
+    <template id="json_itinerary_content_view">
+        <div class="row">
+            <div class="col-12">
+                <span style="font-size: 28px; font-weight: 730">Reservation Detail(s)</span><br/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <table class="table table-sm" style="text-align:center;">
+                    <thead>
+                        <tr>
+                            <th>Voucher No.</th>
+                            <th>Check In</th>
+                            <th>Check Out</th>
+                            <th>Hotel</th>
+                            <th>Room</th>
+                            <th>Meal Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="doc['line']" t-as="line">
+                            <tr>
+                                <td><span t-esc="line['resv']"/></td>
+                                <td><span t-esc="line['checkin']"/></td>
+                                <td><span t-esc="line['checkout']"/></td>
+                                <td><span t-esc="line['hotel_name']"/><br/></td>
+                                <td><span t-esc="line['room_name']"/></td>
+                                <td><span t-esc="line['meal_type']"/></td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+                <span style="font-size: 28px; font-weight: 730">Guest Detail(s)</span><br/>
+                <div class="box" style="margin: 20px; border: 1px solid #BBB; border-radius: 20px">
+                    <div class="row" style="margin: 5px 0; font-size:17px;">
+                        <div class="col-1" style="text-align: center;">
+                            No.
+                        </div>
+                        <div class="col-3" style="text-align: center;">
+                            Name
+                        </div>
+                        <div class="col-2" style="text-align: center;">
+                            Pax Type
+                        </div>
+                        <div class="col-3" style="text-align: center;">
+                            Birth Date
+                        </div>
+                        <div class="col-3" style="text-align: center; padding-right: 30px;">
+                            Additional Info
+                        </div>
+                    </div>
+                    <div style="border: 1px solid #BBB; margin: 0 15px 5px;"/>
+                    <t t-set="psg_index" t-value="0"/>
+                    <t t-foreach="doc['passenger']" t-as="psg">
+                        <div class="row" style="text-align: center; margin-left: 0px; margin-right: 0px; font-weight:450; font-size:17px; margin-bottom: 0px; ">
+                            <div class="col-1">
+                                <label style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg_index+1"/>.</label>
+                            </div>
+                            <div class="col-3">
+                                <label style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg['name']"/></label>
+                            </div>
+                            <div class="col-2">
+                                <label style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg['pax_type']"/></label>
+                            </div>
+                            <div class="col-3">
+                                <label style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg['birth_date']"/></label>
+                            </div>
+                            <div class="col-3" style="text-align: left;">
+                                <ul style="padding: 3px;">
+                                    <t t-foreach="psg['additional_info']" t-as="info_id">
+                                        <li><span t-esc="info_id"/></li>
+                                    </t>
+                                </ul>
+                            </div>
+                        </div>
+                    </t>
+                    <div style="margin-bottom: 5px"/>
+                </div>
+            </div>
+        </div>
+    </template>
+
     <template id="itinerary_signature">
         <div class="row">
             <div class="col-11">
@@ -307,20 +389,20 @@
         </t>
     </template>
 
-<!--    <template id="printout_hotel_itinerary">-->
-<!--        <t t-set="data_report_header_spacing" t-value="20"/>-->
-<!--        <t t-set="data_report_margin_top" t-value="2"/>-->
-<!--        <t t-call="web.html_container">-->
-<!--            <t t-foreach="docs" t-as="doc">-->
-<!--                <div class="page">-->
-<!--                    <t t-call="tt_report_common.external_layout">-->
-<!--                        <t t-call="tt_report_common.activity_itinerary_view"/>-->
-<!--                        &lt;!&ndash;<t t-call="tt_report_common.itinerary_price_detail"/>&ndash;&gt;-->
-<!--                        <br/>-->
-<!--                        <t t-call="tt_report_common.itinerary_signature"/>-->
-<!--                    </t>-->
-<!--                </div>-->
-<!--            </t>-->
-<!--        </t>-->
-<!--    </template>-->
+    <template id="printout_json_itinerary">
+        <t t-set="data_report_header_spacing" t-value="20"/>
+        <t t-set="data_report_margin_top" t-value="2"/>
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <div class="page">
+                    <t t-call="tt_report_common.external_layout">
+                        <t t-call="tt_report_common.json_itinerary_content_view"/>
+                        <t t-call="tt_report_common.itinerary_price_detail"/>
+                        <br/>
+                        <t t-call="tt_report_common.itinerary_signature"/>
+                    </t>
+                </div>
+            </t>
+        </t>
+    </template>
 </odoo>

@@ -51,6 +51,33 @@ class ResCity(models.Model):
                         'country_id': country_id.id,
                     })
                 self.env.cr.commit()
+
+    # Dari Master city Fitruums
+    def reader_city_list2(self):
+        provider_id = self.env['tt.provider'].search([('code', '=', 'webbeds')], limit=1).id
+        with open('/home/rodex-it-05/Downloads/hotel_static_data.csv', 'r') as f:
+            rows = csv.reader(f, delimiter=';')
+            for rec in rows:
+                country_id = self.env['res.country'].find_country_by_name(rec[0])
+                if not country_id:
+                    country_id = self.env['res.country'].create({'name': rec[0], })
+                else:
+                    country_id = country_id[0]
+                city_id = self.env['res.city'].find_city_by_name(rec[2])
+                if not city_id:
+                    city_id = self.env['res.city'].create({
+                        'name': rec[2],
+                        'country_id': country_id.id,
+                    })
+                else:
+                    city_id = city_id[0]
+                self.env['tt.provider.code'].create({
+                    'city_id': city_id.id,
+                    'provider_id': provider_id,
+                    'name': rec[2],
+                    'code': rec[1],
+                })
+                self.env.cr.commit()
     # Internal use only End
 
     @api.model
