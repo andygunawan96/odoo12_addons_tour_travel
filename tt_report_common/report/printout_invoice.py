@@ -1,5 +1,6 @@
 from odoo import models, fields, api
 import datetime
+import json
 
 
 class PrintoutTicketForm(models.AbstractModel):
@@ -370,6 +371,7 @@ class PrintoutIteneraryForm(models.AbstractModel):
 
     @api.model
     def _get_report_values(self, docids, data=None):
+        values = {}
         if not data.get('context'):
             internal_model_id = docids.pop(0)
             data['context'] = {}
@@ -387,7 +389,7 @@ class PrintoutIteneraryForm(models.AbstractModel):
                 data['context']['active_model'] = 'tt.agent.invoice'
 
             data['context']['active_ids'] = docids
-        values = {}
+
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
             a = {}
@@ -465,6 +467,101 @@ class PrintoutActivityIteneraryForm(models.AbstractModel):
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
             'price_lines': values,
             'date_now': fields.Date.today().strftime('%d %b %Y')
+        }
+
+
+class PrintoutJSONIteneraryForm(models.AbstractModel):
+    _name = 'report.tt_report_common.printout_json_itinerary'
+    _description = 'Rodex Model'
+
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        '''
+        values = {
+            'type': 'hotel', ** hotel, activity**
+            'line': [
+                {** Hotel **
+                    'resv': 'qwe123', ** PNR / Resv Code **
+                    'checkin': '2019-10-24', ** YYYY-mm-DD **
+                    'checkout': '2019-10-26',
+                    'hotel_name': 'Hotel Mawar',
+                    'room_name': 'Superior Room',
+                    'meal_type': 'Room Only',
+                },
+                {** Activity **
+                    'resv': 'qwe123', ** PNR / Resv Code **
+                    'checkin': '2019-10-24', ** YYYY-mm-DD **
+                    'time_slot': '09:30:00 - 13:30:00',
+                    'activity_title': 'KidsSTOP Singapore E-voucher',
+                    'product_type': 'Weekday Admission',
+                },
+            ],
+            'passenger': [
+                {
+                    'ticket_number': '12345678', ** airline/train only **
+                    'name': '', **Mr. F_name L_name**
+                    'pax_type': 'Elder', **Elder, Adult, Child, Infant**
+                    'birth_date': '1993-08-17', ** YYYY-mm-dd **
+                    'additional_info': ['Room: 1'],
+                        **klo airline: baggage**,
+                        **klo hotel: room apa?**,
+                }
+            ],
+            'price_detail': [
+                {
+                    'name': **Passenger Name**,
+                    'pax_type': 'ADT' **ADT, CHD, INF, YCD**,
+                    'fare': 0,
+                    'tax': 0,
+                    'total': 0, ** fare + tax **
+                }
+            ],
+        }
+        '''
+        values = {}
+        if data.get('context'):
+            values = json.loads(data['context']['json_content'])
+            # values = [{
+            #     'agent_id': 1,
+            #     'type': 'hotel',
+            #     'line': [
+            #         {
+            #             'resv': 'qwe123',
+            #             'checkin': '2019-10-24',
+            #             'checkout': '2019-10-26',
+            #             'hotel_name': 'Hotel Mawar',
+            #             'room_name': 'Superior Room',
+            #             'meal_type': 'Room Only',
+            #         },
+            #     ],
+            #     'passenger': [
+            #         {
+            #             'ticket_number': '',
+            #             'name': 'Mr Vincentius Hadi',
+            #             'pax_type': 'Adult',
+            #             'birth_date': '1993-08-17',
+            #             'additional_info': ['Room: 1', 'Special Req: Non Smoking Rooms'],
+            #         }
+            #     ],
+            #     'price_detail': [
+            #         {
+            #             'name': 'Mr Vincentius Hadi',
+            #             'pax_type': 'ADT',
+            #             'fare': 50000,
+            #             'tax': 1250,
+            #             'total': 51250,
+            #         }
+            #     ],
+            # }]
+
+            values['agent_id'] = self.env['tt.agent'].browse(values['agent_id'])
+        return {
+            'doc_ids': False,
+            'doc_model': 'tt.reservation.hotel',  # Can be set to as any model
+            'doc_type': 'itin', #untuk judul report
+            'docs': [values,],
+            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'currency_id': self.env.user.company_id.currency_id,
         }
 
 

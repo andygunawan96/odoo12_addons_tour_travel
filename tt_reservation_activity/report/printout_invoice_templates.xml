@@ -43,7 +43,7 @@
                                 <td>
                                     <span t-esc="doc.name + ' | ' + doc.issued_date"/><br/>
                                     <span t-esc="'Issued by ' + doc.booked_uid.name"/><br/>
-                                    <span t-esc="'For booker: ' + doc.Ncontact_id.first_name + ' ' + doc.contact_id.last_name"/><br/>
+                                    <span t-esc="'For booker: ' + doc.contact_id.first_name + ' ' + doc.contact_id.last_name"/><br/>
                                 </td>
                                 <td class="text-right">
                                     <span t-esc="doc.total" t-esc-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
