@@ -151,9 +151,9 @@
                                         <span t-field="p.first_name"/>
                                         <span/>
                                         <span t-field="p.last_name"/><br/>
-                                        <span t-field="p.passenger_id.birth_date" t-field-options="{&quot;format&quot;: &quot;dd-MM-yyyy&quot;}"/><br/>
+                                        <span t-field="p.birth_date" t-field-options="{&quot;format&quot;: &quot;dd-MM-yyyy&quot;}"/><br/>
                                         <span t-field="p.passenger_domicile"/><br/>
-                                        <span t-field="p.pricelist_id.passport_type"/>
+                                        <span t-field="p.pricelist_id.passport_type"/> <span t-field="p.pricelist_id.apply_type"/><br/>
                                         <span t-field="p.pricelist_id.process_type"/><br/>
                                         <span t-field="p.pricelist_id.duration"/><span style="color: white;">...</span><span>day(s)</span><span style="color: white;">...</span><span>____/____/_____</span>
                                     </div>
@@ -177,12 +177,10 @@
                                     </div>
                                     <div class="col-5">
 <!--                                        <span t-field="p.passenger_id.passport_number"/><br/>-->
-                                        <t t-if="p.passenger_id.phone_ids">
-                                            <span t-field="p.passenger_id.phone_ids[0].phone_number"/><br/>
+                                        <t t-if="p.customer_id.phone_ids">
+                                            <span t-field="p.customer_id.phone_ids[0].phone_number"/>
                                         </t>
-                                        <t t-else="">
-                                            <br/>
-                                        </t>
+                                        <br/>
 <!--                                        <span t-field="p.passenger_id.passport_expdate" t-field-options="{&quot;format&quot;: &quot;dd-MM-yyyy&quot;}"/><br/>-->
                                         <span/><br/>
                                         <span t-field="p.passport_id.departure_date" t-field-options="{&quot;format&quot;: &quot;dd-MM-yyyy&quot;}"/>
