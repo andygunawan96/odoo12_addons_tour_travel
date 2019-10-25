@@ -227,9 +227,6 @@ class TtAgent(models.Model):
             },
         }
 
-    def get_transaction(self):
-        self.get_transaction_api({'minimum':0,'maximum':20},{'co_agent_id':self.id})
-
     def get_transaction_api(self,req,context):
         try:
             _logger.info('Get Resv Req:\n'+json.dumps(req))

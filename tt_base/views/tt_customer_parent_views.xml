@@ -6,24 +6,37 @@
         <field name="model">tt.customer.parent</field>
         <field name="arch" type="xml">
             <form>
+                <header/>
                 <sheet>
+                    <div class="oe_button_box" name="button_box"/>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name" placeholder="Agent's Name" required="True"/><br/>
+                            <field name="seq_id"/>
+                        </h1>
+                    </div>
                     <group>
-                        <field name="name"/>
-                        <field name="seq_id"/>
-                        <field name="customer_parent_type_id"/>
-                        <field name="parent_agent_id"/>
-                        <field name="actual_balance"/>
-                        <field name="balance"/>
-                        <field name="credit_limit"/>
-                        <field name="customer_ids" domain="[('agent_id', '=', parent_agent_id)]">
-                            <tree limit="10">
-                                <field name="first_name"/>
-                                <field name="last_name"/>
-                                <field name="birth_date"/>
-                            </tree>
-                        </field>
-                        <field name="currency_id"/>
+                        <group name="ctp_info">
+                            <field name="customer_parent_type_id"/>
+                            <field name="parent_agent_id"/>
+                            <field name="actual_balance"/>
+                            <field name="balance"/>
+                            <field name="credit_limit"/>
+                            <field name="currency_id"/>
+                        </group>
                     </group>
+                    <notebook>
+                        <page string="Customer">
+                            <field name="customer_ids" domain="[('agent_id', '=', parent_agent_id)]">
+                                <tree limit="10">
+                                    <field name="first_name"/>
+                                    <field name="last_name"/>
+                                    <field name="birth_date"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids" widget="mail_followers"/>

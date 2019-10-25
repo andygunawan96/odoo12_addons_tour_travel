@@ -31,6 +31,10 @@ class TtAdjustment(models.Model):
                                default=lambda self: self.env.user.agent_id, states={'draft': [('readonly', False)]})
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', related='agent_id.agent_type_id',
                                     readonly=True)
+    customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer Parent', readonly=True)
+
+    customer_parent_type_id = fields.Many2one('tt.customer.parent.type', 'Customer Parent Type', related='customer_parent_id.customer_parent_type_id',
+                                    readonly=True)
     currency_id = fields.Many2one('res.currency', readonly=True,
                                   default=lambda self: self.env.user.company_id.currency_id)
     # adj_type = fields.Many2one('tt.adjustment.type', 'Adjustment Type', required=True, readonly=True,
@@ -72,7 +76,7 @@ class TtAdjustment(models.Model):
                                   readonly=True, states={'draft': [('readonly', False)]})
     reason_uid = fields.Many2one('res.users', 'Responsible User', readonly=True,
                                  states={'draft': [('readonly', False)]})
-    
+
     @api.model
     def create(self, vals_list):
         vals_list['name'] = self.env['ir.sequence'].next_by_code('tt.adjustment')
@@ -82,9 +86,9 @@ class TtAdjustment(models.Model):
         return super(TtAdjustment, self).create(vals_list)
         
     def parse_adjustment_type(self,type):
-        if type == 0:
+        if type == '0':
             return 'balance'
-        elif type == 1:
+        elif type == '1':
             return 'payment_transaction'
         else:
             return self.env['tt.provider.type'].browse(int(type)).code
@@ -139,6 +143,7 @@ class TtAdjustment(models.Model):
             self.currency_id.id,
             self.env.user.id,
             self.agent_id.id,
+            self.customer_parent_id.id,
             debit,
             credit,
             'Adjustment for %s' % (self.referenced_document),

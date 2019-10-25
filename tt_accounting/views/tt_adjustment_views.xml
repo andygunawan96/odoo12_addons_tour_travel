@@ -22,8 +22,10 @@
                     </div>
                     <group>
                         <group>
-                            <field name="agent_id"/>
-                            <field name="agent_type_id"/>
+                            <field name="agent_id" attrs="{'invisible':[('agent_id','=', False)]}"/>
+                            <field name="agent_type_id" attrs="{'invisible':[('agent_id','=', False)]}"/>
+                            <field name="customer_parent_id" attrs="{'invisible':[('customer_parent_id','=', False)]}"/>
+                            <field name="customer_parent_type_id" attrs="{'invisible':[('customer_parent_id','=', False)]}"/>
                             <field name="currency_id"/>
                             <field name="adj_type"/>
                             <field name="referenced_document"/>
@@ -35,6 +37,8 @@
                             <field name="description"/>
                         </group>
                         <group>
+                            <field name="adj_reason"/>
+                            <field name="reason_uid"/>
                             <label for="confirm_uid" string="Confrim by"/>
                             <div>
                                 <field name="confirm_uid" readonly="1" class="oe_inline"/> -
@@ -58,7 +62,8 @@
                             <field name="cancel_message"/>
                         </group>
                         <separator string="Ledger"/>
-                        <field name="ledger_ids"/>
+                        <field name="ledger_ids"
+                               context="{'tree_view_ref': 'tt_accounting.tt_ledger_adj_tree_view'}"/>
                     </group>
                 </sheet>
             </form>
@@ -73,6 +78,7 @@
                 <field name="create_date"/>
                 <field name="name"/>
                 <field name="agent_id"/>
+                <field name="customer_parent_id"/>
                 <field name="adj_type"/>
                 <field name="component_type"/>
                 <field name="adjust_side"/>

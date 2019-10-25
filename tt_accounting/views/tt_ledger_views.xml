@@ -21,6 +21,8 @@
                         <group>
                             <field name="agent_id"/>
                             <field name="agent_type_id"/>
+                            <field name="customer_parent_id"/>
+                            <field name="customer_parent_type_id"/>
                             <field name="currency_id"/>
                         </group>
                         <group>
@@ -60,6 +62,7 @@
     <record id="tt_ledger_tree_view_page" model="ir.ui.view">
         <field name="name">tt.ledger.tree.view.page</field>
         <field name="model">tt.ledger</field>
+        <field name="priority">20</field>
         <field name="arch" type="xml">
             <tree create="false">
                 <field name="date"/>
@@ -76,9 +79,34 @@
         </field>
     </record>
 
+    <record id="tt_ledger_adj_tree_view" model="ir.ui.view">
+        <field name="name">tt.ledger.adj.tree.view</field>
+        <field name="model">tt.ledger</field>
+        <field name="priority">30</field>
+        <field name="arch" type="xml">
+            <tree create="false">
+                <field name="date"/>
+                <field name="ref"/>
+                <field name="agent_id"/>
+                <field name="agent_type_id"/>
+                <field name="customer_parent_id"/>
+                <field name="customer_parent_type_id"/>
+                <field name="description"/>
+                <field name="issued_uid"/>
+                <field name="transaction_type"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="debit" sum="Total Debit"/>
+                <field name="credit" sum="Total Credit"/>
+                <field name="balance" invisible="1" sum="Total Balance"/>
+            </tree>
+        </field>
+    </record>
+
+
     <record id="tt_ledger_tree_view" model="ir.ui.view">
         <field name="name">tt.ledger.tree.view</field>
         <field name="model">tt.ledger</field>
+        <field name="priority">10</field>
         <field name="arch" type="xml">
             <tree create="false">
                 <field name="date"/>

@@ -9,16 +9,18 @@
                 <group>
                     <field name="agent_id"/>
                     <field name="agent_type_id"/>
+                    <field name="customer_parent_id"/>
+                    <field name="customer_parent_type_id"/>
                     <field name="currency_id"/>
                     <field name="adj_type"/>
                     <field name="referenced_document"/>
                     <field name="res_model"/>
                     <field name="res_id"/>
-                    <field name="component_type"/>
+                    <field name="component_type" invisible="context.get('hide_component_type',False)"/>
                     <field name="adjust_side"/>
                     <field name="adjust_amount"/>
                     <field name="adj_reason"/>
-                    <field name="reason_uid" options="{'no_create': True, 'no_quick_create': True, 'no_create_edit':True}"/>
+                    <field name="reason_uid" attrs="{'invisible': [('adj_reason', '=', 'sys')]}" options="{'no_create': True, 'no_quick_create': True, 'no_create_edit':True}"/>
                     <field name="description"/>
                 </group>
                 <footer>

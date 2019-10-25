@@ -15,6 +15,16 @@
                     <button string="Reject" name="action_reject_from_button"
                             type="object" groups="tt_base.group_tt_tour_travel_operator"
                             attrs="{'invisible':[('state','!=','confirm')]}"/>
+                    <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action"
+                            context="{
+                        'default_res_model': 'tt.payment',
+                        'default_res_id': id,
+                        'default_agent_id': agent_id,
+                        'default_referenced_document': name,
+                        'default_currency_id': currency_id,
+                        'default_adj_type': 1,
+                        'hide_component_type': True
+                   }"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,validated"/>
                 </header>
                 <sheet>
@@ -65,6 +75,8 @@
                         <field name="top_up_id"
                         attrs="{'invisible': [('customer_parent_id', '!=', False)]}"/>
                     </group>
+                    <separator string="Adjustment"/>
+                    <field name="adjustment_ids"/>
                 </sheet>
             </form>
         </field>

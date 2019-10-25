@@ -47,7 +47,6 @@
             <form>
                 <header>
                     <button name="get_current_agent_target" type="object" string="Calc Target"/>
-                    <button name="get_transaction" type="object" string="Get Transaction"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">

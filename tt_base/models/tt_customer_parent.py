@@ -13,7 +13,7 @@ class TtCustomerParent(models.Model):
     customer_parent_type_id = fields.Many2one('tt.customer.parent.type', 'Customer Parent Type', required=True)
     parent_agent_id = fields.Many2one('tt.agent', 'Parent', required=True)
 
-    balance = fields.Monetary(string="Balance" )
+    balance = fields.Monetary(string="Balance")
     actual_balance = fields.Monetary(string="Actual Balance", readonly=True, compute="_compute_actual_balance")
     credit_limit = fields.Monetary(string="Credit Limit")
 
@@ -32,7 +32,7 @@ class TtCustomerParent(models.Model):
 
     def _compute_actual_balance(self):
         for rec in self:
-            rec.actual_balance = rec.credit_limit - rec.balance
+            rec.actual_balance = rec.credit_limit + rec.balance
 
     @api.model
     def create(self,vals_list):

@@ -37,10 +37,13 @@ class Ledger(models.Model):
                                  default=lambda self: self.env.user.company_id)
 
     ref = fields.Char('Reference', readonly=True, copy=False)
-    agent_id = fields.Many2one('tt.agent', 'Agent', index=True, default=lambda self: self.env.user.agent_id)
-    parent_agent_id = fields.Many2one('tt.agent', 'Parent Agent', related='agent_id.parent_agent_id', store=True)
+    agent_id = fields.Many2one('tt.agent', 'Agent', index=True)
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', related='agent_id.agent_type_id',
                                     store=True)
+
+    customer_parent_id = fields.Many2one('tt.customer.parent','Customer Parent')
+    customer_parent_type_id = fields.Many2one('tt.customer.parent.type','Customer Parent', related='customer_parent_id.customer_parent_type_id')
+
     transaction_type = fields.Selection(LEDGER_TYPE, string='Type')
 
     description = fields.Text('Description')
@@ -79,13 +82,14 @@ class Ledger(models.Model):
             }
 
 
-    def create_ledger_vanilla(self, res_model,res_id,name, ref, date, ledger_type, currency_id, issued_uid,agent_id, debit=0, credit=0,description = '',**kwargs):
+    def create_ledger_vanilla(self, res_model,res_id,name, ref, date, ledger_type, currency_id, issued_uid,agent_id,customer_parent_id, debit=0, credit=0,description = '',**kwargs):
         vals = self.prepare_vals(res_model,
                           res_id,name, ref,
                           date, ledger_type,
                           currency_id, issued_uid,
                           debit, credit,description)
         vals['agent_id'] = agent_id
+        vals['customer_parent_id'] = customer_parent_id
         if kwargs:
             vals.update(kwargs)
         self.create(vals)
@@ -213,7 +217,7 @@ class Ledger(models.Model):
     #         # partner_obj = self.env['res.partner'].browse(user_obj.agent_id.id)
     #
     #         user_obj = self.env['res.users'].browse(api_context['co_uid'])
-    #         domain = [('agent_id', 'in', user_obj.allowed_customer_ids.ids)]
+    #         domain = [('agent_id', 'in', user_obj.allowed__ids.ids)]
     #         # domain.append(('agent_id', '=', partner_obj.id))
     #         if api_context.get('type', False):
     #             type = LEDGER_TYPE_TO_INT[api_context['type']]

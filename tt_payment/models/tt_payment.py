@@ -36,6 +36,10 @@ class PaymentTransaction(models.Model):
     payment_image_id = fields.Many2one('tt.upload.center','Image ID')
     payment_image_ids = fields.Many2many('tt.upload.center','rel_test_image','payment_id','image_id','Image IDs')
 
+    adjustment_ids = fields.One2many('tt.adjustment','res_id','Adjustment')
+
+
+
     def unlink_image(self):
         self.payment_image_id.unlink()
 

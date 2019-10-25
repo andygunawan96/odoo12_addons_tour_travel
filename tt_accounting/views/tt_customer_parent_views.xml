@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_customer_parent_form_view_inherit" model="ir.ui.view">
+        <field name="name">tt.customer.parent.form.view.inherit</field>
+        <field name="model">tt.customer.parent</field>
+        <field name="inherit_id" ref="tt_base.tt_customer_parent_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                <button name="action_view_ledgers" type="object"
+                        class="oe_stat_button" icon="fa-money">
+                    <field name="ledger_ids" widget="statinfo" string="Ledger(s)"/>
+                </button>
+            </xpath>
+            <xpath expr="//header" position="inside">
+                <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action"
+                        context="{
+                        'default_res_model': 'tt.customer.parent',
+                        'default_res_id': id,
+                        'default_customer_parent_id': id,
+                        'default_referenced_document': name,
+                        'default_currency_id': currency_id,
+                        'default_adj_type': 0,
+                        'hide_component_type': True
+                   }"/>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Adjustment Balance">
+                    <field name="adjustment_ids"/>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -14,15 +14,21 @@ class TtAdjustmentWizard(models.TransientModel):
 
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', related='agent_id.agent_type_id',
                                     readonly=True)
+
+    customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer Parent', readonly=True)
+
+    customer_parent_type_id = fields.Many2one('tt.customer.parent.type', 'Customer Parent Type', related='customer_parent_id.customer_parent_type_id',
+                                    readonly=True)
+
     currency_id = fields.Many2one('res.currency', readonly=True)
     adj_type = fields.Char('Adjustment Type', required=True, readonly=True)
 
     referenced_document = fields.Char('Ref. Document',required=True,readonly=True)
 
     res_model = fields.Char(
-        'Related Reservation Name', index=True, required=True, readonly=True)
+        'Related Reservation Name', index=True, readonly=True)
     res_id = fields.Integer(
-        'Related Reservation ID', index=True, help='Id of the followed resource',required=True,readonly=True)
+        'Related Reservation ID', index=True, help='Id of the followed resource',readonly=True)
 
     component_type = fields.Selection([('total', 'Grand Total'), ('commission', 'Total Commission')])
 
@@ -37,8 +43,12 @@ class TtAdjustmentWizard(models.TransientModel):
     description = fields.Text('Description')
 
     def submit_adjustment(self):
+        if self.adj_reason == 'sys':
+            self.reason_uid = False
+
         self.env['tt.adjustment'].create({
             'agent_id': self.agent_id.id,
+            'customer_parent_id': self.customer_parent_id.id,
             'currency_id': self.currency_id.id,
             'adj_type': self.adj_type,
             'res_model': self.res_model,
