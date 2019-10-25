@@ -15,18 +15,16 @@ class ProviderType(models.Model):
     code = fields.Char(string='Code', required=True)
     active = fields.Boolean(string='Active', default=True)
 
-    def fill_provider_type(self):
+    def get_provider_type(self):
         provider_type_obj = self.search([])
-        variables.PROVIDER_TYPE = []
-        variables.ADJUSTMENT_TYPE = []
+        provider_type = []
         for rec in provider_type_obj:
-            variables.PROVIDER_TYPE.append(rec.code)
-            variables.ADJUSTMENT_TYPE.append((rec.code,rec.code.capitalize()))
+            provider_type.append(rec.code)
+        return provider_type
 
     def _register_hook(self):
-        self.fill_provider_type()
+        variables.PROVIDER_TYPE = self.get_provider_type()
         print(variables.PROVIDER_TYPE)
-        print(variables.ADJUSTMENT_TYPE)
 
     def to_dict(self):
         res = {

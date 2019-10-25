@@ -406,6 +406,30 @@ class TtVisa(models.Model):
                     "id": 2
                 }
             ]
+        },
+        {
+            "pax_type": "ADT",
+            "first_name": "andy",
+            "last_name": "sanjaya",
+            "title": "MR",
+            "birth_date": "2000-02-15",
+            "nationality_name": "Indonesia",
+            "nationality_code": "ID",
+            "country_of_issued_code": "",
+            "passport_expdate": "",
+            "passport_number": "",
+            "passenger_id": "",
+            "is_booker": False,
+            "is_contact": False,
+            "number": 1,
+            "master_visa_Id": "2",
+            "required": [
+                {
+                    "is_original": True,
+                    "is_copy": False,
+                    "id": 2
+                }
+            ]
         }
     ]
 
@@ -430,7 +454,7 @@ class TtVisa(models.Model):
         "seq_id": "PQR.0429001"
     }
 
-    def get_booking_visa_api(self, data):  #
+    def get_booking_visa_api(self, data, context):  #
         res = {}
         for rec in self.search([('name', '=', data['order_number'])]):  # self.name
             res_dict = rec.sudo().to_dict()
@@ -546,16 +570,14 @@ class TtVisa(models.Model):
         print('Response : ' + str(json.dumps(res)))
         return Response().get_no_error(res)
 
-    def create_booking_visa_api(self, data, context, kwargs):  #
-        sell_visa = copy.deepcopy(data['sell_visa'])  # self.param_sell_visa
-        booker = copy.deepcopy(data['booker'])  # self.param_booker
-        contact = copy.deepcopy(data['contact'])  # self.param_contact
-        passengers = copy.deepcopy(data['passenger'])  # self.param_passenger
-        search = copy.deepcopy(data['search'])  # self.param_search
-        payment = copy.deepcopy(data['payment'])  # self.param_payment
-        context = copy.deepcopy(context)  # self.param_context
-        kwargs = copy.deepcopy(kwargs)  # self.param_kwargs
-
+    def create_booking_visa_api(self, data, context):  #
+        sell_visa = data['sell_visa'] # self.param_sell_visa
+        booker = data['booker']  # self.param_booker
+        contact = data['contact']  # self.param_contact
+        passengers = data['passenger']  # self.param_passenger
+        search = data['search']  # self.param_search
+        payment = data['payment']  # self.param_payment
+        context = context  # self.param_context
         try:
             user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
 
@@ -1088,8 +1110,8 @@ class TtVisa(models.Model):
             for pax in self.passenger_ids:
                 ho_profit += pax.pricelist_id.cost_price - pax.pricelist_id.nta_price
 
-            vals = ledger.prepare_vals('Commission HO : ' + rec.name, rec.name, rec.issued_date,
-                                       3, rec.currency_id.id, ho_profit, 0)
+            vals = ledger.prepare_vals(self._name, self.id, 'Commission HO : ' + rec.name, rec.name, rec.issued_date,
+                                       3, rec.currency_id.id, self.env.user.id, ho_profit, 0)
             vals = ledger.prepare_vals_for_resv(self, vals)
             vals.update({
                 'agent_id': self.env['tt.agent'].sudo().search([('agent_type_id.name', '=', 'HO')], limit=1).id

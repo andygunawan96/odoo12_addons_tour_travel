@@ -1,5 +1,17 @@
 from odoo import api,models,fields
+from odoo.exceptions import UserError
+from dateutil.relativedelta import relativedelta
+from datetime import datetime
 from ...tools import variables
+
+# class TtAdjustmentType(models.Model):
+#     _name = 'tt.adjustment.type'
+#     _description = 'Adjustment Type Model'
+#     _order = 'id DESC'
+#
+#     name = fields.Char('Name')
+#     code = fields.Char('Code')
+#     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
 
 class TtAdjustment(models.Model):
     _name = "tt.adjustment"
@@ -21,35 +33,30 @@ class TtAdjustment(models.Model):
                                     readonly=True)
     currency_id = fields.Many2one('res.currency', readonly=True,
                                   default=lambda self: self.env.user.company_id.currency_id)
+    # adj_type = fields.Many2one('tt.adjustment.type', 'Adjustment Type', required=True, readonly=True,
+    #                             states={'draft': [('readonly', False)]})
 
-    adj_type = fields.Selection(variables.ADJUSTMENT_TYPE+[('payment_transaction', 'Payment Transaction'),
-                                 ('balance', 'Balance')], 'Adjustment Type', required=True, readonly=True,
+    adj_type = fields.Selection(lambda self: self.get_adjustment_type(), 'Adjustment Type', required=True, readonly=True,
                                 states={'draft': [('readonly', False)]})
+
+    referenced_document = fields.Char('Ref. Document')
 
     res_model = fields.Char(
         'Related Reservation Name', index=True)
     res_id = fields.Integer(
         'Related Reservation ID', index=True, help='Id of the followed resource')
 
-    component_amount = fields.Monetary('Initial Amount', store=True)#compute='onchange_component_type',
+    component_type = fields.Selection([('total', 'Grand Total'), ('commission', 'Total Commission')],
+                                      readonly=True, states={'draft': [('readonly', False)]})
 
-    #ini apa?
-    # vendor_amount_offline = fields.Monetary('Vendor Amount', readonly=True)
-    # ho_amount_offline = fields.Monetary('HO Amount', readonly=True)
-    # final_vendor_amount_offline = fields.Monetary('Final Vendor Amount', readonly=True)
-    # final_ho_amount_offline = fields.Monetary('Final HO Amount', readonly=True)
+    adjust_side = fields.Selection([('debit', 'Debit'), ('credit', 'Credit')], 'Side', default='debit', readonly=True, states={'draft': [('readonly',False)]})
 
-    amount = fields.Monetary('Adjusted Amount', readonly=True, states={'draft': [('readonly', False)]},
+    adjust_amount = fields.Monetary('Credit Amount', readonly=True, states={'draft': [('readonly', False)]},
                              help="Amount to be adjusted")
-    agent_commission = fields.Monetary('Agent Amount')#, compute='onchange_amount'
-    parent_agent_commission = fields.Monetary('Parent Agent Amount')#, compute='onchange_amount'
-    ho_commission = fields.Monetary('HO Amount')#, compute='onchange_amount'
-
-    final_amount = fields.Monetary('Final Amount')#, compute='onchange_amount'
 
     description = fields.Text('Description', readonly=True, states={'draft': [('readonly', False)]})
 
-    ledger_ids = fields.One2many('tt.ledger','res_id',domain={'res_model':'tt.adjustment'})
+    ledger_ids = fields.One2many('tt.ledger','adjustment_id')
 
     confirm_date = fields.Datetime('Confirm Date', readonly=True)
     confirm_uid = fields.Many2one('res.users', 'Confirmed by', readonly=True)
@@ -65,4 +72,82 @@ class TtAdjustment(models.Model):
                                   readonly=True, states={'draft': [('readonly', False)]})
     reason_uid = fields.Many2one('res.users', 'Responsible User', readonly=True,
                                  states={'draft': [('readonly', False)]})
+    
+    @api.model
+    def create(self, vals_list):
+        vals_list['name'] = self.env['ir.sequence'].next_by_code('tt.adjustment')
+        if 'adj_type' in vals_list:
+            vals_list['adj_type'] = self.parse_adjustment_type(vals_list['adj_type'])
+            
+        return super(TtAdjustment, self).create(vals_list)
+        
+    def parse_adjustment_type(self,type):
+        if type == 0:
+            return 'balance'
+        elif type == 1:
+            return 'payment_transaction'
+        else:
+            return self.env['tt.provider.type'].browse(int(type)).code
+        
+    def get_adjustment_type(self):
+        return [(rec,rec.capitalize()) for rec in self.env['tt.provider.type'].get_provider_type()]+[('payment_transaction', 'Payment Transaction'),
+                 ('balance', 'Balance')]
+
+    def confirm_adj_from_button(self):
+        if self.state != 'draft':
+            raise UserError("Cannot Approve because state is not 'draft'.")
+
+        self.write({
+            'state': 'confirm',
+            'confirm_uid': self.env.user.id,
+            'confirm_date': datetime.now()
+        })
+
+    def validate_adj_from_button(self):
+        if self.state != 'confirm':
+            raise UserError("Cannot Approve because state is not 'confirm'.")
+
+        self.write({
+            'state': 'validate',
+            'validate_uid': self.env.user.id,
+            'validate_date': datetime.now()
+        })
+
+    def approve_adj_from_button(self):
+        if self.state != 'validate':
+            raise UserError("Cannot Approve because state is not 'Validate'.")
+        debit = 0
+        credit = 0
+        if self.adjust_side == 'debit':
+            debit = self.adjust_amount
+        else:
+            credit = self.adjust_amount
+
+        ledger_type = 5
+        if self.component_type == 'total':
+            ledger_type = 2
+        elif self.component_type == 'commission':
+            ledger_type = 3
+
+        self.env['tt.ledger'].create_ledger_vanilla(
+            self.res_model,
+            self.res_id,
+            'Adjustment : for %s' % (self.name),
+            self.referenced_document,
+            datetime.now() + relativedelta(hours=7),
+            ledger_type,
+            self.currency_id.id,
+            self.env.user.id,
+            self.agent_id.id,
+            debit,
+            credit,
+            'Adjustment for %s' % (self.referenced_document),
+            **{'adjustment_id': self.id}
+        )
+
+        self.write({
+            'state': 'approve',
+            'approve_uid': self.env.user.id,
+            'approve_date': datetime.now()
+        })
 

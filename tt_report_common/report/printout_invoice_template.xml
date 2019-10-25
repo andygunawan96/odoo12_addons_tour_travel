@@ -343,7 +343,7 @@
     <template id="price_and_sign">
         <br/>
         <div style="width: 100%; border-bottom: 1px solid black; margin:20px 0px 0px 0px;"/>  <!---15px -15px-->
-        <div class="row">
+        <div class="row" style="page-break-inside:avoid;">
             <!--No Rekening-->
             <div class="col-11">
                 <t t-if="doc.agent_id.payment_acquirer_ids">
@@ -423,51 +423,87 @@
         <div style="margin-bottom: 10px; margin-top: 20px;">
             <span style="font-size: 28px; font-weight: 730">INVOICE DETAILS</span><br/>
         </div>
-        <div class="box" style="margin: 0px">
-            <div class="title" style="background-color: #DC5413; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px">
-                <div class="row" style="padding-left: 20px; color: white; font-weight: 600; font-size: 18px">
-                    <div class="col-2">Ref.Number</div>
-                    <t t-if="doc_model in ['tt.reservation.airline','tt.reservation.train']">
-                        <div class="col-4">Passenger(s)</div>
-                    </t>
-                    <t t-else="">
-                        <div class="col-4">Guest(s)</div>
-                    </t>
-                    <div class="col-4">Detail</div>
-                    <div class="col-2">Amount</div>
-                </div>
-            </div>
-            <t t-foreach="inv_lines[doc.id].keys()" t-as="line_idx">
-                <t t-set="line" t-value="inv_lines[doc.id][line_idx]"/>
-                <t t-set="col_len" t-value="len(line['descs'])"/>
-                <div class="row" style="margin: 0px; border: 1px solid #BBB; border-radius: 0 0 20px 20px;">
-                    <div class="col-2" style="background: #F0F0F0; border-radius: 0 0 0px 20px; padding: 10px 10px 10px 20px;">
-                        <span t-esc="line_idx"/>
-                    </div>
-                    <div class="col-4" style="padding: 10px; 0">
-                        <ul style="padding-left:15px;">
-                            <t t-foreach="line['paxs']" t-as="pax">
-                                <li><span t-field="pax.first_name"/> <span t-field="pax.last_name"/></li>
+        <table style="width: 100%; line-height: normal; margin-bottom: 30px; padding-top: 5px; padding-bottom: 5px">
+            <tr style="background-color: #DC5413; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px">
+                <td style="width: 16.667%; border-radius: 20px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px; color: white; font-weight: 500; font-size: 18px">
+                    Ref. Number
+                </td>
+                <td style="width: 25%; padding: 7px 7px 7px 20px; color: white; font-weight: 500; font-size: 18px">
+                    Descriptions
+                </td>
+                <td style="width: 16.666%; padding: 7px 7px 7px 20px; color: white; font-weight: 500; font-size: 18px">
+                    Type
+                </td>
+                <td style="width: 25%; padding: 7px 7px 7px 20px; color: white; font-weight: 500; font-size: 18px">
+                    Details
+                </td>
+                <td style="width: 16.667%; border-radius: 0px 20px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px; color: white; font-weight: 500; font-size: 18px">
+                    Amount
+                </td>
+            </tr>
+            <t t-set="row_idx" t-value="0"/>
+            <t t-foreach="inv_lines[doc.id]" t-as="line2_idx">
+                <t t-foreach="line2_idx.keys()" t-as="line_idx">
+                    <t t-set="line" t-value="line2_idx[line_idx]"/>
+                    <t t-set="col_len" t-value="len(line['descs'])"/>
+                    <t t-set="pax_count" t-value="0"/>
+                    <t t-foreach="line['pax_data']" t-as="pax">
+                        <tr valign="top" style="padding-top: 5px; padding-bottom: 5px;">
+                            <t t-if="pax_count == 0">
+                                <t t-if="row_idx == len(inv_lines[doc.id])-1">
+                                    <td t-att-rowspan="len(line['pax_data'])" style="background: #F0F0F0; width: 16.667%; border: 1px solid #ccc; border-radius: 0px 0px 0px 20px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                                        <span t-esc="line_idx"/>
+                                    </td>
+                                </t>
+                                <t t-else="">
+                                    <td t-att-rowspan="len(line['pax_data'])" style="background: #F0F0F0; width: 16.667%; border: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                                        <span t-esc="line_idx"/>
+                                    </td>
+                                </t>
+                                <td t-att-rowspan="len(line['pax_data'])" style="width: 25%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc;">
+                                    <t t-foreach="line['descs']" t-as="desc">
+                                        <span t-esc="desc"/>
+                                        <br/>
+                                    </t>
+                                </td>
+                                <td t-att-rowspan="len(line['pax_data'])" style="width: 16.666%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc;">
+                                    <span t-esc="line['provider_type']"/>
+                                    <br/>
+                                </td>
                             </t>
-                        </ul>
-                    </div>
-                    <div class="col-4" style="padding: 10px; 0">
-                        <t t-foreach="line['descs']" t-as="desc">
-                            <span t-esc="desc"/>
-                        </t>
-                    </div>
-                    <div class="col-2 text-right" style="border-radius: 0 0 20px 0px; padding: 10px 25px;">
-                        <span t-esc="line['total']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
-                    </div>
-                </div>
+                            <td style="width: 25%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc;">
+                                <ul style="padding-left:15px;">
+                                    <li><span t-esc="pax['name']"/></li>
+                                </ul>
+                            </td>
+                            <t t-if="row_idx == len(inv_lines[doc.id])-1">
+                                <td style="width: 16.667%; border-color: #CCC; padding: 7px 20px 7px 7px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-bottom-right-radius: 10px; text-align: right">
+                                    <ul style="list-style-type: none;">
+                                        <li><span t-esc="pax['total']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></li>
+                                    </ul>
+                                </td>
+                            </t>
+                            <t t-else="">
+                                <td style="width: 16.667%; border-color: #CCC; padding: 7px 20px 7px 7px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; text-align: right">
+                                    <ul style="list-style-type: none;">
+                                        <li><span t-esc="pax['total']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></li>
+                                    </ul>
+                                </td>
+                            </t>
+                        </tr>
+                        <t t-set="pax_count" t-value="pax_count+1"/>
+                    </t>
+                    <t t-set="row_idx" t-value="row_idx+1"/>
+                </t>
             </t>
-        </div>
+        </table>
+
         <!-- SubTotal -->
-        <div class="row mt4 mb2">
+        <div class="row mt4 mb2" style="padding-top: 20px; page-break-inside: avoid">
             <div class="col-8">
                 <br/>
                 <table style="width:80%;">
-                    <tr>
+                    <tr valign="top">
                         <td style="width:100px;">In Words</td>
                         <td style="width:20px;">:</td>
                         <td style=""><t t-esc="terbilang[doc.name]"/></td>
@@ -475,7 +511,7 @@
                     <tr>
                         <td>Remarks</td>
                         <td>:</td>
-                        <td></td>
+                        <td/>
                     </tr>
                 </table>
             </div>

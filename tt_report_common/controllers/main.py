@@ -62,6 +62,8 @@ class Main(http.Controller):
                     'active_model': 'tt.agent.invoice',
                     'active_ids': model_id,
                 })
+            elif model_name == 'form.itinerary':
+                pdf = request.env.ref('tt_report_common.action_printout_itinerary_activity')
             else:
                 pdf = request.env.ref('tt_report_common.action_report_printout_invoice')
 
