@@ -14,7 +14,7 @@ class Main(http.Controller):
             if print_type.lower() == 'pdf':
                 pdf, _ = pdf.sudo().render_qweb_pdf(False, data=data)
                 pdfhttpheaders = [('Content-Type', 'application/pdf'), ('Content-Length', len(pdf))]
-                pdfhttpheaders.append( ('Content-Disposition', 'attachment; filename="trial.pdf"') )
+                pdfhttpheaders.append( ('Content-Disposition', 'attachment; filename="Itinerary.pdf"') )
                 return request.make_response(pdf, headers=pdfhttpheaders)
             else:
                 html = pdf.sudo().render_qweb_html(False, data=data)
