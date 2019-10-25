@@ -41,9 +41,13 @@ class TtTemporaryRecord(models.Model):
                     'rec_model': model_name,
                 })
         remove_obj = self.env[self.rec_model].browse(self.remove_rec_id)
-        if self.rec_model == 'res.city':
+        if self.rec_model in ['res.city', 'res.country']:
             if not self.env[self.rec_model].browse(self.parent_rec_id).other_name_ids.filtered(lambda x: x.name == remove_obj.name):
                 self.env['tt.destination.alias'].create({'name': remove_obj.name, 'city_id': self.parent_rec_id, })
+
+            for a in remove_obj.provide_code_ids:
+                a.update({field_name: self.parent_rec_id})
+
         remove_obj.active = False
         remove_obj.other_name_ids = False
         self.state = 'merge'
