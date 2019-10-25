@@ -35,6 +35,13 @@ class ReservationVisa(models.Model):
                         + '\n'
         return desc_text
 
+    def get_visa_summary(self):
+        desc_text = ''
+        for rec in self:
+            desc_text = 'Reservation Visa Country : ' + self.country_id.name + ' ' + 'Consulate : ' + \
+                        rec.immigration_consulate + ' ' + 'Journey Date : ' + str(rec.departure_date)
+        return desc_text
+
     def action_create_invoice(self):
         invoice_id = self.env['tt.agent.invoice'].search(
             [('booker_id', '=', self.contact_id.id), ('state', '=', 'draft')])
@@ -51,7 +58,7 @@ class ReservationVisa(models.Model):
             'res_model_resv': self._name,
             'res_id_resv': self.id,
             'invoice_id': invoice_id.id,
-            'desc': self.get_all_passengers_desc()
+            'desc': self.get_visa_summary()
         })
 
         invoice_line_id = inv_line_obj.id

@@ -406,6 +406,30 @@ class TtVisa(models.Model):
                     "id": 2
                 }
             ]
+        },
+        {
+            "pax_type": "ADT",
+            "first_name": "andy",
+            "last_name": "sanjaya",
+            "title": "MR",
+            "birth_date": "2000-02-15",
+            "nationality_name": "Indonesia",
+            "nationality_code": "ID",
+            "country_of_issued_code": "",
+            "passport_expdate": "",
+            "passport_number": "",
+            "passenger_id": "",
+            "is_booker": False,
+            "is_contact": False,
+            "number": 1,
+            "master_visa_Id": "2",
+            "required": [
+                {
+                    "is_original": True,
+                    "is_copy": False,
+                    "id": 2
+                }
+            ]
         }
     ]
 
@@ -1086,8 +1110,8 @@ class TtVisa(models.Model):
             for pax in self.passenger_ids:
                 ho_profit += pax.pricelist_id.cost_price - pax.pricelist_id.nta_price
 
-            vals = ledger.prepare_vals('Commission HO : ' + rec.name, rec.name, rec.issued_date,
-                                       3, rec.currency_id.id, ho_profit, 0)
+            vals = ledger.prepare_vals(self._name, self.id, 'Commission HO : ' + rec.name, rec.name, rec.issued_date,
+                                       3, rec.currency_id.id, self.env.user.id, ho_profit, 0)
             vals = ledger.prepare_vals_for_resv(self, vals)
             vals.update({
                 'agent_id': self.env['tt.agent'].sudo().search([('agent_type_id.name', '=', 'HO')], limit=1).id
