@@ -80,9 +80,10 @@ class VisaOrderPassengers(models.Model):
     expired_date = fields.Date('Expired Date', readonly=1)
 
     cost_service_charge_ids = fields.Many2many('tt.service.charge', 'tt_reservation_visa_cost_charge_rel',
-                                               'passenger_id', 'service_charge_id', 'Cost Service Charges')
+                                               'passenger_id', 'service_charge_id', 'Cost Service Charges', readonly=1)
     channel_service_charge_ids = fields.Many2many('tt.service.charge', 'tt_reservation_visa_channel_charge_rel',
-                                                  'passenger_id', 'service_charge_id', 'Channel Service Charges')
+                                                  'passenger_id', 'service_charge_id', 'Channel Service Charges',
+                                                  readonly=1)
 
     # use_vendor = fields.Boolean('Use Vendor', readonly=1, related='passport_id.use_vendor')
     notes = fields.Text('Notes (Agent to Customer)')
