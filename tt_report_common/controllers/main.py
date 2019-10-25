@@ -8,6 +8,18 @@ class Main(http.Controller):
     @http.route(['/rodextrip/report/<string:print_type>/<string:model_name>/<string:order_number>',
         '/rodextrip/report/<string:print_type>/<string:model_name>/<string:order_number>/<int:report_mode>'], methods=['GET'], csrf=False, type='http', auth="public", website=True)
     def print_id(self, print_type, model_name, order_number, report_mode=False):
+        if model_name == 'form.itinerary':
+            pdf = request.env.ref('tt_report_common.action_printout_itinerary_from_json')
+            data = { 'context': {'json_content': order_number} }
+            if print_type.lower() == 'pdf':
+                pdf, _ = pdf.sudo().render_qweb_pdf(False, data=data)
+                pdfhttpheaders = [('Content-Type', 'application/pdf'), ('Content-Length', len(pdf))]
+                pdfhttpheaders.append( ('Content-Disposition', 'attachment; filename="Itinerary.pdf"') )
+                return request.make_response(pdf, headers=pdfhttpheaders)
+            else:
+                html = pdf.sudo().render_qweb_html(False, data=data)
+                return request.make_response(html)
+
         model_id = request.env[model_name].search([('name', '=ilike', order_number)], limit=1).ids
         data = {'context': {'active_model': model_name, 'active_ids': model_id}}
         model_obj = request.env[model_name].browse(model_id)
@@ -62,8 +74,6 @@ class Main(http.Controller):
                     'active_model': 'tt.agent.invoice',
                     'active_ids': model_id,
                 })
-            elif model_name == 'form.itinerary':
-                pdf = request.env.ref('tt_report_common.action_printout_itinerary_activity')
             else:
                 pdf = request.env.ref('tt_report_common.action_report_printout_invoice')
 

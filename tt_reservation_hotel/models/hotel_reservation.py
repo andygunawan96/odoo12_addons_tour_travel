@@ -565,7 +565,8 @@ class HotelReservation(models.Model):
         api_context = {
             'co_uid': self.env.user.agent_id.id
         }
-        res = API_CN_HOTEL.check_booking_status_by_api({'name': self.name, 'issued_name': self.room_detail_ids[0].issued_name,
+        res = API_CN_HOTEL.check_booking_status_by_api({'name': self.name, 'booking_name': self.room_detail_ids[0].name,
+                                                        'issued_name': self.room_detail_ids[0].issued_name,
                                                         'provider': self.room_detail_ids[0].provider_id.code}, api_context)
         if res['error_code'] != 0:
             raise ('Error')
