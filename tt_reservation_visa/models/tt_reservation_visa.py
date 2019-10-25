@@ -46,7 +46,7 @@ class TtVisa(models.Model):
     duration = fields.Char('Duration', readonly=True, states={'draft': [('readonly', False)]})
     total_cost_price = fields.Monetary('Total Cost Price', default=0, readonly=True)
 
-    state_visa = fields.Selection(STATE_VISA, 'State', default='draft',
+    state_visa = fields.Selection(STATE_VISA, 'State', default='confirm',
                                   help='''draft = requested
                                         confirm = HO accepted
                                         validate = if all required documents submitted and documents in progress
@@ -434,7 +434,7 @@ class TtVisa(models.Model):
     ]
 
     param_search = {
-        "destination": "Albania",
+        "destination": "California",
         "consulate": "Jakarta",
         "departure_date": "2019-10-04",
         "provider": "skytors_visa"
@@ -452,6 +452,7 @@ class TtVisa(models.Model):
     param_payment = {
         "member": False,
         "seq_id": "PQR.0429001"
+        # "seq_id": "PQR.9999999"
     }
 
     def get_booking_visa_api(self, data, context):  #
@@ -465,14 +466,6 @@ class TtVisa(models.Model):
             type = []
             for idx, pax in enumerate(rec.passenger_ids, 1):
                 requirement = []
-                # sale[pax.passenger_id.first_name + ' ' + pax.passenger_id.last_name] = []
-                # for sale_price in passenger[len(passenger) - 1]['visa']['price']:
-                #     if sale_price != 'currency':
-                #         sale[pax.passenger_id.first_name + ' ' + pax.passenger_id.last_name].append({
-                #             'charge_code': sale_price,
-                #             'amount': passenger[len(passenger) - 1]['visa']['price'][sale_price],
-                #             'currency': passenger[len(passenger) - 1]['visa']['price']['currency']
-                #         })
                 sale_obj = self.env['tt.service.charge'].sudo().search([('visa_id', '=', data['order_number']), ('passenger_visa_ids', '=', pax.id)])  # self.name
                 sale = {}
                 for ssc in sale_obj:
@@ -491,13 +484,8 @@ class TtVisa(models.Model):
                 for require in pax.to_requirement_ids:
                     requirement.append({
                         'name': require.requirement_id.name,
-                        # 'is_ori': require.is_ori,
-                        # 'is_copy': require.is_copy,
-                        # 'validate_HO': require.validate_HO,
-                        # 'required': require.required,
                     })
                 passenger.append({
-                    # 'title': pax.passenger_id.title,
                     'title': pax.title,
                     'first_name': pax.first_name,
                     'last_name': pax.last_name,
@@ -507,9 +495,6 @@ class TtVisa(models.Model):
                     'passport_number': pax.passport_number or '',
                     'passport_expdate': pax.passport_expdate or '',
                     'visa': {
-                        # 'sale_price': pax.pricelist_id.sale_price,
-                        # 'commission': pax.pricelist_id.commission_price,
-                        # 'currency': pax.pricelist_id.currency_id.name
                         'price': sale,
                         'entry_type': dict(pax.pricelist_id._fields['entry_type'].selection).get(pax.pricelist_id.entry_type),
                         'visa_type': dict(pax.pricelist_id._fields['visa_type'].selection).get(pax.pricelist_id.visa_type),
@@ -526,33 +511,12 @@ class TtVisa(models.Model):
                     'visa_type': dict(pax.pricelist_id._fields['visa_type'].selection).get(pax.pricelist_id.visa_type),
                     'process': dict(pax.pricelist_id._fields['process_type'].selection).get(pax.pricelist_id.process_type)
                 })
-            # for pax in rec.contact_ids:
-            #     contact.append({
-            #         'title': pax.title,
-            #         'name': pax.name,
-            #         'phone_number': pax.phone_ids[0].phone_number if len(pax.phone_ids) > 0 else '',
-            #     })
             res = {
                 'contact': {
                     'name': res_dict['contact']['name'],
                     'email': res_dict['contact']['email'],
                     'phone': res_dict['contact']['phone']
                 },
-                # {
-                #     'first_name': rec.contact_id.first_name,
-                #     'last_name': rec.contact_id.last_name,
-                #     'email': rec.contact_id.email,
-                #     'phone_number': rec.contact_id.phone_ids[0].phone_number if len(
-                #         rec.contact_id.phone_ids) > 0 else '',
-                # }
-                # 'booker': rec.booker_id.to_dict(),
-                # {
-                #     # 'title': rec.booker_id.title,
-                #     'first_name': rec.booker_id.first_name,
-                #     'last_name': rec.booker_id.last_name,
-                #     'email': rec.booker_id.email,
-                #     'phone_number': rec.booker_id.phone_ids[0].phone_number if len(rec.booker_id.phone_ids) > 0 else '',
-                # }
                 'journey': {
                     'country': rec.country_id.name,
                     'departure_date': str(res_dict['departure_date']),
@@ -570,18 +534,19 @@ class TtVisa(models.Model):
         print('Response : ' + str(json.dumps(res)))
         return Response().get_no_error(res)
 
-    def create_booking_visa_api(self, data, context):  #
-        sell_visa = data['sell_visa'] # self.param_sell_visa
-        booker = data['booker']  # self.param_booker
-        contact = data['contact']  # self.param_contact
-        passengers = data['passenger']  # self.param_passenger
-        search = data['search']  # self.param_search
-        payment = data['payment']  # self.param_payment
-        context = context  # self.param_context
+    def create_booking_visa_api(self):  # , data, context
+        sell_visa = self.param_sell_visa  # data['sell_visa']
+        booker = self.param_booker  # data['booker']
+        contact = self.param_contact  # data['contact']
+        passengers = self.param_passenger  # data['passenger']
+        search = self.param_search  # data['search']
+        payment = self.param_payment  # data['payment']
+        context = self.param_context  # context
         try:
             user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
 
             header_val = self._visa_header_normalization(search, sell_visa)
+
             booker_id = self.create_booker_api(booker, context)
             # contact_ids = self._create_contact(context, contact)  # create contact
             contact_id = self.create_contact_api(contact[0], booker_id, context)
@@ -635,6 +600,11 @@ class TtVisa(models.Model):
 
             provider = provider_obj.env['tt.provider'].search([('code', '=', 'ho')], limit=1)
             country = country_obj.search([('name', '=', search['destination'])], limit=1)
+            # if not country:
+            #     return {
+            #         'error_code': 1,
+            #         'error_msg': 'Country Destination not Found',
+            #     }
 
             vals = {
                 'booking_id': book_obj.id,
@@ -799,118 +769,6 @@ class TtVisa(models.Model):
 
         return res
 
-    def _create_booker(self, context, booker):
-        country_env = self.env['res.country'].sudo()
-        booker_env = self.env['tt.customer'].sudo()
-        if booker.get('booker_id'):
-            booker['booker_id'] = int(booker['booker_id'])
-            booker_rec = booker_env.browse(booker['booker_id'])
-            if booker_rec:
-                booker_rec.update({
-                    'email': booker.get('email', booker_rec.email),
-                    # 'mobile': vals.get('mobile', contact_rec.phone_ids[0]),
-                })
-            return booker_rec.id
-        else:
-            country = country_env.search([('code', '=', booker.pop('nationality_code'))])
-            booker.update({
-                'commercial_agent_id': context['co_agent_id'],
-                'agent_id': context['co_agent_id'],
-                'nationality_id': country and country[0].id or False,
-                'email': booker.get('email', booker['email']),
-                'mobile': booker.get('mobile', booker['mobile']),
-            })
-            booker_obj = booker_env.create(booker)
-            booker_obj.update({
-                'phone_ids': booker_obj.phone_ids.create({
-                    'phone_number': booker.get('mobile', booker['mobile']),
-                    'type': 'work'
-                }),
-            })
-            return booker_obj.id
-
-    def _create_contact(self, context, contact):  # odoo10 : hanya 1 contact | odoo12 : bisa lebih dari 1 contact
-        contact_env = self.env['tt.customer'].sudo()
-        country_env = self.env['res.country'].sudo()
-        contact_list = []
-        contact_count = 0
-        for con in contact:
-            contact_count += 1
-            # cek jika sudah ada contact
-            if con['contact_id']:
-                con['contact_id'] = int(con['contact_id'])
-                contact_rec = contact_env.browse(con['contact_id'])
-                if contact_rec:
-                    contact_rec.update({
-                        'email': con.get('email', contact_rec.email),
-                        # 'mobile': vals.get('mobile', contact_rec.phone_ids[0]),
-                    })
-                # return contact_rec
-                contact_list.append(con['contact_id'])
-            # jika tidak ada, buat customer baru
-            else:
-                country = country_env.search([('code', '=', con.pop('nationality_code'))])  # diubah ke country_code
-                con.update({
-                    'commercial_agent_id': context['co_agent_id'],
-                    'agent_id': context['co_agent_id'],
-                    'nationality_id': country and country[0].id or False,
-                    # 'passenger_type': 'ADT',
-                    'email': con.get('email', con['email'])
-                })
-                contact_obj = contact_env.create(con)
-                contact_obj.update({
-                    'phone_ids': contact_obj.phone_ids.create({
-                        'phone_number': con.get('mobile', con['mobile']),
-                        'type': 'work'
-                    }),
-                })
-                contact_list.append(contact_obj.id)
-        return contact_list
-
-    def _create_passenger(self, context, passengers):
-        passenger_list = []
-        country_env = self.env['res.country'].sudo()
-        passenger_env = self.env['tt.customer'].sudo()
-        passenger_count = 0
-        for psg in passengers:
-            passenger_count += 1
-            p_id = psg.get('passenger_id')
-            if p_id:
-                p_object = passenger_env.browse(int(p_id))
-                if p_object:
-                    passenger_list.append(p_id)
-                    if psg.get('passport_number'):
-                        p_object['passport_number'] = psg['passport_number']
-                    if psg.get('passport_expdate'):
-                        p_object['passport_expdate'] = psg['passport_expdate']
-                    if psg.get('country_of_issued_id'):
-                        p_object['country_of_issued_id'] = psg['country_of_issued_id']
-                    print('Passenger Type : ' + str(psg['passenger_type']))
-                    p_object.write({
-                        'domicile': psg.get('domicile'),
-                        # 'mobile': psg.get('mobile')
-                    })
-            else:
-                # buat nationality_id dan country_of_issued_id
-                country = country_env.search([('code', '=', psg.pop('nationality_code'))])
-                psg['nationality_id'] = country and country[0].id or False
-                if psg['country_of_issued_code']:
-                    country = country_env.search([('code', '=', psg.pop('country_of_issued_code'))])
-                    psg['country_of_issued_id'] = country and country[0].id or False
-                if not psg.get('passport_expdate'):
-                    psg.pop('passport_expdate')
-
-                psg.update({
-                    'passenger_id': False,
-                    'agent_id': context['co_agent_id']
-                })
-                psg_res = passenger_env.create(psg)
-                psg.update({
-                    'passenger_id': psg_res.id,
-                })
-                passenger_list.append(psg_res.id)
-        return passenger_list
-
     def create_sale_service_charge_value(self, passenger, passenger_ids):
         ssc_list = []
         ssc_list_final = []
@@ -1024,7 +882,9 @@ class TtVisa(models.Model):
                         'to_passenger_id': to_psg_obj.id,
                         'requirement_id': req['id'],
                         'is_ori': req['is_original'],
-                        'is_copy': req['is_copy']
+                        'is_copy': req['is_copy'],
+                        'check_uid': self.env.user.id,
+                        'check_date': datetime.now()
                     }
                     to_req_obj = to_req_env.create(req_vals)
                     to_req_list.append(to_req_obj.id)  # akan dipindah ke edit requirements
@@ -1383,6 +1243,7 @@ class TtVisa(models.Model):
 
     @api.multi
     @api.depends('passenger_ids')
+    @api.onchange('passenger_ids')
     def _compute_immigration_consulate(self):
         for rec in self:
             if rec.passenger_ids:

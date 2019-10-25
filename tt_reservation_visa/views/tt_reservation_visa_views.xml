@@ -162,7 +162,7 @@
                     <notebook colspan="4">
                         <page string="Passengers">
                             <field name="passenger_ids">
-                                <tree create="1">
+                                <tree create="false">
                                     <field name="customer_id"/>
                                     <field name="passenger_type"/>
                                     <field name="pricelist_id"/>
@@ -213,7 +213,7 @@
                     </notebook>
                     <group>
                         <group>
-                            <field name="notes"/>
+                            <field name="notes" string="Notes"/>
                         </group>
                         <group>
                             <field name="error_msg"/>
@@ -245,7 +245,7 @@
         <field name="name">tt.reservation.visa.view.tree</field>
         <field name="model">tt.reservation.visa</field>
         <field name="arch" type="xml">
-            <tree create="true">
+            <tree create="false">
                 <button type="object" string="Create Booking Visa" name="create_booking_visa_api"/>
                 <button type="object" string="Get Booking Visa" name="get_booking_visa_api"/>
                 <field name="name"/>
