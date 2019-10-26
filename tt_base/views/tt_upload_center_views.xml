@@ -4,6 +4,7 @@
     <record id="tt_upload_center_form_view" model="ir.ui.view">
         <field name="name">tt.upload.center.form.view</field>
         <field name="model">tt.upload.center</field>
+        <field name="priority">10</field>
         <field name="arch" type="xml">
             <form string="Upload Center">
                 <sheet>
@@ -37,6 +38,7 @@
     <record id="tt_upload_center_create_form_view" model="ir.ui.view">
         <field name="name">tt.upload.center.create.form.view</field>
         <field name="model">tt.upload.center</field>
+        <field name="priority">20</field>
         <field name="arch" type="xml">
             <form>
                 <button name="%(tt_base.tt_upload_center_wizard_action_view)d" type="action" string="Upload"/>
@@ -65,6 +67,7 @@
         <field name="view_type">form</field>
         <field name="priority">16</field>
         <field name="view_mode">tree,form</field>
+        <field name="domain">['|',('active','=',True),('active','=',False)]</field>
         <field name="context">
             {
                 'form_view_ref':'tt_base.tt_upload_center_form_view'

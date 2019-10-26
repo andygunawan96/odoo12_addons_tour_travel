@@ -76,6 +76,7 @@ class TtCustomer(models.Model):
         identity_dict = {}
         for rec in self.identity_ids:
             identity_dict.update(rec.to_dict())
+
         res = {
             'name': self.name,
             'first_name': self.first_name,
@@ -146,6 +147,7 @@ class TtCustomer(models.Model):
             type = data['identity_type']
             expdate = data['identity_expdate']
             c_issued_id = data['identity_country_of_issued_code']
+            image_seqs = data.get('identity_images',[])
         except:
             raise RequestException(1023,additional_message="Missing key.")
 
@@ -160,20 +162,32 @@ class TtCustomer(models.Model):
         if not c_issued_id:
             raise RequestException(1023,additional_message="Country not found.")
 
+        #convet seq_id to id
+        image_ids = []
+        if image_seqs:
+            for seq in image_seqs:
+                image_ids.append((seq[0],self.env['tt.upload.center'].search([('seq_id','=',seq[1])])))
+
         if not_exist:
-            self.env['tt.customer.identity'].create({
+            create_vals = {
                 'identity_type': type,
                 'identity_number': number,
                 'identity_country_of_issued_id': c_issued_id,
                 'identity_expdate': expdate,
-                'customer_id': self.id
-            })
+                'customer_id': self.id,
+            }
+            if image_ids:
+                create_vals.update(image_ids)
+            self.env['tt.customer.identity'].create(create_vals)
         else:
-            exixting_identity.write({
+            update_vals = {
                 'identity_number': number,
                 'identity_country_of_issued_id': c_issued_id,
                 'identity_expdate': expdate
-            })
+            }
+            if image_ids:
+                update_vals.update(image_ids)
+            exixting_identity.write()
 
 
 
@@ -186,6 +200,7 @@ class TtCustomerIdentityNumber(models.Model):
     identity_number = fields.Char('Number',required=True)
     identity_expdate = fields.Date('Expire Date', required=True)
     identity_country_of_issued_id = fields.Many2one('res.country','Issued  Country')
+    identity_image_ids = fields.Many2many('tt.upload.center','tt_customer_identity_upload_center_rel','identity_id','upload_id','Uploads')
 
     customer_id = fields.Many2one('tt.customer','Owner',required=True)
 
@@ -210,11 +225,13 @@ class TtCustomerIdentityNumber(models.Model):
         super(TtCustomerIdentityNumber, self).write(vals)
         
     def to_dict(self):
+        image_list = [(rec.url,rec.seq_id) for rec in self.identity_image_ids]
         return {
             self.identity_type:{
                 'identity_number': self.identity_number,
                 'identity_expdate': self.identity_expdate and self.identity_expdate.strftime('%Y-%m-%d') or '',
                 'identity_country_of_issued_name': self.identity_country_of_issued_id and self.identity_country_of_issued_id.name or '',
-                'identity_country_of_issued_code': self.identity_country_of_issued_id and self.identity_country_of_issued_id.code or ''
+                'identity_country_of_issued_code': self.identity_country_of_issued_id and self.identity_country_of_issued_id.code or '',
+                'identity_images': image_list
             }
         }

@@ -62,7 +62,11 @@ class Ledger(models.Model):
 
     def calc_balance(self, vals):
         # Pertimbangkan Multi Currency Ledger
-        balance = self.env['tt.agent'].browse(vals['agent_id']).balance
+        balance = 0
+        if vals.get('agent_id'):
+            balance = self.env['tt.agent'].browse(vals['agent_id']).balance
+        elif vals.get('customer_parent_id'):
+            balance = self.env['tt.customer.parent'].browse(vals['customer_parent_id']).balance
         return (balance + vals['debit']) - vals['credit']
 
     def prepare_vals(self, res_model,res_id,name, ref, date, ledger_type, currency_id, issued_uid, debit=0, credit=0,description = ''):
@@ -80,7 +84,6 @@ class Ledger(models.Model):
                 'description': description,
                 'issued_uid': issued_uid
             }
-
 
     def create_ledger_vanilla(self, res_model,res_id,name, ref, date, ledger_type, currency_id, issued_uid,agent_id,customer_parent_id, debit=0, credit=0,description = '',**kwargs):
         vals = self.prepare_vals(res_model,

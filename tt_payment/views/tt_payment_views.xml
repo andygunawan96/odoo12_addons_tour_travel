@@ -56,10 +56,6 @@
                             </div>
                             <field name="payment_date"/>
                             <field name="reference"/>
-                            <field name="payment_image_id"/>
-                            <field name="payment_image_ids"/>
-                            <button name="unlink_image" string="Unlink Image" type="object"/>
-                            <button name="unlink_image_ids" string="Unlink Images" type="object"/>
                         </group>
                         <group string="Amount">
                             <field name="total_amount"/>
@@ -70,13 +66,22 @@
                             <field name="currency_id" invisible="1"/>
                         </group>
                     </group>
-                    <separator name="used_on" string="Used on"/>
-                    <group>
-                        <field name="top_up_id"
-                        attrs="{'invisible': [('customer_parent_id', '!=', False)]}"/>
-                    </group>
-                    <separator string="Adjustment"/>
-                    <field name="adjustment_ids"/>
+                    <notebook>
+                        <page string="Uploads">
+                            <button name="%(tt_base.tt_upload_center_wizard_action_view)d" string="New Upload" type="action"/>
+                            <field name="payment_image_ids" options="{'no_create':True}"/>
+                        </page>
+                        <page name="used_on" string="Used On">
+                            <group>
+                                <field name="top_up_id"
+                                       attrs="{'invisible': [('customer_parent_id', '!=', False)]}"/>
+                            </group>
+                        </page>
+                        <page string="Adjsutments">
+                            <separator string="Adjustment"/>
+                            <field name="adjustment_ids"/>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>

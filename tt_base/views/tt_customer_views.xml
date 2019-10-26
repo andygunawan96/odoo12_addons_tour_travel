@@ -47,11 +47,12 @@
                         <notebook colspan="2">
                             <page string="Identity">
                                 <field name="identity_ids">
-                                    <tree editable="bottom">
+                                    <tree>
                                         <field name="identity_type"/>
                                         <field name="identity_number"/>
                                         <field name="identity_expdate"/>
                                         <field name="identity_country_of_issued_id"/>
+                                        <field name="identity_image_ids"/>
                                     </tree>
                                 </field>
                             </page>
@@ -118,4 +119,32 @@
               sequence="1"
               action="tt_customer_action_view"/>
 
+
+<!--    ### IDENTITY CUSTOMER ###-->
+
+    <record id="tt_customer_identity_form_view" model="ir.ui.view">
+        <field name="name">tt.customer.identity.form.view</field>
+        <field name="model">tt.customer.identity</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <h1>
+                        <field name="identity_type"/>
+                    </h1>
+                    <group>
+                        <group>
+                            <field name="identity_number"/>
+                            <field name="identity_expdate"/>
+                        </group>
+                        <group>
+                            <field name="identity_country_of_issued_id"/>
+                            <field name="customer_id"/>
+                        </group>
+                    </group>
+                    <separator string="Uploads"/>
+                    <field name="identity_image_ids"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
 </odoo>
