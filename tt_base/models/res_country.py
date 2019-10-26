@@ -57,6 +57,13 @@ class Country(models.Model):
             res = Response().get_error(str(e), 500)
         return res
 
+    def find_country_by_name(self, str_name, limit=1):
+        found = self.search([('name', '=ilike', str_name)], limit=limit)
+        if len(found) < limit:
+            for rec in self.env['tt.destination.alias'].search([('name', 'ilike', str_name),('country_id','!=',False)], limit=limit-len(found)):
+                found += rec.country_id
+        return found
+
 
 class CountryState(models.Model):
     _inherit = "res.country.state"
@@ -85,6 +92,12 @@ class CountryCity(models.Model):
     latitude = fields.Float('Latitude Degree', digits=(3, 7))
     longitude = fields.Float('Longitude Degree', digits=(3, 7))
 
+    def find_city_by_name(self, str_name, limit=1):
+        found = self.search([('name', '=ilike', str_name)], limit=limit)
+        if len(found) < limit:
+            for rec in self.env['tt.destination.alias'].search([('name', 'ilike', str_name),('city_id','!=',False)], limit=limit-len(found)):
+                found += rec.city_id
+        return found
 
 class CountryDistrict(models.Model):
     _name = 'res.district'
