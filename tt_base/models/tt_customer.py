@@ -194,7 +194,7 @@ class TtCustomer(models.Model):
             }
             if image_ids:
                 update_vals.update({'identity_image_ids':image_ids})
-            exixting_identity.write()
+            exixting_identity.write(update_vals)
 
 
 
