@@ -1,6 +1,7 @@
 from odoo import models, fields, api
 import datetime
 import json
+from num2words import num2words
 
 
 class PrintoutTicketForm(models.AbstractModel):
@@ -269,74 +270,12 @@ class PrintoutInvoice(models.AbstractModel):
                     for pax in a[rec2.pnr]['pax_data']:
                         pax['total'] = rec.total / len(rec.passenger_ids)
         return a
-
-    def get_terbilang(self, amount, separator_index=0, separator_index2=0):
-        angka = ["", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas"]
-        separator1 = ['', 'puluh', 'ratus']
-        separator2 = ['', 'ribu', 'juta', 'miliar', 'triliun']
-
-        n = int(amount)
-        a = int(n / 10)
-        sisa = n % 10
-
-        amount_to_str = sisa and angka[sisa] + ' ' + separator1[separator_index] or ''
-        amount_to_str = separator_index and amount_to_str or amount_to_str[:-1]
-
-        if a:
-            separator_index += 1
-            if separator_index % 3 == 0:
-                separator_index = 0
-                separator_index2 += 1
-                amount_to_str = separator2[separator_index2] + ' ' + amount_to_str
-
-        if a != 0:
-            amount_to_str = self.get_terbilang(a, separator_index, separator_index2) + ' ' + amount_to_str
-        return amount_to_str
-
+    # Get Terbilang dkk di hapus
     def compute_terbilang_from_objs(self, recs, currency_str='rupiah'):
         a = {}
         for rec2 in recs:
-            a.update({rec2.name: self.compute_terbilang(rec2.total, currency_str)})
+            a.update({rec2.name: num2words(rec2.total) + ' Rupiah'})
         return a
-
-    def compute_terbilang(self, total, currency_str='rupiah'):
-        separator2 = ['ribu', 'juta', 'miliar', 'triliun']
-        terbilang = self.get_terbilang(total)
-        ongoing_list = []
-        for rec in terbilang.split(' '):
-            if rec:
-                ongoing_list.append(rec)
-        new_list = []
-        skip_idx = []
-        for idx, rec in enumerate(ongoing_list):
-            if idx in skip_idx:
-                continue
-            if rec == 'satu':
-                if idx >= len(ongoing_list)-1:
-                    new_list.append(rec)
-                    continue
-                if ongoing_list[idx + 1] == 'puluh':
-                    if ongoing_list[idx + 2] in ["dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan"]:
-                        new_list.append(ongoing_list[idx + 2])
-                        new_list.append('belas')
-                        skip_idx.append(idx + 2)
-                    elif ongoing_list[idx + 2] == 'satu':
-                        new_list.append('sebelas')
-                        skip_idx.append(idx + 2)
-                    skip_idx.append(idx + 1)
-                elif ongoing_list[idx + 1] in ['ratus', 'ribu']:
-                    new_list.append('se' + ongoing_list[idx + 1].lower() )
-                    skip_idx.append(idx + 1)
-                else:
-                    new_list.append(rec)
-            elif rec in separator2:
-                if new_list[-1] not in separator2:
-                    new_list.append(rec)
-            else:
-                new_list.append(rec)
-
-        new_list.append(currency_str)
-        return ' '.join(filter(None, new_list))
 
     @api.model
     def _get_report_values(self, docids, data=None):
@@ -554,7 +493,7 @@ class PrintoutJSONIteneraryForm(models.AbstractModel):
             #     ],
             # }]
 
-            values['agent_id'] = self.env['tt.agent'].browse(values['agent_id'])
+            values['agent_id'] = self.env['tt.agent'].search([('name', '=ilike', values['agent_name'])], limit=1)
         return {
             'doc_ids': False,
             'doc_model': 'tt.reservation.hotel',  # Can be set to as any model
@@ -582,60 +521,10 @@ class PrintoutBilling(models.AbstractModel):
                 a.update({ rec.name: inv_obj[0].confirmed_date.strftime('%d/%m/%Y') })
         return a
 
-    def get_terbilang(self, amount, separator_index=0, separator_index2=0):
-        angka = ["", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas"]
-        separator1 = ['', 'puluh', 'ratus']
-        separator2 = ['', 'ribu', 'juta', 'miliar', 'triliun']
-
-        n = int(amount)
-        a = int(n / 10)
-        sisa = n % 10
-
-        amount_to_str = sisa and angka[sisa] + ' ' + separator1[separator_index] or ''
-        amount_to_str = separator_index and amount_to_str or amount_to_str[:-1]
-
-        if a:
-            separator_index += 1
-            if separator_index % 3 == 0:
-                separator_index = 0
-                separator_index2 += 1
-                amount_to_str = separator2[separator_index2] + ' ' + amount_to_str
-
-        if a != 0:
-            amount_to_str = self.get_terbilang(a, separator_index, separator_index2) + ' ' + amount_to_str
-        return amount_to_str
-
-    def compute_terbilang(self, recs, currency_str='rupiah'):
+    def compute_terbilang_from_objs(self, recs, currency_str='rupiah'):
         a = {}
         for rec2 in recs:
-            terbilang = self.get_terbilang(rec2.amount_total)
-            ongoing_list = terbilang.split(' ')
-            new_list = []
-            skip_idx = []
-            for idx, rec in enumerate(ongoing_list):
-                if idx in skip_idx:
-                    continue
-                if rec == 'satu':
-                    if idx >= len(ongoing_list)-1:
-                        continue
-                    if ongoing_list[idx + 1] == 'puluh':
-                        if ongoing_list[idx + 2] in ["dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan"]:
-                            new_list.append(ongoing_list[idx + 2])
-                            new_list.append('belas')
-                            skip_idx.append(idx + 2)
-                        elif ongoing_list[idx + 2] == 'satu':
-                            new_list.append('sebelas')
-                        else:
-                            new_list.append('Se' + ongoing_list[idx + 1].lower())
-                        skip_idx.append(idx + 1)
-                    elif ongoing_list[idx + 1] in ['ratus', 'ribu']:
-                        new_list.append('se' + ongoing_list[idx + 1].lower() )
-                        skip_idx.append(idx + 1)
-                else:
-                    new_list.append(rec)
-
-            new_list.append(currency_str)
-            a.update({rec2.name: ' '.join(filter(None, new_list))})
+            a.update({rec2.name: num2words(rec2.total) + ' Rupiah'})
         return a
 
     @api.model
@@ -650,7 +539,7 @@ class PrintoutBilling(models.AbstractModel):
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
-            'terbilang': self.compute_terbilang(
+            'terbilang': self.compute_terbilang_from_objs(
                 self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
             'last_billing': self.last_billing(
                 self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
@@ -661,60 +550,10 @@ class PrintoutTopUp(models.AbstractModel):
     _name = 'report.tt_report_common.printout_topup'
     _description = 'Rodex Model'
 
-    def get_terbilang(self, amount, separator_index=0, separator_index2=0):
-        angka = ["", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas"]
-        separator1 = ['', 'puluh', 'ratus']
-        separator2 = ['', 'ribu', 'juta', 'miliar', 'triliun']
-
-        n = int(amount)
-        a = int(n / 10)
-        sisa = n % 10
-
-        amount_to_str = sisa and angka[sisa] + ' ' + separator1[separator_index] or ''
-        amount_to_str = separator_index and amount_to_str or amount_to_str[:-1]
-
-        if a:
-            separator_index += 1
-            if separator_index % 3 == 0:
-                separator_index = 0
-                separator_index2 += 1
-                amount_to_str = separator2[separator_index2] + ' ' + amount_to_str
-
-        if a != 0:
-            amount_to_str = self.get_terbilang(a, separator_index, separator_index2) + ' ' + amount_to_str
-        return amount_to_str
-
-    def compute_terbilang(self, recs, currency_str='rupiah'):
+    def compute_terbilang_from_objs(self, recs, currency_str='Rupiah'):
         a = {}
         for rec2 in recs:
-            terbilang = self.get_terbilang(rec2.total_with_fees)
-            ongoing_list = terbilang.split(' ')
-            new_list = []
-            skip_idx = []
-            for idx, rec in enumerate(ongoing_list):
-                if idx in skip_idx:
-                    continue
-                if rec == 'satu':
-                    if idx >= len(ongoing_list)-1:
-                        continue
-                    if ongoing_list[idx + 1] == 'puluh':
-                        if ongoing_list[idx + 2] in ["dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan"]:
-                            new_list.append(ongoing_list[idx + 2])
-                            new_list.append('belas')
-                            skip_idx.append(idx + 2)
-                        elif ongoing_list[idx + 2] == 'satu':
-                            new_list.append('sebelas')
-                        else:
-                            new_list.append('se' + ongoing_list[idx + 1].lower())
-                        skip_idx.append(idx + 1)
-                    elif ongoing_list[idx + 1] in ['ratus', 'ribu']:
-                        new_list.append('se' + ongoing_list[idx + 1].lower() )
-                        skip_idx.append(idx + 1)
-                else:
-                    new_list.append(rec)
-
-            new_list.append(currency_str)
-            a.update({rec2.name: ' '.join(filter(None, new_list))})
+            a.update({rec2.name: num2words(rec2.total) + ' ' + currency_str})
         return a
 
     @api.model
@@ -729,6 +568,6 @@ class PrintoutTopUp(models.AbstractModel):
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
-            'terbilang': self.compute_terbilang(
+            'terbilang': self.compute_terbilang_from_objs(
                 self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
         }
