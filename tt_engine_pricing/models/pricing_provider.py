@@ -8,16 +8,10 @@ class PricingProvider(models.Model):
     _name = 'tt.pricing.provider'
     _description = 'Rodex Model'
 
-    name = fields.Char('Name', readonly=1)
+    name = fields.Char('Name', readonly=1, compute="_compute_name")
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', required=True)
-    provider_id = fields.Many2one('tt.provider', 'Provider')
     provider_ids = fields.Many2many('tt.provider', 'pricing_provider_rel', 'pricing_id', 'provider_id', 'Providers')
     display_providers = fields.Char('Display Providers', compute='_compute_display_providers', store=True, readonly=1)
-    pricing_type = fields.Selection([
-        ('sale', 'Sale'),
-        ('commission', 'Commission'),
-        ('provider', 'provider'),
-    ], 'Pricing Type')
     carrier_ids = fields.Many2many('tt.transport.carrier', 'tt_pricing_provider_carrier_rel', 'pricing_id', 'carrier_id', string='Carriers')
     display_carriers = fields.Char('Display Carriers', compute='_compute_display_carriers', store=True, readonly=1)
     line_ids = fields.One2many('tt.pricing.provider.line', 'pricing_id', 'Configs')
@@ -27,36 +21,20 @@ class PricingProvider(models.Model):
     is_provider_commission = fields.Boolean('Is Provider Commission', default=False)
 
     @api.multi
-    @api.depends('provider_ids')
-    def _compute_display_providers(self):
+    @api.depends('provider_ids.code','carrier_ids')
+    def _compute_name(self):
         for rec in self:
-            res = [data.code for data in rec.provider_ids]
-            rec.display_providers = ','.join(res)
+            res = '%s - %s' % (','.join([provider.code.title() for provider in rec.provider_ids]), ','.join([carrier.code for carrier in rec.carrier_ids]))
+            rec.name = res
 
-    @api.multi
-    @api.depends('carrier_ids')
-    def _compute_display_carriers(self):
-        for rec in self:
-            res = [data.code for data in rec.carrier_ids]
-            rec.display_carriers = ','.join(res)
-
-    def get_name(self):
-        # Perlu diupdate lagi, sementara menggunakan ini
-        res = ''
-        # res = '%s (%s) - %s' % (self.provider_id.code.title(), self.pricing_type.title(), ','.join([rec.code for rec in self.carrier_ids]))
-        return res
-
-    @api.model
-    def create(self, values):
-        res = super(PricingProvider, self).create(values)
-        res.write({})
-        return res
-
-    def write(self, values):
-        res = super(PricingProvider, self).write(values)
-        # if not values.get('name'):
-        #     self.write({'name': self.get_name()})
-        return res
+    # @api.model
+    # def create(self, values):
+    #     res = super(PricingProvider, self).create(values)
+    #     return res
+    #
+    # def write(self, values):
+    #     res = super(PricingProvider, self).write(values)
+    #     return res
 
     def get_pricing_data(self):
         line_ids = [rec.get_pricing_data() for rec in self.line_ids if rec.active]
@@ -67,7 +45,7 @@ class PricingProvider(models.Model):
             'provider_type': self.provider_type_id and self.provider_type_id.code or '',
             # 'provider': self.provider_id and self.provider_id.code,
             'providers': providers,
-            'pricing_type': self.pricing_type,
+            # 'pricing_type': self.pricing_type,
             'carrier_codes': carrier_codes,
             'is_sale': self.is_sale,
             'is_commission': self.is_commission,

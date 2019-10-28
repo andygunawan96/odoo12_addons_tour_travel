@@ -166,7 +166,14 @@ class TtCustomer(models.Model):
         image_ids = []
         if image_seqs:
             for seq in image_seqs:
-                image_ids.append((seq[0],self.env['tt.upload.center'].search([('seq_id','=',seq[1])])))
+                action = False
+                if seq[0] == 4:
+                    action = 4
+                elif seq[0] == 3:
+                    action = 3
+                if not action:
+                    raise RequestException(1023,additional_message="Wrong Upload Action")
+                image_ids.append((action,self.env['tt.upload.center'].search([('seq_id','=',seq[1])])))
 
         if not_exist:
             create_vals = {
