@@ -147,7 +147,7 @@ class TtCustomer(models.Model):
             type = data['identity_type']
             expdate = data['identity_expdate']
             c_issued_id = data['identity_country_of_issued_code']
-            image_seqs = data.get('identity_images',[])
+            image_seqs = data.get('identity_image',[])
         except:
             raise RequestException(1023,additional_message="Missing key.")
 
@@ -167,13 +167,13 @@ class TtCustomer(models.Model):
         if image_seqs:
             for seq in image_seqs:
                 action = False
-                if seq[0] == 4:
+                if seq[1] == 4:
                     action = 4
-                elif seq[0] == 3:
+                elif seq[1] == 3:
                     action = 3
                 if not action:
                     raise RequestException(1023,additional_message="Wrong Upload Action")
-                image_ids.append((action,self.env['tt.upload.center'].search([('seq_id','=',seq[1])])))
+                image_ids.append((action,self.env['tt.upload.center'].search([('seq_id','=',seq[0])],limit=1).id))
 
         if not_exist:
             create_vals = {
@@ -184,7 +184,7 @@ class TtCustomer(models.Model):
                 'customer_id': self.id,
             }
             if image_ids:
-                create_vals.update(image_ids)
+                create_vals.update({'identity_image_ids':image_ids})
             self.env['tt.customer.identity'].create(create_vals)
         else:
             update_vals = {
@@ -193,7 +193,7 @@ class TtCustomer(models.Model):
                 'identity_expdate': expdate
             }
             if image_ids:
-                update_vals.update(image_ids)
+                update_vals.update({'identity_image_ids':image_ids})
             exixting_identity.write()
 
 

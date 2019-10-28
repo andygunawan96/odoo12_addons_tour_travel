@@ -248,6 +248,16 @@ class TtReservation(models.Model):
                 'customer_parent_ids': [(4, agent_obj.customer_parent_walkin_id.id)],
                 'marital_status': 'married' if psg.get('title') == 'MRS' else '',
             })
+            #if ada phone, kalau dari frontend cache passenger
+            if psg.get('phone'):
+                psg.update({
+                    'phone_ids': [(0, 0, {
+                        'calling_code': psg.get('phone_id', ''),
+                        'calling_number': psg.get('phone', ''),
+                        'phone_number': '%s%s' % (psg.get('phone_id', ''), psg.get('phone', '')),
+                        'country_id': country and country[0].id or False,
+                    })]
+                })
             psg_obj = passenger_obj.create(psg)
             if psg.get('identity'):
                 psg_obj.add_or_update_identity(psg['identity'])
