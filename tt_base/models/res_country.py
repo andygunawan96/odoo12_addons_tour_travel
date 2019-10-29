@@ -95,9 +95,17 @@ class CountryCity(models.Model):
     def find_city_by_name(self, str_name, limit=1):
         found = self.search([('name', '=ilike', str_name)], limit=limit)
         if len(found) < limit:
-            for rec in self.env['tt.destination.alias'].search([('name', 'ilike', str_name),('city_id','!=',False)], limit=limit-len(found)):
+            for rec in self.env['tt.destination.alias'].search([('name', 'ilike', str_name), ('city_id','!=',False), ('city_id','not in', found.ids)], limit=limit-len(found)):
                 found += rec.city_id
         return found
+
+    def prepare_city_for_cache(self, city_obj):
+        return {
+            'name': city_obj.name,
+            'id': city_obj.id,
+            # 'city_alias_list': [rec.name for rec in city_obj.other_name_ids],
+            'alias': ','.join([rec.name for rec in city_obj.other_name_ids]),
+        }
 
 class CountryDistrict(models.Model):
     _name = 'res.district'

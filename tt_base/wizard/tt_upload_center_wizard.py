@@ -15,7 +15,6 @@ class SplitInvoice(models.TransientModel):
     delete_date = fields.Date('Delete Date')
     file = fields.Binary('File',required=True)
 
-
     def upload_from_button(self):
         # self.upload(self.filename,self.file_reference,base64.b64decode(self.file))
         self.upload(self.filename,self.file_reference,self.file,{'co_agent_id': self.env.user.agent_id.id},self.delete_date)
