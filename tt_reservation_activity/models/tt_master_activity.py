@@ -292,23 +292,25 @@ class MasterActivity(models.Model):
                 vendor_id = self.env['tt.provider'].search([('code', '=', provider)], limit=1)
                 vendor_id = vendor_id[0].id
                 continent_id = False
-                for continent in file['locations']:
-                    for country in continent['countries']:
-                        country_id = self.env['res.country'].update_provider_data(country['name'], country['uuid'], vendor_id, continent_id)
-                        if country.get('states'):
-                            for state in country['states']:
-                                state_id = False
-                                if state.get('name'):
-                                    state_id = self.env['res.country.state'].update_provider_data(state['name'], state['uuid'], vendor_id, country_id)
-                                if state.get('cities'):
-                                    for city in state['cities']:
-                                        self.env['res.city'].update_provider_data(city['name'], city['uuid'], vendor_id, state_id, country_id)
-                if provider == 'bemyguest':
-                    type_lib = {
-                        'categories': 'category',
-                        'types': 'type',
-                    }
-                    for index in ['categories', 'types']:
+                if file.get('locations'):
+                    for continent in file['locations']:
+                        if continent.get('countries'):
+                            for country in continent['countries']:
+                                country_id = self.env['res.country'].update_provider_data(country['name'], country['uuid'], vendor_id, continent_id)
+                                if country.get('states'):
+                                    for state in country['states']:
+                                        state_id = False
+                                        if state.get('name'):
+                                            state_id = self.env['res.country.state'].update_provider_data(state['name'], state['uuid'], vendor_id, country_id)
+                                        if state.get('cities'):
+                                            for city in state['cities']:
+                                                self.env['res.city'].update_provider_data(city['name'], city['uuid'], vendor_id, state_id, country_id)
+                type_lib = {
+                    'categories': 'category',
+                    'types': 'type',
+                }
+                for index in ['categories', 'types']:
+                    if file.get(index):
                         for rec in file[index]['data']:
                             obj_id = self.env['tt.activity.category'].search([('name', '=', rec['name'])])
                             if obj_id:
@@ -350,8 +352,10 @@ class MasterActivity(models.Model):
                                         self.env.cr.commit()
                 return True
             except Exception as e:
+                _logger.error('Error: Failed to sync config activity. \n %s : %s' % (traceback.format_exc(), str(e)))
                 return False
         else:
+            _logger.info('Error: Failed to sync config activity. No response from gateway.')
             return False
 
     def sync_products(self, provider=None, data=None, page=None):
