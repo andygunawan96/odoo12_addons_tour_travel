@@ -107,15 +107,12 @@ class MasterTour(models.Model):
     driving_times = fields.Integer('Driving Times', default=0)
 
     adult_fare = fields.Monetary('Adult Fare', default=0)
-    adult_tax = fields.Monetary('Adult Tax', default=0)
     adult_commission = fields.Monetary('Adult Commission', default=0)
 
     child_fare = fields.Monetary('Child Fare', default=0)
-    child_tax = fields.Monetary('Child Tax', default=0)
     child_commission = fields.Monetary('Child Commission', default=0)
 
     infant_fare = fields.Monetary('Infant Fare', default=0)
-    infant_tax = fields.Monetary('Infant Tax', default=0)
     infant_commission = fields.Monetary('Infant Commission', default=0)
 
     discount_ids = fields.One2many('tt.master.tour.discount.fit', 'tour_pricelist_id')
@@ -423,9 +420,9 @@ class MasterTour(models.Model):
                                 img_key: ''
                             })
 
-                adult_sale_price = int(rec['adult_fare']) + int(rec['adult_tax'])
-                child_sale_price = int(rec['child_fare']) + int(rec['child_tax'])
-                infant_sale_price = int(rec['infant_fare']) + int(rec['infant_tax'])
+                adult_sale_price = int(rec['adult_fare']) + int(rec['adult_commission'])
+                child_sale_price = int(rec['child_fare']) + int(rec['child_commission'])
+                infant_sale_price = int(rec['infant_fare']) + int(rec['infant_commission'])
                 res_provider = rec.get('provider_id') and self.env['tt.provider'].browse(rec['provider_id']) or None
                 rec.update({
                     'name': rec['name'],
@@ -556,9 +553,9 @@ class MasterTour(models.Model):
                 commission_agent_type = 'other'
 
             for idx, rec in enumerate(tour_list):
-                adult_commission = int(rec['adult_tax']) > 0 and int(rec['adult_tax']) or 0
-                child_commission = int(rec['child_tax']) > 0 and int(rec['child_tax']) or 0
-                infant_commission = int(rec['infant_tax']) > 0 and int(rec['infant_tax']) or 0
+                adult_commission = int(rec['adult_commission']) > 0 and int(rec['adult_commission']) or 0
+                child_commission = int(rec['child_commission']) > 0 and int(rec['child_commission']) or 0
+                infant_commission = int(rec['infant_commission']) > 0 and int(rec['infant_commission']) or 0
 
                 try:
                     self.env.cr.execute("""SELECT * FROM tt_master_tour_discount_fit WHERE tour_pricelist_id = %s;""", (rec['id'],))
@@ -618,9 +615,9 @@ class MasterTour(models.Model):
                                 key: ''
                             })
 
-                adult_sale_price = int(rec['adult_fare']) + int(rec['adult_tax'])
-                child_sale_price = int(rec['child_fare']) + int(rec['child_tax'])
-                infant_sale_price = int(rec['infant_fare']) + int(rec['infant_tax'])
+                adult_sale_price = int(rec['adult_fare']) + int(rec['adult_commission'])
+                child_sale_price = int(rec['child_fare']) + int(rec['child_commission'])
+                infant_sale_price = int(rec['infant_fare']) + int(rec['infant_commission'])
 
                 rec.update({
                     'name': rec['name'],
@@ -776,13 +773,10 @@ class MasterTour(models.Model):
             tour_data = tour_data_list[0]
             price_itinerary = {
                 'adult_fare': tour_data.adult_fare,
-                'adult_tax': tour_data.adult_tax,
                 'adult_commission': tour_data.adult_commission,
                 'child_fare': tour_data.child_fare,
-                'child_tax': tour_data.child_tax,
                 'child_commission': tour_data.child_commission,
                 'infant_fare': tour_data.infant_fare,
-                'infant_tax': tour_data.infant_tax,
                 'infant_commission': tour_data.infant_commission,
                 'airport_tax': tour_data.airport_tax,
                 'adult_tipping_guide': tour_data.tipping_guide,
