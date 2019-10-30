@@ -1002,7 +1002,7 @@ class TestSearch(models.Model):
             }
             return vals
 
-        city_id = self.env['res.city'].search([('name', '=ilike', dest_name)], limit=1)
+        city_id = self.env['res.city'].find_city_by_name(dest_name, 1)
         country_id = city_id.state_id and city_id.state_id.country_id or city_id.country_id
         vendor_ids = self.env['tt.provider.destination'].sudo().search([('country_id', '=', country_id.id)])
         providers = [provider_to_dic(rec, city_id) for rec in vendor_ids]
