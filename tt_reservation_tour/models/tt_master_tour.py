@@ -106,26 +106,14 @@ class MasterTour(models.Model):
     guiding_days = fields.Integer('Guiding Days', default=1)
     driving_times = fields.Integer('Driving Times', default=0)
 
-    # adult_nta_price = fields.Monetary('Adult NTA Price', default=0)
-    # adult_citra_price = fields.Monetary('Adult Citra Price', default=0)
-    # adult_sale_price = fields.Monetary('Adult Sale Price', default=0)
-
     adult_fare = fields.Monetary('Adult Fare', default=0)
-    adult_tax = fields.Monetary('Adult Tax', default=0)
-
-    # child_nta_price = fields.Monetary('Child NTA Price', default=0)
-    # child_citra_price = fields.Monetary('Child Citra Price', default=0)
-    # child_sale_price = fields.Monetary('Child Sale Price', default=0)
+    adult_commission = fields.Monetary('Adult Commission', default=0)
 
     child_fare = fields.Monetary('Child Fare', default=0)
-    child_tax = fields.Monetary('Child Tax', default=0)
-
-    # infant_nta_price = fields.Monetary('Infant NTA Price', default=0)
-    # infant_citra_price = fields.Monetary('Infant Citra Price', default=0)
-    # infant_sale_price = fields.Monetary('Infant Sale Price', default=0)
+    child_commission = fields.Monetary('Child Commission', default=0)
 
     infant_fare = fields.Monetary('Infant Fare', default=0)
-    infant_tax = fields.Monetary('Infant Tax', default=0)
+    infant_commission = fields.Monetary('Infant Commission', default=0)
 
     discount_ids = fields.One2many('tt.master.tour.discount.fit', 'tour_pricelist_id')
     room_ids = fields.One2many('tt.master.tour.rooms', 'tour_pricelist_id', required=True)
@@ -432,9 +420,9 @@ class MasterTour(models.Model):
                                 img_key: ''
                             })
 
-                adult_sale_price = int(rec['adult_fare']) + int(rec['adult_tax'])
-                child_sale_price = int(rec['child_fare']) + int(rec['child_tax'])
-                infant_sale_price = int(rec['infant_fare']) + int(rec['infant_tax'])
+                adult_sale_price = int(rec['adult_fare']) + int(rec['adult_commission'])
+                child_sale_price = int(rec['child_fare']) + int(rec['child_commission'])
+                infant_sale_price = int(rec['infant_fare']) + int(rec['infant_commission'])
                 res_provider = rec.get('provider_id') and self.env['tt.provider'].browse(rec['provider_id']) or None
                 rec.update({
                     'name': rec['name'],
@@ -565,9 +553,9 @@ class MasterTour(models.Model):
                 commission_agent_type = 'other'
 
             for idx, rec in enumerate(tour_list):
-                adult_commission = int(rec['adult_tax']) > 0 and int(rec['adult_tax']) or 0
-                child_commission = int(rec['child_tax']) > 0 and int(rec['child_tax']) or 0
-                infant_commission = int(rec['infant_tax']) > 0 and int(rec['infant_tax']) or 0
+                adult_commission = int(rec['adult_commission']) > 0 and int(rec['adult_commission']) or 0
+                child_commission = int(rec['child_commission']) > 0 and int(rec['child_commission']) or 0
+                infant_commission = int(rec['infant_commission']) > 0 and int(rec['infant_commission']) or 0
 
                 try:
                     self.env.cr.execute("""SELECT * FROM tt_master_tour_discount_fit WHERE tour_pricelist_id = %s;""", (rec['id'],))
@@ -627,9 +615,9 @@ class MasterTour(models.Model):
                                 key: ''
                             })
 
-                adult_sale_price = int(rec['adult_fare']) + int(rec['adult_tax'])
-                child_sale_price = int(rec['child_fare']) + int(rec['child_tax'])
-                infant_sale_price = int(rec['infant_fare']) + int(rec['infant_tax'])
+                adult_sale_price = int(rec['adult_fare']) + int(rec['adult_commission'])
+                child_sale_price = int(rec['child_fare']) + int(rec['child_commission'])
+                infant_sale_price = int(rec['infant_fare']) + int(rec['infant_commission'])
 
                 rec.update({
                     'name': rec['name'],
@@ -785,12 +773,14 @@ class MasterTour(models.Model):
             tour_data = tour_data_list[0]
             price_itinerary = {
                 'adult_fare': tour_data.adult_fare,
-                'adult_tax': tour_data.adult_tax,
+                'adult_commission': tour_data.adult_commission,
                 'child_fare': tour_data.child_fare,
-                'child_tax': tour_data.child_tax,
+                'child_commission': tour_data.child_commission,
                 'infant_fare': tour_data.infant_fare,
-                'infant_tax': tour_data.infant_tax,
-                'airport_tax': tour_data.infant_tax,
+                'infant_commission': tour_data.infant_commission,
+                'adult_airport_tax': tour_data.airport_tax,
+                'child_airport_tax': tour_data.airport_tax,
+                'infant_airport_tax': tour_data.airport_tax,
                 'adult_tipping_guide': tour_data.tipping_guide,
                 'adult_tipping_tour_leader': tour_data.tipping_tour_leader,
                 'adult_tipping_driver': tour_data.tipping_driver,
@@ -800,6 +790,9 @@ class MasterTour(models.Model):
                 'infant_tipping_guide': 0,
                 'infant_tipping_tour_leader': 0,
                 'infant_tipping_driver': 0,
+                'guiding_days': tour_data.guiding_days,
+                'driving_times': tour_data.driving_times,
+                'duration': tour_data.duration,
                 'accommodations': []
             }
             if tour_data.tipping_guide_child:
@@ -831,6 +824,8 @@ class MasterTour(models.Model):
             total_adt = 0
             total_chd = 0
             total_inf = 0
+            grand_total_pax = 0
+            grand_total_pax_no_infant = 0
             for rec in temp_room_list:
                 total_adt += rec['adult']
                 total_chd += rec['child']
@@ -838,7 +833,9 @@ class MasterTour(models.Model):
                 tour_room_list = self.env['tt.master.tour.rooms'].sudo().search([('id', '=', int(rec['id']))], limit=1)
                 tour_room = tour_room_list[0]
                 total_amount = int(rec['adult']) + int(rec['child']) + int(rec['infant'])
+                grand_total_pax += total_amount
                 total_amount_no_infant = int(rec['adult']) + int(rec['child'])
+                grand_total_pax_no_infant += total_amount_no_infant
                 adult_amt = child_amt = infant_amt = adult_sur_amt = child_sur_amt = adult_sur = child_sur = 0
                 extra_bed_limit = tour_room.extra_bed_limit
                 single_sup = 0
@@ -870,10 +867,13 @@ class MasterTour(models.Model):
                                     child_sur_amt += rec['child'] - (tour_room.pax_minimum - rec['adult']) - extra_bed_limit
                                 else:
                                     child_sur_amt += rec['child'] - (tour_room.pax_minimum - rec['adult'])
-                                child_sur += child_sur_amt * tour_room.child_surcharge
+                                child_sur += child_sur_amt * int(tour_room.child_surcharge)
                         if rec['infant'] > 0:
                             if rec['adult'] + rec['child'] < tour_room.pax_minimum:
-                                infant_amt += 0
+                                if rec['infant'] - (tour_room.pax_minimum - rec['adult'] - rec['child']) > 0:
+                                    infant_amt += rec['infant'] - (tour_room.pax_minimum - rec['adult'] - rec['child'])
+                                else:
+                                    infant_amt += 0
                             else:
                                 infant_amt += rec['infant']
 
@@ -884,8 +884,8 @@ class MasterTour(models.Model):
                     'infant_amount': infant_amt,
                     'adult_surcharge_amount': adult_sur_amt,
                     'child_surcharge_amount': child_sur_amt,
-                    'adult_surcharge': adult_sur,
-                    'child_surcharge': child_sur,
+                    'adult_surcharge': tour_room.adult_surcharge,
+                    'child_surcharge': tour_room.child_surcharge,
                     'single_supplement': single_sup,
                     'additional_charge': int(tour_room.additional_charge),
                 }
@@ -895,7 +895,14 @@ class MasterTour(models.Model):
                 'total_child': total_chd,
                 'total_infant': total_inf,
             })
-
+            if tour_data.tour_type == 'sic':
+                for rec in tour_data.discount_ids:
+                    if rec.min_pax <= grand_total_pax_no_infant <= rec.max_pax:
+                        price_itinerary.update({
+                            'discount_per_pax': rec.discount_per_pax,
+                            'commission_multiplier': 0.5,
+                            'discount_total': rec.discount_total,
+                        })
             return ERR.get_no_error(price_itinerary)
         except RequestException as e:
             _logger.error(traceback.format_exc())

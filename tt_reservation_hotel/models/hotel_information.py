@@ -103,6 +103,8 @@ class HotelInformation(models.Model):
         for rec in self.search([('city_id', '=', self.city_id.id)]):
             rec.get_provider_name()
 
+    def render_cache_city(self):
+        self.env['test.search'].update_cache_city()
 
 class HotelImage(models.Model):
     _inherit = 'tt.hotel.image'

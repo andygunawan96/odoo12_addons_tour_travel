@@ -40,7 +40,7 @@ class MasterActivityLines(models.Model):
     meetingTime = fields.Char('Meeting Time')
     instantConfirmation = fields.Boolean('Instant Confirmation')
 
-    option_ids = fields.Many2many('tt.activity.booking.option', 'tt_booking_option_rel', 'option_id', 'product_type_id')
+    option_ids = fields.Many2many('tt.activity.booking.option', 'tt_booking_option_rel', 'product_type_id', 'option_id')
     timeslot_ids = fields.One2many('tt.activity.master.timeslot', 'product_type_id')
 
     advanceBookingDays = fields.Integer('Advance Booking Days', default=0)

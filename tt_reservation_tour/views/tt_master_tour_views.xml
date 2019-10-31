@@ -139,15 +139,15 @@
                                 <field name="currency_id" invisible="1"/>
                                 <group>
                                     <field name="adult_fare" groups="tt_base.group_tt_tour_travel_operator"/>
-                                    <field name="adult_tax" groups="tt_base.group_tt_tour_travel_operator"/>
+                                    <field name="adult_commission" groups="tt_base.group_tt_tour_travel_operator"/>
                                 </group>
                                 <group>
                                     <field name="child_fare" groups="tt_base.group_tt_tour_travel_operator"/>
-                                    <field name="child_tax" groups="tt_base.group_tt_tour_travel_operator"/>
+                                    <field name="child_commission" groups="tt_base.group_tt_tour_travel_operator"/>
                                 </group>
                                 <group>
                                     <field name="infant_fare" groups="tt_base.group_tt_tour_travel_operator"/>
-                                    <field name="infant_tax" groups="tt_base.group_tt_tour_travel_operator"/>
+                                    <field name="infant_commission" groups="tt_base.group_tt_tour_travel_operator"/>
                                 </group>
                             </group>
                         </page>

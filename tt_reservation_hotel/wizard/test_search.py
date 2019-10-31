@@ -3,6 +3,7 @@ from datetime import datetime
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from datetime import date, datetime, timedelta
 from odoo.exceptions import UserError
+import json
 
 
 class TestSearch(models.Model):
@@ -30,6 +31,58 @@ class TestSearch(models.Model):
     user_price = fields.Float('Grand Total', compute='onchange_calc_sub')
     rodex_profit = fields.Float('Profit', compute='onchange_calc_profit')
     vendor_payment = fields.Float('Total', compute='onchange_calc_sub')
+
+    ##### Cache Odoo12 START #####
+    def compute_country_for_city(self, rec_dict):
+        key_item = rec_dict.keys()
+        for rec in key_item:
+            rec_dict['country_' + rec] = rec_dict.pop(rec)
+        return rec_dict
+
+    def render_cache_city(self, country_name=[], city_name='', limit=99999):
+        domain = []
+        city_cache = []
+        if country_name:
+            country_ids = []
+            for rec in country_name:
+                country_ids += self.env['res.country'].sudo().search([('name', '=ilike', rec)]).ids
+            domain += ('country_id', 'in', country_ids)
+
+        if city_name:
+            domain += ('name', '=ilike', city_name)
+
+        for rec in self.env['res.city'].sudo().search(domain, limit=limit):
+            city_fmt = self.env['res.city'].prepare_city_for_cache(rec)
+            # Updating State for this city
+            # city_fmt.update(self.prepare_state_for_cache(rec.state_id))
+            # Updating Country for this city
+            city_fmt.update( self.compute_country_for_city(rec.country_id.get_country_data()) )
+            # Updating Provider code for this city
+            # city_fmt.update(self.prepare_provider_code_city_for_cache(rec.country_id))
+            city_cache.append(city_fmt)
+        return city_cache
+
+    def create_cache_city(self):
+        json_city = self.render_cache_city()
+        filename = "/var/log/tour_travel/cache_city/cache_city.json"
+        file = open(filename, 'w')
+        file.write(json_city)
+        file.close()
+        return True
+
+    def update_cache_city(self):
+        json_city = self.render_cache_city()
+        temp_filename = "/var/log/tour_travel/autocomplete_hotel/autocomplete_cache.json"
+        with open(temp_filename, 'r') as f2:
+            record = f2.read()
+            record = json.loads(record)
+            record['city_ids'] = json_city
+
+        file = open(temp_filename, 'w')
+        file.write(json.dumps(record))
+        file.close()
+        return True
+    ##### Cache Odoo12 END   #####
 
     def prepare_facilities(self, view_obj):
         return [{'facility_id': facility.id, 'facility_name': facility.name, 'description': facility.description} for facility in view_obj.facility_ids]
@@ -949,7 +1002,7 @@ class TestSearch(models.Model):
             }
             return vals
 
-        city_id = self.env['res.city'].search([('name', '=ilike', dest_name)], limit=1)
+        city_id = self.env['res.city'].find_city_by_name(dest_name, 1)
         country_id = city_id.state_id and city_id.state_id.country_id or city_id.country_id
         vendor_ids = self.env['tt.provider.destination'].sudo().search([('country_id', '=', country_id.id)])
         providers = [provider_to_dic(rec, city_id) for rec in vendor_ids]
