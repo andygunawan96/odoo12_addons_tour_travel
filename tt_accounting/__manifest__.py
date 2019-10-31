@@ -28,13 +28,13 @@
         'security/ir_rule_data.xml',
         'data/ir_sequence_data.xml',
         'data/ir_cron_data.xml',
-        # 'data/top_up_amount.xml',
         'views/tt_ledger_views.xml',
+        'views/tt_adjustment_views.xml',
+        'views/tt_refund_views.xml',
+        'wizard/tt_adjustment_wizard_view.xml',
         'views/tt_agent_views.xml',
         'views/tt_top_up_views.xml',
-        'views/tt_adjustment_views.xml',
         'views/tt_customer_parent_views.xml',
-        'wizard/tt_adjustment_wizard_view.xml'
     ],
     # only loaded in demonstration mode
     'demo': [

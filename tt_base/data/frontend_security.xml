@@ -19,4 +19,20 @@
         <field name="name">Login</field>
         <field name="code">login</field>
     </record>
+
+    <record id="able_to_psg_cache_1" model="tt.frontend.security">
+        <field name="name">Passenger Cache Lv. 1</field>
+        <field name="code">p_cache_1</field>
+    </record>
+
+    <record id="able_to_psg_cache_2" model="tt.frontend.security">
+        <field name="name">Passenger Cache Lv. 2</field>
+        <field name="code">p_cache_2</field>
+    </record>
+
+    <record id="able_to_psg_cache_3" model="tt.frontend.security">
+        <field name="name">Passenger Cache Lv. 3</field>
+        <field name="code">p_cache_3</field>
+    </record>
+
 </odoo>

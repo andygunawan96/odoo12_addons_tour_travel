@@ -989,7 +989,9 @@ class ReservationAirline(models.Model):
             if req.get('force_issued'):
                 self.calculate_service_charge()
                 self.action_booked_api_airline(context, pnr_list, hold_date)
-                self.payment_airline_api({'book_id': req['book_id']}, context)
+                payment_res = self.payment_airline_api({'book_id': req['book_id']}, context)
+                if payment_res['error_code'] != 0:
+                    raise RequestException(payment_res['error_code'])
 
             self.action_issued_api_airline(acquirer_id.id, customer_parent_id, context)
         elif all(rec.state == 'fail_refunded' for rec in self.provider_booking_ids):

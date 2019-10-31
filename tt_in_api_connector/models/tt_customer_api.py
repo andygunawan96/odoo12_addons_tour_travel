@@ -13,8 +13,8 @@ class TtAirlineApiCon(models.Model):
         if action == 'get_customer_list':
             res = table_obj.get_customer_list_api(data, context)
         elif action == 'create_customer':
-            self.env['tt.reservation'].create_customer_api(data['passengers'],context)
-            res = ERR.get_no_error()
+            res = table_obj.create_or_update_customer_api(data['passengers'], context)
+            # self.env['tt.reservation'].create_customer_api(data['passengers'],context)
         else:
             raise RequestException(999)
         return res

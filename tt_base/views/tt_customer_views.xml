@@ -21,16 +21,15 @@
                         </button>
                     </div>
                     <div id="o_employee_container"><div id="o_employee_main">
-                        <field name="logo" widget='image' class="oe_avatar" options='{"preview_image":"logo_thumb"}'/>
                         <div class="oe_title">
-                            <h3>
-                                <field name="first_name" placeholder="First Name"/>
-                                <span color="white"> </span>
-                                <field name="last_name" placeholder="Last Name"/>
-                            </h3>
-                            <h3>
+                            <h1>
+                                <field name="first_name" placeholder="First Name" class="oe_inline"/>
+                                <span color="white"><![CDATA[&nbsp;]]></span>
+                                <field name="last_name" placeholder="Last Name" class="oe_inline"/>
+                            </h1>
+                            <h2>
                                 <field name="seq_id"/>
-                            </h3>
+                            </h2>
                         </div>
                         <group>
                             <field name="agent_id" readonly="False"/>
@@ -42,6 +41,7 @@
                             <field name="nationality_id"/>
                             <field name="religion"/>
                             <field name="birth_date"/>
+                            <field name="face_image_id"/>
                         </group>
 
                         <notebook colspan="2">

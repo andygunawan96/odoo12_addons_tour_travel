@@ -132,7 +132,6 @@ class TtReservation(models.Model):
         country = self.env['res.country'].sudo().search([('code', '=', vals.pop('nationality_code'))])
         agent_obj = self.env['tt.agent'].sudo().browse(context['co_agent_id'])
 
-
         vals.update({
             'agent_id': context['co_agent_id'],
             'nationality_id': country and country[0].id or False,

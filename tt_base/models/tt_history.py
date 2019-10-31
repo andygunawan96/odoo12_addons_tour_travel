@@ -49,9 +49,12 @@ class TtHistory(models.Model):
     def update_ids_only(self, target_objs, key_list):
         for obj in target_objs:
             for key in key_list:
-                if isinstance(obj[key], list):
-                    a = [self.env[self.fields_get().get(key)['relation']].browse(par_rec).name_get()[0][1] for par_rec in obj[key]]
-                    obj[key] = a
+                try:
+                    if isinstance(obj[key], list):
+                        a = [self.env[self.fields_get().get(key)['relation']].browse(par_rec).name_get()[0][1] for par_rec in obj[key]]
+                        obj[key] = a
+                except:
+                    pass
         return target_objs
 
 
