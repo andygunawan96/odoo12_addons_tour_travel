@@ -22,6 +22,9 @@ class TbServiceCharge(models.Model):
 
     commission_agent_id = fields.Many2one('tt.agent', 'Agent ( Commission )', help='''Agent who get commission''')
 
+    is_ledger_created = fields.Boolean('Ledger Created')
+    is_extra_fees = fields.Boolean('Extra Fees')
+
     # @api.one
     # @api.depends('pax_count', 'amount')
     # def _compute_total(self):
@@ -36,3 +39,7 @@ class TbServiceCharge(models.Model):
             'foreign_currency': self.foreign_currency_id.name,
             'foreign_amount': self.foreign_amount
         }
+
+    def get_total_for_payment(self):
+        self.is_ledger_created = True
+        return self.total

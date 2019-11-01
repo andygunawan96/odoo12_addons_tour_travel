@@ -1123,7 +1123,7 @@ class ReservationAirline(models.Model):
 
         ##generate leg data
         provider_type = self.env['tt.provider.type'].search([('code', '=', 'airline')])[0]
-        provider_obj.create_ticket_api(provider['passengers'])
+        provider_obj.create_ticket_api(provider['passengers'],provider['pnr'])
         provider_obj.action_booked_api_airline(provider, context)
 
         # August 16, 2019 - SAM

@@ -50,7 +50,7 @@ class TtProviderAirline(models.Model):
 
     ticket_ids = fields.One2many('tt.ticket.airline', 'provider_id', 'Ticket Number')
 
-    is_ledger_created = fields.Boolean('Ledger Created', default=False, readonly=True, states={'draft': [('readonly', False)]})
+    # is_ledger_created = fields.Boolean('Ledger Created', default=False, readonly=True, states={'draft': [('readonly', False)]})
 
     error_history_ids = fields.One2many('tt.reservation.err.history','res_id','Error History')
     # , domain = [('res_model', '=', 'tt.provider.airline')]
@@ -153,9 +153,8 @@ class TtProviderAirline(models.Model):
     def action_expired(self):
         self.state = 'cancel2'
 
-    def create_ticket_api(self,passengers):
+    def create_ticket_api(self,passengers,pnr=""):
         ticket_list = []
-        ticket_found = []
         ticket_not_found = []
 
         #################
@@ -189,6 +188,7 @@ class TtProviderAirline(models.Model):
                     'passenger_id': psg_obj.id
                 }))
                 psg_obj.is_ticketed = True
+                psg_obj.create_ssr(psg['fees'],pnr,self.id)
             else:
                 ticket_not_found.append(psg)
 
@@ -269,7 +269,7 @@ class TtProviderAirline(models.Model):
         # "total": 14400000
 
     def delete_service_charge(self):
-        for rec in self.cost_service_charge_ids:
+        for rec in self.cost_service_charge_ids.filtered(lambda x: x.is_ledger_created == False and x.is_extra_fees ==  False):
             rec.unlink()
     # @api.depends('cost_service_charge_ids')
     # def _compute_total(self):
