@@ -678,6 +678,7 @@ class ReservationAirline(models.Model):
             book_status = []
             pnr_list = []
             hold_date = datetime.datetime.max
+            any_provider_changed = False
 
             for provider in req['provider_bookings']:
                 provider_obj = self.env['tt.provider.airline'].browse(provider['provider_id'])
@@ -692,6 +693,7 @@ class ReservationAirline(models.Model):
                     if provider_obj.state == 'booked':
                         continue
                     self.update_pnr_booked(provider_obj,provider,context)
+                    any_provider_changed = True
                 elif provider['status'] == 'ISSUED' and not provider.get('error_code'):
                     if provider_obj.state == 'issued':
                         continue
@@ -701,6 +703,7 @@ class ReservationAirline(models.Model):
                     #action issued dan create ticket number
                     provider_obj.action_issued_api_airline(context)
                     provider_obj.update_ticket_api(provider['passengers'])
+                    any_provider_changed = True
 
                     #get balance vendor
                     if provider_obj.provider_id.track_balance:
@@ -711,13 +714,16 @@ class ReservationAirline(models.Model):
                             _logger.error(traceback.format_exc())
                 elif provider['status'] == 'FAIL_BOOKED':
                     provider_obj.action_failed_booked_api_airline(provider.get('error_code'),provider.get('error_msg'))
+                    any_provider_changed = True
                 elif provider['status'] == 'FAIL_ISSUED':
                     provider_obj.action_failed_issued_api_airline(provider.get('error_msg'))
+                    any_provider_changed = True
 
             for rec in book_obj.provider_booking_ids:
                 pnr_list.append(rec.pnr)
 
-            book_obj.check_provider_state(context,pnr_list,hold_date,req)
+            if any_provider_changed:
+                book_obj.check_provider_state(context,pnr_list,hold_date,req)
 
             return ERR.get_no_error({
                 'order_number': book_obj.name,
