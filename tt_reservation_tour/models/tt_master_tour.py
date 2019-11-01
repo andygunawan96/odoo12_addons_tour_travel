@@ -827,9 +827,6 @@ class MasterTour(models.Model):
             grand_total_pax = 0
             grand_total_pax_no_infant = 0
             for rec in temp_room_list:
-                total_adt += rec['adult']
-                total_chd += rec['child']
-                total_inf += rec['infant']
                 tour_room_list = self.env['tt.master.tour.rooms'].sudo().search([('id', '=', int(rec['id']))], limit=1)
                 tour_room = tour_room_list[0]
                 total_amount = int(rec['adult']) + int(rec['child']) + int(rec['infant'])
@@ -851,8 +848,12 @@ class MasterTour(models.Model):
                             adult_sur += (rec['adult'] - tour_room.pax_minimum) * int(tour_room.adult_surcharge)
                             extra_bed_limit -= rec['adult'] - tour_room.pax_minimum
                             child_amt += rec['child']
-                            child_sur_amt += int(rec['child']) <= extra_bed_limit and rec['child'] or (rec['child'] - extra_bed_limit)
-                            child_sur += child_sur_amt * int(tour_room.child_surcharge)
+                            if int(rec['child']) <= extra_bed_limit:
+                                child_sur_amt += rec['child']
+                                child_sur += rec['child'] * int(tour_room.child_surcharge)
+                            else:
+                                child_sur_amt += rec['child'] - extra_bed_limit
+                                child_sur += (rec['child'] - extra_bed_limit) * int(tour_room.child_surcharge)
                         else:
                             adult_sur_amt += rec['adult'] - tour_room.pax_minimum - extra_bed_limit
                             adult_sur += adult_sur * int(tour_room.adult_surcharge)
@@ -861,7 +862,7 @@ class MasterTour(models.Model):
                     else:
                         adult_amt += tour_room.pax_minimum
                         if rec['child'] > 0:
-                            if rec['child'] - (tour_room.pax_minimum - rec['adult']) > 0:
+                            if max(rec['child'] - (tour_room.pax_minimum - rec['adult']), 0) != 0:
                                 child_amt += rec['child'] - (tour_room.pax_minimum - rec['adult'])
                                 if (rec['child'] - (tour_room.pax_minimum - rec['adult'])) > extra_bed_limit:
                                     child_sur_amt += rec['child'] - (tour_room.pax_minimum - rec['adult']) - extra_bed_limit
@@ -890,6 +891,9 @@ class MasterTour(models.Model):
                     'additional_charge': int(tour_room.additional_charge),
                 }
                 price_itinerary['accommodations'].append(temp_accom)
+                total_adt += adult_amt
+                total_chd += child_amt
+                total_inf += infant_amt
             price_itinerary.update({
                 'total_adult': total_adt,
                 'total_child': total_chd,
