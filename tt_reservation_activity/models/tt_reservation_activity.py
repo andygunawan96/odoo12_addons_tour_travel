@@ -160,7 +160,7 @@ class ReservationActivity(models.Model):
         }
         GatewayConnector().telegram_notif_api(data, {})
 
-    def action_issued(self):
+    def action_issued_vendor(self):
         req = {
             'uuid': self.booking_uuid,
             'provider': self.provider_name,
@@ -241,14 +241,14 @@ class ReservationActivity(models.Model):
             'state': 'fail_issued',
         })
         self.message_post(body='Order FAILED')
-        self.send_push_notif('failed')
+        self.send_push_notif('Activity Booking Failed')
 
-    def action_done(self):
+    def action_issued(self):
         self.write({
-            'state': 'done',
+            'state': 'issued',
         })
-        self.message_post(body='Order DONE')
-        self.send_push_notif('done')
+        self.message_post(body='Order ISSUED')
+        self.send_push_notif('Activity Booking Issued')
 
     def call_create_invoice(self, acquirer_id):
         _logger.info('Creating Invoice for ' + self.name)
@@ -333,11 +333,11 @@ class ReservationActivity(models.Model):
         obj_id = str(self.id)
         model = 'tt.reservation.activity'
         url = base_url + '/web#id=' + obj_id + '&view_type=form&model=' + model
-        if type == 'issued':
-            desc = 'Activity Issued ' + self.name + ' From ' + self.agent_id.name
+        if type == 'paid':
+            desc = 'Activity Paid ' + self.name + ' From ' + self.agent_id.name
         elif type == 'failed':
             desc = 'FAILED Activity Issued ' + self.name + ' From ' + self.agent_id.name
-        elif type == 'done':
+        elif type == 'issued':
             desc = 'Activity CONFIRMED BY VENDOR ' + self.name + ' From ' + self.agent_id.name
         else:
             desc = 'Activity Booking ' + self.name + ' From ' + self.agent_id.name
@@ -591,7 +591,7 @@ class ReservationActivity(models.Model):
             book_obj.action_booked_activity(context)
             context['order_id'] = book_obj.id
             if req['force_issued']:
-                book_obj.action_issued_activity(context)
+                book_obj.action_paid_activity(context)
 
             self.env.cr.commit()
 
@@ -847,7 +847,7 @@ class ReservationActivity(models.Model):
             elif activity_voucher_urls:
                 voucher_url_parsed = activity_voucher_urls[0].name
 
-            if activity_booking.state not in ['done', 'rejected', 'cancel', 'cancel2', 'fail_issued']:
+            if activity_booking.state not in ['issued', 'rejected', 'cancel', 'cancel2', 'fail_issued']:
                 activity_booking.sudo().write({
                     'state': res['status']
                 })
@@ -904,7 +904,7 @@ class ReservationActivity(models.Model):
         }
         self.write(vals)
 
-    def action_issued_activity(self, api_context=None):
+    def action_paid_activity(self, api_context=None):
         if not api_context:  # Jika dari call from backend
             api_context = {
                 'co_uid': self.env.user.id
@@ -915,14 +915,14 @@ class ReservationActivity(models.Model):
             })
 
         vals = {
-            'state': 'issued',
+            'state': 'paid',
             'issued_uid': api_context['co_uid'] or self.env.user.id,
             'issued_date': datetime.now(),
         }
         self.sudo().write(vals)
         for rec in self.provider_booking_ids:
             rec.action_create_ledger(vals['issued_uid'])
-        self.send_push_notif('issued')
+        self.send_push_notif('Activity Paid')
 
     def get_id(self, booking_number):
         row = self.env['tt.reservation.activity'].search([('name', '=', booking_number)])
@@ -935,7 +935,7 @@ class ReservationActivity(models.Model):
             order_id = req['order_id']
             book_obj = self.sudo().search([('pnr', '=', order_id), ('provider_name', '=', req['provider'])], limit=1)
             book_obj = book_obj[0]
-            if book_obj.state not in ['done', 'cancel', 'cancel2', 'refund']:
+            if book_obj.state not in ['issued', 'cancel', 'cancel2', 'refund']:
                 book_obj.sudo().write({
                     'state': req.get('status') and req['status'] or 'pending',
                 })
@@ -948,7 +948,7 @@ class ReservationActivity(models.Model):
             booking_uuid = req['booking_uuid']
             book_obj = self.sudo().search([('booking_uuid', '=', booking_uuid), ('provider_name', '=', req['provider'])], limit=1)
             book_obj = book_obj[0]
-            if book_obj.state not in ['done', 'cancel', 'cancel2', 'refund']:
+            if book_obj.state not in ['issued', 'cancel', 'cancel2', 'refund']:
                 book_obj.sudo().write({
                     'state': req.get('status') and req['status'] or 'pending',
                 })
