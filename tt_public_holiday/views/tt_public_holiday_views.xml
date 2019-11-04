@@ -1,0 +1,59 @@
+<odoo>
+    <record model="ir.ui.view" id="tt_public_holiday_view_form" >
+        <field name="name">tt.public.holiday.form</field>
+        <field name="model">tt.public.holiday</field>
+        <field name="arch" type="xml">
+            <form string="Public Holiday">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object"
+                                class="oe_stat_button" icon="fa-archive"
+                                groups="tt_base.group_tt_tour_travel_supervisor">
+                            <field name="active" widget="boolean_button"
+                                   options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="date"/>
+                        </group>
+                        <group>
+                            <field name="country_id"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tt_public_holiday_view_tree" >
+        <field name="name">tt.public.holiday.form</field>
+        <field name="model">tt.public.holiday</field>
+        <field name="arch" type="xml">
+            <tree string="Public Holiday">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="country_id"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_public_holiday_action">
+        <field name="name">Public Holiday</field>
+        <field name="res_model">tt.public.holiday</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{}</field>
+    </record>
+
+    <!--    web_icon="tt_accounting,static/description/account_management.png"-->
+    <menuitem id="submenu_calendar_public_holiday" parent="tt_public_holiday.menu_tour_travel_configuration_calendar"
+              name="Public Holiday" action="tt_public_holiday_action"/>
+</odoo>
+
