@@ -54,6 +54,9 @@
                         </form>
                     </field>
                     <notebook colspan="4">
+                        <page string="Locations">
+                            <field name="visa_location_ids"/>
+                        </page>
                         <page string="Notes">
                             <field name="notes"/>
                         </page>
@@ -98,7 +101,10 @@
         </field>
     </record>
 
-    <menuitem id="submenu_visa_pricelist" parent="tt_reservation_visa.menu_tour_travel_visa_master"
-              name="Visa" action="tt_reservation_visa.tt_reservation_visa_pricelist_view_action"
-              groups="tt_base.group_tt_tour_travel_operator"/>
+    <menuitem id="submenu_visa_pricelist"
+              parent="tt_reservation_visa.menu_tour_travel_visa_master"
+              name="Visa"
+              action="tt_reservation_visa.tt_reservation_visa_pricelist_view_action"
+              groups="tt_base.group_tt_tour_travel_operator"
+              sequence="1"/>
 </odoo>

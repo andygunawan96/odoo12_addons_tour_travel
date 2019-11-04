@@ -8,6 +8,7 @@
         <field name="arch" type="xml">
             <field name="description" position="after">
                 <field name="passenger_visa_ids"/>
+                <field name="pricelist_id"/>
             </field>
         </field>
     </record>

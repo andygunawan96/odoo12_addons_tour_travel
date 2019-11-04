@@ -51,6 +51,9 @@ class VisaPricelist(models.Model):
 
     requirement_ids = fields.One2many('tt.reservation.visa.requirements', 'pricelist_id', 'Requirements')
 
+    visa_location_ids = fields.Many2many('tt.master.visa.locations', 'tt_master_visa_locations_rel',
+                                         'master_visa_location_id', 'pricelist_id', 'Visa Locations')
+
     duration = fields.Integer('Duration (day(s))', help="in day(s)", required=True, default=1)
     commercial_duration = fields.Char('Duration', compute='_compute_duration', readonly=1)
 

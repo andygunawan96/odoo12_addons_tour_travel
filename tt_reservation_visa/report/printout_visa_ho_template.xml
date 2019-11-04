@@ -242,122 +242,151 @@
                                         <th style="border: 1px solid black; width:5%;"><strong>No</strong></th>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td style="border: 1px solid black;">
-                                                1. Have you ever applied for a visa to this country?
-                                            </td>
-                                            <td style="border: 1px solid black;">
+                                        <t t-if="p.handling_ids">
+                                            <t t-foreach="p.handling_ids" t-as="handling">
+                                                <tr>
+                                                    <td style="border: 1px solid black;">
+                                                        <span t-field="handling.handling_id.name"/>
+                                                    </td>
+                                                    <td style="border: 1px solid black;">
+                                                        <t t-if="handling.answer">
+                                                            <img t-att-src="'/tt_reservation_visa/static/src/images/checked-checkbox.png'"
+                                                                 style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>
+                                                        </t>
+                                                        <t t-else="">
+                                                            <img t-att-src="'/tt_reservation_visa/static/src/images/unchecked-checkbox.png'"
+                                                                 style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>
+                                                        </t>
+                                                    </td>
+                                                    <td style="border: 1px solid black;">
+                                                        <t t-if="not handling.answer">
+                                                            <img t-att-src="'/tt_reservation_visa/static/src/images/checked-checkbox.png'"
+                                                                 style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>
+                                                        </t>
+                                                        <t t-else="">
+                                                            <img t-att-src="'/tt_reservation_visa/static/src/images/unchecked-checkbox.png'"
+                                                                 style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>
+                                                        </t>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </t>
+<!--                                        <tr>-->
+<!--                                            <td style="border: 1px solid black;">-->
+<!--                                                1. Have you ever applied for a visa to this country?-->
+<!--                                            </td>-->
+<!--                                            <td style="border: 1px solid black;">-->
 
-                                            </td>
-                                            <td style="border: 1px solid black;">
+<!--                                            </td>-->
+<!--                                            <td style="border: 1px solid black;">-->
 
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="border: 1px solid black;">
-                                                2. Have you ever been rejected when applying for a visa to any countries? If yes, please
-                                                explain it in the extra information column below.
-                                            </td>
-                                            <td style="border: 1px solid black;">
+<!--                                            </td>-->
+<!--                                        </tr>-->
+<!--                                        <tr>-->
+<!--                                            <td style="border: 1px solid black;">-->
+<!--                                                2. Have you ever been rejected when applying for a visa to any countries? If yes, please-->
+<!--                                                explain it in the extra information column below.-->
+<!--                                            </td>-->
+<!--                                            <td style="border: 1px solid black;">-->
 
-                                            </td>
-                                            <td style="border: 1px solid black;">
+<!--                                            </td>-->
+<!--                                            <td style="border: 1px solid black;">-->
 
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="border: 1px solid black;">
-                                                3. Are you aware that if your visa get rejected, it is outside of the travel agent responsibility ?
-                                            </td>
-                                            <td style="border: 1px solid black;">
+<!--                                            </td>-->
+<!--                                        </tr>-->
+<!--                                        <tr>-->
+<!--                                            <td style="border: 1px solid black;">-->
+<!--                                                3. Are you aware that if your visa get rejected, it is outside of the travel agent responsibility ?-->
+<!--                                            </td>-->
+<!--                                            <td style="border: 1px solid black;">-->
 
-                                            </td>
-                                            <td style="border: 1px solid black;">
+<!--                                            </td>-->
+<!--                                            <td style="border: 1px solid black;">-->
 
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="border: 1px solid black;">
-                                                4. Have you read all of our terms and conditions thoroughly ?
-                                            </td>
-                                            <td style="border: 1px solid black;">
+<!--                                            </td>-->
+<!--                                        </tr>-->
+<!--                                        <tr>-->
+<!--                                            <td style="border: 1px solid black;">-->
+<!--                                                4. Have you read all of our terms and conditions thoroughly ?-->
+<!--                                            </td>-->
+<!--                                            <td style="border: 1px solid black;">-->
 
-                                            </td>
-                                            <td style="border: 1px solid black;">
+<!--                                            </td>-->
+<!--                                            <td style="border: 1px solid black;">-->
 
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="border: 1px solid black;">
-                                                5. Are you a First Traveler?
-                                            </td>
-                                            <td style="border: 1px solid black;">
+<!--                                            </td>-->
+<!--                                        </tr>-->
+<!--                                        <tr>-->
+<!--                                            <td style="border: 1px solid black;">-->
+<!--                                                5. Are you a First Traveler?-->
+<!--                                            </td>-->
+<!--                                            <td style="border: 1px solid black;">-->
 
-                                            </td>
-                                            <td style="border: 1px solid black;">
+<!--                                            </td>-->
+<!--                                            <td style="border: 1px solid black;">-->
 
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="border: 1px solid black;">
-                                                6. Do your family ever get rejected by the embassy when applying for a visa ? If yes, please
-                                                elaborate the reason in the extra information column below.
-                                            </td>
-                                            <td style="border: 1px solid black;">
+<!--                                            </td>-->
+<!--                                        </tr>-->
+<!--                                        <tr>-->
+<!--                                            <td style="border: 1px solid black;">-->
+<!--                                                6. Do your family ever get rejected by the embassy when applying for a visa ? If yes, please-->
+<!--                                                elaborate the reason in the extra information column below.-->
+<!--                                            </td>-->
+<!--                                            <td style="border: 1px solid black;">-->
 
-                                            </td>
-                                            <td style="border: 1px solid black;">
+<!--                                            </td>-->
+<!--                                            <td style="border: 1px solid black;">-->
 
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="border: 1px solid black;">
-                                                7. Do you have the standard amount of Rp.50.000.000,- / Pax in your account? If no, please write a
-                                                statement that you insist on applying your document in the extra information column below.
-                                            </td>
-                                            <td style="border: 1px solid black;">
+<!--                                            </td>-->
+<!--                                        </tr>-->
+<!--                                        <tr>-->
+<!--                                            <td style="border: 1px solid black;">-->
+<!--                                                7. Do you have the standard amount of Rp.50.000.000,- / Pax in your account? If no, please write a-->
+<!--                                                statement that you insist on applying your document in the extra information column below.-->
+<!--                                            </td>-->
+<!--                                            <td style="border: 1px solid black;">-->
 
-                                            </td>
-                                            <td style="border: 1px solid black;">
+<!--                                            </td>-->
+<!--                                            <td style="border: 1px solid black;">-->
 
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="border: 1px solid black;">
-                                                8. Do you have any family members or relatives who currently live at the country you want to visit ?
-                                                If yes, please write it in the extra information column below.
-                                            </td>
-                                            <td style="border: 1px solid black;">
+<!--                                            </td>-->
+<!--                                        </tr>-->
+<!--                                        <tr>-->
+<!--                                            <td style="border: 1px solid black;">-->
+<!--                                                8. Do you have any family members or relatives who currently live at the country you want to visit ?-->
+<!--                                                If yes, please write it in the extra information column below.-->
+<!--                                            </td>-->
+<!--                                            <td style="border: 1px solid black;">-->
 
-                                            </td>
-                                            <td style="border: 1px solid black;">
+<!--                                            </td>-->
+<!--                                            <td style="border: 1px solid black;">-->
 
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="border: 1px solid black;">
-                                                9. Are you aware that even having an Electronic Visa, you can still get rejected during immigration in the
-                                                country of destination ?
-                                            </td>
-                                            <td style="border: 1px solid black;">
+<!--                                            </td>-->
+<!--                                        </tr>-->
+<!--                                        <tr>-->
+<!--                                            <td style="border: 1px solid black;">-->
+<!--                                                9. Are you aware that even having an Electronic Visa, you can still get rejected during immigration in the-->
+<!--                                                country of destination ?-->
+<!--                                            </td>-->
+<!--                                            <td style="border: 1px solid black;">-->
 
-                                            </td>
-                                            <td style="border: 1px solid black;">
+<!--                                            </td>-->
+<!--                                            <td style="border: 1px solid black;">-->
 
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="border: 1px solid black;">
-                                                10. Did you give any false information or forged documents when you apply for a visa to the country your want to visit right now?
-                                                If yes, explain it in the extra information column below.
-                                            </td>
-                                            <td style="border: 1px solid black;">
+<!--                                            </td>-->
+<!--                                        </tr>-->
+<!--                                        <tr>-->
+<!--                                            <td style="border: 1px solid black;">-->
+<!--                                                10. Did you give any false information or forged documents when you apply for a visa to the country your want to visit right now?-->
+<!--                                                If yes, explain it in the extra information column below.-->
+<!--                                            </td>-->
+<!--                                            <td style="border: 1px solid black;">-->
 
-                                            </td>
-                                            <td style="border: 1px solid black;">
+<!--                                            </td>-->
+<!--                                            <td style="border: 1px solid black;">-->
 
-                                            </td>
-                                        </tr>
+<!--                                            </td>-->
+<!--                                        </tr>-->
                                     </tbody>
                                 </table>
                             </div>
@@ -375,7 +404,9 @@
                         <div id="description" class="row">
                             <div class="col-12">
                                 Please write all sorts of information about you that might help us in processing your document !
-                                <div style="border: 1px solid black; width:100%; height: 450px;"> </div>
+                                <div style="border: 1px solid black; width:100%; height: 450px;">
+                                    <span t-field="p.handling_information" style="margin: 10px 10px 10px 10px;"/>
+                                </div>
                             </div>
                         </div>
                         Are you sure all of your statements above are right and can be accounted for ?

@@ -94,6 +94,7 @@ class PricingAgent(models.Model):
 
     def get_agent_hierarchy(self, agent_id, hierarchy=[]):
         hierarchy.append({
+            'commission_agent_id': agent_id.id,
             'agent_id': agent_id.id,
             'agent_name': agent_id.name,
             'agent_type_id': agent_id.agent_type_id.id,
@@ -136,6 +137,7 @@ class PricingAgent(models.Model):
 
             """ Set pricing untuk agent yang pesan """
             vals = {
+                'commission_agent_id': agent_id.id,
                 'agent_id': agent_id.id,
                 'agent_name': agent_id.name,
                 'agent_type_id': agent_id.agent_type_id.id,
@@ -190,6 +192,7 @@ class PricingAgent(models.Model):
                 else:
                     amount = 0
                 vals.update({
+                    'commission_agent_id': rec['commission_agent_id'],
                     'agent_id': rec['agent_id'],
                     'agent_name': rec['agent_name'],
                     'agent_type_id': rec['agent_type_id'],

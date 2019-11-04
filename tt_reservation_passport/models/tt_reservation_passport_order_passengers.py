@@ -77,7 +77,18 @@ class PassportOrderPassengers(models.Model):
     passenger_domicile = fields.Char('Domicile', related='passenger_id.domicile', readonly=0)  # readonly=1
     process_status = fields.Selection(PROCESS_STATUS, string='Process Result',
                                       readonly=0)  # readonly=1
-    biometrics_interview = fields.Boolean('Biometrics / Interview')
+
+    biometrics = fields.Boolean('Biometrics')
+    biometrics_datetime = fields.Datetime('Datetime')
+    biometrics_ho_employee = fields.Many2one('res.users', 'Employee', domain=lambda self: self.get_user_HO())
+    biometrics_meeting_point = fields.Char('Meeting Point')
+    biometrics_location = fields.Char('Biometrics Location')
+
+    interview = fields.Boolean('Interview')
+    interview_datetime = fields.Datetime('Datetime')
+    interview_ho_employee = fields.Many2one('res.users', 'Employee', domain=lambda self: self.get_user_HO())
+    interview_meeting_point = fields.Char('Meeting Point')
+    interview_location = fields.Char('Interview Location')
 
     in_process_date = fields.Datetime('In Process Date', readonly=0)  # readonly=1
     payment_date = fields.Datetime('Payment Date', readonly=0)  # readonly=1
@@ -125,12 +136,23 @@ class PassportOrderPassengers(models.Model):
                                                 ready = ready to pickup by customer
                                                 done = picked up by customer''')
 
+    @api.model
+    def get_user_HO(self):
+        return [('agent_id', '=', self.env.ref('tt_base.rodex_ho').id)]
+
     def action_send_email_interview(self):
         """Dijalankan, jika user menekan tombol 'Send Email Interview'"""
         template = self.env.ref('tt_reservation_passport.template_mail_passport_interview')
         mail = self.env['mail.template'].browse(template.id)
         mail.send_mail(self.id)
         print("Email Sent")
+
+    def action_send_email_biometrics(self):
+        """Dijalankan, jika user menekan tombol 'Send Email Biometrics'"""
+        template = self.env.ref('tt_reservation_passport.template_mail_passport_biometrics')
+        mail = self.env['mail.template'].browse(template.id)
+        mail.send_mail(self.id)
+        print("Email Biometrics Sent")
 
     def action_draft(self):
         for rec in self:

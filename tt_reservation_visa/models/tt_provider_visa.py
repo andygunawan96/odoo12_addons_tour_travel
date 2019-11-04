@@ -2,6 +2,22 @@ from odoo import api, fields, models
 from ...tools import variables
 from datetime import datetime
 
+STATE_VISA = [
+    ('draft', 'Open'),
+    ('confirm', 'Confirm to HO'),
+    ('validate', 'Validated by HO'),
+    ('to_vendor', 'Send to Vendor'),
+    ('vendor_process', 'Proceed by Vendor'),
+    ('cancel', 'Canceled'),
+    ('payment', 'Payment'),
+    ('in_process', 'In Process'),
+    ('partial_proceed', 'Partial Proceed'),
+    ('proceed', 'Proceed'),
+    ('delivered', 'Delivered'),
+    ('ready', 'Sent'),
+    ('done', 'Done')
+]
+
 
 class ProviderVisaPassengers(models.Model):
     _name = 'tt.provider.visa.passengers'
@@ -30,6 +46,7 @@ class TtProviderVisa(models.Model):
     booking_id = fields.Many2one('tt.reservation.visa', 'Order Number', ondelete='cascade')
     visa_id = fields.Many2one('tt.reservation.visa.pricelist', 'Visa Pricelist')
     state = fields.Selection(variables.BOOKING_STATE, 'Status', default='draft')
+    state_visa = fields.Selection(STATE_VISA, 'State', related="booking_id.state_visa")
     cost_service_charge_ids = fields.One2many('tt.service.charge', 'provider_visa_booking_id', 'Cost Service Charges')
 
     country_id = fields.Many2one('res.country', 'Country', ondelete="cascade", readonly=True,
