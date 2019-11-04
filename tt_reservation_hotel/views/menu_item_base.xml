@@ -102,4 +102,9 @@
                   name="Get Provider Data"
                   sequence="10"
                   action="tt_reservation_hotel.tt_hotel_provider_data_view_action_rodex"/>
+            <menuitem id="submenu_hotel_read_file"
+                  parent="tt_reservation_hotel.menu_hotel_get_vendor_record"
+                  name="Get Read File"
+                  sequence="10"
+                  action="tt_reservation_hotel.tt_hotel_read_file_view_action_rodex"/>
 </odoo>

@@ -26,6 +26,7 @@ class Destinations(models.Model):
     display_name = fields.Char('Display Name',compute="_compute_display_name_rodex",store=True)
     country_id = fields.Many2one('res.country', 'Country')
     city = fields.Char('City', required=True, default='')
+    city_id = fields.Many2one('res.city', 'City ID')
     icao = fields.Char('ICAO', help="for airline : 4-letter ICAO code")
     latitude = fields.Float('Latitude Degree', digits=(3,7))
     longitude = fields.Float('Longitude Degree', digits=(3,7))
@@ -144,3 +145,17 @@ class Destinations(models.Model):
             _logger.error('Error Get Destination List API, %s, %s' % (str(e), traceback.format_exc()))
             res = Response().get_error(str(e), 500)
         return res
+
+    def get_city(self):
+        for rec in self.search([]):
+            # _logger.info('Finding: ' + rec.city)
+            for rec2 in self.env['res.city'].find_city_by_name(rec.city, limit=5):
+                if rec.country_id == rec2.country_id:
+                    # _logger.info('Found: ' + rec2.name + '(' + rec2.country_id.name + ')')
+                    rec.city_id = rec2
+                    break
+        return True
+
+    def remove_city(self):
+        for rec in self.search([]):
+            rec.city_id = False

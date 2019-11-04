@@ -331,4 +331,53 @@
         <field name="view_mode">tree,form</field>
         <field name="search_view_id" ref="tt_hotel_view_search"/>
     </record>
+
+    <record id="tt_hotel_read_file_view_form_rodex" model="ir.ui.view">
+        <field name="name">tt.hotel.read.file.view.form.rodex</field>
+        <field name="model">tt.hotel</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm" />
+                </header>
+
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="get_record_homas" class="oe_stat_button" string="Merge" type="object" icon="fa-plus"/>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name">Name</label>
+                        <h1>
+                            <field name="name" default_focus="1" placeholder="Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="HotelPro">
+                            <button name="get_record_by_file" string="File Country City ver 1" type="object" icon="fa-building"/>
+                            <button name="get_record_by_file_2" string="Country, City" type="object" icon="fa-building"/>
+                            <button name="get_record_by_file_2a" string="HotelsPro" type="object" icon="fa-plus"/>
+                            <button name="get_record_by_file_3" string="HotelsPro" type="object" icon="fa-plus"/>
+                            <button name="get_record_by_file_4" string="HotelsPro" type="object" icon="fa-plus"/>
+                        </group>
+                        <group string="DIDA">
+                            <button name="get_record_by_api7a" string="Country, Meal Type, Room Type, Prop. Type" type="object" icon="fa-spoon"/>
+                            <button name="get_record_by_api7b" string="City by country" type="object" icon="fa-building"/>
+                            <button name="get_record_by_api7c" string="Hotel by CSV" type="object" icon="fa-home"/>
+                        </group>
+                        <group string="TBO">
+                            <button name="get_record_by_api9" string="Country + City" type="object" icon="fa-building"/>
+                            <button name="get_record_by_api9a" string="Hotel" type="object" icon="fa-home"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="tt_hotel_read_file_view_action_rodex" model="ir.actions.act_window">
+        <field name="name">Read File</field>
+        <field name="res_model">tt.hotel</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context" eval="{'form_view_ref': 'tt_reservation_hotel.tt_hotel_read_file_view_form_rodex'}"/>
+    </record>
 </odoo>
