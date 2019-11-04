@@ -60,13 +60,13 @@ class ApiConnectorHotels:
 
     def get_record_by_api(self, req_post, api_context=None):
         self.credetial['co_uid'] = request.env.user.id
-        self.cookie = self.signin().get('cookie', False)
+        self.signin()
         # Fixme: Auto sign if session expire
         res = self.send_request('get_vendor_content', req_post, timeout=60*5)
-        # res = API_CN_HOTEL.execute('', 'get_vendor_content', req_post)
-        if res['error_code'] != 0:
-            raise Exception('%s %s' % (res['error_code'], res['error_msg']))
-        res = json.loads(res['response'])['result']
+        if res.get('http_code'):
+            if res['http_code'] != 200:
+                raise Exception('%s %s' % (res['http_code'], res['error_msg']))
+            res = json.loads(res['response'])['result']
         return res
 
     def check_booking_status_by_api(self, req_post, api_context=None):
