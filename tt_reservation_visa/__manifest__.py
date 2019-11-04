@@ -33,6 +33,8 @@
         'views/tt_reservation_visa_menuheader.xml',
         'views/tt_reservation_visa_views.xml',
         'views/tt_reservation_visa_order_passengers_views.xml',
+        'views/tt_master_visa_locations_views.xml',
+        'views/tt_master_visa_handling_views.xml',
         'views/tt_reservation_visa_pricelist_views.xml',
         'views/tt_reservation_visa_service_charge_views.xml',
         'views/tt_provider_visa_views.xml',

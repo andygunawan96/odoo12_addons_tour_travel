@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_master_visa_locations_form_view" model="ir.ui.view">
+        <field name="name">tt.master.visa.locations.form.view</field>
+        <field name="model">tt.master.visa.locations</field>
+        <field name="arch" type="xml">
+            <form string="">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="location_type"/>
+                        <field name="address"/>
+                        <field name="city"/>
+                    </group>
+                    <group string="Pricelist">
+                        <field name="pricelist_ids"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_master_visa_locations_tree_view" model="ir.ui.view">
+        <field name="name">tt.master.visa.locations.form.view</field>
+        <field name="model">tt.master.visa.locations</field>
+        <field name="arch" type="xml">
+            <tree string="">
+                <field name="name"/>
+                <field name="location_type"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_master_visa_locations_view_action">
+        <field name="name">Master Visa Locations</field>
+        <field name="res_model">tt.master.visa.locations</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain"/>
+        <field name="context">
+            {
+                'form_view_ref': 'tt_reservation_visa.tt_master_visa_locations_form_view',
+                'tree_view_ref': 'tt_reservation_visa.tt_master_visa_locations_tree_view',
+            }
+        </field>
+    </record>
+
+    <menuitem id="submenu_visa_locations"
+              parent="tt_reservation_visa.menu_tour_travel_visa_master"
+              name="Locations"
+              action="tt_reservation_visa.tt_master_visa_locations_view_action"
+              groups="tt_base.group_tt_tour_travel_operator"
+              sequence="2"/>
+</odoo>

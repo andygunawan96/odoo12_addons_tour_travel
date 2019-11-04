@@ -131,7 +131,7 @@
                             </div>
 
                             <field name="in_process_date"/>
-                            <field name="ready_date"/>
+<!--                            <field name="ready_date"/>-->
                             <field name="done_date"/>
                         </group>
                     </group>
