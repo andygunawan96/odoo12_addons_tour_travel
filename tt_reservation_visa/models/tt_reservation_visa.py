@@ -45,7 +45,7 @@ class TtVisa(models.Model):
     country_id = fields.Many2one('res.country', 'Country', ondelete="cascade", readonly=True,
                                  states={'draft': [('readonly', False)]})
     duration = fields.Char('Duration', readonly=True, states={'draft': [('readonly', False)]})
-    total_cost_price = fields.Monetary('Total Cost Price', default=0, readonly=True)
+    total_cost_price = fields.Monetary('Total Cost Price', default=0, readonly=True, compute="_compute_total_price")
 
     state_visa = fields.Selection(STATE_VISA, 'State', default='confirm',
                                   help='''draft = requested
@@ -545,14 +545,14 @@ class TtVisa(models.Model):
         print('Response : ' + str(json.dumps(res)))
         return Response().get_no_error(res)
 
-    def create_booking_visa_api(self, data, context):  #
-        sell_visa = data['sell_visa']  # self.param_sell_visa
-        booker = data['booker']  # self.param_booker
-        contact = data['contact']  # self.param_contact
-        passengers = data['passenger']  # self.param_passenger
-        search = data['search']  # self.param_search
-        payment = data['payment']  # self.param_payment
-        context = context  # self.param_context
+    def create_booking_visa_api(self):  # , data, context
+        sell_visa = self.param_sell_visa  # data['sell_visa']
+        booker = self.param_booker  # data['booker']
+        contact = self.param_contact  # data['contact']
+        passengers = self.param_passenger  # data['passenger']
+        search = self.param_search  # data['search']
+        payment = self.param_payment  # data['payment']
+        context = self.param_context  # context
         try:
             user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
 
@@ -810,8 +810,8 @@ class TtVisa(models.Model):
             passenger_obj = passenger_env.browse(passenger_ids[idx])
             vals = {
                 'amount': pricelist_obj.sale_price,
-                'charge_code': 'fare',
-                'charge_type': 'FARE',
+                'charge_code': 'total',
+                'charge_type': 'TOTAL',
                 'passenger_visa_id': passenger_ids[idx],
                 'description': pricelist_obj.description,
                 'pax_type': pricelist_obj.pax_type,
@@ -1055,7 +1055,7 @@ class TtVisa(models.Model):
             for sc in rec.sale_service_charge_ids:
                 if sc.pricelist_id.visa_type not in doc_type:
                     doc_type.append(sc.pricelist_id.visa_type)
-                if sc.charge_code == 'FARE':
+                if sc.charge_code == 'TOTAL':
                     total_order += sc.total
                 if sc.pricelist_id.display_name:
                     desc = sc.pricelist_id.display_name.upper() + ' ' + sc.pricelist_id.entry_type.upper()
@@ -1102,7 +1102,7 @@ class TtVisa(models.Model):
                     'description': 'HO Commission'
                 })
                 commission_aml = ledger_obj.create(vals)
-        print('Total Fare : ' + str(self.total_fare))
+        # print('Total Fare : ' + str(self.total_fare))
 
     # ANTI / REVERSE LEDGER
 
@@ -1310,7 +1310,7 @@ class TtVisa(models.Model):
         for psg in self.passenger_ids:
             if psg.pricelist_id and (psg.booking_state == 'draft' or psg.booking_state == 'confirm' or psg.booking_state == 'validate'):
                 for scs in psg.cost_service_charge_ids:
-                    if scs.charge_code == 'fare':
+                    if scs.charge_code == 'total':
                         if scs.amount != psg.pricelist_id.sale_price:
                             scs.amount = psg.pricelist_id.sale_price
                     elif scs.charge_code == 'rac':
@@ -1360,7 +1360,7 @@ class TtVisa(models.Model):
             rec.total_fare = 0
 
             for line in rec.sale_service_charge_ids:
-                if line.charge_type == 'FARE':
+                if line.charge_type == 'TOTAL':
                     rec.total_fare += line.total
                 if line.charge_type == 'tax':
                     rec.total_tax += line.total
