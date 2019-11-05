@@ -7,13 +7,8 @@
         <menuitem id="top_reservations_train"
                   parent="tt_reservation.main_reservations"
                   name="Train"
-                  sequence="2"/>
-
-        <!--<menuitem id="menu_reservations_train"-->
-                  <!--name="Booking"-->
-
-                  <!--sequence="1"/>-->
-                          <!--&lt;!&ndash;parent="tt_transport.top_reservations_train"&ndash;&gt;-->
+                  sequence="21"
+                  groups="base.group_user"/>
 
         <menuitem id="menu_reservations_train"
                   parent="tt_reservation_train.top_reservations_train"

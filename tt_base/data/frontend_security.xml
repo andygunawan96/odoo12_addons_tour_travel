@@ -35,4 +35,9 @@
         <field name="code">p_cache_3</field>
     </record>
 
+    <record id="able_to_update_cache_version" model="tt.frontend.security">
+        <field name="name">Update Cache Version</field>
+        <field name="code">cache_version</field>
+    </record>
+
 </odoo>
