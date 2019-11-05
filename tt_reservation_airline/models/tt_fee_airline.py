@@ -8,7 +8,7 @@ class TtSsrAirline(models.Model):
     name = fields.Char("Name")
     type = fields.Char("Type")
     code = fields.Char("Code")
-    value = fields.Float("Value")
+    value = fields.Char("Value")
     description = fields.Text("Description")
     amount = fields.Monetary("Amount")
     currency_id = fields.Many2one("res.currency","Currency")
