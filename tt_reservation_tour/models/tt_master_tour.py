@@ -703,8 +703,13 @@ class MasterTour(models.Model):
     def get_payment_rules_api(self, data, context, **kwargs):
         try:
             search_tour_id = data.get('id')
+            search_tour_obj = self.env['tt.master.tour'].sudo().browse(int(search_tour_id))
+            if search_tour_obj.dp_type == 'amount':
+                dp_val = search_tour_obj.dp_amount
+            else:
+                dp_val = search_tour_obj.dp_percentage
             payment_rules = []
-            for payment in self.env['tt.master.tour'].sudo().browse(int(search_tour_id)).payment_rules_ids:
+            for payment in search_tour_obj.payment_rules_ids:
                 vals = {
                     'name': payment.name,
                     'description': payment.description,
@@ -714,7 +719,9 @@ class MasterTour(models.Model):
                 payment_rules.append(vals)
 
             response = {
-                'payment_rules': payment_rules
+                'payment_rules': payment_rules,
+                'dp_val': dp_val,
+                'dp_type': search_tour_obj.dp_type
             }
             return ERR.get_no_error(response)
         except RequestException as e:
