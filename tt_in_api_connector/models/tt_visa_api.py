@@ -12,7 +12,7 @@ class TtOfflineApiCon(models.Model):
         if action == 'get_config_api':
             res = self.env['tt.reservation.visa.pricelist'].get_config_api()
         elif action == 'search_api':
-            res = self.env['tt.reservation.visa.pricelist'].search_api(data, context)
+            res = self.env['tt.reservation.visa.pricelist'].search_api(data)
         elif action == 'create_booking_visa_api':
             res = table_obj.create_booking_visa_api(data, context)
         elif action == 'get_booking_visa_api':
