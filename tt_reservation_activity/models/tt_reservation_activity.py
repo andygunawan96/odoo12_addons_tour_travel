@@ -368,7 +368,8 @@ class ReservationActivity(models.Model):
                         sc_value[p_pax_type][p_charge_type].update({
                             'amount': 0,
                             'foreign_amount': 0,
-                            'total': 0
+                            'total': 0,
+                            'pax_count': 0
                         })
                     c_type = p_charge_type
                     c_code = p_charge_type.lower()
@@ -378,14 +379,15 @@ class ReservationActivity(models.Model):
                         sc_value[p_pax_type][p_charge_code].update({
                             'amount': 0,
                             'foreign_amount': 0,
-                            'total': 0
+                            'total': 0,
+                            'pax_count': 0
                         })
                     c_type = p_charge_code
                     c_code = p_charge_code
                 sc_value[p_pax_type][c_type].update({
                     'charge_type': p_charge_type,
                     'charge_code': c_code,
-                    'pax_count': p_sc.pax_count,
+                    'pax_count': sc_value[p_pax_type][c_type]['pax_count'] + p_sc.pax_count,
                     'currency_id': p_sc.currency_id.id,
                     'foreign_currency_id': p_sc.foreign_currency_id.id,
                     'amount': sc_value[p_pax_type][c_type]['amount'] + p_sc.amount,
@@ -789,6 +791,17 @@ class ReservationActivity(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1013)
 
+    def clean_string(self, txt):
+        replace_list = {
+            '<br>': '\n',
+            '<p>': '',
+            '</p>': '',
+        }
+        for key, val in replace_list.items():
+            if txt:
+                txt = txt.replace(key, val)
+        return txt
+
     def get_booking_by_api(self, res, req, context):
         try:
             order_number = req['order_number']
@@ -812,15 +825,20 @@ class ReservationActivity(models.Model):
             contact = self.env['tt.customer'].browse(activity_booking.contact_id.id)
 
             master = self.env['tt.master.activity'].browse(activity_booking.activity_id.id)
+            image_urls = []
+            for img in master.image_ids:
+                image_urls.append(str(img.photos_url) + str(img.photos_path))
+
             activity_details = {
                 'name': master.name,
-                'description': master.description,
-                'highlights': master.highlights,
-                'additionalInfo': master.additionalInfo,
-                'safety': master.safety,
-                'warnings': master.warnings,
-                'priceIncludes': master.priceIncludes,
-                'priceExcludes': master.priceExcludes,
+                'description': self.clean_string(master.description),
+                'highlights': self.clean_string(master.highlights),
+                'additionalInfo': self.clean_string(master.additionalInfo),
+                'safety': self.clean_string(master.safety),
+                'warnings': self.clean_string(master.warnings),
+                'priceIncludes': self.clean_string(master.priceIncludes),
+                'priceExcludes': self.clean_string(master.priceExcludes),
+                'image_urls': image_urls,
             }
             master_line = self.env['tt.master.activity.lines'].search([('activity_id', '=', master.id), ('uuid', '=', activity_booking.activity_product_uuid)])
             if master_line:
@@ -831,8 +849,8 @@ class ReservationActivity(models.Model):
                     'voucher_validity_days': master_line.voucher_validity_days,
                     'voucher_validity_type': master_line.voucher_validity_type,
                 },
-                'voucherUse': master_line.voucherUse,
-                'voucherRedemptionAddress': master_line.voucherRedemptionAddress,
+                'voucherUse': self.clean_string(master_line.voucherUse),
+                'voucherRedemptionAddress': self.clean_string(master_line.voucherRedemptionAddress),
                 'cancellationPolicies': master_line.cancellationPolicies,
             }
 
@@ -871,7 +889,6 @@ class ReservationActivity(models.Model):
                 'pnr': activity_booking.pnr,
                 'visit_date': str(activity_booking.visit_date)[:10],
                 'timeslot': activity_booking.timeslot and activity_booking.timeslot or False,
-                'currencyCode': res['currencyCode'],
                 'passengers': passengers,
                 'name': order_number,
                 'activity_details': activity_details,

@@ -6,7 +6,7 @@ from datetime import datetime
 class TtProviderTour(models.Model):
     _name = 'tt.provider.tour'
     _rec_name = 'pnr'
-    _order = 'visit_date'
+    _order = 'departure_date'
     _description = 'Rodex Model'
 
     pnr = fields.Char('PNR')

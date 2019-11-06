@@ -5,7 +5,7 @@ import logging,traceback
 
 
 class TtTourApiCon(models.Model):
-    _name = 'tt.tour.tour.api.con'
+    _name = 'tt.tour.api.con'
     _inherit = 'tt.api.con'
 
     table_name = 'tt.reservation.tour'

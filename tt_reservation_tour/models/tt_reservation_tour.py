@@ -21,6 +21,7 @@ PAYMENT_METHOD = [
 class ReservationTour(models.Model):
     _inherit = ['tt.reservation']
     _name = 'tt.reservation.tour'
+    _order = 'id DESC'
     _description = 'Rodex Model'
 
     tour_id = fields.Many2one('tt.master.tour', 'Tour ID')
@@ -107,7 +108,7 @@ class ReservationTour(models.Model):
             })
 
         # Kurangi seat sejumlah pax_amount, lalu cek sisa kuota tour
-        pax_amount = sum(1 for temp in self.line_ids if temp.pax_type != 'INF')  # jumlah orang yang di book
+        pax_amount = sum(1 for temp in self.passenger_ids if temp.pax_type != 'INF')  # jumlah orang yang di book
         self.tour_id.seat -= pax_amount  # seat tersisa dikurangi jumlah orang yang di book
         if self.tour_id.seat <= int(0.2 * self.tour_id.quota):
             self.tour_id.state_tour = 'definite'  # pasti berangkat jika kuota >=80%
@@ -133,13 +134,11 @@ class ReservationTour(models.Model):
 
     def commit_booking_api(self, data, context, **kwargs):
         try:
-            booking_data = data.get('booking_data')
-
+            booker_data = data.get('booker_data') and data['booker_data'] or False
+            contacts_data = data.get('contacts_data') and data['contacts_data'] or False
+            passengers = data.get('passengers_data') and data['passengers_data'] or False
             force_issued = data.get('force_issued') and int(data['force_issued']) or 0
-            booker_data = booking_data.get('booker') and booking_data['booker'] or False
-            contacts_data = booking_data.get('contact') and booking_data['contact'] or False
-            passengers = booking_data.get('all_pax') and booking_data['all_pax'] or False
-            pricelist_id = data.get('id') and int(data['id']) or 0
+            pricelist_id = data.get('tour_id') and int(data['tour_id']) or 0
             tour_data = self.env['tt.master.tour'].sudo().search([('id', '=', pricelist_id)], limit=1)
             if tour_data:
                 tour_data = tour_data[0]
@@ -162,7 +161,7 @@ class ReservationTour(models.Model):
                     'title': temp_pax['title'],
                     'pax_type': temp_pax['pax_type'],
                     'tour_room_id': temp_pax.get('tour_room_id', 0),
-                    'master_tour_id': tour_data and tour_data['id'] or False,
+                    'master_tour_id': tour_data and tour_data.id or False,
                 })
 
             try:
@@ -183,6 +182,9 @@ class ReservationTour(models.Model):
                 'agent_id': context['co_agent_id'],
                 'user_id': context['co_uid'],
                 'tour_id': pricelist_id,
+                'adult': data.get('adult') and int(data['adult']) or 0,
+                'child': data.get('child') and int(data['child']) or 0,
+                'infant': data.get('infant') and int(data['infant']) or 0,
                 'transport_type': 'tour',
             })
 
