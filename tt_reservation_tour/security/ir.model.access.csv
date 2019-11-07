@@ -119,3 +119,5 @@ tt_tour_master_locations_for_agent_user_manager,tt.tour.master.locations.for.age
 tt_tour_master_locations_for_sub_agent_user_operator,tt.tour.master.locations.for.sub.agent.user.operator,model_tt_tour_master_locations,tt_base.group_tt_sub_agent_user_operator,1,1,1,0
 tt_tour_master_locations_for_sub_agent_user_supervisor,tt.tour.master.locations.for.sub.agent.user.supervisor,model_tt_tour_master_locations,tt_base.group_tt_sub_agent_user_supervisor,1,1,1,0
 tt_tour_master_locations_for_sub_agent_user_manager,tt.tour.master.locations.for.sub.agent.user.manager,model_tt_tour_master_locations,tt_base.group_tt_sub_agent_user_manager,1,1,1,0
+,,,,,,,
+tt_provider_tour_for_all,tt.provider.tour.for.all,model_tt_provider_tour,,1,0,0,0
