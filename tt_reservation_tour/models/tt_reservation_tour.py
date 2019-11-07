@@ -39,15 +39,39 @@ class ReservationTour(models.Model):
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', default=lambda self: self.env.ref('tt_reservation_tour.tt_provider_type_tour'))
     payment_method = fields.Selection(PAYMENT_METHOD, 'Payment Method')
 
-    def action_issued_tour(self,co_uid,customer_parent_id,acquirer_id=False):
+    def action_issued_tour(self, api_context=None):
+        if not api_context:  # Jika dari call from backend
+            api_context = {
+                'co_uid': self.env.user.id
+            }
+        if not api_context.get('co_uid'):
+            api_context.update({
+                'co_uid': self.env.user.id
+            })
+
         if self.state != 'issued':
             self.write({
                 'state': 'issued',
                 'issued_date': datetime.now(),
-                'issued_uid': self.env.user.id
+                'issued_uid': api_context['co_uid'] or self.env.user.id,
             })
             for rec in self.provider_booking_ids:
-                rec.action_create_ledger()
+                rec.action_create_ledger(self.env.user.id)
+
+    def call_create_invoice(self, acquirer_id):
+        _logger.info('Creating Invoice for ' + self.name)
+
+    def update_pnr_data(self, book_id, pnr):
+        provider_objs = self.env['tt.provider.tour'].search([('booking_id', '=', book_id)])
+        for rec in provider_objs:
+            rec.sudo().write({
+                'pnr': pnr
+            })
+            cost_service_charges = self.env['tt.service.charge'].search([('provider_tour_booking_id', '=', rec.id)])
+            for rec2 in cost_service_charges:
+                rec2.sudo().write({
+                    'description': pnr
+                })
 
     def action_reissued(self):
         pax_amount = sum(1 for temp in self.line_ids if temp.pax_type != 'INF')
@@ -99,11 +123,20 @@ class ReservationTour(models.Model):
     # *END STATE*
 
     def action_booked_tour(self, api_context=None):
+        if not api_context:  # Jika dari call from backend
+            api_context = {
+                'co_uid': self.env.user.id
+            }
+        if not api_context.get('co_uid'):
+            api_context.update({
+                'co_uid': self.env.user.id
+            })
+
         if self.state != 'booked':
             self.write({
                 'state': 'booked',
                 'booked_date': datetime.now(),
-                'booked_uid': self.env.user.id,
+                'booked_uid': api_context['co_uid'] or self.env.user.id,
                 'hold_date': datetime.now() + relativedelta(days=1),
             })
 
@@ -132,14 +165,73 @@ class ReservationTour(models.Model):
     ############################################################################################################
     ############################################################################################################
 
+    # to generate sale service charge
+    def calculate_service_charge(self):
+        for service_charge in self.sale_service_charge_ids:
+            service_charge.unlink()
+
+        for provider in self.provider_booking_ids:
+            sc_value = {}
+            for p_sc in provider.cost_service_charge_ids:
+                p_charge_code = p_sc.charge_code
+                p_charge_type = p_sc.charge_type
+                p_pax_type = p_sc.pax_type
+                if not sc_value.get(p_pax_type):
+                    sc_value[p_pax_type] = {}
+                if p_charge_type != 'RAC':
+                    if not sc_value[p_pax_type].get(p_charge_type):
+                        sc_value[p_pax_type][p_charge_type] = {}
+                        sc_value[p_pax_type][p_charge_type].update({
+                            'amount': 0,
+                            'foreign_amount': 0,
+                            'total': 0
+                        })
+                    c_type = p_charge_type
+                    c_code = p_charge_type.lower()
+                elif p_charge_type == 'RAC':
+                    if not sc_value[p_pax_type].get(p_charge_code):
+                        sc_value[p_pax_type][p_charge_code] = {}
+                        sc_value[p_pax_type][p_charge_code].update({
+                            'amount': 0,
+                            'foreign_amount': 0,
+                            'total': 0
+                        })
+                    c_type = p_charge_code
+                    c_code = p_charge_code
+                sc_value[p_pax_type][c_type].update({
+                    'charge_type': p_charge_type,
+                    'charge_code': c_code,
+                    'pax_count': p_sc.pax_count,
+                    'currency_id': p_sc.currency_id.id,
+                    'foreign_currency_id': p_sc.foreign_currency_id.id,
+                    'amount': sc_value[p_pax_type][c_type]['amount'] + p_sc.amount,
+                    'total': sc_value[p_pax_type][c_type]['total'] + p_sc.total,
+                    'foreign_amount': sc_value[p_pax_type][c_type]['foreign_amount'] + p_sc.foreign_amount,
+                })
+
+            values = []
+            for p_type, p_val in sc_value.items():
+                for c_type, c_val in p_val.items():
+                    curr_dict = {}
+                    curr_dict['pax_type'] = p_type
+                    curr_dict['booking_tour_id'] = self.id
+                    curr_dict['description'] = provider.pnr
+                    curr_dict.update(c_val)
+                    values.append((0, 0, curr_dict))
+
+            self.write({
+                'sale_service_charge_ids': values
+            })
+
     def commit_booking_api(self, data, context, **kwargs):
         try:
             booker_data = data.get('booker_data') and data['booker_data'] or False
             contacts_data = data.get('contacts_data') and data['contacts_data'] or False
             passengers = data.get('passengers_data') and data['passengers_data'] or False
-            force_issued = data.get('force_issued') and int(data['force_issued']) or 0
+            force_issued = data.get('force_issued') and int(data['force_issued']) or False
             pricelist_id = data.get('tour_id') and int(data['tour_id']) or 0
             tour_data = self.env['tt.master.tour'].sudo().search([('id', '=', pricelist_id)], limit=1)
+            pricing = data.get('pricing') and data['pricing'] or []
             if tour_data:
                 tour_data = tour_data[0]
             provider_id = tour_data.provider_id
@@ -185,11 +277,15 @@ class ReservationTour(models.Model):
                 'adult': data.get('adult') and int(data['adult']) or 0,
                 'child': data.get('child') and int(data['child']) or 0,
                 'infant': data.get('infant') and int(data['infant']) or 0,
+                'departure_date': tour_data.departure_date,
+                'return_date': tour_data.return_date,
+                'provider_name': provider_id.name,
                 'transport_type': 'tour',
             })
 
             if booking_obj:
-                booking_obj.action_booked_tour()
+                booking_obj.action_booked_tour(context)
+
                 provider_tour_vals = {
                     'booking_id': booking_obj.id,
                     'tour_id': pricelist_id,
@@ -199,7 +295,7 @@ class ReservationTour(models.Model):
                     # 'balance_due': req['amount'],
                 }
 
-                provider_tour_obj = self.env['tt.provider.activity'].sudo().create(provider_tour_vals)
+                provider_tour_obj = self.env['tt.provider.tour'].sudo().create(provider_tour_vals)
                 for psg in booking_obj.passenger_ids:
                     vals = {
                         'provider_id': provider_tour_obj.id,
@@ -207,16 +303,9 @@ class ReservationTour(models.Model):
                         'pax_type': psg.pax_type,
                         'tour_room_id': psg.tour_room_id.id
                     }
-                    self.env['tt.ticket.activity'].sudo().create(vals)
+                    self.env['tt.ticket.tour'].sudo().create(vals)
                 provider_tour_obj.delete_service_charge()
-                # for rec in pricing:
-                #     provider_tour_obj.create_service_charge(rec)
-
-                if force_issued == 1:
-                    booking_obj.write({
-                        'payment_method': data.get('payment_method') and data['payment_method'] or 'cash'
-                    })
-                    booking_obj.action_issued_tour()
+                provider_tour_obj.create_service_charge(pricing)
 
                 response = {
                     'order_number': booking_obj.name
@@ -437,13 +526,57 @@ class ReservationTour(models.Model):
         try:
             book_objs = self.env['tt.reservation.tour'].sudo().search([('name', '=', data['order_number'])])
             book_obj = book_objs[0]
-            book_obj.sudo().write({
-                'payment_method': data.get('payment_method') and data['payment_method'] or 'cash'
+            write_vals = {}
+            book_info = data.get('book_info') and data['book_info'] or {}
+            if book_info:
+                write_vals.update({
+                    'pnr': book_info.get('pnr') and book_info['pnr'] or ''
+                })
+            if data.get('member'):
+                customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', data['seq_id'])])
+            else:
+                customer_parent_id = book_obj.agent_id.customer_parent_walkin_id.id
+
+            write_vals.update({
+                'customer_parent_id': customer_parent_id,
             })
-            book_obj.action_issued_tour()
+
+            try:
+                agent_obj = self.env['tt.customer'].browse(int(self.booker_id.id)).agent_id
+                if not agent_obj:
+                    agent_obj = self.env['res.users'].browse(int(context['co_uid'])).agent_id
+            except Exception:
+                agent_obj = self.env['res.users'].browse(int(context['co_uid'])).agent_id
+
+            if data.get('force_issued'):
+                is_enough = self.env['tt.agent'].check_balance_limit_api(agent_obj.id, data['amount'])
+                if is_enough['error_code'] != 0:
+                    _logger.error('Balance not enough')
+                    raise RequestException(1007)
+
+                write_vals.update({
+                    'payment_method': data.get('payment_method') and data['payment_method'] or 'full'
+                })
+            book_obj.sudo().write(write_vals)
+
+            book_obj.update_pnr_data(book_obj.id, book_info['pnr'])
+            book_obj.calculate_service_charge()
+            self.env.cr.commit()
+
+            if data.get('force_issued'):
+                book_obj.action_issued_tour(context)
+                if data.get('seq_id'):
+                    acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', data['seq_id'])])
+                    if not acquirer_id:
+                        raise RequestException(1017)
+                else:
+                    raise RequestException(1017)
+
+                book_obj.call_create_invoice(acquirer_id)
 
             response = {
                 'order_number': book_obj.name,
+                'state': book_obj.state,
             }
             return ERR.get_no_error(response)
         except RequestException as e:

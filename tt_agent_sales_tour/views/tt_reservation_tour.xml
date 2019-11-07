@@ -3,7 +3,7 @@
     <record id="tt_reservation_tour_sales_form_view" model="ir.ui.view">
         <field name="name">tt.reservation.tour.sales.form.view</field>
         <field name="model">tt.reservation.tour</field>
-        <field name="inherit_id" ref="tt_reservation_tour.tt_reservation_tour_form_views"/>
+        <field name="inherit_id" ref="tt_reservation_tour.tt_reservation_tour_form_view"/>
         <field name="arch" type="xml">
 
 <!--            <field name="display_mobile" position="after">-->

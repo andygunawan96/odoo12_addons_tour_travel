@@ -854,16 +854,16 @@ class ReservationActivity(models.Model):
                 'cancellationPolicies': master_line.cancellationPolicies,
             }
 
-            voucher_url_parsed = ''
+            voucher_url_parsed = []
             activity_voucher_urls = self.env['tt.reservation.activity.vouchers'].sudo().search([('booking_id', '=', int(activity_booking.id))])
             if res.get('voucher_url') and not activity_voucher_urls:
                 new_vouch_obj = self.env['tt.reservation.activity.vouchers'].sudo().create({
                     'name': res['voucher_url'],
                     'booking_id': activity_booking.id
                 })
-                voucher_url_parsed = new_vouch_obj.name
+                voucher_url_parsed = [new_vouch_obj.name]
             elif activity_voucher_urls:
-                voucher_url_parsed = activity_voucher_urls[0].name
+                voucher_url_parsed = [url_voucher.name for url_voucher in activity_voucher_urls]
 
             if activity_booking.state not in ['issued', 'rejected', 'cancel', 'cancel2', 'fail_issued']:
                 activity_booking.sudo().write({
@@ -896,7 +896,7 @@ class ReservationActivity(models.Model):
                 'uuid': res.get('uuid') and res['uuid'] or '',
                 'status': activity_booking.state,
                 'booking_options': book_option_ids,
-                'voucher_url': voucher_url_parsed and voucher_url_parsed or False
+                'voucher_url': voucher_url_parsed and voucher_url_parsed or []
             }
             result = ERR.get_no_error(response)
             return result
