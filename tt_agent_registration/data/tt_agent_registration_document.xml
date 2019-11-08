@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <record id="tt_agent_registration_document_registration_ktp" model="tt.agent.registration.document">
+            <field name="name">KTP</field>
+            <field name="document_type">registration</field>
+            <field name="agent_type_ids" eval="[(6, 0, [ref('tt_base.agent_type_citra'), ref('tt_base.agent_type_japro'), ref('tt_base.agent_type_btbr'), ref('tt_base.agent_type_btbo')])]"/>
+            <field name="description">-</field>
+        </record>
+
+        <record id="tt_agent_registration_document_registration_npwp" model="tt.agent.registration.document">
+            <field name="name">NPWP</field>
+            <field name="document_type">registration</field>
+            <field name="agent_type_ids" eval="[(6, 0, [ref('tt_base.agent_type_citra')])]"/>
+            <field name="description">-</field>
+        </record>
+
+        <record id="tt_agent_registration_document_registration_siup" model="tt.agent.registration.document">
+            <field name="name">SIUP</field>
+            <field name="document_type">registration</field>
+            <field name="agent_type_ids" eval="[(6, 0, [ref('tt_base.agent_type_citra')])]"/>
+            <field name="description">-</field>
+        </record>
+
+        <record id="tt_agent_registration_document_opening_kartu_nama" model="tt.agent.registration.document">
+            <field name="name">Kartu Nama</field>
+            <field name="document_type">opening</field>
+            <field name="agent_type_ids" eval="[(6, 0, [ref('tt_base.agent_type_citra'), ref('tt_base.agent_type_japro'), ref('tt_base.agent_type_btbr'), ref('tt_base.agent_type_btbo')])]"/>
+            <field name="description">-</field>
+        </record>
+
+    </data>
+</odoo>
