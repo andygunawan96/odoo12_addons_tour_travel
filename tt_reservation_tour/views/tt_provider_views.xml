@@ -61,7 +61,7 @@
                         </group>
                     </group>
                     <separator string="Service Charges"/>
-                    <field name="cost_service_charge_ids">
+                    <field name="cost_service_charge_ids" context="{'form_view_ref': 'tt_reservation_tour.tt_service_charge_tour_inherit_form_view'}">
                         <tree>
                             <field name="charge_code"/>
                             <field name="charge_type"/>

@@ -6,7 +6,7 @@
     'summary': 'Public Holiday',
     'sequence': 2,
     'description': """
-TT_PAYMENT
+TT_PUBLIC_HOLIDAY
 """,
     'category': 'tour_travel',
     'website': '',

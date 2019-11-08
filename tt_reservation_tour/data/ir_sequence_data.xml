@@ -3,22 +3,30 @@
     <data noupdate="1">
         <record id="seq_reservation_tour" model="ir.sequence">
             <field name="name">Reservation Tour</field>
-            <field name="code">reservation.tour.booking.code</field>
+            <field name="code">tt.reservation.tour</field>
             <field name="prefix">TR.%(range_y)s%(range_month)s%(range_day)s%(range_sec)s</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_reservation_skytors_tour" model="ir.sequence">
+            <field name="name">Reservation Skytors Tour</field>
+            <field name="code">skytors.tour.reservation.code</field>
+            <field name="prefix">MTR.%(range_y)s%(range_month)s%(range_day)s%(range_sec)s</field>
             <field name="padding">5</field>
             <field name="company_id" eval="False"/>
         </record>
 
         <record id="seq_tour_code_group" model="ir.sequence">
             <field name="name">Group Tour Code</field>
-            <field name="code">tour.pricelist.code.group</field>
+            <field name="code">master.tour.code.group</field>
             <field name="prefix">GRDX</field>
             <field name="padding">5</field>
         </record>
 
         <record id="seq_tour_code_fit" model="ir.sequence">
             <field name="name">FIT Tour Code</field>
-            <field name="code">tour.pricelist.code.fit</field>
+            <field name="code">master.tour.code.fit</field>
             <field name="prefix">FRDX</field>
             <field name="padding">5</field>
         </record>

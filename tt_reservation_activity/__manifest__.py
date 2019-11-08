@@ -18,7 +18,7 @@ TT_TRANSPORT
         'data/tt_provider_type_data.xml',
         'data/tt_provider_activity.xml',
         'security/ir.model.access.csv',
-        # 'security/ir_rule_data.xml',
+        'security/ir_rule_data.xml',
         # 'report/printout_invoice_templates.xml',
         'views/menu_item_base.xml',
         'views/tt_activity_voucher_wizard.xml',
