@@ -123,3 +123,5 @@ tt_tour_master_locations_for_sub_agent_user_manager,tt.tour.master.locations.for
 tt_provider_tour_for_all,tt.provider.tour.for.all,model_tt_provider_tour,,1,0,0,0
 ,,,,,,,
 tt_ticket_tour_for_all,tt.ticket.tour.for.all,model_tt_ticket_tour,,1,0,0,0
+,,,,,,,
+tt_reservation_tour_room_for_all,tt.reservation.tour.room.for.all,model_tt_reservation_tour_room,,1,0,0,0

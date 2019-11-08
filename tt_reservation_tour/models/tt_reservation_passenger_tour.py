@@ -21,6 +21,7 @@ class TtReservationCustomer(models.Model):
     def to_dict(self):
         res = super(TtReservationCustomer, self).to_dict()
         res.update({
+            'tour_room_id': self.tour_room_id and self.tour_room_id.id or 0,
             'pax_type': self.pax_type and self.pax_type or '',
             'sale_service_charges': self.get_service_charges()
         })
