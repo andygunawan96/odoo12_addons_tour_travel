@@ -29,6 +29,7 @@ STATE = [
 class AgentRegistration(models.Model):
     _name = 'tt.agent.registration'
     _description = 'Rodex Model'
+    _rec_name = 'registration_num'
     _order = 'registration_num desc'
 
     name = fields.Char('Name', default='')
@@ -52,7 +53,7 @@ class AgentRegistration(models.Model):
     registration_num = fields.Char('Registration No.', readonly=True)
     registration_fee = fields.Float('Registration Fee', store=True, compute='get_registration_fee')
     # promotion_id required supaya agent yang merekrut bisa dapat komisi
-    promotion_id = fields.Many2one('tt.agent.registration.promotion', 'Promotion', readonly=True, required=True,
+    promotion_id = fields.Many2one('tt.agent.registration.promotion', 'Promotion', readonly=True, required=False,
                                    states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]},
                                    domain=lambda self: [("agent_type_id", "=", self.env.user.agent_id.agent_type_id.id),
                                                         ("start_date", "<=", date.today().strftime('%d/%m/%Y')),
@@ -152,9 +153,12 @@ class AgentRegistration(models.Model):
     def get_registration_fee(self):
         for rec in self:
             if rec.agent_type_id:
-                promotion_obj = self.env['tt.agent.registration.promotion'].search([('default', '=', True), ('agent_type_id', '=', rec.env.user.agent_id.agent_type_id.id)], order="sequence desc", limit=1)
-                rec.promotion_id = promotion_obj.id
-                rec.registration_fee = rec.agent_type_id.registration_fee
+                if self.promotion_id:
+                    promotion_obj = self.env['tt.agent.registration.promotion'].search([('default', '=', True), ('agent_type_id', '=', rec.env.user.agent_id.agent_type_id.id)], order="sequence desc", limit=1)
+                    rec.promotion_id = promotion_obj.id
+                    rec.registration_fee = rec.agent_type_id.registration_fee
+                else:
+                    rec.registration_fee = rec.agent_type_id.registration_fee
 
     @api.depends('registration_fee', 'discount')
     @api.onchange('registration_fee', 'discount')
@@ -179,10 +183,10 @@ class AgentRegistration(models.Model):
                 'receive_qty': 0,
                 'document_id': rec.id
             }
-            agent_regis_doc_obj = self.env['tt.agent.registration.document'].create(vals)
+            agent_regis_doc_obj = self.env['tt.agent.registration.document'].sudo().create(vals)
             agent_regis_doc_ids.append(agent_regis_doc_obj.id)
             vals_list.append(vals)
-        self.registration_document_ids = [(6, 0, agent_regis_doc_ids)]
+        self.sudo().registration_document_ids = [(6, 0, agent_regis_doc_ids)]
         return vals_list
 
     def check_registration_documents(self):
@@ -225,6 +229,27 @@ class AgentRegistration(models.Model):
         self.env.cr.execute(query)
         _logger.info(query)
         return self.env.cr.dictfetchall()
+
+    def get_promotions_api(self):
+        promotion_env = self.env['tt.agent.registration.promotion']
+        promotion_ids = promotion_env.search([('start_date', '<=', datetime.today()), ('end_date', '>=', datetime.today())])
+
+        promotion_list = []
+
+        for promotion in promotion_ids:
+            val = {
+                'id': promotion.id,
+                'name': promotion.name,
+                'agent_type': promotion.agent_type_id.name,
+                'start_date': promotion.start_date.strftime("%d-%m-%Y"),
+                'end_date': promotion.end_date.strftime("%d-%m-%Y"),
+                'default_commission': promotion.default,
+                'description': promotion.description,
+            }
+            promotion_list.append(val)
+
+        print(promotion_list)
+        return promotion_list
 
     def get_all_registration_documents_api(self):
         regis_doc_env = self.env['tt.document.type']
@@ -289,15 +314,38 @@ class AgentRegistration(models.Model):
             return self.get_parent_citra(parent_agent_id.parent_agent_id)
 
     def calc_commission(self):
+        ledger = self.env['tt.ledger']
         self.calc_ledger()
-        line_obj = self.env['tt.agent.registration.promotion.agent.type'].search(
-            [('promotion_id', '=', self.promotion_id.id), ('agent_type_id', '=', self.agent_type_id.id)])
-        # if self.reference_id.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id:
-        #     self.calc_commission_ho(line_obj)
-        if self.reference_id.agent_type_id.id == self.env.ref('tt_base.agent_type_japro').id:
-            self.calc_commission_japro(line_obj)
-        elif self.reference_id.agent_type_id.id == self.env.ref('tt_base.agent_type_citra').id:
-            self.calc_commission_citra(line_obj)
+        promotion_obj = self.env['tt.agent.registration.promotion'].search([('id', '=', self.promotion_id.id)]
+                                                                           , limit=1)
+        comm = promotion_obj.get_commission(self.registration_fee, self.agent_type_id, self.reference_id, self.promotion_id)
+        for rec in comm:
+            if rec['agent_type_id'] == self.reference_id.agent_type_id.id:
+                agent_comm_vals = ledger.prepare_vals(self._name, self.id, 'Recruit Comm. : ' + self.name,
+                                                      'Recruit Comm. : ' + self.name, datetime.now(), 3,
+                                                      self.currency_id.id, self.env.user.id, rec['amount'], 0)
+                agent_comm_vals = ledger.prepare_vals_for_agent_regis(self, agent_comm_vals)
+                agent_comm_vals.update({
+                    'agent_id': self.reference_id.id
+                })
+                self.env['tt.ledger'].create(agent_comm_vals)
+            else:
+                agent_comm_vals = ledger.prepare_vals(self._name, self.id, 'Recruit Comm. Parent : ' + self.name,
+                                                      'Recruit Comm. : ' + self.name, datetime.now(), 3,
+                                                      self.currency_id.id, self.env.user.id, rec['amount'], 0)
+                agent_comm_vals = ledger.prepare_vals_for_agent_regis(self, agent_comm_vals)
+                agent_comm_vals.update({
+                    'agent_id': rec['agent_id']
+                })
+                self.env['tt.ledger'].create(agent_comm_vals)
+        # line_obj = self.env['tt.agent.registration.promotion.agent.type'].search(
+        #     [('promotion_id', '=', self.promotion_id.id), ('agent_type_id', '=', self.agent_type_id.id)])
+        # # if self.reference_id.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id:
+        # #     self.calc_commission_ho(line_obj)
+        # if self.reference_id.agent_type_id.id == self.env.ref('tt_base.agent_type_japro').id:
+        #     self.calc_commission_japro(line_obj)
+        # elif self.reference_id.agent_type_id.id == self.env.ref('tt_base.agent_type_citra').id:
+        #     self.calc_commission_citra(line_obj)
 
     def calc_ledger(self):
         ledger = self.env['tt.ledger']
@@ -348,9 +396,9 @@ class AgentRegistration(models.Model):
             if line.agent_type_id.id == self.env.ref('tt_base.agent_type_citra').id:
                 ledger = self.env['tt.ledger']
 
-                agent_comm_vals = ledger.prepare_vals(self._name, self.id, 'Recruit Comm. Parent : ' + self.name, 'Recruit Comm. Parent : ' +
-                                                      self.name, datetime.now(), 3, self.currency_id.id,
-                                                      self.env.user.id, line.amount, 0)
+                agent_comm_vals = ledger.prepare_vals(self._name, self.id, 'Recruit Comm. Parent : ' + self.name,
+                                                      'Recruit Comm. Parent : ' + self.name, datetime.now(), 3,
+                                                      self.currency_id.id, self.env.user.id, line.amount, 0)
                 agent_comm_vals = ledger.prepare_vals_for_agent_regis(self, agent_comm_vals)
                 agent_comm_vals.update({
                     'agent_id': citra_parent_agent.id
@@ -372,8 +420,9 @@ class AgentRegistration(models.Model):
         # HO
         ledger = self.env['tt.ledger']
 
-        agent_comm_vals = ledger.prepare_vals(self._name, self.id, 'Recruit Comm. HO : ' + self.name, 'Recruit Comm. HO : ' +
-                                              self.name, datetime.now(), 3, self.env.user.id, self.currency_id.id, amount_remaining, 0)
+        agent_comm_vals = ledger.prepare_vals(self._name, self.id, 'Recruit Comm. HO : ' + self.name,
+                                              'Recruit Comm. HO : ' + self.name, datetime.now(), 3, self.env.user.id,
+                                              self.currency_id.id, amount_remaining, 0)
         agent_comm_vals = ledger.prepare_vals_for_agent_regis(self, agent_comm_vals)
         agent_comm_vals.update({
             'agent_id': self.env['tt.agent'].sudo().search([('agent_type_id.name', '=', 'HO')], limit=1).id
@@ -393,7 +442,7 @@ class AgentRegistration(models.Model):
         self.env['tt.ledger'].create(vals_credit)
 
         vals_debit = self.env['tt.ledger'].prepare_vals(self._name, self.id, 'Opening Balance', 'Opening Balance', datetime.now(),
-                                                        0, self.currency_id.id, self.opening_balance, 0)
+                                                        0, self.currency_id.id, self.env.user.id, self.opening_balance, 0)
         vals_debit = ledger.prepare_vals_for_agent_regis(self, vals_debit)
         vals_debit.update({
             'agent_id': agent_id.id
@@ -490,10 +539,20 @@ class AgentRegistration(models.Model):
             for con in rec.agent_registration_customer_ids:
                 name = (con.first_name or '') + ' ' + (con.last_name or '')
 
+                partner_vals = {
+                    'name': name,
+                    'email': con.email,
+                    'phone': con.phone,
+                    'mobile': con.mobile
+                }
+                partner_id = self.env['res.partner'].create(partner_vals)
+
                 vals = {
                     'name': name,
                     'login': con.email,
+                    'email': con.email,
                     'password': '123456',
+                    'partner_id': partner_id.id
                 }
                 if user_dict:
                     vals.update({
@@ -534,24 +593,30 @@ class AgentRegistration(models.Model):
             else:
                 percentage += rec.percentage
         if percentage >= 100:
-            self.calc_commission()
-            # self.partner_id = self.parent_agent_id.id
-            self.create_opening_documents()
-            self.state = 'validate'
+            if self.name:
+                self.calc_commission()
+                # self.partner_id = self.parent_agent_id.id
+                self.create_opening_documents()
+                self.state = 'validate'
+            else:
+                raise UserError('Please input agent name.')
         else:
             raise UserError('Please complete all the payments.')
 
     def action_done(self):
-        try:
-            self.check_opening_documents()
-            user_ids = self.create_agent_user()
-            agent_id = self.create_partner_agent(user_ids)
-            self.create_customers_contact(agent_id)
-            self.create_opening_balance_ledger(agent_id)
-            self.state = 'done'
-        except Exception as e:
-            self.env.cr.rollback()
-            _logger.error(msg=str(e) + '\n' + traceback.format_exc())
+        self.check_opening_documents()
+        user_ids = self.create_agent_user()
+        agent_id = self.create_partner_agent(user_ids)
+        # self.create_customers_contact(agent_id)
+        self.create_opening_balance_ledger(agent_id)
+        for rec in self.contact_ids:
+            print("Send Email")
+        self.state = 'done'
+        # try:
+        #
+        # except Exception as e:
+        #     self.env.cr.rollback()
+        #     _logger.error(msg=str(e) + '\n' + traceback.format_exc())
 
     def action_cancel(self):
         self.state = 'cancel'
@@ -663,7 +728,7 @@ class AgentRegistration(models.Model):
                 agent_type = self.env['tt.agent.type'].sudo().search([('name', '=', other.get('agent_type'))], limit=1)
                 parent_agent_id = self.set_parent_agent_id_api(agent_type)
                 social_media_ids = self.create_social_media_agent_regis(other)
-                promotion_id = self.env['tt.agent.registration.promotion'].sudo().search([('id', '=', 10)], limit=1)
+                # promotion_id = self.env['tt.agent.registration.promotion'].sudo().search([('id', '=', 10)], limit=1)
                 header = self.prepare_header(company, other, agent_type)
                 # contact_ids = self.prepare_contact(pic)
                 agent_registration_customer_ids = self.prepare_customer(pic)
@@ -674,7 +739,7 @@ class AgentRegistration(models.Model):
                     'social_media_ids': [(6, 0, social_media_ids)],
                     'registration_fee': agent_type.registration_fee,
                     'registration_date': datetime.now(),
-                    'promotion_id': promotion_id.id,
+                    # 'promotion_id': promotion_id.id,
                     'parent_agent_id': parent_agent_id.id,
                     'tac': agent_type.terms_and_condition,
                     'create_uid': self.env.user.id

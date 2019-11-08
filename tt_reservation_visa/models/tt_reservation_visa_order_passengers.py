@@ -58,7 +58,7 @@ class VisaInterviewBiometrics(models.Model):
                                              related="passenger_interview_id.pricelist_id", readonly=1)
     pricelist_biometrics_id = fields.Many2one('tt.reservation.visa.pricelist', 'Pricelist',
                                               related="passenger_biometrics_id.pricelist_id", readonly=1)
-    location_id = fields.Many2one('tt.master.visa.locations', domain=lambda self: self.get_domain_location())  # [] , domain=lambda self: self.onchange_pricelist()
+    location_id = fields.Many2one('tt.master.visa.locations')  # self.get_domain_location() [] , domain=lambda self: self.onchange_pricelist() , domain=lambda self: [('id', 'in', self.passenger_interview_id.pricelist_id.visa_location_ids.ids)]
     datetime = fields.Datetime('Datetime')
     ho_employee = fields.Many2one('res.users', 'Employee', domain=lambda self: self.get_user_HO())
     meeting_point = fields.Char('Meeting Point')
@@ -67,23 +67,6 @@ class VisaInterviewBiometrics(models.Model):
     @api.model
     def get_user_HO(self):
         return [('agent_id', '=', self.env.ref('tt_base.rodex_ho').id)]
-
-    # @api.onchange('item_delivered_ids')
-    # def onchange_location(self):
-    #     return {'domain': {'item_delivered_ids': [('order_id', '=', self.id)]}}
-
-    @api.model
-    def get_domain_location(self):
-        return [('id', 'in', self.pricelist_interview_id.visa_location_ids.ids)]
-
-    # @api.onchange('pricelist_interview_id','pricelist_biometrics_id')
-    # @api.depends('pricelist_interview_id','pricelist_biometrics_id')
-    # def onchange_pricelist(self):
-    #     for rec in self:
-    #         return {'domain': {'location_id': [('id', 'in', rec.pricelist_interview_id.visa_location_ids.ids)]}}
-
-    # locations = self.passenger_interview_id.pricelist_id.visa_location_ids.ids
-    # return [('id', 'in', locations)]
 
 
 class VisaOrderPassengers(models.Model):
@@ -107,9 +90,9 @@ class VisaOrderPassengers(models.Model):
 
     interview = fields.Boolean('Needs Interview')
     biometrics = fields.Boolean('Needs Biometrics')
-    interview_ids = fields.One2many('tt.reservation.visa.interview.biometrics', 'passenger_interview_id', 'Interview')  # domain=[('pricelist_interview_id', '=', pricelist_id)]
+    interview_ids = fields.One2many('tt.reservation.visa.interview.biometrics', 'passenger_interview_id', 'Interview')
     biometrics_ids = fields.One2many('tt.reservation.visa.interview.biometrics', 'passenger_biometrics_id',
-                                     'Biometrics')  # , domain=[('pricelist_biometrics_id', '=', pricelist_id)]
+                                     'Biometrics')
 
     handling_ids = fields.One2many('tt.reservation.visa.order.handling', 'to_passenger_id', 'Handling Questions')
     handling_information = fields.Text('Handling Information')
@@ -426,14 +409,3 @@ class VisaOrderPassengers(models.Model):
                 if handling.handling_id.id == handling_id:
                     return True
             return False
-
-    @api.depends('interview_ids', 'biometrics_ids')
-    @api.onchange('interview_ids', 'biometrics_ids')
-    def onchange_location(self):
-        for rec in self:
-            return {'domain': {
-                'interview_ids': [('pricelist_interview_id', '=', rec.pricelist_id)],  # .visa_location_ids.ids
-                'biometrics_ids': [('pricelist_biometrics_id', '=', rec.pricelist_id)],  # .visa_location_ids.ids
-            }}
-            # locations = self.passenger_interview_id.pricelist_id.visa_location_ids.ids
-            # return [('id', 'in', locations)]

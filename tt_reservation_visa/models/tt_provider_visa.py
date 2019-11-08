@@ -110,7 +110,7 @@ class TtProviderVisa(models.Model):
             scs['foreign_currency_id'] = currency_obj.get_id('IDR')  # currency (foreign)
             scs['provider_visa_booking_id'] = self.id  # id provider visa
             for psg in self.passenger_ids:
-                if scs['pax_type'] == psg.pax_type:
+                if scs['pax_type'] == psg.pax_type and scs['pricelist_id'] == psg.pricelist_id.id:
                     scs['passenger_visa_ids'].append(psg.passenger_id.id)  # add passenger to passenger visa ids
                     scs['pax_count'] += 1
                     scs['total'] += scs['amount']

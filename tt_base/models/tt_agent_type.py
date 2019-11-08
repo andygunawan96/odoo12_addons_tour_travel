@@ -25,9 +25,6 @@ class TtAgentType(models.Model):
     agent_ids = fields.One2many('tt.agent', 'agent_type_id', 'Agent')
     can_register_agent = fields.Boolean('Can Register Agent', default=False)
     can_be_registered = fields.Boolean('Can be Registered', default=False)
-    commission_rule_ids = fields.One2many('tt.commission.rule', 'agent_type_id', 'Commission Rule(s)')
-    recruitment_commission_ids = fields.One2many('tt.commission.rule', 'agent_type2_id',
-                                                 'Recruitment Commission Rule(s)')
     seq_prefix = fields.Char('Sequence Prefix', size=2, required=True)
     terms_and_condition = fields.Html('Terms and Condition')
 

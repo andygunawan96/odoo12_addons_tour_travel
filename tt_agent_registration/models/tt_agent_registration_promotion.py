@@ -15,9 +15,8 @@ class AgentRegistrationPromotion(models.Model):
     active = fields.Boolean('Active', default=True)
     start_date = fields.Date('Start Date')
     end_date = fields.Date('End Date')
-    agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type yang Merekrut')
-    agent_type_ids = fields.One2many('tt.agent.registration.promotion.agent.type', 'promotion_id',
-                                     'Agent2 Type yang akan Direkrut',
+    agent_type_id = fields.Many2one('tt.agent.type', 'Recruit by')
+    agent_type_ids = fields.One2many('tt.agent.registration.promotion.agent.type', 'promotion_id', 'Recruited',
                                      help='''Agent Type yang berhak untuk mendapatkan promo.''')
     description = fields.Char('Description')
     default = fields.Boolean('Default Commission')
@@ -36,6 +35,46 @@ class AgentRegistrationPromotion(models.Model):
         if not values.get('name'):
             self.write({'name': self.get_name()})
         return res
+
+    def get_agent_hierarchy(self, agent_id, hierarchy=[]):
+        hierarchy.append({
+            'agent_id': agent_id.id,
+            'agent_name': agent_id.name,
+            'agent_type_id': agent_id.agent_type_id.id,
+            'code': agent_id.agent_type_id.code,
+        })
+        if agent_id.parent_agent_id:
+            return self.get_agent_hierarchy(agent_id.parent_agent_id, hierarchy)
+        else:
+            return hierarchy
+
+    def get_commission(self, input_commission, agent_type_id, reference, promotion_id):
+        vals_list = []
+        remaining_diff = 0
+
+        ho_agent = self.env['tt.agent'].sudo().search(
+            [('agent_type_id.id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
+        line_obj = self.env['tt.agent.registration.promotion.agent.type'].search(
+            [('promotion_id', '=', promotion_id.id), ('agent_type_id', '=', agent_type_id.id)])
+        agent_hierarchy = self.get_agent_hierarchy(reference, hierarchy=[])
+        for line in line_obj.line_ids:
+            if line.agent_type_id.id == reference.agent_type_id.id:
+                vals = {
+                    'agent_id': reference.id,
+                    'agent_type_id': reference.agent_type_id.id,
+                    'amount': line.amount
+                }
+                vals_list.append(vals)
+            else:
+                for hierarchy in agent_hierarchy:
+                    if hierarchy['agent_type_id'] == line.agent_type_id.id:
+                        vals = {
+                            'agent_id': hierarchy['agent_id'],
+                            'agent_type_id': hierarchy['agent_type_id'],
+                            'amount': line.amount
+                        }
+                        vals_list.append(vals)
+        return vals_list
 
 
 class AgentRegistrationPromotionAgentType(models.Model):

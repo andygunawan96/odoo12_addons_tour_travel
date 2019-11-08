@@ -33,7 +33,7 @@
                                             <field name="discount_amount_type"/>
                                             <field name="discount_amount"/>
                                             <field name="preview_price"/>
-                                            <field name="line_ids">
+                                            <field name="line_ids" string="Commission">
                                                 <form>
                                                     <sheet>
                                                         <group>
@@ -71,6 +71,7 @@
             <field name="arch" type="xml">
                 <tree>
                     <field name="name"/>
+                    <field name="agent_type_id"/>
                     <field name="start_date"/>
                     <field name="end_date"/>
                     <field name="active"/>
