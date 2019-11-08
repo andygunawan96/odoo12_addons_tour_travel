@@ -1,22 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+
+        <template id="external_layout_header">
+            <div class="row" style="height:100px;">
+                <div class="col-4" style="margin-left: 30px">
+                    <img t-if="doc.parent_agent_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(doc.parent_agent_id.logo)" height="200" border="1" width="300" style="max-height:100px; max-width:165px; margin-bottom: 20px"/><br/>
+                </div>
+                <div class="col-2">
+
+                </div>
+                <div class="col-5 text-center">
+                    <t t-set="printout_icon" t-value="'/tt_report_common/static/images/airfreight-white.svg'"/>
+                    <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Other</span><br/>
+                    <div style="height: 105px; margin-left: 0px">
+                        <div id="circle" style="width: 60px; height: 60px; background: #DC5413; border-radius: 100%; position: absolute; z-index: 1;">
+                            <img t-att-src="printout_icon" style="max-height: 35px; max-width: 35px; margin: 12px 0px 0px 0px;"/>
+                        </div>
+                        <div id="rectangle" style="width: 100%; height: 50px; bottom: 15px; background-image:  url('/tt_report_common/static/images/background footer airline.jpg'); border-radius: 25px; position: absolute; z-index: 0;">
+                            <div style="padding-left: 60px; padding-bottom: 10px; vertical-align: middle; text-align: center; border-radius: 25px; background-color: rgba(39,62,84,0.76); padding-top: 5px;">
+                                <div style="vertical-align: middle; display: flex; letter-spacing: 0.05em; font-size: 24px; color: white; font-weight: 600; margin-top: 0px; margin-left: -10px;">
+                                    <t t-if="doc_type == 'itin'">
+                                        <span style="margin-top: 5px;">Itinerary Form</span>
+                                    </t>
+                                    <t t-else="">
+                                        <span t-field="doc.name" style="margin-top: 5px;"/>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="width: 100%; border-bottom: 1px solid black; margin:20px 0px 0px 0px;"/>  <!---15px -15px-->
+        </template>
+
         <template id="printout_invoice_ticket_template">
-            <t t-foreach="docs" t-as="o">
+            <t t-foreach="docs" t-as="doc">
                 <t t-call="web.html_container">
                     <div class="header">
-
+                        <t t-call="tt_agent_registration.external_layout_header"/>
                     </div>
                     <div class="article">
                         <p>Testingggg</p>
                     </div>
+                    <t t-call="tt_report_common.external_layout_footer"/>
                 </t>
             </t>
         </template>
 
         <template id="printout_invoice">
-            <t t-set="data_report_header_spacing" t-value="20"/>
-            <t t-set="data_report_margin_top" t-value="22"/>
+            <t t-set="data_report_header_spacing" t-value="0"/>
+            <t t-set="data_report_margin_top" t-value="10"/>
+            <t t-set="data_report_margin_bottom" t-value="26"/>
             <t t-call="tt_agent_registration.printout_invoice_ticket_template"/>
         </template>
     </data>

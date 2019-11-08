@@ -114,7 +114,8 @@ class PricingAgent(models.Model):
         vals_list = []  # output list of pricing
         remaining_diff = 0  # sisa diff yang jika masih ada sisa, akan dimasukkan ke HO
 
-        ho_agent = self.env['tt.agent'].sudo().search([('agent_type_id.id', '=', self.env.ref('tt_base.agent_type_ho').id)],limit=1)
+        ho_agent = self.env['tt.agent'].sudo().search(
+            [('agent_type_id.id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
 
         """ kurangi input amount dengan fee amount. masukkan fee amount ke dalam service charge HOC """
         # if price_obj.fee_amount != 0:

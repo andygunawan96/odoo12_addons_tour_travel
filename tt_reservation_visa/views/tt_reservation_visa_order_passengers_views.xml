@@ -72,10 +72,11 @@
                         <field name="interview"/>
                         <field name="interview_ids" attrs="{'invisible': [('interview', '=', False)], 'readonly': [('state', 'not in', ['in_process', 'waiting'])]}">
                             <tree editable="bottom">
+                                <field name="pricelist_interview_id" invisible="1"/>
                                 <field name="datetime"/>
                                 <field name="ho_employee"/>
                                 <field name="meeting_point"/>
-                                <field name="location_id"/>
+                                <field name="location_id" domain="[('pricelist_ids', 'in', pricelist_interview_id), ('location_type', '=', 'interview')]"/>
                                 <field name="description"/>
                             </tree>
                             <form>
@@ -101,10 +102,11 @@
                         <field name="biometrics"/>
                         <field name="biometrics_ids" attrs="{'invisible': [('biometrics', '=', False)], 'readonly': [('state', 'not in', ['in_process', 'waiting'])]}">
                             <tree editable="bottom">
+                                <field name="pricelist_biometrics_id" invisible="1"/>
                                 <field name="datetime"/>
                                 <field name="ho_employee"/>
                                 <field name="meeting_point"/>
-                                <field name="location_id"/>
+                                <field name="location_id" domain="[('pricelist_ids', 'in', pricelist_biometrics_id), ('location_type', '=', 'biometrics')]"/>
                                 <field name="description"/>
                             </tree>
                             <form>

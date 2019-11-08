@@ -62,34 +62,6 @@
                                 <field name="agent_ids"/>
                             </group>
                         </div></div>
-                        <notebook>
-                            <page string="Commission Rule(s)">
-                                <field name="commission_rule_ids">
-                                    <tree>
-                                        <field name="carrier_id"/>
-                                        <field name="carrier_code"/>
-                                        <field name="percentage"/>
-                                        <field name="amount"/>
-                                        <field name="amount_multiplier"/>
-                                        <field name="parent_agent_amount"/>
-                                        <field name="parent_agent_type"/>
-                                        <field name="active"/>
-                                    </tree>
-                                </field>
-                            </page>
-                            <page string="Recruitment Commission(s)">
-                                <field name="recruitment_commission_ids">
-                                    <tree>
-                                        <field name="rec_agent_type_id"/>
-                                        <field name="percentage"/>
-                                        <field name="amount"/>
-                                        <field name="parent_agent_amount"/>
-                                        <field name="parent_agent_type"/>
-                                        <field name="active"/>
-                                    </tree>
-                                </field>
-                            </page>
-                        </notebook>
                         <group>
                             <field name="terms_and_condition"/>
                         </group>

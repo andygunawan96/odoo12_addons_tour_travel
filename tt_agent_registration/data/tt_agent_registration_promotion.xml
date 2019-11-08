@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <record id="tt_agent_registration_promotion_citra_standard" model="tt.agent.registration.promotion">
+            <field name="name">Citra - Standard</field>
+            <field name="start_date">12/10/2019</field>
+            <field name="end_date">12/10/2999</field>
+            <field name="agent_type_id" ref="tt_base.agent_type_citra"/>
+            <field name="default" eval="True"/>
+            <field name="description">Pricing recruitment commission standard citra</field>
+            <field name="sequence">99</field>
+        </record>
+
+            <!--Citra rekrut citra-->
+            <record id="tt_agent_registration_promotion_citra_standard_citra" model="tt.agent.registration.promotion.agent.type">
+                <field name="promotion_id" ref="tt_agent_registration.tt_agent_registration_promotion_citra_standard"/>
+                <field name="agent_type_id" ref="tt_base.agent_type_citra"/>
+                <field name="discount_amount_type">amount</field>
+                <field name="discount_amount">0</field>
+            </record>
+
+                <record id="tt_agent_registration_promotion_line_citra_citra_standard_citra" model="tt.agent.registration.promotion.line">
+                    <field name="agent_type_id" ref="tt_base.agent_type_citra"/>
+                    <field name="res_id" ref="tt_agent_registration.tt_agent_registration_promotion_citra_standard_citra"/>
+                    <field name="amount">5000000</field>
+                </record>
+
+            <!--Citra rekrut japro-->
+            <record id="tt_agent_registration_promotion_citra_standard_japro" model="tt.agent.registration.promotion.agent.type">
+                <field name="promotion_id" ref="tt_agent_registration.tt_agent_registration_promotion_citra_standard"/>
+                <field name="agent_type_id" ref="tt_base.agent_type_japro"/>
+                <field name="discount_amount_type">amount</field>
+                <field name="discount_amount">0</field>
+            </record>
+
+                <record id="tt_agent_registration_promotion_line_citra_citra_standard_japro" model="tt.agent.registration.promotion.line">
+                    <field name="agent_type_id" ref="tt_base.agent_type_citra"/>
+                    <field name="res_id" ref="tt_agent_registration.tt_agent_registration_promotion_citra_standard_japro"/>
+                    <field name="amount">1500000</field>
+                </record>
+
+        <record id="tt_agent_registration_promotion_japro_standard" model="tt.agent.registration.promotion">
+            <field name="name">Japro - Standard</field>
+            <field name="start_date">12/10/2019</field>
+            <field name="end_date">12/10/2999</field>
+            <field name="agent_type_id" ref="tt_base.agent_type_japro"/>
+            <field name="default" eval="True"/>
+            <field name="description">Pricing recruitment commission standard JaPro</field>
+            <field name="sequence">99</field>
+        </record>
+
+            <!--Japro rekrut japro-->
+            <record id="tt_agent_registration_promotion_japro_standard_japro" model="tt.agent.registration.promotion.agent.type">
+                <field name="promotion_id" ref="tt_agent_registration.tt_agent_registration_promotion_japro_standard"/>
+                <field name="agent_type_id" ref="tt_base.agent_type_japro"/>
+                <field name="discount_amount_type">amount</field>
+                <field name="discount_amount">0</field>
+            </record>
+
+                <record id="tt_agent_registration_promotion_line_citra_japro_standard_japro" model="tt.agent.registration.promotion.line">
+                    <field name="agent_type_id" ref="tt_base.agent_type_citra"/>
+                    <field name="res_id" ref="tt_agent_registration.tt_agent_registration_promotion_japro_standard_japro"/>
+                    <field name="amount">1000000</field>
+                </record>
+
+                <record id="tt_agent_registration_promotion_line_japro_japro_standard_japro" model="tt.agent.registration.promotion.line">
+                    <field name="agent_type_id" ref="tt_base.agent_type_japro"/>
+                    <field name="res_id" ref="tt_agent_registration.tt_agent_registration_promotion_japro_standard_japro"/>
+                    <field name="amount">500000</field>
+                </record>
+
+        <record id="tt_agent_registration_promotion_ho_standard" model="tt.agent.registration.promotion">
+            <field name="name">HO - Standard</field>
+            <field name="start_date">12/10/2019</field>
+            <field name="end_date">12/10/2999</field>
+            <field name="agent_type_id" ref="tt_base.agent_type_ho"/>
+            <field name="default" eval="True"/>
+            <field name="description">Pricing recruitment commission standard HO</field>
+            <field name="sequence">99</field>
+        </record>
+
+            <!--HO rekrut citra-->
+            <record id="tt_agent_registration_promotion_ho_standard_citra" model="tt.agent.registration.promotion.agent.type">
+                <field name="promotion_id" ref="tt_agent_registration.tt_agent_registration_promotion_ho_standard"/>
+                <field name="agent_type_id" ref="tt_base.agent_type_citra"/>
+                <field name="discount_amount_type">amount</field>
+                <field name="discount_amount">0</field>
+            </record>
+
+            <!--HO rekrut citra-->
+            <record id="tt_agent_registration_promotion_ho_standard_japro" model="tt.agent.registration.promotion.agent.type">
+                <field name="promotion_id" ref="tt_agent_registration.tt_agent_registration_promotion_ho_standard"/>
+                <field name="agent_type_id" ref="tt_base.agent_type_japro"/>
+                <field name="discount_amount_type">amount</field>
+                <field name="discount_amount">0</field>
+            </record>
+
+    </data>
+</odoo>
