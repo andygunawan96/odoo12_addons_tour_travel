@@ -176,9 +176,9 @@ class MasterTour(models.Model):
         self.state_tour = 'open'
         self.create_uid = self.env.user.id
         if self.tour_category == 'group':
-            self.tour_code = self.env['ir.sequence'].next_by_code('tour.pricelist.code.group')
+            self.tour_code = self.env['ir.sequence'].next_by_code('master.tour.code.group')
         elif self.tour_category == 'private':
-            self.tour_code = self.env['ir.sequence'].next_by_code('tour.pricelist.code.fit')
+            self.tour_code = self.env['ir.sequence'].next_by_code('master.tour.code.fit')
 
     def action_closed(self):
         self.state_tour = 'on_going'
@@ -921,3 +921,16 @@ class MasterTour(models.Model):
         except Exception as e:
             _logger.error(traceback.format_exc())
             return ERR.get_error(1022)
+
+    def commit_booking_vendor(self, data, context, **kwargs):
+        try:
+            response = {
+                'pnr': self.env['ir.sequence'].next_by_code('skytors.tour.reservation.code')
+            }
+            return ERR.get_no_error(response)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1004)

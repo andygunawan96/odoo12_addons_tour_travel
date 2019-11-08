@@ -121,3 +121,5 @@ tt_tour_master_locations_for_sub_agent_user_supervisor,tt.tour.master.locations.
 tt_tour_master_locations_for_sub_agent_user_manager,tt.tour.master.locations.for.sub.agent.user.manager,model_tt_tour_master_locations,tt_base.group_tt_sub_agent_user_manager,1,1,1,0
 ,,,,,,,
 tt_provider_tour_for_all,tt.provider.tour.for.all,model_tt_provider_tour,,1,0,0,0
+,,,,,,,
+tt_ticket_tour_for_all,tt.ticket.tour.for.all,model_tt_ticket_tour,,1,0,0,0

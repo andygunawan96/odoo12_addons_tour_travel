@@ -30,16 +30,17 @@ class ReservationTour(models.Model):
         elif any(state != 'draft' for state in states):
             self.state_invoice = 'partial'
 
-    def get_segment_description(self):
+    def get_tour_description(self):
         tmp = ''
-        # vals = []
-        for rec in self.journey_ids:
-            tmp += '%s(%s) - %s(%s),' % (rec.origin_id.city, rec.origin_id.code, rec.destination_id.city, rec.destination_id.code)
-            tmp += '%s - %s\n ' % (rec.departure_date[:16], rec.arrival_date[:16])
+        tmp += '%s' % (self.tour_id.name,)
+        tmp += '\n '
+        tmp += '%s - %s ' % (self.departure_date, self.return_date,)
+        tmp += '\n '
         return tmp
 
-    def action_create_invoice(self,acquirer_id,customer_parent_id):
-        invoice_id = self.env['tt.agent.invoice'].search([('booker_id','=',self.booker_id.id), ('state','=','draft')])
+    def action_create_invoice(self, acquirer_id):
+        invoice_id = self.env['tt.agent.invoice'].search(
+            [('booker_id', '=', self.booker_id.id), ('state', '=', 'draft')])
 
         if not invoice_id:
             invoice_id = self.env['tt.agent.invoice'].create({
@@ -53,12 +54,12 @@ class ReservationTour(models.Model):
             'res_model_resv': self._name,
             'res_id_resv': self.id,
             'invoice_id': invoice_id.id,
-            'desc': self.get_segment_description()
+            'desc': self.get_tour_description()
         })
 
         invoice_line_id = inv_line_obj.id
 
-        #untuk harga fare per passenger
+        # untuk harga fare per passenger
         for psg in self.passenger_ids:
             desc_text = '%s, %s' % (' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '')
             price_unit = 0
@@ -69,7 +70,7 @@ class ReservationTour(models.Model):
                 price_unit += channel_charge.amount
 
             inv_line_obj.write({
-                'invoice_line_detail_ids': [(0,0,{
+                'invoice_line_detail_ids': [(0, 0, {
                     'desc': desc_text,
                     'price_unit': price_unit,
                     'quantity': 1,
@@ -80,9 +81,9 @@ class ReservationTour(models.Model):
         ##membuat payment dalam draft
         payment_obj = self.env['tt.payment'].create({
             'agent_id': self.agent_id.id,
-            'acquirer_id': acquirer_id,
+            'acquirer_id': acquirer_id.id,
             'real_total_amount': inv_line_obj.total,
-            'customer_parent_id': customer_parent_id
+            'customer_parent_id': self.customer_parent_id.id
         })
 
         self.env['tt.payment.invoice.rel'].create({
@@ -91,20 +92,6 @@ class ReservationTour(models.Model):
             'pay_amount': inv_line_obj.total,
         })
 
-    # # ## CREATED by Samvi 2018/07/24
-    # @api.multi
-    # def action_check_provider_state(self, api_context=None):
-    #     res = super(ReservationTrain, self).action_check_provider_state(api_context)
-    #     if self.provider_booking_ids:
-    #         # todo membuat mekanisme untuk partial issued seperti apa
-    #         # fixme sementara create agent invoice berdasarkan bookingan
-    #         if any(rec.state == 'issued' for rec in self.provider_booking_ids):
-    #             # if self.agent_id.agent_type_id.id in [self.env.ref('tt_base_rodex.agent_type_citra').id,
-    #             #                                       self.env.ref('tt_base_rodex.agent_type_japro').id]:
-    #             self.action_create_invoice()
-    #
-    #     return res
-
-    def action_issued_tour(self,co_uid,customer_parent_id,acquirer_id):
-        super(ReservationTour, self).action_issued_tour(co_uid,customer_parent_id)
-        self.action_create_invoice(acquirer_id,customer_parent_id)
+    def call_create_invoice(self, acquirer_id):
+        super(ReservationTour, self).call_create_invoice(acquirer_id)
+        self.action_create_invoice(acquirer_id)
