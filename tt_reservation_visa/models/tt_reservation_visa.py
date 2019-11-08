@@ -599,14 +599,14 @@ class TtVisa(models.Model):
         print('Response : ' + str(json.dumps(res)))
         return Response().get_no_error(res)
 
-    def create_booking_visa_api(self):  # , data, context
-        sell_visa = self.param_sell_visa  # data['sell_visa']
-        booker = self.param_booker  # data['booker']
-        contact = self.param_contact  # data['contact']
-        passengers = self.param_passenger  # data['passenger']
-        search = self.param_search  # data['search']
-        payment = self.param_payment  # data['payment']
-        context = self.param_context  # context
+    def create_booking_visa_api(self, data, context):  #
+        sell_visa = data['sell_visa']  # self.param_sell_visa
+        booker = data['booker']  # self.param_booker
+        contact = data['contact']  # self.param_contact
+        passengers = data['passenger']  # self.param_passenger
+        search = data['search']  # self.param_search
+        payment = data['payment']  # self.param_payment
+        context = context  # self.param_context
         try:
             user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
 
