@@ -81,10 +81,30 @@
                 </page>
             </xpath>
             <xpath expr="//page[@name='anchor']" position="before">
+                <page string="Room Choices">
+                    <field name="room_ids" readonly="1">
+                        <tree>
+                            <field name="room_id"/>
+                            <field name="notes"/>
+                        </tree>
+                        <form>
+                            <group>
+                                <group>
+                                    <field name="room_id"/>
+                                </group>
+                                <group>
+                                    <field name="notes"/>
+                                </group>
+                            </group>
+                        </form>
+                    </field>
+                </page>
+            </xpath>
+            <xpath expr="//page[@name='anchor']" position="before">
                 <page string="Prices" name="prices">
                     <!--                    <button name="calculate_service_charge" type="object" string="calc"/>-->
                     <!--                    <button name="test_error" type="object" string="test_error"/>-->
-                    <field name="sale_service_charge_ids">
+                    <field name="sale_service_charge_ids" context="{'form_view_ref': 'tt_reservation_tour.tt_service_charge_tour_inherit_form_view'}">
                         <tree>
                             <field name="charge_code"/>
                             <field name="charge_type"/>

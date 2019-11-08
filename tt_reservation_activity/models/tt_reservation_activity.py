@@ -806,7 +806,7 @@ class ReservationActivity(models.Model):
         try:
             order_number = req['order_number']
 
-            activity_booking = self.env['tt.reservation.activity'].search([('name', '=', order_number)])
+            activity_booking = self.env['tt.reservation.activity'].search([('name', '=', order_number)], limit=1)
             if activity_booking:
                 activity_booking = activity_booking[0]
 

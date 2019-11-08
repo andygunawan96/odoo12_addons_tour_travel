@@ -260,69 +260,6 @@ class MasterTour(models.Model):
                     str(rec.departure_date), '%Y-%m-%d')).days
                 rec.duration = str(diff)
 
-    # @api.depends('quotation_ids')
-    # @api.onchange('quotation_ids')
-    # def _compute_all_prices(self):
-    #     adult_nta = 0
-    #     adult_citra = 0
-    #     adult_sale = 0
-    #     child_nta = 0
-    #     child_citra = 0
-    #     child_sale = 0
-    #     infant_nta = 0
-    #     infant_citra = 0
-    #     infant_sale = 0
-    #     adult_citra_real = 0
-    #     adult_sale_real = 0
-    #     child_citra_real = 0
-    #     child_sale_real = 0
-    #     infant_citra_real = 0
-    #     infant_sale_real = 0
-    #
-    #     # looping semua quotation_ids yang ada
-    #     for rec in self.quotation_ids:
-    #         if rec.pax_type == 'adt':
-    #             print('Adult')
-    #             adult_nta += rec.total_exclude
-    #             adult_sale += rec.retail_price_exclude + rec.visa
-    #             adult_citra += rec.retail_price_exclude + rec.visa - rec.service_charge
-    #             adult_citra_real += rec.retail_price_include - rec.service_charge
-    #             adult_sale_real += rec.retail_price_include
-    #         elif rec.pax_type == 'chd':
-    #             child_nta += rec.total_exclude
-    #             child_sale += rec.retail_price_exclude + rec.visa
-    #             child_citra += rec.retail_price_exclude + rec.visa - rec.service_charge
-    #             child_citra_real += rec.retail_price_include - rec.service_charge
-    #             child_sale_real += rec.retail_price_include
-    #         elif rec.pax_type == 'inf':
-    #             infant_nta += rec.total_exclude
-    #             infant_sale += rec.total_exclude
-    #             infant_citra += rec.total_exclude
-    #             infant_sale_real += rec.total_exclude
-    #             infant_citra_real += rec.total_exclude
-    #
-    #     # Masukkan nilai variable ke self.variable
-    #     # Adult
-    #     self.adult_fare = adult_nta
-    #     self.adult_citra_price = adult_citra
-    #     self.adult_sale_price = adult_sale
-    #     self.adult_citra_price_real = adult_citra_real
-    #     self.adult_sale_price_real = adult_sale_real
-    #
-    #     # Child
-    #     self.child_fare = child_nta
-    #     self.child_citra_price = child_citra
-    #     self.child_sale_price = child_sale
-    #     self.child_citra_price_real = child_citra_real
-    #     self.child_sale_price_real = child_sale_real
-    #
-    #     # Infant
-    #     self.infant_fare = infant_nta
-    #     self.infant_citra_price = infant_citra
-    #     self.infant_sale_price = infant_sale
-    #     self.infant_citra_price_real = infant_citra_real
-    #     self.infant_sale_price_real = infant_sale_real
-
     def int_with_commas(self, x):
         result = ''
         while x >= 1000:
@@ -344,7 +281,7 @@ class MasterTour(models.Model):
                 'departure_date': str(search_request['departure_year']) + '-' + str(search_request['departure_month'])
             })
 
-            sql_query = "SELECT tp.* FROM tt_master_tour tp LEFT JOIN tt_tour_location_rel tcr ON tcr.product_id = tp.id left join tt_tour_master_locations loc on loc.id = tcr.location_id WHERE tp.state_tour IN ('open', 'definite', 'sold') AND tp.active = True"
+            sql_query = "SELECT tp.* FROM tt_master_tour tp LEFT JOIN tt_tour_location_rel tcr ON tcr.product_id = tp.id left join tt_tour_master_locations loc on loc.id = tcr.location_id WHERE tp.state_tour IN ('open', 'definite') AND tp.seat > 0 AND tp.active = True"
 
             if search_request.get('tour_query'):
                 sql_query += " AND tp.name ILIKE '" + search_request['tour_query'] + "'"
