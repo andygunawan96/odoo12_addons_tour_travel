@@ -2,7 +2,107 @@
 <odoo>
     <data noupdate="0">
 
+        <record id="visa_pricelist_japan_adult_single_regular" model="tt.reservation.visa.pricelist">
+            <field name="name">Japan</field>
+            <field name="visa_type">tourist</field>
+            <field name="entry_type">single</field>
+            <field name="process_type">regular</field>
+            <field name="pax_type">ADT</field>
 
+            <field name="country_id" ref="base.jp"/>
+            <field name="duration">5</field>
+            <field name="description">Jl. Sumatera No.93, Gubeng</field>
+            <field name="immigration_consulate">Surabaya</field>
+
+            <field name="nta_price">385000</field>
+            <field name="cost_price">425000</field>
+            <field name="sale_price">485000</field>
+        </record>
+
+        <record id="visa_pricelist_japan_children_single_regular" model="tt.reservation.visa.pricelist">
+            <field name="name">Japan</field>
+            <field name="visa_type">tourist</field>
+            <field name="entry_type">single</field>
+            <field name="process_type">regular</field>
+            <field name="pax_type">CHD</field>
+
+            <field name="country_id" ref="base.jp"/>
+            <field name="duration">5</field>
+            <field name="description">Jl. Sumatera No.93, Gubeng</field>
+            <field name="immigration_consulate">Surabaya</field>
+
+            <field name="nta_price">385000</field>
+            <field name="cost_price">425000</field>
+            <field name="sale_price">485000</field>
+        </record>
+
+        <record id="visa_pricelist_japan_adult_multiple_regular" model="tt.reservation.visa.pricelist">
+            <field name="name">Japan</field>
+            <field name="visa_type">tourist</field>
+            <field name="entry_type">multiple</field>
+            <field name="process_type">regular</field>
+            <field name="pax_type">ADT</field>
+
+            <field name="country_id" ref="base.jp"/>
+            <field name="duration">5</field>
+            <field name="description">Jl. Sumatera No.93, Gubeng</field>
+            <field name="immigration_consulate">Surabaya</field>
+
+            <field name="nta_price">720000</field>
+            <field name="cost_price">795000</field>
+            <field name="sale_price">865000</field>
+        </record>
+
+        <record id="visa_pricelist_japan_children_multiple_regular" model="tt.reservation.visa.pricelist">
+            <field name="name">Japan</field>
+            <field name="visa_type">tourist</field>
+            <field name="entry_type">multiple</field>
+            <field name="process_type">regular</field>
+            <field name="pax_type">CHD</field>
+
+            <field name="country_id" ref="base.jp"/>
+            <field name="duration">30</field>
+            <field name="description">Graha Pena Lt.15 R 1506, Jl Ahmad Yani no 88 Surabaya</field>
+            <field name="immigration_consulate">Surabaya</field>
+
+            <field name="nta_price">720000</field>
+            <field name="cost_price">795000</field>
+            <field name="sale_price">865000</field>
+        </record>
+
+        <record id="visa_pricelist_england_adult_single_regular" model="tt.reservation.visa.pricelist">
+            <field name="name">England</field>
+            <field name="visa_type">tourist</field>
+            <field name="entry_type">single</field>
+            <field name="process_type">regular</field>
+            <field name="pax_type">ADT</field>
+
+            <field name="country_id" ref="base.uk"/>
+            <field name="duration">30</field>
+            <field name="description">Graha Pena Lt.15 R 1506, Jl Ahmad Yani no 88 Surabaya</field>
+            <field name="immigration_consulate">Surabaya</field>
+
+            <field name="nta_price">3050000</field>
+            <field name="cost_price">3200000</field>
+            <field name="sale_price">3250000</field>
+        </record>
+
+        <record id="visa_pricelist_england_children_single_regular" model="tt.reservation.visa.pricelist">
+            <field name="name">England</field>
+            <field name="visa_type">tourist</field>
+            <field name="entry_type">single</field>
+            <field name="process_type">regular</field>
+            <field name="pax_type">CHD</field>
+
+            <field name="country_id" ref="base.uk"/>
+            <field name="duration">30</field>
+            <field name="description">Graha Pena Lt.15 R 1506, Jl Ahmad Yani no 88 Surabaya</field>
+            <field name="immigration_consulate">Surabaya</field>
+
+            <field name="nta_price">3050000</field>
+            <field name="cost_price">3200000</field>
+            <field name="sale_price">3250000</field>
+        </record>
 
     </data>
 </odoo>
