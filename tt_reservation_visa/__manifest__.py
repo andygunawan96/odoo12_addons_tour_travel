@@ -30,6 +30,7 @@
         # 'data/ir_cron_data.xml',
         'data/ir_send_email.xml',
         'data/tt_provider_type_data.xml',
+        'data/tt_reservation_visa_pricelist.xml',
         'views/tt_reservation_visa_menuheader.xml',
         'views/tt_reservation_visa_views.xml',
         'views/tt_reservation_visa_order_passengers_views.xml',
