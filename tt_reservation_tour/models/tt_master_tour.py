@@ -75,7 +75,7 @@ class MasterTour(models.Model):
     quota = fields.Integer('Quota', required=True, default=1)
     is_can_hold = fields.Boolean('Can Be Hold', default=True, required=True)
 
-    state_tour = fields.Selection([('draft', 'Draft'), ('open', 'Open'), ('definite', 'Definite'), ('sold', 'Sold Out'),
+    state = fields.Selection([('draft', 'Draft'), ('open', 'Open'), ('definite', 'Definite'), ('sold', 'Sold Out'),
                                    ('on_going', 'On Going'), ('done', 'Done'), ('closed', 'Closed'),
                                    ('cancelled', 'Canceled')],
                                   'State', copy=False, default='draft', help="draft = tidak tampil di front end"
@@ -173,7 +173,7 @@ class MasterTour(models.Model):
                     rec.tipping_tour_leader = 0
 
     def action_validate(self):
-        self.state_tour = 'open'
+        self.state = 'open'
         self.create_uid = self.env.user.id
         if self.tour_category == 'group':
             self.tour_code = self.env['ir.sequence'].next_by_code('master.tour.code.group')
@@ -181,7 +181,7 @@ class MasterTour(models.Model):
             self.tour_code = self.env['ir.sequence'].next_by_code('master.tour.code.fit')
 
     def action_closed(self):
-        self.state_tour = 'on_going'
+        self.state = 'on_going'
         # dup_survey = self.env['survey.survey'].search([('type', '=', 'tour'), ('is_default', '=', True)], limit=1)
         # if dup_survey:
         #     a = dup_survey[0].copy()
@@ -189,10 +189,10 @@ class MasterTour(models.Model):
         #     a.name = self.name
 
     def action_definite(self):
-        self.state_tour = 'definite'
+        self.state = 'definite'
 
     def action_cancelled(self):
-        self.state_tour = 'cancelled'
+        self.state = 'cancelled'
 
     def action_adjustment(self):
         # Calculate Adjustment
@@ -221,16 +221,16 @@ class MasterTour(models.Model):
             acc_debit = ho_profit
         else:
             acc_credit = ho_profit * -1
-        self.state_tour = 'closed'
+        self.state = 'closed'
 
     def action_done(self):
-        self.state_tour = 'done'
+        self.state = 'done'
 
     def action_sold(self):
-        self.state_tour = 'sold'
+        self.state = 'sold'
 
     def action_reopen(self):
-        self.state_tour = 'open'
+        self.state = 'open'
 
     @api.multi
     def action_send_email(self, passenger_id):
@@ -281,7 +281,7 @@ class MasterTour(models.Model):
                 'departure_date': str(search_request['departure_year']) + '-' + str(search_request['departure_month'])
             })
 
-            sql_query = "SELECT tp.* FROM tt_master_tour tp LEFT JOIN tt_tour_location_rel tcr ON tcr.product_id = tp.id left join tt_tour_master_locations loc on loc.id = tcr.location_id WHERE tp.state_tour IN ('open', 'definite') AND tp.seat > 0 AND tp.active = True"
+            sql_query = "SELECT tp.* FROM tt_master_tour tp LEFT JOIN tt_tour_location_rel tcr ON tcr.product_id = tp.id left join tt_tour_master_locations loc on loc.id = tcr.location_id WHERE tp.state IN ('open', 'definite') AND tp.seat > 0 AND tp.active = True"
 
             if search_request.get('tour_query'):
                 sql_query += " AND tp.name ILIKE '" + search_request['tour_query'] + "'"
@@ -871,3 +871,41 @@ class MasterTour(models.Model):
         except Exception as e:
             _logger.error(traceback.format_exc())
             return ERR.get_error(1004)
+
+    def issued_booking_vendor(self, data, context, **kwargs):
+        try:
+            response = {
+                'success': True
+            }
+            return ERR.get_no_error(response)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1004)
+
+    def get_autocomplete_api(self, req, context):
+        try:
+            query = req.get('name') and '%' + req['name'] + '%' or False
+            sql_query = "select * from tt_master_tour where state IN ('open', 'definite') AND seat > 0 AND active = True"
+            if query:
+                sql_query += " and name ilike %"+query+"%"
+            self.env.cr.execute(sql_query)
+
+            result_id_list = self.env.cr.dictfetchall()
+            result_list = []
+
+            for result in result_id_list:
+                result = {
+                    'name': result.get('name') and result['name'] or '',
+                }
+                result_list.append(result)
+
+            return ERR.get_no_error(result_list)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1022)
