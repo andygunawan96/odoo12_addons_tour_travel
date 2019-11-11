@@ -4,6 +4,7 @@ import logging
 from .ApiConnector_Hotel import ApiConnectorHotels
 import csv, glob, os
 from lxml import html
+from ...tools import xmltodict
 
 _logger = logging.getLogger(__name__)
 API_CN_HOTEL = ApiConnectorHotels()
@@ -470,64 +471,6 @@ class HotelInformation(models.Model):
                         self.env.cr.commit()
         return True
 
-    # Quantum Get Hotel By City (Tembak ke development nya Quantum)
-    def get_record_by_api2(self):
-        api_context = {
-            'co_uid': self.env.user.id
-        }
-        provider_id = self.env['res.partner'].search(
-            [('is_master_vendor', '=', True), ('provider_code', '=', 'quantum')], limit=1)
-
-        cities = self.env['provider.code'].search([('city_id', '!=', False),('provider_id', '=', provider_id.id),('id', '>=', 500659)])
-
-        for rec in cities:
-            search_req = {
-                'provider': 'quantum',
-                'type': 'city',
-                'limit': '0',
-                'offset': '0',
-                'codes': rec.code,
-            }
-
-            res = API_CN_HOTEL.get_record_by_api(search_req, api_context)
-            if res['error_code'] != 0:
-                raise ('Error')
-            else:
-                for obj in res.get('response'):
-                    if obj.get('code'):
-                        city_id = rec.city_id
-                        value = {
-                            'name': obj.get('basicinfo') and obj.get('basicinfo').get('name') or '',
-                            'street': obj.get('addressinfo') and obj['addressinfo'].get('address1') or '',
-                            'description': obj.get('locationinfo') and 'Raildistance: ' +
-                                           obj['locationinfo'].get('raildistance', ' ') + '; Airport Distance: ' +
-                                           obj['locationinfo'].get('airportdistance', ' ') or '',
-                            'email': obj.get('contactinfo') and obj.get('contactinfo').get('email') or '',
-                            'images': [(6, 0, self.rec_to_images(obj.get('images')))],
-                            'phone': obj.get('contactinfo') and obj.get('contactinfo').get('telephonenumber1') or '',
-                            'phone_2': '',
-                            'phone_3': '',
-                            'fax': obj.get('contactinfo') and obj.get('contactinfo').get('faxnumber') or '',
-                            'zip': obj.get('addressinfo') and obj['addressinfo'].get('zipcode'),
-                            'website': obj.get('web'),
-                            'lat': obj.get('coordinates') and str(obj.get('coordinates').get('latitude')),
-                            'long': obj.get('coordinates') and str(obj.get('coordinates').get('longitude')),
-                            # 'rating': obj.get('categoryCode') and int(obj.get('categoryCode')[0]),
-                            'street2': obj.get('addressinfo') and 'City: ' + obj['addressinfo'].get('city`', ' ') +
-                                       '; State: ' + obj['addressinfo'].get('state', ' ') or '',
-                            'hotel_partner_city_id': city_id and city_id[0].id or False
-                        }
-                        hotel_id = self.env['tt.hotel'].create(value)
-                        self.env['provider.code'].create({
-                            'name': hotel_id.name,
-                            'hotel_id': hotel_id.id,
-                            'code': obj.get('code'),
-                            'provider_id': provider_id[0].id,
-                        })
-                        self.env.cr.commit()
-
-        return True
-
     # Ambil record hotel dari prod. quantum
     # digunakan untuk homas
     # source data dari csv yg berisi city2x ne
@@ -539,8 +482,8 @@ class HotelInformation(models.Model):
         # provider_id = self.env['res.partner'].search(
         #     [('is_master_vendor', '=', True), ('provider_code', '=', 'quantum')], limit=1)
         self.file_log_write('###### Quantum Render Start ######')
-        with open('/var/log/cache_hotel/quantum/zzz_city_code.csv', 'r') as f:
-            city_ids = csv.reader(f)
+        with open('/var/log/cache_hotel/quantum/master/city_code.csv', 'r') as f:
+            city_ids = csv.reader(f, delimiter=';')
             for idx, rec in enumerate(city_ids):
                 if idx == 0:
                     continue
@@ -594,16 +537,16 @@ class HotelInformation(models.Model):
 
     # Quantum
     # Source data dari csv yg berisi city2x ne
-    # Tembak ke Live dev
+    # Tembak ke Live Production
     def get_record_by_api2b(self):
         api_context = {
             'co_uid': self.env.user.id
         }
-        self.file_log_write('###### Quantum Render Start ######')
-        with open('/var/log/cache_hotel/quantum/zzz_city_code.csv', 'r') as f:
-            city_ids = csv.reader(f)
+        with open('/var/log/cache_hotel/quantum/master/city_code.csv', 'r') as f:
+            city_ids = csv.reader(f, delimiter=';')
             for idx, rec in enumerate(city_ids):
-                if idx == 0:
+                # if idx == 0:
+                if idx < 1003:
                     continue
                 search_req = {
                     'provider': 'quantum',
@@ -623,18 +566,19 @@ class HotelInformation(models.Model):
                             'address': obj['location']['address'],
                             'lat': obj['location']['latitude'],
                             'long': obj['location']['longitude'],
-                            'city': obj['location']['city'],
+                            'city': rec[2],
                             'country': obj['location']['country'],
                         })
+
+                        for fac in obj['facilities']:
+                            fac['facility_name'] = fac.pop('name')
+
                         obj.pop('hotel_code')
                         obj.pop('prices')
                         obj.pop('location')
                         hotel_fmt_objs.append(obj)
                     if hotel_fmt_objs:
                         self.file_log_write(str(idx) + '. Hotel found for ' + rec[2] + ': ' + str(len(hotel_fmt_objs)))
-                        # Simpan di Folder sendiri
-                        # with open('/var/log/cache_hotel/quantum_prod/' + rec[2].replace('/', ' ') + '.json', 'w+') as f:
-                        #     f.write(json.dumps(hotel_fmt_objs))
                         try:
                             # Langsung Compare
                             with open('/var/log/cache_hotel/quantum/' + rec[2].replace('/', ' ') + '.json', 'r') as f2:
@@ -642,7 +586,7 @@ class HotelInformation(models.Model):
                                 hotel_in_file = json.loads(file)
                                 for hotel_fmt in hotel_fmt_objs:
                                     # Cek apakah file dengan kota tsb sdah ada di memory?
-                                    same_name = filter(lambda x: x['name'] == hotel_fmt['name'], hotel_in_file)
+                                    same_name = list(filter(lambda x: x['name'] == hotel_fmt['name'], hotel_in_file))
                                     if same_name:
                                         # tambahkan detail ke record yg sama tersebut
                                         same_name[0]['images'] = hotel_fmt['images']
@@ -655,7 +599,13 @@ class HotelInformation(models.Model):
                             f2.close()
                         except:
                             # Simpan di Folder sendiri
-                            self.file_log_write('Oops Folder not Found')
+                            self.file_log_write('Creating new Folder')
+                            with open('/var/log/cache_hotel/quantum/' + rec[2].replace('/', ' ') + '.json', 'w+') as f:
+                                self.file_log_write(
+                                    str(idx) + '. Hotel found for ' + rec[2] + ': ' + str(len(hotel_fmt_objs)))
+                                f.write(json.dumps(hotel_fmt_objs))
+                            hotel_in_file = hotel_fmt_objs
+
                         self.file_log_write('Total hotel for ' + rec[2] + ': ' + str(len(hotel_in_file)))
                         with open('/var/log/cache_hotel/quantum/' + rec[2].replace('/', ' ') + '.json', 'w+') as f:
                             f.write(json.dumps(hotel_in_file))
@@ -663,7 +613,6 @@ class HotelInformation(models.Model):
                     else:
                         self.file_log_write(str(idx) + '. No Hotel Found for ' + rec[2])
         f.close()
-        self.file_log_write('###### Quantum Render END ######')
         return True
 
     # Quantum
@@ -714,6 +663,7 @@ class HotelInformation(models.Model):
         csvFile.close()
 
     # Miki Travel
+    # Get City -> Get Hotel -> **Simpan di DB**
     def get_record_by_api3(self):
         api_context = {
             'co_uid': self.env.user.id
@@ -733,6 +683,7 @@ class HotelInformation(models.Model):
         else:
             for obj in res.get('response'):
                 if obj.get('code'):
+                    rec = self.env['res.city'].find_city_by_name(obj['addressinfo'].get('city', ''))
                     city_id = rec.city_id
                     value = {
                         'name': obj.get('basicinfo') and obj.get('basicinfo').get('name') or '',
@@ -761,10 +712,71 @@ class HotelInformation(models.Model):
                         'name': hotel_id.name,
                         'hotel_id': hotel_id.id,
                         'code': obj.get('code'),
-                        'provider_id': provider_id[0].id,
+                        'provider_id': self.env['tt.provider'].search([('code', '=', 'miki')], limit=1).id,
                     })
                     self.env.cr.commit()
 
+        return True
+
+    # Miki Travel
+    # Get Data dari XML read ambil dari FTP -> **Write di cache**
+    # URL: ftp://ftp.mikinet.co.uk -> USER PASS ambil di Document vendor
+    def get_record_by_api3a(self):
+        file_ids = glob.glob("/var/log/cache_hotel/miki_api/master/*.xml")
+        file_ids.sort()
+        city_ids = {}
+        try:
+            for file_name in file_ids:
+                _logger.info("Read " + file_name)
+                try:
+                    file = open(file_name, 'r')
+                    hotel_list = file.read()
+                    file.close()
+                except:
+                    continue
+                for hotel in xmltodict.parse(hotel_list)['productInfoResponse']['productInfo']['product']:
+                    # if hotel['productDescription']['productName'].title() == 'Achat Comfort':
+                    #     pass
+                    imgs = hotel['hotelProductInfo'].get('images') and hotel['hotelProductInfo']['images']['image'] or []
+                    hotel_fmt = {
+                        'id': hotel['productCode']['#text'],
+                        'name': hotel['productDescription']['productName'].title(),
+                        'description': hotel['productDescription']['productDetailText'],
+                        'street': hotel['hotelProductInfo']['contactInfo']['address'].get('street1'),
+                        'street2': hotel['hotelProductInfo']['contactInfo']['address'].get('street2','') + '; Country: ' + hotel['hotelProductInfo']['contactInfo']['address'].get('country') or '',
+                        'city': hotel['hotelProductInfo']['contactInfo']['address'].get('city', '').title(),
+                        'email': '',
+                        'images': imgs and [{'name': img['@imageCaption'], 'url': img['@imageURL']} for img in isinstance(imgs, list) and imgs or [imgs]] or [],
+                        'facilities': [key for (key, value) in hotel['hotelProductInfo']['hotelFacilities'].items() if value == 'true'] + [key for (key, value) in hotel['hotelProductInfo']['hotelRoomFacilities'].items() if value == 'true'],
+                        'phone': hotel['hotelProductInfo']['contactInfo'].get('telephoneNumber'),
+                        'fax': hotel['hotelProductInfo']['contactInfo'].get('faxNumber'),
+                        'zip': hotel['hotelProductInfo']['contactInfo']['address'].get('street3'),
+                        'website': '',
+                        'lat': '',
+                        'long': '',
+                        'rating': hotel['hotelProductInfo']['hotelInfo'].get('starRating') or '',
+                    }
+
+                    _logger.info("Adding Hotel:" + hotel_fmt['name'] + ' in City: ' + hotel_fmt['city'])
+                    if not city_ids.get(hotel_fmt['city']):
+                        city_ids[hotel_fmt['city']] = []
+                    city_ids[hotel_fmt['city']].append(hotel_fmt)
+        except Exception as e:
+            _logger.info("Error in " + file_name[36:] + ' Name:' + hotel_fmt['name'] +' Error: ' + str(e) + '.')
+        # Write per City
+        need_to_add = [['Name', 'Hotel Qty']]
+        for city_rec in city_ids.keys():
+            city_rec = city_rec.replace('/', '')
+            _logger.info("Write File " + city_rec + ": " + str(len(city_ids[city_rec])))
+            filename = "/var/log/cache_hotel/miki_api/" + city_rec + ".json"
+            file = open(filename, 'w')
+            file.write(json.dumps(city_ids[city_rec]))
+            file.close()
+            need_to_add.append([city_rec, len(city_ids[city_rec])])
+        with open('/var/log/cache_hotel/miki_api/result/result_data.csv', 'w') as csvFile:
+            writer = csv.writer(csvFile)
+            writer.writerows(need_to_add)
+        csvFile.close()
         return True
 
     # Miki Travel Pool Data tgl 20190703
@@ -1229,10 +1241,10 @@ class HotelInformation(models.Model):
                                                      float(hotel_img / hotel_qty),
                                                      float(hotel_fac / hotel_qty), float(hotel_rating / hotel_qty)])
                         except:
-                            need_to_add_list.append([a, unicode(rec[2]).encode("utf-8"), 'error',
+                            need_to_add_list.append([a, rec[2].encode("utf-8"), 'error',
                                                      0, 0, 0, 0, 0, 0])
                 except:
-                    need_to_add_list.append([a, unicode(rec[2]).encode("utf-8"), 'Not Found',
+                    need_to_add_list.append([a, rec[2].encode("utf-8"), 'Not Found',
                                              0, 0, 0, 0, 0, 0])
                 f2.close()
 
@@ -1612,6 +1624,81 @@ class HotelInformation(models.Model):
             writer.writerows(need_to_add_list)
         csvFile.close()
         return True
+
+    # OYO TMC
+    # Get All Hotel (by hotel Code/ 'IN')
+    def get_record_by_api10(self):
+        api_context = {
+            'co_uid': self.env.user.id
+        }
+        i = 75
+        limit = 100
+        all_obj = (i*limit)+1
+        while i*limit < all_obj:
+            search_req = {
+                'provider': 'oyo',
+                'type': 'hotel',
+                'limit': limit,
+                'offset': i*limit,
+                'codes': 'IN', #Country Code
+            }
+            hotel_fmt = []
+            _logger.info("Get offset " + str(i*limit) + " Hotel(s) ")
+            try:
+                hotel_objs = API_CN_HOTEL.get_record_by_api(search_req, api_context)
+                all_obj = hotel_objs['response'][0]
+                hotel_fmt = hotel_objs['response'][1]
+            except:
+                all_obj = 0
+
+            filename = "/var/log/cache_hotel/oyo/master/" + 'IN' + '_' + str(i) + ".json"
+            i += 1
+            # Create Record Hotel per City
+            file = open(filename, 'w')
+            file.write(json.dumps(hotel_fmt))
+            file.close()
+        return True
+
+    # OYO TMC
+    # Mapping Hotel
+    def get_record_by_api10b(self):
+        file_ids = glob.glob("/var/log/cache_hotel/oyo/master/*.json")
+        # TODO pertimbangkan pengelompokan per country
+        city_ids = {}
+        for file in file_ids:
+            _logger.info("Read " + file)
+            try:
+                file = open(file, 'r')
+                hotel_list = json.loads(file.read())
+                file.close()
+            except:
+                continue
+            for rec in hotel_list:
+                if not city_ids.get(rec['city']):
+                    city_ids.update({
+                        rec['city']: [],
+                    })
+                city_ids[ rec['city'] ].append(rec)
+
+        i = 1
+        need_to_add_list = [['No', 'City', 'Country', 'Hotel qty']]
+        for city in city_ids:
+            _logger.info("Creating " + str(i) + ": " + city + ' Found: ' + str(len(city_ids[city])) + ' Hotel(s)')
+            filename = "/var/log/cache_hotel/oyo/" + city.replace('/', '-') + ".json"
+
+            need_to_add_list.append([i, city, '', str(len(city_ids[city])) ])
+            # Create Record Hotel per City
+            file = open(filename, 'w')
+            file.write(json.dumps(city_ids[city]))
+            file.close()
+            i += 1
+
+        with open('/var/log/cache_hotel/oyo/master/result_data.csv', 'w') as csvFile:
+            writer = csv.writer(csvFile)
+            writer.writerows(need_to_add_list)
+        csvFile.close()
+        return True
+
     # ====================== TOOLS =====================================================
     def masking_provider(self, provider):
         # Perlu dibuat gini karena cache data bisa berasal dari mana sja
@@ -1635,11 +1722,17 @@ class HotelInformation(models.Model):
             return 'A8'
         elif provider == 'tbo':
             return 'A9'
+        elif provider == 'welcomebeds':
+            return 'A10'
+        elif provider == 'oyo':
+            return 'A11'
+        else:
+            return provider
 
     def formating_homas(self, hotel, hotel_id, provider, city_id, city_name):
         new_hotel = {
                     'id': str(hotel_id),
-                    'name': hotel.get('name'),
+                    'name': hotel.get('name') and hotel['name'].title(),
                     'rating': hotel.get('rating', 0),
                     'prices': [],
                     'description': hotel.get('description'),
@@ -1660,24 +1753,30 @@ class HotelInformation(models.Model):
                     'state': 'confirm',
                     'external_code': {self.masking_provider(provider): str(hotel.get('id',''))},
                     'near_by_facility': [],
-                    'images': hotel.get('images'),
+                    'images': hotel.get('images') or hotel.get('image'),
                     'facilities': hotel.get('facilities'),
                 }
         if not isinstance(new_hotel['rating'], int):
             try:
-                new_hotel['rating'] = int(new_hotel['rating'])
+                new_hotel['rating'] = int(new_hotel['rating'][0])
             except:
                 new_hotel['rating'] = 0
 
         fac_list = []
-        for img in new_hotel.get('images', []):
+        for img in new_hotel.get('images') or []:
             new_img_url = 'http' in img and img or 'http://www.sunhotels.net/Sunhotels.net/HotelInfo/hotelImage.aspx' + img + '&full=1'
             fac_list.append({'name': '', 'url': new_img_url})
         new_hotel['images'] = fac_list
 
-        for fac in new_hotel.get('facilities', []):
-            fac_name = isinstance(fac, dict) and fac['facility_name'] or face
-            facility = self.env['tt.hotel.facility'].search([('name', '=ilike' , fac_name)])
+        for fac in new_hotel.get('facilities') or []:
+            # if isinstance(fac, dict):
+            #     if not fac.get('facility_name'):
+            #         fac['facility_name'] = fac.pop('name')
+            #     fac_name = fac['facility_name']
+            # else:
+            #     fac_name = fac
+            fac_name = isinstance(fac, dict) and fac['facility_name'] or fac
+            facility = self.env['tt.hotel.facility'].search([('name', '=ilike', fac_name)])
             fac['facility_id'] = facility and facility[0].id or False
         return new_hotel
 
@@ -1823,10 +1922,10 @@ class HotelInformation(models.Model):
         hotel_id = 0
         rendered_city = []
 
-        # provider_list = ['hotelspro', 'miki', 'fitruums', 'itank', 'quantum', 'mgholiday',
-        #                  'mg_pool', 'hotelspro_file', 'miki_pool', 'webbeds_pool', 'webbeds_excel_pool',
-        #                  'dida_pool', 'quantum_pool', 'tbo']
-        provider_list = ['webbeds_pool', 'webbeds_excel_pool', 'dida_pool', 'tbo']
+        # provider_list = ['hotelspro', 'hotelspro_file', 'fitruums', 'webbeds_pool', 'webbeds_excel_pool',
+        #                  'itank', 'quantum', 'quantum_pool', 'mgholiday', 'mg_pool', 'miki_api', 'miki_scrap', 'miki_pool',
+        #                  'dida_pool', 'tbo', 'oyo']
+        provider_list = ['miki_api', 'miki_pool']
 
         need_to_add_list = [['No', 'CityName', 'RodexTrip City_id'] + provider_list + ['Total']]
         new_to_add_list2 = [['Type', 'Name', 'Similar Name']]
@@ -1849,19 +1948,20 @@ class HotelInformation(models.Model):
                     # Looping untuk setiap city di alias name
                     searched_city_names = [city_name,]
                     if city_obj:
-                        searched_city_names += [rec.name for rec in city_obj.other_name_ids]
+                        searched_city_names += [rec.name for rec in city_obj.other_name_ids.filtered(lambda x: x.name not in city_name)]
                     for searched_city_name in searched_city_names:
+                        a = 0
                         try:
                             file_url = "/var/log/cache_hotel/" + provider + "/" + searched_city_name + ".json"
                             # Loop untuk setiap city cari file yg nama nya sma dengan  city yg dimaksud
                             with open(file_url, 'r') as f2:
                                 file = f2.read()
                                 self.file_log_write('Provider ' + provider + ': ' + str(len(json.loads(file))))
-                                new_to_add_list.append(len(json.loads(file)))
+                                a += len(json.loads(file))
                                 for hotel in json.loads(file):
                                     hotel_id += 1
                                     # rubah format ke odoo
-                                    hotel_fmt = self.formating_homas(hotel, hotel_id, provider, city_id, target_city[1])
+                                    hotel_fmt = self.formating_homas(hotel, hotel_id, provider, city_id, target_city)
                                     # Cek apakah file dengan kota tsb sdah ada di memory?
                                     same_name = self.advance_find_similar_name(hotel_fmt['name'], hotel_fmt['location']['city'], cache_content)
                                     # same_name = False
@@ -1889,11 +1989,11 @@ class HotelInformation(models.Model):
                         except Exception as e:
                             self.file_log_write('Error:' + provider + ' in id ' + str(hotel_id) + '; MSG:' + str(e))
                             try:
-                                new_to_add_list.append(0)
                                 f2.close()
                                 pass
                             except:
                                 pass
+                        new_to_add_list.append(a)
 
                 if cache_content:
                     self.file_log_write('Render ' + city_name + ' End, Get:' + str(len(cache_content)) + ' Hotel(s)')
@@ -2059,3 +2159,25 @@ class HotelInformation(models.Model):
         # Baca File + merge data source untuk city tsb
         # Updata CSV Result merger (Nice to have)
         return True
+
+    # ====================== Cache Hotel to Gateway ==============================================
+    @api.multi
+    def prepare_gateway_cache(self):
+        API_CN_HOTEL.signin()
+        file_number = 1
+        while file_number:
+            try:
+                name = "cache_hotel_" + str(file_number-1) + ".txt"
+                file = open("/var/log/cache_hotel/" + name, 'r')
+                content = file.read()
+                file.close()
+                API_CN_HOTEL.send_request('create_hotel_file', {'name': name, 'content': content})
+            except:
+                API_CN_HOTEL.send_request('prepare_gateway_cache', {
+                    'hotel_ids': [],
+                    'city_ids': self.env['test.search'].render_cache_city(),
+                    'country_ids': self.env['test.search'].prepare_countries(self.env['res.country'].sudo().search([])),
+                    'landmark_ids': []
+                })
+                break
+            file_number += 1

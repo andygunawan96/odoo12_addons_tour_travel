@@ -188,6 +188,10 @@ class TestSearch(models.Model):
             return 'dida'
         elif provider == 'A9':
             return 'tbo'
+        elif provider == 'A10':
+            return 'welcomebeds'
+        elif provider == 'A11':
+            return 'oyo'
         else:
             return provider
 
