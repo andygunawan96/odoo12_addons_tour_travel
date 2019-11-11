@@ -108,7 +108,7 @@ class ReservationTour(models.Model):
         self.tour_id.seat += pax_amount
         if self.tour_id.seat > self.tour_id.quota:
             self.tour_id.seat = self.tour_id.quota
-        self.tour_id.state_tour = 'open'
+        self.tour_id.state = 'open'
 
         print('state : ' + self.state)
 
@@ -125,7 +125,7 @@ class ReservationTour(models.Model):
             self.tour_id.seat += pax_amount
             if self.tour_id.seat > self.tour_id.quota:
                 self.tour_id.seat = self.tour_id.quota
-            self.tour_id.state_tour = 'open'
+            self.tour_id.state = 'open'
 
         for rec in self.tour_id.passengers_ids:
             if rec.tour_id.id == self.id:
@@ -154,9 +154,9 @@ class ReservationTour(models.Model):
         pax_amount = sum(1 for temp in self.passenger_ids if temp.pax_type != 'INF')  # jumlah orang yang di book
         self.tour_id.seat -= pax_amount  # seat tersisa dikurangi jumlah orang yang di book
         if self.tour_id.seat <= int(0.2 * self.tour_id.quota):
-            self.tour_id.state_tour = 'definite'  # pasti berangkat jika kuota >=80%
+            self.tour_id.state = 'definite'  # pasti berangkat jika kuota >=80%
         if self.tour_id.seat == 0:
-            self.tour_id.state_tour = 'sold'  # kuota habis
+            self.tour_id.state = 'sold'  # kuota habis
 
     def action_cancel_by_manager(self):
         self.action_refund()
@@ -328,9 +328,9 @@ class ReservationTour(models.Model):
                 provider_tour_obj.create_service_charge(pricing)
 
                 response = {
-                    'order_number': booking_obj.name
+                    'order_id': booking_obj.id,
+                    'order_number': booking_obj.name,
                 }
-
             else:
                 response = {
                     'order_number': 0
@@ -347,6 +347,67 @@ class ReservationTour(models.Model):
             _logger.error(traceback.format_exc())
             try:
                 booking_obj.notes += traceback.format_exc()+'\n'
+            except:
+                _logger.error('Creating Notes Error')
+            return ERR.get_error(1004)
+
+    def issued_booking_api(self, data, context, **kwargs):
+        try:
+            book_objs = self.env['tt.reservation.tour'].sudo().search([('name', '=', data['order_number'])], limit=1)
+            book_obj = book_objs[0]
+
+            try:
+                agent_obj = self.env['tt.customer'].browse(int(self.booker_id.id)).agent_id
+                if not agent_obj:
+                    agent_obj = self.env['res.users'].browse(int(context['co_uid'])).agent_id
+            except Exception:
+                agent_obj = self.env['res.users'].browse(int(context['co_uid'])).agent_id
+
+            is_enough = self.env['tt.agent'].check_balance_limit_api(agent_obj.id, book_obj.total)
+            if is_enough['error_code'] != 0:
+                _logger.error('Balance not enough')
+                raise RequestException(1007)
+
+            if data.get('member'):
+                customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', data['seq_id'])])
+            else:
+                customer_parent_id = book_obj.agent_id.customer_parent_walkin_id.id
+
+            vals = {
+                'customer_parent_id': customer_parent_id,
+                'payment_method': data.get('payment_method') and data['payment_method'] or 'full'
+            }
+
+            book_obj.sudo().write(vals)
+            book_obj.action_issued_tour(context)
+            if data.get('seq_id'):
+                acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', data['seq_id'])])
+                if not acquirer_id:
+                    raise RequestException(1017)
+            else:
+                raise RequestException(1017)
+
+            book_obj.call_create_invoice(acquirer_id)
+
+            response = {
+                'order_id': book_obj.id,
+                'order_number': book_obj.name,
+                'state': book_obj.state,
+                'pnr': book_obj.pnr,
+                'provider': book_obj.tour_id.provider_id.code,
+            }
+            return ERR.get_no_error(response)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            try:
+                book_obj.notes += traceback.format_exc()+'\n'
+            except:
+                _logger.error('Creating Notes Error')
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            try:
+                book_obj.notes += traceback.format_exc()+'\n'
             except:
                 _logger.error('Creating Notes Error')
             return ERR.get_error(1004)
@@ -444,54 +505,19 @@ class ReservationTour(models.Model):
         try:
             book_objs = self.env['tt.reservation.tour'].sudo().search([('name', '=', data['order_number'])])
             book_obj = book_objs[0]
-            write_vals = {}
+            write_vals = {
+                'sid_booked': context.get('sid') and context['sid'] or '',
+            }
             book_info = data.get('book_info') and data['book_info'] or {}
             if book_info:
                 write_vals.update({
                     'pnr': book_info.get('pnr') and book_info['pnr'] or ''
                 })
-            if data.get('member'):
-                customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', data['seq_id'])])
-            else:
-                customer_parent_id = book_obj.agent_id.customer_parent_walkin_id.id
 
-            write_vals.update({
-                'customer_parent_id': customer_parent_id,
-                'sid_booked': context.get('sid') and context['sid'] or '',
-            })
-
-            try:
-                agent_obj = self.env['tt.customer'].browse(int(self.booker_id.id)).agent_id
-                if not agent_obj:
-                    agent_obj = self.env['res.users'].browse(int(context['co_uid'])).agent_id
-            except Exception:
-                agent_obj = self.env['res.users'].browse(int(context['co_uid'])).agent_id
-
-            if data.get('force_issued'):
-                is_enough = self.env['tt.agent'].check_balance_limit_api(agent_obj.id, data['amount'])
-                if is_enough['error_code'] != 0:
-                    _logger.error('Balance not enough')
-                    raise RequestException(1007)
-
-                write_vals.update({
-                    'payment_method': data.get('payment_method') and data['payment_method'] or 'full'
-                })
             book_obj.sudo().write(write_vals)
-
             book_obj.update_pnr_data(book_obj.id, book_info['pnr'])
             book_obj.calculate_service_charge()
             self.env.cr.commit()
-
-            if data.get('force_issued'):
-                book_obj.action_issued_tour(context)
-                if data.get('seq_id'):
-                    acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', data['seq_id'])])
-                    if not acquirer_id:
-                        raise RequestException(1017)
-                else:
-                    raise RequestException(1017)
-
-                book_obj.call_create_invoice(acquirer_id)
 
             response = {
                 'order_number': book_obj.name,
