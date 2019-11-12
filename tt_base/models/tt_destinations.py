@@ -109,12 +109,16 @@ class Destinations(models.Model):
             res.update({code: rec.get_destination_data()})
         return res
 
-    def get_destination_list_by_country(self, _provider_type):
+    def get_destination_list_by_country(self, _provider_type, is_all_data=False):
         provider_obj = self.env['tt.provider.type'].sudo().search([('code', '=', _provider_type)], limit=1)
         if not provider_obj:
             raise Exception('Provider type not found, %s' % _provider_type)
 
-        _obj = self.sudo().search([('provider_type_id', '=', provider_obj.id), ('active', '=', True)])
+        param = [('provider_type_id', '=', provider_obj.id)]
+        if not is_all_data:
+            param.append(('active', '=', True))
+        # _obj = self.sudo().search(param)
+        _obj = self.sudo().with_context(active_test=False).search(param)
         country_dict = {}
         for rec in _obj:
             country_code = rec.country_id.code
@@ -139,7 +143,8 @@ class Destinations(models.Model):
             #     response = self.get_destination_list_by_code(data['provider_type'])
             # else:
             #     response = self.get_destination_list_by_country_code(data['provider_type'])
-            response = self.get_destination_list_by_country(data['provider_type'])
+            is_all_data = data.get('is_all_data', False)
+            response = self.get_destination_list_by_country(data['provider_type'], is_all_data)
             res = Response().get_no_error(response)
         except Exception as e:
             _logger.error('Error Get Destination List API, %s, %s' % (str(e), traceback.format_exc()))
