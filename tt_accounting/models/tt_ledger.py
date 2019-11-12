@@ -161,7 +161,7 @@ class Ledger(models.Model):
             if getattr(self, check_key):
                 for item in restriction:
                     if item in vals.keys():
-                        raise UserError('Error')
+                        raise UserError('Error not allowed to edit ledger')
         return super(Ledger, self).write(vals)
 
     @api.multi

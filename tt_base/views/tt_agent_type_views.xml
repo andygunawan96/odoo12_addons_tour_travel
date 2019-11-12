@@ -62,6 +62,9 @@
                                 <field name="agent_ids"/>
                             </group>
                         </div></div>
+                        <notebook>
+
+                        </notebook>
                         <group>
                             <field name="terms_and_condition"/>
                         </group>

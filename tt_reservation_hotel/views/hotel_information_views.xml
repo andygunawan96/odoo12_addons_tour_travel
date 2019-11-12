@@ -343,7 +343,8 @@
 
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="get_record_homas" class="oe_stat_button" string="Merge" type="object" icon="fa-plus"/>
+                        <button name="get_record_homas" class="oe_stat_button" string="1. Merge" type="object" icon="fa-plus"/>
+                        <button name="prepare_gateway_cache" class="oe_stat_button" string="2. Send to GW" type="object" icon="fa-plus"/>
                     </div>
                     <div class="oe_title">
                         <label for="name">Name</label>
@@ -359,6 +360,11 @@
                             <button name="get_record_by_file_3" string="HotelsPro" type="object" icon="fa-plus"/>
                             <button name="get_record_by_file_4" string="HotelsPro" type="object" icon="fa-plus"/>
                         </group>
+                        <group string="Quantum">
+                            <button name="get_record_by_api2a" string="Hotel API Development" type="object" icon="fa-spoon"/>
+                            <button name="get_record_by_api2b" string="Hotel API Production" type="object" icon="fa-spoon"/>
+                            <button name="get_record_by_api2_2" string="Hotel by CSV" type="object" icon="fa-home"/>
+                        </group>
                         <group string="DIDA">
                             <button name="get_record_by_api7a" string="Country, Meal Type, Room Type, Prop. Type" type="object" icon="fa-spoon"/>
                             <button name="get_record_by_api7b" string="City by country" type="object" icon="fa-building"/>
@@ -367,6 +373,14 @@
                         <group string="TBO">
                             <button name="get_record_by_api9" string="Country + City" type="object" icon="fa-building"/>
                             <button name="get_record_by_api9a" string="Hotel" type="object" icon="fa-home"/>
+                        </group>
+                        <group string="Miki Travel">
+                            <button name="get_record_by_api3a" string="Hotel by API XML" type="object" icon="fa-building"/>
+                            <button name="get_record_by_file3a" string="Hotel by CSV" type="object" icon="fa-home"/>
+                        </group>
+                        <group string="OYO">
+                            <button name="get_record_by_api10" string="Hotel Raw" type="object" icon="fa-home"/>
+                            <button name="get_record_by_api10b" string="Hotel Mapping" type="object" icon="fa-maps"/>
                         </group>
                     </group>
                 </sheet>
