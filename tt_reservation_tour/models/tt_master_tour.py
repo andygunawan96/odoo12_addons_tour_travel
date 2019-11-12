@@ -862,7 +862,7 @@ class MasterTour(models.Model):
     def commit_booking_vendor(self, data, context, **kwargs):
         try:
             response = {
-                'pnr': self.env['ir.sequence'].next_by_code('skytors.tour.reservation.code')
+                'pnr': self.env['ir.sequence'].next_by_code('rodextrip.tour.reservation.code')
             }
             return ERR.get_no_error(response)
         except RequestException as e:
