@@ -27,6 +27,7 @@
         'security/ir.model.access.csv',
         # 'views/views.xml',
         # 'views/templates.xml',
+        'data/tt.traveldoc.type.csv',
         'views/tt_traveldoc_type_views.xml',
     ],
     # only loaded in demonstration mode

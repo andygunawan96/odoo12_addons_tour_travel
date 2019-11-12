@@ -1,11 +1,11 @@
-id,name,description,
+id,name,description
 traveldoc_type_1,Pasport,-
 traveldoc_type_2,Akta Lahir,-
 traveldoc_type_3,Kartu Keluarga,-
 traveldoc_type_4,Pendidikan Terakhir,** Hanya jika akta lahir tidak ada
 traveldoc_type_5,KTP,-
 traveldoc_type_6,Surat Sponsor,** Jika perusahaan harus ada Logo dan stampel perusahaan
-traveldoc_type_7,Rekening Koran Pribadi,** Laporan Rekening koran Pribadi selama 3 bulan terakhir
+traveldoc_type_7,Rekening Koran Pribadi,** Lapo	ran Rekening koran Pribadi selama 3 bulan terakhir
 traveldoc_type_8,Foto,-
 traveldoc_type_9,Surat Keterangan Sekolah,** Jika pemohon adalah murid dan harus berbahasa inggris
 traveldoc_type_10,Akta Nikah,-

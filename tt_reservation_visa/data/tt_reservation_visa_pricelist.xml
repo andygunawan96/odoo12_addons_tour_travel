@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data noupdate="0">
+    <data noupdate="1">
 
         <record id="visa_pricelist_japan_adult_single_regular" model="tt.reservation.visa.pricelist">
             <field name="name">Japan</field>
@@ -15,9 +15,109 @@
             <field name="immigration_consulate">Surabaya</field>
 
             <field name="nta_price">385000</field>
-            <field name="cost_price">425000</field>
+            <field name="cost_price">420000</field>
             <field name="sale_price">485000</field>
         </record>
+
+            <record id="visa_pricelist_japan_adult_single_regular_requirement_formulir_aplikasi" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_29"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_single_regular_requirement_paspor" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_1"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_single_regular_requirement_paspor_lama" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_20"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_single_regular_requirement_foto" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_8"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_single_regular_requirement_ktp" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_5"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_single_regular_requirement_kartu_keluarga" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_3"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_single_regular_requirement_surat_ganti_nama" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_17"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_single_regular_requirement_surat_keterangan_WNI" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_21"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_single_regular_requirement_akta_lahir" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_2"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_single_regular_requirement_akta_nikah" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_10"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_single_regular_requirement_surat_sponsor" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_6"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_single_regular_requirement_surat_keterangan_kerja" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_18"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_single_regular_requirement_tanda_daftar_perusahaan" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_14"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_single_regular_requirement_siup" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_15"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_single_regular_requirement_npwp" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_19"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_single_regular_requirement_laporan_keuangan_3_bulan" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_32"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_single_regular_requirement_tiket_pesawat" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_11"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_single_regular_requirement_voucher_hoter" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_12"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_single_regular_requirement_itinerary" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_41"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_single_regular_requirement_surat_kuasa" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_33"/>
+            </record>
 
         <record id="visa_pricelist_japan_children_single_regular" model="tt.reservation.visa.pricelist">
             <field name="name">Japan</field>
@@ -32,9 +132,124 @@
             <field name="immigration_consulate">Surabaya</field>
 
             <field name="nta_price">385000</field>
-            <field name="cost_price">425000</field>
+            <field name="cost_price">420000</field>
             <field name="sale_price">485000</field>
         </record>
+
+            <record id="visa_pricelist_japan_children_single_regular_requirement_formulir_aplikasi" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_29"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_single_regular_requirement_paspor" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_1"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_single_regular_requirement_paspor_lama" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_20"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_single_regular_requirement_foto" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_8"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_single_regular_requirement_ktp_ayah" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_25"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_single_regular_requirement_ktp_ibu" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_26"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_single_regular_requirement_kartu_keluarga" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_3"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_single_regular_requirement_surat_ganti_nama" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_17"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_single_regular_requirement_surat_keterangan_WNI" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_21"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_single_regular_requirement_akta_lahir" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_2"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_single_regular_requirement_akta_nikah" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_10"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_single_regular_requirement_surat_keterangan_sekolah" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_9"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_single_regular_requirement_surat_sponsor" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_6"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_single_regular_requirement_surat_keterangan_kerja" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_18"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_single_regular_requirement_tanda_daftar_perusahaan" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_14"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_single_regular_requirement_siup" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_15"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_single_regular_requirement_npwp" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_19"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_single_regular_requirement_laporan_keuangan_3_bulan" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_32"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_single_regular_requirement_tiket_pesawat" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_11"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_single_regular_requirement_voucher_hoter" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_12"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_single_regular_requirement_itinerary" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_41"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_single_regular_requirement_surat_ijin_orang_tua" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_42"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_single_regular_requirement_surat_kuasa" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_33"/>
+            </record>
 
         <record id="visa_pricelist_japan_adult_multiple_regular" model="tt.reservation.visa.pricelist">
             <field name="name">Japan</field>
@@ -53,6 +268,116 @@
             <field name="sale_price">865000</field>
         </record>
 
+            <record id="visa_pricelist_japan_adult_multiple_regular_requirement_formulir_aplikasi" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_29"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_multiple_regular_requirement_paspor" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_1"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_multiple_regular_requirement_paspor_lama" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_20"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_multiple_regular_requirement_foto" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_8"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_multiple_regular_requirement_ktp" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_5"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_multiple_regular_requirement_kartu_keluarga" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_3"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_multiple_regular_requirement_surat_ganti_nama" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_17"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_multiple_regular_requirement_surat_keterangan_WNI" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_21"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_multiple_regular_requirement_akta_lahir" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_2"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_multiple_regular_requirement_akta_nikah" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_10"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_multiple_regular_requirement_surat_sponsor" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_6"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_multiple_regular_requirement_surat_keterangan_kerja" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_18"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_multiple_regular_requirement_tanda_daftar_perusahaan" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_14"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_multiple_regular_requirement_siup" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_15"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_multiple_regular_requirement_npwp" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_19"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_multiple_regular_requirement_laporan_keuangan_3_bulan" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_32"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_multiple_regular_requirement_tiket_pesawat" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_11"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_multiple_regular_requirement_voucher_hoter" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_12"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_multiple_regular_requirement_itinerary" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_41"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_multiple_regular_requirement_surat_kuasa" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_33"/>
+            </record>
+
+            <record id="visa_pricelist_japan_adult_multiple_regular_requirement_itinerary_perjalanan" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_34"/>
+            </record>
+
+        <record id="visa_pricelist_japan_adult_multiple_regular_requirement_surat_ijin_orang_tua" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_28"/>
+            </record>
+
         <record id="visa_pricelist_japan_children_multiple_regular" model="tt.reservation.visa.pricelist">
             <field name="name">Japan</field>
             <field name="visa_type">tourist</field>
@@ -61,14 +386,129 @@
             <field name="pax_type">CHD</field>
 
             <field name="country_id" ref="base.jp"/>
-            <field name="duration">30</field>
-            <field name="description">Graha Pena Lt.15 R 1506, Jl Ahmad Yani no 88 Surabaya</field>
+            <field name="duration">5</field>
+            <field name="description">Jl. Sumatera No.93, Gubeng</field>
             <field name="immigration_consulate">Surabaya</field>
 
             <field name="nta_price">720000</field>
             <field name="cost_price">795000</field>
             <field name="sale_price">865000</field>
         </record>
+
+            <record id="visa_pricelist_japan_children_multiple_regular_requirement_formulir_aplikasi" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_29"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_multiple_regular_requirement_paspor" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_1"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_multiple_regular_requirement_paspor_lama" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_20"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_multiple_regular_requirement_foto" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_8"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_multiple_regular_requirement_ktp_ayah" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_25"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_multiple_regular_requirement_ktp_ibu" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_26"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_multiple_regular_requirement_kartu_keluarga" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_3"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_multiple_regular_requirement_surat_ganti_nama" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_17"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_multiple_regular_requirement_surat_keterangan_WNI" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_21"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_multiple_regular_requirement_akta_lahir" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_2"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_multiple_regular_requirement_akta_nikah" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_10"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_multiple_regular_requirement_surat_keterangan_sekolah" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_9"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_multiple_regular_requirement_surat_sponsor" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_6"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_multiple_regular_requirement_surat_keterangan_kerja" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_18"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_multiple_regular_requirement_tanda_daftar_perusahaan" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_14"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_multiple_regular_requirement_siup" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_15"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_multiple_regular_requirement_npwp" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_19"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_multiple_regular_requirement_laporan_keuangan_3_bulan" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_32"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_multiple_regular_requirement_tiket_pesawat" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_11"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_multiple_regular_requirement_voucher_hoter" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_12"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_multiple_regular_requirement_itinerary" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_41"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_multiple_regular_requirement_surat_ijin_orang_tua" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_42"/>
+            </record>
+
+            <record id="visa_pricelist_japan_children_multiple_regular_requirement_surat_kuasa" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_children_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_33"/>
+            </record>
 
         <record id="visa_pricelist_england_adult_single_regular" model="tt.reservation.visa.pricelist">
             <field name="name">England</field>
@@ -87,6 +527,161 @@
             <field name="sale_price">3250000</field>
         </record>
 
+            <record id="visa_pricelist_england_adult_single_regular_requirement_formulir_aplikasi" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_29"/>
+            </record>
+
+            <record id="visa_pricelist_england_adult_single_regular_requirement_paspor" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_1"/>
+            </record>
+
+            <record id="visa_pricelist_england_adult_single_regular_requirement_paspor_lama" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_20"/>
+            </record>
+
+            <record id="visa_pricelist_england_adult_single_regular_requirement_foto" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_8"/>
+            </record>
+
+            <record id="visa_pricelist_england_adult_single_regular_requirement_ktp" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_5"/>
+            </record>
+
+            <record id="visa_pricelist_england_adult_single_regular_requirement_kartu_keluarga" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_3"/>
+            </record>
+
+            <record id="visa_pricelist_england_adult_single_regular_requirement_surat_ganti_nama" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_17"/>
+            </record>
+
+            <record id="visa_pricelist_england_adult_single_regular_requirement_surat_keterangan_WNI" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_21"/>
+            </record>
+
+            <record id="visa_pricelist_england_adult_single_regular_requirement_akta_lahir" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_2"/>
+            </record>
+
+            <record id="visa_pricelist_england_adult_single_regular_requirement_akta_nikah" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_japan_adult_multiple_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_10"/>
+            </record>
+
+            <record id="visa_pricelist_england_adult_single_regular_requirement_surat_sponsor" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_6"/>
+            </record>
+
+            <record id="visa_pricelist_england_adult_single_regular_requirement_tanda_daftar_perusahaan" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_14"/>
+            </record>
+
+            <record id="visa_pricelist_england_adult_single_regular_requirement_siup" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_15"/>
+            </record>
+
+            <record id="visa_pricelist_england_adult_single_regular_requirement_npwp" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_19"/>
+            </record>
+
+            <record id="visa_pricelist_england_adult_single_regular_requirement_laporan_keuangan_3_bulan" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_32"/>
+            </record>
+
+            <record id="visa_pricelist_england_adult_single_regular_requirement_surat_referensi_bank" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_16"/>
+            </record>
+
+            <record id="visa_pricelist_england_adult_single_regular_requirement_surat_keterangan_kerja" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_18"/>
+            </record>
+
+            <record id="visa_pricelist_england_adult_single_regular_requirement_kartu_pelajar" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_37"/>
+            </record>
+
+            <record id="visa_pricelist_england_adult_single_regular_requirement_surat_keterangan_sekolah" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_9"/>
+            </record>
+
+            <record id="visa_pricelist_england_adult_single_regular_requirement_tiket_pesawat" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_11"/>
+            </record>
+
+            <record id="visa_pricelist_england_adult_single_regular_requirement_voucher_hotel" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_12"/>
+            </record>
+
+            <record id="visa_pricelist_england_adult_single_regular_requirement_itinerary" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_41"/>
+            </record>
+
+            <record id="visa_pricelist_england_adult_single_regular_requirement_asuransi_perjalanan" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_43"/>
+            </record>
+
+            <record id="visa_pricelist_england_adult_single_regular_requirement_surat_ijin_suami_orang_tua" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_42"/>
+            </record>
+
+            <record id="visa_pricelist_england_adult_single_regular_requirement_ktp_translate" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_56"/>
+            </record>
+
+            <record id="visa_pricelist_england_adult_single_regular_requirement_kk_translate" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_48"/>
+            </record>
+
+            <record id="visa_pricelist_england_adult_single_regular_requirement_surat_ganti_nama_translate" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_57"/>
+            </record>
+
+            <record id="visa_pricelist_england_adult_single_regular_requirement_surat_wni_translate" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_58"/>
+            </record>
+
+            <record id="visa_pricelist_england_adult_single_regular_requirement_akta_lahir_translate" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_51"/>
+            </record>
+
+            <record id="visa_pricelist_england_adult_single_regular_requirement_akta_nikah_translate" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_52"/>
+            </record>
+
+            <record id="visa_pricelist_england_adult_single_regular_requirement_siup_translate" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_adult_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_59"/>
+            </record>
+
         <record id="visa_pricelist_england_children_single_regular" model="tt.reservation.visa.pricelist">
             <field name="name">England</field>
             <field name="visa_type">tourist</field>
@@ -103,6 +698,161 @@
             <field name="cost_price">3200000</field>
             <field name="sale_price">3250000</field>
         </record>
+
+            <record id="visa_pricelist_england_children_single_regular_requirement_formulir_aplikasi" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_29"/>
+            </record>
+
+            <record id="visa_pricelist_england_children_single_regular_requirement_paspor" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_1"/>
+            </record>
+
+            <record id="visa_pricelist_england_children_single_regular_requirement_paspor_lama" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_20"/>
+            </record>
+
+            <record id="visa_pricelist_england_children_single_regular_requirement_foto" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_8"/>
+            </record>
+
+            <record id="visa_pricelist_england_children_single_regular_requirement_ktp_ayah" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_25"/>
+            </record>
+
+            <record id="visa_pricelist_england_children_single_regular_requirement_ktp_ibu" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_26"/>
+            </record>
+
+            <record id="visa_pricelist_england_children_single_regular_requirement_kartu_keluarga" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_3"/>
+            </record>
+
+            <record id="visa_pricelist_england_children_single_regular_requirement_surat_ganti_nama" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_17"/>
+            </record>
+
+            <record id="visa_pricelist_england_children_single_regular_requirement_surat_keterangan_WNI" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_21"/>
+            </record>
+
+            <record id="visa_pricelist_england_children_single_regular_requirement_akta_lahir" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_2"/>
+            </record>
+
+            <record id="visa_pricelist_england_children_single_regular_requirement_akta_nikah" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_10"/>
+            </record>
+
+            <record id="visa_pricelist_england_children_single_regular_requirement_surat_sponsor" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_6"/>
+            </record>
+
+            <record id="visa_pricelist_england_children_single_regular_requirement_tanda_daftar_perusahaan" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_14"/>
+            </record>
+
+            <record id="visa_pricelist_england_children_single_regular_requirement_siup" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_15"/>
+            </record>
+
+            <record id="visa_pricelist_england_children_single_regular_requirement_npwp" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_19"/>
+            </record>
+
+            <record id="visa_pricelist_england_children_single_regular_requirement_laporan_keuangan_3_bulan" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_32"/>
+            </record>
+
+            <record id="visa_pricelist_england_children_single_regular_requirement_surat_referensi_bank" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_16"/>
+            </record>
+
+            <record id="visa_pricelist_england_children_single_regular_requirement_kartu_pelajar" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_37"/>
+            </record>
+
+            <record id="visa_pricelist_england_children_single_regular_requirement_surat_keterangan_sekolah" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_9"/>
+            </record>
+
+            <record id="visa_pricelist_england_children_single_regular_requirement_tiket_pesawat" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_11"/>
+            </record>
+
+            <record id="visa_pricelist_england_children_single_regular_requirement_voucher_hotel" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_12"/>
+            </record>
+
+            <record id="visa_pricelist_england_children_single_regular_requirement_itinerary" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_41"/>
+            </record>
+
+            <record id="visa_pricelist_england_children_single_regular_requirement_asuransi_perjalanan" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_43"/>
+            </record>
+
+            <record id="visa_pricelist_england_children_single_regular_requirement_surat_ijin_suami_orang_tua" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_42"/>
+            </record>
+
+            <record id="visa_pricelist_england_children_single_regular_requirement_ktp_ayah_translate" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_60"/>
+            </record>
+
+            <record id="visa_pricelist_england_children_single_regular_requirement_ktp_ibu_translate" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_61"/>
+            </record>
+
+            <record id="visa_pricelist_england_children_single_regular_requirement_kk_translate" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_48"/>
+            </record>
+
+            <record id="visa_pricelist_england_children_single_regular_requirement_surat_ganti_nama_translate" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_57"/>
+            </record>
+
+            <record id="visa_pricelist_england_children_single_regular_requirement_surat_wni_translate" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_58"/>
+            </record>
+
+            <record id="visa_pricelist_england_children_single_regular_requirement_akta_lahir_translate" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_51"/>
+            </record>
+
+            <record id="visa_pricelist_england_children_single_regular_requirement_akta_nikah_translate" model="tt.reservation.visa.requirements">
+                <field name="pricelist_id" ref="tt_reservation_visa.visa_pricelist_england_children_single_regular"/>
+                <field name="type_id" ref="tt_traveldoc.traveldoc_type_52"/>
+            </record>
 
     </data>
 </odoo>

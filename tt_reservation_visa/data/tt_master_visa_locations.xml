@@ -1,8 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data noupdate="0">
+    <data noupdate="1">
 
+        <record id="visa_location_interview_japan_1" model="tt.master.visa.locations">
+            <field name="name">Kedubes Jepang</field>
+            <field name="location_type">interview</field>
+            <field name="address">Jl. Sumatera No.93 Surabaya</field>
+            <field name="city">Surabaya</field>
+        </record>
 
+        <record id="visa_location_biometrics_japan_1" model="tt.master.visa.locations">
+            <field name="name">Kedubes Jepang</field>
+            <field name="location_type">biometrics</field>
+            <field name="address">Jl. Sumatera No.93 Surabaya</field>
+            <field name="city">Surabaya</field>
+        </record>
+
+        <record id="visa_location_interview_england_1" model="tt.master.visa.locations">
+            <field name="name">VFS Inggris</field>
+            <field name="location_type">interview</field>
+            <field name="address">Graha Pena Lt.15 R 1506, Jl Ahmad Yani no 88 Surabaya</field>
+            <field name="city">Surabaya</field>
+        </record>
+
+        <record id="visa_location_biometrics_england_1" model="tt.master.visa.locations">
+            <field name="name">VFS Inggris</field>
+            <field name="location_type">biometrics</field>
+            <field name="address">Graha Pena Lt.15 R 1506, Jl Ahmad Yani no 88 Surabaya</field>
+            <field name="city">Surabaya</field>
+        </record>
 
     </data>
 </odoo>
