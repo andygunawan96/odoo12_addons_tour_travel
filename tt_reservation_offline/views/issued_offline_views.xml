@@ -81,9 +81,9 @@
                         <button string="Post" class="oe_highlight" name="action_done" states="paid" type="object" groups="tt_base.group_tt_ticketing_manager,account.group_account_invoice"/>
                         <button string="Cancel" name="action_cancel" type="object" states="confirm,sent,paid" groups="tt_base.group_tt_ticketing_operator,account.group_account_invoice"/>
                         <button string="Cancel" name="action_cancel" type="object" states="draft"/>
-                        <button string="Print Invoice" name="print_invoice" type="object" states="paid,posted"/>
-                        <button string="Print Invoice Ticket" name="print_invoice_ticket" type="object" states="paid,posted"/>
-                        <button string="Duplicate REC" name="randomizer_rec" type="object"/>
+<!--                        <button string="Print Invoice" name="print_invoice" type="object" states="paid,posted"/>-->
+<!--                        <button string="Print Invoice Ticket" name="print_invoice_ticket" type="object" states="paid,posted"/>-->
+<!--                        <button string="Duplicate REC" name="randomizer_rec" type="object"/>-->
                         <field name="state" widget="statusbar" statusbar_visible="draft,confirm,sent,paid,posted"/>
                     </header>
                     <sheet>
@@ -102,7 +102,7 @@
                                 <!--<field name="customer_parent_type_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>-->
                                 <field name="provider_type_id" domain="[('code', 'not in', ['tour','visa','passport'])]"/>
                                 <field name="provider_type_id_name" invisible="1"/>
-                                <field name="provider_name"/>
+                                <field name="provider_name" groups="tt_base.group_tt_tour_travel_operator"/>
                                 <field name="sector_type" attrs="{'invisible': [('provider_type_id_name', 'not in', 'airline')]}"/>
                                 <!--<field name="customer_id"/>-->
                                 <field name="cancel_message" states="cancel"

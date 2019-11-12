@@ -9,9 +9,9 @@
             <field name="description" position="after">
                 <field name="state_invoice"/>
             </field>
-            <xpath expr="//button[@name='action_cancel']" position="after">
-                <button string="CREATE INVOICE" name="action_create_invoice" states="paid,posted" type="object"/>
-            </xpath>
+<!--            <xpath expr="//button[@name='action_cancel']" position="after">-->
+<!--                <button string="CREATE INVOICE" name="action_create_invoice" states="paid,posted" type="object"/>-->
+<!--            </xpath>-->
             <xpath expr="//page[@name='attachment']" position="after">
                 <page string="Agent Invoice" name="agent_invoice">
                     <field name="invoice_line_ids" readonly="1">
