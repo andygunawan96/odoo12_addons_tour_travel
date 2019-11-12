@@ -9,9 +9,9 @@
             <field name="company_id" eval="False"/>
         </record>
 
-        <record id="seq_reservation_skytors_tour" model="ir.sequence">
+        <record id="seq_reservation_rodextrip_tour" model="ir.sequence">
             <field name="name">Reservation Skytors Tour</field>
-            <field name="code">skytors.tour.reservation.code</field>
+            <field name="code">rodextrip.tour.reservation.code</field>
             <field name="prefix">MTR.%(range_y)s%(range_month)s%(range_day)s%(range_sec)s</field>
             <field name="padding">5</field>
             <field name="company_id" eval="False"/>
