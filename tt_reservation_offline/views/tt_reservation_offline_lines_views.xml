@@ -20,12 +20,12 @@
                             <field name="destination_id"/>
                         </group>
                         <group>
-                            <field name="departure_date"/>
-                            <field name="return_date"/>
+                            <field name="departure_date" string="Departure Datetime"/>
+                            <field name="return_date" string="Arrival Datetime"/>
                         </group>
                         <group>
                             <field name="carrier_id"/>
-                            <field name="provider_id" attrs="{'required' :[('state','in',['confirm'])]}"/>
+                            <field name="provider_id" attrs="{'required' :[('state','in',['confirm'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
                         </group>
                         <group>
                             <field name="pnr"/>
@@ -44,7 +44,7 @@
                         <!--Hotel / Themes Park-->
                         <group>
                             <field name="pnr"/>
-                            <field name="provider_id" attrs="{'required' :[('state','in',['confirm'])]}"/>
+                            <field name="provider_id" attrs="{'required' :[('state','in',['confirm'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
                             <field name="hotel_name" attrs="{'invisible': [('transaction_name', 'not in', ['hotel'])]}"/>
                             <field name="cruise_name" attrs="{'invisible': [('transaction_name', 'not in', ['cruise'])]}"/>
                             <field name="departure_location" attrs="{'invisible': [('transaction_name', 'not in', ['cruise'])]}"/>
