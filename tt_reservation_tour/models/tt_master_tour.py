@@ -288,12 +288,12 @@ class MasterTour(models.Model):
 
             if search_request['country_id'] != '0':
                 self.env.cr.execute("""SELECT id, name FROM res_country WHERE id=%s""",
-                                    (search_request['country_id'],))
+                                    (str(search_request['country_id']),))
                 temp = self.env.cr.dictfetchall()
                 search_request.update({
                     'country_name': temp[0]['name']
                 })
-                sql_query += " AND loc.country_id = " + search_request['country_id']
+                sql_query += " AND loc.country_id = " + str(search_request['country_id'])
 
             if search_request['city_id'] != '0':
                 self.env.cr.execute("""SELECT id, name FROM res_city WHERE id=%s""",
@@ -302,7 +302,7 @@ class MasterTour(models.Model):
                 search_request.update({
                     'city_name': temp[0]['name']
                 })
-                sql_query += " AND loc.city_id = " + search_request['city_id']
+                sql_query += " AND loc.city_id = " + str(search_request['city_id'])
 
             sql_query += ' group by tp.id'
             self.env.cr.execute(sql_query)
