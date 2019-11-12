@@ -28,15 +28,15 @@
                     <group>
                         <group string="Pricing">
                             <field name="currency_id" invisible="1"/>
-                            <field name="nta_price"/>  <!--groups="tt_base.group_tt_tour_travel_operator"-->
-                            <field name="cost_price"/>  <!--groups="tt_base.group_tt_tour_travel_operator"-->
+                            <field name="nta_price" groups="tt_base.group_tt_tour_travel_operator"/>
+                            <field name="cost_price" groups="tt_base.group_tt_tour_travel_operator"/>
                             <field name="sale_price"/>
-                            <field name="commission_price"/>  <!--groups="tt_base.group_tt_tour_travel_operator"-->
+                            <field name="commission_price" groups="tt_base.group_tt_tour_travel_operator"/>
                         </group>
                     </group>
                     <separator string="Requirements"/>
                     <field name="requirement_ids" string="Requirements">
-                        <tree>
+                        <tree editable="bottom">
                             <field name="type_id"/>
                             <field name="required"/>
                         </tree>

@@ -408,7 +408,7 @@ class TtVisa(models.Model):
             "is_booker": False,
             "is_contact": False,
             "number": 1,
-            "master_visa_Id": "2",
+            "master_visa_Id": "17",
             "required": [
                 {
                     "is_original": True,
@@ -432,7 +432,7 @@ class TtVisa(models.Model):
             "is_booker": False,
             "is_contact": False,
             "number": 1,
-            "master_visa_Id": "4",
+            "master_visa_Id": "17",
             "required": [
                 {
                     "is_original": True,
@@ -456,7 +456,7 @@ class TtVisa(models.Model):
             "is_booker": False,
             "is_contact": False,
             "number": 1,
-            "master_visa_Id": "5",
+            "master_visa_Id": "18",
             "required": [
                 {
                     "is_original": True,
@@ -468,8 +468,8 @@ class TtVisa(models.Model):
     ]
 
     param_search = {
-        "destination": "Albania",
-        "consulate": "Jakarta",
+        "destination": "United Kingdom",
+        "consulate": "Surabaya",
         "departure_date": "2019-10-04",
         "provider": "skytors_visa"
     }

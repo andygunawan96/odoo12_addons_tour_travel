@@ -20,7 +20,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'tt_base', 'tt_engine_pricing', 'tt_traveldoc', 'tt_reservation', 'tt_report_common'],
+    'depends': ['base', 'tt_base', 'tt_engine_pricing', 'tt_traveldoc', 'tt_reservation', 'tt_reservation_hotel', 'tt_report_common'],
 
     # always loaded
     'data': [
@@ -31,6 +31,7 @@
         'data/ir_send_email.xml',
         'data/tt_provider_type_data.xml',
         'data/tt_reservation_visa_pricelist.xml',
+        'data/tt_master_visa_locations.xml',
         'views/tt_reservation_visa_menuheader.xml',
         'views/tt_reservation_visa_views.xml',
         'views/tt_reservation_visa_order_passengers_views.xml',

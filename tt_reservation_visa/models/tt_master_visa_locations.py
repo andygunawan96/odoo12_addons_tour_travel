@@ -15,4 +15,4 @@ class MasterVisaLocations(models.Model):
                                      'pricelist_id', 'master_visa_location_id', 'Visa Pricelist')  # readonly=1
     location_type = fields.Selection(LOCATION_TYPE, 'Type')
     address = fields.Char('Location Address')
-    city = fields.Many2one('res.city', 'Location City')
+    city = fields.Char('Location City')
