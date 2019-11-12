@@ -489,9 +489,9 @@ class TtVisa(models.Model):
         # "seq_id": "PQR.9999999"
     }
 
-    def get_booking_visa_api(self):  # , data, context
+    def get_booking_visa_api(self, data, context):  #
         res = {}
-        for rec in self.search([('name', '=', self.name)]):  # data['order_number']
+        for rec in self.search([('name', '=', data['order_number'])]):  # self.name
             res_dict = rec.sudo().to_dict()
             print('Res Dict. : ' + str(res_dict))
             passenger = []
@@ -506,7 +506,7 @@ class TtVisa(models.Model):
                 biometrics = {
                     'needs': pax.biometrics
                 }
-                sale_obj = self.env['tt.service.charge'].sudo().search([('visa_id', '=', self.name), ('passenger_visa_ids', '=', pax.id)])  # data['order_number']
+                sale_obj = self.env['tt.service.charge'].sudo().search([('visa_id', '=', data['order_number']), ('passenger_visa_ids', '=', pax.id)])  # self.name
                 sale = {}
                 for ssc in sale_obj:
                     if ssc['charge_code'] == 'rac':
