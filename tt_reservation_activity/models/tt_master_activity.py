@@ -1281,7 +1281,7 @@ class MasterActivity(models.Model):
             category = ''
             if req.get('sub_category'):
                 if req['sub_category'] != '0':
-                    category = req['sub_category'].split(' ')[0]
+                    category = req['sub_category']
                 else:
                     get_cat_instead = 1
             else:
@@ -1289,7 +1289,7 @@ class MasterActivity(models.Model):
 
             if get_cat_instead:
                 if req.get('category'):
-                    category = req['category'] != '0' and req['category'].split(' ')[0] or ''
+                    category = req['category'] != '0' and req['category'] or ''
                 else:
                     category = ''
 
@@ -1676,7 +1676,7 @@ class MasterActivity(models.Model):
     def get_autocomplete_api(self, req, context):
         try:
             query = req.get('name') and '%' + req['name'] + '%' or False
-            sql_query = 'select * from tt_master_activity where active = True and basePrice > 0'
+            sql_query = 'select * from tt_master_activity where active = True and "basePrice" > 0'
             if query:
                 sql_query += ' and name ilike %'+query+'%'
             self.env.cr.execute(sql_query)
