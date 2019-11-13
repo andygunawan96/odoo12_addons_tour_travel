@@ -173,7 +173,7 @@
                                 <field name="resv_code"/>
                                 <field name="vendor_amount" groups="tt_base.group_tt_tour_travel_operator"/>
                                 <field name="ho_final_amount" groups="tt_base.group_tt_tour_travel_operator"/>
-                                <field name="ho_final_ledger_id" groups="tt_base.group_tt_tour_travel_operator" readonly="1"/>
+<!--                                <field name="ho_final_ledger_id" groups="tt_base.group_tt_tour_travel_operator" readonly="1"/>-->
                                 <label for="booked_date" string="Booked"/>
                                 <div>
                                     <field name="booked_date" class="oe_inline"/> -
