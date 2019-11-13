@@ -100,7 +100,7 @@
                                 <field name="contact_id" required="1" context="{'default_commercial_agent_id': agent_id}" options="{'no_quick_create': True}"/>
                                 <field name="customer_parent_id" readonly="0" required="1" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                                 <!--<field name="customer_parent_type_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>-->
-                                <field name="provider_type_id" domain="[('code', 'not in', ['tour','visa','passport'])]"/>
+                                <field name="provider_type_id" domain="[('code', 'not in', ['tour','visa','passport','offline'])]"/>
                                 <field name="provider_type_id_name" invisible="1"/>
                                 <field name="provider_name" groups="tt_base.group_tt_tour_travel_operator"/>
                                 <field name="sector_type" attrs="{'invisible': [('provider_type_id_name', 'not in', 'airline')]}"/>
