@@ -506,21 +506,47 @@ class TtVisa(models.Model):
                 biometrics = {
                     'needs': pax.biometrics
                 }
-                sale_obj = self.env['tt.service.charge'].sudo().search([('visa_id', '=', data['order_number']), ('passenger_visa_ids', '=', pax.id)])  # self.name
+                # sale_obj = self.env['tt.service.charge'].sudo().search([('visa_id', '=', self.name)])  # data['order_number'] , ('passenger_visa_ids', 'in', pax.id)]
+                # print(sale_obj.read())
                 sale = {}
-                for ssc in sale_obj:
-                    if ssc['charge_code'] == 'rac':
+                for ssc in pax.cost_service_charge_ids:
+                    if ssc.charge_code == 'rac':
                         sale['RAC'] = {
                             'charge_code': 'rac',
-                            'amount': ssc['amount'],
-                            'currency': ssc['currency_id'].name
+                            'amount': ssc.amount
                         }
+                        if ssc.currency_id:
+                            sale['RAC'].update({
+                                'currency': ssc.currency_id.name
+                            })
                     else:
-                        sale[ssc['charge_code'].upper()] = {
-                            'charge_code': ssc['charge_code'],
-                            'amount': ssc['amount'],
-                            'currency': ssc['currency_id'].name
+                        sale[ssc.charge_code.upper()] = {
+                            'charge_code': ssc.charge_code,
+                            'amount': ssc.amount,
                         }
+                        if ssc['currency_id']:
+                            sale[ssc.charge_code.upper()].update({
+                                'currency': ssc.currency_id.name
+                            })
+                # for ssc in sale_obj:
+                #     if ssc['charge_code'] == 'rac':
+                #         sale['RAC'] = {
+                #             'charge_code': 'rac',
+                #             'amount': ssc['amount'],
+                #         }
+                #         if ssc['currency_id']:
+                #             sale['RAC'].update({
+                #                 'currency': ssc['currency_id'].name
+                #             })
+                #     else:
+                #         sale[ssc['charge_code'].upper()] = {
+                #             'charge_code': ssc['charge_code'],
+                #             'amount': ssc['amount'],
+                #         }
+                #         if ssc['currency_id']:
+                #             sale[ssc['charge_code'].upper()].update({
+                #                 'currency': ssc['currency_id'].name
+                #             })
                 """ Requirements """
                 for require in pax.to_requirement_ids:
                     requirement.append({
@@ -620,7 +646,7 @@ class TtVisa(models.Model):
 
             header_val.update({
                 'country_id': self.env['res.country'].sudo().search([('name', '=', search['destination'])], limit=1).id,
-                'provider_name': self.env['tt.provider'].sudo().search([('code', '=', 'ho')], limit=1).name,
+                'provider_name': self.env['tt.provider'].sudo().search([('code', '=', 'visa_rodextrip')], limit=1).name,
                 'booker_id': booker_id.id,
                 'contact_id': contact_id.id,
                 'contact_name': contact_id.name,
@@ -636,6 +662,10 @@ class TtVisa(models.Model):
             })
 
             book_obj = self.sudo().create(header_val)
+
+            for psg in book_obj.passenger_ids:
+                for scs in psg.cost_service_charge_ids:
+                    print(scs.read())
 
             book_obj.action_booked_visa(context)
             book_obj.hold_date = book_obj.set_expired_date()
@@ -667,7 +697,7 @@ class TtVisa(models.Model):
             country_obj = self.env['res.country']
             provider_obj = self.env['tt.provider']
 
-            provider = provider_obj.env['tt.provider'].search([('code', '=', 'ho')], limit=1)
+            provider = provider_obj.env['tt.provider'].search([('code', '=', 'visa_rodextrip')], limit=1)
             country = country_obj.search([('name', '=', search['destination'])], limit=1)
 
             vals = {
@@ -859,11 +889,16 @@ class TtVisa(models.Model):
                 'pax_count': 1,
                 'total': pricelist_obj.sale_price,
                 'pricelist_id': pricelist_id,
-                'sequence': passenger_obj.sequence
+                'sequence': passenger_obj.sequence,
+                # 'passenger_visa_ids': []
             }
+            # vals['passenger_visa_ids'].append(vals['passenger_visa_id'])
             ssc_list.append(vals)
             # passenger_env.search([('id', '=', 'passenger_ids[idx])].limit=1).cost_service_charge_ids.create(ssc_list))
             ssc_obj = passenger_obj.cost_service_charge_ids.create(vals)
+            ssc_obj.write({
+                'passenger_visa_ids': [(6, 0, passenger_obj.ids)]
+            })
             ssc.append(ssc_obj.id)
             commission_list = pricing_obj.get_commission(pricelist_obj.commission_price, agent_id, self.provider_type_id)
             for comm in commission_list:
@@ -873,10 +908,13 @@ class TtVisa(models.Model):
                         'total': comm['amount'] * -1,
                         'amount': comm['amount'] * -1,
                         'charge_code': comm['code'],
-                        'charge_type': 'RAC'
+                        'charge_type': 'RAC',
                     })
                     ssc_list.append(vals2)
                     ssc_obj2 = passenger_obj.cost_service_charge_ids.create(vals2)
+                    ssc_obj2.write({
+                        'passenger_visa_ids': [(6, 0, passenger_obj.ids)]
+                    })
                     ssc.append(ssc_obj2.id)
             passenger_obj.write({
                 'cost_service_charge_ids': [(6, 0, ssc)]
