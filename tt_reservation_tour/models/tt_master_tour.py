@@ -270,8 +270,8 @@ class MasterTour(models.Model):
     def search_tour_api(self, data, context, **kwargs):
         try:
             search_request = {
-                'country_id': data.get('country_id') and data['country_id'] or '0',
-                'city_id': data.get('city_id') and data['city_id'] or '0',
+                'country_id': data.get('country_id') and data['country_id'] or 0,
+                'city_id': data.get('city_id') and data['city_id'] or 0,
                 'departure_month': data.get('month') and data['month'] or '00',
                 'departure_year': data.get('year') and data['year'] or '0000',
                 'tour_query': data.get('tour_query') and '%' + str(data['tour_query']) + '%' or '',
@@ -286,7 +286,7 @@ class MasterTour(models.Model):
             if search_request.get('tour_query'):
                 sql_query += " AND tp.name ILIKE '" + search_request['tour_query'] + "'"
 
-            if search_request['country_id'] != '0':
+            if search_request['country_id'] != 0:
                 self.env.cr.execute("""SELECT id, name FROM res_country WHERE id=%s""",
                                     (str(search_request['country_id']),))
                 temp = self.env.cr.dictfetchall()
@@ -295,7 +295,7 @@ class MasterTour(models.Model):
                 })
                 sql_query += " AND loc.country_id = " + str(search_request['country_id'])
 
-            if search_request['city_id'] != '0':
+            if search_request['city_id'] != 0:
                 self.env.cr.execute("""SELECT id, name FROM res_city WHERE id=%s""",
                                     (search_request['city_id'],))
                 temp = self.env.cr.dictfetchall()

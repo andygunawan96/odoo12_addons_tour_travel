@@ -460,7 +460,7 @@ class ReservationTour(models.Model):
                 for temp_room in rooms:
                     if int(psg['tour_room_id']) == int(temp_room['room_id']):
                         psg.update({
-                            'tour_room_index': int(temp_room['room_index'])
+                            'tour_room_string': temp_room['room_name'] + ' (' + temp_room['room_hotel'] + ')'
                         })
                         break
 
