@@ -35,7 +35,14 @@ class TtReservationTrain(models.Model):
 
     carrier_name = fields.Char('List of Carriers',readonly=True)
 
-
+    def action_booked_api_train(self,context,pnr_list,hold_date):
+        self.write({
+            'state': 'booked',
+            'pnr': ', '.join(pnr_list),
+            'hold_date': hold_date,
+            'booked_uid': context['co_uid'],
+            'booked_date': datetime.now()
+        })
 
     def create_booking_train_api(self, req, context):
         # req = copy.deepcopy(self.param_global)
@@ -45,7 +52,7 @@ class TtReservationTrain(models.Model):
         _logger.info("Create\n" + json.dumps(req))
         search_RQ = req['searchRQ']
         booker = req['booker']
-        contacts = req['contacts']
+        contacts = req['contacts'][0]
         passengers = req['passengers']
         schedules = req['schedules']
 
@@ -53,10 +60,6 @@ class TtReservationTrain(models.Model):
             values = self._prepare_booking_api(search_RQ,context)
             booker_obj = self.create_booker_api(booker,context)
             contact_obj = self.create_contact_api(contacts,booker_obj,context)
-
-            #                                               # 'identity_type','identity_number',
-            #                                               # 'identity_country_of_issued_id','identity_expdate'])
-            # list_passenger_id = self.create_passenger_api(list_customer_obj,self.env['tt.reservation.passenger.airline'])
 
             list_passenger_value = self.create_passenger_value_api_test(passengers)
             list_customer_id = self.create_customer_api(passengers,context,booker_obj.seq_id,contact_obj.seq_id)
@@ -113,6 +116,125 @@ class TtReservationTrain(models.Model):
                 _logger.error('Creating Notes Error')
             return ERR.get_error(1004)
 
+    def update_pnr_provider_train_api(self, req, context):
+        ### dapatkan PNR dan ubah ke booked
+        ### kemudian update service charges
+        # req['booking_commit_provider'][-1]['status'] = 'FAILED'
+        _logger.info("Update\n" + json.dumps(req))
+        # req = self.param_update_pnr
+        try:
+            book_obj = self.env['tt.reservation.train'].browse(req['book_id'])
+            if not book_obj:
+                raise RequestException(1001)
+
+            book_status = []
+            pnr_list = []
+            hold_date = datetime.max
+            any_provider_changed = False
+
+            for provider in req['provider_bookings']:
+                provider_obj = self.env['tt.provider.train'].browse(provider['provider_id'])
+                if not provider_obj:
+                    raise RequestException(1002)
+                book_status.append(provider['status'])
+
+                if provider['status'] == 'BOOKED' and not provider.get('error_code'):
+                    curr_hold_date = datetime.strptime(provider['hold_date'], '%Y-%m-%d %H:%M:%S')
+                    if curr_hold_date < hold_date:
+                        hold_date = curr_hold_date
+                    if provider_obj.state == 'booked':
+                        continue
+                    self.update_pnr_booked(provider_obj,provider,context)
+                    any_provider_changed = True
+                elif provider['status'] == 'ISSUED' and not provider.get('error_code'):
+                    if provider_obj.state == 'issued':
+                        continue
+                    if req.get('force_issued'):
+                        self.update_pnr_booked(provider_obj,provider,context)
+
+                    #action issued dan create ticket number
+                    provider_obj.action_issued_api_train(context)
+                    # provider_obj.update_ticket_api(provider['passengers'])
+                    any_provider_changed = True
+
+                    #get balance vendor
+                    if provider_obj.provider_id.track_balance:
+                        try:
+                            provider_obj.provider_id.sync_balance()
+                        except Exception as e:
+                            _logger.error(traceback.format_exc())
+                elif provider['status'] == 'FAIL_BOOKED':
+                    provider_obj.action_failed_booked_api_train(provider.get('error_code'),provider.get('error_msg'))
+                    any_provider_changed = True
+                elif provider['status'] == 'FAIL_ISSUED':
+                    provider_obj.action_failed_issued_api_train(provider.get('error_msg'))
+                    any_provider_changed = True
+
+            for rec in book_obj.provider_booking_ids:
+                pnr_list.append(rec.pnr)
+
+            if any_provider_changed:
+                book_obj.check_provider_state(context,pnr_list,hold_date,req)
+
+            return ERR.get_no_error({
+                'order_number': book_obj.name,
+                'book_id': book_obj.id
+            })
+
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            try:
+                book_obj.notes += traceback.format_exc()+'\n'
+            except:
+                _logger.error('Creating Notes Error')
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            try:
+                book_obj.notes += traceback.format_exc()+'\n'
+            except:
+                _logger.error('Creating Notes Error')
+            return ERR.get_error(1005)
+
+    def payment_train_api(self,req,context):
+        _logger.info("Payment\n" + json.dumps(req))
+        try:
+            book_obj = self.env['tt.reservation.train'].browse(req.get('book_id'))
+            if book_obj and book_obj.agent_id.id == context.get('co_agent_id',-1):
+                #cek balance due book di sini, mungkin suatu saat yang akan datang
+                if book_obj.state == 'issued':
+                    _logger.error('Transaction Has been paid.')
+                    raise RequestException(1009)
+                if book_obj.state != 'booked':
+                    _logger.error('Cannot issue not [Booked] State.')
+                    raise RequestException(1020)
+                #cek saldo
+                balance_res = self.env['tt.agent'].check_balance_limit_api(context['co_agent_id'],book_obj.total_nta)
+                if balance_res['error_code']!=0:
+                    _logger.error('Balance not enough')
+                    raise RequestException(1007)
+
+                for provider in book_obj.provider_booking_ids:
+                    provider.action_create_ledger(context['co_uid'])
+
+                return ERR.get_no_error()
+            else:
+                RequestException(1001)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            try:
+                book_obj.notes += traceback.format_exc() + '\n'
+            except:
+                _logger.error('Creating Notes Error')
+            return e.error_dict()
+        except Exception as e:
+            _logger.info(str(e) + traceback.format_exc())
+            try:
+                book_obj.notes += str(e)+traceback.format_exc()+'\n'
+            except:
+                _logger.error('Creating Notes Error')
+            return ERR.get_error(1011)
+
     def _prepare_booking_api(self, searchRQ, context_gateway):
         dest_obj = self.env['tt.destinations']
         provider_type_id = self.env.ref('tt_reservation_train.tt_provider_type_train')
@@ -139,6 +261,60 @@ class TtReservationTrain(models.Model):
         }
 
         return booking_tmp
+
+    def check_provider_state(self,context,pnr_list=[],hold_date=False,req={}):
+        if all(rec.state == 'booked' for rec in self.provider_booking_ids):
+            # booked
+            self.calculate_service_charge()
+            self.action_booked_api_train(context, pnr_list, hold_date)
+        elif all(rec.state == 'issued' for rec in self.provider_booking_ids):
+            # issued
+            ##get payment acquirer
+            if req.get('seq_id'):
+                acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', req['seq_id'])])
+                if not acquirer_id:
+                    raise RequestException(1017)
+            # ini harusnya ada tetapi di comment karena rusak ketika force issued from button di tt.provider.airlines
+            else:
+                # raise RequestException(1017)
+                acquirer_id = self.agent_id.default_acquirer_id
+
+            if req.get('member'):
+                customer_parent_id = acquirer_id.agent_id.id
+            else:
+                customer_parent_id = self.agent_id.customer_parent_walkin_id.id
+
+            if req.get('force_issued'):
+                self.calculate_service_charge()
+                self.action_booked_api_train(context, pnr_list, hold_date)
+                payment_res = self.payment_train_api({'book_id': req['book_id']}, context)
+                if payment_res['error_code'] != 0:
+                    raise RequestException(payment_res['error_code'])
+
+            self.action_issued_api_train(acquirer_id.id, customer_parent_id, context)
+        elif all(rec.state == 'fail_refunded' for rec in self.provider_booking_ids):
+            self.write({
+                'state':  'fail_refunded',
+                'refund_uid': context['co_uid'],
+                'refund_date': datetime.now()
+            })
+        elif any(rec.state == 'issued' for rec in self.provider_booking_ids):
+            # partial issued
+            self.action_partial_issued_api_train()
+        elif any(rec.state == 'booked' for rec in self.provider_booking_ids):
+            # partial booked
+            self.calculate_service_charge()
+            self.action_partial_booked_api_train(context, pnr_list, hold_date)
+        elif all(rec.state == 'fail_issued' for rec in self.provider_booking_ids):
+            # failed issue
+            self.action_failed_issue()
+        elif all(rec.state == 'fail_booked' for rec in self.provider_booking_ids):
+            # failed book
+            self.action_failed_book()
+        else:
+            # entah status apa
+            _logger.error('Entah status apa')
+            raise RequestException(1006)
 
     def _create_provider_api(self, schedules, api_context):
         dest_obj = self.env['tt.destinations']
@@ -178,6 +354,8 @@ class TtReservationTrain(models.Model):
                     'carrier_id': carrier_id,
                     'carrier_code': journey['carrier_code'],
                     'carrier_number': journey['carrier_number'],
+                    'journey_code': journey['journey_code'],
+                    'fare_code': journey['fare_code']
                 }))
 
             JRN_len = len(this_pnr_journey)
@@ -211,52 +389,27 @@ class TtReservationTrain(models.Model):
     def update_pnr_booked(self,provider_obj,provider,context):
 
         ##generate leg data
-        provider_type = self.env['tt.provider.type'].search([('code', '=', 'train')])[0]
         provider_obj.create_ticket_api(provider['passengers'],provider['pnr'])
         provider_obj.action_booked_api_train(provider, context)
 
         # August 16, 2019 - SAM
         # Mengubah mekanisme update booking backend
-        segment_dict = provider['segment_dict']
+        journey_dict = provider['journey_dict']
 
-        # update leg dan create service charge
+        # create service charge, update seat
         for idx, journey in enumerate(provider_obj.journey_ids):
-            for idx1, segment in enumerate(journey.segment_ids):
-                # param_segment = provider['journeys'][idx]['segments'][idx1]
-                param_segment = segment_dict[segment.segment_code]
-                if segment.segment_code == param_segment['segment_code']:
-                    this_segment_legs = []
-                    this_segment_fare_details = []
-                    for idx2, leg in enumerate(param_segment['legs']):
-                        leg_org = self.env['tt.destinations'].get_id(leg['origin'], provider_type)
-                        leg_dest = self.env['tt.destinations'].get_id(leg['destination'], provider_type)
-                        leg_prov = self.env['tt.provider'].get_provider_id(leg['provider'], provider_type)
-                        this_segment_legs.append((0, 0, {
-                            'sequence': idx2,
-                            'leg_code': leg['leg_code'],
-                            'origin_terminal': leg['origin_terminal'],
-                            'destination_terminal': leg['destination_terminal'],
-                            'origin_id': leg_org,
-                            'destination_id': leg_dest,
-                            'departure_date': leg['departure_date'],
-                            'arrival_date': leg['arrival_date'],
-                            'provider_id': leg_prov
-                        }))
-
-                    for fare in param_segment['fares']:
-                        provider_obj.create_service_charge(fare['service_charges'])
-                        for addons in fare['fare_details']:
-                            addons['description'] = json.dumps(addons['description'])
-                            addons['segment_id'] = segment.id
-                            this_segment_fare_details.append((0,0,addons))
-
-                    segment.write({
-                        'leg_ids': this_segment_legs,
-                        'cabin_class': param_segment.get('fares')[0].get('cabin_class',''),
-                        'class_of_service': param_segment.get('fares')[0].get('class_of_service',''),
-                        'segment_addons_ids': this_segment_fare_details
-                    })
-
+            try:
+                param_journey = journey_dict[journey.journey_code]
+            except:
+                raise RequestException(1005,additional_message="Journey Code not found")
+            for fare in param_journey['fares']:
+                provider_obj.create_service_charge(fare['service_charges'])
+            journey.create_seat(param_journey['passenger_seat'])
+            journey.write({
+                'cabin_class': param_journey.get('fares')[0].get('cabin_class',''),
+                'class_of_service': param_journey.get('fares')[0].get('class_of_service',''),
+                'carrier_name': param_journey.get('carrier_name')
+            })
 
     def pick_destination(self, data):
         dest1 = data[0][2]['origin_id']
@@ -269,3 +422,94 @@ class TtReservationTrain(models.Model):
                 count -= 1
                 dest2 = data[count][2]['destination_id']
             return count
+
+
+    def get_booking_train_api(self,req, context):
+        try:
+            _logger.info("Get req train\n" + json.dumps(context))
+            book_obj = self.get_book_obj(req.get('book_id'),req.get('order_number'))
+            if book_obj and book_obj.agent_id.id == context.get('co_agent_id',-1):
+                res = book_obj.to_dict()
+                psg_list = []
+                for rec in book_obj.sudo().passenger_ids:
+                    psg_list.append(rec.to_dict())
+                prov_list = []
+                for rec in book_obj.provider_booking_ids:
+                    prov_list.append(rec.to_dict())
+                res.update({
+                    'direction': book_obj.direction,
+                    'origin': book_obj.origin_id.code,
+                    'destination': book_obj.destination_id.code,
+                    'sector_type': book_obj.sector_type,
+                    'passengers': psg_list,
+                    'provider_bookings': prov_list,
+                    # 'provider_type': book_obj.provider_type_id.code
+                })
+                _logger.info("Get resp\n" + json.dumps(res))
+                return ERR.get_no_error(res)
+            else:
+                raise RequestException(1001)
+
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1013)
+
+    def calculate_service_charge(self):
+        for service_charge in self.sale_service_charge_ids:
+            service_charge.unlink()
+
+        for provider in self.provider_booking_ids:
+            sc_value = {}
+            for p_sc in provider.cost_service_charge_ids:
+                p_charge_code = p_sc.charge_code
+                p_charge_type = p_sc.charge_type
+                p_pax_type = p_sc.pax_type
+                if not sc_value.get(p_pax_type):
+                    sc_value[p_pax_type] = {}
+                if p_charge_type != 'RAC':
+                    if not sc_value[p_pax_type].get(p_charge_type):
+                        sc_value[p_pax_type][p_charge_type] = {}
+                        sc_value[p_pax_type][p_charge_type].update({
+                            'amount': 0,
+                            'foreign_amount': 0,
+                            'total': 0
+                        })
+                    c_type = p_charge_type
+                    c_code = p_charge_type.lower()
+                elif p_charge_type == 'RAC':
+                    if not sc_value[p_pax_type].get(p_charge_code):
+                        sc_value[p_pax_type][p_charge_code] = {}
+                        sc_value[p_pax_type][p_charge_code].update({
+                            'amount': 0,
+                            'foreign_amount': 0,
+                            'total': 0
+                        })
+                    c_type = p_charge_code
+                    c_code = p_charge_code
+                sc_value[p_pax_type][c_type].update({
+                    'charge_type': p_charge_type,
+                    'charge_code': c_code,
+                    'pax_count': p_sc.pax_count,
+                    'currency_id': p_sc.currency_id.id,
+                    'foreign_currency_id': p_sc.foreign_currency_id.id,
+                    'amount': sc_value[p_pax_type][c_type]['amount'] + p_sc.amount,
+                    'total': sc_value[p_pax_type][c_type]['total'] + p_sc.total,
+                    'foreign_amount': sc_value[p_pax_type][c_type]['foreign_amount'] + p_sc.foreign_amount,
+                })
+
+            values = []
+            for p_type,p_val in sc_value.items():
+                for c_type,c_val in p_val.items():
+                    curr_dict = {}
+                    curr_dict['pax_type'] = p_type
+                    curr_dict['booking_train_id'] = self.id
+                    curr_dict['description'] = provider.pnr
+                    curr_dict.update(c_val)
+                    values.append((0,0,curr_dict))
+
+            self.write({
+                'sale_service_charge_ids': values
+            })

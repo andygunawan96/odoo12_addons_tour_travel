@@ -53,7 +53,6 @@ class TtProviderTrain(models.Model):
     # is_ledger_created = fields.Boolean('Ledger Created', default=False, readonly=True, states={'draft': [('readonly', False)]})
 
     error_history_ids = fields.One2many('tt.reservation.err.history','res_id','Error History')
-    # , domain = [('res_model', '=', 'tt.provider.airline')]
 
     ##button function
     def action_set_to_issued_from_button(self):
@@ -113,7 +112,6 @@ class TtProviderTrain(models.Model):
         for rec in self:
             rec.write({
                 'pnr': provider_data['pnr'],
-                'pnr2': provider_data['pnr2'],
                 'state': 'booked',
                 'booked_uid': api_context['co_uid'],
                 'booked_date': fields.Datetime.now(),
@@ -155,57 +153,17 @@ class TtProviderTrain(models.Model):
 
     def create_ticket_api(self,passengers,pnr=""):
         ticket_list = []
-        ticket_not_found = []
-
-        #################
-        for passenger in self.booking_id.passenger_ids:
-            passenger.is_ticketed = False
-        #################
 
         for psg in passengers:
-            psg_obj = self.booking_id.passenger_ids.filtered(lambda x: x.name.replace(' ', '').lower() ==
-                                                                ('%s%s' % (psg.get('first_name', ''),
-                                                                           psg.get('last_name', ''))).lower().replace(' ',''))
-
-            if not psg_obj:
-                psg_obj = self.booking_id.passenger_ids.filtered(lambda x: x.name.replace(' ', '').lower()*2 ==
-                                                                           ('%s%s' % (psg.get('first_name', ''),
-                                                                                      psg.get('last_name',
-                                                                                              ''))).lower().replace(' ',''))
-
-            if psg_obj:
-                print(psg_obj.ids)
-                if len(psg_obj.ids) > 1:
-                    for psg_o in psg_obj:
-                        if not psg_o.is_ticketed:
-                            psg_obj = psg_o
-                            break
-
-                print(str(psg_obj))
+            psg_obj = self.booking_id.passenger_ids.filtered(lambda x: x.sequence == psg.get('sequence'))
+            if not psg_obj.is_ticketed:
+                psg_obj.is_ticketed = True
                 ticket_list.append((0, 0, {
                     'pax_type': psg.get('pax_type'),
                     'ticket_number': psg.get('ticket_number'),
                     'passenger_id': psg_obj.id
                 }))
-                psg_obj.is_ticketed = True
-                psg_obj.create_ssr(psg['fees'],pnr,self.id)
-            else:
-                ticket_not_found.append(psg)
 
-        psg_with_no_ticket = self.booking_id.passenger_ids.filtered(lambda x: x.is_ticketed == False)
-        for idx, psg in enumerate(ticket_not_found):
-            if idx >= len(psg_with_no_ticket):
-                ticket_list.append((0, 0, {
-                    'pax_type': psg.get('pax_type'),
-                    'ticket_number': psg.get('ticket_number'),
-                }))
-            else:
-                ticket_list.append((0, 0, {
-                    'pax_type': psg.get('pax_type'),
-                    'ticket_number': psg.get('ticket_number'),
-                    'passenger_id': psg_with_no_ticket[idx].id
-                }))
-                psg_with_no_ticket[idx].is_ticketed = True
 
         self.write({
             'ticket_ids': ticket_list

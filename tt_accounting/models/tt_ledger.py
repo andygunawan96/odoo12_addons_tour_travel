@@ -182,7 +182,7 @@ class Ledger(models.Model):
         ledger_values = self.prepare_vals(booking_obj._name,booking_obj.id,'Order : ' + booking_obj.name, booking_obj.name, datetime.now()+relativedelta(hours=7),
                                           2, booking_obj.currency_id.id, issued_uid, 0, amount)
 
-        ledger_values = self.prepare_vals_for_resv(booking_obj,ledger_values)
+        ledger_values = self.prepare_vals_for_resv(booking_obj,provider_obj.pnr,ledger_values)
         self.create(ledger_values)
 
     def create_commission_ledger(self, provider_obj,issued_uid):
@@ -206,7 +206,7 @@ class Ledger(models.Model):
             ledger_values.update({
                 'agent_id': abs(agent_id),
             })
-            values = self.prepare_vals_for_resv(booking_obj,ledger_values)
+            values = self.prepare_vals_for_resv(booking_obj,provider_obj.pnr,ledger_values)
             _logger.info('Create Ledger Comission\n')
             self.create(values)
 

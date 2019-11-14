@@ -19,6 +19,25 @@
                             <field name="arrival_date"/>
                         </group>
                     </group>
+                    <group>
+                        <group>
+                            <field name="carrier_id"/>
+                            <field name="carrier_code"/>
+                            <field name="carrier_number"/>
+                            <field name="carrier_name"/>
+
+                        </group>
+                        <group>
+                            <field name="cabin_class"/>
+                            <field name="class_of_service"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="journey_code"/>
+                        <field name="fare_code"/>
+                    </group>
+                    <separator string="Seat"/>
+                    <field name="seat_ids"/>
                 </sheet>
             </form>
         </field>

@@ -15,6 +15,7 @@ class TtTicketTrain(models.Model):
         res = {
             'passenger': self.passenger_id.name,
             'pax_type': self.pax_type,
-            'ticket_number': self.ticket_number
+            'ticket_number': self.ticket_number,
+            'passenger_sequence': self.passenger_id.sequence
         }
         return res

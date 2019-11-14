@@ -57,6 +57,64 @@ class ReservationAirline(models.Model):
             'desc': self.get_segment_description()
         })
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         invoice_line_id = inv_line_obj.id
 
         #untuk harga fare per passenger

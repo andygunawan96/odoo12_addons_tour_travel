@@ -192,7 +192,7 @@ class TtCustomer(models.Model):
         try:
             print("request teropong\n"+json.dumps((req))+json.dumps(context))
             mode = req.get('mode','b2c')
-            if mode == 'b2b':
+            if mode == 'btb':
                 customer_list_obj = self.search([('agent_id','=',context['co_agent_id']),('name','ilike',req['name'])])
             else:
                 customer_list_obj = self.search([('agent_id', '=', context['co_agent_id']), ('seq_id', '=', req[''])])
