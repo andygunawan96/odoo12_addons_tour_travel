@@ -629,7 +629,7 @@ class TtVisa(models.Model):
         sell_visa = data['sell_visa']  # self.param_sell_visa
         booker = data['booker']  # self.param_booker
         contact = data['contact']  # self.param_contact
-        passengers = data['passenger']  # self.param_passenger
+        passengers = copy.deepcopy(data['passenger'])  # self.param_passenger
         search = data['search']  # self.param_search
         payment = data['payment']  # self.param_payment
         context = context  # self.param_context
@@ -641,7 +641,7 @@ class TtVisa(models.Model):
             booker_id = self.create_booker_api(booker, context)
             contact_id = self.create_contact_api(contact[0], booker_id, context)
             passenger_ids = self.create_customer_api(passengers, context, booker_id, contact_id)  # create passenger
-            to_psg_ids = self._create_visa_order(passengers, passenger_ids)  # create visa order
+            to_psg_ids = self._create_visa_order(data['passenger'], passenger_ids)  # create visa order
             pricing = self.create_sale_service_charge_value(passengers, to_psg_ids, context)  # create pricing dict
 
             header_val.update({
@@ -989,7 +989,7 @@ class TtVisa(models.Model):
 
             to_req_list = []
 
-            if psg['required']:
+            if len(psg['required']) > 0:
                 for req in psg['required']:  # pricelist_obj.requirement_ids
                     req_vals = {
                         'to_passenger_id': to_psg_obj.id,
