@@ -76,6 +76,7 @@ class Destinations(models.Model):
             'code': self.code,
             'city': self.city and self.city or '',
             'timezone_hour': self.timezone_hour and self.timezone_hour or 0,
+            'active': self.active,
         }
         return res
 

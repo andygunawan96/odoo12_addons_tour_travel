@@ -123,12 +123,10 @@ class PricingProviderLine(models.Model):
     origin_city_ids = fields.Many2many('res.city', 'tt_pricing_provider_line_origin_city_rel', 'pricing_line_id', 'city_id',
                                        string='Origin Cities')
     display_origin_cities = fields.Char('Display Origin Cities', compute='_compute_display_origin_cities', store=True, readonly=1)
-    origin_country_ids = fields.Many2many('res.country', 'tt_pricing_provider_line_origin_country_rel', 'pricing_line_id', 'country_id',
-                                          string='Origin Countries')
+    origin_country_ids = fields.Many2many('res.country', 'tt_pricing_provider_line_origin_country_rel', 'pricing_line_id', 'country_id', string='Origin Countries')
     display_origin_countries = fields.Char('Display Origin Countries', compute='_compute_display_origin_countries', store=True, readonly=1)
     destination_type = fields.Selection(variables.ACCESS_TYPE, 'Destination Type', required=True, default='all')
-    destination_ids = fields.Many2many('tt.destinations', 'tt_pricing_provider_line_destination_rel', 'pricing_line_id', 'destination_id',
-                                       string='Destinations')
+    destination_ids = fields.Many2many('tt.destinations', 'tt_pricing_provider_line_destination_rel', 'pricing_line_id', 'destination_id', string='Destinations')
     display_destinations = fields.Char('Display Destinations', compute='_compute_display_destinations', store=True, readonly=1)
     destination_city_ids = fields.Many2many('res.city', 'tt_pricing_provider_line_destination_city_rel', 'pricing_line_id', 'city_id',
                                             string='Destination Cities')
