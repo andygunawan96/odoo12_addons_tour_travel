@@ -6,7 +6,7 @@ from datetime import datetime
 class TtProviderTour(models.Model):
     _name = 'tt.provider.tour'
     _rec_name = 'pnr'
-    _order = 'visit_date'
+    _order = 'departure_date'
     _description = 'Rodex Model'
 
     pnr = fields.Char('PNR')
@@ -158,13 +158,20 @@ class TtProviderTour(models.Model):
             scs['foreign_currency_id'] = currency_obj.get_id('IDR')
             scs['provider_tour_booking_id'] = self.id
             for psg in self.ticket_ids:
-                if scs['pax_type'] == psg.pax_type and scs['sku_id'] == psg.ticket_number:
-                    scs['passenger_tour_ids'].append(psg.passenger_id.id)
-                    scs['pax_count'] += 1
-                    scs['total'] += scs['amount']
+                if scs.get('tour_room_id'):
+                    if scs['pax_type'] == psg.pax_type and scs['tour_room_id'] == psg.tour_room_id.id:
+                        scs['passenger_tour_ids'].append(psg.passenger_id.id)
+                        scs['pax_count'] += 1
+                        scs['total'] += scs['amount']
+                else:
+                    if scs['pax_type'] == psg.pax_type:
+                        scs['passenger_tour_ids'].append(psg.passenger_id.id)
+                        scs['pax_count'] += 1
+                        scs['total'] += scs['amount']
+            if scs.get('tour_room_id'):
+                scs.pop('tour_room_id')
             # scs.pop('currency')
             # scs.pop('foreign_currency')
-            scs.pop('sku_id')
             scs['passenger_tour_ids'] = [(6,0,scs['passenger_tour_ids'])]
             scs['description'] = self.pnr and self.pnr or ''
             if scs['total'] != 0:
@@ -199,10 +206,8 @@ class TtProviderTour(models.Model):
     #             'total_orig': total_orig
     #         })
 
-    def action_create_ledger(self):
-        if not self.is_ledger_created:
-            self.write({'is_ledger_created': True})
-            self.env['tt.ledger'].action_create_ledger(self)
+    def action_create_ledger(self, issued_uid):
+        self.env['tt.ledger'].action_create_ledger(self, issued_uid)
 
     def to_dict(self):
         journey_list = []

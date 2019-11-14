@@ -888,6 +888,7 @@ class IssuedOffline(models.Model):
         "calling_code": "62",
         "mobile": "81283182321",
         "nationality_name": "Indonesia",
+        "nationality_code": "ID",
         "booker_id": ""
     }
 
@@ -899,7 +900,8 @@ class IssuedOffline(models.Model):
             "email": "asd@gmail.com",
             "calling_code": "62",
             "mobile": "81283182321",
-            "nationality_code": "Indonesia",
+            "nationality_name": "Indonesia",
+            "nationality_code": "ID",
             "contact_id": "",
             "is_booker": True
         }
@@ -912,7 +914,8 @@ class IssuedOffline(models.Model):
             "last_name": "suryajaya",
             "title": "MR",
             "birth_date": "2019-08-25",
-            "nationality_code": "Indonesia",
+            "nationality_name": "Indonesia",
+            "nationality_code": "ID",
             "country_of_issued_code": "Indonesia",
             "passport_expdate": "2019-10-04",
             "passport_number": "1231312323",
@@ -945,7 +948,7 @@ class IssuedOffline(models.Model):
     def create_booking_reservation_offline_api(self, data, context):  #
         booker = data['booker']  # self.param_booker
         data_reservation_offline = data['issued_offline_data']  # self.param_issued_offline_data
-        passenger = data['passenger']  # self.param_passenger
+        passengers = data['passenger']  # self.param_passenger
         contact = data['contact']  # self.param_contact
         context = context  # self.param_context
         lines = data['issued_offline_data']['line_ids']  # data_reservation_offline['line_ids']
@@ -957,18 +960,20 @@ class IssuedOffline(models.Model):
                 'agent_id': user_obj.agent_id.id,
                 'user_id': user_obj.id
             })
-            booker_id = self._create_booker(context, booker)  # create booker
-            passenger_ids = self._create_passenger(context, passenger)  # create passenger
+            booker_id = self.create_booker_api(booker, context)  # create booker
+            # passenger_ids = self._create_passenger(context, passenger)  # create passenger
             # contact_ids = self._create_contact(context, contact)
-            contact_id = self._create_contact(context, contact[0])
+            # contact_id = self._create_contact(context, contact[0])
+            contact_id = self.create_contact_api(contact[0], booker_id, context)
+            passenger_ids = self.create_customer_api(passengers, context, booker_id, contact_id)  # create passenger
             customer_parent_id = self._set_customer_parent(context, contact_id)
             booking_line_ids = self._create_line(lines, data_reservation_offline)  # create booking line
-            iss_off_psg_ids = self._create_reservation_offline_order(passenger)
+            iss_off_psg_ids = self._create_reservation_offline_order(passengers, passenger_ids)
             header_val = {
-                'booker_id': booker_id,
+                'booker_id': booker_id.id,
                 'passenger_ids': [(6, 0, iss_off_psg_ids)],
                 # 'contact_ids': [(6, 0, contact_ids)],
-                'contact_id': contact_id,
+                'contact_id': contact_id.id,
                 'customer_parent_id': customer_parent_id,
                 'line_ids': [(6, 0, booking_line_ids)],
                 'provider_type_id': self.env['tt.provider.type'].sudo()
@@ -1103,7 +1108,7 @@ class IssuedOffline(models.Model):
         walkin_obj = agent_obj.customer_parent_walkin_id
         if walkin_obj:
             walkin_obj.write({
-                'customer_ids': [(4, contact)]
+                'customer_ids': [(4, contact.id)]
             })
             return walkin_obj.id
         else:
@@ -1217,17 +1222,18 @@ class IssuedOffline(models.Model):
                 line_list.append(line_obj.id)
         return line_list
 
-    def _create_reservation_offline_order(self, passenger):
+    def _create_reservation_offline_order(self, passengers, passenger_ids):
         iss_off_psg_env = self.env['tt.reservation.offline.passenger'].sudo()
         iss_off_pas_list = []
-        for psg in passenger:
+        for idx, psg in enumerate(passengers):
             psg_vals = {
-                'passenger_id': psg['passenger_id'],
+                'passenger_id': passenger_ids[idx][0].id,
                 'agent_id': self.env.user.agent_id.id,
                 'pax_type': psg['pax_type']
             }
             iss_off_psg_obj = iss_off_psg_env.create(psg_vals)
             iss_off_pas_list.append(iss_off_psg_obj.id)
+
         return iss_off_pas_list
 
     def _get_social_media_id_by_name(self, name):

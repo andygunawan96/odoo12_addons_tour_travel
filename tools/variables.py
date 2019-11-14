@@ -68,6 +68,7 @@ BOOKING_STATE_STR = {
     'in_progress': 'In Progress',
     'fail_issued': 'Failed (Issue)',
     'partial_issued': 'Partial Issued',
+    'paid': 'Paid',
     'issued': 'Issued',
     'pending': 'Pending',
     'done': 'Done',

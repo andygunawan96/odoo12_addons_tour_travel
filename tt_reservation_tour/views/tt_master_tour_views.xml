@@ -6,12 +6,12 @@
             <form string="">
                 <header>
                     <!--STATE BUTTON-->
-                    <field name="state_tour" widget="statusbar" statusbar_visible="draft,open,on_going,done,closed"/>
-                    <button string="Validate" name="action_validate" type="object" attrs="{'invisible': [('state_tour', '!=', 'draft')]}"/>  <!--groups="tt_base.group_tt_tour_travel_manager"-->
-                    <button string="Calculate Adjustment" name="action_adjustment" type="object" attrs="{'invisible': [('state_tour', '!=', 'done')]}"/>  <!--groups="tt_base.group_tt_tour_travel_manager"-->
-                    <button string="Cancel" name="action_cancelled" type="object" attrs="{'invisible': [('state_tour', 'not in', ['draft','open'])]}"/>  <!--groups="tt_base.group_tt_tour_travel_operator"-->
-                    <button string="Sold Out" name="action_sold" type="object" attrs="{'invisible': [('state_tour', 'not in', ['draft','open','definite'])]}"/>  <!--groups="tt_base.group_tt_tour_travel_operator"-->
-                    <button string="Re-Open" name="action_reopen" type="object" attrs="{'invisible': [('state_tour', '!=', 'cancelled')]}"/>  <!--groups="tt_base.group_tt_tour_travel_manager"-->
+                    <field name="state" widget="statusbar" statusbar_visible="draft,open,on_going,done,closed"/>
+                    <button string="Validate" name="action_validate" type="object" attrs="{'invisible': [('state', '!=', 'draft')]}"/>  <!--groups="tt_base.group_tt_tour_travel_manager"-->
+                    <button string="Calculate Adjustment" name="action_adjustment" type="object" attrs="{'invisible': [('state', '!=', 'done')]}"/>  <!--groups="tt_base.group_tt_tour_travel_manager"-->
+                    <button string="Cancel" name="action_cancelled" type="object" attrs="{'invisible': [('state', 'not in', ['draft','open'])]}"/>  <!--groups="tt_base.group_tt_tour_travel_operator"-->
+                    <button string="Sold Out" name="action_sold" type="object" attrs="{'invisible': [('state', 'not in', ['draft','open','definite'])]}"/>  <!--groups="tt_base.group_tt_tour_travel_operator"-->
+                    <button string="Re-Open" name="action_reopen" type="object" attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>  <!--groups="tt_base.group_tt_tour_travel_manager"-->
                 </header>
                 <sheet>
                     <!--PRINT REPORT BUTTON-->
@@ -20,7 +20,7 @@
                     <!--                                class="oe_stat_button"-->
                     <!--                                groups="tt_base.group_tt_tour_travel_operator"-->
                     <!--                                string="Print Report" type="object" icon="fa-print"-->
-                    <!--                                attrs="{'invisible':[('state_tour','in',('draft','open'))]}"/>-->
+                    <!--                                attrs="{'invisible':[('state','in',('draft','open'))]}"/>-->
                     <!--                    </div>-->
                     <!--TITLE-->
                     <div class="oe_button_box" name="button_box">
@@ -389,8 +389,8 @@
                         </group>
                     </group>
 
-                    <separator string="Tour Adjustment"/>  <!--attrs="{'invisible': [('state_tour', 'not in', ['on_going', 'done'])]}"-->
-                    <field name="adjustment_ids">  <!--attrs="{'invisible': [('state_tour', 'not in', ['on_going', 'done'])]}"-->
+                    <separator string="Tour Adjustment"/>  <!--attrs="{'invisible': [('state', 'not in', ['on_going', 'done'])]}"-->
+                    <field name="adjustment_ids">  <!--attrs="{'invisible': [('state', 'not in', ['on_going', 'done'])]}"-->
                         <tree>
                             <field name="description"/>
                             <field name="type"/>
@@ -437,7 +437,7 @@
                 <field name="commercial_duration"/>
                 <field name="seat" string="Seat Available"/>
                 <!--                <field name="adult_sale_price"/>-->
-                <field name="state_tour"/>
+                <field name="state"/>
                 <field name="create_uid"/>
             </tree>
         </field>

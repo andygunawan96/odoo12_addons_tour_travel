@@ -20,13 +20,14 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base'],
+    'depends': ['base', 'tt_base'],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
         # 'views/views.xml',
         # 'views/templates.xml',
+        'data/tt.traveldoc.type.csv',
         'views/tt_traveldoc_type_views.xml',
     ],
     # only loaded in demonstration mode

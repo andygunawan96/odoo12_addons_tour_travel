@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="tt_agent_registration_payment_form_view" model="ir.ui.view">
+            <field name="name">tt.agent.registration.payment.form.view</field>
+            <field name="model">tt.agent.registration.payment</field>
+            <field name="arch" type="xml">
+                <form string="Agent Registration Payment">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="due_date"/>
+                                <field name="currency_id"/>
+                                <field name="agent_registration_id"/>
+                            </group>
+                            <group>
+                                <field name="description"/>
+                                <field name="state"/>
+                                <field name="amount"/>
+                                <field name="payment_type"/>
+                                <field name="schedule_date"/>
+                                <field name="percentage"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="tt_agent_registration_payment_tree_view" model="ir.ui.view">
+            <field name="name">tt.agent.registration.payment.tree.view</field>
+            <field name="model">tt.agent.registration.payment</field>
+            <field name="arch" type="xml">
+                <tree string="Agent Registration Payment" editable="bottom">
+                    <field name="description"/>
+                    <field name="schedule_date"/>
+                    <field name="due_date"/>
+                    <field name="amount" sum="Amount"/>
+                    <field name="percentage" sum="Percentage"/>
+                    <field name="payment_type"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+    </data>
+</odoo>

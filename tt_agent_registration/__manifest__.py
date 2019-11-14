@@ -17,7 +17,7 @@
     'category': 'Uncategorized',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'tt_base', 'tt_accounting', 'web'],
+    'depends': ['base', 'tt_base', 'tt_accounting', 'tt_report_common', 'web'],
 
     # always loaded
     'data': [
@@ -26,12 +26,16 @@
         'data/ir_sequence_data.xml',
         'data/ir_cron_data.xml',
         'data/ir_send_email.xml',
+        'data/tt_agent_registration_promotion.xml',
+        'data/tt_agent_registration_document.xml',
         # 'data/tt_provider_type_data.xml',
         'data/param_data.xml',
         'views/tt_agent_registration_views.xml',
         'views/tt_agent_registration_menuheader.xml',
         'views/tt_agent_registration_promotion_views.xml',
         'views/tt_agent_registration_customer_views.xml',
+        'views/tt_agent_registration_document_views.xml',
+        'views/tt_agent_registration_payment_views.xml',
         'views/tt_document_type_views.xml',
 
         'report/printout_menu.xml',

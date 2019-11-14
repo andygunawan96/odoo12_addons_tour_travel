@@ -30,6 +30,7 @@ class ProviderType(models.Model):
         res = {
             'name': self.name,
             'code': self.code,
+            'active': self.active,
         }
         return res
 

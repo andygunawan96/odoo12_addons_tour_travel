@@ -5,7 +5,7 @@ import logging,traceback
 
 
 class TtTourApiCon(models.Model):
-    _name = 'tt.tour.tour.api.con'
+    _name = 'tt.tour.api.con'
     _inherit = 'tt.api.con'
 
     table_name = 'tt.reservation.tour'
@@ -18,6 +18,8 @@ class TtTourApiCon(models.Model):
             res = table_obj.get_booking_api(data,context)
         elif action == 'commit_booking':
             res = table_obj.commit_booking_api(data,context)
+        elif action == 'issued_booking':
+            res = table_obj.issued_booking_api(data,context)
         elif action == 'update_booking':
             res = table_obj.update_booking_api(data,context)
         else:
@@ -42,6 +44,8 @@ class TtMasterTourApiCon(models.Model):
             res = table_obj.get_tour_details_api(data,context)
         elif action == 'get_pricing':
             res = table_obj.get_pricing_api(data)
+        elif action == 'get_autocomplete':
+            res = table_obj.get_autocomplete_api(data,context)
         else:
             raise RequestException(999)
 

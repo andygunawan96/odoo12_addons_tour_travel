@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="tt_agent_registration_document_form_view" model="ir.ui.view">
+            <field name="name">tt.agent.registration.document.form.view</field>
+            <field name="model">tt.agent.registration.document</field>
+            <field name="arch" type="xml">
+                <form string="Agent Registration Document">
+                    <sheet>
+                        <group>
+                            <field name="description"/>
+                            <field name="document_attach_ids" string="Attachments"/>
+                        </group>
+                        <group>
+                            <group>
+                                <field name="registration_document_id"/>
+                                <field name="opening_document_id"/>
+                                <field name="state"/>
+                                <field name="schedule_date"/>
+                            </group>
+                            <group>
+                                <field name="qty"/>
+                                <field name="receive_qty"/>
+                                <field name="receive_date"/>
+                                <field name="document_id"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="tt_agent_registration_document_tree_view" model="ir.ui.view">
+            <field name="name">tt.agent.registration.document.tree.view</field>
+            <field name="model">tt.agent.registration.document</field>
+            <field name="arch" type="xml">
+                <tree string="Agent Registration Document" editable="bottom" create="false">
+                    <field name="document_id"/>
+                    <field name="schedule_date"/>
+                    <field name="receive_date"/>
+                    <field name="document_attach_ids" string="Attach a File" widget="many2many_tags"/>
+                    <field name="qty"/>
+                    <field name="description"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+    </data>
+</odoo>

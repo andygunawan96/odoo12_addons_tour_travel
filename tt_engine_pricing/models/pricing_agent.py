@@ -94,6 +94,7 @@ class PricingAgent(models.Model):
 
     def get_agent_hierarchy(self, agent_id, hierarchy=[]):
         hierarchy.append({
+            'commission_agent_id': agent_id.id,
             'agent_id': agent_id.id,
             'agent_name': agent_id.name,
             'agent_type_id': agent_id.agent_type_id.id,
@@ -113,7 +114,8 @@ class PricingAgent(models.Model):
         vals_list = []  # output list of pricing
         remaining_diff = 0  # sisa diff yang jika masih ada sisa, akan dimasukkan ke HO
 
-        ho_agent = self.env['tt.agent'].sudo().search([('agent_type_id.id', '=', self.env.ref('tt_base.agent_type_ho').id)],limit=1)
+        ho_agent = self.env['tt.agent'].sudo().search(
+            [('agent_type_id.id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
 
         """ kurangi input amount dengan fee amount. masukkan fee amount ke dalam service charge HOC """
         # if price_obj.fee_amount != 0:
@@ -136,6 +138,7 @@ class PricingAgent(models.Model):
 
             """ Set pricing untuk agent yang pesan """
             vals = {
+                'commission_agent_id': agent_id.id,
                 'agent_id': agent_id.id,
                 'agent_name': agent_id.name,
                 'agent_type_id': agent_id.agent_type_id.id,
@@ -190,6 +193,7 @@ class PricingAgent(models.Model):
                 else:
                     amount = 0
                 vals.update({
+                    'commission_agent_id': rec['commission_agent_id'],
                     'agent_id': rec['agent_id'],
                     'agent_name': rec['agent_name'],
                     'agent_type_id': rec['agent_type_id'],

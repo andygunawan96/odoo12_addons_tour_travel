@@ -49,6 +49,26 @@ PROCESS_STATUS = [
 ]
 
 
+class VisaInterviewBiometrics(models.Model):
+    _name = 'tt.reservation.visa.interview.biometrics'
+
+    passenger_interview_id = fields.Many2one('tt.reservation.visa.order.passengers', 'Passenger', readonly=1)
+    passenger_biometrics_id = fields.Many2one('tt.reservation.visa.order.passengers', 'Passenger', readonly=1)
+    pricelist_interview_id = fields.Many2one('tt.reservation.visa.pricelist', 'Pricelist',
+                                             related="passenger_interview_id.pricelist_id", readonly=1)
+    pricelist_biometrics_id = fields.Many2one('tt.reservation.visa.pricelist', 'Pricelist',
+                                              related="passenger_biometrics_id.pricelist_id", readonly=1)
+    location_id = fields.Many2one('tt.master.visa.locations')  # self.get_domain_location() [] , domain=lambda self: self.onchange_pricelist() , domain=lambda self: [('id', 'in', self.passenger_interview_id.pricelist_id.visa_location_ids.ids)]
+    datetime = fields.Datetime('Datetime')
+    ho_employee = fields.Many2one('res.users', 'Employee', domain=lambda self: self.get_user_HO())
+    meeting_point = fields.Char('Meeting Point')
+    description = fields.Char('Description')
+
+    @api.model
+    def get_user_HO(self):
+        return [('agent_id', '=', self.env.ref('tt_base.rodex_ho').id)]
+
+
 class VisaOrderPassengers(models.Model):
     _inherit = ['mail.thread', 'tt.reservation.passenger']
     _name = 'tt.reservation.visa.order.passengers'
@@ -67,7 +87,25 @@ class VisaOrderPassengers(models.Model):
     passenger_domicile = fields.Char('Domicile', related='passenger_id.domicile', readonly=1)  # readonly=1
     process_status = fields.Selection(PROCESS_STATUS, string='Process Result',
                                       readonly=1)  # readonly=1
-    biometrics_interview = fields.Boolean('Biometrics / Interview')
+
+    interview = fields.Boolean('Needs Interview')
+    biometrics = fields.Boolean('Needs Biometrics')
+    interview_ids = fields.One2many('tt.reservation.visa.interview.biometrics', 'passenger_interview_id', 'Interview')
+    biometrics_ids = fields.One2many('tt.reservation.visa.interview.biometrics', 'passenger_biometrics_id',
+                                     'Biometrics')
+
+    handling_ids = fields.One2many('tt.reservation.visa.order.handling', 'to_passenger_id', 'Handling Questions')
+    handling_information = fields.Text('Handling Information')
+
+    # biometrics_datetime = fields.Datetime('Datetime')
+    # biometrics_ho_employee = fields.Many2one('res.users', 'Employee', domain=lambda self: self.get_user_HO())
+    # biometrics_meeting_point = fields.Char('Meeting Point')
+    # biometrics_location = fields.Char('Biometrics Location')
+
+    # interview_datetime = fields.Datetime('Datetime')
+    # interview_ho_employee = fields.Many2one('res.users', 'Employee', domain=lambda self: self.get_user_HO())
+    # interview_meeting_point = fields.Char('Meeting Point')
+    # interview_location = fields.Char('Interview Location')
 
     in_process_date = fields.Datetime('In Process Date', readonly=1)  # readonly=1
     payment_date = fields.Datetime('Payment Date', readonly=1)  # readonly=1
@@ -79,11 +117,12 @@ class VisaOrderPassengers(models.Model):
     ready_date = fields.Datetime('Ready Date', readonly=1)
     expired_date = fields.Date('Expired Date', readonly=1)
 
+    use_vendor = fields.Boolean('Use Vendor', readonly=1, related='visa_id.use_vendor')
+
     cost_service_charge_ids = fields.Many2many('tt.service.charge', 'tt_reservation_visa_cost_charge_rel',
                                                'passenger_id', 'service_charge_id', 'Cost Service Charges', readonly=1)
     channel_service_charge_ids = fields.Many2many('tt.service.charge', 'tt_reservation_visa_channel_charge_rel',
-                                                  'passenger_id', 'service_charge_id', 'Channel Service Charges',
-                                                  readonly=1)
+                                                  'passenger_id', 'service_charge_id', 'Channel Service Charges')
 
     # use_vendor = fields.Boolean('Use Vendor', readonly=1, related='passport_id.use_vendor')
     notes = fields.Text('Notes (Agent to Customer)')
@@ -101,7 +140,7 @@ class VisaOrderPassengers(models.Model):
                                                 waiting = Documents ready at HO
                                                 done = Documents given to customer''')
 
-    state = fields.Selection(STATE, default='draft', help='''draft = requested
+    state = fields.Selection(STATE, default='confirm', help='''draft = requested
                                                 confirm = HO accepted
                                                 validate = if all required documents submitted and documents in progress
                                                 cancel = request cancelled
@@ -119,7 +158,14 @@ class VisaOrderPassengers(models.Model):
         template = self.env.ref('tt_reservation_visa.template_mail_visa_interview')
         mail = self.env['mail.template'].browse(template.id)
         mail.send_mail(self.id)
-        print("Email Sent")
+        print("Email Interview Sent")
+
+    def action_send_email_biometrics(self):
+        """Dijalankan, jika user menekan tombol 'Send Email Biometrics'"""
+        template = self.env.ref('tt_reservation_visa.template_mail_visa_biometrics')
+        mail = self.env['mail.template'].browse(template.id)
+        mail.send_mail(self.id)
+        print("Email Biometrics Sent")
 
     def action_draft(self):
         for rec in self:
@@ -211,8 +257,15 @@ class VisaOrderPassengers(models.Model):
     def action_proceed(self):
         for rec in self:
             # jika belum ada tanggal wawancara / call_date, tidak bisa proceed
-            if not rec.call_date:
-                raise UserError(_('You have to Fill Passenger Call Date.'))
+            # if not rec.call_date:
+            #     raise UserError(_('You have to Fill Passenger Call Date.'))
+            # jika interview / biometrics dicentang & belum ada record interview / biometrics, tidak bisa proceed
+            if rec.interview is True:
+                if not rec.interview_ids:
+                    raise UserError(_('You have to add interview record.'))
+            if rec.biometrics is True:
+                if not rec.biometrics_ids:
+                    raise UserError(_('You have to add biometrics record.'))
             rec.write({
                 'state': 'proceed',
             })
@@ -295,7 +348,10 @@ class VisaOrderPassengers(models.Model):
             if is_done:
                 rec.visa_id.action_done_visa()
 
-    def action_sync(self):
+    def get_all_handling_data(self):
+        return self.env['tt.master.visa.handling'].search([])
+
+    def action_sync_requirements(self):
         to_req_env = self.env['tt.reservation.visa.order.requirements']
         for rec in self:
             res = []
@@ -312,6 +368,24 @@ class VisaOrderPassengers(models.Model):
                     'to_requirement_ids': [(4, data)]
                 })
 
+    def action_sync_handling(self):
+        handling_env = self.env['tt.reservation.visa.order.handling']
+        for rec in self:
+            res = []
+            handling_datas = rec.get_all_handling_data()
+            for handling in handling_datas:
+                if not rec.check_handling(handling.id):
+                    vals = {
+                        'handling_id': handling.id,
+                        'to_passenger_id': rec.id,
+                    }
+                    handling_obj = handling_env.create(vals)
+                    res.append(handling_obj.id)
+            for data in res:
+                rec.write({
+                    'handling_ids': [(4, data)]
+                })
+
     @api.depends('birth_date')
     @api.onchange('birth_date')
     def _compute_age(self):
@@ -326,5 +400,12 @@ class VisaOrderPassengers(models.Model):
         for rec in self:
             for to_req in rec.to_requirement_ids:
                 if to_req.requirement_id.id == req_id:
+                    return True
+            return False
+
+    def check_handling(self, handling_id):
+        for rec in self:
+            for handling in rec.handling_ids:
+                if handling.handling_id.id == handling_id:
                     return True
             return False

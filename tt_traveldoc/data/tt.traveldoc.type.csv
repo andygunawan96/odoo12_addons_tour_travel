@@ -1,0 +1,71 @@
+id,name,description
+traveldoc_type_1,Pasport,-
+traveldoc_type_2,Akta Lahir,-
+traveldoc_type_3,Kartu Keluarga,-
+traveldoc_type_4,Pendidikan Terakhir,** Hanya jika akta lahir tidak ada
+traveldoc_type_5,KTP,-
+traveldoc_type_6,Surat Sponsor,** Jika perusahaan harus ada Logo dan stampel perusahaan
+traveldoc_type_7,Rekening Koran Pribadi,** Lapo	ran Rekening koran Pribadi selama 3 bulan terakhir
+traveldoc_type_8,Foto,-
+traveldoc_type_9,Surat Keterangan Sekolah,** Jika pemohon adalah murid dan harus berbahasa inggris
+traveldoc_type_10,Akta Nikah,-
+traveldoc_type_11,Tiket pesawat,-
+traveldoc_type_12,Voucher Hotel,-
+traveldoc_type_13,Surat Undangan,** Jika di undang oleh Perusahaan atau perorangan
+traveldoc_type_14,Tanda Daftar Perusahaan (TDP),-
+traveldoc_type_15,Surat Izin Usaha Perdagangan (SIUP),-
+traveldoc_type_16,Surat Refrensi Bank,"**harus berisi nama pelanggan, nomor rekening (harus sesuai dengan bukti dana), sejak kapan, dan jumlah saldo (dalam bahasa Inggris)"
+traveldoc_type_17,Surat Ganti nama,** Jika pernah ganti nama
+traveldoc_type_18,Surat Keterangan Kerja,** Jika pemohon adalah pegawai (Jika ada)
+traveldoc_type_19,N.P.W.P (Nomor Pokok Wajib Pajak),-
+traveldoc_type_20,Paspor Lama,Jika Ada
+traveldoc_type_21,Surat Keterangan WNI,**Jika pemohon sebelumnya adalah warga negara asing dan berubah menjadi warga negara Indonesia
+traveldoc_type_22,Tanggal keberangkatan,-
+traveldoc_type_23,Paspor Ibu,**Jika pemohon berusia di bawah 18 tahun
+traveldoc_type_24,Paspor Ayah,**Jika pemohon berusia di bawah 18 tahun
+traveldoc_type_25,KTP Ibu,**Jika pemohon berusia di bawah 18 tahun
+traveldoc_type_26,KTP Ayah,**Jika pemohon berusia di bawah 18 tahun
+traveldoc_type_27,Surat Keterangan Umroh,Jika pemohon mengajukan paspor umroh
+traveldoc_type_28,Surat Ijin Orang Tua,** Jika pemohon berusia di bawah 18 tahun dan jika salah satu orang tua tidak dapat hadir selama wawancara
+traveldoc_type_29,Formulir Aplikasi,** Harus ditandatangani oleh pemohon
+traveldoc_type_30,Invoice Hotel,** cap Lunas dan telah terbayar
+traveldoc_type_31,SPT Tahunan (PPh Wajib Pajak Orang Pribadi),Wajib
+traveldoc_type_32,Laporan Keuangan 3 Bulan Terakhir,-
+traveldoc_type_33,Surat Kuasa,Harus di tanda tangan oleh pemohon
+traveldoc_type_34,Itinerary perjalanan,Tuliskan detail perjalanan selama dinegara tujuan
+traveldoc_type_35,Surat Keterangan Pelajar,** jika pelamar masih seorang siswa (Asli)
+traveldoc_type_36,NPWP,-
+traveldoc_type_37,Kartu Pelajar,-
+traveldoc_type_38,Surat Rekomendasi Tour,-
+traveldoc_type_39,Surat Kementerian Agama sebagai Penyelenggara Umrah,-
+traveldoc_type_40,Surat Rekomendasi Umroh Peserta,-
+traveldoc_type_41,Itinerary,-
+traveldoc_type_42,Surat Ijin Suami/Orang Tua,-
+traveldoc_type_43,Asuransi Perjalanan,Minimal biaya cover USD 50.000/EUR 30.000,-
+traveldoc_type_44,Surat Undangan,-
+traveldoc_type_45,Formulir Visa Waiver,-
+traveldoc_type_46,Formulir Visa Australia 1419,-
+traveldoc_type_47,Formulir Visa Australia 956A,-
+traveldoc_type_48,Kartu Keluarga (KK)Terjemahan,**Harus diterjemahkan oleh Penerjemah Tersumpah
+traveldoc_type_49,KTP,-
+traveldoc_type_50,Nomor Pokok Wajib Pajak (NPWP) Translate,**Harus diterjemahkan oleh Penerjemah Tersumpah
+traveldoc_type_51,Akta Nikah Translate,**Harus diterjemahkan oleh Penerjemah Tersumpah
+traveldoc_type_52,Akta Lahir Translate,**Harus diterjemahkan oleh Penerjemah Tersumpah
+traveldoc_type_53,Translate KTP,-
+traveldoc_type_54,TRAVEL ITINERARY,-
+traveldoc_type_55,Surat Pernyataan Beda Nama,-
+traveldoc_type_56,Kartu Tanda Penduduk (KTP) Translate,**Harus diterjemahkan oleh Penerjemah Tersumpah
+traveldoc_type_57,Surat Ganti Nama Translate,**Harus diterjemahkan oleh Penerjemah Tersumpah
+traveldoc_type_58,Surat Warga Negara Indonesia (WNI) Translate,**Harus diterjemahkan oleh Penerjemah Tersumpah
+traveldoc_type_59,Surat Izin Usaha Perdagangan (SIUP) Translate,**Harus diterjemahkan oleh Penerjemah Tersumpah
+traveldoc_type_60,Kartu Tanda Penduduk (KTP) Ayah Translate,**Harus diterjemahkan oleh Penerjemah Tersumpah
+traveldoc_type_61,Kartu Tanda Penduduk (KTP) Ibu Translate,**Harus diterjemahkan oleh Penerjemah Tersumpah
+traveldoc_type_62,Laporan Keuangan 6 Bulan Terakhir,-
+traveldoc_type_63,Formulir Visa Australia 1221,**Untuk Pemohon Di Bawah 18 Tahun
+traveldoc_type_64,Tanda Daftar Perusahaan (TDP) Translate,**Harus diterjemahkan oleh Penerjemah Tersumpah
+traveldoc_type_65,Slip Gaji,-
+traveldoc_type_66,Surat Penerimaan dari sekolah/instansi di China (Admission Notice),**Asli ada stempel merah
+traveldoc_type_67,Formulir JW202,**Asli ada stempel merah
+traveldoc_type_68,Letter of Statement,"format sesuai lampiran , bermaterai 6000 dan di tanda tangani menggunakan tinta hitam"
+traveldoc_type_69,Copy Paspor,"**Untuk visa Korea Selatan di Copy Berwarna Hal depan, Hal pengesahan (bila ada), Hal yang ada stempel dan Visa, dan Hal Belakang"
+traveldoc_type_70,Copy Paspor,**Untuk visa Australia di Copy Berwarna Semua Halaman (hal 1-48)

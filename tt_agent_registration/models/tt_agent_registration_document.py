@@ -10,8 +10,8 @@ class AgentRegistrationDocument(models.Model):
     _name = 'tt.agent.registration.document'
     _description = 'Rodex Model'
 
-    registration_document_id = fields.Many2one('tt.agent.registration', 'Agent Registration')
-    opening_document_id = fields.Many2one('tt.agent.registration', 'Open Document')
+    registration_document_id = fields.Many2one('tt.agent.registration', 'Registration Document')
+    opening_document_id = fields.Many2one('tt.agent.registration', 'Opening Document')
     state = fields.Selection(STATE, 'State', default='draft')
     description = fields.Text('Description')
     # attachment_ids = fields.One2many('ir.attachment')

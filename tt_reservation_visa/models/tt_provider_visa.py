@@ -2,6 +2,22 @@ from odoo import api, fields, models
 from ...tools import variables
 from datetime import datetime
 
+STATE_VISA = [
+    ('draft', 'Open'),
+    ('confirm', 'Confirm to HO'),
+    ('validate', 'Validated by HO'),
+    ('to_vendor', 'Send to Vendor'),
+    ('vendor_process', 'Proceed by Vendor'),
+    ('cancel', 'Canceled'),
+    ('payment', 'Payment'),
+    ('in_process', 'In Process'),
+    ('partial_proceed', 'Partial Proceed'),
+    ('proceed', 'Proceed'),
+    ('delivered', 'Delivered'),
+    ('ready', 'Sent'),
+    ('done', 'Done')
+]
+
 
 class ProviderVisaPassengers(models.Model):
     _name = 'tt.provider.visa.passengers'
@@ -30,6 +46,7 @@ class TtProviderVisa(models.Model):
     booking_id = fields.Many2one('tt.reservation.visa', 'Order Number', ondelete='cascade')
     visa_id = fields.Many2one('tt.reservation.visa.pricelist', 'Visa Pricelist')
     state = fields.Selection(variables.BOOKING_STATE, 'Status', default='draft')
+    state_visa = fields.Selection(STATE_VISA, 'State', related="booking_id.state_visa")
     cost_service_charge_ids = fields.One2many('tt.service.charge', 'provider_visa_booking_id', 'Cost Service Charges')
 
     country_id = fields.Many2one('res.country', 'Country', ondelete="cascade", readonly=True,
@@ -88,12 +105,13 @@ class TtProviderVisa(models.Model):
         for scs in service_charge_vals:
             scs['pax_count'] = 0  # jumlah pax
             scs['total'] = 0  # total pricing
+            scs['passenger_visa_ids'] = []
             scs['currency_id'] = currency_obj.get_id('IDR')  # currency (IDR)
             scs['foreign_currency_id'] = currency_obj.get_id('IDR')  # currency (foreign)
             scs['provider_visa_booking_id'] = self.id  # id provider visa
             for psg in self.passenger_ids:
-                if scs['pax_type'] == psg.pax_type:
-                    scs['passenger_visa_ids'].append(psg.id)  # add passenger to passenger visa ids
+                if scs['pax_type'] == psg.pax_type and scs['pricelist_id'] == psg.pricelist_id.id:
+                    scs['passenger_visa_ids'].append(psg.passenger_id.id)  # add passenger to passenger visa ids
                     scs['pax_count'] += 1
                     scs['total'] += scs['amount']
             scs['passenger_visa_ids'] = [(6, 0, scs['passenger_visa_ids'])]

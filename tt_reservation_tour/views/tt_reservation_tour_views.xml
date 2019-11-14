@@ -1,189 +1,251 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
-        <record model="ir.ui.view" id="tt_reservation_tour_view_form">
-            <field name="name">tt.reservation.tour.view.form</field>
-            <field name="model">tt.reservation.tour</field>
-            <field name="mode">primary</field>
-            <field name="inherit_id" ref="tt_reservation.tt_reservation_form_views"/>
-            <field name="arch" type="xml">
-                <field name="adult" position="after">
-                    <field name="child"/>
-                </field>
-                <xpath expr="//group[@name='paxgroup']" position="before">
-                    <separator string="Tour Information"/>
+    <record id="tt_reservation_tour_view_filter" model="ir.ui.view">
+        <field name="name">tt.reservation.tour.view.filter</field>
+        <field name="model">tt.reservation.tour</field>
+        <field name="arch" type="xml">
+            <search string="Search Tour Booking">
+                <field name="name"/>
+                <field name="pnr"/>
+                <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                <field name="customer_parent_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                <field name="contact_id"/>
+                <group>
+                    <filter string="All" name="all"/>
+                    <filter string="Booked" name="booked" domain="[('state','=','booked')]"/>
+                    <filter string="Issued" name="issued" domain="[('state','=','issued')]"/>
+                    <filter string="Failed/Expired" name="failed_expired" domain="['|', '|', '|', ('state','=','fail_booked'),('state','=','fail_issued'),('state','=','fail_refunded'),('state','=','cancel2')]"/>
+                    <filter string="Cancelled/Rejected/Refunded" name="cancelled" domain="['|', '|', ('state','=','cancel'),('state','=','rejected'),('state','=','refund')]"/>
+                </group>
+                <separator/>
+                <filter name="today" string="Today" domain="[('date','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>
+                <filter name="yesterday" string="Yesterday"
+                        domain="[
+                                ('date', '&lt;', (context_today()).strftime('%Y-%m-%d')),
+                                ('date', '&gt;=', (context_today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d'))
+                        ]"/>
+                <filter name="week" string="This Week"
+                        domain="[
+                                '&amp;',
+                                ('date', '>=', (context_today() + relativedelta(weeks=-1,days=1,weekday=0)).strftime('%Y-%m-%d')),
+                                ('date', '&lt;=', (context_today() + relativedelta(weekday=6)).strftime('%Y-%m-%d')),
+                            ]"/>
+                <filter string="This Month" name="thismonth" domain="[('date','&gt;=',time.strftime('%%Y-%%m-01'))]"/>
+                <filter string="This Year" name="thisyear" domain="[('date','&gt;=',time.strftime('%%Y-01-01'))]"/>
+
+                <group expand="0" string="Group By">
+                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <filter name="group_by_agent_type_id" string="Agent Type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <filter name="group_by_customer_parent_id" string="Customer Parent" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                    <filter name="group_by_customer_parent_type_id" string="Customer Parent Type" domain="[]" context="{'group_by':'customer_parent_type_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                    <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tt_reservation_tour_form_view">
+        <field name="name">tt.reservation.tour.form.view</field>
+        <field name="model">tt.reservation.tour</field>
+        <field name="mode">primary</field>
+        <field name="inherit_id" ref="tt_reservation.tt_reservation_form_views"/>
+        <field name="arch" type="xml">
+            <field name="adult" position="after">
+                <field name="child"/>
+            </field>
+            <xpath expr="//group[@name='paxgroup']" position="before">
+                <separator string="Tour Information"/>
+                <group>
                     <group>
-                        <group>
-                            <field name="tour_id" string="Tour Package Name" readonly="1"/>
-                        </group>
-                        <group>
-                            <field name="departure_date"/>
-                            <field name="return_date"/>
-                        </group>
+                        <field name="tour_id" string="Tour Package Name" readonly="1"/>
                     </group>
-                </xpath>
-                <xpath expr="//page[@name='anchor']" position="before">
-                    <page string="Passengers">
-                        <field name="passenger_ids" readonly="1">
-                            <tree>
-                                <field name="title"/>
-                                <field name="first_name"/>
-                                <field name="last_name"/>
-                                <field name="gender"/>
-                                <field name="birth_date"/>
-                                <field name="nationality_id"/>
-                                <field name="tour_room_id"/>
-                            </tree>
-                        </field>
-                    </page>
-                </xpath>
-                <xpath expr="//page[@name='anchor']" position="before">
-                    <page string="Prices" name="prices">
-                        <!--                    <button name="calculate_service_charge" type="object" string="calc"/>-->
-                        <!--                    <button name="test_error" type="object" string="test_error"/>-->
-                        <field name="sale_service_charge_ids">
-                            <tree>
-                                <field name="charge_code"/>
-                                <field name="charge_type"/>
-                                <field name="pax_type"/>
-                                <field name="pax_count"/>
-                                <field name="amount"/>
-                                <field name="total"/>
-                                <field name="description"/>
-                                <field name="currency_id" invisible="1"/>
-                            </tree>
-                        </field>
-                    </page>
-                </xpath>
-                <xpath expr="//page[@name='anchor']" position="before">
-                    <page string="Vendor" name="vendor" groups="tt_base.group_tt_tour_travel_operator">
-                        <field name="provider_booking_ids"/>
-                        <!--                        &lt;!&ndash;<tree>&ndash;&gt;-->
-                        <!--                        &lt;!&ndash;<field name="pnr"/>&ndash;&gt;-->
-                        <!--                        &lt;!&ndash;<field name="direction"/>&ndash;&gt;-->
-                        <!--                        &lt;!&ndash;<field name="provider" groups="tt_base.group_tt_tour_travel_operator"/>&ndash;&gt;-->
-                        <!--                        &lt;!&ndash;<field name="origin"/>&ndash;&gt;-->
-                        <!--                        &lt;!&ndash;<field name="destination"/>&ndash;&gt;-->
-                        <!--                        &lt;!&ndash;<field name="departure_date"/>&ndash;&gt;-->
-                        <!--                        &lt;!&ndash;<field name="return_date"/>&ndash;&gt;-->
-                        <!--                        &lt;!&ndash;&lt;!&ndash;<field name="total"/>&ndash;&gt;&ndash;&gt;-->
-                        <!--                        &lt;!&ndash;<field name="state"/>&ndash;&gt;-->
-                        <!--                        &lt;!&ndash;</tree>&ndash;&gt;-->
-                        <!--                    </field>-->
-                    </page>
-                </xpath>
-            </field>
-        </record>
+                    <group>
+                        <field name="departure_date"/>
+                        <field name="return_date"/>
+                    </group>
+                </group>
+            </xpath>
+            <xpath expr="//page[@name='anchor']" position="before">
+                <page string="Passengers">
+                    <field name="passenger_ids" readonly="1">
+                        <tree>
+                            <field name="title"/>
+                            <field name="first_name"/>
+                            <field name="last_name"/>
+                            <field name="gender"/>
+                            <field name="birth_date"/>
+                            <field name="nationality_id"/>
+                            <field name="tour_room_id"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+            <xpath expr="//page[@name='anchor']" position="before">
+                <page string="Room Choices">
+                    <field name="room_ids" readonly="1">
+                        <tree>
+                            <field name="room_id"/>
+                            <field name="notes"/>
+                        </tree>
+                        <form>
+                            <group>
+                                <group>
+                                    <field name="room_id"/>
+                                </group>
+                                <group>
+                                    <field name="notes"/>
+                                </group>
+                            </group>
+                        </form>
+                    </field>
+                </page>
+            </xpath>
+            <xpath expr="//page[@name='anchor']" position="before">
+                <page string="Prices" name="prices">
+                    <!--                    <button name="calculate_service_charge" type="object" string="calc"/>-->
+                    <!--                    <button name="test_error" type="object" string="test_error"/>-->
+                    <field name="sale_service_charge_ids" context="{'form_view_ref': 'tt_reservation_tour.tt_service_charge_tour_inherit_form_view'}">
+                        <tree>
+                            <field name="charge_code"/>
+                            <field name="charge_type"/>
+                            <field name="pax_type"/>
+                            <field name="pax_count"/>
+                            <field name="amount"/>
+                            <field name="total"/>
+                            <field name="description"/>
+                            <field name="currency_id" invisible="1"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+            <xpath expr="//page[@name='anchor']" position="before">
+                <page string="Vendor" name="vendor" groups="tt_base.group_tt_tour_travel_operator">
+                    <field name="provider_booking_ids"/>
+                    <!--                        &lt;!&ndash;<tree>&ndash;&gt;-->
+                    <!--                        &lt;!&ndash;<field name="pnr"/>&ndash;&gt;-->
+                    <!--                        &lt;!&ndash;<field name="direction"/>&ndash;&gt;-->
+                    <!--                        &lt;!&ndash;<field name="provider" groups="tt_base.group_tt_tour_travel_operator"/>&ndash;&gt;-->
+                    <!--                        &lt;!&ndash;<field name="origin"/>&ndash;&gt;-->
+                    <!--                        &lt;!&ndash;<field name="destination"/>&ndash;&gt;-->
+                    <!--                        &lt;!&ndash;<field name="departure_date"/>&ndash;&gt;-->
+                    <!--                        &lt;!&ndash;<field name="return_date"/>&ndash;&gt;-->
+                    <!--                        &lt;!&ndash;&lt;!&ndash;<field name="total"/>&ndash;&gt;&ndash;&gt;-->
+                    <!--                        &lt;!&ndash;<field name="state"/>&ndash;&gt;-->
+                    <!--                        &lt;!&ndash;</tree>&ndash;&gt;-->
+                    <!--                    </field>-->
+                </page>
+            </xpath>
+        </field>
+    </record>
 
-        <record model="ir.ui.view" id="tt_reservation_tour_view_tree" >
-            <field name="name">tt.reservation.tour.view.tree</field>
-            <field name="model">tt.reservation.tour</field>
-            <field name="arch" type="xml">
-                <tree create="true">
-                    <field name="name"/>
-                    <field name="agent_id"/>
-                    <field name="agent_type_id"/>
-                    <field name="customer_parent_id"/>
-                    <field name="customer_parent_type_id"/>
-                    <field name="booker_id"/>
-                    <field name="provider_name" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <field name="tour_id"/>
-                    <!--                    <field name="pnr"/>-->
-                    <field name="departure_date"/>
-                    <field name="return_date"/>
-                    <field name="booked_uid"/>
-                    <field name="date"/>
-                    <field name="hold_date"/>
-                    <field name="issued_uid"/>
-                    <field name="issued_date"/>
-                    <field name="state"/>
-                </tree>
-            </field>
-        </record>
+    <record model="ir.ui.view" id="tt_reservation_tour_tree_view" >
+        <field name="name">tt.reservation.tour.tree.view</field>
+        <field name="model">tt.reservation.tour</field>
+        <field name="arch" type="xml">
+            <tree create="false">
+                <field name="name"/>
+                <field name="agent_id"/>
+                <field name="agent_type_id"/>
+                <field name="customer_parent_id"/>
+                <field name="customer_parent_type_id"/>
+                <field name="booker_id"/>
+                <field name="provider_name" groups="tt_base.group_tt_tour_travel_operator"/>
+                <field name="tour_id"/>
+                <!--                    <field name="pnr"/>-->
+                <field name="departure_date"/>
+                <field name="return_date"/>
+                <field name="booked_uid"/>
+                <field name="date"/>
+                <field name="hold_date"/>
+                <field name="issued_uid"/>
+                <field name="issued_date"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
 
-        <record model="ir.actions.act_window" id="tt_reservation_tour_view_action_all">
-            <field name="name">Reservation Tour</field>
-            <field name="res_model">tt.reservation.tour</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
-            <field name="domain">[]</field>
-            <field name="context">
-                {
-                'form_view_ref': 'tt_reservation_tour.tt_reservation_tour_view_form',
-                'tree_view_ref': 'tt_reservation_tour.tt_reservation_tour_view_tree',
-                }
-            </field>
-        </record>
+    <record model="ir.actions.act_window" id="tt_reservation_tour_view_action_all">
+        <field name="name">Reservation Tour</field>
+        <field name="res_model">tt.reservation.tour</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_tour.tt_reservation_tour_form_view',
+            'tree_view_ref': 'tt_reservation_tour.tt_reservation_tour_tree_view',
+            }
+        </field>
+    </record>
 
-        <record model="ir.actions.act_window" id="tt_reservation_tour_view_action_booked">
-            <field name="name">Reservation Tour (Booked)</field>
-            <field name="res_model">tt.reservation.tour</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
-            <field name="domain">[]</field>
-            <field name="context">
-                {
-                'form_view_ref': 'tt_reservation_tour.tt_reservation_tour_view_form',
-                'tree_view_ref': 'tt_reservation_tour.tt_reservation_tour_view_tree',
-                'search_default_booked': 1
-                }
-            </field>
-        </record>
+    <record model="ir.actions.act_window" id="tt_reservation_tour_view_action_booked">
+        <field name="name">Reservation Tour (Booked)</field>
+        <field name="res_model">tt.reservation.tour</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_tour.tt_reservation_tour_form_view',
+            'tree_view_ref': 'tt_reservation_tour.tt_reservation_tour_tree_view',
+            'search_default_booked': 1
+            }
+        </field>
+    </record>
 
-        <record model="ir.actions.act_window" id="tt_reservation_tour_view_action_issued">
-            <field name="name">Reservation Tour (Issued)</field>
-            <field name="res_model">tt.reservation.tour</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
-            <field name="domain">[]</field>
-            <field name="context">
-                {
-                'form_view_ref': 'tt_reservation_tour.tt_reservation_tour_view_form',
-                'tree_view_ref': 'tt_reservation_tour.tt_reservation_tour_view_tree',
-                'search_default_issued': 1
-                }
-            </field>
-        </record>
+    <record model="ir.actions.act_window" id="tt_reservation_tour_view_action_issued">
+        <field name="name">Reservation Tour (Issued)</field>
+        <field name="res_model">tt.reservation.tour</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_tour.tt_reservation_tour_form_view',
+            'tree_view_ref': 'tt_reservation_tour.tt_reservation_tour_tree_view',
+            'search_default_issued': 1
+            }
+        </field>
+    </record>
 
-        <record model="ir.actions.act_window" id="tt_reservation_tour_view_action_in_progress">
-            <field name="name">Reservation Tour (In Progress)</field>
-            <field name="res_model">tt.reservation.tour</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
-            <field name="domain">[]</field>
-            <field name="context">
-                {
-                'form_view_ref': 'tt_reservation_tour.tt_reservation_tour_view_form',
-                'tree_view_ref': 'tt_reservation_tour.tt_reservation_tour_view_tree',
-                'search_default_in_progress': 1
-                }
-            </field>
-        </record>
+    <record model="ir.actions.act_window" id="tt_reservation_tour_view_action_failed_expired">
+        <field name="name">Reservation Tour (Failed/Expired)</field>
+        <field name="res_model">tt.reservation.tour</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_tour.tt_reservation_tour_form_view',
+            'tree_view_ref': 'tt_reservation_tour.tt_reservation_tour_tree_view',
+            'search_default_failed_expired': 1
+            }
+        </field>
+    </record>
 
-        <record model="ir.actions.act_window" id="tt_reservation_tour_view_action_done">
-            <field name="name">Reservation Tour (Done)</field>
-            <field name="res_model">tt.reservation.tour</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
-            <field name="domain">[]</field>
-            <field name="context">
-                {
-                'form_view_ref': 'tt_reservation_tour.tt_reservation_tour_view_form',
-                'tree_view_ref': 'tt_reservation_tour.tt_reservation_tour_view_tree',
-                'search_default_done': 1
-                }
-            </field>
-        </record>
+    <record model="ir.actions.act_window" id="tt_reservation_tour_view_action_cancelled">
+        <field name="name">Reservation Tour (Cancelled/Rejected/Refunded)</field>
+        <field name="res_model">tt.reservation.tour</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_tour.tt_reservation_tour_form_view',
+            'tree_view_ref': 'tt_reservation_tour.tt_reservation_tour_tree_view',
+            'search_default_cancelled': 1
+            }
+        </field>
+    </record>
 
-        <menuitem id="submenu_tour_booking_all" parent="menu_reservations_tour" sequence="1"
-                  name="ALL" action="tt_reservation_tour.tt_reservation_tour_view_action_all"/>
-        <menuitem id="submenu_tour_booking_booked" parent="tt_reservation_tour.menu_reservations_tour" sequence="2"
-                  name="Booked" action="tt_reservation_tour.tt_reservation_tour_view_action_booked"/>
-        <menuitem id="submenu_tour_booking_issued" parent="tt_reservation_tour.menu_reservations_tour" sequence="3"
-                  name="Issued" action="tt_reservation_tour.tt_reservation_tour_view_action_issued"/>
-        <menuitem id="submenu_tour_booking_in_progress" parent="tt_reservation_tour.menu_reservations_tour" sequence="4"
-                  name="In Progress" action="tt_reservation_tour.tt_reservation_tour_view_action_in_progress"/>
-        <menuitem id="submenu_tour_booking_done" parent="tt_reservation_tour.menu_reservations_tour" sequence="5"
-                  name="Done" action="tt_reservation_tour.tt_reservation_tour_view_action_done"/>
-    </data>
+    <menuitem id="submenu_reservation_tour_all" parent="tt_reservation_tour.menu_reservations_tour" sequence="1"
+              name="ALL" action="tt_reservation_tour.tt_reservation_tour_view_action_all"/>
+    <menuitem id="submenu_reservation_tour_booked" parent="tt_reservation_tour.menu_reservations_tour" sequence="2"
+              name="Booked" action="tt_reservation_tour.tt_reservation_tour_view_action_booked"/>
+    <menuitem id="submenu_reservation_tour_issued" parent="tt_reservation_tour.menu_reservations_tour" sequence="3"
+              name="Issued" action="tt_reservation_tour.tt_reservation_tour_view_action_issued"/>
+    <menuitem id="submenu_reservation_tour_failed_expired" parent="tt_reservation_tour.menu_reservations_tour"
+              name="Failed/Expired" action="tt_reservation_tour.tt_reservation_tour_view_action_failed_expired" sequence="4"/>
+    <menuitem id="submenu_reservation_tour_cancelled" parent="tt_reservation_tour.menu_reservations_tour"
+              name="Cancelled/Rejected/Refunded" action="tt_reservation_tour.tt_reservation_tour_view_action_cancelled" sequence="5"/>
 </odoo>

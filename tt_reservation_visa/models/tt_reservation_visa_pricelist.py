@@ -51,6 +51,9 @@ class VisaPricelist(models.Model):
 
     requirement_ids = fields.One2many('tt.reservation.visa.requirements', 'pricelist_id', 'Requirements')
 
+    visa_location_ids = fields.Many2many('tt.master.visa.locations', 'tt_master_visa_locations_rel',
+                                         'master_visa_location_id', 'pricelist_id', 'Visa Locations')
+
     duration = fields.Integer('Duration (day(s))', help="in day(s)", required=True, default=1)
     commercial_duration = fields.Char('Duration', compute='_compute_duration', readonly=1)
 
@@ -67,7 +70,7 @@ class VisaPricelist(models.Model):
         for rec in self:
             rec.commercial_duration = '%s day(s)' % str(rec.duration)
 
-    def get_config_api(self, data, context, kwargs):
+    def get_config_api(self):
         try:
             visa = {}
             for rec in self.sudo().search([]):
@@ -89,7 +92,7 @@ class VisaPricelist(models.Model):
             res = Response().get_error(str(e), 500)
         return res
 
-    def search_api(self, data, context, kwargs):
+    def search_api(self, data):
         try:
             list_of_visa = []
 

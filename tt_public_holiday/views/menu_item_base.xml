@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <menuitem id="menu_tour_travel_configuration_calendar"
+                  name="Calendar"
+                  groups="tt_base.group_tt_tour_travel_operator"
+                  parent="tt_base.top_tour_travel_configuration"
+                  sequence="45"/>
+    </data>
+</odoo>
