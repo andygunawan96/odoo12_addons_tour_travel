@@ -230,7 +230,7 @@ class AgentRegistration(models.Model):
         _logger.info(query)
         return self.env.cr.dictfetchall()
 
-    def get_promotions_api(self):
+    def get_promotions_api(self, context):
         promotion_env = self.env['tt.agent.registration.promotion']
         promotion_ids = promotion_env.search([('start_date', '<=', datetime.today()), ('end_date', '>=', datetime.today())])
 
