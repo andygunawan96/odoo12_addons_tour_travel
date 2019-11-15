@@ -217,6 +217,23 @@ class PrintoutInvoice(models.AbstractModel):
                         'name': (psg.first_name if psg.first_name else '') + ' ' + (psg.last_name if psg.last_name else ''),
                         'total': psg.pricelist_id.sale_price
                     })
+        elif rec._name == 'tt.reservation.tour':
+            for provider in rec.provider_booking_ids:
+                if not a.get(provider.pnr):
+                    a[provider.pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'total': rec.total}
+                temp_desc = (provider.tour_id.name if provider.tour_id.name else '') + '; ' + (str(provider.departure_date)[:10] if provider.departure_date else '') + ' - ' + (str(provider.return_date)[:10] if provider.return_date else '') + '; '
+                a[provider.pnr]['descs'].append(temp_desc)
+                for ticket in provider.ticket_ids:
+                    a[provider.pnr]['pax_data'].append({
+                        'name': ticket.passenger_id.first_name + ' ' + (
+                            ticket.passenger_id.last_name if ticket.passenger_id.last_name else ''),
+                        'total': 0
+                    })
+                for pax in a[provider.pnr]['pax_data']:
+                    if a[provider.pnr]['pax_data'].get('pax_type'):
+                        for price in provider.cost_service_charge_ids:
+                            if pax.get('pax_type') == price.pax_type:
+                                pax['total'] += price.amount / price.pax_total
         elif rec._name == 'tt.reservation.offline':
             if rec.provider_type_id_name == 'hotel':
                 for rec2 in rec.line_ids:
@@ -359,6 +376,58 @@ class PrintoutIteneraryForm(models.AbstractModel):
 
 class PrintoutActivityIteneraryForm(models.AbstractModel):
     _name = 'report.tt_report_common.printout_activity_itinerary'
+    _description = 'Rodex Model'
+
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        if not data.get('context'):
+            internal_model_id = docids.pop(0)
+            data['context'] = {}
+            if internal_model_id == 1:
+                data['context']['active_model'] = 'tt.reservation.airline'
+            elif internal_model_id == 2:
+                data['context']['active_model'] = 'tt.reservation.train'
+            elif internal_model_id == 3:
+                data['context']['active_model'] = 'tt.reservation.hotel'
+            elif internal_model_id == 4:
+                data['context']['active_model'] = 'tt.reservation.activity'
+            elif internal_model_id == 5:
+                data['context']['active_model'] = 'tt.reservation.tour'
+            else:
+                data['context']['active_model'] = 'tt.agent.invoice'
+
+            data['context']['active_ids'] = docids
+        values = {}
+        for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            values[rec.id] = []
+            a = {}
+            for rec2 in rec.sale_service_charge_ids:
+                if rec2.pax_type not in a.keys():
+                    a[rec2.pax_type] = {
+                        'pax_type': rec2.pax_type,
+                        'fare': 0,
+                        'tax': 0,
+                        'qty': 0,
+                    }
+
+                if rec2.charge_type.lower() == 'fare':
+                    a[rec2.pax_type]['fare'] += rec2.amount
+                    a[rec2.pax_type]['qty'] += 1
+                elif rec2.charge_type.lower() in ['roc', 'tax']:
+                    a[rec2.pax_type]['tax'] += rec2.amount
+            values[rec.id] = [a[new_a] for new_a in a]
+        return {
+            'doc_ids': data['context']['active_ids'],
+            'doc_model': data['context']['active_model'],
+            'doc_type': 'itin',
+            'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
+            'price_lines': values,
+            'date_now': fields.Date.today().strftime('%d %b %Y')
+        }
+
+
+class PrintoutTourIteneraryForm(models.AbstractModel):
+    _name = 'report.tt_report_common.printout_tour_itinerary'
     _description = 'Rodex Model'
 
     @api.model
