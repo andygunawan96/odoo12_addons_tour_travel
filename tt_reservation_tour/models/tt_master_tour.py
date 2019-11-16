@@ -383,6 +383,12 @@ class MasterTour(models.Model):
                     'write_date': '',
                 })
 
+                if rec.get('currency_id'):
+                    rec.update({
+                        'currency_code': 'IDR'
+                    })
+                    rec.pop('currency_id')
+
                 key_list = [key for key in rec.keys()]
                 for key in key_list:
                     if rec[key] is None:
@@ -400,7 +406,7 @@ class MasterTour(models.Model):
                 'result': result,
                 # 'result_json': json.dumps(result),
                 'search_value': 2,
-                'currency_id': self.env.user.company_id.currency_id.id
+                'currency_code': 'IDR'
             }
             return ERR.get_no_error(response)
         except RequestException as e:
@@ -580,6 +586,12 @@ class MasterTour(models.Model):
                     'images_obj': images,
                 })
 
+                if rec.get('currency_id'):
+                    rec.update({
+                        'currency_code': 'IDR'
+                    })
+                    rec.pop('currency_id')
+
                 key_list = [key for key in rec.keys()]
                 for key in key_list:
                     if rec[key] is None:
@@ -594,7 +606,7 @@ class MasterTour(models.Model):
                 'search_request': search_request,
                 'result': tour_list,
                 'commission_agent_type': commission_agent_type,
-                'currency_id': self.env.user.company_id.currency_id.id,
+                'currency_code': 'IDR',
                 # 'is_HO': self.env.user.agent_id.is_HO,
                 'agent_id': self.env.user.agent_id.id,
                 # 'is_agent': is_agent,
