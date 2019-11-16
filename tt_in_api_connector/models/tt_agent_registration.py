@@ -15,6 +15,8 @@ class TtOfflineApiCon(models.Model):
             res = table_obj.get_all_registration_documents_api()
         elif action == 'create_agent_registration_api':
             res = table_obj.create_agent_registration_api(data, context)
+        elif action == 'get_promotions_api':
+            res = table_obj.get_promotions_api(context)
         else:
             raise RequestException(999)
 
