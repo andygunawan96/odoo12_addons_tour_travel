@@ -18,8 +18,8 @@
                                 <th>Arrival</th>
                                 <th>Carrier</th>
                                 <th>Flight</th>
-<!--                                <th>Departure Date</th>-->
-<!--                                <th>Arrival Date</th>-->
+                                <!--                                <th>Departure Date</th>-->
+                                <!--                                <th>Arrival Date</th>-->
                             </tr>
                         </thead>
                         <tbody>
@@ -36,9 +36,9 @@
                                     </td>
                                     <td><span t-field="provider_segment_id.carrier_id.name"/></td>
                                     <td><span t-field="provider_segment_id.name"/></td>
-<!--                                    <td><span t-field="provider_segment_id.departure_date" t-options ='{"format": "dd/MM/yyyy HH:mm:ss"}'/></td>-->
-<!--                                    <td><span t-esc="time.strftime('%d %b %Y %H:%M', time.strptime(provider_segment_id.departure_date[:16],'%Y-%m-%d %H:%M'))"/></td>-->
-<!--                                    <td><span t-esc="time.strftime('%d %b %Y %H:%M', time.strptime(provider_segment_id.arrival_date[:16],'%Y-%m-%d %H:%M'))"/></td>-->
+                                    <!--                                    <td><span t-field="provider_segment_id.departure_date" t-options ='{"format": "dd/MM/yyyy HH:mm:ss"}'/></td>-->
+                                    <!--                                    <td><span t-esc="time.strftime('%d %b %Y %H:%M', time.strptime(provider_segment_id.departure_date[:16],'%Y-%m-%d %H:%M'))"/></td>-->
+                                    <!--                                    <td><span t-esc="time.strftime('%d %b %Y %H:%M', time.strptime(provider_segment_id.arrival_date[:16],'%Y-%m-%d %H:%M'))"/></td>-->
                                 </tr>
                             </t>
                         </tbody>
@@ -244,6 +244,78 @@
         </div>
     </template>
 
+    <template id="tour_itinerary_view">
+        <!-- Main Params -->
+        <div class="row">
+            <div class="col-12">
+                <span style="font-size: 28px; font-weight: 730">Reservation Detail(s)</span><br/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <t t-foreach="doc.provider_booking_ids" t-as="provider_itin_id">
+                    <table class="table table-sm" style="text-align:center;">
+                        <thead>
+                            <tr>
+                                <th>PNR</th>
+                                <th>Departure Date</th>
+                                <th>Arrival Date</th>
+                                <th>Tour Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span t-field="provider_itin_id.pnr"/></td>
+                                <!--Jadi nya MM/DD/YYYY-->
+                                <!--<td><span t-field="provider_itin_id.visit_date" t-options="{'widget': 'date'}"/></td> -->
+                                <td><span t-esc="provider_itin_id.departure_date.strftime('%d %B %Y')"/></td>
+                                <td><span t-esc="provider_itin_id.return_date.strftime('%d %B %Y')"/></td>
+                                <td><span t-field="provider_itin_id.tour_id.name"/><br/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <span style="font-size: 28px; font-weight: 730">Guest Detail(s)</span><br/>
+                    <div class="box" style="margin: 20px 20px 20px 20px; border-style: solid; border-width: 1px; border-color: #BBB; border-radius: 20px">
+                        <div class="row" style="margin-left: 0px; margin-right: 0px; margin-top: 5px; margin-bottom: 5px">
+                            <div class="col-1" style="text-align: center; font-size:17px;">
+                                No.
+                            </div>
+                            <div class="col-4" style="text-align: center; font-size:17px;">
+                                Name
+                            </div>
+                            <div class="col-4" style="text-align: right; font-size:17px; padding-right: 30px;">
+                                Birth Date
+                            </div>
+                            <div class="col-3" style="text-align: center; font-size:17px;">
+                                Pax Type
+                            </div>
+                        </div>
+                        <div style="border: 1px solid #BBB; margin-bottom: 5px; margin-left: 15px; margin-right: 15px"/>
+                        <t t-set="psg_index" t-value="0"/>
+                        <t t-foreach="doc.passenger_ids" t-as="psg">
+                            <div class="row" style="margin-left: 0px; margin-right: 0px">
+                                <div class="col-1" style="text-align: center">
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg_index+1"/>.</label>
+                                </div>
+                                <div class="col-4" style="text-align: left">
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.name"/></label>
+                                </div>
+                                <div class="col-4" style="text-align: right">
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.birth_date" t-options ='{"format": "dd MMM yyyy"}'/></label>
+                                </div>
+                                <div class="col-3" style="text-align: center">
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.gender"/></label>
+                                </div>
+                            </div>
+                        </t>
+                        <div style="margin-bottom: 5px"/>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </template>
+
     <template id="json_itinerary_content_view">
         <div class="row">
             <div class="col-12">
@@ -299,6 +371,29 @@
                                     <td><span t-esc="line['time_slot']"/><br/></td>
                                     <td><span t-esc="line['activity_title']"/></td>
                                     <td><span t-esc="line['product_type']"/></td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </t>
+                <!-- Tour -->
+                <t t-if="doc['type'] == 'tour'">
+                    <table class="table table-sm" style="text-align:center;">
+                        <thead>
+                            <tr>
+                                <th>Voucher No.</th>
+                                <th>Departure Date</th>
+                                <th>Return Date</th>
+                                <th>Tour</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="doc['line']" t-as="line">
+                                <tr>
+                                    <td><span t-esc="line['resv']"/></td>
+                                    <td><span t-esc="line['checkin']"/></td>
+                                    <td><span t-esc="line['checkout']"/><br/></td>
+                                    <td><span t-esc="line['tour_name']"/></td>
                                 </tr>
                             </t>
                         </tbody>
@@ -414,6 +509,23 @@
                 <div class="page">
                     <t t-call="tt_report_common.external_layout">
                         <t t-call="tt_report_common.activity_itinerary_view"/>
+                        <t t-call="tt_report_common.itinerary_price_detail"/>
+                        <br/>
+                        <t t-call="tt_report_common.itinerary_signature"/>
+                    </t>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <template id="printout_tour_itinerary">
+        <t t-set="data_report_header_spacing" t-value="20"/>
+        <t t-set="data_report_margin_top" t-value="2"/>
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <div class="page">
+                    <t t-call="tt_report_common.external_layout">
+                        <t t-call="tt_report_common.tour_itinerary_view"/>
                         <t t-call="tt_report_common.itinerary_price_detail"/>
                         <br/>
                         <t t-call="tt_report_common.itinerary_signature"/>
