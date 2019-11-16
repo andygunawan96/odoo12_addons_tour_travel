@@ -1129,10 +1129,14 @@ class ReservationAirline(models.Model):
 
         ##generate leg data
         provider_type = self.env['tt.provider.type'].search([('code', '=', 'airline')])[0]
-        provider_obj.create_ticket_api(provider['passengers'],provider['pnr'])
+        old_state = provider_obj.state
         provider_obj.action_booked_api_airline(provider, context)
 
-        # August 16, 2019 - SAM
+        if old_state != 'draft':
+            return
+
+        provider_obj.create_ticket_api(provider['passengers'],provider['pnr'])
+            # August 16, 2019 - SAM
         # Mengubah mekanisme update booking backend
         segment_dict = provider['segment_dict']
 
