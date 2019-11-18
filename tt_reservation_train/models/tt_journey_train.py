@@ -12,7 +12,6 @@ class TtJourneyTrain(models.Model):
     provider_id = fields.Many2one('tt.provider', related='provider_booking_id.provider_id', store=True)
     pnr = fields.Char('PNR', related='provider_booking_id.pnr', store=True)
 
-
     booking_id = fields.Many2one('tt.reservation.train', related='provider_booking_id.booking_id', string='Order Number',
                                  store=True)
     sequence = fields.Integer('Sequence')
@@ -42,6 +41,7 @@ class TtJourneyTrain(models.Model):
             'destination': self.destination_id.code,
             'departure_date': self.departure_date,
             'arrival_date': self.arrival_date,
+            'pnr': self.pnr,
 
             'carrier_code': self.carrier_code,
             'carrier_number': self.carrier_number,

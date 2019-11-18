@@ -90,6 +90,7 @@ class TtProviderAirline(models.Model):
         if not self.is_ledger_created:
             raise UserError("This Provider Ledger is not Created.")
 
+        ##fixme salahhh, ini ke reverse semua provider bukan provider ini saja
         for rec in self.booking_id.ledger_ids:
             if rec.pnr == self.pnr and not rec.is_reversed:
                 rec.reverse_ledger()

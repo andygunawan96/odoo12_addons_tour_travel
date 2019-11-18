@@ -177,6 +177,8 @@ class Ledger(models.Model):
             if sc.charge_type != 'RAC' and not sc.is_ledger_created:
                 amount += sc.get_total_for_payment()
 
+        if amount == 0:
+            return
 
         booking_obj = provider_obj.booking_id
         ledger_values = self.prepare_vals(booking_obj._name,booking_obj.id,'Order : ' + booking_obj.name, booking_obj.name, datetime.now()+relativedelta(hours=7),
@@ -199,6 +201,9 @@ class Ledger(models.Model):
                 if not agent_commission.get(agent_id, False):
                     agent_commission[agent_id] = 0
                 agent_commission[agent_id] += amount
+
+        if amount == 0:
+            return
 
         for agent_id, amount in agent_commission.items():
             ledger_values = self.prepare_vals(booking_obj._name,booking_obj.id,'Commission : ' + booking_obj.name, booking_obj.name, datetime.now()+relativedelta(hours=7),
