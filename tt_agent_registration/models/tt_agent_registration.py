@@ -230,7 +230,7 @@ class AgentRegistration(models.Model):
         _logger.info(query)
         return self.env.cr.dictfetchall()
 
-    def get_promotions_api(self):
+    def get_promotions_api(self, context):
         promotion_env = self.env['tt.agent.registration.promotion']
         promotion_ids = promotion_env.search([('start_date', '<=', datetime.today()), ('end_date', '>=', datetime.today())])
 
@@ -245,7 +245,22 @@ class AgentRegistration(models.Model):
                 'end_date': promotion.end_date.strftime("%d-%m-%Y"),
                 'default_commission': promotion.default,
                 'description': promotion.description,
+                'commission': []
             }
+            for commission in promotion.agent_type_ids:
+                comm = {
+                    'recruited': commission.agent_type_id.name,
+                    'discount_type': commission.discount_amount_type,
+                    'discount_amount': commission.discount_amount,
+                    'lines': []
+                }
+                for commission_line in commission.line_ids:
+                    line = {
+                        'agent_type_id': commission_line.agent_type_id.name,
+                        'amount': commission_line.amount
+                    }
+                    comm['lines'].append(line)
+                val['commission'].append(comm)
             promotion_list.append(val)
 
         print(promotion_list)

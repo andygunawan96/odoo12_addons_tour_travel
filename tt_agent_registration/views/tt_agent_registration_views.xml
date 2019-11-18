@@ -17,6 +17,7 @@
 <!--                        <button string="Cancel" name="action_cancel" attrs="{'invisible': [('state', '!=', ['confirm','progress','payment','validate'])]}" type="object"/>-->
                          <button string="Cancel" name="action_cancel" type="object" states="confirm,progress,payment,validate"/>
                          <button string="Send Email" name="action_send_email" type="object" states="progress"/>
+<!--                         <button string="Get Promotions" name="get_promotions_api" type="object"/>-->
                         <button string="Set to Draft" name="action_draft" attrs="{'invisible': [('state', '!=', 'cancel')]}" type="object" confirm="All data will be deleted. Proceed?"/>
                     </header>
                     <sheet>
@@ -58,7 +59,7 @@
                             <group string="Registration">
                                 <field name="registration_num"/>
                                 <field name="registration_fee"/>
-                                <field name="promotion_id" options="{'no_quick_create':True,'no_create_edit':True}"/>
+                                <field name="promotion_id" required="1" options="{'no_quick_create':True,'no_create_edit':True}"/>
                                 <field name="discount"/>
                                 <field name="opening_balance"/>
                                 <field name="total_fee"/>

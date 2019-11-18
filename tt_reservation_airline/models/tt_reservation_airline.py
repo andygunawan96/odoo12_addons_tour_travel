@@ -785,8 +785,6 @@ class ReservationAirline(models.Model):
         try:
             book_obj = self.env['tt.reservation.airline'].browse(req.get('book_id'))
             if book_obj and book_obj.agent_id.id == context.get('co_agent_id',-1):
-
-
                 #cek balance due book di sini, mungkin suatu saat yang akan datang
                 if book_obj.state == 'issued':
                     _logger.error('Transaction Has been paid.')

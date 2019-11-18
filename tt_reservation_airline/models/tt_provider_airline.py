@@ -87,8 +87,8 @@ class TtProviderAirline(models.Model):
         if self.state == 'fail_refunded':
             raise UserError("Cannot refund, this PNR has been refunded.")
 
-        if not self.is_ledger_created:
-            raise UserError("This Provider Ledger is not Created.")
+        # if not self.is_ledger_created:
+        #     raise UserError("This Provider Ledger is not Created.")
 
         ##fixme salahhh, ini ke reverse semua provider bukan provider ini saja
         for rec in self.booking_id.ledger_ids:
@@ -97,7 +97,7 @@ class TtProviderAirline(models.Model):
 
         self.write({
             'state': 'fail_refunded',
-            'is_ledger_created': False,
+            # 'is_ledger_created': False,
             'refund_uid': self.env.user.id,
             'refund_date': datetime.now()
         })

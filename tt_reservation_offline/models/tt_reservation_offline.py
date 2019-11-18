@@ -926,8 +926,8 @@ class IssuedOffline(models.Model):
     ]
 
     param_context = {
-        'co_uid': 2,
-        'co_agent_id': 2
+        'co_uid': 6,
+        'co_agent_id': 3
     }
 
     def get_config_api(self):
