@@ -123,70 +123,89 @@ class TtProviderTour(models.Model):
             'ticket_ids': ticket_list
         })
 
-    def update_ticket_api(self,passengers):##isi ticket number
-        ticket_not_found = []
-        for psg in passengers:
-            ticket_found = False
-            for ticket in self.ticket_ids:
-                psg_name = ticket.passenger_id.name.replace(' ','').lower()
-                if ('%s%s' % (psg['first_name'], psg['last_name'])).replace(' ','').lower() in [psg_name, psg_name*2]:
-                    ticket.write({
-                        'ticket_number': psg.get('ticket_number','')
-                    })
-                    ticket_found = True
-                    break
-            if not ticket_found:
-                ticket_not_found.append(psg)
-
-        for psg in ticket_not_found:
-            self.write({
-                'ticket_ids': [(0,0,{
-                    'ticket_number': psg.get('ticket_number'),
-                    'pax_type': psg.get('pax_type'),
-                })]
-            })
+    # def update_ticket_api(self,passengers):##isi ticket number
+    #     ticket_not_found = []
+    #     for psg in passengers:
+    #         ticket_found = False
+    #         for ticket in self.ticket_ids:
+    #             psg_name = ticket.passenger_id.name.replace(' ','').lower()
+    #             if ('%s%s' % (psg['first_name'], psg['last_name'])).replace(' ','').lower() in [psg_name, psg_name*2]:
+    #                 ticket.write({
+    #                     'ticket_number': psg.get('ticket_number','')
+    #                 })
+    #                 ticket_found = True
+    #                 break
+    #         if not ticket_found:
+    #             ticket_not_found.append(psg)
+    #
+    #     for psg in ticket_not_found:
+    #         self.write({
+    #             'ticket_ids': [(0,0,{
+    #                 'ticket_number': psg.get('ticket_number'),
+    #                 'pax_type': psg.get('pax_type'),
+    #             })]
+    #         })
 
     def create_service_charge(self, service_charge_vals):
         service_chg_obj = self.env['tt.service.charge']
         currency_obj = self.env['res.currency']
+        unused_psg = []
 
+        service_charge_vals_dup1 = []
+        service_charge_vals_dup2 = []
         for scs in service_charge_vals:
-            scs['pax_count'] = 0
+            if scs.get('tour_room_id'):
+                service_charge_vals_dup1.append(scs)
+            else:
+                service_charge_vals_dup2.append(scs)
+
+        service_charge_vals_dup = service_charge_vals_dup1 + service_charge_vals_dup2
+
+        for scs in service_charge_vals_dup:
             scs['passenger_tour_ids'] = []
-            scs['total'] = 0
             scs['currency_id'] = currency_obj.get_id('IDR')
             scs['foreign_currency_id'] = currency_obj.get_id('IDR')
             scs['provider_tour_booking_id'] = self.id
             for psg in self.ticket_ids:
                 if scs.get('tour_room_id'):
                     if scs['pax_type'] == psg.pax_type and scs['tour_room_id'] == psg.tour_room_id.id:
-                        scs['passenger_tour_ids'].append(psg.passenger_id.id)
-                        scs['pax_count'] += 1
-                        scs['total'] += scs['amount']
+                        if len(scs['passenger_tour_ids']) < int(scs['pax_count']):
+                            scs['passenger_tour_ids'].append(psg.passenger_id.id)
+                        else:
+                            unused_psg.append(psg)
                 else:
                     if scs['pax_type'] == psg.pax_type:
-                        scs['passenger_tour_ids'].append(psg.passenger_id.id)
-                        scs['pax_count'] += 1
-                        scs['total'] += scs['amount']
+                        if len(scs['passenger_tour_ids']) < int(scs['pax_count']):
+                            scs['passenger_tour_ids'].append(psg.passenger_id.id)
+                        else:
+                            unused_psg.append(psg)
+            scs['description'] = self.pnr and self.pnr or ''
+
+        for scs in service_charge_vals_dup:
+            while len(scs['passenger_tour_ids']) < int(scs['pax_count']):
+                unused_psg_dup = unused_psg
+                for idx, psg in enumerate(unused_psg_dup):
+                    if scs.get('tour_room_id'):
+                        if scs['tour_room_id'] == psg.tour_room_id.id and psg.passenger_id.id not in scs['passenger_tour_ids']:
+                            scs['passenger_tour_ids'].append(psg.passenger_id.id)
+                            unused_psg.pop(idx)
+                            if len(scs['passenger_tour_ids']) >= int(scs['pax_count']):
+                                break
+                    else:
+                        if psg.passenger_id.id not in scs['passenger_tour_ids']:
+                            scs['passenger_tour_ids'].append(psg.passenger_id.id)
+                            unused_psg.pop(idx)
+                            if len(scs['passenger_tour_ids']) >= int(scs['pax_count']):
+                                break
+
+        for scs in service_charge_vals_dup:
             if scs.get('tour_room_id'):
                 scs.pop('tour_room_id')
             # scs.pop('currency')
             # scs.pop('foreign_currency')
             scs['passenger_tour_ids'] = [(6,0,scs['passenger_tour_ids'])]
-            scs['description'] = self.pnr and self.pnr or ''
             if scs['total'] != 0:
                 service_chg_obj.create(scs)
-
-        # "sequence": 1,
-        # "charge_code": "fare",
-        # "charge_type": "FARE",
-        # "currency": "IDR",
-        # "amount": 4800000,
-        # "foreign_currency": "IDR",
-        # "foreign_amount": 4800000,
-        # "pax_count": 3,
-        # "pax_type": "ADT",
-        # "total": 14400000
 
     def delete_service_charge(self):
         for rec in self.cost_service_charge_ids:

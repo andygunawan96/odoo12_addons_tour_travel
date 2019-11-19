@@ -13,16 +13,20 @@ TT_TRANSPORT
     'images' : [],
     'depends' : ['base_setup','tt_base','tt_reservation','base_address_city'],
     'data': [
-        # 'security/ir.model.access.csv',
+        'data/ir_sequence_data.xml',
+        'data/tt_provider_type_data.xml',
+        'data/tt_provider_train.xml',
+        'data/tt_destination_kai.xml',
+        'data/tt_transport_carrier_train.xml',
         'security/ir.model.access.csv',
-        
+        'security/ir_rule_data.xml',
+
         'views/menu_item_base.xml',
         'views/tt_reservation_train.xml',
-        'views/tb_provider_views.xml',
-        'views/tb_segment_views.xml',
-        'views/tb_leg_views.xml',
-        'data/ir_sequence_data.xml',
-        'data/tt_provider_type_data.xml'
+        'views/tt_provider_views.xml',
+        'views/tt_journey_views.xml',
+        'views/tt_service_charge_views.xml'
+
     ],
     'demo': [],
     'qweb': [],

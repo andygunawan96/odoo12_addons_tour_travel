@@ -192,7 +192,12 @@ class TtCustomer(models.Model):
     def get_customer_list_api(self,req,context):
         try:
             print("request teropong\n"+json.dumps((req))+json.dumps(context))
-            customer_list_obj = self.search([('agent_id','=',context['co_agent_id']),('name','ilike',req['name'])])
+            mode = req.get('mode','b2c')
+            if mode == 'btb':
+                customer_list_obj = self.search([('agent_id','=',context['co_agent_id']),('name','ilike',req['name'])])
+            else:
+                customer_list_obj = self.search([('agent_id', '=', context['co_agent_id']), ('seq_id', '=', req[''])])
+
             customer_list = []
             lower = date.today() - relativedelta(years=req.get('lower',12))
             upper = date.today() - relativedelta(years=req.get('upper',200))

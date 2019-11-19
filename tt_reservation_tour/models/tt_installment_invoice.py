@@ -1,16 +1,5 @@
 from odoo import api, fields, models, _
-
-TOUR_BOOKING_STATE = [
-    ('booked', 'Booked'),
-    ('issued', 'Issued'),
-    ('confirm', 'Confirm To HO'),
-    ('confirmed', 'Confirm'),
-    ('process', 'In Process'),
-    ('rejected', 'Rejected'),
-    ('cancelled', 'Cancelled'),
-    ('expired', 'Expired'),
-    ('done', 'Done')
-]
+from ...tools import variables
 
 STATE_INVOICE = [
     ('open', 'Open'),
@@ -37,8 +26,8 @@ class InstallmentInvoice(models.Model):
 
     due_date = fields.Date('Due Date', required=True)
 
-    tour_id = fields.Many2one('tt.reservation.tour', 'Tour ID', readonly=True)
-    tour_booking_state = fields.Selection(TOUR_BOOKING_STATE, related="tour_id.state", store=True)
+    booking_id = fields.Many2one('tt.reservation.tour', 'Tour Reservation ID', readonly=True)
+    tour_booking_state = fields.Selection(variables.BOOKING_STATE, related="booking_id.state", store=True)
 
     state_invoice = fields.Selection(STATE_INVOICE, 'State Invoice', default='open')
 

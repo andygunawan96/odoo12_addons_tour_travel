@@ -36,7 +36,6 @@ class ReservationTour(models.Model):
     tour_id = fields.Many2one('tt.master.tour', 'Tour ID')
     # tour_id = fields.Char('Tour ID')
 
-    next_installment_date = fields.Date('Next Due Date', compute='_next_installment_date', store=True)
     room_ids = fields.One2many('tt.reservation.tour.room', 'booking_id', 'Rooms')
 
     sale_service_charge_ids = fields.One2many('tt.service.charge', 'booking_tour_id', 'Service Charge',
@@ -48,6 +47,7 @@ class ReservationTour(models.Model):
     passenger_ids = fields.One2many('tt.reservation.passenger.tour', 'booking_id', string='Passengers')
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', default=lambda self: self.env.ref('tt_reservation_tour.tt_provider_type_tour'))
     payment_method = fields.Selection(PAYMENT_METHOD, 'Payment Method')
+    installment_invoice_ids = fields.One2many('tt.installment.invoice', 'booking_id', 'Installments')
 
     def action_issued_tour(self, api_context=None):
         if not api_context:  # Jika dari call from backend
@@ -68,7 +68,7 @@ class ReservationTour(models.Model):
             for rec in self.provider_booking_ids:
                 rec.action_create_ledger(self.env.user.id)
 
-    def call_create_invoice(self, acquirer_id):
+    def call_create_invoice(self, acquirer_id, payment_method):
         _logger.info('Creating Invoice for ' + self.name)
 
     def update_pnr_data(self, book_id, pnr):
@@ -373,9 +373,10 @@ class ReservationTour(models.Model):
             else:
                 customer_parent_id = book_obj.agent_id.customer_parent_walkin_id.id
 
+            payment_method = data.get('payment_method') and data['payment_method'] or 'full'
             vals = {
                 'customer_parent_id': customer_parent_id,
-                'payment_method': data.get('payment_method') and data['payment_method'] or 'full'
+                'payment_method': payment_method
             }
 
             book_obj.sudo().write(vals)
@@ -387,7 +388,7 @@ class ReservationTour(models.Model):
             else:
                 raise RequestException(1017)
 
-            book_obj.call_create_invoice(acquirer_id)
+            book_obj.call_create_invoice(acquirer_id, payment_method)
 
             response = {
                 'order_id': book_obj.id,
@@ -460,7 +461,7 @@ class ReservationTour(models.Model):
                 for temp_room in rooms:
                     if int(psg['tour_room_id']) == int(temp_room['room_id']):
                         psg.update({
-                            'tour_room_index': int(temp_room['room_index'])
+                            'tour_room_string': temp_room['room_name'] + ' (' + temp_room['room_hotel'] + ')'
                         })
                         break
 

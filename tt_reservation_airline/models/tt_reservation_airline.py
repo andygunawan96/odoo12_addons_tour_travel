@@ -3,7 +3,8 @@ from ...tools import util,variables,ERR
 from ...tools.ERR import RequestException
 from ...tools.api import Response
 import logging,traceback
-import datetime
+from datetime import datetime
+
 import json
 
 _logger = logging.getLogger(__name__)
@@ -82,7 +83,7 @@ class ReservationAirline(models.Model):
             'pnr': ', '.join(pnr_list),
             'hold_date': hold_date,
             'booked_uid': context['co_uid'],
-            'booked_date': datetime.datetime.now()
+            'booked_date': datetime.now()
         })
 
     def action_issued_api_airline(self,acquirer_id,customer_parent_id,context):
@@ -91,7 +92,7 @@ class ReservationAirline(models.Model):
     def action_issued_airline(self,co_uid,customer_parent_id,acquirer_id = False):
         self.write({
             'state': 'issued',
-            'issued_date': datetime.datetime.now(),
+            'issued_date': datetime.now(),
             'issued_uid': co_uid,
             'customer_parent_id': customer_parent_id
         })
@@ -100,7 +101,7 @@ class ReservationAirline(models.Model):
         self.write({
             'state': 'partial_booked',
             'booked_uid': context['co_uid'],
-            'booked_date': datetime.datetime.now(),
+            'booked_date': datetime.now(),
             'hold_date': hold_date,
             'pnr': pnr_list
         })
@@ -677,7 +678,7 @@ class ReservationAirline(models.Model):
 
             book_status = []
             pnr_list = []
-            hold_date = datetime.datetime.max
+            hold_date = datetime.max
             any_provider_changed = False
 
             for provider in req['provider_bookings']:
@@ -687,7 +688,7 @@ class ReservationAirline(models.Model):
                 book_status.append(provider['status'])
 
                 if provider['status'] == 'BOOKED' and not provider.get('error_code'):
-                    curr_hold_date = datetime.datetime.strptime(provider['hold_date'], '%Y-%m-%d %H:%M:%S')
+                    curr_hold_date = datetime.strptime(provider['hold_date'], '%Y-%m-%d %H:%M:%S')
                     if curr_hold_date < hold_date:
                         hold_date = curr_hold_date
                     if provider_obj.state == 'booked':
@@ -1004,7 +1005,7 @@ class ReservationAirline(models.Model):
             self.write({
                 'state':  'fail_refunded',
                 'refund_uid': context['co_uid'],
-                'refund_date': datetime.datetime.now()
+                'refund_date': datetime.now()
             })
         elif any(rec.state == 'issued' for rec in self.provider_booking_ids):
             # partial issued
@@ -1116,7 +1117,7 @@ class ReservationAirline(models.Model):
                 'return_date': provider_return_date,
 
                 'booked_uid': api_context['co_uid'],
-                'booked_date': datetime.datetime.now(),
+                'booked_date': datetime.now(),
                 'journey_ids': this_pnr_journey
             }
 
@@ -1129,9 +1130,13 @@ class ReservationAirline(models.Model):
 
         ##generate leg data
         provider_type = self.env['tt.provider.type'].search([('code', '=', 'airline')])[0]
-        provider_obj.create_ticket_api(provider['passengers'],provider['pnr'])
+
         provider_obj.action_booked_api_airline(provider, context)
 
+        if provider_obj.state != 'draft':
+            return
+
+        provider_obj.create_ticket_api(provider['passengers'], provider['pnr'])
         # August 16, 2019 - SAM
         # Mengubah mekanisme update booking backend
         segment_dict = provider['segment_dict']

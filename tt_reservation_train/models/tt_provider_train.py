@@ -5,8 +5,8 @@ from datetime import datetime
 import json
 
 
-class TtProviderAirline(models.Model):
-    _name = 'tt.provider.airline'
+class TtProviderTrain(models.Model):
+    _name = 'tt.provider.train'
     _rec_name = 'pnr'
     _order = 'departure_date'
     _description = 'Rodex Model'
@@ -15,7 +15,7 @@ class TtProviderAirline(models.Model):
     pnr2 = fields.Char('PNR2')
     provider_id = fields.Many2one('tt.provider','Provider')
     state = fields.Selection(variables.BOOKING_STATE, 'Status', default='draft')
-    booking_id = fields.Many2one('tt.reservation.airline', 'Order Number', ondelete='cascade')
+    booking_id = fields.Many2one('tt.reservation.train', 'Order Number', ondelete='cascade')
     sequence = fields.Integer('Sequence')
     balance_due = fields.Float('Balance Due')
     origin_id = fields.Many2one('tt.destinations', 'Origin')
@@ -25,8 +25,8 @@ class TtProviderAirline(models.Model):
 
     sid_issued = fields.Char('SID Issued')#signature generate sendiri
 
-    journey_ids = fields.One2many('tt.journey.airline', 'provider_booking_id', string='Journeys')
-    cost_service_charge_ids = fields.One2many('tt.service.charge', 'provider_airline_booking_id', 'Cost Service Charges')
+    journey_ids = fields.One2many('tt.journey.train', 'provider_booking_id', string='Journeys')
+    cost_service_charge_ids = fields.One2many('tt.service.charge', 'provider_train_booking_id', 'Cost Service Charges')
 
     currency_id = fields.Many2one('res.currency', 'Currency', readonly=True, states={'draft': [('readonly', False)]},
                                   default=lambda self: self.env.user.company_id.currency_id)
@@ -48,12 +48,11 @@ class TtProviderAirline(models.Model):
     refund_uid = fields.Many2one('res.users', 'Refund By')
     refund_date = fields.Datetime('Refund Date')
 
-    ticket_ids = fields.One2many('tt.ticket.airline', 'provider_id', 'Ticket Number')
+    ticket_ids = fields.One2many('tt.ticket.train', 'provider_id', 'Ticket Number')
 
     # is_ledger_created = fields.Boolean('Ledger Created', default=False, readonly=True, states={'draft': [('readonly', False)]})
 
     error_history_ids = fields.One2many('tt.reservation.err.history','res_id','Error History')
-    # , domain = [('res_model', '=', 'tt.provider.airline')]
 
     ##button function
     def action_set_to_issued_from_button(self):
@@ -87,17 +86,16 @@ class TtProviderAirline(models.Model):
         if self.state == 'fail_refunded':
             raise UserError("Cannot refund, this PNR has been refunded.")
 
-        # if not self.is_ledger_created:
-        #     raise UserError("This Provider Ledger is not Created.")
+        if not self.is_ledger_created:
+            raise UserError("This Provider Ledger is not Created.")
 
-        ##fixme salahhh, ini ke reverse semua provider bukan provider ini saja
         for rec in self.booking_id.ledger_ids:
             if rec.pnr == self.pnr and not rec.is_reversed:
                 rec.reverse_ledger()
 
         self.write({
             'state': 'fail_refunded',
-            # 'is_ledger_created': False,
+            'is_ledger_created': False,
             'refund_uid': self.env.user.id,
             'refund_date': datetime.now()
         })
@@ -110,11 +108,10 @@ class TtProviderAirline(models.Model):
         }
 
     ###
-    def action_booked_api_airline(self, provider_data, api_context):
+    def action_booked_api_train(self, provider_data, api_context):
         for rec in self:
             rec.write({
                 'pnr': provider_data['pnr'],
-                'pnr2': provider_data['pnr2'],
                 'state': 'booked',
                 'booked_uid': api_context['co_uid'],
                 'booked_date': fields.Datetime.now(),
@@ -122,7 +119,7 @@ class TtProviderAirline(models.Model):
                 'balance_due': provider_data['balance_due']
             })
 
-    def action_issued_api_airline(self,context):
+    def action_issued_api_train(self,context):
         for rec in self:
             rec.write({
                 'state': 'issued',
@@ -132,7 +129,7 @@ class TtProviderAirline(models.Model):
                 'balance_due': 0
             })
 
-    def action_failed_booked_api_airline(self,err_code,err_msg):
+    def action_failed_booked_api_train(self,err_code,err_msg):
         for rec in self:
             rec.write({
                 'state': 'fail_booked',
@@ -144,7 +141,7 @@ class TtProviderAirline(models.Model):
                 })]
             })
 
-    def action_failed_issued_api_airline(self,err_msg):
+    def action_failed_issued_api_train(self,err_msg):
         for rec in self:
             rec.write({
                 'state': 'fail_issued',
@@ -156,57 +153,17 @@ class TtProviderAirline(models.Model):
 
     def create_ticket_api(self,passengers,pnr=""):
         ticket_list = []
-        ticket_not_found = []
-
-        #################
-        for passenger in self.booking_id.passenger_ids:
-            passenger.is_ticketed = False
-        #################
 
         for psg in passengers:
-            psg_obj = self.booking_id.passenger_ids.filtered(lambda x: x.name.replace(' ', '').lower() ==
-                                                                ('%s%s' % (psg.get('first_name', ''),
-                                                                           psg.get('last_name', ''))).lower().replace(' ',''))
-
-            if not psg_obj:
-                psg_obj = self.booking_id.passenger_ids.filtered(lambda x: x.name.replace(' ', '').lower()*2 ==
-                                                                           ('%s%s' % (psg.get('first_name', ''),
-                                                                                      psg.get('last_name',
-                                                                                              ''))).lower().replace(' ',''))
-
-            if psg_obj:
-                print(psg_obj.ids)
-                if len(psg_obj.ids) > 1:
-                    for psg_o in psg_obj:
-                        if not psg_o.is_ticketed:
-                            psg_obj = psg_o
-                            break
-
-                print(str(psg_obj))
+            psg_obj = self.booking_id.passenger_ids.filtered(lambda x: x.sequence == psg.get('sequence'))
+            if not psg_obj.is_ticketed:
+                psg_obj.is_ticketed = True
                 ticket_list.append((0, 0, {
                     'pax_type': psg.get('pax_type'),
                     'ticket_number': psg.get('ticket_number'),
                     'passenger_id': psg_obj.id
                 }))
-                psg_obj.is_ticketed = True
-                psg_obj.create_ssr(psg['fees'],pnr,self.id)
-            else:
-                ticket_not_found.append(psg)
 
-        psg_with_no_ticket = self.booking_id.passenger_ids.filtered(lambda x: x.is_ticketed == False)
-        for idx, psg in enumerate(ticket_not_found):
-            if idx >= len(psg_with_no_ticket):
-                ticket_list.append((0, 0, {
-                    'pax_type': psg.get('pax_type'),
-                    'ticket_number': psg.get('ticket_number'),
-                }))
-            else:
-                ticket_list.append((0, 0, {
-                    'pax_type': psg.get('pax_type'),
-                    'ticket_number': psg.get('ticket_number'),
-                    'passenger_id': psg_with_no_ticket[idx].id
-                }))
-                psg_with_no_ticket[idx].is_ticketed = True
 
         self.write({
             'ticket_ids': ticket_list
@@ -218,7 +175,7 @@ class TtProviderAirline(models.Model):
             ticket_found = False
             for ticket in self.ticket_ids:
                 psg_name = ticket.passenger_id.name.replace(' ','').lower()
-                if ('%s%s' % (psg['first_name'], psg['last_name'])).replace(' ','').lower() in [psg_name, psg_name*2] and not ticket.ticket_number or ticket.ticket_number == psg.get('ticket_number'):
+                if ('%s%s' % (psg['first_name'], psg['last_name'])).replace(' ','').lower() in [psg_name, psg_name*2] and not ticket.ticket_number:
                     ticket.write({
                         'ticket_number': psg.get('ticket_number','')
                     })
@@ -242,19 +199,19 @@ class TtProviderAirline(models.Model):
 
         for scs in service_charge_vals:
             scs['pax_count'] = 0
-            scs['passenger_airline_ids'] = []
+            scs['passenger_train_ids'] = []
             scs['total'] = 0
             scs['currency_id'] = currency_obj.get_id(scs.get('currency'))
             scs['foreign_currency_id'] = currency_obj.get_id(scs.get('foreign_currency'))
-            scs['provider_airline_booking_id'] = self.id
+            scs['provider_train_booking_id'] = self.id
             for psg in self.ticket_ids:
                 if scs['pax_type'] == psg.pax_type:
-                    scs['passenger_airline_ids'].append(psg.passenger_id.id)
+                    scs['passenger_train_ids'].append(psg.passenger_id.id)
                     scs['pax_count'] += 1
                     scs['total'] += scs['amount']
             scs.pop('currency')
             scs.pop('foreign_currency')
-            scs['passenger_airline_ids'] = [(6,0,scs['passenger_airline_ids'])]
+            scs['passenger_train_ids'] = [(6,0,scs['passenger_train_ids'])]
             scs['description'] = self.pnr
             service_chg_obj.create(scs)
 

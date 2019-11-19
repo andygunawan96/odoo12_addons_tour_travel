@@ -6,9 +6,9 @@ class tt_ledger(models.Model):
 
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
 
-    def prepare_vals_for_resv(self, resv_obj, vals):
+    def prepare_vals_for_resv(self, resv_obj,provider_pnr, vals):
         vals.update({
-            'pnr': resv_obj.pnr,
+            'pnr': provider_pnr,
             'date': fields.datetime.now(),
             'display_provider_name': resv_obj.provider_name,
             'provider_type_id': resv_obj.provider_type_id.id,

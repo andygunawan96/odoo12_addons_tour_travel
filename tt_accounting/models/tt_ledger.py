@@ -177,12 +177,14 @@ class Ledger(models.Model):
             if sc.charge_type != 'RAC' and not sc.is_ledger_created:
                 amount += sc.get_total_for_payment()
 
+        if amount == 0:
+            return
 
         booking_obj = provider_obj.booking_id
         ledger_values = self.prepare_vals(booking_obj._name,booking_obj.id,'Order : ' + booking_obj.name, booking_obj.name, datetime.now()+relativedelta(hours=7),
                                           2, booking_obj.currency_id.id, issued_uid, 0, amount)
 
-        ledger_values = self.prepare_vals_for_resv(booking_obj,ledger_values)
+        ledger_values = self.prepare_vals_for_resv(booking_obj,provider_obj.pnr,ledger_values)
         self.create(ledger_values)
 
     def create_commission_ledger(self, provider_obj,issued_uid):
@@ -200,13 +202,16 @@ class Ledger(models.Model):
                     agent_commission[agent_id] = 0
                 agent_commission[agent_id] += amount
 
+        if amount == 0:
+            return
+
         for agent_id, amount in agent_commission.items():
             ledger_values = self.prepare_vals(booking_obj._name,booking_obj.id,'Commission : ' + booking_obj.name, booking_obj.name, datetime.now()+relativedelta(hours=7),
                                        3, booking_obj.currency_id.id,issued_uid, amount, 0)
             ledger_values.update({
                 'agent_id': abs(agent_id),
             })
-            values = self.prepare_vals_for_resv(booking_obj,ledger_values)
+            values = self.prepare_vals_for_resv(booking_obj,provider_obj.pnr,ledger_values)
             _logger.info('Create Ledger Comission\n')
             self.create(values)
 

@@ -1,7 +1,7 @@
 <odoo>
     <record id="tt_reservation_train_provider_form_view" model="ir.ui.view">
         <field name="name">tt.transport.train.provider.form.view</field>
-        <field name="model">tt.tb.provider.train</field>
+        <field name="model">tt.provider.train</field>
         <field name="arch" type="xml">
             <form>
                 <!--<header>-->
@@ -17,17 +17,21 @@
                     <!--&lt;!&ndash;<field name="state" widget="statusbar" statusbar_visible="draft,booked,issued" clickable="1"/>&ndash;&gt;-->
                     <!--<field name="state" widget="statusbar" statusbar_visible="draft,booked,issued"/>-->
                 <!--</header>-->
-                <field name="state"  widget="statusbar"/>
+                <header>
+                    <button string="Force Issued (Create Ledger)" name="action_force_issued_from_button" states="booked" type="object"/>
+                    <button string="Set To Issued (No Create Ledger)" name="action_set_to_issued_from_button" type="object"/>
+                    <button string="Reverse Ledger" name="action_reverse_ledger_from_button" states="issued" type="object"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,booked,issued"/>
+                </header>
                 <sheet>
                     <group>
                         <group>
-                            <field name="is_ledger_created"/>
+<!--                            <field name="is_ledger_created" groups="base.user_admin"/>-->
                             <field name="sequence"/>
                             <field name="booking_id"/>
                             <field name="pnr"/>
-                            <field name="provider"/>
-                            <field name="notes"/>
-                            <field name="error_msg"/>
+                            <field name="provider_id"/>
+                            <field name="balance_due"/>
                         </group>
                         <group>
                             <field name="hold_date"/>
@@ -36,8 +40,21 @@
                             <field name="booked_date"/>
                             <field name="issued_uid"/>
                             <field name="issued_date"/>
-                            <!--<field name="refund_uid"/>-->
-                            <!--<field name="refund_date"/>-->
+                            <field name="refund_uid"/>
+                            <field name="refund_date"/>
+                        </group>
+                    </group>
+                    <group string="Itinerary Info">
+                        <group>
+                            <field name="origin_id"/>
+                            <field name="destination_id"/>
+                            <field name="departure_date"/>
+                            <field name="return_date"/>
+                        </group>
+                        <group>
+                            <field name="currency_id"/>
+                            <field name="sid_issued"/>
+                            <field name="promotion_code"/>
                         </group>
                     </group>
                     <separator string="Passengers"/>
@@ -47,44 +64,32 @@
                             <field name="ticket_number"/>
                         </tree>
                     </field>
-                    <group string="Itinerary Info">
-                        <group>
-                            <field name="origin"/>
-                            <field name="destination"/>
-                            <field name="departure_date"/>
-                            <field name="return_date"/>
-                            <field name="direction"/>
-                        </group>
-                        <group>
-                            <field name="currency_id"/>
-                            <!--<field name="sid"/>-->
-                            <!--<field name="sid_connector"/>-->
-                            <field name="promotion_code"/>
-                        </group>
-                    </group>
                     <separator string="Journeys"/>
-                    <field name="journey_ids">
-                        <tree>
-                            <field name="pnr"/>
-                            <field name="sequence"/>
-                            <field name="origin"/>
-                            <field name="destination"/>
-                        </tree>
-                    </field>
+                    <field name="journey_ids"/>
                     <separator string="Service Charges"/>
-                    <field name="cost_service_charge_ids">
+                    <field name="cost_service_charge_ids" context="{'form_view_ref':'tt_reservation_train.tt_service_charge_train_inherit_form_view'}">
                         <tree>
                             <field name="charge_code"/>
+                            <field name="charge_type"/>
                             <field name="pax_type"/>
                             <field name="pax_count"/>
-                            <field name="total"/>
                             <field name="currency_id" invisible="1"/>
+                            <field name="amount"/>
+                            <field name="total"/>
+                            <field name="passenger_train_ids"/>
                         </tree>
                     </field>
-                    <group string="Total Information" class="oe_subtotal_footer oe_right">
-                        <field name="total" class="oe_subtotal_footer_separator"/>
-                        <field name="total_fare" class="oe_subtotal_footer_seperator"/>
-                    </group>
+                    <separator string="Error History"/>
+                    <field name="error_history_ids">
+                        <tree>
+                            <field name="error_code"/>
+                            <field name="error_msg"/>
+                        </tree>
+                    </field>
+                    <!--<group string="Total Information" class="oe_subtotal_footer oe_right" groups="tt_base.group_tt_tour_travel_operator">-->
+                        <!--<field name="total" class="oe_subtotal_footer_separator"/>-->
+                        <!--<field name="total_fare" class="oe_subtotal_footer_seperator"/>-->
+                    <!--</group>-->
                 </sheet>
             </form>
         </field>
@@ -92,14 +97,14 @@
 
     <record id="tt_reservation_train_provider_tree_view" model="ir.ui.view">
         <field name="name">tt.transport.train.provider.tree.view</field>
-        <field name="model">tt.tb.provider.train</field>
+        <field name="model">tt.provider.train</field>
         <field name="arch" type="xml">
             <tree>
                 <field name="pnr"/>
-                <field name="direction"/>
-                <field name="provider"/>
-                <field name="origin"/>
-                <field name="destination"/>
+                <field name="pnr2"/>
+                <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                <field name="origin_id"/>
+                <field name="destination_id"/>
                 <field name="departure_date"/>
                 <field name="return_date"/>
                 <!--<field name="total"/>-->
@@ -109,13 +114,12 @@
     </record>
 
 
-    <record id="tt_reservation_train_provider_views" model="ir.actions.act_window">
-        <field name="name">Train Provider</field>
-        <field name="res_model">tt.tb.provider.train</field>
+    <record id="tt_reservation_train_provider_action_views" model="ir.actions.act_window">
+        <field name="name">tt.reservation.train.provider.action.views</field>
+        <field name="res_model">tt.provider.train</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="context">
-
         </field>
     </record>
 
