@@ -129,7 +129,9 @@ class ReservationTour(models.Model):
 
         for rec in self.tour_id.passengers_ids:
             if rec.tour_id.id == self.id:
-                rec.sudo().tour_pricelist_id = False
+                rec.sudo().write({
+                    'tour_id': False
+                })
     # *END STATE*
 
     def action_booked_tour(self, api_context=None):
