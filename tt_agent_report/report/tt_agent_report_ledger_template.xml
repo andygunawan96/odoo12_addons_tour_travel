@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="agent_report_ledger">
+            <t t-call="web.html_container">
+                <t t-call="web.internal_layout">
+                    <div class="page">
+                        <!--========= TITLE & SUBTITLE ===========-->
+                        <div style="text-align:center;">
+                            <h4>
+                                <span t-esc="data_form['title']"/>
+                            </h4>
+                        </div>
+                        <div style="text-align:center;">
+                            <strong>
+                                <span t-esc="data_form['subtitle']"/>
+                            </strong>
+                        </div>
+
+                        <table class="table table-condensed">
+                            <col width="100"/>
+                            <col width="250"/>
+                            <thead>
+                                <tr>
+                                    <th style="white-space: nowrap;">Date</th>
+                                    <th>Reference</th>
+                                    <th>Service Type</th>
+                                    <t t-if="data_form['agent_type'] == 'ho'">
+                                        <th>Provider</th>
+                                    </t>
+                                    <th>PNR</th>
+                                    <th>Agent's Name</th>
+                                    <th>Agent's Type</th>
+                                    <th>Description</th>
+                                    <th>Issued By</th>
+                                    <th>Type</th>
+                                    <th class="text-right" style="white-space: nowrap;">Debit</th>
+                                    <th class="text-right" style="white-space: nowrap;">Credit</th>
+                                    <th class="text-right" style="white-space: nowrap;">Balance</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="docs['lines']" t-as="line">
+                                    <td><t t-esc="line['date']"/></td>
+                                    <td><t t-esc="line['ref']"/></td>
+                                    <td><t t-esc="line['provider_type']"/></td>
+                                    <t t-if="data_form['agent_type'] == 'ho'">
+                                        <td><t t-esc="line['display_provider_name']"/></td>
+                                    </t>
+                                    <td><t t-esc="line['pnr']"/></td>
+                                    <td><t t-esc="line['agent']"/></td>
+                                    <td><t t-esc="line['agent_type']"/></td>
+                                    <td><t t-esc="line['description']"/></td>
+                                    <td><t t-esc="line['issued_by']"/></td>
+                                    <td><t t-esc="line['transaction_type']"/></td>
+                                    <td class="text-right">
+                                        <span t-esc="line['debit']"/>
+                                    </td>
+                                    <td class="text-right">
+                                        <span t-esc="line['credit']"/>
+                                    </td>
+                                    <td class="text-right">
+                                        <span t-esc="line['balance']"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>
