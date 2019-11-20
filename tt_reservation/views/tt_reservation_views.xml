@@ -96,7 +96,11 @@
                         </group>
                         <group string="Contact Information">
                             <field name="contact_id"/>
-                            <field name="contact_name"/>
+                            <label for="contact_title" string="Contact Name"/>
+                            <div>
+                                <field name="contact_title" class="oe_inline"/>.
+                                <field name="contact_name" class="oe_inline"/>
+                            </div>
                             <field name="contact_email"/>
                             <field name="contact_phone"/>
                         </group>

@@ -623,6 +623,7 @@ class ReservationAirline(models.Model):
                 'user_id': context['co_uid'],
                 'sid_booked': context['signature'],
                 'booker_id': booker_obj.id,
+                'contact_title': contacts[0]['title'],
                 'contact_id': contact_obj.id,
                 'contact_name': contact_obj.name,
                 'contact_email': contact_obj.email,
