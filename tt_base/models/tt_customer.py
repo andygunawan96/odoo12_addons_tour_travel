@@ -33,7 +33,8 @@ class TtCustomer(models.Model):
     email = fields.Char('Email')
     user_ids = fields.One2many('res.users', 'customer_id', 'User')
     customer_bank_detail_ids = fields.One2many('customer.bank.detail', 'customer_id', 'Customer Bank Detail')
-    agent_id = fields.Many2one('tt.agent', 'Agent')
+    agent_id = fields.Many2one('tt.agent', 'Agent')  # , default=lambda self: self.env.user.agent_id
+    # user_agent_id = fields.Many2one('tt.agent', 'Agent User', default=lambda self: self.env.user.agent_id)
     customer_parent_ids = fields.Many2many('tt.customer.parent','tt_customer_customer_parent_rel','customer_id','customer_parent_id','Customer Parent')
 
     active = fields.Boolean('Active', default=True)
@@ -286,6 +287,22 @@ class TtCustomer(models.Model):
             if image_ids:
                 update_vals.update({'identity_image_ids':image_ids})
             exixting_identity.write(update_vals)
+
+    @api.model
+    def customer_action_view_customer(self):
+        return {
+            'name': 'Customer',
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'res_model': 'tt.customer',
+            'views': [(self.env.ref('tt_base.tt_customer_tree_view_customer').id, 'tree'),
+                      (self.env.ref('tt_base.tt_customer_form_view_customer').id, 'form')],
+            'context': {
+                'default_agent_id': self.env.user.agent_id.id
+            },
+            'domain': [('agent_id', '=', self.env.user.agent_id.id)]
+        }
 
 
 class TtCustomerIdentityNumber(models.Model):

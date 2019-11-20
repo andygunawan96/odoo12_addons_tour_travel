@@ -19,30 +19,6 @@ class AgentReportRecapReservation(models.Model):
         """
 
     @staticmethod
-    def _from_visa():
-        return """tt_reservation_visa rsv
-        LEFT JOIN tt_agent agent ON agent.id = rsv.agent_id 
-        LEFT JOIN tt_agent_type agent_type ON agent_type.id = agent.agent_type_id 
-        LEFT JOIN tt_provider_type tpt ON tpt.id = rsv.provider_type_id 
-        """
-
-    @staticmethod
-    def _from_passport():
-        return """tt_reservation_passport rsv
-        LEFT JOIN tt_agent agent ON agent.id = rsv.agent_id 
-        LEFT JOIN tt_agent_type agent_type ON agent_type.id = agent.agent_type_id 
-        LEFT JOIN tt_provider_type tpt ON tpt.id = rsv.provider_type_id
-        """
-
-    @staticmethod
-    def _from_offline():
-        return """tt_reservation_offline rsv
-        LEFT JOIN tt_agent agent ON agent.id = rsv.agent_id 
-        LEFT JOIN tt_agent_type agent_type ON agent_type.id = agent.agent_type_id 
-        LEFT JOIN tt_provider_type tpt ON tpt.id = rsv.provider_type_id
-        """
-
-    @staticmethod
     def _from(provider_type):
         def selected_field(provider_type):
             if provider_type == 'airline':

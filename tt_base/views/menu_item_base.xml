@@ -11,6 +11,14 @@
                   sequence="1"/>
 
 
+        <!--Customers-->
+        <menuitem id="main_customers"
+                  name="Customers"
+                  groups="group_tt_agent_user_operator"
+                  web_icon="hr,static/description/icon.png"
+                  sequence="4"/>
+
+
         <!--Transactions-->
         <menuitem id="main_transaction"
               name="Transactions"
@@ -27,6 +35,19 @@
                   sequence="10"
                   groups="base.group_user"/>
 
+        <menuitem id="top_customers_customers"
+                  parent="tt_base.main_customers"
+
+                  name="Customers"
+                  sequence="10"
+                  groups="base.group_user"/>
+
+        <menuitem id="top_customers_agent"
+                  parent="tt_base.main_customers"
+
+                  name="Agent"
+                  sequence="20"
+                  groups="base.group_user"/>
 
         <!--Upload-->
         <menuitem id="top_tour_travel_upload"

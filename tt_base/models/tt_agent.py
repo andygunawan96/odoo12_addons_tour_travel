@@ -104,27 +104,44 @@ class TtAgent(models.Model):
         }
 
     def action_create_user(self):
-        # view_users_form
-        form_view_ref = self.env.ref('base.view_users_form', False)
-        user_dict = self.agent_type_id.user_template.read()
+        print(self.agent_type_id.code)
         vals = {
-            'name': 'Create User',
-            'res_model': 'res.users',
+            'name': 'Create User Wizard',
+            'res_model': 'create.user.wizard',
             'type': 'ir.actions.act_window',
-            'views': [(form_view_ref.id, 'form')],
             'view_type': 'form',
             'view_mode': 'form',
-            'target': '_blank',
+            'target': 'new',
             'context': {
-                'default_agent_id': self.id,
+                'agent_id': self.id,
+                'agent_type_id': self.agent_type_id.id,
+                'agent_type_code': self.agent_type_id.code,
             },
         }
-        if user_dict:
-            vals['context'].update({
-                'default_groups_id': [(6, 0, user_dict[0]['groups_id'])]
-            })
-
         return vals
+
+    # def action_create_user(self):
+    #     # view_users_form
+    #     form_view_ref = self.env.ref('base.view_users_form', False)
+    #     user_dict = self.agent_type_id.user_template.read()
+    #     vals = {
+    #         'name': 'Create User',
+    #         'res_model': 'res.users',
+    #         'type': 'ir.actions.act_window',
+    #         'views': [(form_view_ref.id, 'form')],
+    #         'view_type': 'form',
+    #         'view_mode': 'form',
+    #         'target': '_blank',
+    #         'context': {
+    #             'default_agent_id': self.id,
+    #         },
+    #     }
+    #     if user_dict:
+    #         vals['context'].update({
+    #             'default_groups_id': [(6, 0, user_dict[0]['groups_id'])]
+    #         })
+    #
+    #     return vals
 
     def _compute_balance_agent(self):
         for rec in self:

@@ -11,7 +11,7 @@ class TtCustomerParent(models.Model):
     logo_thumb = fields.Binary('Agent Logo Thumb', compute="_get_logo_image", store=True, attachment=True) #fixme later
 
     customer_parent_type_id = fields.Many2one('tt.customer.parent.type', 'Customer Parent Type', required=True)
-    parent_agent_id = fields.Many2one('tt.agent', 'Parent', required=True)
+    parent_agent_id = fields.Many2one('tt.agent', 'Parent', required=True)  # , default=lambda self: self.env.user.agent_id
 
     balance = fields.Monetary(string="Balance")
     actual_balance = fields.Monetary(string="Actual Balance", readonly=True, compute="_compute_actual_balance")
@@ -38,6 +38,22 @@ class TtCustomerParent(models.Model):
     def create(self,vals_list):
         vals_list['seq_id'] = self.env['ir.sequence'].next_by_code('cust.par')
         return super(TtCustomerParent, self).create(vals_list)
+
+    @api.model
+    def customer_parent_action_view_customer(self):
+        return {
+            'name': 'Customer Parent',
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'res_model': 'tt.customer.parent',
+            'views': [(self.env.ref('tt_base.tt_customer_parent_tree_view_customer').id, 'tree'),
+                      (self.env.ref('tt_base.tt_customer_parent_form_view_customer').id, 'form')],
+            'context': {
+                'default_parent_agent_id': self.env.user.agent_id.id
+            },
+            'domain': [('parent_agent_id', '=', self.env.user.agent_id.id)]
+        }
 
     #ledger history
     #booking History
