@@ -18,6 +18,7 @@ class TtMasterTourOtherInfo(models.Model):
 
     name = fields.Char('Name', related='info_message_ids.name')
     info_message_ids = fields.One2many('tt.master.tour.otherinfo.messages', 'otherinfo_id', 'Messages')
+    child_list_type = fields.Selection([('none', 'None'), ('number', 'Number (1, 2, 3)'), ('letter', 'Letter (a, b, c)'), ('dots', 'Dots (o, o, o)'), ('romans', 'Romans (I, II, III)')],'Child List Type', default='none')
     parent_id = fields.Many2one('tt.master.tour.otherinfo', 'Parent')
     child_ids = fields.One2many('tt.master.tour.otherinfo', 'parent_id', 'Children')
     master_tour_id = fields.Many2one('tt.master.tour', 'Master Tour')
@@ -37,6 +38,7 @@ class TtMasterTourOtherInfo(models.Model):
 
         return {
             'message': msg_list,
+            'child_list_type': self.child_list_type,
             'children': obj_child
         }
 
