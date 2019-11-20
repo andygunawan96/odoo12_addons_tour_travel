@@ -11,7 +11,7 @@
                     <button string="Set to Issued" name="action_set_as_issued" groups="tt_base.group_tt_tour_travel_operator" type="object"/>
                     <button string="Set Booking State" name="action_check_provider_state" groups="tt_base.group_tt_tour_travel_operator" type="object"/>
                     <button string="Cancel" name="action_cancel" states="booked,issued" groups="tt_base.group_tt_tour_travel_operator" type="object"/>
-                    <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action"
+                    <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action" groups="tt_base.group_tt_tour_travel_opeartor"
                                        context="{
                         'default_res_model': res_model,
                         'default_res_id': id,
@@ -85,7 +85,7 @@
                                 <field name="refund_uid" readonly="1" class="oe_inline"/> -
                                 <field name="refund_date" readonly="1" class="oe_inline"/>
                             </div>
-                            <field name="sid_booked"/>
+                            <field name="sid_booked" groups="tt_base_group.tt_tour_and_travel_operator"/>
                         </group>
                     </group>
 

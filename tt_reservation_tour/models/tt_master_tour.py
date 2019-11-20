@@ -10,11 +10,6 @@ import pytz
 
 _logger = logging.getLogger(__name__)
 
-DP_TYPE = [
-    ('percentage', 'Percentage'),
-    ('amount', 'Amount'),
-]
-
 
 class Survey(models.Model):
     _inherit = 'survey.survey'
@@ -118,10 +113,6 @@ class MasterTour(models.Model):
     discount_ids = fields.One2many('tt.master.tour.discount.fit', 'tour_pricelist_id')
     room_ids = fields.One2many('tt.master.tour.rooms', 'tour_pricelist_id', required=True)
 
-    dp = fields.Float('Down Payment Percent (%)')
-    dp_type = fields.Selection(DP_TYPE, 'Down Payment Type')
-    dp_amount = fields.Monetary('Down Payment Amount', default=0)
-    dp_percentage = fields.Float('Down Payment Percentage (%)', default=0)
     payment_rules_ids = fields.One2many('tt.payment.rules', 'pricelist_id')
 
     ho_id = fields.Many2one('tt.agent',
@@ -132,7 +123,7 @@ class MasterTour(models.Model):
     # tour_checklist_ids = fields.Char('Tour Checklist')
     tour_checklist_ids = fields.One2many('tt.master.tour.checklist', 'tour_pricelist_id', string="Tour Checklist")
 
-    requirements = fields.Html('Remarks')
+    other_info_ids = fields.One2many('tt.master.tour.otherinfo', 'master_tour_id', 'Other Info')
     image_ids = fields.Many2many('tt.upload.center', 'tour_images_rel', 'tour_id', 'image_id', 'Images')
 
     flight_segment_ids = fields.One2many('flight.segment', 'tour_pricelist_id', string="Flight Segment")
@@ -536,6 +527,8 @@ class MasterTour(models.Model):
                         acc.pop('single_supplement')
                     if acc.get('additional_charge'):
                         acc.pop('additional_charge')
+                    if acc.get('currency_id'):
+                        acc.pop('currency_id')
 
                     acc_key_list = [key for key in acc.keys()]
                     for key in acc_key_list:
@@ -653,24 +646,20 @@ class MasterTour(models.Model):
         try:
             search_tour_id = data.get('id')
             search_tour_obj = self.env['tt.master.tour'].sudo().browse(int(search_tour_id))
-            if search_tour_obj.dp_type == 'amount':
-                dp_val = search_tour_obj.dp_amount
-            else:
-                dp_val = search_tour_obj.dp_percentage
             payment_rules = []
             for payment in search_tour_obj.payment_rules_ids:
                 vals = {
                     'name': payment.name,
                     'description': payment.description,
+                    'payment_type': payment.payment_type,
                     'payment_percentage': payment.payment_percentage,
+                    'payment_amount': payment.payment_amount,
                     'due_date': payment.due_date,
                 }
                 payment_rules.append(vals)
 
             response = {
                 'payment_rules': payment_rules,
-                'dp_val': dp_val,
-                'dp_type': search_tour_obj.dp_type
             }
             return ERR.get_no_error(response)
         except RequestException as e:

@@ -23,7 +23,7 @@
     </record>
 
     <record id="action_agent_report_offline_ho" model="ir.actions.act_window">
-        <field name="name">Offline Report</field>
+        <field name="name">Offline Report HO</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">tt.agent.report.ho.offline.wizard</field>
         <field name="view_type">form</field>

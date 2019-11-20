@@ -20,13 +20,16 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'tt_base', 'tt_reservation', 'tt_agent_sales', 'tt_report_common'],
+    'depends': ['base', 'tt_base', 'tt_accounting', 'tt_reservation', 'tt_agent_sales', 'tt_report_common'],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
         'wizard/tt_agent_report_common_view.xml',
-        'wizard/tt_agent_report_excel_output_wizard.xml'
+        'wizard/tt_agent_report_ledger_view.xml',
+        'wizard/tt_agent_report_excel_output_wizard.xml',
+        'report/tt_agent_report_ledger_menu.xml',
+        'report/tt_agent_report_ledger_template.xml'
         # 'views/views.xml',
         # 'views/templates.xml',
     ],

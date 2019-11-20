@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_customer_form_view_customer" model="ir.ui.view">
+        <field name="name">tt.customer.form.view.customer</field>
+        <field name="model">tt.customer</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button string="Add Identity" name="add_identity_button" type="object"
+                            groups="base.group_user"/>
+
+                    <button string="Update Identity" name="test_vals_cleaner" type="object"
+                            groups="base.group_user"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" groups="base.group_user"
+                                class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button"
+                                   options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <div id="o_employee_container">
+                        <div id="o_employee_main">
+                            <div class="oe_title">
+                                <h1>
+                                    <field name="first_name" placeholder="First Name" class="oe_inline"/>
+                                    <span color="white"><![CDATA[&nbsp;]]></span>
+                                    <field name="last_name" placeholder="Last Name" class="oe_inline"/>
+                                </h1>
+                                <h2>
+                                    <field name="seq_id"/>
+                                </h2>
+                            </div>
+                            <group>
+<!--                                <field name="user_agent_id" readonly="True" invisible="0"/>-->
+                                <field name="agent_id" readonly="True"/>
+                                <field name="name" readonly="True"/>
+                                <field name="nickname"/>
+                                <field name="email"/>
+                                <field name="gender"/>
+                                <field name="marital_status"/>
+                                <field name="nationality_id"/>
+                                <field name="religion"/>
+                                <field name="birth_date"/>
+                                <field name="face_image_id"/>
+                            </group>
+
+                            <notebook colspan="2">
+                                <page string="Identity">
+                                    <field name="identity_ids">
+                                        <tree>
+                                            <field name="identity_type"/>
+                                            <field name="identity_number"/>
+                                            <field name="identity_expdate"/>
+                                            <field name="identity_country_of_issued_id"/>
+                                            <field name="identity_image_ids"/>
+                                        </tree>
+                                    </field>
+                                </page>
+                                <page string="Customer Parent">
+                                    <field name="customer_parent_ids" domain="[('parent_agent_id', '=', agent_id)]"/>
+                                </page>
+                                <page string="Addresses">
+                                    <field name="address_ids"/>
+                                </page>
+                                <page string="Phones">
+                                    <field name="phone_ids"/>
+                                </page>
+                                <page string="Social Media">
+                                    <field name="social_media_ids"/>
+                                </page>
+                                <page string="Bank Detail">
+                                    <field name="customer_bank_detail_ids"/>
+                                </page>
+                                <page string="Users">
+                                    <field name="user_ids"/>
+                                </page>
+                            </notebook>
+                        </div>
+                    </div>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_customer_tree_view_customer" model="ir.ui.view">
+        <field name="name">tt.customer.tree.view.customer</field>
+        <field name="model">tt.customer</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="first_name"/>
+                <field name="last_name"/>
+                <field name="agent_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_view_customer_server" model="ir.actions.server">
+        <field name="name">Customer</field>
+        <field name="model_id" ref="model_tt_customer"/>
+        <field name="state">code</field>
+        <field name="code">action = model.customer_action_view_customer()</field>
+        <field eval="True" name="condition"/>
+    </record>
+
+    <menuitem id="menu_customers_customer"
+              parent="tt_base.top_customers_customers"
+              groups="tt_base.group_tt_agent_user_operator"
+              name="Customer"
+              sequence="1"
+              action="action_view_customer_server"/>
+</odoo>

@@ -96,12 +96,12 @@ class TtVisa(models.Model):
     recipient_address = fields.Char('Recipient Address')
     recipient_phone = fields.Char('Recipient Phone')
 
-    contact_ids = fields.One2many('tt.customer', 'visa_id', 'Contacts', readonly=True)
-    booker_id = fields.Many2one('tt.customer', 'Booker', ondelete='restrict', readonly=True)
-
     to_vendor_date = fields.Datetime('Send To Vendor Date', readonly=1)
     vendor_process_date = fields.Datetime('Vendor Process Date', readonly=1)
     in_process_date = fields.Datetime('In Process Date', readonly=1)
+
+    contact_ids = fields.One2many('tt.customer', 'visa_id', 'Contacts', readonly=True)
+    booker_id = fields.Many2one('tt.customer', 'Booker', ondelete='restrict', readonly=True)
 
     acquirer_id = fields.Char('Payment Method', readonly=True)
 
@@ -170,7 +170,7 @@ class TtVisa(models.Model):
     def action_in_process_visa(self):
         self.write({
             'state_visa': 'in_process',
-            'in_process_date': datetime.now()
+            # 'in_process_date': datetime.now()
         })
         for rec in self.passenger_ids:
             if rec.state in ['validate', 'cancel']:
@@ -512,20 +512,20 @@ class TtVisa(models.Model):
                 for ssc in pax.cost_service_charge_ids:
                     if ssc.charge_code == 'rac':
                         sale['RAC'] = {
-                            'charge_code': 'rac',
-                            'amount': ssc.amount
+                            'charge_code': ssc.charge_code,
+                            'amount': abs(ssc.amount)
                         }
                         if ssc.currency_id:
                             sale['RAC'].update({
                                 'currency': ssc.currency_id.name
                             })
-                    else:
-                        sale[ssc.charge_code.upper()] = {
+                    elif ssc.charge_code == 'total':
+                        sale['TOTAL'] = {
                             'charge_code': ssc.charge_code,
-                            'amount': ssc.amount,
+                            'amount': ssc.amount
                         }
                         if ssc['currency_id']:
-                            sale[ssc.charge_code.upper()].update({
+                            sale['TOTAL'].update({
                                 'currency': ssc.currency_id.name
                             })
                 # for ssc in sale_obj:
@@ -611,12 +611,13 @@ class TtVisa(models.Model):
                 'journey': {
                     'country': rec.country_id.name,
                     'departure_date': str(res_dict['departure_date']),
+                    'in_process_date': str(rec['in_process_date'].strftime("%Y-%m-%d")) if rec['in_process_date'] else '',
                     'name': res_dict['order_number'],
                     'payment_status': rec.commercial_state,
                     'state': res_dict['state'],
-                    'state_visa': rec.state_visa
+                    'state_visa': dict(rec._fields['state_visa'].selection).get(rec.state_visa)
                 },
-                'passengers': passenger,
+                'passengers': passenger
                 # 'contact': contact,
                 # 'sale_price': sale
             }
@@ -1057,11 +1058,6 @@ class TtVisa(models.Model):
 
             vals = {}
 
-            if rec.name == 'New':
-                vals.update({
-                    'state': 'partial_booked',
-                })
-
             vals.update({
                 'state': 'issued',
                 'issued_uid': api_context['co_uid'],
@@ -1100,67 +1096,6 @@ class TtVisa(models.Model):
             })
 
             new_aml = ledger.create(vals)
-
-    def _create_ledger_visa(self):
-        # pass
-        print(self.sale_service_charge_ids.read())
-        ledger = self.env['tt.ledger']
-        total_order = 0
-        for rec in self:
-            doc_type = []
-            desc = ''
-
-            for sc in rec.sale_service_charge_ids:
-                if sc.pricelist_id.visa_type not in doc_type:
-                    doc_type.append(sc.pricelist_id.visa_type)
-                if sc.charge_code == 'TOTAL':
-                    total_order += sc.total
-                if sc.pricelist_id.display_name:
-                    desc = sc.pricelist_id.display_name.upper() + ' ' + sc.pricelist_id.entry_type.upper()
-
-            doc_type = ','.join(str(e) for e in doc_type)
-
-            vals = ledger.prepare_vals('Order ' + doc_type + ' : ' + rec.name, rec.name, rec.issued_date,
-                                       2, rec.currency_id.id, 0, total_order)
-            vals = ledger.prepare_vals_for_resv(self, vals)
-
-            new_aml = ledger.create(vals)
-
-    def _create_commission_ledger_visa(self):
-        # pass
-        for rec in self:
-            ledger_obj = rec.env['tt.ledger']
-            agent_commission, parent_commission, ho_commission = rec.agent_id.agent_type_id.calc_commission(
-                rec.total_commission, 1)
-
-            if agent_commission > 0:
-                vals = ledger_obj.prepare_vals('Commission : ' + rec.name, rec.name, rec.issued_date, 3,
-                                               rec.currency_id.id, agent_commission, 0)
-                vals = ledger_obj.prepare_vals_for_resv(self, vals)
-                vals.update({
-                    'description': 'Agent Commission'
-                })
-                commission_aml = ledger_obj.create(vals)
-            if parent_commission > 0:
-                vals = ledger_obj.prepare_vals('Commission : ' + rec.name, 'PA: ' + rec.name, rec.issued_date,
-                                               3, rec.currency_id.id, parent_commission, 0)
-                vals = ledger_obj.prepare_vals_for_resv(self, vals)
-                vals.update({
-                    'agent_id': rec.agent_id.parent_agent_id.id,
-                    'description': 'Parent Agent Commission'
-                })
-                commission_aml = ledger_obj.create(vals)
-            if int(ho_commission) > 0:
-                vals = ledger_obj.prepare_vals('Commission : ' + rec.name, 'HO: ' + rec.name, rec.issued_date,
-                                               3, rec.currency_id.id, ho_commission, 0)
-                vals = ledger_obj.prepare_vals_for_resv(self, vals)
-                vals.update({
-                    'agent_id': rec.env['tt.agent'].sudo().search(
-                        [('parent_agent_id', '=', False)], limit=1).id,
-                    'description': 'HO Commission'
-                })
-                commission_aml = ledger_obj.create(vals)
-        # print('Total Fare : ' + str(self.total_fare))
 
     # ANTI / REVERSE LEDGER
 

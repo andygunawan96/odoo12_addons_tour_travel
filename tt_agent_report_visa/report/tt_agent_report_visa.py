@@ -84,10 +84,9 @@ class AgentReportVisaModel(models.AbstractModel):
         agent_id = data_form['agent_id']
         state = data_form['state']
         line_list = []
-        for i in range(1000):
-            lines = self._lines(date_from, date_to, agent_id, state)  # main data
-            for line in lines:
-                line_list.append(line)
+        lines = self._lines(date_from, date_to, agent_id, state)  # main data
+        for line in lines:
+            line_list.append(line)
         self._report_title(data_form)
 
         return {
