@@ -400,7 +400,6 @@ class TtReservation(models.Model):
     ##override fungsi ini untuk melakukan action extra jika expired
     def action_expired(self):
         self.state = 'cancel2'
-        pass
 
     ## Digunakan untuk mengupdate PNR seluruh ledger untuk resv ini
     # Digunakan di hotel dan activity

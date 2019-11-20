@@ -7,7 +7,7 @@ class TtSeatTrain(models.Model):
 
     seat = fields.Char('Seat')
     seat_code = fields.Char('Seat Code')
-    journey_id = fields.Many2one('tt.journey.train', 'Segment')
+    journey_id = fields.Many2one('tt.journey.train', 'Journey')
     passenger_id = fields.Many2one('tt.reservation.passenger.train', 'Passenger')
 
     def to_dict(self):

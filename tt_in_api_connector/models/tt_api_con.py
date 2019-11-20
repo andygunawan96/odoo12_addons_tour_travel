@@ -65,7 +65,6 @@ class TtApiCon(models.Model):
 
         if res['error_code'] != 0:
             raise ERR.get_error()
-
         return res['response']['signature']
 
     def _get_header(self, service_name, signature = ''):

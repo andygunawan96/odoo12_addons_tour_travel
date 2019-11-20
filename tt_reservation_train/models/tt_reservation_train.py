@@ -457,6 +457,33 @@ class TtReservationTrain(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1013)
 
+    def update_seat_train_api(self,req,context):
+        try:
+            _logger.info("Update Seat train\n" + json.dumps(req))
+            book_obj = self.get_book_obj(req.get('book_id'),req.get('order_number'))
+            if book_obj and book_obj.agent_id.id == context.get('co_agent_id',-1):
+                for provider in req['provider_bookings']:
+                    if provider['status'] == 'SUCCESS':
+                        for journey in provider['journeys']:
+                            provider_obj = book_obj.provider_booking_ids.filtered(lambda x: x.sequence == provider['sequence'])
+                            journey_obj = provider_obj.journey_ids.filtered(lambda x: x.sequence == journey['sequence'])
+                            journey_obj.update_ticket(
+                                journey['seats']
+                            )
+
+
+                return ERR.get_no_error()
+            else:
+                raise RequestException(1001)
+
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1013)
+
+
     def calculate_service_charge(self):
         for service_charge in self.sale_service_charge_ids:
             service_charge.unlink()

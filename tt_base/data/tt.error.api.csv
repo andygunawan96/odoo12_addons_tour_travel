@@ -28,6 +28,7 @@ tt_error_api_1021,1021,Failed to get config,,,1,1
 tt_error_api_1022,1022,Failed to get data,,,1,1
 tt_error_api_1023,1023,Customer identity validation failed,,,1,1
 tt_error_api_1024,1024,Customer not found,,,1,1
+tt_error_api_1025,1025,Update seat failed,,,1,1
 tt_error_api_4001,4001,Invalid action type,,,1,1
 tt_error_api_4002,4002,Error while validating your credential,,,1,1
 tt_error_api_4003,4003,Your session has been expired,,,1,1

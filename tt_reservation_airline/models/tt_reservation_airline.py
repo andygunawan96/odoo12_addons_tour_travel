@@ -103,7 +103,7 @@ class ReservationAirline(models.Model):
             'booked_uid': context['co_uid'],
             'booked_date': datetime.now(),
             'hold_date': hold_date,
-            'pnr': pnr_list
+            'pnr': ','.join(pnr_list)
         })
 
     def action_partial_issued_api_airline(self):

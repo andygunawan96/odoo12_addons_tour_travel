@@ -80,9 +80,9 @@ class AgentInvoice(models.Model):
         #pengecekan paid di sini dan tidak di compute paid supaya status berubah ketika tekan tombol save
         #jika tidak, saat pilih payment sebelum save bisa lgsg berubah jadi paid
         super(AgentInvoice, self).write(vals)
-        if 'payment_ids' in vals:
-            if self.check_paid_status():
-                self.state = 'paid'
+        # if 'payment_ids' in vals:
+        if self.check_paid_status():
+            self.state = 'paid'
 
     def set_as_confirm(self):
         self.write({

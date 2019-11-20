@@ -191,6 +191,7 @@ class Ledger(models.Model):
         booking_obj = provider_obj.booking_id
 
         agent_commission = {}
+        amount = 0
         for sc in provider_obj.cost_service_charge_ids:
             # Pada lionair ada r.ac positif
             if 'RAC' in sc.charge_type and not sc.is_ledger_created:

@@ -50,8 +50,6 @@ class TtPaymentInvoiceRel(models.Model):
                 # raise exceptions.UserError("Pay amount c8hanged to missing amount")
 
 
-
-
 class TtPaymentInh(models.Model):
     _inherit = 'tt.payment'
 
