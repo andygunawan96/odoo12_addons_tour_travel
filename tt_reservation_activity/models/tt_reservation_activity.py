@@ -509,6 +509,7 @@ class ReservationActivity(models.Model):
                 'contact_id': contact_obj.id,
                 'booker_id': booker_obj.id,
                 'passenger_ids': list_passenger_value,
+                'contact_title': contact_data['title'],
                 'contact_name': contact_data['first_name'] + ' ' + contact_data['last_name'],
                 'contact_email': contact_data.get('email') and contact_data['email'] or '',
                 'contact_phone': contact_data.get('mobile') and str(contact_data['calling_code']) + str(
