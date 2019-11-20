@@ -123,7 +123,7 @@ class MasterTour(models.Model):
     # tour_checklist_ids = fields.Char('Tour Checklist')
     tour_checklist_ids = fields.One2many('tt.master.tour.checklist', 'tour_pricelist_id', string="Tour Checklist")
 
-    requirements = fields.Html('Remarks')
+    other_info_ids = fields.One2many('tt.master.tour.otherinfo', 'master_tour_id', 'Other Info')
     image_ids = fields.Many2many('tt.upload.center', 'tour_images_rel', 'tour_id', 'image_id', 'Images')
 
     flight_segment_ids = fields.One2many('flight.segment', 'tour_pricelist_id', string="Flight Segment")

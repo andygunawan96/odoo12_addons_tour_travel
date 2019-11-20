@@ -215,6 +215,7 @@
                                     <field name="payment_type"/>
                                     <field name="payment_percentage" attrs="{'invisible': [('payment_type', '!=', 'percentage')], 'required': [('payment_type', '=', 'percentage')]}"/>
                                     <field name="payment_amount" attrs="{'invisible': [('payment_type', '!=', 'amount')], 'required': [('payment_type', '=', 'amount')]}"/>
+                                    <field name="is_dp"/>
                                     <field name="description"/>
                                     <field name="due_date"/>
                                     <field name="pricelist_id" invisible="1"/>
@@ -229,6 +230,7 @@
                                                 <field name="payment_amount" attrs="{'invisible': [('payment_type', '!=', 'amount')], 'required': [('payment_type', '=', 'amount')]}"/>
                                             </group>
                                             <group>
+                                                <field name="is_dp"/>
                                                 <field name="description"/>
                                                 <field name="due_date"/>
                                                 <field name="pricelist_id" invisible="1"/>
@@ -279,11 +281,6 @@
                                                 <field name="additional_charge"/>
                                             </group>
                                         </group>
-                                        <!--<group>-->
-                                        <!--<field name="is_extra_bed"/>-->
-                                        <!--<field name="extra_bed_charge" attrs="{'invisible':[('is_extra_bed','!=', True)]}"/>-->
-                                        <!--<field name="extra_bed_required" attrs="{'invisible':[('is_extra_bed','!=', True)]}"/>-->
-                                        <!--</group>-->
                                     </sheet>
                                 </form>
                             </field>
@@ -334,8 +331,8 @@
                                 </form>
                             </field>
                         </page>
-                        <page string="Terms &amp; Conditions">
-                            <field name="requirements"/>
+                        <page string="Other Information">
+                            <field name="other_info_ids"/>
                         </page>
                         <page string="Images">
                             <field name="image_ids"/>

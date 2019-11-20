@@ -1,0 +1,66 @@
+<odoo>
+    <record id="tt_master_tour_otherinfo_form_view" model="ir.ui.view">
+        <field name="name">tt.master.tour.otherinfo.form.view</field>
+        <field name="model">tt.master.tour.otherinfo</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <group>
+                        <field name="name"/>
+                    </group>
+                    <group>
+                        <field name="parent_id" readonly="1"/>
+                        <field name="master_tour_id" invisible="1"/>
+                    </group>
+                </group>
+                <notebook>
+                    <page string="Messages" name="messages">
+                        <field name="info_message_ids">
+                            <tree>
+                                <field name="sequence"/>
+                                <field name="name"/>
+                                <field name="style"/>
+                            </tree>
+                            <form>
+                                <sheet>
+                                    <group>
+                                        <group>
+                                            <field name="name"/>
+                                            <field name="sequence"/>
+                                        </group>
+                                        <group>
+                                            <field name="style"/>
+                                            <field name="otherinfo_id" invisible="1"/>
+                                        </group>
+                                    </group>
+                                </sheet>
+                            </form>
+                        </field>
+                    </page>
+                    <page string="Children" name="children">
+                        <field name="child_ids"/>
+                    </page>
+                </notebook>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_master_tour_otherinfo_tree_view" model="ir.ui.view">
+        <field name="name">tt.master.tour.otherinfo.tree.view</field>
+        <field name="model">tt.master.tour.otherinfo</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_master_tour_otherinfo_action_views" model="ir.actions.act_window">
+        <field name="name">tt.master.tour.otherinfo.action.views</field>
+        <field name="res_model">tt.master.tour.otherinfo</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{}</field>
+    </record>
+
+</odoo>
