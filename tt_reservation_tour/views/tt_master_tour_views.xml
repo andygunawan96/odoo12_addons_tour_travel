@@ -332,7 +332,12 @@
                             </field>
                         </page>
                         <page string="Other Information">
+                            <separator string="Input"/>
                             <field name="other_info_ids"/>
+                            <separator string="Preview"/>
+                            <button name="generate_other_info_preview" type="object" string="Generate"/>
+                            <separator/>
+                            <field name="other_info_preview"/>
                         </page>
                         <page string="Images">
                             <field name="image_ids"/>

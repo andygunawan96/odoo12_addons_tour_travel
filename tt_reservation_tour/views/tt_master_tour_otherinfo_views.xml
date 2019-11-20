@@ -7,6 +7,7 @@
                 <group>
                     <group>
                         <field name="name"/>
+                        <field name="child_list_type"/>
                     </group>
                     <group>
                         <field name="parent_id" readonly="1"/>
@@ -17,7 +18,7 @@
                     <page string="Messages" name="messages">
                         <field name="info_message_ids">
                             <tree>
-                                <field name="sequence"/>
+                                <field name="sequence" widget="handle"/>
                                 <field name="name"/>
                                 <field name="style"/>
                             </tree>
@@ -51,6 +52,7 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="name"/>
+                <field name="child_list_type"/>
             </tree>
         </field>
     </record>
