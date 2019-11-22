@@ -1,22 +1,22 @@
 <odoo>
-<!--    <record id="tt_customer_for_agent" model="ir.rule">-->
-<!--        <field name="name">Customer For Agent</field>-->
-<!--        <field name="model_id" ref="model_tt_customer"/>-->
-<!--        <field name="domain_force">[('agent_id','=',user.agent_id.id)]</field>  &lt;!&ndash;['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]&ndash;&gt;  &lt;!&ndash;[('agent_id','=',user.agent_id.id)]&ndash;&gt;-->
-<!--        <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user_operator'))]"/>  &lt;!&ndash;,(4,ref('tt_base.group_tt_sub_agent_user_operator'))&ndash;&gt;-->
-<!--    </record>-->
+    <record id="tt_customer_for_agent" model="ir.rule">
+        <field name="name">Customer For Agent</field>
+        <field name="model_id" ref="model_tt_customer"/>
+        <field name="domain_force">[('agent_id','=',user.agent_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user_operator'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
+    </record>
 <!--    <record id="tt_customer_parent_for_agent" model="ir.rule">-->
 <!--        <field name="name">Customer Parent For Agent</field>-->
 <!--        <field name="model_id" ref="model_tt_customer_parent"/>-->
 <!--        <field name="domain_force">[('parent_agent_id','=',user.agent_id.id)]</field>  &lt;!&ndash;['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]&ndash;&gt;  &lt;!&ndash;[('agent_id','=',user.agent_id.id)]&ndash;&gt;-->
 <!--        <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user_operator'))]"/>  &lt;!&ndash;,(4,ref('tt_base.group_tt_sub_agent_user_operator'))&ndash;&gt;-->
 <!--    </record>-->
-    <record id="tt_agent_for_agent" model="ir.rule">
-        <field name="name">Agent For Agent</field>
-        <field name="model_id" ref="model_tt_agent"/>
-        <field name="domain_force">['|',('parent_agent_id','=',user.agent_id.id),('id','=',user.agent_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
-        <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user_operator'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
-    </record>
+<!--    <record id="tt_agent_for_agent" model="ir.rule">-->
+<!--        <field name="name">Agent For Agent</field>-->
+<!--        <field name="model_id" ref="model_tt_agent"/>-->
+<!--        <field name="domain_force">['|',('parent_agent_id','=',user.agent_id.id),('id','=',user.agent_id.id)]</field>  &lt;!&ndash;['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]&ndash;&gt;  &lt;!&ndash;[('agent_id','=',user.agent_id.id)]&ndash;&gt;-->
+<!--        <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user_operator'))]"/>  &lt;!&ndash;,(4,ref('tt_base.group_tt_sub_agent_user_operator'))&ndash;&gt;-->
+<!--    </record>-->
     <record id="tt_res_users_for_agent" model="ir.rule">
         <field name="name">Res Users For Agent</field>
         <field name="model_id" ref="model_res_users"/>

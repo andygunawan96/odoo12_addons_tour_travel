@@ -34,6 +34,7 @@
         'views/tt_agent_registration_menuheader.xml',
         'views/tt_agent_registration_promotion_views.xml',
         'views/tt_agent_registration_customer_views.xml',
+        'views/tt_agent_registration_address_views.xml',
         'views/tt_agent_registration_document_views.xml',
         'views/tt_agent_registration_payment_views.xml',
         'views/tt_document_type_views.xml',

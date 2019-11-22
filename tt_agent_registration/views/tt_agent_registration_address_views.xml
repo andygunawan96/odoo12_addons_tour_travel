@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_agent_registration_address_form_view" model="ir.ui.view">
+        <field name="name">tt.agent.registration.address.form.view</field>
+        <field name="model">tt.agent.registration.address</field>
+        <field name="arch" type="xml">
+            <form string="Agent Registration Address">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="type"/>
+                            <field name="name" attrs="{'invisible': [('type','!=','custom')]}"/>
+                            <field name="country_id"/>
+                            <field name="state_id"/>
+                            <field name="city_id"/>
+                            <field name="district_id"/>
+                            <field name="sub_district_id"/>
+                            <field name="address"/>
+                            <field name="zip"/>
+                            <field name="rt"/>
+                            <field name="rw"/>
+                            <field name="sequence"/>
+<!--                            <field name="agent_id"/>-->
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_agent_registration_address_tree_view" model="ir.ui.view">
+        <field name="name">tt.agent.registration.address.tree.view</field>
+        <field name="model">tt.agent.registration.address</field>
+        <field name="arch" type="xml">
+            <tree create="true">
+                <field name="address"/>
+                <field name="rt"/>
+                <field name="rw"/>
+                <field name="city_id"/>
+                <field name="district_id"/>
+                <field name="sub_district_id"/>
+            </tree>
+        </field>
+    </record>
+</odoo>

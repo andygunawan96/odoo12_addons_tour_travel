@@ -11,14 +11,14 @@
 
         <record id="tt_agent_registration_document_registration_npwp" model="tt.document.type">
             <field name="name">NPWP</field>
-            <field name="document_type">registration</field>
+            <field name="document_type">opening</field>
             <field name="agent_type_ids" eval="[(6, 0, [ref('tt_base.agent_type_citra')])]"/>
             <field name="description">-</field>
         </record>
 
         <record id="tt_agent_registration_document_registration_siup" model="tt.document.type">
             <field name="name">SIUP</field>
-            <field name="document_type">registration</field>
+            <field name="document_type">opening</field>
             <field name="agent_type_ids" eval="[(6, 0, [ref('tt_base.agent_type_citra')])]"/>
             <field name="description">-</field>
         </record>

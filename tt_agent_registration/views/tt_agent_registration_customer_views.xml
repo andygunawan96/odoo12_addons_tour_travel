@@ -14,15 +14,12 @@
                         </h3>
                     </div>
                     <group>
-<!--                        <field name="agent_id" readonly="False"/>-->
-                        <field name="customer_id"/>
-                        <field name="gender"/>
-                        <field name="marital_status"/>
-                        <field name="religion"/>
                         <field name="birth_date"/>
                         <field name="email"/>
                         <field name="phone"/>
                         <field name="mobile"/>
+                        <field name="job_position" placeholder="e.g. Sales Director"/>
+                        <field name="user_level" groups="tt_base.group_tt_tour_travel_operator"/>
                     </group>
                 </sheet>
             </form>
