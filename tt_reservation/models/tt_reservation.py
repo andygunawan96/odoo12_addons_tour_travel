@@ -80,6 +80,7 @@ class TtReservation(models.Model):
     total_discount = fields.Monetary(string='Total Discount', default=0, readonly=True)
     total_commission = fields.Monetary(string='Total Commission', default=0, compute='_compute_total_commission')
     total_nta = fields.Monetary(string='NTA Amount',compute='_compute_total_nta')
+    agent_nta = fields.Monetary(string='NTA Amount',compute='_compute_agent_nta')
 
     # yang jual
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True,
@@ -336,6 +337,14 @@ class TtReservation(models.Model):
             for sale in rec.sale_service_charge_ids:
                 nta_total += sale.total
             rec.total_nta = nta_total
+
+    def _compute_agent_nta(self):
+        for rec in self:
+            agent_nta_total = 0
+            for sale in rec.sale_service_charge_ids:
+                if sale.charge_code != 'rac':
+                    agent_nta_total += sale.total
+            rec.agent_nta = agent_nta_total
 
     def to_dict(self):
         res = {

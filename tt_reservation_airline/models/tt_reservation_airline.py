@@ -794,7 +794,7 @@ class ReservationAirline(models.Model):
                     _logger.error('Cannot issue not [Booked] State.')
                     raise RequestException(1020)
                 #cek saldo
-                balance_res = self.env['tt.agent'].check_balance_limit_api(context['co_agent_id'],book_obj.total_nta)
+                balance_res = self.env['tt.agent'].check_balance_limit_api(context['co_agent_id'],book_obj.agent_nta)
                 if balance_res['error_code']!=0:
                     _logger.error('Balance not enough')
                     raise RequestException(1007)
