@@ -655,6 +655,7 @@ class ReservationActivity(models.Model):
                         'filename': 'Activity_Ticket.pdf',
                         'file_reference': str(obj.name) + ' ' + str(idx+1),
                         'file': rec,
+                        'delete_date': obj.visit_date + timedelta(days=7)
                     }
                     attachment_obj = self.env['tt.upload.center.wizard'].upload_file_api(attachment_value, context)
                     if attachment_obj['error_code'] == 0:

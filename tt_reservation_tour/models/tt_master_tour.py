@@ -139,6 +139,7 @@ class MasterTour(models.Model):
     country_name = fields.Char('Country Name')
     itinerary_ids = fields.One2many('tt.reservation.tour.itinerary', 'tour_pricelist_id', 'Itinerary')
     provider_id = fields.Many2one('tt.provider', 'Provider', domain=get_domain, required=True)
+    document_url = fields.Many2one('tt.upload.center', 'Document URL')
     active = fields.Boolean('Active', default=True)
 
     @api.onchange('payment_rules_ids')
@@ -451,10 +452,10 @@ class MasterTour(models.Model):
                 })
 
                 if rec.get('currency_id'):
+                    curr_id = rec.pop('currency_id')
                     rec.update({
-                        'currency_code': 'IDR'
+                        'currency_code': self.env['res.currency'].sudo().browse(int(curr_id)).name
                     })
-                    rec.pop('currency_id')
 
                 key_list = [key for key in rec.keys()]
                 for key in key_list:
@@ -473,7 +474,6 @@ class MasterTour(models.Model):
                 'result': result,
                 # 'result_json': json.dumps(result),
                 'search_value': 2,
-                'currency_code': 'IDR'
             }
             return ERR.get_no_error(response)
         except RequestException as e:
@@ -563,10 +563,6 @@ class MasterTour(models.Model):
             else:
                 commission_agent_type = 'other'
 
-            adult_commission = int(tour_obj.adult_commission) > 0 and int(tour_obj.adult_commission) or 0
-            child_commission = int(tour_obj.child_commission) > 0 and int(tour_obj.child_commission) or 0
-            infant_commission = int(tour_obj.infant_commission) > 0 and int(tour_obj.infant_commission) or 0
-
             try:
                 self.env.cr.execute("""SELECT * FROM tt_master_tour_discount_fit WHERE tour_pricelist_id = %s;""", (tour_obj.id,))
                 discount = self.env.cr.dictfetchall()
@@ -641,6 +637,7 @@ class MasterTour(models.Model):
                 'visa': tour_obj.visa,
                 'flight': tour_obj.flight,
                 'accommodations': accommodation,
+                'currency_code': tour_obj.currency_id.name,
                 'adult_sale_price': adult_sale_price <= 0 and '0' or adult_sale_price,
                 'child_sale_price': child_sale_price <= 0 and '0' or child_sale_price,
                 'infant_sale_price': infant_sale_price <= 0 and '0' or infant_sale_price,
@@ -654,12 +651,13 @@ class MasterTour(models.Model):
                 'start_period_f': tour_obj.start_period and datetime.strptime(str(tour_obj.start_period), '%Y-%m-%d').strftime('%B') or '',
                 'end_period_f': tour_obj.end_period and datetime.strptime(str(tour_obj.end_period), '%Y-%m-%d').strftime('%B') or '',
                 'country_names': country_names,
-                'flight_segment_ids': tour_obj.get_flight_segment(),
+                'flight_segments': tour_obj.get_flight_segment(),
                 'itinerary_ids': tour_obj.get_itineraries(),
-                'other_info_ids': tour_obj.get_tour_other_info(),
+                'other_infos': tour_obj.get_tour_other_info(),
                 'hotel_names': hotel_names,
                 'duration': tour_obj.duration and tour_obj.duration or 0,
                 'images_obj': images,
+                'document_url': tour_obj.document_url and tour_obj.document_url.url or '',
             }
 
             # is_agent = self.env.user.agent_id.agent_type_id.id not in [
