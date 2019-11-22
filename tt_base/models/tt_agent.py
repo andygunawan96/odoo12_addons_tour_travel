@@ -294,6 +294,21 @@ class TtAgent(models.Model):
             _logger.error(str(e)+traceback.format_exc())
             return ERR.get_error(1012)
 
+    @api.model
+    def agent_action_view_customer(self):
+        return {
+            'name': 'Agent',
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'kanban,form',
+            'res_model': 'tt.agent',
+            'views': [(self.env.ref('tt_base.tt_agent_kanban_view').id, 'kanban'),
+                      (self.env.ref('tt_base.tt_agent_form_view').id, 'form')],
+            'context': {},
+            'domain': ['|', ('parent_agent_id', '=', self.env.user.agent_id.id), ('id', '=', self.env.user.agent_id.id)]
+        }
+
+
 class AgentTarget(models.Model):
     _inherit = ['tt.history']
     _name = 'tt.agent.target'

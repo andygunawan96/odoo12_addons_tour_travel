@@ -5,6 +5,7 @@
         <record id="tt_agent_registration_form_view" model="ir.ui.view">
             <field name="name">tt.agent.registration.form.view</field>
             <field name="model">tt.agent.registration</field>
+            <field name="priority">1</field>
             <field name="arch" type="xml">
                 <form string="Agent Registration">
                     <header>
@@ -17,7 +18,7 @@
 <!--                        <button string="Cancel" name="action_cancel" attrs="{'invisible': [('state', '!=', ['confirm','progress','payment','validate'])]}" type="object"/>-->
                          <button string="Cancel" name="action_cancel" type="object" states="confirm,progress,payment,validate"/>
                          <button string="Send Email" name="action_send_email" type="object" states="progress"/>
-<!--                         <button string="Get Promotions" name="get_promotions_api" type="object"/>-->
+                         <button string="Get Promotions" name="get_promotions_api" type="object"/>
                         <button string="Set to Draft" name="action_draft" attrs="{'invisible': [('state', '!=', 'cancel')]}" type="object" confirm="All data will be deleted. Proceed?"/>
                     </header>
                     <sheet>
@@ -87,7 +88,7 @@
                         <group string="Address &amp; Contact">
                             <notebook>
                                 <page string="Address">
-                                    <field name="address_ids">
+                                    <field name="address_ids" attrs="{'readonly': [('state', '=', 'done')]}">
                                         <tree create="true">
                                             <field name="address"/>
                                             <field name="rt"/>
@@ -99,20 +100,20 @@
                                     </field>
                                 </page>
                                 <page string="Contact Information">
-                                    <field name="agent_registration_customer_ids"/>
+                                    <field name="agent_registration_customer_ids" attrs="{'readonly': [('state', '=', 'done')]}"/>
                                 </page>
                             </notebook>
                         </group>
                         <group string="Documents">
                             <notebook>
                                 <page string="Registration Document">
-                                    <field name="registration_document_ids" widget="one2many"/>
+                                    <field name="registration_document_ids" widget="one2many" readonly="1"/>
                                 </page>
                                 <page string="Payment Terms">
-                                    <field name="payment_ids"/>
+                                    <field name="payment_ids" readonly="1"/>
                                 </page>
                                 <page string="Opening Document">
-                                    <field name="open_document_ids" widget="one2many"/>
+                                    <field name="open_document_ids" widget="one2many" readonly="1"/>
                                 </page>
                             </notebook>
                         </group>
@@ -139,6 +140,25 @@
                         </group>
                     </sheet>
                 </form>
+            </field>
+        </record>
+
+        <record id="tt_agent_registration_form_view_tour_travel" model="ir.ui.view">
+            <field name="name">tt.agent.registration.form.view.tour.travel</field>
+            <field name="model">tt.agent.registration</field>
+            <field name="inherit_id" ref="tt_agent_registration.tt_agent_registration_form_view"/>
+            <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_tour_travel_operator') ])]" />
+            <field name="priority">2</field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='registration_document_ids']" position="replace">
+                    <field name="registration_document_ids" widget="one2many" readonly="0"/>
+                </xpath>
+                <xpath expr="//field[@name='payment_ids']" position="replace">
+                    <field name="payment_ids" readonly="0"/>
+                </xpath>
+                <xpath expr="//field[@name='open_document_ids']" position="replace">
+                    <field name="open_document_ids" widget="one2many" readonly="0"/>
+                </xpath>
             </field>
         </record>
 
