@@ -5,8 +5,9 @@ import os
 class TtUploadFile(models.Model):
     _name = 'tt.upload.center'
     _description = 'Upload Center'
+    _order = 'create_date desc'
 
-    seq_id = fields.Char('Sequence Code')
+    seq_id = fields.Char('Sequence Code', index=True)
     name = fields.Char('Reference Name')
     filename = fields.Char('Filename', readonly=True)
     file_reference = fields.Text('File Reference',readonly=True)

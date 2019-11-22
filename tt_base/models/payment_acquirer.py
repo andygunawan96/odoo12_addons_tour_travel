@@ -17,7 +17,7 @@ TYPE = [
 class PaymentAcquirer(models.Model):
     _inherit = 'payment.acquirer'
 
-    seq_id = fields.Char('Sequence ID')
+    seq_id = fields.Char('Sequence ID', index=True)
     type = fields.Selection(TYPE, 'Payment Type')
     provider_id = fields.Many2one('tt.provider', 'Provider')
     agent_id = fields.Many2one('tt.agent', 'Agent')
@@ -66,7 +66,7 @@ class PaymentAcquirer(models.Model):
                 'unique_amount': uniq,
             },
             'total_amount': float(amount) + fee + uniq,
-            'image': self.image or '',
+            'image': self.bank_id.image_id and self.bank_id.image_id.url or '',
             'return_url': '/payment/' + str(self.type) + '/feedback?acq_id=' + str(self.id)
         }
 

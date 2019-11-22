@@ -75,6 +75,7 @@ class TtReservationTrain(models.Model):
                 'sid_booked': context['signature'],
                 'booker_id': booker_obj.id,
                 'contact_id': contact_obj.id,
+                'contact_title': contacts['title'],
                 'contact_name': contact_obj.name,
                 'contact_email': contact_obj.email,
                 'contact_phone': contact_obj.phone_ids[0].phone_number,
@@ -136,9 +137,9 @@ class TtReservationTrain(models.Model):
                 provider_obj = self.env['tt.provider.train'].browse(provider['provider_id'])
                 if not provider_obj:
                     raise RequestException(1002)
-                book_status.append(provider['status'])
+                book_status.append(provider['state'])
 
-                if provider['status'] == 'BOOKED' and not provider.get('error_code'):
+                if provider['state'] == 'booked' and not provider.get('error_code'):
                     curr_hold_date = datetime.strptime(provider['hold_date'], '%Y-%m-%d %H:%M:%S')
                     if curr_hold_date < hold_date:
                         hold_date = curr_hold_date
@@ -146,7 +147,7 @@ class TtReservationTrain(models.Model):
                         continue
                     self.update_pnr_booked(provider_obj,provider,context)
                     any_provider_changed = True
-                elif provider['status'] == 'ISSUED' and not provider.get('error_code'):
+                elif provider['state'] == 'issued' and not provider.get('error_code'):
                     if provider_obj.state == 'issued':
                         continue
                     if req.get('force_issued'):
@@ -163,10 +164,10 @@ class TtReservationTrain(models.Model):
                             provider_obj.provider_id.sync_balance()
                         except Exception as e:
                             _logger.error(traceback.format_exc())
-                elif provider['status'] == 'FAIL_BOOKED':
+                elif provider['state'] == 'fail_booked':
                     provider_obj.action_failed_booked_api_train(provider.get('error_code'),provider.get('error_msg'))
                     any_provider_changed = True
-                elif provider['status'] == 'FAIL_ISSUED':
+                elif provider['state'] == 'fail_issued':
                     provider_obj.action_failed_issued_api_train(provider.get('error_msg'))
                     any_provider_changed = True
 
@@ -456,6 +457,33 @@ class TtReservationTrain(models.Model):
         except Exception as e:
             _logger.error(traceback.format_exc())
             return ERR.get_error(1013)
+
+    def update_seat_train_api(self,req,context):
+        try:
+            _logger.info("Update Seat train\n" + json.dumps(req))
+            book_obj = self.get_book_obj(req.get('book_id'),req.get('order_number'))
+            if book_obj and book_obj.agent_id.id == context.get('co_agent_id',-1):
+                for provider in req['provider_bookings']:
+                    if provider['status'] == 'SUCCESS':
+                        for journey in provider['journeys']:
+                            provider_obj = book_obj.provider_booking_ids.filtered(lambda x: x.sequence == provider['sequence'])
+                            journey_obj = provider_obj.journey_ids.filtered(lambda x: x.sequence == journey['sequence'])
+                            journey_obj.update_ticket(
+                                journey['seats']
+                            )
+
+
+                return ERR.get_no_error()
+            else:
+                raise RequestException(1001)
+
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1013)
+
 
     def calculate_service_charge(self):
         for service_charge in self.sale_service_charge_ids:

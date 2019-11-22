@@ -30,7 +30,7 @@ class TtTopUp(models.Model):
 
     currency_id = fields.Many2one('res.currency', 'Currency', readonly=True,
                                   default=lambda self: self.env.company_id.currency_id.id, store=True)
-    amount = fields.Monetary('Input Amount')
+    amount = fields.Monetary('Input Amount',readonly=True)
     unique_amount = fields.Monetary('Unique Amount', default=0,
                                  states={'draft': [('readonly', False)]},
                                     help='''Unique amount for identification agent top-up via wire transfer''')

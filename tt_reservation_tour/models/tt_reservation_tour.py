@@ -129,7 +129,9 @@ class ReservationTour(models.Model):
 
         for rec in self.tour_id.passengers_ids:
             if rec.tour_id.id == self.id:
-                rec.sudo().tour_pricelist_id = False
+                rec.sudo().write({
+                    'tour_id': False
+                })
     # *END STATE*
 
     def action_booked_tour(self, api_context=None):
@@ -281,6 +283,7 @@ class ReservationTour(models.Model):
                 'contact_id': contact_obj.id,
                 'booker_id': booker_obj.id,
                 'passenger_ids': list_passenger_value,
+                'contact_title': contact_data['title'],
                 'contact_name': contact_data['first_name'] + ' ' + contact_data['last_name'],
                 'contact_email': contact_data.get('email') and contact_data['email'] or '',
                 'contact_phone': contact_data.get('mobile') and str(contact_data['calling_code']) + str(
@@ -431,7 +434,7 @@ class ReservationTour(models.Model):
                 'duration':master.duration,
                 'departure_date': master.departure_date,
                 'return_date': master.return_date,
-                'departure_date_f': datetime.strptime(str(master.return_date), '%Y-%m-%d').strftime("%A, %d-%m-%Y") or '',
+                'departure_date_f': datetime.strptime(str(master.departure_date), '%Y-%m-%d').strftime("%A, %d-%m-%Y") or '',
                 'return_date_f': datetime.strptime(str(master.return_date), '%Y-%m-%d').strftime("%A, %d-%m-%Y") or '',
                 'visa': master.visa,
                 'flight': master.flight,

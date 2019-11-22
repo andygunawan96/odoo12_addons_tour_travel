@@ -17,7 +17,7 @@ class TtCustomerParent(models.Model):
     actual_balance = fields.Monetary(string="Actual Balance", readonly=True, compute="_compute_actual_balance")
     credit_limit = fields.Monetary(string="Credit Limit")
 
-    seq_id = fields.Char('Sequence ID')
+    seq_id = fields.Char('Sequence ID', index=True)
     email = fields.Char(string="Email", required=False, )
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.user.company_id.currency_id.id, string='Currency')
     address_ids = fields.One2many('address.detail', 'agent_id', string='Addresses')

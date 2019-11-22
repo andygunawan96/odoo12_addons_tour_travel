@@ -509,6 +509,7 @@ class ReservationActivity(models.Model):
                 'contact_id': contact_obj.id,
                 'booker_id': booker_obj.id,
                 'passenger_ids': list_passenger_value,
+                'contact_title': contact_data['title'],
                 'contact_name': contact_data['first_name'] + ' ' + contact_data['last_name'],
                 'contact_email': contact_data.get('email') and contact_data['email'] or '',
                 'contact_phone': contact_data.get('mobile') and str(contact_data['calling_code']) + str(
@@ -654,6 +655,7 @@ class ReservationActivity(models.Model):
                         'filename': 'Activity_Ticket.pdf',
                         'file_reference': str(obj.name) + ' ' + str(idx+1),
                         'file': rec,
+                        'delete_date': obj.visit_date + timedelta(days=7)
                     }
                     attachment_obj = self.env['tt.upload.center.wizard'].upload_file_api(attachment_value, context)
                     if attachment_obj['error_code'] == 0:

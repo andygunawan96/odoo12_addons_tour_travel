@@ -15,7 +15,7 @@
                                        options='{"terminology": "archive"}'/>
                             </button>
                         </div>
-                        <field name="image" widget="image" class="oe_avatar" options="{&quot;preview_image&quot;: &quot;image_medium&quot;}"/>
+                        <field name="image" widget="image" class="oe_avatar" options="{&quot;preview_image&quot;: &quot;image&quot;}"/>
                         <div class="oe_title">
                             <h1><field name="name" placeholder="Name"/></h1>
                         </div>
@@ -23,6 +23,7 @@
                             <group>
                                 <field name="code"/>
                                 <field name="bic"/>
+                                <field name="image_id"/>
                             </group>
                         </group>
                         <notebook>

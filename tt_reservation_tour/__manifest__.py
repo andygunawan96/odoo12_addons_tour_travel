@@ -26,6 +26,7 @@
         'data/ir_sequence_data.xml',
         'data/tt_provider_type_data.xml',
         'data/tt_provider_tour.xml',
+        'data/ir_cron_data.xml',
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
         'views/menu_item_base.xml',
@@ -33,6 +34,7 @@
         'views/tt_master_tour_quotation_views.xml',
         'views/tt_tour_master_locations_views.xml',
         'views/tt_master_tour_views.xml',
+        'views/tt_master_tour_otherinfo_views.xml',
         'views/tt_provider_views.xml',
         'views/tt_service_charge_views.xml'
     ],

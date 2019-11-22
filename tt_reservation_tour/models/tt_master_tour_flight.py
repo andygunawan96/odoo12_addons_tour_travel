@@ -13,7 +13,7 @@ CLASS_OF_SERVICE = [
 ]
 
 
-class FlightSegment(models.Model):
+class TtMasterTourFlight(models.Model):
     _name = 'flight.segment'
     _description = 'Rodex Model'
 

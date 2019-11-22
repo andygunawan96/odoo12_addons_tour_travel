@@ -649,6 +649,7 @@ class TtVisa(models.Model):
                 'country_id': self.env['res.country'].sudo().search([('name', '=', search['destination'])], limit=1).id,
                 'provider_name': self.env['tt.provider'].sudo().search([('code', '=', 'visa_rodextrip')], limit=1).name,
                 'booker_id': booker_id.id,
+                'contact_title': contact[0]['title'],
                 'contact_id': contact_id.id,
                 'contact_name': contact_id.name,
                 'contact_email': contact_id.email,

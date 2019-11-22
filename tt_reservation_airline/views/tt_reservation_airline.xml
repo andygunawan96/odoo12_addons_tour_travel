@@ -6,6 +6,9 @@
         <field name="mode">primary</field>
         <field name="inherit_id" ref="tt_reservation.tt_reservation_form_views"/>
         <field name="arch" type="xml">
+            <xpath expr="//form" position="attributes">
+                <attribute name="edit">false</attribute>
+            </xpath>
             <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
                 <div class="oe_button_box" name="button_box">
                     <button name="print_eticket"
@@ -123,10 +126,9 @@
                 <field name="agent_id"/>
                 <field name="agent_type_id"/>
                 <field name="customer_parent_id"/>
-                <field name="customer_parent_type_id"/>
                 <field name="booker_id"/>
                 <field name="provider_name" groups="tt_base.group_tt_tour_travel_operator"/>
-                <field name="carrier_name"/>
+                <field name="sector_type"/>
                 <field name="pnr"/>
                 <field name="booked_uid"/>
                 <field name="date"/>

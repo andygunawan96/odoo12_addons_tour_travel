@@ -38,6 +38,7 @@ class TtReservation(models.Model):
     contact_id = fields.Many2one('tt.customer', 'Contact Person', ondelete='restrict', readonly=True, states={'draft': [('readonly', False)]})
 
     contact_name = fields.Char('Contact Name',readonly=True)  # fixme oncreate later
+    contact_title = fields.Char('Contact Title',readonly=True)
     contact_email = fields.Char('Contact Email',readonly=True)
     contact_phone = fields.Char('Contact Phone',readonly=True)
 
@@ -349,6 +350,7 @@ class TtReservation(models.Model):
             'CHD': self.child,
             'INF': self.infant,
             'contact': {
+                'title': self.contact_title,
                 'name': self.contact_name,
                 'email': self.contact_email,
                 'phone': self.contact_phone
@@ -400,7 +402,6 @@ class TtReservation(models.Model):
     ##override fungsi ini untuk melakukan action extra jika expired
     def action_expired(self):
         self.state = 'cancel2'
-        pass
 
     ## Digunakan untuk mengupdate PNR seluruh ledger untuk resv ini
     # Digunakan di hotel dan activity

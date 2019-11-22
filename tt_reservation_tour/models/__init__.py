@@ -1,4 +1,4 @@
-from . import flight_segment
+from . import tt_master_tour_flight
 from . import tt_payment_rules
 from . import tt_tour_master_locations
 from . import tt_reservation_tour
@@ -13,5 +13,8 @@ from . import tt_master_tour_discount_fit
 from . import tt_master_tour_checklist
 from . import tt_master_tour
 from . import tt_installment_invoice
+from . import tt_master_tour_otherinfo
 from . import tt_master_tour_adjustment
 from . import tt_reservation_passenger_tour
+from . import tt_cron_log
+

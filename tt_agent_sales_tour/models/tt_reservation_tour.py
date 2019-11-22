@@ -1,5 +1,5 @@
 from odoo import models,api,fields
-from datetime import datetime
+from datetime import datetime, date
 
 
 class ReservationTour(models.Model):
@@ -156,6 +156,14 @@ class ReservationTour(models.Model):
                     'invoice_id': invoice_id.id,
                     'payment_id': payment_obj.id,
                     'pay_amount': inv_line_obj.total,
+                })
+
+                self.env['tt.installment.invoice'].create({
+                    'agent_invoice_id': invoice_id.id,
+                    'booking_id': self.id,
+                    'amount': inv_line_obj.total,
+                    'due_date': rec.is_dp and date.today() or rec.due_date,
+                    'description': rec.description,
                 })
 
     def call_create_invoice(self, acquirer_id, payment_method):

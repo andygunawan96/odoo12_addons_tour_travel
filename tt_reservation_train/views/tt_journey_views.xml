@@ -37,7 +37,13 @@
                         <field name="fare_code"/>
                     </group>
                     <separator string="Seat"/>
-                    <field name="seat_ids"/>
+                    <field name="seat_ids">
+                        <tree>
+                            <field name="passenger_id"/>
+                            <field name="seat"/>
+                            <field name="seat_code"/>
+                        </tree>
+                    </field>
                 </sheet>
             </form>
         </field>

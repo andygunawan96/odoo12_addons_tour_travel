@@ -116,3 +116,7 @@ tt_provider_tour_for_all,tt.provider.tour.for.all,model_tt_provider_tour,,1,0,0,
 tt_ticket_tour_for_all,tt.ticket.tour.for.all,model_tt_ticket_tour,,1,0,0,0
 ,,,,,,,
 tt_reservation_tour_room_for_all,tt.reservation.tour.room.for.all,model_tt_reservation_tour_room,,1,0,0,0
+,,,,,,,
+tt_master_tour_otherinfo_for_all,tt.master.tour.otherinfo.for.all,model_tt_master_tour_otherinfo,,1,1,1,1
+,,,,,,,
+tt_master_tour_otherinfo_messages_for_all,tt.master.tour.otherinfo.messages.for.all,model_tt_master_tour_otherinfo_messages,,1,1,1,1

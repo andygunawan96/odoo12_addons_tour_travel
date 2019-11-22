@@ -103,7 +103,7 @@ class ReservationAirline(models.Model):
             'booked_uid': context['co_uid'],
             'booked_date': datetime.now(),
             'hold_date': hold_date,
-            'pnr': pnr_list
+            'pnr': ','.join(pnr_list)
         })
 
     def action_partial_issued_api_airline(self):
@@ -623,6 +623,7 @@ class ReservationAirline(models.Model):
                 'user_id': context['co_uid'],
                 'sid_booked': context['signature'],
                 'booker_id': booker_obj.id,
+                'contact_title': contacts[0]['title'],
                 'contact_id': contact_obj.id,
                 'contact_name': contact_obj.name,
                 'contact_email': contact_obj.email,
@@ -1130,13 +1131,13 @@ class ReservationAirline(models.Model):
 
         ##generate leg data
         provider_type = self.env['tt.provider.type'].search([('code', '=', 'airline')])[0]
-
+        old_state = provider_obj.state
         provider_obj.action_booked_api_airline(provider, context)
 
-        if provider_obj.state != 'draft':
+        if old_state != 'draft':
             return
 
-        provider_obj.create_ticket_api(provider['passengers'], provider['pnr'])
+        provider_obj.create_ticket_api(provider['passengers'],provider['pnr'])
         # August 16, 2019 - SAM
         # Mengubah mekanisme update booking backend
         segment_dict = provider['segment_dict']

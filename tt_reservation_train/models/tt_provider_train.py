@@ -112,6 +112,7 @@ class TtProviderTrain(models.Model):
         for rec in self:
             rec.write({
                 'pnr': provider_data['pnr'],
+                'pnr2': provider_data['pnr2'],
                 'state': 'booked',
                 'booked_uid': api_context['co_uid'],
                 'booked_date': fields.Datetime.now(),
@@ -153,6 +154,11 @@ class TtProviderTrain(models.Model):
 
     def create_ticket_api(self,passengers,pnr=""):
         ticket_list = []
+
+        #################
+        for passenger in self.booking_id.passenger_ids:
+            passenger.is_ticketed = False
+        #################
 
         for psg in passengers:
             psg_obj = self.booking_id.passenger_ids.filtered(lambda x: x.sequence == psg.get('sequence'))

@@ -127,10 +127,16 @@
                         <tree>
                             <field name="amount"/>
                             <field name="due_date"/>
+                            <field name="description"/>
                             <field name="state_invoice"/>
                             <field name="agent_invoice_id"/>
                         </tree>
                         <form>
+                            <header>
+                                <button string="Set to Open" name="action_open" type="object" attrs="{'invisible': [('state_invoice', '=', 'open')]}"/>
+                                <button string="Set to Done" name="action_done" type="object" attrs="{'invisible': [('state_invoice', 'in', ['done', 'cancel'])]}"/>
+                                <button string="Cancel" name="action_cancel" type="object" attrs="{'invisible': [('state_invoice', '=', 'cancel')]}"/>
+                            </header>
                             <group>
                                 <group>
                                     <field name="agent_invoice_id"/>

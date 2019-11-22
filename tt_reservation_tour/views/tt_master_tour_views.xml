@@ -24,6 +24,8 @@
                     <!--                    </div>-->
                     <!--TITLE-->
                     <div class="oe_button_box" name="button_box">
+                        <button name="%(tt_base.tt_upload_center_wizard_action_view)d" string="Upload Document" type="action"
+                                class="oe_stat_button" icon="fa-upload"/>
                         <button name="toggle_active" type="object"
                                 class="oe_stat_button" icon="fa-archive"
                                 groups="tt_base.group_tt_tour_travel_supervisor">
@@ -48,10 +50,12 @@
                             <field name="tour_route"/>
                             <field name="sequence"/>
                             <field name="is_can_hold"/>
+                            <field name="document_url"/>
                         </group>
                         <group>
                             <field name="tour_code"/>
                             <field name="provider_id"/>
+                            <field name="currency_id"/>
                             <field name="description"/>
                             <field name="tour_category"/>
                             <field name="tour_type" attrs="{'invisible': [('tour_category', '=', 'private')], 'required': [('tour_category', '!=', 'private')]}"/>
@@ -215,6 +219,7 @@
                                     <field name="payment_type"/>
                                     <field name="payment_percentage" attrs="{'invisible': [('payment_type', '!=', 'percentage')], 'required': [('payment_type', '=', 'percentage')]}"/>
                                     <field name="payment_amount" attrs="{'invisible': [('payment_type', '!=', 'amount')], 'required': [('payment_type', '=', 'amount')]}"/>
+                                    <field name="is_dp"/>
                                     <field name="description"/>
                                     <field name="due_date"/>
                                     <field name="pricelist_id" invisible="1"/>
@@ -229,6 +234,7 @@
                                                 <field name="payment_amount" attrs="{'invisible': [('payment_type', '!=', 'amount')], 'required': [('payment_type', '=', 'amount')]}"/>
                                             </group>
                                             <group>
+                                                <field name="is_dp"/>
                                                 <field name="description"/>
                                                 <field name="due_date"/>
                                                 <field name="pricelist_id" invisible="1"/>
@@ -279,11 +285,6 @@
                                                 <field name="additional_charge"/>
                                             </group>
                                         </group>
-                                        <!--<group>-->
-                                        <!--<field name="is_extra_bed"/>-->
-                                        <!--<field name="extra_bed_charge" attrs="{'invisible':[('is_extra_bed','!=', True)]}"/>-->
-                                        <!--<field name="extra_bed_required" attrs="{'invisible':[('is_extra_bed','!=', True)]}"/>-->
-                                        <!--</group>-->
                                     </sheet>
                                 </form>
                             </field>
@@ -334,8 +335,13 @@
                                 </form>
                             </field>
                         </page>
-                        <page string="Terms &amp; Conditions">
-                            <field name="requirements"/>
+                        <page string="Other Information">
+                            <separator string="Input"/>
+                            <field name="other_info_ids"/>
+                            <separator string="Preview"/>
+                            <button name="generate_other_info_preview" type="object" string="Generate"/>
+                            <separator/>
+                            <field name="other_info_preview"/>
                         </page>
                         <page string="Images">
                             <field name="image_ids"/>
@@ -430,14 +436,13 @@
                 <field name="name"/>
                 <field name="tour_type"/>
                 <field name="tour_route"/>
-                <field name="location_ids"/>
                 <field name="departure_date"/>
                 <field name="return_date"/>
-                <field name="commercial_duration"/>
+                <field name="duration"/>
                 <field name="seat" string="Seat Available"/>
-                <!--                <field name="adult_sale_price"/>-->
                 <field name="state"/>
                 <field name="create_uid"/>
+                <field name="provider_id"/>
             </tree>
         </field>
     </record>
