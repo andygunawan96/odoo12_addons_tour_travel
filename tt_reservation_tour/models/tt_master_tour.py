@@ -636,6 +636,8 @@ class MasterTour(models.Model):
                 'tour_type': tour_obj.tour_type,
                 'visa': tour_obj.visa,
                 'flight': tour_obj.flight,
+                'seat': int(tour_obj.seat),
+                'quota': int(tour_obj.quota),
                 'accommodations': accommodation,
                 'currency_code': tour_obj.currency_id.name,
                 'adult_sale_price': adult_sale_price <= 0 and '0' or adult_sale_price,
