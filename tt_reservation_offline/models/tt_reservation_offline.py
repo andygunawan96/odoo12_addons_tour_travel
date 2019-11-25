@@ -757,13 +757,13 @@ class IssuedOffline(models.Model):
             res = Response().get_error(str(e), 500)
         return res
 
-    def create_booking_reservation_offline_api(self):  # , data, context
-        booker = self.param_booker  # data['booker']
-        data_reservation_offline = self.param_issued_offline_data  # data['issued_offline_data']
-        passengers = self.param_passenger  # data['passenger']
-        contact = self.param_contact  # data['contact']
-        context = self.param_context  # context
-        lines = data_reservation_offline['line_ids']  # data['issued_offline_data']['line_ids']
+    def create_booking_reservation_offline_api(self, data, context):  #
+        booker = data['booker']  # self.param_booker
+        data_reservation_offline = data['issued_offline_data']  # self.param_issued_offline_data
+        passengers = data['passenger']  # self.param_passenger
+        contact = data['contact']  # self.param_contact
+        context = context  # self.param_context
+        lines = data['issued_offline_data']['line_ids']  # data_reservation_offline['line_ids']
 
         try:
             user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
