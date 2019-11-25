@@ -445,8 +445,6 @@ class ReservationTour(models.Model):
                 'duration':master.duration,
                 'departure_date': master.departure_date,
                 'return_date': master.return_date,
-                'departure_date_f': datetime.strptime(str(master.departure_date), '%Y-%m-%d').strftime("%A, %d-%m-%Y") or '',
-                'return_date_f': datetime.strptime(str(master.return_date), '%Y-%m-%d').strftime("%A, %d-%m-%Y") or '',
                 'visa': master.visa,
                 'flight': master.flight,
                 'image_urls': image_urls,
