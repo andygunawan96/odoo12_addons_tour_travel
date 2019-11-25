@@ -402,6 +402,14 @@ class TtReservation(models.Model):
     ##override fungsi ini untuk melakukan action extra jika expired
     def action_expired(self):
         self.state = 'cancel2'
+        try:
+            for rec in self.provider_booking_ids.filtered(lambda x: x.state != 'cancel2'):
+                rec.action_expired()
+        except:
+            _logger.error("provider type %s failed to expire vendor" % (self._name))
+
+    def action_cancel(self):
+        self.state = 'cancel'
 
     ## Digunakan untuk mengupdate PNR seluruh ledger untuk resv ini
     # Digunakan di hotel dan activity

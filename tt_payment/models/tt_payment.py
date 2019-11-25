@@ -147,7 +147,7 @@ class PaymentTransaction(models.Model):
                     self.top_up_id.action_validate_top_up(self.total_amount)
                     self.state = 'validated'
                 else:
-                    raise  exceptions.UserError('No permission to validate Top Up.')
+                    raise exceptions.UserError('No permission to validate Top Up.')
             else:
                 self.state = 'validated'
         else:

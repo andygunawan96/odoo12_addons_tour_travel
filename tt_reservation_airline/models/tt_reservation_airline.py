@@ -72,11 +72,6 @@ class ReservationAirline(models.Model):
         for rec in self:
             rec.state = 'issued'
 
-
-    @api.multi
-    def action_check_provider_state(self):
-        pass##fixme later
-
     def action_booked_api_airline(self,context,pnr_list,hold_date):
         self.write({
             'state': 'booked',
@@ -1267,10 +1262,10 @@ class ReservationAirline(models.Model):
         datas['form'] = res
         return self.env.ref('tt_report_common.action_printout_itinerary_airline').report_action(self, data=datas)
 
-    def action_expired(self):
-        super(ReservationAirline, self).action_expired()
-        for provider in self.provider_booking_ids:
-            provider.action_expired()
+    # def action_expired(self):
+    #     super(ReservationAirline, self).action_expired()
+    #     for provider in self.provider_booking_ids:
+    #         provider.action_expired()
 
     def pick_destination(self,data):
         dest1 = data[0][2]['origin_id']

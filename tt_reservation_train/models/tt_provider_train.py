@@ -152,6 +152,9 @@ class TtProviderTrain(models.Model):
     def action_expired(self):
         self.state = 'cancel2'
 
+    def action_cancel(self):
+        self.state = 'cancel'
+
     def create_ticket_api(self,passengers,pnr=""):
         ticket_list = []
 

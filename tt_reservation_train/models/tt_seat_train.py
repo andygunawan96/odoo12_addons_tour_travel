@@ -6,7 +6,7 @@ class TtSeatTrain(models.Model):
     _description = 'Rodex Model'
 
     seat = fields.Char('Seat')
-    seat_code = fields.Char('Seat Code')
+    seat_code = fields.Char('Seat Code')##auto findketika req parser assign seat KAI..
     journey_id = fields.Many2one('tt.journey.train', 'Journey')
     passenger_id = fields.Many2one('tt.reservation.passenger.train', 'Passenger')
 

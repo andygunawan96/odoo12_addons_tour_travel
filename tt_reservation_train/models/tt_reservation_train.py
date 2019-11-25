@@ -35,6 +35,33 @@ class TtReservationTrain(models.Model):
 
     carrier_name = fields.Char('List of Carriers',readonly=True)
 
+    @api.multi
+    def action_set_as_draft(self):
+        for rec in self:
+            rec.state = 'draft'
+
+
+    @api.multi
+    def action_set_as_booked(self):
+        for rec in self:
+            rec.state = 'booked'
+
+    @api.multi
+    def action_set_as_issued(self):
+        for rec in self:
+            rec.state = 'issued'
+
+    @api.depends('origin_id','destination_id')
+    def _compute_sector_type(self):
+        for rec in self:
+            if rec.origin_id and rec.destination_id:
+                if rec.origin_id.country_id == rec.destination_id.country_id:
+                    rec.sector_type = "Domestic"
+                else:
+                    rec.sector_type = "International"
+            else:
+                rec.sector_type = "Not Defined"
+
     def action_booked_api_train(self,context,pnr_list,hold_date):
         self.write({
             'state': 'booked',
@@ -42,6 +69,17 @@ class TtReservationTrain(models.Model):
             'hold_date': hold_date,
             'booked_uid': context['co_uid'],
             'booked_date': datetime.now()
+        })
+
+    def action_issued_api_train(self,acquirer_id,customer_parent_id,context):
+        self.action_issued_train(context['co_uid'],customer_parent_id,acquirer_id)
+
+    def action_issued_train(self,co_uid,customer_parent_id,acquirer_id = False):
+        self.write({
+            'state': 'issued',
+            'issued_date': datetime.now(),
+            'issued_uid': co_uid,
+            'customer_parent_id': customer_parent_id
         })
 
     def create_booking_train_api(self, req, context):
@@ -164,6 +202,12 @@ class TtReservationTrain(models.Model):
                             provider_obj.provider_id.sync_balance()
                         except Exception as e:
                             _logger.error(traceback.format_exc())
+                elif provider['state'] == 'cancel':
+                    provider_obj.action_cancel()
+                    any_provider_changed = True
+                elif provider['state'] == 'cancel2':
+                    provider_obj.action_expired()
+                    any_provider_changed = True
                 elif provider['state'] == 'fail_booked':
                     provider_obj.action_failed_booked_api_train(provider.get('error_code'),provider.get('error_msg'))
                     any_provider_changed = True
@@ -200,7 +244,11 @@ class TtReservationTrain(models.Model):
     def payment_train_api(self,req,context):
         _logger.info("Payment\n" + json.dumps(req))
         try:
-            book_obj = self.env['tt.reservation.train'].browse(req.get('book_id'))
+            # book_obj = self.env['tt.reservation.train'].browse(req.get('book_id'))
+            if req.get('book_id'):
+                book_obj = self.env['tt.reservation.train'].browse(req.get('book_id'))
+            else:
+                book_obj = self.env['tt.reservation.train'].search([('name','=',req.get('order_number'))],limit=1)
             if book_obj and book_obj.agent_id.id == context.get('co_agent_id',-1):
                 #cek balance due book di sini, mungkin suatu saat yang akan datang
                 if book_obj.state == 'issued':
@@ -220,7 +268,7 @@ class TtReservationTrain(models.Model):
 
                 return ERR.get_no_error()
             else:
-                RequestException(1001)
+                raise RequestException(1001)
         except RequestException as e:
             _logger.error(traceback.format_exc())
             try:
@@ -306,6 +354,12 @@ class TtReservationTrain(models.Model):
             # partial booked
             self.calculate_service_charge()
             self.action_partial_booked_api_train(context, pnr_list, hold_date)
+        elif all(rec.state == 'cancel' for rec in self.provider_booking_ids):
+            # failed issue
+            self.action_cancel()
+        elif all(rec.state == 'cancel2' for rec in self.provider_booking_ids):
+            # failed issue
+            self.action_expired()
         elif all(rec.state == 'fail_issued' for rec in self.provider_booking_ids):
             # failed issue
             self.action_failed_issue()
@@ -390,7 +444,7 @@ class TtReservationTrain(models.Model):
     def update_pnr_booked(self,provider_obj,provider,context):
 
         ##generate leg data
-        provider_obj.create_ticket_api(provider['passengers'],provider['pnr'])
+        provider_obj.create_ticket_api(provider['tickets'],provider['pnr'])
         provider_obj.action_booked_api_train(provider, context)
 
         # August 16, 2019 - SAM
@@ -405,7 +459,7 @@ class TtReservationTrain(models.Model):
                 raise RequestException(1005,additional_message="Journey Code not found")
             for fare in param_journey['fares']:
                 provider_obj.create_service_charge(fare['service_charges'])
-            journey.create_seat(param_journey['passenger_seat'])
+            journey.create_seat(param_journey['seats'])
             journey.write({
                 'cabin_class': param_journey.get('fares')[0].get('cabin_class',''),
                 'class_of_service': param_journey.get('fares')[0].get('class_of_service',''),
@@ -423,7 +477,6 @@ class TtReservationTrain(models.Model):
                 count -= 1
                 dest2 = data[count][2]['destination_id']
             return count
-
 
     def get_booking_train_api(self,req, context):
         try:
@@ -484,6 +537,24 @@ class TtReservationTrain(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1013)
 
+    def update_cost_service_charge_train_api(self,req,context):
+        _logger.info('update cost\n' + json.dumps(req))
+        for provider in req['provider_bookings']:
+            provider_obj = self.env['tt.provider.train'].browse(provider['provider_id'])
+            if not provider_obj:
+                raise RequestException(1002)
+            provider_obj.delete_service_charge()
+            provider_obj.write({
+                'balance_due': provider['balance_due']
+            })
+            for journey in provider['journeys']:
+                for segment in journey['segments']:
+                    for fare in segment['fares']:
+                        provider_obj.create_service_charge(fare['service_charges'])
+
+        book_obj = self.get_book_obj(req.get('book_id'),req.get('order_number'))
+        book_obj.calculate_service_charge()
+        return ERR.get_no_error()
 
     def calculate_service_charge(self):
         for service_charge in self.sale_service_charge_ids:
