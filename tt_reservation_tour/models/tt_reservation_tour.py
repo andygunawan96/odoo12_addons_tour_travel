@@ -366,7 +366,19 @@ class ReservationTour(models.Model):
             except Exception:
                 agent_obj = self.env['res.users'].browse(int(context['co_uid'])).agent_id
 
-            is_enough = self.env['tt.agent'].check_balance_limit_api(agent_obj.id, book_obj.total)
+            payment_method = data.get('payment_method') and data['payment_method'] or 'full'
+
+            if payment_method == 'full':
+                is_enough = self.env['tt.agent'].check_balance_limit_api(agent_obj.id, book_obj.agent_nta)
+            else:
+                total_dp = 0
+                for rec in book_obj.tour_id.payment_rules_ids:
+                    if rec.is_dp:
+                        if rec.payment_type == 'amount':
+                            total_dp += rec.payment_amount
+                        else:
+                            total_dp += (rec.payment_percentage / 100) * book_obj.agent_nta
+                is_enough = self.env['tt.agent'].check_balance_limit_api(agent_obj.id, total_dp)
             if is_enough['error_code'] != 0:
                 _logger.error('Balance not enough')
                 raise RequestException(1007)
@@ -376,7 +388,6 @@ class ReservationTour(models.Model):
             else:
                 customer_parent_id = book_obj.agent_id.customer_parent_walkin_id.id
 
-            payment_method = data.get('payment_method') and data['payment_method'] or 'full'
             vals = {
                 'customer_parent_id': customer_parent_id,
                 'payment_method': payment_method
@@ -434,7 +445,7 @@ class ReservationTour(models.Model):
                 'duration':master.duration,
                 'departure_date': master.departure_date,
                 'return_date': master.return_date,
-                'departure_date_f': datetime.strptime(str(master.return_date), '%Y-%m-%d').strftime("%A, %d-%m-%Y") or '',
+                'departure_date_f': datetime.strptime(str(master.departure_date), '%Y-%m-%d').strftime("%A, %d-%m-%Y") or '',
                 'return_date_f': datetime.strptime(str(master.return_date), '%Y-%m-%d').strftime("%A, %d-%m-%Y") or '',
                 'visa': master.visa,
                 'flight': master.flight,

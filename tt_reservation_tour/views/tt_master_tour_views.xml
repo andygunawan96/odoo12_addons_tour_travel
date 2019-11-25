@@ -24,6 +24,8 @@
                     <!--                    </div>-->
                     <!--TITLE-->
                     <div class="oe_button_box" name="button_box">
+                        <button name="%(tt_base.tt_upload_center_wizard_action_view)d" string="Upload Document" type="action"
+                                class="oe_stat_button" icon="fa-upload"/>
                         <button name="toggle_active" type="object"
                                 class="oe_stat_button" icon="fa-archive"
                                 groups="tt_base.group_tt_tour_travel_supervisor">
@@ -48,10 +50,12 @@
                             <field name="tour_route"/>
                             <field name="sequence"/>
                             <field name="is_can_hold"/>
+                            <field name="document_url"/>
                         </group>
                         <group>
                             <field name="tour_code"/>
                             <field name="provider_id"/>
+                            <field name="currency_id"/>
                             <field name="description"/>
                             <field name="tour_category"/>
                             <field name="tour_type" attrs="{'invisible': [('tour_category', '=', 'private')], 'required': [('tour_category', '!=', 'private')]}"/>
@@ -432,14 +436,13 @@
                 <field name="name"/>
                 <field name="tour_type"/>
                 <field name="tour_route"/>
-                <field name="location_ids"/>
                 <field name="departure_date"/>
                 <field name="return_date"/>
-                <field name="commercial_duration"/>
+                <field name="duration"/>
                 <field name="seat" string="Seat Available"/>
-                <!--                <field name="adult_sale_price"/>-->
                 <field name="state"/>
                 <field name="create_uid"/>
+                <field name="provider_id"/>
             </tree>
         </field>
     </record>

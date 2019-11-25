@@ -87,6 +87,14 @@ tt_installment_invoice_for_sub_agent_user_operator,tt.installment.invoice.for.su
 tt_installment_invoice_for_sub_agent_user_supervisor,tt.installment.invoice.for.sub.agent.user.supervisor,model_tt_installment_invoice,tt_base.group_tt_sub_agent_user_supervisor,1,1,1,0
 tt_installment_invoice_for_sub_agent_user_manager,tt.installment.invoice.for.sub.agent.user.manager,model_tt_installment_invoice,tt_base.group_tt_sub_agent_user_manager,1,1,1,0
 ,,,,,,,
+tt_installment_invoice_for_agent_user_operator,tt.installment.invoice.for.agent.user.operator,model_tt_installment_invoice,tt_base.group_tt_agent_user_operator,1,1,1,0
+tt_installment_invoice_for_agent_user_supervisor,tt.installment.invoice.for.agent.user.supervisor,model_tt_installment_invoice,tt_base.group_tt_agent_user_supervisor,1,1,1,0
+tt_installment_invoice_for_agent_user_manager,tt.installment.invoice.for.agent.user.manager,model_tt_installment_invoice,tt_base.group_tt_agent_user_manager,1,1,1,0
+,,,,,,,
+tt_installment_invoice_for_tour_travel_operator,tt.installment.invoice.for.tour.travel.operator,model_tt_installment_invoice,tt_base.group_tt_tour_travel_operator,1,1,1,0
+tt_installment_invoice_for_tour_travel_supervisor,tt.installment.invoice.for.tour.travel.supervisor,model_tt_installment_invoice,tt_base.group_tt_tour_travel_supervisor,1,1,1,0
+tt_installment_invoice_for_tour_travel_manager,tt.installment.invoice.for.tour.travel.manager,model_tt_installment_invoice,tt_base.group_tt_tour_travel_manager,1,1,1,0
+,,,,,,,
 tt_master_tour_discount_fit_for_sub_agent_user_operator,tt.master.tour.discount.fit.for.sub.agent.user.operator,model_tt_master_tour_discount_fit,tt_base.group_tt_sub_agent_user_operator,1,1,1,0
 tt_master_tour_discount_fit_for_sub_agent_user_supervisor,tt.master.tour.discount.fit.for.sub.agent.user.supervisor,model_tt_master_tour_discount_fit,tt_base.group_tt_sub_agent_user_supervisor,1,1,1,0
 tt_master_tour_discount_fit_for_sub_agent_user_manager,tt.master.tour.discount.fit.for.sub.agent.user.manager,model_tt_master_tour_discount_fit,tt_base.group_tt_sub_agent_user_manager,1,1,1,0
@@ -94,6 +102,10 @@ tt_master_tour_discount_fit_for_sub_agent_user_manager,tt.master.tour.discount.f
 tt_master_tour_adjustment_for_sub_agent_user_operator,tt.master.tour.adjustment.for.sub.agent.user.operator,model_tt_master_tour_adjustment,tt_base.group_tt_sub_agent_user_operator,1,1,1,0
 tt_master_tour_adjustment_for_sub_agent_user_supervisor,tt.master.tour.adjustment.for.sub.agent.user.supervisor,model_tt_master_tour_adjustment,tt_base.group_tt_sub_agent_user_supervisor,1,1,1,0
 tt_master_tour_adjustment_for_sub_agent_user_manager,tt.master.tour.adjustment.for.sub.agent.user.manager,model_tt_master_tour_adjustment,tt_base.group_tt_sub_agent_user_manager,1,1,1,0
+,,,,,,,
+tt_reservation_tour_for_agent_user_operator,tt.reservation.tour.for.agent.user.operator,model_tt_reservation_tour,tt_base.group_tt_agent_user_operator,1,1,1,0
+tt_reservation_tour_for_agent_user_supervisor,tt.reservation.tour.for.agent.user.supervisor,model_tt_reservation_tour,tt_base.group_tt_agent_user_supervisor,1,1,1,0
+tt_reservation_tour_for_agent_user_manager,tt.reservation.tour.for.agent.user.manager,model_tt_reservation_tour,tt_base.group_tt_agent_user_manager,1,1,1,0
 ,,,,,,,
 tt_reservation_passenger_tour_for_agent_user_operator,tt.reservation.passenger.tour.for.agent.user.operator,model_tt_reservation_passenger_tour,tt_base.group_tt_agent_user_operator,1,0,0,0
 tt_reservation_passenger_tour_for_agent_user_supervisor,tt.reservation.passenger.tour.for.agent.user.supervisor,model_tt_reservation_passenger_tour,tt_base.group_tt_agent_user_supervisor,1,0,0,0

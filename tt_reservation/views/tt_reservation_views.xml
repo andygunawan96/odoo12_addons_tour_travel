@@ -127,8 +127,9 @@
                             <field name="total_tax" class="oe_subtotal_footer_separator"/>
                             <field name="total" class="oe_subtotal_footer_separator"/>
                             <field name="total_discount" class="oe_subtotal_footer_separator"/>
-                            <field name="total_commission" class="oe_subtotal_footer_separator"/>
-                            <field name="total_nta" class="oe_subtotal_footer_separator"/>
+                            <field name="total_commission" class="oe_subtotal_footer_separator" groups="tt_base.group_tt_tour_travel_operator"/>
+                            <field name="total_nta" class="oe_subtotal_footer_separator" groups="tt_base.group_tt_tour_travel_operator"/>
+                            <field name="agent_nta" class="oe_subtotal_footer_separator" groups="tt_base.group_tt_agent_user_operator, base.user_admin"/>
                         </group>
                         <group>
                             <field name="notes" groups="tt_base.group_tt_tour_travel_operator"/>

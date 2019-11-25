@@ -12,3 +12,4 @@ from . import tt_reservation_visa_pricelist
 from . import tt_master_visa_locations
 from . import tt_master_visa_handling
 from . import tt_provider_visa
+from . import tt_cron_log

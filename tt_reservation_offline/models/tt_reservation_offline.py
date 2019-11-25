@@ -52,8 +52,10 @@ class IssuedOffline(models.Model):
     _order = 'name desc'
     _description = 'Rodex Model'
 
-    sub_agent_id = fields.Many2one('tt.agent', 'Sub-Agent', readonly=True, states={'draft': [('readonly', False)]},
-                                   help='COR / POR', related='booker_id.agent_id')
+    # sub_agent_id = fields.Many2one('tt.agent', 'Sub-Agent', readonly=True, states={'draft': [('readonly', False)]},
+    #                                help='COR / POR', related='booker_id.agent_id')
+
+    # booking_id = fields.Many2one('tt.reservation.offline', 'Booking ID', default=lambda self: self.id)
 
     state = fields.Selection(STATE_OFFLINE, 'State', default='draft')
     # type = fields.Selection(TYPE, required=True, readonly=True,
@@ -61,6 +63,7 @@ class IssuedOffline(models.Model):
     provider_type_id = fields.Many2one('tt.provider.type', required=True, readonly=True,
                                        states={'draft': [('readonly', False)]}, string='Transaction Type')
     provider_type_id_name = fields.Char('Transaction Name', readonly=True, related='provider_type_id.code')
+    # provider_booking_ids = fields.One2many('tt.provider.offline', 'booking_id', string='Provider Booking')
 
     segment = fields.Integer('Number of Segment', compute='get_segment_length')
     person = fields.Integer('Person', readonly=True, states={'draft': [('readonly', False)],
@@ -130,7 +133,9 @@ class IssuedOffline(models.Model):
     line_ids = fields.One2many('tt.reservation.offline.lines', 'booking_id', 'Issued Offline', readonly=True,
                                states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
     passenger_ids = fields.One2many('tt.reservation.offline.passenger', 'booking_id', 'Issued Offline', readonly=True,
-                                    states={'draft': [('readonly', False)]})
+                                    states={'draft': [('readonly', False)],
+                                            'confirm': [('readonly', False)],
+                                            'paid': [('readonly', False)]})
 
     incentive_amount = fields.Monetary('Insentif')
     vendor_amount = fields.Float('Vendor Amount', readonly=True,
@@ -144,8 +149,8 @@ class IssuedOffline(models.Model):
     sale_service_charge_ids = fields.One2many('tt.service.charge', 'booking_offline_id', 'Service Charge',
                                               readonly=True, states={'draft': [('readonly', False)]})
 
-    provider_booking_ids = fields.One2many('tt.tb.provider.offline', 'booking_id', string='Provider Booking',
-                                           readonly=True, states={'draft': [('readonly', False)]})
+    # provider_booking_ids = fields.One2many('tt.tb.provider.offline', 'booking_id', string='Provider Booking',
+    #                                        readonly=True, states={'draft': [('readonly', False)]})
 
     contact_ids = fields.One2many('tt.customer', 'reservation_offline_id', 'Contact Person', readonly=True,
                                   states={'draft': [('readonly', False)]})
@@ -248,13 +253,11 @@ class IssuedOffline(models.Model):
     @api.one
     def action_paid(self, kwargs={}):
         # cek saldo sub agent
-        is_enough = self.agent_id.check_balance_limit_api(self.agent_id.id, self.total)
+        is_enough = self.agent_id.check_balance_limit_api(self.agent_id.id, self.agent_nta)
         # jika saldo mencukupi
         if is_enough['error_code'] == 0:
             # self.validate_date = fields.Datetime.now()
             # self.validate_uid = kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
-            self.issued_date = fields.Datetime.now()
-            self.issued_uid = kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
             # create prices
             self.create_ssc_ledger()
             # create ledger
@@ -263,6 +266,12 @@ class IssuedOffline(models.Model):
             self.state = 'paid'
             self.vendor_amount = self.nta_price
             self.compute_final_ho()
+            self.issued_date = fields.Datetime.now()
+            self.issued_uid = kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
+            for provider in self.provider_booking_ids:
+                provider.issued_date = self.issued_date
+                provider.issued_uid = self.issued_uid
+
         return is_enough
 
     def check_pnr_empty(self):
@@ -286,6 +295,7 @@ class IssuedOffline(models.Model):
                 or self.provider_type_id_name == 'cruise':
             if self.check_provider_empty() is False:
                 self.get_provider_name()
+                # pnr = self.get_pnr_list()
                 if self.provider_type_id_name == 'airline' or self.provider_type_id_name == 'train':
                     if self.check_pnr_empty():
                         raise UserError(_('PNR(s) can\'t be Empty'))
@@ -294,6 +304,9 @@ class IssuedOffline(models.Model):
         self.state = 'sent'
         self.sent_date = fields.Datetime.now()
         self.sent_uid = self.env.user.id
+        for provider in self.provider_booking_ids:
+            provider.sent_date = self.sent_date
+            provider.sent_uid = self.sent_uid
 
     @api.one
     def action_issued_backend(self):
@@ -343,6 +356,7 @@ class IssuedOffline(models.Model):
 
     def create_ssc_ledger(self):
         provider_obj = self.env['tt.reservation.offline.lines'].search([('booking_id', '=', self.id)])
+        ledger_obj = self.env['tt.ledger']
         try:
             service_charge_list = []
             if self.provider_type_id_name != 'hotel':
@@ -355,7 +369,8 @@ class IssuedOffline(models.Model):
                     service_charge_list.append((self.get_service_charge_summary_hotel(total_line)))
             service_charge_list = self.sudo().get_service_charge_list_offline(service_charge_list)
             self.sudo().create_service_charge_new(service_charge_list)
-            self.create_ledger(provider_obj)
+            ledger_obj.action_create_ledger(self, self.env.user.id)
+            # self.create_ledger(provider_obj)
             self.create_ledger_commission(provider_obj)
         except Exception as e:
             self.env.cr.rollback()
@@ -506,7 +521,7 @@ class IssuedOffline(models.Model):
 
             vals = self.env['tt.ledger'].prepare_vals(self._name, self.id, 'Resv : ' + rec.name, rec.name, rec.validate_date,
                                                       2, rec.currency_id.id, self.env.user.id, 0, rec.total)
-            vals = self.env['tt.ledger'].prepare_vals_for_resv(self, vals)
+            vals = self.env['tt.ledger'].prepare_vals_for_resv(self, pnr, vals)
             vals.update({
                 'pnr': pnr,
                 'display_provider_name': self.get_display_provider_name(),
@@ -707,6 +722,25 @@ class IssuedOffline(models.Model):
         for vals in vals_list:
             self.env['tt.ledger'].create(vals)
         print(vals_list)
+
+    def create_provider_offline(self):
+        provider_found = []
+        for line in self.line_ids:
+            if line.provider_id.id in provider_found:
+                pass
+            else:
+                vals = {
+                    'booking_id': self.id,
+                    'provider_id': line.provider_id.id,
+                    'confirm_uid': self.env.user.id,
+                    'confirm_date': datetime.now()
+                }
+                self.env['tt.provider.offline'].create(vals)
+
+    def update_provider_offline(self):
+        for provider in self.provider_booking_ids:
+            pnr = provider.get_all_provider_pnr()
+            provider.pnr = ', '.join(pnr)
 
     ####################################################################################################
     # Set, Get & Compute

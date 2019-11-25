@@ -70,7 +70,7 @@ class TtProviderTrain(models.Model):
         if self.state == 'issued':
             raise UserError("Has been Issued.")
 
-        balance_res = self.env['tt.agent'].check_balance_limit_api(self.booking_id.agent_id.id,self.booking_id.total_nta)
+        balance_res = self.env['tt.agent'].check_balance_limit_api(self.booking_id.agent_id.id,self.booking_id.agent_nta)
         if balance_res['error_code'] != 0:
             raise UserError("Balance not enough.")
 

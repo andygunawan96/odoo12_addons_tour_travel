@@ -71,9 +71,6 @@ class TtPassport(models.Model):
     confirmed_date = fields.Datetime('Confirmed Date', readonly=1)
     confirmed_uid = fields.Many2one('res.users', 'Confirmed By', readonly=1)
 
-    sale_service_charge_ids = fields.One2many('tt.service.charge', 'passport_id', 'Service Charge',
-                                              readonly=True, states={'draft': [('readonly', False)]})
-
     validate_date = fields.Datetime('Validate Date', readonly=1)
     validate_uid = fields.Many2one('res.users', 'Validate By', readonly=1)
     payment_uid = fields.Many2one('res.users', 'Payment By', readonly=1)
@@ -81,8 +78,14 @@ class TtPassport(models.Model):
     ledger_ids = fields.One2many('tt.ledger', 'res_id', 'Ledger', readonly=True,
                                  domain=[('res_model', '=', 'tt.reservation.passport')])
 
+    sale_service_charge_ids = fields.One2many('tt.service.charge', 'passport_id', 'Service Charge',
+                                              readonly=True, states={'draft': [('readonly', False)]})
+
+    provider_booking_ids = fields.One2many('tt.provider.passport', 'booking_id', string='Provider Booking')  # , readonly=True, states={'cancel2': [('readonly', False)]}
+
     done_date = fields.Datetime('Done Date', readonly=1)
     ready_date = fields.Datetime('Ready Date', readonly=1)
+
     recipient_name = fields.Char('Recipient Name')
     recipient_address = fields.Char('Recipient Address')
     recipient_phone = fields.Char('Recipient Phone')
@@ -96,10 +99,9 @@ class TtPassport(models.Model):
 
     acquirer_id = fields.Char('Payment Method', readonly=True)  # dipake di agent invoice
 
-    provider_booking_ids = fields.One2many('tt.provider.passport', 'booking_id', string='Provider Booking',
-                                           readonly=True, states={'cancel2': [('readonly', False)]})
-
     immigration_consulate = fields.Char('Immigration Consulate', readonly=1, compute="_compute_immigration_consulate")
+
+    agent_commission = fields.Monetary('Agent Commission', default=0, compute="_compute_agent_commission")
 
     ######################################################################################################
     # STATE
@@ -328,26 +330,6 @@ class TtPassport(models.Model):
                 new_aml = ledger.create(vals)
                 # new_aml.action_done()
                 rec.ledger_id = new_aml
-
-    def action_booked_passport(self, api_context=None):
-        if not api_context:  # Jika dari call from backend
-            api_context = {
-                'co_uid': self.env.user.id
-            }
-        vals = {}
-        if self.name == 'New':
-            vals.update({
-                'state': 'partial_booked',
-            })
-
-        vals.update({
-            'state': 'booked',
-            'booked_uid': api_context and api_context['co_uid'],
-            'booked_date': datetime.now(),
-        })
-        self.write(vals)
-
-        self._compute_commercial_state()
 
     ######################################################################################################
     # LEDGER
@@ -589,8 +571,68 @@ class TtPassport(models.Model):
     # CREATE
     ######################################################################################################
 
-    def create_booking(self):
-        pass
+    param_booker = {
+        "title": "MR",
+        "first_name": "ivan",
+        "last_name": "suryajaya",
+        "email": "asd@gmail.com",
+        "calling_code": "62",
+        "mobile": "81283182321",
+        "nationality_name": "Indonesia",
+        "nationality_code": "ID",
+        "booker_id": ""
+    }
+
+    param_contact = [
+        {
+            "title": "MR",
+            "first_name": "ivan",
+            "last_name": "suryajaya",
+            "email": "asd@gmail.com",
+            "calling_code": "62",
+            "mobile": "81823812832",
+            "nationality_name": "Indonesia",
+            "nationality_code": "ID",
+            "contact_id": "",
+            "is_booker": True
+        }
+    ]
+
+    param_passenger = [
+        {
+            "pax_type": "INF",
+            "first_name": "ivan",
+            "last_name": "suryajaya",
+            "title": "MR",
+            "birth_date": "2019-08-25",
+            "nationality_name": "Indonesia",
+            "nationality_code": "ID",
+            "country_of_issued_code": "Indonesia",
+            "passport_expdate": "2019-10-04",
+            "passport_number": "1231312323",
+            "passenger_id": "",
+            "is_booker": True,
+            "is_contact": False
+        }
+    ]
+
+    param_context = {
+        'co_uid': 66,
+        'co_agent_id': 4
+    }
+
+    param_payment = {
+        "member": False,
+        "seq_id": "PQR.0429001"
+        # "seq_id": "PQR.9999999"
+    }
+
+    def create_booking_passport_api(self):
+        booker = self.param_booker  # data['booker']
+        contact = self.param_contact  # data['contact']
+        passengers = self.param_passenger  # copy.deepcopy(data['passenger'])
+        payment = self.param_payment  # data['payment']
+        context = self.param_context  # context
 
     def create_sale_service_charge_value(self, passenger, passenger_ids):
         ssc_list = []
@@ -673,6 +715,26 @@ class TtPassport(models.Model):
             print(ssc_obj.read())
             ssc_ids.append(ssc_obj.id)
         return ssc_ids
+
+    def action_booked_passport(self, api_context=None):
+        if not api_context:  # Jika dari call from backend
+            api_context = {
+                'co_uid': self.env.user.id
+            }
+        vals = {}
+        if self.name == 'New':
+            vals.update({
+                'state': 'partial_booked',
+            })
+
+        vals.update({
+            'state': 'booked',
+            'booked_uid': api_context and api_context['co_uid'],
+            'booked_date': datetime.now(),
+        })
+        self.write(vals)
+
+        self._compute_commercial_state()
 
     ######################################################################################################
     # OTHERS
