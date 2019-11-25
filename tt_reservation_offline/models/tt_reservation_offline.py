@@ -255,7 +255,7 @@ class IssuedOffline(models.Model):
     @api.one
     def action_paid(self, kwargs={}):
         # cek saldo sub agent
-        is_enough = self.agent_id.check_balance_limit_api(self.agent_id.id, self.total)
+        is_enough = self.agent_id.check_balance_limit_api(self.agent_id.id, self.agent_nta)
         # jika saldo mencukupi
         if is_enough['error_code'] == 0:
             # self.validate_date = fields.Datetime.now()

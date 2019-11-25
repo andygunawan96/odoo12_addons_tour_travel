@@ -73,4 +73,7 @@ class TtJourneyTrain(models.Model):
     def update_ticket(self,seats):
         for seat in seats:
             curr_seat = self.seat_ids.filtered(lambda x: x.passenger_id.sequence == seat['passenger_sequence'])
-            curr_seat.seat = seat['seat']
+            curr_seat.write({
+                'seat': seat['seat'],
+                'seat_code': seat['seat_code']
+            })

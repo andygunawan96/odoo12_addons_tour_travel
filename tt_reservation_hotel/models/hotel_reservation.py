@@ -281,7 +281,7 @@ class HotelReservation(models.Model):
         if not self.ensure_one():
             return False
         # 1. Ledger
-        is_enough = self.agent_id.check_balance_limit(self.total_nta)
+        is_enough = self.agent_id.check_balance_limit(self.agent_nta)
         if is_enough:
             # Jika cukup Potong Saldo
             self.pnr = self.get_pnr_list()

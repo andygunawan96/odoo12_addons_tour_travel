@@ -80,6 +80,7 @@ class TtReservation(models.Model):
     total_discount = fields.Monetary(string='Total Discount', default=0, readonly=True)
     total_commission = fields.Monetary(string='Total Commission', default=0, compute='_compute_total_commission')
     total_nta = fields.Monetary(string='NTA Amount',compute='_compute_total_nta')
+    agent_nta = fields.Monetary(string='NTA Amount',compute='_compute_agent_nta')
 
     # yang jual
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True,
@@ -337,6 +338,14 @@ class TtReservation(models.Model):
                 nta_total += sale.total
             rec.total_nta = nta_total
 
+    def _compute_agent_nta(self):
+        for rec in self:
+            agent_nta_total = 0
+            for sale in rec.sale_service_charge_ids:
+                if sale.charge_code != 'rac':
+                    agent_nta_total += sale.total
+            rec.agent_nta = agent_nta_total
+
     def to_dict(self):
         res = {
             'order_number': self.name,
@@ -402,6 +411,14 @@ class TtReservation(models.Model):
     ##override fungsi ini untuk melakukan action extra jika expired
     def action_expired(self):
         self.state = 'cancel2'
+        try:
+            for rec in self.provider_booking_ids.filtered(lambda x: x.state != 'cancel2'):
+                rec.action_expired()
+        except:
+            _logger.error("provider type %s failed to expire vendor" % (self._name))
+
+    def action_cancel(self):
+        self.state = 'cancel'
 
     ## Digunakan untuk mengupdate PNR seluruh ledger untuk resv ini
     # Digunakan di hotel dan activity

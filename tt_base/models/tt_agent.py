@@ -263,33 +263,36 @@ class TtAgent(models.Model):
                 if util.get_without_empty(req,'order_or_pnr'):
                     list_obj = self.env['tt.reservation.%s' % (type)].search(['|',('name','=',req['order_or_pnr']),
                                                                               ('pnr', '=', req['order_or_pnr']),
-                                                                              ('agent_id','=',context['co_agent_id'])])
+                                                                              ('agent_id','=',context['co_agent_id'])],
+                                                                             order='create_date')
                 else:
                     list_obj = self.env['tt.reservation.%s' % (type)].search([('agent_id','=',context['co_agent_id'])],
-                                                              offset=req['minimum'],
-                                                              limit=req['maximum']-req['minimum'])
+                                                              # offset=req['minimum'],
+                                                              # limit=req['maximum']-req['minimum'],
+                                                            order='create_date desc')
                 for rec in list_obj:
                     res_list.append({
                         'order_number': rec.name,
-                        'booked_date': rec.booked_date and rec.booked_date.strftime('%d-%m-%Y %H:%M:%S') or '',
+                        'booked_date': rec.booked_date and rec.booked_date.strftime('%Y-%m-%d %H:%M:%S') or '',
                         'booked_uid': rec.booked_uid and rec.booked_uid.name or '',
                         'provider': {
                             'provider_type': rec.provider_type_id and rec.provider_type_id.code or '',
                             'airline_carrier_codes': list(set([seg.carrier_code for seg in rec.segment_ids]))
                             if hasattr(rec,'segment_ids') else [],
                         },
-                        'hold_date': rec.hold_date and rec.hold_date.strftime('%d-%m-%Y %H:%M:%S') or '',
+                        'hold_date': rec.hold_date and rec.hold_date.strftime('%Y-%m-%d %H:%M:%S') or '',
                         'booker': rec.booker_id and rec.booker_id.to_dict() or '',
                         'pnr': rec.pnr or '',
                         'state_description': variables.BOOKING_STATE_STR[rec.state],
-                        'issued_date': rec.issued_date and rec.issued_date.strftime('%d-%m-%Y %H:%M:%S') or '',
-                        'issued_uid': rec.issued_uid and rec.issued_uid.name or ''
+                        'issued_date': rec.issued_date and rec.issued_date.strftime('%Y-%m-%d %H:%M:%S') or '',
+                        'issued_uid': rec.issued_uid and rec.issued_uid.name or '',
+                        'create_date': rec.create_date and rec.create_date.strftime('%Y-%m-%d %H:%M:%S') or ''
                     })
 
-            sorted(res_list, key=lambda i: i['hold_date'])
+            res_list.sort( key=lambda i: i['create_date'],reverse=True)
 
-            _logger.info('Get Transaction Resp:\n'+json.dumps(res_list))
-            return ERR.get_no_error(res_list)
+            _logger.info('Get Transaction Resp:\n'+json.dumps(res_list[req.get('minimum',0):req.get('maximum',20)]))
+            return ERR.get_no_error(res_list[req.get('minimum',0):req.get('maximum',20)])
         except Exception as e:
             _logger.error(str(e)+traceback.format_exc())
             return ERR.get_error(1012)
