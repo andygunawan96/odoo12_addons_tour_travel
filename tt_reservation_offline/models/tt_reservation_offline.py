@@ -63,7 +63,7 @@ class IssuedOffline(models.Model):
     provider_type_id = fields.Many2one('tt.provider.type', required=True, readonly=True,
                                        states={'draft': [('readonly', False)]}, string='Transaction Type')
     provider_type_id_name = fields.Char('Transaction Name', readonly=True, related='provider_type_id.code')
-    # provider_booking_ids = fields.One2many('tt.provider.offline', 'booking_id', string='Provider Booking')
+    provider_booking_ids = fields.One2many('tt.provider.offline', 'booking_id', string='Provider Booking')
 
     segment = fields.Integer('Number of Segment', compute='get_segment_length')
     person = fields.Integer('Person', readonly=True, states={'draft': [('readonly', False)],
@@ -94,6 +94,8 @@ class IssuedOffline(models.Model):
     validate_uid = fields.Many2one('res.users', 'Validate by', readonly=True, copy=False)
     done_date = fields.Datetime('Done Date', readonly=True, copy=False)
     done_uid = fields.Many2one('res.users', readonly=True, copy=False)
+    cancel_date = fields.Datetime('Cancel Date', readonly=True, copy=False)
+    cancel_uid = fields.Many2one('res.users', readonly=True, copy=False)
 
     expired_date = fields.Datetime('Time Limit', readonly=True, states={'draft': [('readonly', False)]})
 
@@ -120,7 +122,8 @@ class IssuedOffline(models.Model):
     #                                   'tt_issued_id', 'attachment_id', domain=[('res_model', '=', 'tt.reservation.offline')]
     #                                   , string='Attachments', readonly=True, states={'paid': [('readonly', False)]})
     attachment_ids = fields.Many2many('tt.upload.center', 'offline_ir_attachments_rel', 'tt_issued_id',
-                                      'attachment_id', string='Attachments')
+                                      'attachment_id', string='Attachments', readonly=True,
+                                      states={'paid': [('readonly', False)]})
     guest_ids = fields.Many2many('tt.customer', 'tt_issued_guest_rel', 'resv_issued_id', 'tt_product_id',
                                  'Guest(s)', readonly=True, states={'draft': [('readonly', False)]})
     # passenger_qty = fields.Integer('Passenger Qty', default=1)
@@ -131,7 +134,9 @@ class IssuedOffline(models.Model):
                               readonly=True, states={'draft': [('readonly', False)]})
 
     line_ids = fields.One2many('tt.reservation.offline.lines', 'booking_id', 'Issued Offline', readonly=True,
-                               states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
+                               states={'draft': [('readonly', False)],
+                                       'confirm': [('readonly', False)],
+                                       'paid': [('readonly', False)]})
     passenger_ids = fields.One2many('tt.reservation.offline.passenger', 'booking_id', 'Issued Offline', readonly=True,
                                     states={'draft': [('readonly', False)],
                                             'confirm': [('readonly', False)],
@@ -148,9 +153,6 @@ class IssuedOffline(models.Model):
 
     sale_service_charge_ids = fields.One2many('tt.service.charge', 'booking_offline_id', 'Service Charge',
                                               readonly=True, states={'draft': [('readonly', False)]})
-
-    # provider_booking_ids = fields.One2many('tt.tb.provider.offline', 'booking_id', string='Provider Booking',
-    #                                        readonly=True, states={'draft': [('readonly', False)]})
 
     contact_ids = fields.One2many('tt.customer', 'reservation_offline_id', 'Contact Person', readonly=True,
                                   states={'draft': [('readonly', False)]})
@@ -259,7 +261,16 @@ class IssuedOffline(models.Model):
             # self.validate_date = fields.Datetime.now()
             # self.validate_uid = kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
             # create prices
-            self.create_ssc_ledger()
+            for provider in self.provider_booking_ids:
+                # create pricing list
+                if self.provider_type_id_name != 'hotel':
+                    provider.create_service_charge()
+                else:
+                    provider.create_service_charge_hotel()
+                provider.action_create_ledger()
+            self.calculate_service_charge()
+
+            # self.create_ssc_ledger()
             # create ledger
             # self.sudo().create_ledger()
             # set state = paid
@@ -290,6 +301,8 @@ class IssuedOffline(models.Model):
 
     @api.one
     def action_sent(self):
+        if self.agent_commission <= 0:
+            raise UserError(_('Agent Commission can\'t be Zero (0)'))
         if self.provider_type_id_name == 'airline' or self.provider_type_id_name == 'train' or \
                 self.provider_type_id_name == 'hotel' or self.provider_type_id_name == 'activity'\
                 or self.provider_type_id_name == 'cruise':
@@ -304,7 +317,11 @@ class IssuedOffline(models.Model):
         self.state = 'sent'
         self.sent_date = fields.Datetime.now()
         self.sent_uid = self.env.user.id
+        self.create_provider_offline()
+        # self.update_provider_offline()
         for provider in self.provider_booking_ids:
+            provider.confirm_date = self.confirm_date
+            provider.confirm_uid = self.confirm_uid
             provider.sent_date = self.sent_date
             provider.sent_uid = self.sent_uid
 
@@ -354,393 +371,113 @@ class IssuedOffline(models.Model):
     # LEDGER & PRICES
     ####################################################################################################
 
-    def create_ssc_ledger(self):
-        provider_obj = self.env['tt.reservation.offline.lines'].search([('booking_id', '=', self.id)])
-        ledger_obj = self.env['tt.ledger']
-        try:
-            service_charge_list = []
-            if self.provider_type_id_name != 'hotel':
-                total_passengers = len(self.passenger_ids)
-                for psg in self.passenger_ids:
-                    service_charge_list.append(self.get_service_charge_summary_airline_train(psg, total_passengers))
-            else:
-                total_line = len(self.line_ids)
-                for line in self.line_ids:
-                    service_charge_list.append((self.get_service_charge_summary_hotel(total_line)))
-            service_charge_list = self.sudo().get_service_charge_list_offline(service_charge_list)
-            self.sudo().create_service_charge_new(service_charge_list)
-            ledger_obj.action_create_ledger(self, self.env.user.id)
-            # self.create_ledger(provider_obj)
-            self.create_ledger_commission(provider_obj)
-        except Exception as e:
-            self.env.cr.rollback()
-            _logger.error(msg=str(e) + '\n' + traceback.format_exc())
-            return {
-                'error_code': 1,
-                'error_msg': str(e) + '\nCreate ledger / service charge failed.'
-            }
+    # to generate sale service charge
+    def calculate_service_charge(self):
+        for service_charge in self.sale_service_charge_ids:
+            service_charge.unlink()
 
-    def get_service_charge_list_offline(self, service_charge_list):
-        new_sc_list = []
-        total_pax = len(service_charge_list)
-        for service_charge in service_charge_list:
-            for sc in service_charge['service_charges']:
-                found = False
-                print(new_sc_list)
-                if new_sc_list:
-                    for new_sc in new_sc_list:
-                        if new_sc['charge_code'] == sc['charge_code']:
-                            if new_sc['pax_type'] == sc['pax_type']:
-                                found = True
-                                new_sc['pax_count'] = new_sc['pax_count'] + 1
-                                new_sc['total'] = new_sc['amount'] * int(new_sc['pax_count'])
-                                break
-                if not found:
-                    if sc['charge_type'] == 'FARE':
-                        sc.update({
-                            'total': sc['amount']
+        for provider in self.provider_booking_ids:
+            sc_value = {}
+            for p_sc in provider.cost_service_charge_ids:
+                p_charge_code = p_sc.charge_code  # get charge code
+                p_charge_type = p_sc.charge_type  # get charge type
+                p_pax_type = p_sc.pax_type  # get pax type
+                if not sc_value.get(p_pax_type):
+                    sc_value[p_pax_type] = {}
+                if p_charge_type != 'RAC':
+                    if not sc_value[p_pax_type].get(p_charge_type):
+                        sc_value[p_pax_type][p_charge_type] = {}
+                        sc_value[p_pax_type][p_charge_type].update({
+                            'amount': 0,
+                            'foreign_amount': 0,
+                            'total': 0,
+                            'pax_count': 0
                         })
-                    else:
-                        sc.update({
-                            'amount': sc['amount'] / total_pax,
-                            'total': sc['amount'] / total_pax
+                    c_type = p_charge_type
+                    c_code = p_charge_type.lower()
+                elif p_charge_type == 'RAC':
+                    if not sc_value[p_pax_type].get(p_charge_code):
+                        sc_value[p_pax_type][p_charge_code] = {}
+                        sc_value[p_pax_type][p_charge_code].update({
+                            'amount': 0,
+                            'foreign_amount': 0,
+                            'total': 0,
+                            'pax_count': 0
                         })
-                    new_sc_list.append(sc)
-        # for HO Commission
-        ho_agent = self.env['tt.agent'].sudo().search([('parent_agent_id', '=', False),
-                                                       ('agent_type_id', '=', 'HO')], limit=1)
-        new_sc_list.append({
-            'agent_id': ho_agent.id,
-            'agent_type_id': ho_agent.agent_type_id.id,
-            'charge_type': 'RAC',
-            'type': 'RAC',
-            'charge_code': 'hoc',
-            'code': 'hoc',
-            'pax_count': 1,
-            'pax_type': 'ADT',
-            'amount': self.ho_commission,
-            'total': self.ho_commission,
-            'currency': self.currency_id,
-        })
-        return new_sc_list
+                    c_type = p_charge_code
+                    c_code = p_charge_code
+                sc_value[p_pax_type][c_type].update({
+                    'charge_type': p_charge_type,
+                    'charge_code': c_code,
+                    'pax_count': sc_value[p_pax_type][c_type]['pax_count'] + p_sc.pax_count,
+                    'currency_id': p_sc.currency_id.id,
+                    'foreign_currency_id': p_sc.foreign_currency_id.id,
+                    'amount': sc_value[p_pax_type][c_type]['amount'] + p_sc.amount,
+                    'total': sc_value[p_pax_type][c_type]['total'] + p_sc.total,
+                    'foreign_amount': sc_value[p_pax_type][c_type]['foreign_amount'] + p_sc.foreign_amount,
+                })
 
-    def create_service_charge_new(self, service_charge_list):
-        for ssc in self.sale_service_charge_ids:
-            ssc.sudo().unlink()
-        service_chg_obj = self.env['tt.service.charge']
-        for sc in service_charge_list:
-            sc.update({
-                'booking_offline_id': self.id,
+            values = []
+            for p_type, p_val in sc_value.items():
+                for c_type, c_val in p_val.items():
+                    curr_dict = {}
+                    curr_dict['pax_type'] = p_type
+                    curr_dict['booking_offline_id'] = self.id
+                    curr_dict['description'] = provider.pnr
+                    curr_dict.update(c_val)
+                    values.append((0, 0, curr_dict))
+
+            self.write({
+                'sale_service_charge_ids': values
             })
-            if sc['charge_type'] != 'FARE':
-                sc.update({
-                    'commission_agent_id': sc['agent_id']
-                })
-            service_chg_obj.create(sc)
-
-    def get_service_charge_summary_airline_train(self, psg, total_passengers):
-        vals_list = []
-        for rec in self:
-            pricing_obj = rec.env['tt.pricing.agent'].search([('agent_type_id', '=', rec.agent_type_id.id),
-                                                              ('provider_type_id', '=', rec.provider_type_id.id)],
-                                                             limit=1)
-
-            # FARE
-            vals = {
-                'charge_type': 'FARE',
-                'charge_code': 'fare',
-                'pax_count': 1,
-                'pax_type': psg.pax_type,
-                'amount': rec.nta_price / total_passengers,
-                'currency': rec.currency_id,
-            }
-            vals_list.append(vals)
-
-            # RAC
-            commission_list = pricing_obj.get_commission(rec.agent_commission, self.agent_id, self.provider_type_id)
-            for comm in commission_list:
-                comm.update({
-                    'charge_type': 'RAC',
-                    'charge_code': comm['code'],
-                    'currency': rec.currency_id,
-                    'pax_type': psg.pax_type,
-                    'pax_count': 1
-                })
-                vals_list.append(comm)
-
-        res = {
-            'service_charges': vals_list
-        }
-        return res
-
-    def get_service_charge_summary_hotel(self, total_line):
-        vals_list = []
-        for rec in self:
-            pricing_obj = rec.env['tt.pricing.agent'].search([('agent_type_id', '=', rec.agent_type_id.id),
-                                                              ('provider_type_id', '=', rec.provider_type_id.id)],
-                                                             limit=1)
-
-            # FARE
-            vals = {
-                'charge_type': 'FARE',
-                'charge_code': 'fare',
-                'pax_count': 1,
-                'pax_type': 'ADT',
-                'amount': rec.nta_price / total_line,
-                'currency': rec.currency_id,
-            }
-            vals_list.append(vals)
-
-            commission_list = pricing_obj.get_commission(rec.agent_commission, self.agent_id, self.provider_type_id)
-            for comm in commission_list:
-                comm.update({
-                    'charge_type': 'RAC',
-                    'charge_code': comm['code'],
-                    'currency': rec.currency_id,
-                    'pax_type': 'ADT',
-                    'pax_count': 1
-                })
-                vals_list.append(comm)
-
-        res = {
-            'service_charges': vals_list
-        }
-        return res
-
-    def get_service_charge_summary_activity(self):
-        vals_list = []
-        for rec in self:
-            pricing_obj = rec.env['tt.pricing.agent'].search([('agent_type_id', '=', rec.agent_type_id.id),
-                                                              ('provider_type_id', '=', rec.provider_type_id.id)],
-                                                             limit=1)
-
-    def create_ledger(self, provider_obj):
-        for rec in self:
-            # Agent Ledger
-            pnr = self.get_pnr_list()
-
-            vals = self.env['tt.ledger'].prepare_vals(self._name, self.id, 'Resv : ' + rec.name, rec.name, rec.validate_date,
-                                                      2, rec.currency_id.id, self.env.user.id, 0, rec.total)
-            vals = self.env['tt.ledger'].prepare_vals_for_resv(self, pnr, vals)
-            vals.update({
-                'pnr': pnr,
-                'display_provider_name': self.get_display_provider_name(),
-            })
-            new_aml = rec.env['tt.ledger'].create(vals)
-
-    def create_ledger_commission(self, provider_obj):
-        for rec in self:
-            vals_list = []
-            pnr = self.get_pnr_list()
-
-            for ssc in self.sale_service_charge_ids:
-                if ssc.charge_type != 'FARE':
-                    if ssc.amount > 0:
-                        found = False
-                        for vals in vals_list:
-                            if ssc.commission_agent_id.id == vals['agent_id'] and ssc.charge_code == vals['charge_code']:
-                                found = True
-                                amount = vals['debit'] + ssc.total
-                                vals.update({
-                                    'debit': amount
-                                })
-                        if not found:
-                            if ssc.charge_type == 'RAC' or ssc.charge_type == 'rac':
-                                # komisi HO
-                                if ssc.charge_code == 'hoc':
-                                    vals1 = self.env['tt.ledger'].prepare_vals(self._name, self.id,
-                                                                               'Commission : ' + rec.name,
-                                                                               'HO: ' + rec.name, rec.validate_date, 3,
-                                                                               rec.currency_id.id, self.env.user.id,
-                                                                               ssc.total, 0)
-
-                                    vals1 = self.env['tt.ledger'].prepare_vals_for_resv(self, vals1)
-                                    vals1.update({
-                                        'agent_id': ssc.commission_agent_id.id,
-                                        'agent_type_id': ssc.commission_agent_id.agent_type_id.id,
-                                        'charge_code': ssc.charge_code,
-                                        'pnr': pnr,
-                                        'display_provider_name': self.get_display_provider_name(),
-                                    })
-                                    vals_list.append(vals1)
-                                else:
-                                    if ssc.charge_code == 'rac':
-                                        vals1 = self.env['tt.ledger'].prepare_vals(self._name, self.id,
-                                                                                   'Commission : ' + rec.name, rec.name,
-                                                                                   rec.validate_date, 3,
-                                                                                   rec.currency_id.id, self.env.user.id,
-                                                                                   ssc.total, 0)
-                                        vals1 = self.env['tt.ledger'].prepare_vals_for_resv(self, vals1)
-                                        vals1.update({
-                                            'agent_id': ssc.commission_agent_id.id,
-                                            'agent_type_id': ssc.commission_agent_id.agent_type_id.id,
-                                            'charge_code': ssc.charge_code,
-                                            'pnr': pnr,
-                                            'display_provider_name': self.get_display_provider_name(),
-                                        })
-                                        vals_list.append(vals1)
-                                    else:
-                                        vals1 = self.env['tt.ledger'].prepare_vals(self._name, self.id,
-                                                                                   'Commission : ' + rec.name,
-                                                                                   'PA: ' + rec.name,
-                                                                                   rec.validate_date, 3,
-                                                                                   rec.currency_id.id, self.env.user.id,
-                                                                                   ssc.total, 0)
-                                        vals1 = self.env['tt.ledger'].prepare_vals_for_resv(self, vals1)
-                                        vals1.update({
-                                            'agent_id': ssc.commission_agent_id.id,
-                                            'agent_type_id': ssc.commission_agent_id.agent_type_id.id,
-                                            'charge_code': ssc.charge_code,
-                                            'pnr': pnr,
-                                            'display_provider_name': self.get_display_provider_name(),
-                                        })
-                                        vals_list.append(vals1)
-
-        for vals in vals_list:
-            self.env['tt.ledger'].create(vals)
-        print(vals_list)
 
     def create_final_ho_ledger(self, provider_obj):
         for rec in self:
-            # Agent Ledger
-            pnr = self.get_pnr_list()
+            if rec.nta_price > rec.vendor_amount:
+                # Agent Ledger
+                pnr = self.get_pnr_list()
 
-            vals = self.env['tt.ledger'].prepare_vals(self._name, self.id, 'Resv : ' + rec.name, 'Profit&Loss: ' + rec.name,
-                                                      rec.validate_date, 3, rec.currency_id.id, self.env.user.id,
-                                                      rec.ho_final_amount, 0)
-            vals = self.env['tt.ledger'].prepare_vals_for_resv(self, vals)
-            vals.update({
-                'pnr': pnr,
-                'provider_type_id': self.provider_type_id,
-                'display_provider_name': self.get_display_provider_name(),
-            })
-            new_aml = rec.env['tt.ledger'].create(vals)
+                vals = self.env['tt.ledger'].prepare_vals(self._name, self.id, 'Resv : ' + rec.name, 'Profit&Loss: ' + rec.name,
+                                                          rec.validate_date, 3, rec.currency_id.id, self.env.user.id,
+                                                          rec.ho_final_amount, 0)
+                vals = self.env['tt.ledger'].prepare_vals_for_resv(self, pnr, vals)
+                vals.update({
+                    'pnr': pnr,
+                    'provider_type_id': self.provider_type_id,
+                    'display_provider_name': self.provider_name,
+                })
+                new_aml = rec.env['tt.ledger'].create(vals)
+            else:
+                # Agent Ledger
+                pnr = self.get_pnr_list()
 
-    def create_reverse_ledger_offline(self):
-        provider_obj = self.env['tt.reservation.offline.lines'].search([('booking_id', '=', self.id)])
-
-        try:
-            self.sudo().create_reverse_ledger(provider_obj)
-            self.sudo().create_reverse_ledger_commission(provider_obj)
-        except Exception as e:
-            self.env.cr.rollback()
-            _logger.error(msg=str(e) + '\n' + traceback.format_exc())
-            return {
-                'error_code': 1,
-                'error_msg': str(e) + '\nCreate ledger / service charge failed.'
-            }
-
-    def create_reverse_ledger(self, provider_obj):
-        for rec in self:
-            pnr = self.get_pnr_list()
-
-            vals = self.env['tt.ledger'].prepare_vals(self._name, self.id, 'Resv : ' + rec.name + ' - REVERSE', rec.name + ' - REVERSE',
-                                                      rec.validate_date, 2, rec.currency_id.id, self.env.user.id,
-                                                      rec.total, 0)
-            vals = self.env['tt.ledger'].prepare_vals_for_resv(self, vals)
-            vals.update({
-                'pnr': pnr,
-                'reverse_id': self.id,
-                'provider_type_id': self.provider_type_id,
-                'issued_uid': self.env.user.id,
-                'display_provider_name': self.get_display_provider_name()
-            })
-            new_aml = rec.env['tt.ledger'].create(vals)
-
-    def create_reverse_ledger_commission(self, provider_obj):
-        for rec in self:
-            vals_list = []
-            pnr = self.get_pnr_list()
-
-            for ssc in self.sale_service_charge_ids:
-                if ssc.charge_type != 'FARE':
-                    if ssc.amount > 0:
-                        found = False
-                        for vals in vals_list:
-                            if ssc.commission_agent_id.id == vals['agent_id'] and ssc.charge_code == vals['charge_code']:
-                                found = True
-                                amount = vals['credit'] + ssc.total
-                                vals.update({
-                                    'credit': amount
-                                })
-                        if not found:
-                            if ssc.charge_type == 'RAC' or ssc.charge_type == 'rac':
-                                # komisi HO
-                                if ssc.charge_code == 'hoc':
-                                    vals1 = self.env['tt.ledger'].prepare_vals(self._name, self.id,
-                                                                               'Commission : ' + rec.name,
-                                                                               'HO: ' + rec.name + ' - REVERSE',
-                                                                               rec.validate_date, self.env.user.id,
-                                                                               3, rec.currency_id.id, 0, ssc.total)
-
-                                    vals1 = self.env['tt.ledger'].prepare_vals_for_resv(self, vals1)
-                                    vals1.update({
-                                        'agent_id': ssc.commission_agent_id.id,
-                                        'agent_type_id': ssc.commission_agent_id.agent_type_id.id,
-                                        'charge_code': ssc.charge_code,
-                                        'pnr': pnr,
-                                        'reverse_id': self.id,
-                                        'display_provider_name': self.get_display_provider_name(),
-                                    })
-                                    vals_list.append(vals1)
-                                else:
-                                    if ssc.charge_code == 'rac':
-                                        vals1 = self.env['tt.ledger'].prepare_vals(self._name, self.id,
-                                                                                   'Commission : ' + rec.name,
-                                                                                   rec.name + ' - REVERSE',
-                                                                                   rec.validate_date, 3,
-                                                                                   rec.currency_id.id, self.env.user.id,
-                                                                                   0, ssc.total)
-                                        vals1 = self.env['tt.ledger'].prepare_vals_for_resv(self, vals1)
-                                        vals1.update({
-                                            'agent_id': ssc.commission_agent_id.id,
-                                            'agent_type_id': ssc.commission_agent_id.agent_type_id.id,
-                                            'charge_code': ssc.charge_code,
-                                            'pnr': pnr,
-                                            'reverse_id': self.id,
-                                            'display_provider_name': self.get_display_provider_name(),
-                                        })
-                                        vals_list.append(vals1)
-                                    else:
-                                        vals1 = self.env['tt.ledger'].prepare_vals(self._name, self.id,
-                                                                                   'Commission : ' + rec.name,
-                                                                                   'PA: ' + rec.name + ' - REVERSE',
-                                                                                   rec.validate_date, 3,
-                                                                                   rec.currency_id.id, self.env.user.id,
-                                                                                   0, ssc.total)
-                                        vals1 = self.env['tt.ledger'].prepare_vals_for_resv(self, vals1)
-                                        vals1.update({
-                                            'agent_id': ssc.commission_agent_id.id,
-                                            'agent_type_id': ssc.commission_agent_id.agent_type_id.id,
-                                            'charge_code': ssc.charge_code,
-                                            'pnr': pnr,
-                                            'reverse_id': self.id,
-                                            'display_provider_name': self.get_display_provider_name(),
-                                        })
-                                        vals_list.append(vals1)
-
-        for vals in vals_list:
-            self.env['tt.ledger'].create(vals)
-        print(vals_list)
+                vals = self.env['tt.ledger'].prepare_vals(self._name, self.id, 'Resv : ' + rec.name,
+                                                          'Profit&Loss: ' + rec.name,
+                                                          rec.validate_date, 3, rec.currency_id.id, self.env.user.id,
+                                                          0, abs(rec.ho_final_amount))
+                vals = self.env['tt.ledger'].prepare_vals_for_resv(self, pnr, vals)
+                vals.update({
+                    'pnr': pnr,
+                    'provider_type_id': self.provider_type_id,
+                    'display_provider_name': self.provider_name,
+                })
+                new_aml = rec.env['tt.ledger'].create(vals)
 
     def create_provider_offline(self):
-        provider_found = []
+        for provider in self.provider_booking_ids:
+            provider.unlink()
+        pnr_found = []
         for line in self.line_ids:
-            if line.provider_id.id in provider_found:
-                pass
-            else:
+            if line.pnr not in pnr_found or self.provider_type_id_name in ['hotel', 'activity']:
                 vals = {
                     'booking_id': self.id,
                     'provider_id': line.provider_id.id,
+                    'pnr': line.pnr,
                     'confirm_uid': self.env.user.id,
                     'confirm_date': datetime.now()
                 }
                 self.env['tt.provider.offline'].create(vals)
-
-    def update_provider_offline(self):
-        for provider in self.provider_booking_ids:
-            pnr = provider.get_all_provider_pnr()
-            provider.pnr = ', '.join(pnr)
+                pnr_found.append(line.pnr)
 
     ####################################################################################################
     # Set, Get & Compute
@@ -858,10 +595,11 @@ class IssuedOffline(models.Model):
             }}
 
     def get_provider_name(self):
-        self.provider_name = ''
+        provider_list = []
         for rec in self.line_ids:
             if rec.provider_id:
-                self.provider_name += rec.provider_id.name + ' '
+                provider_list.append(rec.provider_id.name)
+        self.provider_name = ', '.join(provider_list)
 
     def check_line_empty(self):
         empty = True
@@ -892,27 +630,67 @@ class IssuedOffline(models.Model):
     ####################################################################################################
 
     param_issued_offline_data = {
-        "type": "airline",
+        "type": "activity",
         "total_sale_price": 100000,
         "desc": "amdaksd",
-        "pnr": "10020120",
+        # "pnr": "10020120",
         "social_media_id": "Facebook",
         "expired_date": "2019-10-04 02:29",
         "line_ids": [
             {
-                "origin": "SUB",
-                "destination": "SIN",
-                "provider": "Singapore Airlines",
-                "departure": "2019-10-04 02:30",
-                "arrival": "2019-10-04 02:30",
-                "carrier_code": "SQ",
-                "carrier_number": "a123",
-                "sub_class": "B",
-                "class_of_service": "eco"
+                "name": 1,
+                "activity_package": 1,
+                "qty": 1,
+                "description": 'Test Activity',
+                "visit_date": '2019-10-04',
             }
-        ],
-        "sector_type": "domestic"
+        ]
+        # "sector_type": "domestic"
     }
+
+    # param_issued_offline_data = {
+    #     "type": "hotel",
+    #     "total_sale_price": 100000,
+    #     "desc": "amdaksd",
+    #     # "pnr": "10020120",
+    #     "social_media_id": "Facebook",
+    #     "expired_date": "2019-10-04 02:29",
+    #     "line_ids": [
+    #         {
+    #             "name": 'Jayakarta Hotel & Resort',
+    #             "room": 'Deluxe',
+    #             "meal_type": 'With Breakfast',
+    #             "qty": 1,
+    #             "description": 'Jemput di bandara',
+    #             "check_in": '2019-10-04',
+    #             "check_out": '2019-10-07'
+    #         }
+    #     ]
+    #     # "sector_type": "domestic"
+    # }
+
+    # param_issued_offline_data = {
+    #     "type": "airline",
+    #     "total_sale_price": 100000,
+    #     "desc": "amdaksd",
+    #     "pnr": "10020120",
+    #     "social_media_id": "Facebook",
+    #     "expired_date": "2019-10-04 02:29",
+    #     "line_ids": [
+    #         {
+    #             "origin": "SUB",
+    #             "destination": "SIN",
+    #             "provider": "Singapore Airlines",
+    #             "departure": "2019-10-04 02:30",
+    #             "arrival": "2019-10-04 02:30",
+    #             "carrier_code": "SQ",
+    #             "carrier_number": "a123",
+    #             "sub_class": "B",
+    #             "class_of_service": "eco"
+    #         }
+    #     ],
+    #     "sector_type": "domestic"
+    # }
 
     param_booker = {
         "title": "MR",
@@ -1036,104 +814,6 @@ class IssuedOffline(models.Model):
             res = Response().get_error(str(e), 500)
         return res
 
-    def _create_booker(self, context, booker):
-        country_env = self.env['res.country'].sudo()
-        booker_env = self.env['tt.customer'].sudo()
-        if booker['booker_id']:  # jika id booker ada
-            booker['booker_id'] = int(booker['booker_id'])
-            booker_rec = booker_env.browse(booker['booker_id'])
-            if booker_rec:
-                booker_rec.update({
-                    'email': booker.get('email', booker_rec.email),
-                    # 'mobile': vals.get('mobile', contact_rec.phone_ids[0]),
-                })
-            return booker_rec.id
-        else:  # jika tidak ada id booker
-            country = country_env.search([('code', '=', booker.pop('nationality_code'))])
-            booker.update({
-                'commercial_agent_id': context['co_agent_id'],
-                'agent_id': context['co_agent_id'],
-                'nationality_id': country and country[0].id or False,
-                'email': booker.get('email', booker['email']),
-                # 'mobile': booker.get('mobile', booker['mobile']),
-            })
-            booker_obj = booker_env.create(booker)
-            booker_obj.update({
-                'phone_ids': booker_obj.phone_ids.create({
-                    'phone_number': booker.get('mobile', booker['mobile']),
-                    'type': 'work'
-                }),
-            })
-            return booker_obj.id
-
-    def _create_contact(self, context, contact):
-        contact_env = self.env['tt.customer'].sudo()
-        country_env = self.env['res.country'].sudo()
-        if contact['contact_id']:
-            contact['contact_id'] = int(contact['contact_id'])
-            contact_obj = contact_env.browse(contact['contact_id'])
-            if contact_obj:
-                contact_obj.update({
-                    'email': contact.get('email', contact_obj.email),
-                    # 'mobile': vals.get('mobile', contact_rec.phone_ids[0]),
-                })
-            return contact_obj.id
-        else:
-            country = country_env.search([('code', '=', contact.pop('nationality_code'))])  # diubah ke country_code
-            contact.update({
-                'commercial_agent_id': context['co_agent_id'],
-                'agent_id': context['co_agent_id'],
-                'nationality_id': country and country[0].id or False,
-                # 'passenger_type': 'ADT',
-                'email': contact.get('email', contact['email'])
-            })
-            contact_obj = contact_env.create(contact)
-            contact_obj.update({
-                'phone_ids': contact_obj.phone_ids.create({
-                    'phone_number': contact.get('mobile', contact['mobile']),
-                    'type': 'work'
-                }),
-            })
-            return contact_obj.id
-
-    def _create_contacts(self, context, contact):  # odoo10 : hanya 1 contact | odoo12 : bisa lebih dari 1 contact
-        contact_env = self.env['tt.customer'].sudo()
-        country_env = self.env['res.country'].sudo()
-        contact_list = []
-        contact_count = 0
-        for con in contact:
-            contact_count += 1
-            # cek jika sudah ada contact
-            if con['contact_id']:
-                con['contact_id'] = int(con['contact_id'])
-                contact_rec = contact_env.browse(con['contact_id'])
-                if contact_rec:
-                    contact_rec.update({
-                        'email': con.get('email', contact_rec.email),
-                        # 'mobile': vals.get('mobile', contact_rec.phone_ids[0]),
-                    })
-                # return contact_rec
-                contact_list.append(con['contact_id'])
-            # jika tidak ada, buat customer baru
-            else:
-                country = country_env.search([('code', '=', con.pop('nationality_code'))])  # diubah ke country_code
-                con.update({
-                    'commercial_agent_id': context['co_agent_id'],
-                    'agent_id': context['co_agent_id'],
-                    'nationality_id': country and country[0].id or False,
-                    # 'passenger_type': 'ADT',
-                    'email': con.get('email', con['email'])
-                })
-                contact_obj = contact_env.create(con)
-                contact_obj.update({
-                    'phone_ids': contact_obj.phone_ids.create({
-                        'phone_number': con.get('mobile', con['mobile']),
-                        'type': 'work'
-                    }),
-                })
-                contact_list.append(contact_obj.id)
-        return contact_list
-
     def _set_customer_parent(self, context, contact):
         customer_parent_env = self.env['tt.customer.parent']
         print('Agent ID : ' + str(context['co_agent_id']))
@@ -1161,49 +841,6 @@ class IssuedOffline(models.Model):
                 'customer_ids': [(4, contact)]
             })
             return walkin_obj.id
-
-    def _create_passenger(self, context, passenger):
-        passenger_list = []
-        country_env = self.env['res.country'].sudo()
-        passenger_env = self.env['tt.customer'].sudo()
-        passenger_count = 0
-        for psg in passenger:
-            passenger_count += 1
-            passenger_id = psg['passenger_id']
-            if passenger_id:
-                p_object = passenger_env.browse(int(passenger_id))
-                if p_object:
-                    passenger_list.append(passenger_id)
-                    if psg.get('passport_number'):
-                        p_object['passport_number'] = psg['passport_number']
-                    if psg.get('passport_expdate'):
-                        p_object['passport_expdate'] = psg['passport_expdate']
-                    if psg.get('country_of_issued_id'):
-                        p_object['country_of_issued_id'] = psg['country_of_issued_id']
-                    print('Passenger Type : ' + str(psg['passenger_type']))
-                    p_object.write({
-                        'domicile': psg.get('domicile'),
-                        # 'mobile': psg.get('mobile')
-                    })
-            else:
-                country = country_env.search([('code', '=', psg.pop('nationality_code'))])
-                psg['nationality_id'] = country and country[0].id or False
-                if psg['country_of_issued_code']:
-                    country = country_env.search([('code', '=', psg.pop('country_of_issued_code'))])
-                    psg['country_of_issued_id'] = country and country[0].id or False
-                if not psg.get('passport_expdate'):
-                    psg.pop('passport_expdate')
-
-                psg.update({
-                    'passenger_id': False,
-                    'agent_id': context['co_agent_id']
-                })
-                psg_res = passenger_env.create(psg)
-                psg.update({
-                    'passenger_id': psg_res.id,
-                })
-                passenger_list.append(psg_res.id)
-        return passenger_list
 
     def _create_line(self, lines, data_reservation_offline):
         line_list = []
@@ -1234,8 +871,9 @@ class IssuedOffline(models.Model):
         elif provider_type == 'hotel':
             for line in lines:
                 line_tmp = {
-                    "provider": line.get('name'),
+                    "hotel_name": line.get('name'),
                     "room": line.get('room'),
+                    "meal_type": line.get('meal_type'),
                     "qty": int(line.get('qty')),
                     "description": line.get('description'),
                     "check_in": line.get('check_in'),
@@ -1246,8 +884,8 @@ class IssuedOffline(models.Model):
         elif provider_type == 'activity':
             for line in lines:
                 line_tmp = {
-                    "provider": line.get('name'),
-                    "activity_package": line.get('package'),
+                    "activity_name": line.get('name'),
+                    "activity_package": line.get('activity_package'),
                     "qty": int(line.get('qty')),
                     "description": line.get('description'),
                     "visit_date": line.get('visit_date'),

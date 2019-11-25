@@ -2,11 +2,13 @@ from odoo import models, fields, api, _
 
 STATE = [
     ('draft', 'Draft'),
-    ('confirm', 'Request'),
-    ('valid', 'Validated'),
-    ('final', 'Finalization'),
-    ('done', 'Done'),
-    ('cancel', 'Cancelled')
+    ('confirm', 'Confirm'),
+    ('sent', 'Sent'),
+    ('paid', 'Validate'),
+    ('posted', 'Done'),
+    ('refund', 'Refund'),
+    ('expired', 'Expired'),
+    ('cancel', 'Canceled')
 ]
 
 TRANSACTION_TYPE = [
@@ -48,7 +50,9 @@ class IssuedOfflineLines(models.Model):
     _name = 'tt.reservation.offline.lines'
     _description = 'Rodex Model'
 
-    pnr = fields.Char('PNR', readonly=True, states={'confirm': [('readonly', False)]})
+    pnr = fields.Char('PNR', readonly=True, states={'draft': [('readonly', False)],
+                                                    'confirm': [('readonly', False)],
+                                                    'paid': [('readonly', False)]})
 
     booking_id = fields.Many2one('tt.reservation.offline', 'Reservation Offline')
     obj_qty = fields.Integer('Qty', readonly=True, states={'draft': [('readonly', False)],
@@ -73,22 +77,30 @@ class IssuedOfflineLines(models.Model):
     provider = fields.Char('Provider', readonly=True, required=False, states={'draft': [('required', False)],
                                                                               'confirm': [('readonly', False)]})
 
-    carrier_code = fields.Char('Carrier Code', help='or Flight Code', index=True)
-    carrier_number = fields.Char('Carrier Number', help='or Flight Number', index=True)
-    class_of_service = fields.Selection(CLASS_OF_SERVICE, 'Class')
-    subclass = fields.Char('SubClass')
+    carrier_code = fields.Char('Carrier Code', help='or Flight Code', index=True,
+                               states={'draft': [('required', False)],
+                                       'confirm': [('readonly', False)]})
+    carrier_number = fields.Char('Carrier Number', help='or Flight Number', index=True,
+                                 states={'draft': [('required', False)],
+                                         'confirm': [('readonly', False)]})
+    class_of_service = fields.Selection(CLASS_OF_SERVICE, 'Class', states={'draft': [('required', False)],
+                                                                           'confirm': [('readonly', False)]})
+    subclass = fields.Char('SubClass', states={'draft': [('required', False)],
+                                               'confirm': [('readonly', False)]})
 
     # Hotel / Activity / Cruise
-    visit_date = fields.Datetime('Visit Date', readonly=True, states={'draft': [('readonly', False)],
-                                                                      'confirm': [('readonly', False)]})
+    visit_date = fields.Date('Visit Date', readonly=True, states={'draft': [('readonly', False)],
+                                                                  'confirm': [('readonly', False)]})
     check_in = fields.Date('Check In', readonly=True, states={'draft': [('readonly', False)],
                                                               'confirm': [('readonly', False)]})
     check_out = fields.Date('Check Out', readonly=True, states={'draft': [('readonly', False)],
                                                                 'confirm': [('readonly', False)]})
     hotel_name = fields.Char('Name', readonly=True, states={'draft': [('readonly', False)],
                                                             'confirm': [('readonly', False)]})
-    room = fields.Char('Room', readonly=True, states={'draft': [('readonly', False)],
-                                                      'confirm': [('readonly', False)]})
+    room = fields.Char('Room Type', readonly=True, states={'draft': [('readonly', False)],
+                                                           'confirm': [('readonly', False)]})
+    meal_type = fields.Char('Meal Type', states={'draft': [('readonly', False)],
+                                                 'confirm': [('readonly', False)]})
     activity_name = fields.Many2one('tt.master.activity', 'Activity Name', readonly=True,
                                     states={'draft': [('readonly', False)],
                                             'confirm': [('readonly', False)]})
@@ -104,7 +116,6 @@ class IssuedOfflineLines(models.Model):
                                                                               'confirm': [('readonly', False)]})
 
     description = fields.Text('Description')
-    meal_type = fields.Selection(MEAL_TYPE, 'Meal Type')
 
     is_ledger_created = fields.Boolean('Ledger Created', default=False, readonly=True,
                                        states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
@@ -206,34 +217,45 @@ class IssuedOfflineLines(models.Model):
             vals += rec.carrier_number + ' \n' if rec.carrier_number else ' \n'
         return vals
 
-    def get_line_hotel_description(self, line):
+    def get_line_airline_train_description(self):
         vals = ''
-        vals += 'Hotel : ' + line.hotel_name + '\n' if line.hotel_name else 'Hotel : ' + '\n'
-        vals += 'Room : ' + line.room + ' (' + line.get_meal_type() + ') ' + str(line.obj_qty) + 'x\n' if line.room else 'Room : ' + '\n'
-        vals += 'Date : ' + str(line.check_in) + ' - ' if line.check_in else 'Date : - '
-        vals += str(line.check_out) + '\n' if line.check_out else '\n'
+        vals += self.origin_id.name + ' - ' if self.origin_id else ' - '
+        vals += self.destination_id.name + ' \n' if self.destination_id else ' \n'
+        vals += str(self.departure_date) + ' - ' if self.departure_date else ' - '
+        vals += str(self.return_date) + ' \n' if self.return_date else ' \n'
+        vals += self.carrier_id.name + ' ' if self.carrier_id else ' '
+        vals += self.carrier_code + ' ' if self.carrier_code else ' '
+        vals += self.carrier_number + ' \n' if self.carrier_number else ' \n'
+        return vals
+
+    def get_line_hotel_description(self):
+        vals = ''
+        vals += 'Hotel : ' + self.hotel_name + '\n' if self.hotel_name else 'Hotel : ' + '\n'
+        vals += 'Room : ' + self.room + ' (' + self.meal_type + ') ' + str(self.obj_qty) + 'x\n' if self.room else 'Room : ' + '\n'
+        vals += 'Date : ' + str(self.check_in) + ' - ' if self.check_in else 'Date : - '
+        vals += str(self.check_out) + '\n' if self.check_out else '\n'
         vals += 'Passengers : \n' + str(self.get_passengers_list())
-        vals += 'Description : ' + line.description if line.description else 'Description : '
+        vals += 'Description : ' + self.description if self.description else 'Description : '
         return vals
 
     def get_all_line_hotel_description(self):
         vals = ''
         for line in self.booking_id.line_ids:
             vals += 'Hotel : ' + line.hotel_name + '\n' if line.hotel_name else 'Hotel : ' + '\n'
-            vals += 'Room : ' + line.room + ' (' + line.get_meal_type() + ') ' + str(line.obj_qty) + 'x\n' if line.room else 'Room : ' + '\n'
+            vals += 'Room : ' + line.room + ' (' + line.meal_type + ') ' + str(line.obj_qty) + 'x\n' if line.room else 'Room : ' + '\n'
             vals += 'Date : ' + str(line.check_in) + ' - ' if line.check_in else 'Date : - '
             vals += str(line.check_out) + '\n' if line.check_out else '\n'
             vals += 'Passengers : \n' + str(self.get_passengers_list())
             vals += 'Description : ' + line.description if line.description else 'Description : '
         return vals
 
-    def get_line_activity_description(self, line):
+    def get_line_activity_description(self):
         vals = ''
-        vals += 'Activity : ' + line.activity_name.name + '\n' if line.activity_name else 'Activity : ' + '\n'
-        vals += 'Package : ' + line.activity_package.name + str(line.obj_qty) + 'x\n' if line.activity_package else 'Package : ' + '\n'
-        vals += 'Date : ' + str(line.check_in) + '\n' if line.check_in else 'Date : ' + '\n'
+        vals += 'Activity : ' + self.activity_name.name + '\n' if self.activity_name else 'Activity : ' + '\n'
+        vals += 'Package : ' + self.activity_package.name + str(self.obj_qty) + 'x\n' if self.activity_package else 'Package : ' + '\n'
+        vals += 'Date : ' + str(self.check_in) + '\n' if self.check_in else 'Date : ' + '\n'
         vals += 'Passengers : \n' + str(self.get_passengers_list())
-        vals += 'Description : ' + line.description if line.description else 'Description : '
+        vals += 'Description : ' + self.description if self.description else 'Description : '
         return vals
 
     def get_all_line_activity_description(self):
@@ -270,12 +292,13 @@ class IssuedOfflineLines(models.Model):
     def get_line_description(self):
         vals = ''
         if self.booking_id.provider_type_id_name == 'airline' or self.booking_id.provider_type_id_name == 'train':
-            vals = self.get_all_line_airline_train_description()
-        elif self.booking_id.provider_type_id_name == 'hotel':
-            if self.booking_id.description:
-                vals = 'Description : ' + self.booking_id.description
+            # vals = self.get_all_line_airline_train_description()
+            vals = self.get_line_airline_train_description()
+        # elif self.booking_id.provider_type_id_name == 'hotel':
+        #     if self.booking_id.description:
+        #         vals = 'Description : ' + self.booking_id.description
         elif self.booking_id.provider_type_id_name == 'activity':
-            vals = self.get_all_line_activity_description()
+            vals = self.get_line_activity_description()
         elif self.booking_id.provider_type_id_name == 'cruise':
             vals = self.get_all_line_cruise_description()
         return vals
