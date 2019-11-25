@@ -28,16 +28,16 @@
                             <field name="provider_id" attrs="{'required' :[('state','in',['confirm'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
                         </group>
                         <group>
-                            <field name="pnr"/>
+                            <field name="pnr" attrs="{'readonly' :[('state','in',['paid'])]}"/>
                             <field name="obj_qty"/>
                         </group>
                         <group>
-                            <field name="carrier_code"/>
-                            <field name="carrier_number"/>
+                            <field name="carrier_code" attrs="{'readonly' :[('state','in',['paid','done'])]}"/>
+                            <field name="carrier_number" attrs="{'readonly' :[('state','in',['paid','done'])]}"/>
                         </group>
                         <group>
-                            <field name="class_of_service"/>
-                            <field name="subclass"/>
+                            <field name="class_of_service" attrs="{'readonly' :[('state','in',['paid','done'])]}"/>
+                            <field name="subclass" attrs="{'readonly' :[('state','in',['paid','done'])]}"/>
                         </group>
                     </group>
                     <group attrs="{'invisible': [('transaction_name', 'not in', ['hotel','activity','cruise'])]}">  <!--'hotel','activity','cruise'-->
@@ -45,21 +45,23 @@
                         <group>
                             <field name="pnr"/>
                             <field name="provider_id" attrs="{'required' :[('state','in',['confirm'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                            <field name="carrier_id" attrs="{'invisible': [('transaction_name', 'not in', ['cruise'])]}"/>
                             <field name="hotel_name" attrs="{'invisible': [('transaction_name', 'not in', ['hotel'])]}"/>
                             <field name="cruise_name" attrs="{'invisible': [('transaction_name', 'not in', ['cruise'])]}"/>
                             <field name="departure_location" attrs="{'invisible': [('transaction_name', 'not in', ['cruise'])]}"/>
                             <field name="arrival_location" attrs="{'invisible': [('transaction_name', 'not in', ['cruise'])]}"/>
                             <field name="room" attrs="{'invisible': [('transaction_name', 'not in', ['hotel','cruise'])]}"/>
+                            <field name="meal_type" attrs="{'invisible': [('transaction_name', 'not in', ['hotel'])]}"/>
                             <field name="activity_name" attrs="{'invisible': [('transaction_name', 'not in', ['activity'])]}"/>
                             <field name="activity_package" attrs="{'invisible': [('transaction_name', 'not in', ['activity'])]}"/>
                             <field name="activity_timeslot" attrs="{'invisible': [('transaction_name', 'not in', ['activity'])]}"/>
                         </group>
                         <group>
-                            <field name="check_in"/>
+                            <field name="visit_date" attrs="{'invisible': [('transaction_name', 'not in', ['activity'])]}"/>
+                            <field name="check_in" attrs="{'invisible': [('transaction_name', 'in', ['activity'])]}"/>
                             <field name="check_out" attrs="{'invisible': [('transaction_name', 'not in', ['hotel','cruise'])]}"/>
                             <field name="obj_qty"/>
                             <field name="description"/>
-                            <field name="meal_type" attrs="{'invisible': [('transaction_name', 'not in', ['hotel'])]}"/>
                         </group>
                     </group>
                 </form>
