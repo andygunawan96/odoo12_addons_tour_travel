@@ -38,11 +38,18 @@ class ReservationOffline(models.Model):
                 'customer_parent_type_id': self.customer_parent_type_id.id
             })
 
+        line_desc = ''
+        if self.provider_type_id_name != 'hotel':
+            for line in self.line_ids:
+                line_desc += line.get_line_description()
+        else:
+            line_desc += 'Description : ' + (self.description if self.description else '')
+
         inv_line_obj = self.env['tt.agent.invoice.line'].create({
             'res_model_resv': self._name,
             'res_id_resv': self.id,
             'invoice_id': invoice_id.id,
-            'desc': self.line_ids.get_line_description()
+            'desc': line_desc
         })
 
         invoice_line_id = inv_line_obj.id
@@ -56,7 +63,7 @@ class ReservationOffline(models.Model):
             for line in self.line_ids:
                 qty += line.obj_qty
             for line in self.line_ids:
-                desc_text = line.get_line_hotel_description(line)
+                desc_text = line.get_line_hotel_description()
                 inv_line_obj.write({
                     'invoice_line_detail_ids': [(0, 0, {
                         'desc': desc_text,

@@ -215,7 +215,7 @@ class Ledger(models.Model):
             })
             values = self.prepare_vals_for_resv(booking_obj,provider_obj.pnr,ledger_values)
             _logger.info('Create Ledger Comission\n')
-            self.create(values)
+            self.sudo().create(values)
 
     def action_create_ledger(self, provider_obj,issued_uid):
         self.create_commission_ledger(provider_obj,issued_uid)
