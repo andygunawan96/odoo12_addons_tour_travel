@@ -433,18 +433,10 @@ class MasterTour(models.Model):
                     'child_sale_price': child_sale_price,
                     'infant_sale_price': infant_sale_price,
                     'images_obj': images,
-                    'departure_date_f': rec['departure_date'] and datetime.strptime(str(rec['departure_date']), '%Y-%m-%d').strftime("%A, %d-%m-%Y") or '',
-                    'return_date_f': rec['return_date'] and datetime.strptime(str(rec['return_date']), '%Y-%m-%d').strftime("%A, %d-%m-%Y") or '',
-                    'start_period_f': rec['start_period'] and datetime.strptime(str(rec['start_period']), '%Y-%m-%d').strftime('%B') or '',
-                    'end_period_f': rec['end_period'] and datetime.strptime(str(rec['end_period']), '%Y-%m-%d').strftime('%B') or '',
-                    'departure_date': rec['departure_date'] and datetime.strptime(str(rec['departure_date']), '%Y-%m-%d').strftime('%d %b %Y') or '',
-                    'departure_date_ori': rec['departure_date'] and rec['departure_date'] or '',
-                    'return_date': rec['return_date'] and datetime.strptime(str(rec['return_date']), '%Y-%m-%d').strftime('%d %b %Y') or '',
-                    'return_date_ori': rec['return_date'] and rec['return_date'] or '',
-                    'start_period': rec['start_period'] and datetime.strptime(str(rec['start_period']), '%Y-%m-%d').strftime('%B') or '',
-                    'start_period_ori': rec['start_period'] and rec['start_period'] or '',
-                    'end_period': rec['end_period'] and datetime.strptime(str(rec['end_period']), '%Y-%m-%d').strftime('%B') or '',
-                    'end_period_ori': rec['end_period'] and rec['end_period'] or '',
+                    'departure_date': rec['departure_date'] and rec['departure_date'] or '',
+                    'return_date': rec['return_date'] and rec['return_date'] or '',
+                    'start_period': rec['start_period'] and rec['start_period'] or '',
+                    'end_period': rec['end_period'] and rec['end_period'] or '',
                     'provider_id': rec.get('provider_id') and rec['provider_id'] or '',
                     'provider': res_provider and res_provider.code or '',
                     'create_date': '',
@@ -644,14 +636,10 @@ class MasterTour(models.Model):
                 'child_sale_price': child_sale_price <= 0 and '0' or child_sale_price,
                 'infant_sale_price': infant_sale_price <= 0 and '0' or infant_sale_price,
                 'discount': json.dumps(discount),
-                'departure_date': tour_obj.departure_date and datetime.strptime(str(tour_obj.departure_date),'%Y-%m-%d').strftime('%d %b %Y') or '',
-                'departure_date_ori': tour_obj.departure_date and tour_obj.departure_date or '',
-                'departure_date_f': tour_obj.departure_date and datetime.strptime(str(tour_obj.departure_date), '%Y-%m-%d').strftime("%A, %d-%m-%Y") or '',
-                'return_date': tour_obj.return_date and datetime.strptime(str(tour_obj.return_date), '%Y-%m-%d').strftime('%d %b %Y') or '',
-                'return_date_ori': tour_obj.return_date and tour_obj.return_date or '',
-                'return_date_f': tour_obj.return_date and datetime.strptime(str(tour_obj.return_date), '%Y-%m-%d').strftime("%A, %d-%m-%Y") or '',
-                'start_period_f': tour_obj.start_period and datetime.strptime(str(tour_obj.start_period), '%Y-%m-%d').strftime('%B') or '',
-                'end_period_f': tour_obj.end_period and datetime.strptime(str(tour_obj.end_period), '%Y-%m-%d').strftime('%B') or '',
+                'departure_date': tour_obj.departure_date and tour_obj.departure_date or '',
+                'return_date': tour_obj.return_date and tour_obj.return_date or '',
+                'start_period': tour_obj.start_period and tour_obj.start_period or '',
+                'end_period': tour_obj.end_period and tour_obj.end_period or '',
                 'country_names': country_names,
                 'flight_segments': tour_obj.get_flight_segment(),
                 'itinerary_ids': tour_obj.get_itineraries(),
@@ -682,35 +670,6 @@ class MasterTour(models.Model):
         except Exception as e:
             _logger.error(traceback.format_exc())
             return ERR.get_error(1022)
-
-    def check_pax_similarity(self, vals):
-        result = []
-        parameters = []
-        if vals.get('first_name'):
-            parameters.append(('first_name', '=ilike', vals['first_name']))
-        if vals.get('last_name'):
-            parameters.append(('last_name', '=ilike', vals['last_name']))
-        if vals.get('title'):
-            parameters.append(('title', '=', vals['title']))
-        if vals.get('agent_id'):
-            parameters.append(('agent_id', '=', int(vals['agent_id'])))
-        if vals.get('birth_date_f'):
-            parameters.append(('birth_date', '=', vals['birth_date_f']))
-
-        search_result = self.env['tt.customer'].search(parameters)
-
-        if vals.get('mobile'):
-            for rec in search_result:
-                for rec2 in rec['phone_ids']:
-                    if rec2.phone_number == vals.get('mobile'):
-                        result.append(rec)
-        else:
-            result = search_result
-
-        if len(result) > 0:
-            return result[0]
-        else:
-            return False
 
     def get_payment_rules_api(self, data, context, **kwargs):
         try:
