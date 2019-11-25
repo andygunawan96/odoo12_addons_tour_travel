@@ -612,3 +612,32 @@ class TtReservationTrain(models.Model):
             self.write({
                 'sale_service_charge_ids': values
             })
+
+    @api.multi
+    def print_eticket(self):
+        datas = {'ids': self.env.context.get('active_ids', [])}
+        # res = self.read(['price_list', 'qty1', 'qty2', 'qty3', 'qty4', 'qty5'])
+        res = self.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        return self.env.ref('tt_report_common.action_report_printout_reservation_airline').report_action(self,
+                                                                                                         data=datas)
+
+    @api.multi
+    def print_eticket_with_price(self):
+        datas = {'ids': self.env.context.get('active_ids', [])}
+        # res = self.read(['price_list', 'qty1', 'qty2', 'qty3', 'qty4', 'qty5'])
+        res = self.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        datas['is_with_price'] = True
+        return self.env.ref('tt_report_common.action_report_printout_reservation_airline').report_action(self,
+                                                                                                         data=datas)
+
+    @api.multi
+    def print_itinerary(self):
+        datas = {'ids': self.env.context.get('active_ids', [])}
+        res = self.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        return self.env.ref('tt_report_common.action_printout_itinerary_airline').report_action(self, data=datas)
