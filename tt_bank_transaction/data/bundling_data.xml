@@ -1,0 +1,9 @@
+<odoo>
+    <data noupdate="1">
+        <record id="tt_top_up_admin" model="res.users">
+            <field name="name">Top up admin</field>
+            <field name="login">topUpAdmin</field>
+            <field name="password">1q2w3e4r5t</field>
+        </record>
+    </data>
+</odoo>
