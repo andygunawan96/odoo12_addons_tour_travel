@@ -49,7 +49,9 @@ class ReservationTour(models.Model):
     payment_method = fields.Selection(PAYMENT_METHOD, 'Payment Method')
     installment_invoice_ids = fields.One2many('tt.installment.invoice', 'booking_id', 'Installments')
 
-    def action_issued_tour(self, api_context=None):
+    def action_issued_tour(self, pay_method=None, api_context=None):
+        if not pay_method:
+            pay_method = self.payment_method and self.payment_method or 'full'
         if not api_context:  # Jika dari call from backend
             api_context = {
                 'co_uid': self.env.user.id
@@ -66,7 +68,7 @@ class ReservationTour(models.Model):
                 'issued_uid': api_context['co_uid'] or self.env.user.id,
             })
             for rec in self.provider_booking_ids:
-                rec.action_create_ledger(self.env.user.id)
+                rec.action_create_ledger(self.env.user.id, pay_method)
 
     def call_create_invoice(self, acquirer_id, payment_method):
         _logger.info('Creating Invoice for ' + self.name)
@@ -394,7 +396,7 @@ class ReservationTour(models.Model):
             }
 
             book_obj.sudo().write(vals)
-            book_obj.action_issued_tour(context)
+            book_obj.action_issued_tour(payment_method, context)
             if data.get('seq_id'):
                 acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', data['seq_id'])])
                 if not acquirer_id:

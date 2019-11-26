@@ -189,7 +189,6 @@ class Ledger(models.Model):
 
     def create_commission_ledger(self, provider_obj,issued_uid):
         booking_obj = provider_obj.booking_id
-        amount = 0
 
         agent_commission = {}
         amount = 0
