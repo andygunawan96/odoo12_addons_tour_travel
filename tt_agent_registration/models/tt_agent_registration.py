@@ -914,7 +914,7 @@ class AgentRegistration(models.Model):
                 # check jika doc name sama dengan loop rec regis doc
                 if doc_name == rec_regis_doc[2] or doc_name.lower() == rec_regis_doc[2]:
                     seq_id = rec_regis_doc[0]
-                    doc_id = self.env['tt.upload.center'].search([])
+                    doc_id = self.env['tt.upload.center'].search([('seq_id', '=', seq_id)], limit=1).id
                     upload_center_ids.append(doc_id)
                     break
             vals = {
