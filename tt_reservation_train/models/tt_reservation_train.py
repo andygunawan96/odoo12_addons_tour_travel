@@ -395,7 +395,7 @@ class TtReservationTrain(models.Model):
                 org_id = dest_obj.get_id(journey['origin'],_destination_type)
                 dest_id = dest_obj.get_id(journey['destination'],_destination_type)
 
-                name['carrier'].append(journey['carrier_code'])
+                name['carrier'].append(carrier_id.name)
 
                 journey_sequence+=1
 
@@ -406,7 +406,7 @@ class TtReservationTrain(models.Model):
                     'destination_id': dest_id,
                     'departure_date': journey['departure_date'],
                     'arrival_date': journey['arrival_date'],
-                    'carrier_id': carrier_id,
+                    'carrier_id': carrier_id.id,
                     'carrier_code': journey['carrier_code'],
                     'carrier_number': journey['carrier_number'],
                     'journey_code': journey['journey_code'],
@@ -462,7 +462,7 @@ class TtReservationTrain(models.Model):
             journey.create_seat(param_journey['seats'])
             journey.write({
                 'cabin_class': param_journey.get('fares')[0].get('cabin_class',''),
-                'class_of_service': param_journey.get('fares')[0].get('class_of_service',''),
+                'class_of_service': param_journey.get('fares')[0].get('cla  ss_of_service',''),
                 'carrier_name': param_journey.get('carrier_name')
             })
 

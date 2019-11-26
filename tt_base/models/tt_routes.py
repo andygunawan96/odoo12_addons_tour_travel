@@ -263,7 +263,7 @@ class Routes(models.Model):
                 _gw_con.telegram_notif_api(values, {})
                 destination_id = destination_obj.id
 
-            carrier_id = self.env['tt.transport.carrier'].sudo().get_id(req_data['carrier_code'], provider_obj)
+            carrier_id = self.env['tt.transport.carrier'].sudo().get_id(req_data['carrier_code'], provider_obj).id
             if not carrier_id:
                 carrier_values = {
                     'name': req_data['carrier_code'],
