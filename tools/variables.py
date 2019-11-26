@@ -35,6 +35,11 @@ AMOUNT_TYPE = [
     ("percentage", "Percentage"),
     ]
 
+BANK_STATEMENT = [
+    ('not_connect', 'Not Connected'),       #Processing
+    ('connect', 'connected')                #after Processing
+]
+
 BOOKING_STATE = [
     ('draft', 'New'),
     ('cancel', 'Cancelled'),
