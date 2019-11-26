@@ -1050,13 +1050,13 @@ class ReservationAirline(models.Model):
                     org_id = dest_obj.get_id(segment['origin'],_destination_type)
                     dest_id = dest_obj.get_id(segment['destination'],_destination_type)
 
-                    name['carrier'].append(segment['carrier_code'])
+                    name['carrier'].append(carrier_id.name)
 
                     this_journey_seg_sequence += 1
                     this_journey_seg.append((0,0,{
                         'segment_code': segment['segment_code'],
                         'fare_code': segment.get('fare_code', ''),
-                        'carrier_id': carrier_id,
+                        'carrier_id': carrier_id.id,
                         'carrier_code': segment['carrier_code'],
                         'carrier_number': segment['carrier_number'],
                         'provider_id': provider_id,

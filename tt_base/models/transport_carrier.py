@@ -36,8 +36,8 @@ class TransportCarrier(models.Model):
         return pos.name_get()
 
     def get_id(self, code, provider_type):
-        res = self.sudo().search([('code', '=', code), ('provider_type_id', '=', provider_type.id)])
-        return res and res[0].id or False
+        res = self.sudo().search([('code', '=', code), ('provider_type_id', '=', provider_type.id)],limit=1)
+        return res and res or False
 
     def to_dict(self):
         return {

@@ -128,6 +128,7 @@
                 <field name="customer_parent_id"/>
                 <field name="booker_id"/>
                 <field name="provider_name" groups="tt_base.group_tt_tour_travel_operator"/>
+                <field name="carrier_name"/>
                 <field name="sector_type"/>
                 <field name="pnr"/>
                 <field name="booked_uid"/>
