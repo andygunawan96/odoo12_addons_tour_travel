@@ -101,6 +101,7 @@ class MasterActivity(models.Model):
     video_ids = fields.One2many('tt.activity.master.videos', 'activity_id', 'Video Path')
     provider_id = fields.Many2one('tt.provider', 'Provider')
     provider_code = fields.Char('Provider Code')
+    can_hold_booking = fields.Boolean('Can Hold Booking', default=False)
     active = fields.Boolean('Active', default=True)
 
     @api.depends('provider_id')
@@ -367,8 +368,6 @@ class MasterActivity(models.Model):
                 product_obj = self.env['tt.master.activity'].search([('uuid', '=', rec['product']['uuid']), ('provider_id', '=', provider_id.id), '|', ('active', '=', False), ('active', '=', True)], limit=1)
                 product_obj = product_obj and product_obj[0] or False
                 temp = []
-                temp3 = self.env['tt.provider'].search([('code', '=', provider)], limit=1)
-                temp3 = temp3[0]
                 if provider == 'klook':
                     parent_cat_obj = False
                     for category in rec['product']['categories']:
@@ -394,7 +393,7 @@ class MasterActivity(models.Model):
                             self.env.cr.commit()
                             self.env['tt.activity.category.lines'].sudo().create({
                                 'uuid': child_cat['uuid'],
-                                'provider_id': temp3.id,
+                                'provider_id': provider_id.id,
                                 'category_id': child_cat_obj.id,
                             })
                             self.env.cr.commit()
@@ -411,7 +410,7 @@ class MasterActivity(models.Model):
                             self.env.cr.commit()
                             self.env['tt.activity.category.lines'].sudo().create({
                                 'uuid': category['uuid'],
-                                'provider_id': temp3.id,
+                                'provider_id': provider_id.id,
                                 'category_id': category_obj.id,
                             })
                             self.env.cr.commit()
@@ -419,9 +418,7 @@ class MasterActivity(models.Model):
                 temp2 = []
 
                 if rec['product'].get('country_id'):
-                    rec_prov = self.env['tt.provider'].sudo().search([('code', '=', provider)], limit=1)
-                    rec_prov_id = rec_prov[0].id
-                    rec_provider_codes = self.env['tt.provider.code'].sudo().search([('code', '=', rec['product']['country_id']), ('provider_id', '=', rec_prov_id)])
+                    rec_provider_codes = self.env['tt.provider.code'].sudo().search([('code', '=', rec['product']['country_id']), ('provider_id', '=', int(provider_id.id))])
                     for prov_data in rec_provider_codes:
                         new_loc = self.env['tt.activity.master.locations'].sudo().create({
                             'country_id': prov_data.country_id.id,
@@ -478,6 +475,7 @@ class MasterActivity(models.Model):
                         'businessHoursTo': rec['product']['businessHoursTo'],
                         'hotelPickup': rec['product']['hotelPickup'],
                         'airportPickup': rec['product']['airportPickup'],
+                        'can_hold_booking': rec['product']['can_hold_booking'],
                         'active': True,
                         'provider_id': provider_id.id,
                     })
@@ -508,6 +506,7 @@ class MasterActivity(models.Model):
                         'businessHoursTo': rec['product']['businessHoursTo'],
                         'hotelPickup': rec['product']['hotelPickup'],
                         'airportPickup': rec['product']['airportPickup'],
+                        'can_hold_booking': rec['product']['can_hold_booking'],
                         'active': True,
                         'provider_id': provider_id.id,
                     }
@@ -1367,6 +1366,7 @@ class MasterActivity(models.Model):
                     'type_id': result.get('type_id') and result['type_id'] or 0,
                     'uuid': result['uuid'],
                     'warnings': result.get('warnings') and result['warnings'] or '',
+                    'can_hold_booking': result.get('can_hold_booking') and result['can_hold_booking'] or False,
                 }
 
                 additionalInfo = (result['additionalInfo'].replace('<p>', '\n').replace('</p>', ''))[1:]
