@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="bank_accounts_tree_view" model="ir.ui.view">
+        <field name="name">bank.accounts.tree.view</field>
+        <field name="model">tt.bank.accounts</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="bank_account_owner"/>
+                <field name="bank_account_number"/>
+                <field name="currency_id"/>
+                <field name="bank_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="bank_accounts_form_view" model="ir.ui.view">
+        <field name="name">bank.accounts.form.view</field>
+        <field name="model">tt.bank.accounts</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="bank_id"/>
+                        <field name="currency_id"/>
+                        <field name="bank_account_owner"/>
+                        <field name="bank_account_number"/>
+                        <field name="bank_account_number_without_dot"/>
+                    </group>
+                    <notebook>
+                        <page>
+                            <field name="bank_transaction_ids"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="bank_accounts_action_view" model="ir.actions.act_window">
+        <field name="name">Bank Accounts</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.bank.accounts</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+    </record>
+
+</odoo>
