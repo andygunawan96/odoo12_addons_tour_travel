@@ -585,7 +585,7 @@ class AgentRegistration(models.Model):
                     'name': name,
                     'login': con.email,
                     'email': con.email,
-                    'password': '123456',
+                    'password': ')[Lu*tsCcWt(MNM~9kJf',
                     'partner_id': partner_id.id
                 }
                 if user_dict:
@@ -673,7 +673,7 @@ class AgentRegistration(models.Model):
         "company_type": "company",
         "business_license": "",
         "npwp": "",
-        "name": "rodex testing it",
+        "name": "Satelit Travel",
     }
 
     # "business_license": "01/2019/04/0100-02",
@@ -726,9 +726,9 @@ class AgentRegistration(models.Model):
     }
 
     param_regis_doc = [
-        ["UPC.2142002", 4, "ktp"],
-        ["UPC.1103001", 4, "npwp"],
-        ["UPC.2159003", 4, "siup"],
+        # ["UPC.2142002", 4, "ktp"],
+        ["UPC.1103001", 4, "ktp"],
+        # ["UPC.2159003", 4, "siup"],
         # {
         #     'id': 2,
         #     "type": "npwp"
@@ -741,21 +741,21 @@ class AgentRegistration(models.Model):
 
     param_other = {
         "social_media": "Telegram",
-        "agent_type": "Agent Citra",
-        "promotion_id": "15"
+        "agent_type": "Agent BTBO",
+        "promotion_id": "16"
     }
 
     param_context = {
         'co_uid': 7
     }
 
-    def create_agent_registration_api(self):  # , data, context
-        company = self.param_company  # data['company']
-        pic = self.param_pic  # data['pic']
-        address = self.param_address  # data['address']
-        other = self.param_other  # data['other']
-        context = self.param_context  # context
-        regis_doc = self.param_regis_doc  # data['regis_doc']
+    def create_agent_registration_api(self, data, context):  #
+        company = data['company']  # self.param_company
+        pic = data['pic']  # self.param_pic
+        address = data['address']  # self.param_address
+        other = data['other']  # self.param_other
+        context = context  # self.param_context
+        regis_doc = data['regis_doc']  # self.param_regis_doc
         registration_list = self.search([('name', '=', company['name'])], order='registration_date desc', limit=1)  # data['company']
         check = 0
         response = {}
@@ -913,7 +913,8 @@ class AgentRegistration(models.Model):
                 doc_name = str(document_type_env.search([('id', '=', doc['document_id'])], limit=1).name)
                 # check jika doc name sama dengan loop rec regis doc
                 if doc_name == rec_regis_doc[2] or doc_name.lower() == rec_regis_doc[2]:
-                    doc_id = self.env['tt.upload.center'].search([('seq_id', '=', rec_regis_doc[0])], limit=1).id
+                    seq_id = rec_regis_doc[0]
+                    doc_id = self.env['tt.upload.center'].search([])
                     upload_center_ids.append(doc_id)
                     break
             vals = {

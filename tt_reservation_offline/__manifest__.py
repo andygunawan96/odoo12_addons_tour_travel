@@ -11,7 +11,7 @@
     'author': "Rodextrip",
     'website': 'www.rodextrip.com',
     'images': [],
-    'depends': ['base', 'tt_base', 'tt_accounting', 'tt_agent_sales', 'tt_engine_pricing', 'tt_reservation', 'tt_report_common'],
+    'depends': ['base', 'tt_base', 'tt_accounting', 'tt_engine_pricing', 'tt_reservation', 'tt_report_common'],
 
     # always loaded
     'data': [

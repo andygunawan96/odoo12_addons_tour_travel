@@ -629,27 +629,8 @@ class IssuedOffline(models.Model):
     # CREATE
     ####################################################################################################
 
-    param_issued_offline_data = {
-        "type": "activity",
-        "total_sale_price": 100000,
-        "desc": "amdaksd",
-        # "pnr": "10020120",
-        "social_media_id": "Facebook",
-        "expired_date": "2019-10-04 02:29",
-        "line_ids": [
-            {
-                "name": 1,
-                "activity_package": 1,
-                "qty": 1,
-                "description": 'Test Activity',
-                "visit_date": '2019-10-04',
-            }
-        ]
-        # "sector_type": "domestic"
-    }
-
     # param_issued_offline_data = {
-    #     "type": "hotel",
+    #     "type": "activity",
     #     "total_sale_price": 100000,
     #     "desc": "amdaksd",
     #     # "pnr": "10020120",
@@ -657,17 +638,63 @@ class IssuedOffline(models.Model):
     #     "expired_date": "2019-10-04 02:29",
     #     "line_ids": [
     #         {
-    #             "name": 'Jayakarta Hotel & Resort',
-    #             "room": 'Deluxe',
-    #             "meal_type": 'With Breakfast',
+    #             "name": 1,
+    #             "activity_package": 1,
     #             "qty": 1,
-    #             "description": 'Jemput di bandara',
-    #             "check_in": '2019-10-04',
-    #             "check_out": '2019-10-07'
+    #             "description": 'Test Activity',
+    #             "visit_date": '2019-10-04',
     #         }
     #     ]
     #     # "sector_type": "domestic"
     # }
+
+    param_issued_offline_data = {
+        "type": "hotel",
+        "total_sale_price": 100000,
+        "desc": "amdaksd",
+        # "pnr": "10020120",
+        "social_media_id": "Facebook",
+        "expired_date": "2019-10-04 02:29",
+        "line_ids": [
+            {
+                "name": 'Jayakarta Hotel & Resort',
+                "room": 'Deluxe',
+                "meal_type": 'With Breakfast',
+                "qty": 1,
+                "description": 'Jemput di bandara',
+                "check_in": '2019-10-04',
+                "check_out": '2019-10-07'
+            },
+            {
+                "name": 'Wina Holiday Villa',
+                "room": 'Superior',
+                "meal_type": 'Room Only',
+                "qty": 1,
+                "description": 'Jemput di bandara',
+                "check_in": '2019-10-04',
+                "check_out": '2019-10-07'
+            },
+            {
+                "name": 'Mercure Kuta Beach Bali',
+                "room": 'Deluxe',
+                "meal_type": 'Breakfast + Dinner',
+                "qty": 1,
+                "description": 'Jemput di bandara',
+                "check_in": '2019-10-04',
+                "check_out": '2019-10-07'
+            },
+            {
+                "name": 'Harris Resort Kuta Beach Bali',
+                "room": 'Presidential',
+                "meal_type": '',
+                "qty": 1,
+                "description": 'Jemput di bandara',
+                "check_in": '2019-10-04',
+                "check_out": '2019-10-07'
+            },
+        ]
+        # "sector_type": "domestic"
+    }
 
     # param_issued_offline_data = {
     #     "type": "airline",
@@ -680,14 +707,36 @@ class IssuedOffline(models.Model):
     #         {
     #             "origin": "SUB",
     #             "destination": "SIN",
-    #             "provider": "Singapore Airlines",
+    #             "provider": "Garuda Indonesia",
     #             "departure": "2019-10-04 02:30",
     #             "arrival": "2019-10-04 02:30",
     #             "carrier_code": "SQ",
     #             "carrier_number": "a123",
     #             "sub_class": "B",
     #             "class_of_service": "eco"
-    #         }
+    #         },
+    #         # {
+    #         #     "origin": "SIN",
+    #         #     "destination": "HKG",
+    #         #     "provider": "Singapore Airlines",
+    #         #     "departure": "2019-10-04 02:30",
+    #         #     "arrival": "2019-10-04 02:30",
+    #         #     "carrier_code": "SQ",
+    #         #     "carrier_number": "a123",
+    #         #     "sub_class": "B",
+    #         #     "class_of_service": "eco"
+    #         # },
+    #         # {
+    #         #     "origin": "HKG",
+    #         #     "destination": "SUB",
+    #         #     "provider": "Cathay Pacific",
+    #         #     "departure": "2019-10-04 02:30",
+    #         #     "arrival": "2019-10-04 02:30",
+    #         #     "carrier_code": "CP",
+    #         #     "carrier_number": "a123",
+    #         #     "sub_class": "B",
+    #         #     "class_of_service": "eco"
+    #         # },
     #     ],
     #     "sector_type": "domestic"
     # }

@@ -17,7 +17,7 @@
     'category': 'Uncategorized',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'hr', 'tt_base', 'tt_accounting', 'tt_report_common', 'web'],
+    'depends': ['base', 'tt_base', 'tt_accounting', 'tt_report_common', 'web'],
 
     # always loaded
     'data': [
