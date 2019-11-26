@@ -4,13 +4,12 @@
     
         <record id="tt_transport_carrier_train_kai" model="tt.transport.carrier">
             <field name="name">KAI</field>
-            <field name="code">kai</field>
-            <field name="icao">kai</field>
+            <field name="code">KAI</field>
+            <field name="icao">KAI</field>
             <field name="call_sign">KAI</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
         </record>
-
     </data>
 </odoo>
     
