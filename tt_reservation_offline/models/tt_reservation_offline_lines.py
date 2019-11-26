@@ -101,12 +101,12 @@ class IssuedOfflineLines(models.Model):
                                                            'confirm': [('readonly', False)]})
     meal_type = fields.Char('Meal Type', states={'draft': [('readonly', False)],
                                                  'confirm': [('readonly', False)]})
-    activity_name = fields.Many2one('tt.master.activity', 'Activity Name', readonly=True,
-                                    states={'draft': [('readonly', False)],
-                                            'confirm': [('readonly', False)]})
-    activity_package = fields.Many2one('tt.master.activity.lines', 'Activity Package', readonly=True,
-                                       states={'draft': [('readonly', False)],
-                                               'confirm': [('readonly', False)]})
+    activity_name = fields.Char('Activity Name', readonly=True,
+                                states={'draft': [('readonly', False)],
+                                        'confirm': [('readonly', False)]})
+    activity_package = fields.Char('Activity Package', readonly=True,
+                                   states={'draft': [('readonly', False)],
+                                           'confirm': [('readonly', False)]})
     activity_timeslot = fields.Many2one('tt.activity.master.timeslot', 'Timeslot')
     cruise_name = fields.Char('Cruise Name', readonly=True, states={'draft': [('readonly', False)],
                                                                     'confirm': [('readonly', False)]})
