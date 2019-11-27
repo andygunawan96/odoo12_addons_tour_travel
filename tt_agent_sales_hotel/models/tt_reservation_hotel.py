@@ -38,7 +38,7 @@ class ReservationHotel(models.Model):
 
     def create_agent_invoice(self, acquirer_id, customer_parent_id):
         super(ReservationHotel, self).create_agent_invoice(acquirer_id, customer_parent_id)
-        invoice_id = self.env['tt.agent.invoice'].search([('booker_id','=',self.contact_id.id), ('state','=','draft')])
+        invoice_id = False
         if not invoice_id:
             invoice_id = self.env['tt.agent.invoice'].create({
                 'agent_id': self.agent_id.id,
