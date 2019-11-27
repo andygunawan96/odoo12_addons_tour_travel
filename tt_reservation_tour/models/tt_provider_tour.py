@@ -2,6 +2,7 @@ from odoo import api, fields, models, _
 from ...tools import variables
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+from odoo.exceptions import UserError
 
 
 class TtProviderTour(models.Model):
@@ -259,6 +260,43 @@ class TtProviderTour(models.Model):
                                                         ledger_issued_uid, agent_id, customer_parent_id, debit, credit, description, **additional_vals)
         else:
             self.env['tt.ledger'].action_create_ledger(self, issued_uid)
+
+    def action_create_installment_ledger(self, issued_uid, payment_rules_id, commission_ledger=False):
+        total_amount = 0
+        payment_rules_obj = self.env['tt.payment.rules'].sudo().browse(int(payment_rules_id))
+        if payment_rules_obj.payment_type == 'amount':
+            total_amount += payment_rules_obj.payment_amount
+        else:
+            total_amount += (payment_rules_obj.payment_percentage / 100) * self.booking_id.total
+
+        is_enough = self.env['tt.agent'].check_balance_limit_api(self.booking_id.agent_id.id, total_amount)
+        if is_enough['error_code'] != 0:
+            raise UserError(_('Not Enough Balance.'))
+
+        res_model = self.booking_id._name
+        res_id = self.booking_id.id
+        name = 'Order ' + payment_rules_obj.description + ': ' + self.booking_id.name
+        ref = self.booking_id.name
+        date = datetime.now()+relativedelta(hours=7)
+        currency_id = self.booking_id.currency_id.id
+        ledger_issued_uid = issued_uid
+        agent_id = self.booking_id.agent_id.id
+        customer_parent_id = self.booking_id.customer_parent_id.id
+        description = 'Ledger for ' + str(self.booking_id.name)
+        ledger_type = 2
+        debit = 0
+        credit = total_amount
+        additional_vals = {
+            'pnr': self.booking_id.pnr,
+            'display_provider_name': self.provider_id.name,
+            'provider_type_id': self.provider_id.provider_type_id.id,
+        }
+
+        self.env['tt.ledger'].create_ledger_vanilla(res_model, res_id, name, ref, date, ledger_type, currency_id,
+                                                    ledger_issued_uid, agent_id, customer_parent_id, debit, credit, description, **additional_vals)
+
+        if commission_ledger:
+            self.env['tt.ledger'].create_commission_ledger(self, issued_uid)
 
     def to_dict(self):
         journey_list = []

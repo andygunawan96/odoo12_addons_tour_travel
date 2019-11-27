@@ -164,6 +164,8 @@ class ReservationTour(models.Model):
                     'amount': inv_line_obj.total,
                     'due_date': rec.is_dp and date.today() or rec.due_date,
                     'description': rec.description,
+                    'state_invoice': rec.is_dp and 'done' or 'open',
+                    'payment_rules_id': rec.id,
                 })
 
     def call_create_invoice(self, acquirer_id, payment_method):
