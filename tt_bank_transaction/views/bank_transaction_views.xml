@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="bank_transaction_tree_view" model="ir.ui.view">
+        <field name="name">bank.transaction.tree.view</field>
+        <field name="model">tt.bank.transaction</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="transaction_date"/>
+                <field name="currency_id"/>
+                <field name="transaction_bank_branch"/>
+                <field name="transaction_original"/>
+                <field name="transaction_debit"/>
+                <field name="transaction_credit"/>
+                <field name="bank_balance"/>
+                <field name="transaction_connection"/>
+                <field name="top_up_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="bank_transaction_form_view" model="ir.ui.view">
+        <field name="name">bank.transaction.form.view</field>
+        <field name="model">tt.bank.transaction</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+<!--                    <div class="oe_button_box" name="button_box">-->
+<!--                        <button name="toggle_active" type="object" groups="base.group_user"-->
+<!--                                class="oe_stat_button" icon="fa-archive">-->
+<!--                            <field name="active" widget="boolean_button"-->
+<!--                                   options='{"terminology": "archive"}'/>-->
+<!--                        </button>-->
+<!--                    </div>-->
+
+                    <group>
+                        <group>
+                            <field name="transaction_code"/>
+                            <field name="bank_account_id"/>
+                            <field name="transaction_date"/>
+                            <field name="currency_id"/>
+                            <field name="transaction_bank_branch"/>
+                            <field name="transaction_original"/>
+                            <field name="transaction_amount"/>
+                            <field name="transaction_debit"/>
+                            <field name="transaction_credit"/>
+                            <field name="bank_balance"/>
+                            <field name="transaction_name"/>
+                            <field name="transaction_message"/>
+                            <field name="transaction_connection"/>
+                            <field name="transaction_process"/>
+                            <field name="top_up_id"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="bank_transaction_action_view" model="ir.actions.act_window">
+        <field name="name">Bank Transaction</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.bank.transaction</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+    </record>
+
+</odoo>

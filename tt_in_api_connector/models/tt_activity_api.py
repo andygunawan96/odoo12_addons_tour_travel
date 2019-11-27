@@ -42,10 +42,10 @@ class TtActivityApiCon(models.Model):
         return res
 
     def resend_voucher(self, data):
-        return self._send_request('%s/booking/activity' % (self.url), data, 'resend_voucher')
+        return self.send_request_to_gatweay('%s/booking/activity' % (self.url), data, 'resend_voucher')
 
     def update_booking(self, data):
-        return self._send_request('%s/booking/activity' % (self.url), data, 'update_booking')
+        return self.send_request_to_gateway('%s/booking/activity' % (self.url), data, 'update_booking')
 
     def get_booking(self, data):
         req_post = {
@@ -55,7 +55,7 @@ class TtActivityApiCon(models.Model):
             'uuid': data.get('uuid', ''),
             'pnr': data.get('pnr', ''),
         }
-        return self._send_request('%s/booking/activity' % (self.url), req_post, 'get_booking_provider')
+        return self.send_request_to_gateway('%s/booking/activity' % (self.url), req_post, 'get_booking_provider')
 
     def get_pricing(self, data):
         req_post = {
@@ -64,10 +64,10 @@ class TtActivityApiCon(models.Model):
             'date_end': data.get('date_end', ''),
             'provider': data.get('provider', ''),
         }
-        return self._send_request('%s/booking/activity' % (self.url), req_post, 'get_pricing_provider')
+        return self.send_request_to_gateway('%s/booking/activity' % (self.url), req_post, 'get_pricing_provider')
 
     def get_vouchers(self, data):
-        return self._send_request('%s/booking/activity' % (self.url), data, 'get_vouchers_provider')
+        return self.send_request_to_gateway('%s/booking/activity' % (self.url), data, 'get_vouchers_provider')
 
 
 class TtMasterActivityApiCon(models.Model):
@@ -100,17 +100,17 @@ class TtMasterActivityApiCon(models.Model):
         return res
 
     def get_config(self, data):
-        return self._send_request('%s/booking/activity' % (self.url), data, 'get_config_provider', timeout=600)
+        return self.send_request_to_gateway('%s/booking/activity' % (self.url), data, 'get_config_provider', timeout=600)
 
     def search_provider(self, data):
-        return self._send_request('%s/booking/activity' % (self.url), data, 'search_provider', timeout=900)
+        return self.send_request_to_gateway('%s/booking/activity' % (self.url), data, 'search_provider', timeout=900)
 
     def get_details(self, data):
-        return self._send_request('%s/booking/activity' % (self.url), data, 'get_details_provider', timeout=600)
+        return self.send_request_to_gateway('%s/booking/activity' % (self.url), data, 'get_details_provider', timeout=600)
 
     def send_product_analytics(self, data):
-        return self._send_request('%s/booking/activity' % (self.url), data, 'send_product_analytics')
+        return self.send_request_to_gateway('%s/booking/activity' % (self.url), data, 'send_product_analytics')
 
     def get_countries(self, data):
-        return self._send_request('%s/booking/activity' % (self.url), data, 'get_countries', timeout=600)
+        return self.send_request_to_gateway('%s/booking/activity' % (self.url), data, 'get_countries', timeout=600)
 

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="tt_bank_accounts_sub_menu"
+              name="Bank Accounts"
+              sequence="1"
+              parent="tt_base.menu_tour_travel_configuration_bank"
+              action="bank_accounts_action_view"
+        />
+
+    <menuitem id="tt_bank_transaction_sub_menu"
+              name="Bank Transactions"
+              sequence="1"
+              parent="tt_base.menu_tour_travel_configuration_bank"
+              action="bank_transaction_action_view"
+        />
+</odoo>

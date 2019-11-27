@@ -16,7 +16,7 @@ class TtCustomer(models.Model):
     _rec_name = 'name'
     _description = 'Tour & Travel - Customer'
 
-    seq_id = fields.Char('ID', index=True)
+    seq_id = fields.Char('ID', index=True,readonly=True)
     name = fields.Char(string='Name', compute='_compute_name', store=True)
     face_image_id = fields.Many2one('tt.upload.center','Face Image')
     first_name = fields.Char('First Name')

@@ -1,7 +1,7 @@
 import base64
 from .api import Response
 from datetime import datetime, timedelta
-import logging
+import logging,traceback
 import copy
 import json
 import requests
@@ -74,36 +74,60 @@ def get_without_empty(dict,key,else_param=False):
             return value
     return else_param
 
-
-def send_request(url, data=None, headers=None, method=None, cookie=None, is_json=False, timeout=TIMEOUT):
+def send_request(url, data=None, headers=None, method=None, cookie=None, content_type='json', request_type='', timeout=TIMEOUT):
+    '''
+        :param url:
+        :param data:
+        :param headers:
+        :param method:
+        :param cookie:
+        :param content_type:
+            'json': response.json()
+            'text': response.text()
+            'content': response.content() --> asumsi bytes apabila bytes akan di base64 encode
+        :param timeout:
+        :return:
+    '''
     ses = requests.Session()
     cookie and [ses.cookies.set(key, val) for key, val in cookie.iteritems()]
 
     data = data and data or {}
+    is_data_dict = True if type(data) == dict else False
     headers = headers and headers or _default_headers()
     if not method:
         method = data and 'POST' or 'GET'
+    if not request_type:
+        request_type = 'json' if is_data_dict else 'data'
+    if method == 'GET' and data and is_data_dict:
+        addons = ''
+        temp = ['%s=%s' % (key, val) for key, val in data.items()]
+        # August 30, 2019 - SAM
+        # FIXME comment untuk sementara karena ada error pada hotel
+        # if url[-1] != '/':
+        #     addons += '/'
+        if url.find('?') < 0:
+            addons += '?'
+        addons = '%s%s' % (addons, '&'.join(temp))
+        url = '%s%s' % (url, addons)
+
     response = None
-    try:
-        if method == 'GET':
-            addons = ''
-            if data and type(data) == dict:
-                temp = ['%s=%s' % (key, val) for key, val in data.items()]
-                # August 30, 2019 - SAM
-                # FIXME comment untuk sementara karena ada error pada hotel
-                # if url[-1] != '/':
-                #     addons += '/'
-                if url.find('?') < 0:
-                    addons += '?'
-                addons = '%s%s' % (addons, '&'.join(temp))
-            url = '%s%s' % (url, addons)
-            response = ses.get(url=url, headers=headers, timeout=timeout)
-        elif method == 'POST' and type(data) == dict:
-            response = ses.post(url=url, headers=headers, json=data, timeout=timeout)
-        elif method == 'PUT' and type(data) == dict:
-            response = ses.put(url=url, headers=headers, json=data, timeout=timeout)
+    param = {
+        'url': url,
+        'headers': headers,
+        'timeout': timeout,
+    }
+    if method != 'GET' and data:
+        if request_type == 'json':
+            param['json'] = data
         else:
-            response = ses.post(url=url, headers=headers, data=data, timeout=timeout)
+            param['data'] = data
+
+    req_obj = getattr(ses, method.lower(), None)
+    if not req_obj:
+        raise Exception('Method not Found')
+
+    try:
+        response = req_obj(**param)
         response.raise_for_status()
         values = {'error_code': 0}
     except Exception as e:
@@ -112,9 +136,66 @@ def send_request(url, data=None, headers=None, method=None, cookie=None, is_json
             'error_msg': str(e),
         }
 
-    content = response.json() if is_json else getattr(response, 'text', '')
+    try:
+        if content_type == 'json':
+            content = response.json()
+        elif content_type == 'content':
+            content = base64.b64encode(getattr(response, 'content', b'')).decode()
+        else:
+            content = getattr(response, 'text', '')
+    except Exception as e:
+        _logger.error('Error util send request, %s' % traceback.format_exc())
+        content = getattr(response, 'text', '')
 
-    return content['result']
+    values.update({
+        'http_code': getattr(response, 'status_code', ''),
+        'response': content,
+        'url': url,
+        'cookies': response.cookies.get_dict() if getattr(response, 'cookies', '') else ''
+    })
+    res = Response(values).to_dict()
+    return res
+
+# def send_request(url, data=None, headers=None, method=None, cookie=None, is_json=False, timeout=TIMEOUT):
+#     ses = requests.Session()
+#     cookie and [ses.cookies.set(key, val) for key, val in cookie.iteritems()]
+#
+#     data = data and data or {}
+#     headers = headers and headers or _default_headers()
+#     if not method:
+#         method = data and 'POST' or 'GET'
+#     response = None
+#     try:
+#         if method == 'GET':
+#             addons = ''
+#             if data and type(data) == dict:
+#                 temp = ['%s=%s' % (key, val) for key, val in data.items()]
+#                 # August 30, 2019 - SAM
+#                 # FIXME comment untuk sementara karena ada error pada hotel
+#                 # if url[-1] != '/':
+#                 #     addons += '/'
+#                 if url.find('?') < 0:
+#                     addons += '?'
+#                 addons = '%s%s' % (addons, '&'.join(temp))
+#             url = '%s%s' % (url, addons)
+#             response = ses.get(url=url, headers=headers, timeout=timeout)
+#         elif method == 'POST' and type(data) == dict:
+#             response = ses.post(url=url, headers=headers, json=data, timeout=timeout)
+#         elif method == 'PUT' and type(data) == dict:
+#             response = ses.put(url=url, headers=headers, json=data, timeout=timeout)
+#         else:
+#             response = ses.post(url=url, headers=headers, data=data, timeout=timeout)
+#         response.raise_for_status()
+#         values = {'error_code': 0}
+#     except Exception as e:
+#         values = {
+#             'error_code': 500,
+#             'error_msg': str(e),
+#         }
+#
+#     content = response.json() if is_json else getattr(response, 'text', '')
+#
+#     return content['result']
 
     # values.update({
     #     'http_code': getattr(response, 'status_code', ''),

@@ -40,8 +40,7 @@ class ReservationTour(models.Model):
 
     def action_create_invoice(self, acquirer_id, payment_method):
         if payment_method == 'full':
-            invoice_id = self.env['tt.agent.invoice'].search(
-                [('booker_id', '=', self.booker_id.id), ('state', '=', 'draft')])
+            invoice_id = False
 
             if not invoice_id:
                 invoice_id = self.env['tt.agent.invoice'].create({
@@ -164,6 +163,8 @@ class ReservationTour(models.Model):
                     'amount': inv_line_obj.total,
                     'due_date': rec.is_dp and date.today() or rec.due_date,
                     'description': rec.description,
+                    'state_invoice': rec.is_dp and 'done' or 'open',
+                    'payment_rules_id': rec.id,
                 })
 
     def call_create_invoice(self, acquirer_id, payment_method):
