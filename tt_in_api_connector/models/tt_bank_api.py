@@ -3,7 +3,7 @@ from ...tools import ERR
 from ...tools.ERR import RequestException
 
 class TtBankApiCon(models.Model):
-    _name = 'tt.customer.api.con'
+    _name = 'tt.bank.api.con'
     _inherit = 'tt.api.con'
 
     table_name = 'tt.bank.con'
