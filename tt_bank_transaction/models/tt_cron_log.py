@@ -48,13 +48,9 @@ class ttCronTopUpValidator(models.Model):
                 'startdate': datetime.today().strftime("%Y-%m-%d"),
                 'enddate': datetime.today().strftime("%Y-%m-%d"),
             }
-            try:
                 #called function to proceed data and input in bank transaction
-                result = self.env['tt.bank.transaction'].get_data(data)
-            except Exception as e:
-                result = "Failed to get data"
-                _logger.error(
-                    '%s something failed during expired cron.\n' % traceback.format_exc())
+            result = self.env['tt.bank.transaction'].get_data(data)
+
         except Exception as e:
             self.create_cron_log_folder()
             self.write_cron_log('auto get bank transaction')
