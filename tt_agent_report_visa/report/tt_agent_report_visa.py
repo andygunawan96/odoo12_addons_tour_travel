@@ -11,17 +11,11 @@ class AgentReportVisaModel(models.AbstractModel):
 
     @staticmethod
     def _select():
-        # tb.name, tcd.title | | ' ' | | tcd.first_name | | ' ' | | tcd.last_name as contact_person,
-        # rc.name as country_name, ttp.passport_type, tb.departure_date, ttp.immigration_consulate,
-        # tct.title | | ' ' | | tct.first_name | | ' ' | | tct.last_name as pass_name, tct.age as pass_age,
-        # rp.name as issued_name, tb.issued_date, tb.in_process_date, tb.ready_date, tb.done_date, tl.commission,
-        # tb.total, tb.total_nta, tb.state
-
         return """
-        vs.name, tcd.first_name || ' ' || tcd.last_name as contact_person, vs.contact_name, rc.name as country_name,
+        vs.id, vs.name, tcd.first_name || ' ' || tcd.last_name as contact_person, vs.contact_name, rc.name as country_name,
         top.title || ' ' || top.first_name || ' ' || top.last_name as pass_name, top.age, vs.departure_date, vs.issued_date, 
         vs.in_process_date, vs.ready_date, vs.done_date, vs.state, rp.name as issued_name, tvp.immigration_consulate, 
-        tvp.visa_type, tl.debit as commission, vs.total, vs.total_nta
+        tvp.visa_type, tl.debit as commission
         """
 
     @staticmethod
@@ -72,6 +66,13 @@ class AgentReportVisaModel(models.AbstractModel):
         _logger.info(query)
         return self.env.cr.dictfetchall()
 
+    def edit_data(self, line_list):
+        for line in line_list:
+            visa_obj = self.env['tt.reservation.visa'].search([('id', '=', line.get('id'))], limit=1)
+            line['total'] = visa_obj.total
+            line['total_nta'] = visa_obj.total_nta
+        return line_list
+
     @staticmethod
     def _report_title(data_form):
         data_form['title'] = 'Visa Report: ' + data_form['subtitle']
@@ -87,6 +88,7 @@ class AgentReportVisaModel(models.AbstractModel):
         lines = self._lines(date_from, date_to, agent_id, state)  # main data
         for line in lines:
             line_list.append(line)
+        self.edit_data(line_list)
         self._report_title(data_form)
 
         return {

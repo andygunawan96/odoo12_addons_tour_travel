@@ -11,7 +11,7 @@
         </field>
     </record>
 
-    <record id="action_agent_report_ledger" model="ir.actions.act_window">
+    <record id="action_agent_report_ledger_wz" model="ir.actions.act_window">
         <field name="name">Ledger Report</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">tt.agent.report.ledger.wizard</field>
@@ -25,8 +25,8 @@
         id="sub_menu_agent_report_ledger"
         name="Ledger Report"
         parent="tt_accounting.top_transaction_ledger"
-        action="action_agent_report_ledger"
-        sequence="1"
+        action="action_agent_report_ledger_wz"
+        sequence="20"
         groups="tt_base.group_tt_agent_user_supervisor,tt_base.group_tt_tour_travel_operator"
        />
 </odoo>
