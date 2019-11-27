@@ -88,17 +88,20 @@ class TtBankTransaction(models.Model):
         end_month = splits[1]
 
         result = self.env['tt.customer.api.con'].get_transaction(data)
-        logs['data_recieve'] = len(result['Data'])
+        if result['error_code'] != 0:
+            raise Exception("Unable to get bank Transaction")
+
+        logs['data_recieve'] = len(result['response']['Data'])
 
         #look for currency_id
-        currency_id = self.env['res.currency'].sudo().search([('name', 'ilike', result['Currency'])]).read()
+        currency_id = self.env['res.currency'].sudo().search([('name', 'ilike', result['response']['Currency'])]).read()
         bank_owner = self.env['tt.bank.accounts'].sudo().search([('bank_account_number_without_dot', '=', data['account_number'])]).read()
 
         #get bank code
         bank_code = self.env['tt.bank'].sudo().browse(int(bank_owner[0]['bank_id'][0]))
 
         #get starting balance
-        balance_modified = result['StartBalance']
+        balance_modified = result['response']['StartBalance']
 
         #compare if data already exist in our database
         transaction = self.env['tt.bank.transaction'].sudo().search([('transaction_date', '>=', data['startdate']), ('transaction_date', '<=', data['enddate'])]).read()
@@ -127,7 +130,7 @@ class TtBankTransaction(models.Model):
             i.pop('__last_update')
 
         #add data to transaction
-        for i in result['Data']:
+        for i in result['response']['Data']:
 
             temp_dictionary = {
                 'transaction_bank_branch': i['BranchCode'],
@@ -144,10 +147,14 @@ class TtBankTransaction(models.Model):
 
                 temp_date = i['TransactionDate'].split("-")
 
+                debit_value = 0
+                credit_value = 0
                 if i['TransactionType'] == 'D':
                     balance_modified = float(balance_modified) + float(i['TransactionAmount'])
+                    debit_value = float(i['TransactionAmount'])
                 else:
                     balance_modified = float(balance_modified) + float(i['TransactionAmount'])
+                    credit_value = float(i['TransactionAmount'])
 
                 data = {
                     'bank_account_id': bank_owner[0]['id'],
@@ -157,8 +164,8 @@ class TtBankTransaction(models.Model):
                     'transaction_type': i['TransactionType'],
                     'transaction_original': i['TransactionAmount'],
                     'transaction_amount': i['TransactionAmount'],
-                    'transaction_debit': i['TransactionAmount'],
-                    'transaction_credit': 0,
+                    'transaction_debit': debit_value,
+                    'transaction_credit': credit_value,
                     'bank_balance': balance_modified,
                     'transaction_name': i['TransactionName'],
                     'transaction_message': i['Trailer']
