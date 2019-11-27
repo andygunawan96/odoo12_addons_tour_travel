@@ -54,7 +54,7 @@ class Routes(models.Model):
     def update_route_api(self, req_data, provider_type):
         try:
             schedules = req_data.get('schedules', [])
-            provider_type_obj = self.env['tt.provider.type'].sudo().search([('code', '=', provider_type)])
+            provider_type_obj = self.env['tt.provider.type'].sudo().search([('code', '=', provider_type)], limit=1)
             if not provider_type_obj:
                 raise Exception('Provider Type Object not found, %s' % provider_type)
             for sch in schedules:
@@ -67,7 +67,7 @@ class Routes(models.Model):
                                                    ('destination', '=', journey_data['destination']),
                                                    ('departure_date', '=', journey_data['departure_date']),
                                                    ('provider_type_id', '=', provider_type_obj.id),
-                                                   ('provider', '=', provider)])
+                                                   ('provider', '=', provider)], limit=1)
                 if not schedule_obj:
                     schedule_obj = schedule_env.create({
                         'provider_type_id': provider_type_obj.id
@@ -76,7 +76,7 @@ class Routes(models.Model):
                 for journey in sch['journeys']:
                     journey_env = self.env['tt.routes.journey'].sudo()
                     journey_obj = journey_env.search([('route_code', '=', journey['route_code']),
-                                                      ('schedule_id', '=', schedule_obj.id)])
+                                                      ('schedule_id', '=', schedule_obj.id)], limit=1)
                     if not journey_obj:
                         journey_obj = journey_env.create({
                             'schedule_id': schedule_obj.id,
@@ -86,7 +86,7 @@ class Routes(models.Model):
                     for seg in journey['segments']:
                         seg_env = self.env['tt.routes.segment'].sudo()
                         seg_obj = seg_env.search([('route_code', '=', seg['route_code']),
-                                                  ('journey_id', '=', journey_obj.id)])
+                                                  ('journey_id', '=', journey_obj.id)], limit=1)
                         if not seg_obj:
                             seg_obj = seg_env.create({
                                 'journey_id': journey_obj.id,
@@ -96,12 +96,12 @@ class Routes(models.Model):
                         for leg in seg['legs']:
                             leg_env = self.env['tt.routes.leg'].sudo()
                             leg_obj = leg_env.search([('route_code', '=', leg['route_code']),
-                                                      ('segment_id', '=', seg_obj.id)])
+                                                      ('segment_id', '=', seg_obj.id)], limit=1)
                             if not leg_obj:
                                 route_obj = self.sudo().search([('carrier_code', '=', leg['carrier_code']),
                                                                 ('carrier_number', '=', leg['carrier_number']),
                                                                 ('origin', '=', leg['origin']),
-                                                                ('destination', '=', leg['destination'])])
+                                                                ('destination', '=', leg['destination'])], limit=1)
                                 if not route_obj:
                                     carrier_env = self.carrier_id.with_context(active_test=False).sudo()
                                     carrier_obj = carrier_env.search([('code', '=', leg['carrier_code'])], limit=1)
@@ -173,7 +173,7 @@ class Routes(models.Model):
 
                         for fare in seg['fares']:
                             fare_env = self.env['tt.routes.fare'].sudo()
-                            fare_obj = fare_env.search([('class_of_service', '=', fare['class_of_service']), ('segment_id', '=' , seg_obj.id)])
+                            fare_obj = fare_env.search([('class_of_service', '=', fare['class_of_service']), ('segment_id', '=' , seg_obj.id)], limit=1)
                             if not fare_obj:
                                 fare_values = {
                                     'cabin_class': fare['cabin_class'],
@@ -197,7 +197,7 @@ class Routes(models.Model):
                             fare_pax_env = self.env['tt.routes.pax.fare'].sudo()
                             for sc_sum in fare['service_charge_summary']:
                                 fare_pax_obj = fare_pax_env.search([('pax_type', '=', sc_sum['pax_type']),
-                                                                    ('fare_id', '=', fare_obj.id)])
+                                                                    ('fare_id', '=', fare_obj.id)], limit=1)
                                 sc_env = self.env['tt.routes.service.charge'].sudo()
                                 if not fare_pax_obj:
                                     fare_pax_obj = fare_pax_env.create({
@@ -279,7 +279,7 @@ class Routes(models.Model):
             schedules = []
             for rec_id, rec in enumerate(req_data['journey_list']):
                 schedule_code = '%s,%s,%s,%s,%s' % (rec['origin'], rec['destination'], rec['departure_date'], provider_type, req_data['provider'])
-                schedule_obj = self.env['tt.routes.schedule'].sudo().search([('schedule_code', '=', schedule_code)])
+                schedule_obj = self.env['tt.routes.schedule'].sudo().search([('schedule_code', '=', schedule_code)], limit=1)
                 if not schedule_obj:
                     raise Exception('Schedule not found, %s' % schedule_code)
                 schedule_values = schedule_obj.get_data(False)
