@@ -10,7 +10,7 @@
                         <div class="oe_title">
                             <label for="name" class="oe_edit_only" string="Name"/>
                             <h1>
-                                <field name="name" required="True"/>
+                                <field name="name" readonly="1"/>
                             </h1>
                         </div>
                         <group>
@@ -33,29 +33,24 @@
                         <group string="Carriers">
                             <group>
                                 <field name="carrier_id"/>
+                                <field name="carrier_name"/>
                                 <field name="carrier_code"/>
                                 <field name="carrier_number"/>
                                 <field name="operating_airline_code"/>
-                                <field name="code_share"/>
-                            </group>
-                            <group>
-                                <field name="elapsed_time"/>
                             </group>
                         </group>
-                        <separator string="Destinations"/>
+                        <separator string="Trip Information"/>
                         <group>
                             <group string="Origin">
                                 <field name="origin_id"/>
                                 <field name="origin"/>
-                                <field name="origin_terminal"/>
-                                <field name="origin_timezone_hour"/>
+                                <field name="origin_utc"/>
                                 <field name="departure_time"/>
                             </group>
                             <group string="Destination">
                                 <field name="destination_id"/>
                                 <field name="destination"/>
-                                <field name="destination_terminal"/>
-                                <field name="destination_timezone_hour"/>
+                                <field name="destination_utc"/>
                                 <field name="arrival_time"/>
                             </group>
                         </group>
@@ -69,12 +64,11 @@
             <field name="model">tt.routes</field>
             <field name="arch" type="xml">
                 <tree string="Route">
+                    <field name="name"/>
                     <field name="carrier_code"/>
                     <field name="carrier_number"/>
                     <field name="origin"/>
-                    <field name="origin_terminal"/>
                     <field name="destination"/>
-                    <field name="destination_terminal"/>
                     <field name="departure_time"/>
                     <field name="arrival_time"/>
                 </tree>
@@ -107,6 +101,784 @@
                   name="Routes"
                   sequence="3"
                   action="tt_routes_action_view"/>
+
+    </data>
+    <data>
+        <record id="tt_routes_leg_form_view" model="ir.ui.view">
+            <field name="name">tt.routes.leg.form.view</field>
+            <field name="model">tt.routes.leg</field>
+            <field name="arch" type="xml">
+                <form string="Leg">
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only" string="Name"/>
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="route_code"/>
+                                <field name="leg_code"/>
+                                <field name="route_id"/>
+                                <field name="segment_id"/>
+                                <field name="provider"/>
+                            </group>
+                            <group>
+                                <label for="create_uid" string="Created By"/>
+                                <div>
+                                    <field name="create_uid" class="oe_inline" readonly="True"/> -
+                                    <field name="create_date" class="oe_inline" readonly="True"/>
+                                </div>
+                                <label for="write_uid" string="Last Edited By"/>
+                                <div>
+                                    <field name="write_uid" class="oe_inline" readonly="True"/> -
+                                    <field name="write_date" class="oe_inline" readonly="True"/>
+                                </div>
+                            </group>
+                        </group>
+                        <group string="Carriers">
+                            <group>
+                                <field name="carrier_name"/>
+                                <field name="carrier_code"/>
+                                <field name="carrier_number"/>
+                                <field name="operating_airline_code"/>
+                            </group>
+                        </group>
+                        <separator string="Trip Information"/>
+                        <group>
+                            <group string="Origin">
+                                <field name="origin"/>
+                                <field name="origin_terminal"/>
+                                <field name="origin_utc"/>
+                                <field name="departure_date"/>
+                                <field name="departure_time"/>
+                            </group>
+                            <group string="Destination">
+                                <field name="destination"/>
+                                <field name="destination_terminal"/>
+                                <field name="destination_utc"/>
+                                <field name="arrival_date"/>
+                                <field name="arrival_time"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="tt_routes_leg_tree_view" model="ir.ui.view">
+            <field name="name">tt.routes.leg.tree.view</field>
+            <field name="model">tt.routes.leg</field>
+            <field name="arch" type="xml">
+                <tree string="Route">
+                    <field name="carrier_code"/>
+                    <field name="carrier_number"/>
+                    <field name="origin"/>
+                    <field name="origin_terminal"/>
+                    <field name="destination"/>
+                    <field name="destination_terminal"/>
+                    <field name="departure_date"/>
+                    <field name="arrival_date"/>
+                    <field name="provider"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="tt_routes_leg_action_view" model="ir.actions.act_window">
+            <field name="name">Routes Leg</field>
+            <field name="view_type">form</field>
+            <field name="res_model">tt.routes.leg</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    <!-- Add Text Here -->
+                </p><p>
+                <!-- More details about what a user can do with this object will be OK -->
+            </p>
+            </field>
+            <field name="context">
+                {
+                'form_view_ref': 'tt_base.tt_routes_leg_form_view',
+                'tree_view_ref': 'tt_base.tt_routes_leg_tree_view'
+                }
+            </field>
+        </record>
+
+        <menuitem id="sub_menu_tour_travel_routes_leg"
+                  parent="tt_base.menu_tour_travel_destination"
+                  groups="base.group_user"
+                  name="Routes Leg"
+                  sequence="3"
+                  action="tt_routes_leg_action_view"/>
+
+    </data>
+    <data>
+        <record id="tt_routes_segment_form_view" model="ir.ui.view">
+            <field name="name">tt.routes.segment.form.view</field>
+            <field name="model">tt.routes.segment</field>
+            <field name="arch" type="xml">
+                <form string="Segment">
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only" string="Name"/>
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="route_code"/>
+                                <field name="segment_code"/>
+                                <field name="journey_id"/>
+                                <field name="provider"/>
+                            </group>
+                            <group>
+                                <label for="create_uid" string="Created By"/>
+                                <div>
+                                    <field name="create_uid" class="oe_inline" readonly="True"/> -
+                                    <field name="create_date" class="oe_inline" readonly="True"/>
+                                </div>
+                                <label for="write_uid" string="Last Edited By"/>
+                                <div>
+                                    <field name="write_uid" class="oe_inline" readonly="True"/> -
+                                    <field name="write_date" class="oe_inline" readonly="True"/>
+                                </div>
+                            </group>
+                        </group>
+                        <group string="Carriers">
+                            <group>
+                                <field name="carrier_name"/>
+                                <field name="carrier_code"/>
+                                <field name="carrier_number"/>
+                                <field name="operating_airline_code"/>
+                            </group>
+                        </group>
+                        <separator string="Trip Information"/>
+                        <group>
+                            <group string="Origin">
+                                <field name="origin"/>
+                                <field name="origin_terminal"/>
+                                <field name="origin_utc"/>
+                                <field name="departure_date"/>
+                            </group>
+                            <group string="Destination">
+                                <field name="destination"/>
+                                <field name="destination_terminal"/>
+                                <field name="destination_utc"/>
+                                <field name="arrival_date"/>
+                            </group>
+                        </group>
+                        <separator string="Legs"/>
+                        <field name="leg_ids"/>
+                        <separator string="Fares"/>
+                        <field name="fare_ids"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="tt_routes_segment_tree_view" model="ir.ui.view">
+            <field name="name">tt.routes.segment.tree.view</field>
+            <field name="model">tt.routes.segment</field>
+            <field name="arch" type="xml">
+                <tree string="Route">
+                    <field name="carrier_code"/>
+                    <field name="carrier_number"/>
+                    <field name="origin"/>
+                    <field name="origin_terminal"/>
+                    <field name="destination"/>
+                    <field name="destination_terminal"/>
+                    <field name="departure_date"/>
+                    <field name="arrival_date"/>
+                    <field name="provider"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="tt_routes_segment_action_view" model="ir.actions.act_window">
+            <field name="name">Routes Segment</field>
+            <field name="view_type">form</field>
+            <field name="res_model">tt.routes.segment</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    <!-- Add Text Here -->
+                </p><p>
+                <!-- More details about what a user can do with this object will be OK -->
+            </p>
+            </field>
+            <field name="context">
+                {
+                'form_view_ref': 'tt_base.tt_routes_segment_form_view',
+                'tree_view_ref': 'tt_base.tt_routes_segment_tree_view'
+                }
+            </field>
+        </record>
+
+        <menuitem id="sub_menu_tour_travel_routes_segment"
+                  parent="tt_base.menu_tour_travel_destination"
+                  groups="base.group_user"
+                  name="Routes Segment"
+                  sequence="3"
+                  action="tt_routes_segment_action_view"/>
+
+    </data>
+    <data>
+        <record id="tt_routes_journey_form_view" model="ir.ui.view">
+            <field name="name">tt.routes.journey.form.view</field>
+            <field name="model">tt.routes.journey</field>
+            <field name="arch" type="xml">
+                <form string="Journey">
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only" string="Name"/>
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="route_code"/>
+                                <field name="journey_code"/>
+                                <field name="provider"/>
+                                <field name="carrier_code_list"/>
+                                <field name="operating_airline_code_list"/>
+                            </group>
+                            <group>
+                                <label for="create_uid" string="Created By"/>
+                                <div>
+                                    <field name="create_uid" class="oe_inline" readonly="True"/> -
+                                    <field name="create_date" class="oe_inline" readonly="True"/>
+                                </div>
+                                <label for="write_uid" string="Last Edited By"/>
+                                <div>
+                                    <field name="write_uid" class="oe_inline" readonly="True"/> -
+                                    <field name="write_date" class="oe_inline" readonly="True"/>
+                                </div>
+                            </group>
+                        </group>
+                        <separator string="Trip Information"/>
+                        <group>
+                            <group string="Origin">
+                                <field name="origin"/>
+                                <field name="origin_terminal"/>
+                                <field name="origin_utc"/>
+                                <field name="departure_date"/>
+                            </group>
+                            <group string="Destination">
+                                <field name="destination"/>
+                                <field name="destination_terminal"/>
+                                <field name="destination_utc"/>
+                                <field name="arrival_date"/>
+                            </group>
+                        </group>
+                        <separator string="Segments"/>
+                        <field name="segment_ids"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="tt_routes_journey_tree_view" model="ir.ui.view">
+            <field name="name">tt.routes.journey.tree.view</field>
+            <field name="model">tt.routes.journey</field>
+            <field name="arch" type="xml">
+                <tree string="Journey">
+                    <field name="origin"/>
+                    <field name="origin_terminal"/>
+                    <field name="destination"/>
+                    <field name="destination_terminal"/>
+                    <field name="departure_date"/>
+                    <field name="arrival_date"/>
+                    <field name="provider"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="tt_routes_journey_action_view" model="ir.actions.act_window">
+            <field name="name">Routes Journey</field>
+            <field name="view_type">form</field>
+            <field name="res_model">tt.routes.journey</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    <!-- Add Text Here -->
+                </p><p>
+                <!-- More details about what a user can do with this object will be OK -->
+            </p>
+            </field>
+            <field name="context">
+                {
+                'form_view_ref': 'tt_base.tt_routes_journey_form_view',
+                'tree_view_ref': 'tt_base.tt_routes_journey_tree_view'
+                }
+            </field>
+        </record>
+
+        <menuitem id="sub_menu_tour_travel_routes_journey"
+                  parent="tt_base.menu_tour_travel_destination"
+                  groups="base.group_user"
+                  name="Routes Journey"
+                  sequence="3"
+                  action="tt_routes_journey_action_view"/>
+
+    </data>
+    <data>
+        <record id="tt_routes_fare_form_view" model="ir.ui.view">
+            <field name="name">tt.routes.fare.form.view</field>
+            <field name="model">tt.routes.fare</field>
+            <field name="arch" type="xml">
+                <form string="Fare">
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only" string="Name"/>
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="segment_id"/>
+                            </group>
+                            <group>
+                                <label for="create_uid" string="Created By"/>
+                                <div>
+                                    <field name="create_uid" class="oe_inline" readonly="True"/> -
+                                    <field name="create_date" class="oe_inline" readonly="True"/>
+                                </div>
+                                <label for="write_uid" string="Last Edited By"/>
+                                <div>
+                                    <field name="write_uid" class="oe_inline" readonly="True"/> -
+                                    <field name="write_date" class="oe_inline" readonly="True"/>
+                                </div>
+                            </group>
+                        </group>
+                        <separator string="Fare Information"/>
+                        <group>
+                            <group>
+                                <field name="cabin_class"/>
+                                <field name="class_of_service"/>
+                                <field name="fare_code"/>
+                                <field name="fare_basis_code"/>
+                            </group>
+                            <group>
+                                <field name="fare_class"/>
+                                <field name="fare_name"/>
+                                <field name="available_count"/>
+                            </group>
+                        </group>
+                        <separator string="Pax Fares"/>
+                        <field name="pax_fare_ids"/>
+                        <separator string="Fare Details"/>
+                        <field name="fare_detail_ids"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="tt_routes_fare_tree_view" model="ir.ui.view">
+            <field name="name">tt.routes.fare.tree.view</field>
+            <field name="model">tt.routes.fare</field>
+            <field name="arch" type="xml">
+                <tree string="Fare">
+                    <field name="cabin_class"/>
+                    <field name="class_of_service"/>
+                    <field name="fare_basis_code"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="tt_routes_fare_action_view" model="ir.actions.act_window">
+            <field name="name">Routes Fare</field>
+            <field name="view_type">form</field>
+            <field name="res_model">tt.routes.fare</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    <!-- Add Text Here -->
+                </p><p>
+                <!-- More details about what a user can do with this object will be OK -->
+            </p>
+            </field>
+            <field name="context">
+                {
+                'form_view_ref': 'tt_base.tt_routes_fare_form_view',
+                'tree_view_ref': 'tt_base.tt_routes_fare_tree_view'
+                }
+            </field>
+        </record>
+
+        <menuitem id="sub_menu_tour_travel_routes_fare"
+                  parent="tt_base.menu_tour_travel_destination"
+                  groups="base.group_user"
+                  name="Routes Fare"
+                  sequence="3"
+                  action="tt_routes_fare_action_view"/>
+
+    </data>
+    <data>
+        <record id="tt_routes_pax_fare_form_view" model="ir.ui.view">
+            <field name="name">tt.routes.pax.fare.form.view</field>
+            <field name="model">tt.routes.pax.fare</field>
+            <field name="arch" type="xml">
+                <form string="Pax Fare">
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only" string="Name"/>
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="fare_id"/>
+                            </group>
+                            <group>
+                                <label for="create_uid" string="Created By"/>
+                                <div>
+                                    <field name="create_uid" class="oe_inline" readonly="True"/> -
+                                    <field name="create_date" class="oe_inline" readonly="True"/>
+                                </div>
+                                <label for="write_uid" string="Last Edited By"/>
+                                <div>
+                                    <field name="write_uid" class="oe_inline" readonly="True"/> -
+                                    <field name="write_date" class="oe_inline" readonly="True"/>
+                                </div>
+                            </group>
+                        </group>
+                        <separator string="Pax Fare Information"/>
+                        <group>
+                            <group>
+                                <field name="pax_type"/>
+                                <field name="fare_amount"/>
+                                <field name="tax_amount"/>
+                            </group>
+                            <group>
+                                <field name="total_amount"/>
+                            </group>
+                        </group>
+                        <separator string="Service Charges"/>
+                        <field name="service_charge_ids"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="tt_routes_pax_fare_tree_view" model="ir.ui.view">
+            <field name="name">tt.routes.pax.fare.tree.view</field>
+            <field name="model">tt.routes.pax.fare</field>
+            <field name="arch" type="xml">
+                <tree string="Routes Pax Fare">
+                    <field name="pax_type"/>
+                    <field name="fare_amount"/>
+                    <field name="tax_amount"/>
+                    <field name="total_amount"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="tt_routes_pax_fare_action_view" model="ir.actions.act_window">
+            <field name="name">Routes Pax Fare</field>
+            <field name="view_type">form</field>
+            <field name="res_model">tt.routes.pax.fare</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    <!-- Add Text Here -->
+                </p><p>
+                <!-- More details about what a user can do with this object will be OK -->
+            </p>
+            </field>
+            <field name="context">
+                {
+                'form_view_ref': 'tt_base.tt_routes_pax_fare_form_view',
+                'tree_view_ref': 'tt_base.tt_routes_pax_fare_tree_view'
+                }
+            </field>
+        </record>
+
+        <menuitem id="sub_menu_tour_travel_routes_pax_fare"
+                  parent="tt_base.menu_tour_travel_destination"
+                  groups="base.group_user"
+                  name="Routes Pax Fare"
+                  sequence="3"
+                  action="tt_routes_pax_fare_action_view"/>
+
+    </data>
+    <data>
+        <record id="tt_routes_fare_detail_form_view" model="ir.ui.view">
+            <field name="name">tt.routes.fare.detail.form.view</field>
+            <field name="model">tt.routes.fare.detail</field>
+            <field name="arch" type="xml">
+                <form string="Fare Detail">
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only" string="Name"/>
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="fare_id"/>
+                            </group>
+                            <group>
+                                <label for="create_uid" string="Created By"/>
+                                <div>
+                                    <field name="create_uid" class="oe_inline" readonly="True"/> -
+                                    <field name="create_date" class="oe_inline" readonly="True"/>
+                                </div>
+                                <label for="write_uid" string="Last Edited By"/>
+                                <div>
+                                    <field name="write_uid" class="oe_inline" readonly="True"/> -
+                                    <field name="write_date" class="oe_inline" readonly="True"/>
+                                </div>
+                            </group>
+                        </group>
+                        <separator string="Fare Detail Information"/>
+                        <group>
+                            <group>
+                                <field name="detail_code"/>
+                                <field name="detail_type"/>
+                                <field name="amount"/>
+                                <field name="unit"/>
+                            </group>
+                            <group>
+                                <field name="description"/>
+                                <field name="detail_name"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="tt_routes_fare_detail_tree_view" model="ir.ui.view">
+            <field name="name">tt.routes.fare.detail.tree.view</field>
+            <field name="model">tt.routes.fare.detail</field>
+            <field name="arch" type="xml">
+                <tree string="Fare Detail">
+                    <field name="detail_code"/>
+                    <field name="detail_type"/>
+                    <field name="amount"/>
+                    <field name="unit"/>
+                    <field name="description"/>
+                    <field name="detail_name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="tt_routes_fare_detail_action_view" model="ir.actions.act_window">
+            <field name="name">Routes Fare Detail</field>
+            <field name="view_type">form</field>
+            <field name="res_model">tt.routes.fare.detail</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    <!-- Add Text Here -->
+                </p><p>
+                <!-- More details about what a user can do with this object will be OK -->
+            </p>
+            </field>
+            <field name="context">
+                {
+                'form_view_ref': 'tt_base.tt_routes_fare_detail_form_view',
+                'tree_view_ref': 'tt_base.tt_routes_fare_detail_tree_view'
+                }
+            </field>
+        </record>
+
+        <menuitem id="sub_menu_tour_travel_routes_fare_detail"
+                  parent="tt_base.menu_tour_travel_destination"
+                  groups="base.group_user"
+                  name="Routes Fare Detail"
+                  sequence="3"
+                  action="tt_routes_fare_detail_action_view"/>
+
+    </data>
+    <data>
+        <record id="tt_routes_service_charge_form_view" model="ir.ui.view">
+            <field name="name">tt.routes.service.charge.form.view</field>
+            <field name="model">tt.routes.service.charge</field>
+            <field name="arch" type="xml">
+                <form string="Service Charge">
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only" string="Name"/>
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="pax_fare_id"/>
+                            </group>
+                            <group>
+                                <label for="create_uid" string="Created By"/>
+                                <div>
+                                    <field name="create_uid" class="oe_inline" readonly="True"/> -
+                                    <field name="create_date" class="oe_inline" readonly="True"/>
+                                </div>
+                                <label for="write_uid" string="Last Edited By"/>
+                                <div>
+                                    <field name="write_uid" class="oe_inline" readonly="True"/> -
+                                    <field name="write_date" class="oe_inline" readonly="True"/>
+                                </div>
+                            </group>
+                        </group>
+                        <separator string="Pax Fare Information"/>
+                        <group>
+                            <group>
+                                <field name="pax_type"/>
+                                <field name="charge_code"/>
+                                <field name="charge_type"/>
+                            </group>
+                            <group>
+                                <field name="currency"/>
+                                <field name="amount"/>
+                                <field name="foreign_currency"/>
+                                <field name="foreign_amount"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="tt_routes_service_charge_tree_view" model="ir.ui.view">
+            <field name="name">tt.routes.service.charge.tree.view</field>
+            <field name="model">tt.routes.service.charge</field>
+            <field name="arch" type="xml">
+                <tree string="Routes Service Charge">
+                    <field name="pax_type"/>
+                    <field name="charge_code"/>
+                    <field name="charge_type"/>
+                    <field name="currency"/>
+                    <field name="amount"/>
+                    <field name="foreign_currency"/>
+                    <field name="foreign_amount"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="tt_routes_service_charge_action_view" model="ir.actions.act_window">
+            <field name="name">Routes Service Charge</field>
+            <field name="view_type">form</field>
+            <field name="res_model">tt.routes.service.charge</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    <!-- Add Text Here -->
+                </p><p>
+                <!-- More details about what a user can do with this object will be OK -->
+            </p>
+            </field>
+            <field name="context">
+                {
+                'form_view_ref': 'tt_base.tt_routes_service_charge_form_view',
+                'tree_view_ref': 'tt_base.tt_routes_service_charge_tree_view'
+                }
+            </field>
+        </record>
+
+        <menuitem id="sub_menu_tour_travel_routes_service_charge"
+                  parent="tt_base.menu_tour_travel_destination"
+                  groups="base.group_user"
+                  name="Routes Service Charge"
+                  sequence="3"
+                  action="tt_routes_service_charge_action_view"/>
+
+    </data>
+    <data>
+        <record id="tt_routes_schedule_form_view" model="ir.ui.view">
+            <field name="name">tt.routes.schedule.form.view</field>
+            <field name="model">tt.routes.schedule</field>
+            <field name="arch" type="xml">
+                <form string="Schedule">
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only" string="Name"/>
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                            </group>
+                            <group>
+                                <label for="create_uid" string="Created By"/>
+                                <div>
+                                    <field name="create_uid" class="oe_inline" readonly="True"/> -
+                                    <field name="create_date" class="oe_inline" readonly="True"/>
+                                </div>
+                                <label for="write_uid" string="Last Edited By"/>
+                                <div>
+                                    <field name="write_uid" class="oe_inline" readonly="True"/> -
+                                    <field name="write_date" class="oe_inline" readonly="True"/>
+                                </div>
+                            </group>
+                        </group>
+                        <separator string="Schedule Information"/>
+                        <group>
+                            <group>
+                                <field name="schedule_code"/>
+                                <field name="provider"/>
+                                <field name="provider_type_id"/>
+                            </group>
+                            <group>
+                                <field name="origin"/>
+                                <field name="destination"/>
+                                <field name="departure_date"/>
+                            </group>
+                        </group>
+                        <separator string="Journeys"/>
+                        <field name="journey_ids"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="tt_routes_schedule_tree_view" model="ir.ui.view">
+            <field name="name">tt.routes.schedule.tree.view</field>
+            <field name="model">tt.routes.schedule</field>
+            <field name="arch" type="xml">
+                <tree string="Routes Schedule">
+                    <field name="origin"/>
+                    <field name="destination"/>
+                    <field name="departure_date"/>
+                    <field name="provider"/>
+                    <field name="provider_type_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="tt_routes_schedule_action_view" model="ir.actions.act_window">
+            <field name="name">Routes Schedule</field>
+            <field name="view_type">form</field>
+            <field name="res_model">tt.routes.schedule</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    <!-- Add Text Here -->
+                </p><p>
+                <!-- More details about what a user can do with this object will be OK -->
+            </p>
+            </field>
+            <field name="context">
+                {
+                'form_view_ref': 'tt_base.tt_routes_schedule_form_view',
+                'tree_view_ref': 'tt_base.tt_routes_schedule_tree_view'
+                }
+            </field>
+        </record>
+
+        <menuitem id="sub_menu_tour_travel_routes_schedule"
+                  parent="tt_base.menu_tour_travel_destination"
+                  groups="base.group_user"
+                  name="Routes Schedule"
+                  sequence="3"
+                  action="tt_routes_schedule_action_view"/>
 
     </data>
 </odoo>
