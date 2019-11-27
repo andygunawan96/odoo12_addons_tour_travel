@@ -146,37 +146,23 @@ class TtBankTransaction(models.Model):
 
                 if i['TransactionType'] == 'D':
                     balance_modified = float(balance_modified) + float(i['TransactionAmount'])
-
-                    data = {
-                        'bank_account_id': bank_owner[0]['id'],
-                        'currency_id': currency_id[0]['id'],
-                        'transaction_date': i['TransactionDate'],
-                        'transaction_bank_branch': i['BranchCode'],
-                        'transaction_type': i['TransactionType'],
-                        'transaction_original': i['TransactionAmount'],
-                        'transaction_amount': i['TransactionAmount'],
-                        'transaction_debit': i['TransactionAmount'],
-                        'transaction_credit': 0,
-                        'bank_balance': balance_modified,
-                        'transaction_name': i['TransactionName'],
-                        'transaction_message': i['Trailer']
-                    }
                 else:
                     balance_modified = float(balance_modified) + float(i['TransactionAmount'])
-                    data = {
-                        'bank_account_id': bank_owner[0]['id'],
-                        'currency_id': currency_id[0]['id'],
-                        'transaction_date': i['TransactionDate'],
-                        'transaction_bank_branch': i['BranchCode'],
-                        'transaction_type': i['TransactionType'],
-                        'transaction_original': i['TransactionAmount'],
-                        'transaction_amount': i['TransactionAmount'],
-                        'transaction_debit': 0,
-                        'transaction_credit': i['TransactionAmount'],
-                        'bank_balance': balance_modified,
-                        'transaction_name': i['TransactionName'],
-                        'transaction_message': i['Trailer']
-                    }
+
+                data = {
+                    'bank_account_id': bank_owner[0]['id'],
+                    'currency_id': currency_id[0]['id'],
+                    'transaction_date': i['TransactionDate'],
+                    'transaction_bank_branch': i['BranchCode'],
+                    'transaction_type': i['TransactionType'],
+                    'transaction_original': i['TransactionAmount'],
+                    'transaction_amount': i['TransactionAmount'],
+                    'transaction_debit': i['TransactionAmount'],
+                    'transaction_credit': 0,
+                    'bank_balance': balance_modified,
+                    'transaction_name': i['TransactionName'],
+                    'transaction_message': i['Trailer']
+                }
 
                 try:
                     added = self.create_bank_statement(data)
