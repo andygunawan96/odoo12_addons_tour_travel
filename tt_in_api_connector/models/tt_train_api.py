@@ -23,9 +23,8 @@ class TtAirlineApiCon(models.Model):
             res = table_obj.update_seat_train_api(data,context)
         else:
             raise RequestException(999)
-
         return res
 
     def get_balance(self,provider):
-        return self._send_request('%s/account/train' % (self.url),{'provider': provider},'get_vendor_balance')
+        return self.send_request_to_gateway('%s/account/train' % (self.url),{'provider': provider},'get_vendor_balance')
 

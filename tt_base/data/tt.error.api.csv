@@ -2,6 +2,8 @@ id,code,message,note,description,active,is_data
 tt_error_api_50,50,Error code message is not found,,,1,1
 tt_error_api_420,420,Method failure,,,1,1
 tt_error_api_500,500,Internal server error,,,1,1
+tt_error_api_997,997,Send response error,,,1,1
+tt_error_api_998,998,Send payload response error,,,1,1
 tt_error_api_999,999,Action not found,,,1,1
 tt_error_api_1000,1000,Model not found,,,1,1
 tt_error_api_1001,1001,Booking not found,,,1,1
