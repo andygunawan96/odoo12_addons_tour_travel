@@ -1,7 +1,7 @@
 from odoo import api,models,fields
 from ...tools.ERR import RequestException
 
-class TtAirlineApiCon(models.Model):
+class TtTrainApiCon(models.Model):
     _name = 'tt.train.api.con'
     _inherit = 'tt.api.con'
 
@@ -26,5 +26,8 @@ class TtAirlineApiCon(models.Model):
         return res
 
     def get_balance(self,provider):
-        return self.send_request_to_gateway('%s/account/train' % (self.url),{'provider': provider},'get_vendor_balance')
+        res = self.send_request_to_gateway('%s/account/train' % (self.url),{'provider': provider},'get_vendor_balance')
+        if res['error_code'] != 0:
+            raise Exception(res)
+        return res
 

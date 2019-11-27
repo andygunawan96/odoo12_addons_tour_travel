@@ -37,14 +37,17 @@ class TtApiCon(models.Model):
         try:
             res = util.send_request(url,data,header,content_type=content_type,request_type=request_type, timeout=timeout)
             if res['error_code'] != 0:
-                raise Exception(ERR.get_error(997))
+                raise RequestException(997,additional_message=res['error_msg'])
             res = res['response']['result']
             if res['error_code'] != 0:
-                raise Exception(ERR.get_error(998))
+                raise RequestException(998,additional_message=res['error_msg'])
             return res
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
         except Exception as e:
             _logger.error(traceback.format_exc())
-        return ERR.get_error()
+        return res
 
     def _gateway_sign_in(self):
         res = self._send_request(
