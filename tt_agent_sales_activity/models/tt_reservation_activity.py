@@ -41,8 +41,7 @@ class ReservationActivity(models.Model):
         return tmp
 
     def action_create_invoice(self, acquirer_id):
-        invoice_id = self.env['tt.agent.invoice'].search(
-            [('booker_id', '=', self.booker_id.id), ('state', '=', 'draft')])
+        invoice_id = False
 
         if not invoice_id:
             invoice_id = self.env['tt.agent.invoice'].create({

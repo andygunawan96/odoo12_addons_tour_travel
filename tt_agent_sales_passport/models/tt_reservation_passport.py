@@ -36,8 +36,7 @@ class ReservationPassport(models.Model):
         return desc_text
 
     def action_create_invoice(self):
-        invoice_id = self.env['tt.agent.invoice'].search(
-            [('booker_id', '=', self.contact_id.id), ('state', '=', 'draft')])
+        invoice_id = False
 
         if not invoice_id:
             invoice_id = self.env['tt.agent.invoice'].create({
