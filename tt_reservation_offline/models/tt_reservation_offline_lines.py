@@ -107,7 +107,7 @@ class IssuedOfflineLines(models.Model):
     activity_package = fields.Char('Activity Package', readonly=True,
                                    states={'draft': [('readonly', False)],
                                            'confirm': [('readonly', False)]})
-    activity_timeslot = fields.Many2one('tt.activity.master.timeslot', 'Timeslot')
+    activity_timeslot = fields.Char('Timeslot')
     cruise_name = fields.Char('Cruise Name', readonly=True, states={'draft': [('readonly', False)],
                                                                     'confirm': [('readonly', False)]})
     departure_location = fields.Char('Departure Location', readonly=True, states={'draft': [('readonly', False)],
