@@ -2,6 +2,7 @@ from odoo import api, fields, models, _
 from ...tools import variables
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+from odoo.exceptions import UserError
 
 
 class TtProviderTour(models.Model):
@@ -267,6 +268,10 @@ class TtProviderTour(models.Model):
             total_amount += payment_rules_obj.payment_amount
         else:
             total_amount += (payment_rules_obj.payment_percentage / 100) * self.booking_id.total
+
+        is_enough = self.env['tt.agent'].check_balance_limit_api(self.booking_id.agent_id.id, total_amount)
+        if is_enough['error_code'] != 0:
+            raise UserError(_('Not Enough Balance.'))
 
         res_model = self.booking_id._name
         res_id = self.booking_id.id
