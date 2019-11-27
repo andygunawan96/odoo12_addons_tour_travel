@@ -133,6 +133,7 @@
                         </tree>
                         <form>
                             <header>
+                                <button string="Pay Now" name="action_pay_now" type="object" attrs="{'invisible': [('state_invoice', 'not in', ['open', 'trouble'])]}"/>
                                 <button string="Set to Open" name="action_open" type="object" attrs="{'invisible': [('state_invoice', '=', 'open')]}"/>
                                 <button string="Set to Done" name="action_done" type="object" attrs="{'invisible': [('state_invoice', 'in', ['done', 'cancel'])]}"/>
                                 <button string="Cancel" name="action_cancel" type="object" attrs="{'invisible': [('state_invoice', '=', 'cancel')]}"/>
