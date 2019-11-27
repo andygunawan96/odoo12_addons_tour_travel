@@ -308,7 +308,7 @@ class Routes(models.Model):
             ]
             segment_obj = None
             segment_env = self.env['tt.routes.segment'].sudo()
-            for i in range(1):
+            for i in range(2):
                 segment_obj = segment_env.search(param, limit=1)
                 if segment_obj:
                     break
