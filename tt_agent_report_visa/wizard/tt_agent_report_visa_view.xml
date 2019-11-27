@@ -11,8 +11,8 @@
         </field>
     </record>
 
-    <record id="action_agent_report_visa" model="ir.actions.act_window">
-        <field name="name">Visa Report</field>
+    <record id="action_agent_report_visa_wz" model="ir.actions.act_window">
+        <field name="name">Visa Report Wizard</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">tt.agent.report.visa.wizard</field>
         <field name="view_type">form</field>
@@ -25,7 +25,7 @@
         id="sub_menu_agent_report_visa"
         name="Visa Report"
         parent="tt_reservation_visa.menu_visa_report"
-        action="action_agent_report_visa"
+        action="action_agent_report_visa_wz"
         sequence="1"
         groups="tt_base.group_tt_agent_user_supervisor,tt_base.group_tt_tour_travel_operator"
        />

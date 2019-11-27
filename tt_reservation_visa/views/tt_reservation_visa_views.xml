@@ -63,10 +63,10 @@
                     <button string="In Process" name="action_in_process_visa" type="object" attrs="{'invisible': [('state_visa', 'not in', ['validate','vendor_process'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
                     <button string="Process to Consulate" name="action_in_process_consulate_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'payment')]}" groups="tt_base.group_tt_tour_travel_operator"/>
                     <button string="Cancel All" name="action_cancel_visa" type="object" attrs="{'invisible': [('state_visa', 'in', ['cancel'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <button string="Calc. Channel Prices" name="calc_channel_service_charge_visa" type="object"/>
+<!--                    <button string="Calc. Channel Prices" name="calc_channel_service_charge_visa" type="object"/>-->
 <!--                    <button string="Pay Now" name="action_pay_now_visa" type="object" attrs="{'invisible': [('state_visa', 'not in', ['draft','confirm', 'validate'])]}"/>-->
                     <button string="Proforma Invoice" name="action_proforma_invoice_visa" type="object"/>
-                    <button string="Recalculate Price" name="recalculate_price" type="object"/>
+<!--                    <button string="Recalculate Price" name="recalculate_price" type="object"/>-->
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
@@ -242,9 +242,9 @@
 <!--                            <field name="total_fare" class="oe_subtotal_footer_separator"/>-->
 <!--                            <field name="total_tax" class="oe_subtotal_footer_separator"/>-->
                             <field name="total" class="oe_subtotal_footer_separator"/>
-                            <field name="total_commission" class="oe_subtotal_footer_separator" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator"/>
+                            <field name="total_commission" class="oe_subtotal_footer_separator" groups="tt_base.group_tt_tour_travel_operator"/>  <!--,tt_base.group_tt_agent_user_operator-->
                             <field name="agent_commission" class="oe_subtotal_footer_separator" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator"/>
-                            <field name="total_nta" class="oe_subtotal_footer_separator" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator"/>
+                            <field name="total_nta" class="oe_subtotal_footer_separator" groups="tt_base.group_tt_tour_travel_operator"/>  <!--,tt_base.group_tt_agent_user_operator-->
                             <!--<field name="total_sale_price" class="oe_subtotal_footer_separator"/>-->
                         </group>
                     </group>
@@ -263,8 +263,8 @@
         <field name="model">tt.reservation.visa</field>
         <field name="arch" type="xml">
             <tree create="false">
-                <button type="object" string="Create Booking Visa" name="create_booking_visa_api"/>
-                <button type="object" string="Get Booking Visa" name="get_booking_visa_api"/>
+<!--                <button type="object" string="Create Booking Visa" name="create_booking_visa_api"/>-->
+<!--                <button type="object" string="Get Booking Visa" name="get_booking_visa_api"/>-->
                 <field name="name"/>
                 <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>
                 <field name="agent_type_id" groups="tt_base.group_tt_tour_travel_operator"/>
@@ -345,7 +345,7 @@
     </record>
 
     <!--Visa Document Filter Delivered Ready-->
-    <record model="ir.actions.act_window" id="tt_reservation_visa_delivered_ready_view_action">
+    <record model="ir.actions.act_window" id="tt_reservation_visa_partial_proceed_proceed_view_action">
         <field name="name">Visa Document</field>
         <field name="res_model">tt.reservation.visa</field>
         <field name="view_type">form</field>
@@ -355,13 +355,13 @@
             {
                 'form_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_form',
                 'tree_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_tree',
-                'search_default_delivered_ready': 1,
+                'search_default_partial_proceed_proceed': 1,
             }
         </field>
     </record>
 
     <!--Visa Document Filter Done-->
-    <record model="ir.actions.act_window" id="tt_reservation_visa_done_view_action">
+    <record model="ir.actions.act_window" id="tt_reservation_visa_delivered_done_view_action">
         <field name="name">Visa Document</field>
         <field name="res_model">tt.reservation.visa</field>
         <field name="view_type">form</field>
@@ -371,7 +371,7 @@
             {
                 'form_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_form',
                 'tree_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_tree',
-                'search_default_done': 1,
+                'search_default_delivered_done': 1,
             }
         </field>
     </record>
@@ -405,16 +405,16 @@
               action="tt_reservation_visa_confirm_validate_view_action" sequence="3"/>
 
     <!--Visa Document Menu Item In Process Payment-->
-    <menuitem id="menu_visa_in_process_payment" parent="menu_visa_order" name="In Process/Paymet"
+    <menuitem id="menu_visa_in_process_payment" parent="menu_visa_order" name="In Process/Payment"
               action="tt_reservation_visa_in_process_payment_view_action" sequence="4"/>
 
     <!--Visa Document Menu Item Delivered Ready-->
-    <menuitem id="menu_visa_delivered_ready" parent="menu_visa_order" name="Delivered/Ready"
-              action="tt_reservation_visa_delivered_ready_view_action" sequence="5"/>
+    <menuitem id="menu_visa_delivered_ready" parent="menu_visa_order" name="Partial Proceed/Proceed"
+              action="tt_reservation_visa_partial_proceed_proceed_view_action" sequence="5"/>
 
     <!--Visa Document Menu Item Done-->
-    <menuitem id="menu_visa_done" parent="menu_visa_order" name="Done"
-              action="tt_reservation_visa_done_view_action" sequence="6"/>
+    <menuitem id="menu_visa_done" parent="menu_visa_order" name="Delivered/Done"
+              action="tt_reservation_visa_delivered_done_view_action" sequence="6"/>
 
     <!--Visa Document Menu Item Cancel-->
     <menuitem id="menu_visa_cancel" parent="menu_visa_order" name="Cancel"

@@ -12,7 +12,19 @@
         </field>
     </record>
 
-    <record id="action_agent_report_offline" model="ir.actions.act_window">
+    <record model="ir.ui.view" id="detail_offline_HO_form">
+        <field name="name">Detail Offline HO Form</field>
+        <field name="model">tt.agent.report.ho.offline.wizard</field>
+        <field name="inherit_id" ref="tt_agent_report.agent_common_report_view"/>
+        <field name="arch" type="xml">
+            <field name="agent_id" position="before">
+                <field name="provider_type"/>
+                <field name="state" required="1"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="action_agent_report_offline_wz" model="ir.actions.act_window">
         <field name="name">Offline Report</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">tt.agent.report.offline.wizard</field>
@@ -22,13 +34,13 @@
         <field name="target">new</field>
     </record>
 
-    <record id="action_agent_report_offline_ho" model="ir.actions.act_window">
+    <record id="action_agent_report_offline_ho_wz" model="ir.actions.act_window">
         <field name="name">Offline Report HO</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">tt.agent.report.ho.offline.wizard</field>
         <field name="view_type">form</field>
         <field name="view_mode">form</field>
-        <field name="view_id" ref="detail_offline_form"/>
+        <field name="view_id" ref="detail_offline_HO_form"/>
         <field name="target">new</field>
     </record>
 
@@ -36,7 +48,7 @@
         id="submenu_agent_report_offline"
         name="Offline Report"
         parent="tt_reservation_offline.menu_offline_report"
-        action="action_agent_report_offline"
+        action="action_agent_report_offline_wz"
         sequence="1"
         groups="tt_base.group_tt_agent_user_supervisor,tt_base.group_tt_tour_travel_operator"
        />
@@ -45,7 +57,7 @@
         id="submenu_agent_report_offline_HO"
         name="Offline Report HO"
         parent="tt_reservation_offline.menu_offline_report"
-        action="action_agent_report_offline_ho"
+        action="action_agent_report_offline_ho_wz"
         sequence="2"
         groups="tt_base.group_tt_tour_travel_operator"
        />

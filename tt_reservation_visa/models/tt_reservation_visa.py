@@ -356,10 +356,10 @@ class TtVisa(models.Model):
 
     param_sell_visa = {
         "total_cost": 25,
-        "provider": "skytors_visa",
+        "provider": "visa_rodextrip",
         "pax": {
-            "adult": 1,
-            "child": 0,
+            "adult": 2,
+            "child": 1,
             "infant": 0,
             "elder": 0
         }
@@ -699,7 +699,7 @@ class TtVisa(models.Model):
             country_obj = self.env['res.country']
             provider_obj = self.env['tt.provider']
 
-            provider = provider_obj.env['tt.provider'].search([('code', '=', 'visa_rodextrip')], limit=1)
+            provider = provider_obj.env['tt.provider'].search([('code', '=', sell_visa['provider'])], limit=1)
             country = country_obj.search([('name', '=', search['destination'])], limit=1)
 
             vals = {
