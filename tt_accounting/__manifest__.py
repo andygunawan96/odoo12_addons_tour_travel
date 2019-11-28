@@ -32,6 +32,7 @@
         'views/tt_adjustment_views.xml',
         'views/tt_refund_views.xml',
         'wizard/tt_adjustment_wizard_view.xml',
+        'wizard/tt_refund_wizard_view.xml',
         'views/tt_agent_views.xml',
         'views/tt_top_up_views.xml',
         'views/tt_customer_parent_views.xml',

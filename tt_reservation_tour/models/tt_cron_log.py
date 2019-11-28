@@ -10,10 +10,14 @@ class TtCronLogInhResv(models.Model):
 
     def cron_update_installment_invoice(self):
         try:
-            installment_objs = self.env['tt.installment.invoice'].sudo().search([('state', 'in', ['open', 'trouble'])])
+            installment_objs = self.env['tt.installment.invoice'].sudo().search([('state_invoice', 'in', ['open', 'trouble'])])
             for rec in installment_objs:
                 if rec.agent_invoice_id.state == 'paid':
                     rec.action_set_to_done()
+                elif rec.due_date == date.today():
+                    res = rec.action_pay_now()
+                    if res.get('error_code') and rec.state_invoice != 'trouble':
+                        rec.action_trouble()
                 elif rec.due_date < date.today() and rec.state_invoice != 'trouble':
                     rec.action_trouble()
 
