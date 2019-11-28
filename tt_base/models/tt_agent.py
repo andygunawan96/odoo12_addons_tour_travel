@@ -49,6 +49,10 @@ class TtAgent(models.Model):
     tac = fields.Text('Terms and Conditions', readonly=True, states={'draft': [('readonly', False)],
                                                                      'confirm': [('readonly', False)]})
     active = fields.Boolean('Active', default='True')
+    image_ids = fields.Many2many('tt.upload.center', 'tt_frontend_banner_tt_upload_center_rel' 'banner_id', 'image_id',
+                                 string='Image',
+                                 context={'active_test': False, 'form_view_ref': 'tt_base.tt_upload_center_form_view'})
+    virtual_ids = fields.One2many('tt.virtual.account', 'agent_id', 'Virtual Account')
 
     # TODO VIN:tnyakan creator
     # 1. Image ckup 1 ae (logo)
