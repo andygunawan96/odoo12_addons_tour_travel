@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
-    
         <record id="tt_transport_carrier_airline_sq" model="tt.transport.carrier">
             <field name="name">Singapore Airlines</field>
             <field name="code">SQ</field>
@@ -41,6 +40,7 @@
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
+
         <record id="tt_transport_carrier_airline_tr" model="tt.transport.carrier">
             <field name="name">Scoot</field>
             <field name="code">TR</field>
@@ -50,6 +50,7 @@
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
+
         <record id="tt_transport_carrier_airline_mi" model="tt.transport.carrier">
             <field name="name">Silk Air</field>
             <field name="code">MI</field>
@@ -58,6 +59,427 @@
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
+
+
+        <record id="tt_transport_carrier_airline_jt" model="tt.transport.carrier">
+            <field name="name">Lion Air</field>
+            <field name="code">JT</field>
+            <field name="icao">LNI</field>
+            <field name="call_sign">LION INTER</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_ka" model="tt.transport.carrier">
+            <field name="name">Cathay Dragon</field>
+            <field name="code">KA</field>
+            <field name="icao">HDA</field>
+            <field name="call_sign">DRAGON</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_bi" model="tt.transport.carrier">
+            <field name="name">Royal Brunei</field>
+            <field name="code">BI</field>
+            <field name="icao">RBA</field>
+            <field name="call_sign">BRUNEI</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_tk" model="tt.transport.carrier">
+            <field name="name">Turkish Airlines</field>
+            <field name="code">TK</field>
+            <field name="icao">THY</field>
+            <field name="call_sign">TURKAIR</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_br" model="tt.transport.carrier">
+            <field name="name">Eva Airways</field>
+            <field name="code">BR</field>
+            <field name="icao">EVA</field>
+            <field name="call_sign">Eva</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_cz" model="tt.transport.carrier">
+            <field name="name">China Southern</field>
+            <field name="code">CZ</field>
+            <field name="icao">CSN</field>
+            <field name="call_sign">CHINA SOUTHERN</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_aa" model="tt.transport.carrier">
+            <field name="name">American Airlines</field>
+            <field name="code">AA</field>
+            <field name="icao">AAL</field>
+            <field name="call_sign">AMERICAN</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_px" model="tt.transport.carrier">
+            <field name="name">Air Niugini</field>
+            <field name="code">PX</field>
+            <field name="icao">ANG</field>
+            <field name="call_sign">NIUGINI</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_dl" model="tt.transport.carrier">
+            <field name="name">Delta Airlines</field>
+            <field name="code">DL</field>
+            <field name="icao">DAL</field>
+            <field name="call_sign">DELTA</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_ms" model="tt.transport.carrier">
+            <field name="name">Egypt Air</field>
+            <field name="code">MS</field>
+            <field name="icao">MSR</field>
+            <field name="call_sign">EGYPTAIR</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_ha" model="tt.transport.carrier">
+            <field name="name">Hawaiian Airlines</field>
+            <field name="code">HA</field>
+            <field name="icao">HAL</field>
+            <field name="call_sign">HAWAIIAN</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_fj" model="tt.transport.carrier">
+            <field name="name">Air Pacific Limited</field>
+            <field name="code">FJ</field>
+            <field name="icao">FJI</field>
+            <field name="call_sign">PACIFIC</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_9b" model="tt.transport.carrier">
+            <field name="name">Access Rail and Partner</field>
+            <field name="code">9B</field>
+            <field name="icao"></field>
+            <field name="call_sign"></field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_ps" model="tt.transport.carrier">
+            <field name="name">Ukraine International Airlines</field>
+            <field name="code">PS</field>
+            <field name="icao">AUI</field>
+            <field name="call_sign">UKRAINE INTERNATIONAL</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_od" model="tt.transport.carrier">
+            <field name="name">Malindo Air</field>
+            <field name="code">OD</field>
+            <field name="icao">MXD</field>
+            <field name="call_sign">MALINDO</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_mh" model="tt.transport.carrier">
+            <field name="name">Malaysia Airlines</field>
+            <field name="code">MH</field>
+            <field name="icao">MAS</field>
+            <field name="call_sign">MALAYSIAN</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_pr" model="tt.transport.carrier">
+            <field name="name">Philippine Airlines</field>
+            <field name="code">PR</field>
+            <field name="icao">PAL</field>
+            <field name="call_sign">PHILIPPINE</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_qr" model="tt.transport.carrier">
+            <field name="name">Qatar Airways</field>
+            <field name="code">QR</field>
+            <field name="icao">QTR</field>
+            <field name="call_sign">QATARI</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_os" model="tt.transport.carrier">
+            <field name="name">Austrian Airlines AG</field>
+            <field name="code">OS</field>
+            <field name="icao">AUA</field>
+            <field name="call_sign">AUSTRIAN</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_et" model="tt.transport.carrier">
+            <field name="name">Ethiopian Airlines</field>
+            <field name="code">ET</field>
+            <field name="icao">ETH</field>
+            <field name="call_sign">ETHIOPIAN</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_ey" model="tt.transport.carrier">
+            <field name="name">Etihad Airways</field>
+            <field name="code">EY</field>
+            <field name="icao">ETD</field>
+            <field name="call_sign">Etihad</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_nh" model="tt.transport.carrier">
+            <field name="name">All Nippon Airways</field>
+            <field name="code">NH</field>
+            <field name="icao">ANA</field>
+            <field name="call_sign">ALL NIPPON</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_ke" model="tt.transport.carrier">
+            <field name="name">Korean Airlines</field>
+            <field name="code">KE</field>
+            <field name="icao">KAL</field>
+            <field name="call_sign">KOREAN AIR</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_mu" model="tt.transport.carrier">
+            <field name="name">China Eastern</field>
+            <field name="code">MU</field>
+            <field name="icao">CES</field>
+            <field name="call_sign">CHINA EASTERN</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_w2" model="tt.transport.carrier">
+            <field name="name">Flex Flight</field>
+            <field name="code">W2</field>
+            <field name="icao"></field>
+            <field name="call_sign"></field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_7c" model="tt.transport.carrier">
+            <field name="name">Jeju Air</field>
+            <field name="code">7C</field>
+            <field name="icao">JJA</field>
+            <field name="call_sign">JEJUAIR</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_qf" model="tt.transport.carrier">
+            <field name="name">Qantas</field>
+            <field name="code">QF</field>
+            <field name="icao">QFA</field>
+            <field name="call_sign">QANTAS</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_vn" model="tt.transport.carrier">
+            <field name="name">Vietnam Airlines</field>
+            <field name="code">VN</field>
+            <field name="icao">HVN</field>
+            <field name="call_sign">VIET NAM AIRLINES</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_hr" model="tt.transport.carrier">
+            <field name="name">Hahn Air</field>
+            <field name="code">HR</field>
+            <field name="icao">HHN</field>
+            <field name="call_sign">ROOSTER</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_tg" model="tt.transport.carrier">
+            <field name="name">Thai Airways</field>
+            <field name="code">TG</field>
+            <field name="icao">THA</field>
+            <field name="call_sign">THAI</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_va" model="tt.transport.carrier">
+            <field name="name">Virgin Australia</field>
+            <field name="code">VA</field>
+            <field name="icao">VOZ</field>
+            <field name="call_sign">VELOCITY</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_mf" model="tt.transport.carrier">
+            <field name="name">Xiamen Airlines</field>
+            <field name="code">MF</field>
+            <field name="icao">CXA</field>
+            <field name="call_sign">XIAMEN AIR</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_oz" model="tt.transport.carrier">
+            <field name="name">Asiana Airlines</field>
+            <field name="code">OZ</field>
+            <field name="icao">AAR</field>
+            <field name="call_sign">ASIANA</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_ac" model="tt.transport.carrier">
+            <field name="name">Air Canada</field>
+            <field name="code">AC</field>
+            <field name="icao">ACA</field>
+            <field name="call_sign">AIR CANADA</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_lh" model="tt.transport.carrier">
+            <field name="name">Lufthansa</field>
+            <field name="code">LH</field>
+            <field name="icao">DLH</field>
+            <field name="call_sign">LUFTHANSA</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_jl" model="tt.transport.carrier">
+            <field name="name">Japan Airlines</field>
+            <field name="code">JL</field>
+            <field name="icao">JAL</field>
+            <field name="call_sign">JAPANAIR</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_nz" model="tt.transport.carrier">
+            <field name="name">Air New Zealand</field>
+            <field name="code">NZ</field>
+            <field name="icao">ANZ</field>
+            <field name="call_sign">NEW ZEALAND</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_qg" model="tt.transport.carrier">
+            <field name="name">Citilink</field>
+            <field name="code">QG</field>
+            <field name="icao">CTV</field>
+            <field name="call_sign">SUPERGREEN</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_8b" model="tt.transport.carrier">
+            <field name="name">TransNusa Air</field>
+            <field name="code">8B</field>
+            <field name="icao">TNU</field>
+            <field name="call_sign">TRANSNUSA</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_il" model="tt.transport.carrier">
+            <field name="name">Trigana Air</field>
+            <field name="code">IL</field>
+            <field name="icao">TGN</field>
+            <field name="call_sign">TRIGANA</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_sj" model="tt.transport.carrier">
+            <field name="name">Sriwijaya Air</field>
+            <field name="code">SJ</field>
+            <field name="icao">SJY</field>
+            <field name="call_sign">SRIWIJAYA</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_ak" model="tt.transport.carrier">
+            <field name="name">AirAsia</field>
+            <field name="code">AK</field>
+            <field name="icao">AXM</field>
+            <field name="call_sign">RED CAP</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
     </data>
 </odoo>
     
