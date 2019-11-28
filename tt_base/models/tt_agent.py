@@ -231,6 +231,23 @@ class TtAgent(models.Model):
             rec.annual_revenue_target = last_target_id.annual_revenue_target
             rec.annual_profit_target = last_target_id.annual_profit_target
 
+    def generate_va_number(self):
+        if len(self.virtual_ids) == 0:
+            for phone in self.phone_ids:
+                data = {
+                    'number': self.phone_ids[0].calling_number[:9],
+                    'email': self.email,
+                    'name': self.name
+                }
+                res = self.env['tt.payment.api.con'].set_VA(data)
+                break
+                if res['error_code'] == 0:
+                    break
+            pass
+        else:
+            UserError(_("Already set VA number for this agent!"))
+
+
     def action_show_agent_target_history(self):
         tree_view_id = self.env.ref('tt_base.view_agent_target_tree').id
         form_view_id = self.env.ref('tt_base.view_agent_target_form').id
