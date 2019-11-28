@@ -49,6 +49,10 @@ class TtAgent(models.Model):
     tac = fields.Text('Terms and Conditions', readonly=True, states={'draft': [('readonly', False)],
                                                                      'confirm': [('readonly', False)]})
     active = fields.Boolean('Active', default='True')
+    image_ids = fields.Many2many('tt.upload.center', 'tt_frontend_banner_tt_upload_center_rel' 'banner_id', 'image_id',
+                                 string='Image',
+                                 context={'active_test': False, 'form_view_ref': 'tt_base.tt_upload_center_form_view'})
+    virtual_ids = fields.One2many('tt.virtual.account', 'agent_id', 'Virtual Account')
 
     # TODO VIN:tnyakan creator
     # 1. Image ckup 1 ae (logo)
@@ -226,6 +230,23 @@ class TtAgent(models.Model):
             last_target_id = self.env['tt.agent.target'].search([('agent_id', '=', rec.id)], limit=1)
             rec.annual_revenue_target = last_target_id.annual_revenue_target
             rec.annual_profit_target = last_target_id.annual_profit_target
+
+    def generate_va_number(self):
+        if len(self.virtual_ids) == 0:
+            for phone in self.phone_ids:
+                data = {
+                    'number': self.phone_ids[0].calling_number[:9],
+                    'email': self.email,
+                    'name': self.name
+                }
+                res = self.env['tt.payment.api.con'].set_VA(data)
+                break
+                if res['error_code'] == 0:
+                    break
+            pass
+        else:
+            UserError(_("Already set VA number for this agent!"))
+
 
     def action_show_agent_target_history(self):
         tree_view_id = self.env.ref('tt_base.view_agent_target_tree').id

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
+    <data noupdate="0">
         <!--======== Reports : Payment ==========-->
         <report
             id="action_agent_report_recap_reservation"

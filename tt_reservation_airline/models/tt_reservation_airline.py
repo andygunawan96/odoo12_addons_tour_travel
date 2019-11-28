@@ -1061,9 +1061,9 @@ class ReservationAirline(models.Model):
                         'carrier_number': segment['carrier_number'],
                         'provider_id': provider_id,
                         'origin_id': org_id,
-                        'origin_terminal': segment['origin_terminal'],
+                        # 'origin_terminal': segment['origin_terminal'],
                         'destination_id': dest_id,
-                        'destination_terminal': segment['destination_terminal'],
+                        # 'destination_terminal': segment['destination_terminal'],
                         'departure_date': segment['departure_date'],
                         'arrival_date': segment['arrival_date'],
                         'sequence': this_journey_seg_sequence

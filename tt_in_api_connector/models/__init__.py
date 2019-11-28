@@ -11,4 +11,5 @@ from . import tt_agent_registration
 from . import tt_customer_api
 from . import tt_public_holiday_api
 from . import tt_train_api
+from . import tt_payment
 from . import tt_bank_api
