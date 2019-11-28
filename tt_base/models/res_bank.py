@@ -15,6 +15,7 @@ class ResBank(models.Model):
     agent_bank_ids = fields.One2many('agent.bank.detail', 'bank_id', 'Agent Bank')
     customer_bank_ids = fields.One2many('customer.bank.detail', 'bank_id', 'Customer Bank')
     payment_acquirer_ids = fields.One2many('payment.acquirer', 'bank_id', 'Payment Acquirer')
+    virtual_account_ids = fields.One2many('tt.virtual.account', 'bank_id', 'Virtual_account')
     active = fields.Boolean('Active', default=True)
     image = fields.Binary('Bank Logo', attachment=True)
     image_id = fields.Many2one('tt.upload.center', compute="_compute_image_id",store=True)

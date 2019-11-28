@@ -66,6 +66,7 @@ Key Features
         'views/error_api_views.xml',
         'views/tt_ssr_views.xml',
         'views/tt_frontend_security.xml',
+        'views/tt_virtual_account_views.xml',
 
         'wizard/tt_upload_center_wizard_view.xml',
         'wizard/create_user_wizard_view.xml',
