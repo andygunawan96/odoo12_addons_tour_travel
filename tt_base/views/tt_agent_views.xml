@@ -47,6 +47,7 @@
             <form>
                 <header>
                     <button name="get_current_agent_target" type="object" string="Calc Target"/>
+                    <button name="generate_va_number" type="object" string="Generate VA"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
@@ -119,6 +120,9 @@
                         </page>
                         <page string="Social Media">
                             <field name="social_media_ids"/>
+                        </page>
+                        <page string="Virtual Account">
+                            <field name="virtual_ids"/>
                         </page>
                     </notebook>
                 </sheet>
