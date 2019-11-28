@@ -18,7 +18,7 @@ class TtTrainApiCon(models.Model):
         elif action == 'payment':
             res = table_obj.payment_train_api(data,context)
         elif action == 'update_cost_service_charges':
-            res = table_obj.update_cost_service_charge_airline_api(data,context)
+            res = table_obj.update_cost_service_charge_train_api(data,context)
         elif action == 'update_seat':
             res = table_obj.update_seat_train_api(data,context)
         else:

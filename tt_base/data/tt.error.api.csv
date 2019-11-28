@@ -44,6 +44,16 @@ tt_error_api_4010,4010,Failed to assign Seat,,,1,1
 tt_error_api_4011,4011,Missing Requirements,,,1,1
 tt_error_api_4012,4012,"Duplicate Session, Please create new session",,,1,1
 tt_error_api_4013,4013,"Data Validation Error",,,1,1
+tt_error_api_4014,4014,"You had already call this function",,,1,1
+tt_error_api_4015,4015,"Destinations are not allowed",,,1,1
+tt_error_api_4016,4016,"Failed to commit booking",,,1,1
+tt_error_api_4017,4017,"Failed to get booking",,,1,1
+tt_error_api_4018,4018,"Access restriction",,,1,1
+tt_error_api_4019,4019,Failed to Reissue,,,1,1
+tt_error_api_4020,4020,No Schedules,,,1,1
+tt_error_api_4021,4021,No Price Itinerary,,,1,1
+tt_error_api_4022,4022,Cancel booking failed,,,1,1
+tt_error_api_4023,4023,Reservation not found,,,1,1
 tt_error_api_9001,9901,Notification,For Notif,,1,1
 tt_error_api_9002,9902,Warning,For Warning,,1,1
 tt_error_api_9003,9903,Error,For Error,,1,1
