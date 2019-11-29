@@ -12,7 +12,7 @@ class TtAirlineApiCon(models.Model):
         if action == 'create_top_up':
             res = table_obj.create_top_up_api(data,context)
         elif action == 'get_top_up':
-            res = table_obj.get_top_up_api(context)
+            res = table_obj.get_top_up_api(data,context)
         elif action == 'cancel_top_up':
             res = table_obj.cancel_top_up_api(data,context)
         elif action == 'get_top_up_amount':

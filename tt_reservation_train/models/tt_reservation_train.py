@@ -244,6 +244,7 @@ class TtReservationTrain(models.Model):
     def payment_train_api(self,req,context):
         _logger.info("Payment\n" + json.dumps(req))
         try:
+            raise RequestException(1007)
             # book_obj = self.env['tt.reservation.train'].browse(req.get('book_id'))
             if req.get('book_id'):
                 book_obj = self.env['tt.reservation.train'].browse(req.get('book_id'))

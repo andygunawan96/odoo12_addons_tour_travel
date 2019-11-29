@@ -44,17 +44,20 @@ class ReservationAirline(models.Model):
         return self.env.ref("tt_reservation_airline.tt_reservation_airline_form_views")
 
 
-    @api.depends('origin_id','destination_id')
+    @api.depends('segment_ids')
     def _compute_sector_type(self):
         for rec in self:
-            if rec.origin_id and rec.destination_id:
-                if rec.origin_id.country_id == rec.destination_id.country_id:
-                    rec.sector_type = "Domestic"
-                else:
-                    rec.sector_type = "International"
-            else:
-                rec.sector_type = "Not Defined"
+            sector_type = "Domestic"
+            destination_country_list = []
+            for segment in rec.segment_ids:
+                destination_country_list.append(segment.origin_id.country_id.id)
+                destination_country_list.append(segment.destination_id.country_id.id)
+            destination_set = len(set(destination_country_list))
 
+            if destination_set > 1:
+                rec.sector_type = "International"
+            elif destination_set == 1:
+                rec.sector_type = "Domestic"
 
     @api.multi
     def action_set_as_draft(self):
