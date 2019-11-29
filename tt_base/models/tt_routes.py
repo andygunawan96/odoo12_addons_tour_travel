@@ -1,5 +1,5 @@
 from odoo import api, fields, models, _
-from datetime import datetime
+from datetime import datetime, timedelta
 from ...tools.api import Response
 from ...tools import ERR
 import logging
@@ -8,6 +8,7 @@ from ...tools.db_connector import GatewayConnector
 
 _logger = logging.getLogger(__name__)
 _gw_con = GatewayConnector()
+_UPDATE_TIME = 300 # 5 x 60 seconds
 
 
 class Routes(models.Model):
@@ -264,11 +265,10 @@ class Routes(models.Model):
                             journey_obj._compute_data()
                         except:
                             _logger.error('Error Compute Data Journey, %s' % traceback.format_exc())
-                if not schedule_obj.schedule_code:
-                    try:
-                        schedule_obj._compute_data()
-                    except:
-                        _logger.error('Error Compute Data Schedule, %s' % traceback.format_exc())
+                try:
+                    schedule_obj._compute_data()
+                except:
+                    _logger.error('Error Compute Data Schedule, %s' % traceback.format_exc())
             return ERR.get_no_error()
         except Exception as e:
             _logger.error('Error Update Routes API, %s' % traceback.format_exc())
@@ -322,6 +322,26 @@ class Routes(models.Model):
         except Exception as e:
             _logger.error('Error Get Segment Route API, %s' % traceback.format_exc())
             return ERR.get_error(500, additional_message='Error Get Segment Route API')
+
+    def get_schedule_update_permission_api(self, req_data, provider_type):
+        try:
+            schedule_env = self.env['tt.routes.schedule'].sudo()
+            is_permitted = False
+            for rec in req_data['journey_list']:
+                schedule_code = '%s,%s,%s,%s,%s' % (rec['origin'], rec['destination'], rec['departure_date'], provider_type, req_data['provider'])
+                schedule_obj = schedule_env.search([('schedule_code', '=', schedule_code)], limit=1)
+                if not schedule_obj:
+                    is_permitted = True
+                    break
+                last_update = schedule_obj.write_date + timedelta(seconds=_UPDATE_TIME)
+                if datetime.now() > last_update:
+                    is_permitted = True
+                    break
+            payload = {'is_permitted': is_permitted}
+            return ERR.get_no_error(payload)
+        except Exception as e:
+            _logger.error('Error Get Schedule Update Permission API, %s' % traceback.format_exc())
+            return ERR.get_error(500, additional_message='Error Get Schedule Update Permission API')
 
 
 class RoutesLeg(models.Model):
