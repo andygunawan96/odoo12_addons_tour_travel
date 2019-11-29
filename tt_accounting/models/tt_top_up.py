@@ -190,19 +190,6 @@ class TtTopUp(models.Model):
             agent_obj = self.browse(context['co_agent_id'])
             if not agent_obj:
                 raise RequestException(1008)
-            data = {
-                'type': 'date',
-                'date_from': '2019-09-20',
-                'date_to': '2019-09-26'
-            }
-            data = {
-                'type': 'name',
-                'name': 'TU.2019092021048'
-            }
-            data = {
-                'type': 'state',
-                'state': 'cancel'
-            }
             res = []
             dom = [('agent_id','=',agent_obj.id)]
             if data['type'] == 'name':
