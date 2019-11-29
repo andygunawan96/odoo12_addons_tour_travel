@@ -79,6 +79,10 @@ class TtTopUp(models.Model):
                 'total_with_fees': tp.amount + tp.unique_amount + tp.fees,
             })
 
+    def get_help_by(self):
+        return self.validate_uid and self.validate_uid.name or \
+                self.cancel_uid and self.cancel_uid.name or ''
+
     def action_reject_from_button(self):
         self.action_cancel_top_up({
             'co_uid':self.env.user.id
@@ -134,7 +138,8 @@ class TtTopUp(models.Model):
             'total': self.total or '',
             'state': self.state,
             'state_description': TOP_UP_STATE_STR[self.state],
-            'payment_method': self.payment_id.acquirer_id.name
+            'payment_method': self.payment_id.acquirer_id.name,
+            'help_by': self.get_help_by()
         }
         return res
 
@@ -187,6 +192,7 @@ class TtTopUp(models.Model):
 
     def get_top_up_api(self,data,context):
         try:
+            print(json.dumps(data))
             agent_obj = self.browse(context['co_agent_id'])
             if not agent_obj:
                 raise RequestException(1008)
