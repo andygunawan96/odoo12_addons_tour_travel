@@ -233,17 +233,17 @@ class TtAgent(models.Model):
 
     def generate_va_number(self):
         if len(self.virtual_ids) == 0:
-            for phone in self.phone_ids:
+            if self.phone_ids:
                 data = {
-                    'number': self.phone_ids[0].calling_number[:9],
+                    'number': self.phone_ids[0].calling_number[-8:],
                     'email': self.email,
                     'name': self.name
                 }
                 res = self.env['tt.payment.api.con'].set_VA(data)
-                break
                 if res['error_code'] == 0:
-                    break
-            pass
+                    return True
+            else:
+                UserError(_("Please insert phone number for this agent to generate VA !"))
         else:
             UserError(_("Already set VA number for this agent!"))
 
