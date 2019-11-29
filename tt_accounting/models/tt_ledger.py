@@ -52,6 +52,7 @@ class Ledger(models.Model):
     display_provider_name = fields.Char('Provider', help='Display Provider Name')
 
     adjustment_id = fields.Many2one('tt.adjustment','Adjustment')
+    refund_id = fields.Many2one('tt.refund','Refund')
     reverse_id = fields.Many2one('tt.ledger', 'Reverse')
     is_reversed = fields.Boolean('Already Reversed', default=False)
 
