@@ -640,7 +640,7 @@ class TestSearch(models.Model):
                 self.env['tt.room.date'].sudo().create({
                     'detail_id': detail.id,
                     'date': charge_id['date'],
-                    'sale_price': charge_id['price_currency'],
+                    'sale_price': charge_id['price'], #charge_id['price_currency'],
                     'commission_amount': charge_id['commission'],
                     'meal_type': '',
                 })
