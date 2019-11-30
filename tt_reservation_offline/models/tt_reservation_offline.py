@@ -802,7 +802,7 @@ class IssuedOffline(models.Model):
             res = {
                 'sector_type': self._fields['sector_type'].selection,
                 'transaction_type': [{'code': rec.code, 'name': rec.name} for rec in
-                                     self.env['tt.provider.type'].search([('code', 'in', ['airline', 'activity', 'hotel'])])],
+                                     self.env['tt.provider.type'].search([('code', 'in', ['airline', 'activity', 'hotel', 'train'])])],
                 'carrier_id': [{'code': rec.code, 'name': rec.name, 'icao': rec.icao} for rec in
                                self.env['tt.transport.carrier'].search([])],
                 'social_media_id': [{'name': rec.name} for rec in self.env['res.social.media.type'].search([])],

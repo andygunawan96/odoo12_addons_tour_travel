@@ -242,7 +242,7 @@
             <field name="model">tt.reservation.offline</field>
             <field name="arch" type="xml">
                 <tree>
-                    <button type="object" string="Create Issued Offline" name="create_booking_reservation_offline_api"/>
+<!--                    <button type="object" string="Create Issued Offline" name="create_booking_reservation_offline_api"/>-->
                     <field name="name"/>
                     <field name="provider_type_id"/>
                     <field name="state"/>
