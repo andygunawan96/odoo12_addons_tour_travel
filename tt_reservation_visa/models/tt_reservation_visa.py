@@ -1024,7 +1024,7 @@ class TtVisa(models.Model):
 
             vals = ledger.prepare_vals(self._name, self.id, 'Commission HO : ' + rec.name, rec.name, rec.issued_date,
                                        3, rec.currency_id.id, self.env.user.id, ho_profit, 0)
-            vals = ledger.prepare_vals_for_resv(self, vals)
+            vals = ledger.prepare_vals_for_resv(self, rec.name, vals)
             vals.update({
                 'agent_id': self.env['tt.agent'].sudo().search([('agent_type_id.name', '=', 'HO')], limit=1).id
             })
