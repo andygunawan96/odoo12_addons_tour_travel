@@ -36,7 +36,7 @@ class TtRefundWizard(models.TransientModel):
     notes = fields.Text('Notes')
 
     def submit_refund(self):
-        self.env['tt.refund'].create({
+        refund_obj = self.env['tt.refund'].create({
             'agent_id': self.agent_id.id,
             'customer_parent_id': self.customer_parent_id.id,
             'currency_id': self.currency_id.id,
@@ -46,3 +46,13 @@ class TtRefundWizard(models.TransientModel):
             'res_id': self.res_id,
             'notes': self.notes
         })
+
+        resv_obj = self.env[self.res_model].sudo().browse(int(self.res_id))
+        for rec in resv_obj.provider_booking_ids:
+            if rec.state == 'issued':
+                self.env['tt.provider.refund'].sudo().create({
+                    'name': rec.pnr,
+                    'res_id': rec.id,
+                    'res_model': rec._name,
+                    'refund_id': refund_obj.id,
+                })
