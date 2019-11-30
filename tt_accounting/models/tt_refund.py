@@ -153,6 +153,10 @@ class TtRefund(models.Model):
             **{'refund_id': self.id}
         )
 
+        for rec in self.provider_booking_ids:
+            prov_obj = self.env[rec.res_model].browse(int(rec.res_id))
+            prov_obj.action_refund()
+
         self.write({
             'state': 'validate',
             'approve_uid': self.env.user.id,
