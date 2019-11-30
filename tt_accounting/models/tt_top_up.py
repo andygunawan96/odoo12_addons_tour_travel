@@ -45,7 +45,7 @@ class TtTopUp(models.Model):
                                   default=lambda self: self.env.company_id.currency_id.id, store=True)
     amount = fields.Monetary('Input Amount',readonly=True)
     unique_amount = fields.Monetary('Unique Amount', default=0,
-                                 states={'draft': [('readonly', False)]},
+                                    states={'draft': [('readonly', False)]},
                                     help='''Unique amount for identification agent top-up via wire transfer''')
     fees = fields.Monetary('Fees',  default=0, help='Fees amount; set by the system because depends on the acquirer',readonly=True, states={'draft': [('readonly', False)]})
     total = fields.Monetary('Total', compute='_compute_amount', store=True, readonly=True)
@@ -81,12 +81,12 @@ class TtTopUp(models.Model):
 
     def get_help_by(self):
         return self.validate_uid and self.validate_uid.name or \
-                self.cancel_uid and self.cancel_uid.name or ''
+               self.cancel_uid and self.cancel_uid.name or ''
 
     def action_reject_from_button(self):
         self.action_cancel_top_up({
             'co_uid':self.env.user.id
-       })
+        })
 
     def action_cancel_top_up(self,context):
         self.write({
@@ -203,12 +203,11 @@ class TtTopUp(models.Model):
             elif data['type'] == 'date':
                 dom.append(('due_date','>=',data['date_from']))
                 dom.append(('due_date','<=',data['date_to']))
+                if data.get('state') != 'all':
+                    dom.append(('state', '=', data['state']))
             elif data['type'] == 'state':
-                dom.append(('state','=',data['state']))
-            elif data['type'] == 'state_date':
-                dom.append(('due_date','>=',data['date_from']))
-                dom.append(('due_date','<=',data['date_to']))
-                dom.append(('state', '=', data['state']))
+                if data.get('state') != 'all':
+                    dom.append(('state','=',data['state']))
 
             for rec in self.search(dom):
                 res.append(rec.to_dict())
