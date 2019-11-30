@@ -136,6 +136,39 @@ class ReservationActivity(models.Model):
             rec.total = rec.total_fare + rec.total_tax + rec.total_discount
             rec.total_nta = rec.total - rec.total_commission
 
+    def check_provider_state(self,context,pnr_list=[],hold_date=False,req={}):
+        if all(rec.state == 'booked' for rec in self.provider_booking_ids):
+            # booked
+            pass
+        elif all(rec.state == 'issued' for rec in self.provider_booking_ids):
+            # issued
+            pass
+        elif all(rec.state == 'refund' for rec in self.provider_booking_ids):
+            # refund
+            self.action_refund()
+        elif all(rec.state == 'fail_refunded' for rec in self.provider_booking_ids):
+            self.write({
+                'state':  'fail_refunded',
+                'refund_uid': context['co_uid'],
+                'refund_date': datetime.now()
+            })
+        elif any(rec.state == 'issued' for rec in self.provider_booking_ids):
+            # partial issued
+            self.action_partial_issued_api_activity()
+        elif any(rec.state == 'booked' for rec in self.provider_booking_ids):
+            # partial booked
+            self.action_partial_booked_api_activity(context, pnr_list, hold_date)
+        elif all(rec.state == 'fail_issued' for rec in self.provider_booking_ids):
+            # failed issue
+            self.action_failed_issue()
+        elif all(rec.state == 'fail_booked' for rec in self.provider_booking_ids):
+            # failed book
+            self.action_failed_book()
+        else:
+            # entah status apa
+            _logger.error('Entah status apa')
+            raise RequestException(1006)
+
     def action_booked(self):
         self.write({
             'state': 'booked',
@@ -184,34 +217,44 @@ class ReservationActivity(models.Model):
             'state': 'approved',
             'acceptance_date': datetime.now(),
         })
-        self.message_post(body='Order APPROVED')
 
     def action_rejected(self):
         self.write({
             'state': 'rejected',
             'rejected_date': datetime.now(),
         })
-        self.message_post(body='Order REJECTED')
 
     def action_expired(self):
         self.write({
             'state': 'cancel2',
             'expired_date': datetime.now(),
         })
-        self.message_post(body='Order EXPIRED')
 
-    def action_refunded(self):
+    def action_refund(self):
         self.write({
             'state': 'refund',
             'refund_date': datetime.now(),
+            'refund_uid': self.env.user.id
         })
 
         # todo create refund ledger
         # self._create_refund_ledger_activity()
 
-        self.message_post(body='Order REFUNDED')
+    def action_partial_booked_api_activity(self,context,pnr_list,hold_date):
+        self.write({
+            'state': 'partial_booked',
+            'booked_uid': context['co_uid'],
+            'booked_date': datetime.now(),
+            'hold_date': hold_date,
+            'pnr': ','.join(pnr_list)
+        })
 
-    def action_cancelled(self):
+    def action_partial_issued_api_activity(self):
+        self.write({
+            'state': 'partial_issued'
+        })
+
+    def action_cancel(self):
         for rec in self.invoice_id:
             rec.action_cancel()
         self._create_anti_ledger_activity()
@@ -221,7 +264,6 @@ class ReservationActivity(models.Model):
             'cancelled_date': datetime.now(),
             'cancelled_uid': self.env.user.id
         })
-        self.message_post(body='Order CANCELLED')
 
     def action_failed(self, booking_id, error_msg):
         booking_rec = self.browse(booking_id)
@@ -240,14 +282,12 @@ class ReservationActivity(models.Model):
         self.write({
             'state': 'fail_issued',
         })
-        self.message_post(body='Order FAILED')
         self.send_push_notif('Activity Booking Failed')
 
     def action_issued(self):
         self.write({
             'state': 'issued',
         })
-        self.message_post(body='Order ISSUED')
         self.send_push_notif('Activity Booking Issued')
 
     def call_create_invoice(self, acquirer_id):

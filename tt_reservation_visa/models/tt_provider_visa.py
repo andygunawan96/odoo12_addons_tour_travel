@@ -98,6 +98,10 @@ class TtProviderVisa(models.Model):
     def action_expired(self):
         self.state = 'cancel2'
 
+    def action_refund(self):
+        self.state = 'refund'
+        self.booking_id.check_provider_state({'co_uid': self.env.user.id})
+
     def create_service_charge(self, service_charge_vals):
         service_chg_obj = self.env['tt.service.charge']
         currency_obj = self.env['res.currency']

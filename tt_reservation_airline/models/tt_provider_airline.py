@@ -154,6 +154,10 @@ class TtProviderAirline(models.Model):
     def action_expired(self):
         self.state = 'cancel2'
 
+    def action_refund(self):
+        self.state = 'refund'
+        self.booking_id.check_provider_state({'co_uid': self.env.user.id})
+
     def create_ticket_api(self,passengers,pnr=""):
         ticket_list = []
         ticket_not_found = []

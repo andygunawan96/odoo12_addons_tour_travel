@@ -58,17 +58,44 @@ class TtProviderTour(models.Model):
 
     notes = fields.Text('Notes', readonly=True, states={'draft': [('readonly', False)]})
 
+    def action_reverse_ledger_from_button(self):
+        if self.state == 'fail_refunded':
+            raise UserError("Cannot refund, this PNR has been refunded.")
+
+        # if not self.is_ledger_created:
+        #     raise UserError("This Provider Ledger is not Created.")
+
+        ##fixme salahhh, ini ke reverse semua provider bukan provider ini saja
+        for rec in self.booking_id.ledger_ids:
+            if rec.pnr == self.pnr and not rec.is_reversed:
+                rec.reverse_ledger()
+
+        self.write({
+            'state': 'fail_refunded',
+            # 'is_ledger_created': False,
+            'refund_uid': self.env.user.id,
+            'refund_date': datetime.now()
+        })
+
+        self.booking_id.check_provider_state({'co_uid':self.env.user.id})
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
+
     def action_booked_api_tour(self, provider_data, api_context):
         for rec in self:
             rec.write({
                 'pnr': provider_data['pnr'],
-                'pnr2': provider_data['pnr2'],
                 'state': 'booked',
                 'booked_uid': api_context['co_uid'],
                 'booked_date': fields.Datetime.now(),
-                'hold_date': datetime.strptime(provider_data['hold_date'],"%Y-%m-%d %H:%M:%S"),
-                'balance_due': provider_data['balance_due']
             })
+            for rec2 in rec.cost_service_charge_ids:
+                rec2.sudo().write({
+                    'description': provider_data['pnr']
+                })
 
     def action_issued_api_tour(self,context):
         for rec in self:
@@ -94,6 +121,10 @@ class TtProviderTour(models.Model):
 
     def action_expired(self):
         self.state = 'cancel2'
+
+    def action_refund(self):
+        self.state = 'refund'
+        self.booking_id.check_provider_state({'co_uid': self.env.user.id})
 
     def create_ticket_api(self,passengers):
         ticket_list = []
