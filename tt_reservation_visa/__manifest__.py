@@ -33,6 +33,7 @@
         'data/tt_provider_visa.xml',
         'data/tt_reservation_visa_pricelist.xml',
         'data/tt_master_visa_locations.xml',
+        'data/tt.master.visa.handling.csv',
         'views/tt_reservation_visa_menuheader.xml',
         'views/tt_reservation_visa_views.xml',
         'views/tt_reservation_visa_order_passengers_views.xml',

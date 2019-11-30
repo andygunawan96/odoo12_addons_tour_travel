@@ -38,8 +38,7 @@ class TtVisa(models.Model):
 
     provider_type_id = fields.Many2one('tt.provider.type', required=True, readonly=True,
                                        states={'draft': [('readonly', False)]}, string='Transaction Type',
-                                       default=lambda self: self.env['tt.provider.type'].search([('code', '=', 'visa')],
-                                                                                                limit=1))
+                                       default=lambda self: self.env.ref('tt_reservation_visa.tt_provider_type_visa'))
 
     description = fields.Char('Description', readonly=True, states={'draft': [('readonly', False)]})
     country_id = fields.Many2one('res.country', 'Country', ondelete="cascade", readonly=True,
@@ -72,6 +71,8 @@ class TtVisa(models.Model):
     receipt_number = fields.Char('Reference Number')
     vendor_ids = fields.One2many('tt.reservation.visa.vendor.lines', 'visa_id', 'Expenses')
 
+    document_to_ho_date = fields.Datetime('Document to HO Date', readonly=1)
+
     passenger_ids = fields.One2many('tt.reservation.visa.order.passengers', 'visa_id', 'Visa Order Passengers')
     commercial_state = fields.Char('Payment Status', readonly=1)  # , compute='_compute_commercial_state'
     confirmed_date = fields.Datetime('Confirmed Date', readonly=1)
@@ -99,6 +100,7 @@ class TtVisa(models.Model):
     to_vendor_date = fields.Datetime('Send To Vendor Date', readonly=1)
     vendor_process_date = fields.Datetime('Vendor Process Date', readonly=1)
     in_process_date = fields.Datetime('In Process Date', readonly=1)
+    delivered_date = fields.Datetime('Delivered Date', readonly=1)
 
     contact_ids = fields.One2many('tt.customer', 'visa_id', 'Contacts', readonly=True)
     booker_id = fields.Many2one('tt.customer', 'Booker', ondelete='restrict', readonly=True)
@@ -240,7 +242,8 @@ class TtVisa(models.Model):
             self.calc_visa_vendor()
 
         self.write({
-            'state_visa': 'delivered'
+            'state_visa': 'delivered',
+            'delivered_date': datetime.now()
         })
         self.message_post(body='Order DELIVERED')
 
@@ -402,13 +405,14 @@ class TtVisa(models.Model):
             "nationality_name": "Indonesia",
             "nationality_code": "ID",
             "country_of_issued_code": "",
-            "passport_expdate": "",
-            "passport_number": "",
+            "passport_expdate": "2022-11-10",
+            "passport_number": "0938675340864",
             "passenger_id": "",
             "is_booker": False,
             "is_contact": False,
             "number": 1,
             "master_visa_Id": "17",
+            "notes": "Pax Notes",
             "required": [
                 {
                     "is_original": True,
@@ -433,6 +437,7 @@ class TtVisa(models.Model):
             "is_contact": False,
             "number": 1,
             "master_visa_Id": "17",
+            "notes": "Pax Notes2",
             "required": [
                 {
                     "is_original": True,
@@ -457,6 +462,7 @@ class TtVisa(models.Model):
             "is_contact": False,
             "number": 1,
             "master_visa_Id": "18",
+            "notes": "Pax Notes3",
             "required": [
                 {
                     "is_original": True,
@@ -471,12 +477,12 @@ class TtVisa(models.Model):
         "destination": "United Kingdom",
         "consulate": "Surabaya",
         "departure_date": "2019-10-04",
-        "provider": "skytors_visa"
+        "provider": "visa_rodextrip"
     }
 
     param_context = {
         'co_uid': 66,
-        'co_agent_id': 4
+        'co_agent_id': 2
     }
 
     param_kwargs = {
@@ -495,8 +501,6 @@ class TtVisa(models.Model):
             res_dict = rec.sudo().to_dict()
             print('Res Dict. : ' + str(res_dict))
             passenger = []
-            # contact = []
-            # sale = {}
             type = []
             for idx, pax in enumerate(rec.passenger_ids, 1):
                 requirement = []
@@ -528,29 +532,12 @@ class TtVisa(models.Model):
                             sale['TOTAL'].update({
                                 'currency': ssc.currency_id.name
                             })
-                # for ssc in sale_obj:
-                #     if ssc['charge_code'] == 'rac':
-                #         sale['RAC'] = {
-                #             'charge_code': 'rac',
-                #             'amount': ssc['amount'],
-                #         }
-                #         if ssc['currency_id']:
-                #             sale['RAC'].update({
-                #                 'currency': ssc['currency_id'].name
-                #             })
-                #     else:
-                #         sale[ssc['charge_code'].upper()] = {
-                #             'charge_code': ssc['charge_code'],
-                #             'amount': ssc['amount'],
-                #         }
-                #         if ssc['currency_id']:
-                #             sale[ssc['charge_code'].upper()].update({
-                #                 'currency': ssc['currency_id'].name
-                #             })
                 """ Requirements """
                 for require in pax.to_requirement_ids:
                     requirement.append({
                         'name': require.requirement_id.name,
+                        'is_copy': require.is_copy,
+                        'is_original': require.is_ori
                     })
                 """ Interview """
                 interview_list = []
@@ -582,7 +569,7 @@ class TtVisa(models.Model):
                     'gender': pax.gender,
                     # 'age': pax.passenger_id.age or '',
                     'passport_number': pax.passport_number or '',
-                    'passport_expdate': pax.passport_expdate or '',
+                    'passport_expdate': str(pax.passport_expdate) or '',
                     'visa': {
                         'price': sale,
                         'entry_type': dict(pax.pricelist_id._fields['entry_type'].selection).get(pax.pricelist_id.entry_type),
@@ -604,6 +591,7 @@ class TtVisa(models.Model):
                 })
             res = {
                 'contact': {
+                    'title': res_dict['contact']['title'],
                     'name': res_dict['contact']['name'],
                     'email': res_dict['contact']['email'],
                     'phone': res_dict['contact']['phone']
@@ -618,8 +606,6 @@ class TtVisa(models.Model):
                     'state_visa': dict(rec._fields['state_visa'].selection).get(rec.state_visa)
                 },
                 'passengers': passenger
-                # 'contact': contact,
-                # 'sale_price': sale
             }
         if not res:
             res = Response().get_error(str('Visa Booking not found'), 500)
@@ -642,7 +628,7 @@ class TtVisa(models.Model):
             booker_id = self.create_booker_api(booker, context)
             contact_id = self.create_contact_api(contact[0], booker_id, context)
             passenger_ids = self.create_customer_api(passengers, context, booker_id, contact_id)  # create passenger
-            to_psg_ids = self._create_visa_order(data['passenger'], passenger_ids)  # create visa order
+            to_psg_ids = self._create_visa_order(passengers, passenger_ids)  # create visa order data['passenger']
             pricing = self.create_sale_service_charge_value(passengers, to_psg_ids, context)  # create pricing dict
 
             header_val.update({
@@ -651,7 +637,7 @@ class TtVisa(models.Model):
                 'booker_id': booker_id.id,
                 'contact_title': contact[0]['title'],
                 'contact_id': contact_id.id,
-                'contact_name': contact_id.name,
+                'contact_name': contact[0]['first_name'] + ' ' + contact[0]['last_name'],
                 'contact_email': contact_id.email,
                 'contact_phone': contact_id.phone_ids[0].phone_number,
                 'passenger_ids': [(6, 0, to_psg_ids)],
@@ -665,12 +651,8 @@ class TtVisa(models.Model):
 
             book_obj = self.sudo().create(header_val)
 
-            for psg in book_obj.passenger_ids:
-                for scs in psg.cost_service_charge_ids:
-                    print(scs.read())
-
-            book_obj.action_booked_visa(context)
-            book_obj.hold_date = book_obj.set_expired_date()
+            book_obj.document_to_ho_date = datetime.now() + timedelta(days=1)
+            book_obj.hold_date = datetime.now() + timedelta(days=3)
 
             book_obj.pnr = book_obj.name
 
@@ -710,6 +692,8 @@ class TtVisa(models.Model):
                 'departure_date': search['departure_date']
             }
             provider_visa_obj = book_obj.env['tt.provider.visa'].sudo().create(vals)
+
+            book_obj.action_booked_visa(context)
 
             for psg in book_obj.passenger_ids:
                 vals = {
@@ -795,50 +779,6 @@ class TtVisa(models.Model):
             })
 
     def _update_api_context(self, contact, context):
-        # sementara comment dulu. tunggu sampai ada agent_id di contact
-        # for con in contact:
-        #     sub_agent_id = int(con['agent_id'])
-        #     context['co_uid'] = int(context['co_uid'])
-        #     user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
-        #
-        #     # jika tidak ada is_company_website di context
-        #     if 'is_company_website' not in context:
-        #         context.update({
-        #             'agent_id': user_obj.agent_id.id,
-        #             'sub_agent_id': user_obj.agent_id.id,
-        #             'booker_type': 'FPO',
-        #         })
-        #     # jika is_company_website ada isinya
-        #     elif context['is_company_website']:
-        #         if user_obj.agent_id.agent_type_id.id == 3 or 9:  # 3 : COP | 9 : POR
-        #             # ===== COR/POR User ===== CORPOR LOGIN SENDIRI
-        #             context.update({
-        #                 'agent_id': user_obj.agent_id.parent_agent_id.id,
-        #                 'sub_agent_id': user_obj.agent_id.id,
-        #                 'booker_type': 'COR/POR',
-        #             })
-        #         elif sub_agent_id:
-        #             # ===== COR/POR in Contact ===== DARMO YANG LOGIN
-        #             context.update({
-        #                 'agent_id': user_obj.agent_id.id,
-        #                 'sub_agent_id': sub_agent_id,
-        #                 'booker_type': 'COR/POR',
-        #             })
-        #         else:
-        #             # ===== FPO in Contact =====
-        #             context.update({
-        #                 'agent_id': user_obj.agent_id.id,
-        #                 'sub_agent_id': user_obj.agent_id.id,
-        #                 'booker_type': 'FPO',
-        #             })
-        #     # jika is_company_website tidak ada isinya / kosong
-        #     else:
-        #         context.update({
-        #             'agent_id': user_obj.agent_id.id,
-        #             'sub_agent_id': user_obj.agent_id.id,
-        #             'booker_type': 'FPO',
-        #         })
-        #     return context
         user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
         context.update({
             'agent_id': user_obj.agent_id.id,
@@ -870,9 +810,7 @@ class TtVisa(models.Model):
 
         pricelist_env = self.env['tt.reservation.visa.pricelist'].sudo()
         passenger_env = self.env['tt.reservation.visa.order.passengers']
-        pricing_obj = self.env['tt.pricing.agent'].search([('agent_type_id', '=', self.agent_type_id.id),
-                                                           ('provider_type_id', '=', self.provider_type_id.id)],
-                                                          limit=1)
+        pricing_obj = self.env['tt.pricing.agent'].sudo()
         agent_id = self.env['tt.agent'].search([('id', '=', context['co_agent_id'])])
 
         for idx, psg in enumerate(passenger):
@@ -982,6 +920,9 @@ class TtVisa(models.Model):
                 'title': psg['title'],
                 'pricelist_id': pricelist_id,
                 'passenger_type': psg['pax_type'],
+                'passport_number': psg.get('passport_number'),
+                'passport_expdate': psg.get('passport_expdate'),
+                'notes': psg.get('notes'),
                 # Pada state request, pax akan diberi expired date dg durasi tergantung dari paket visa yang diambil
                 'expired_date': fields.Date.today() + timedelta(days=pricelist_obj.duration),
                 'sequence': int(idx+1)
@@ -1030,16 +971,8 @@ class TtVisa(models.Model):
 
         self._compute_commercial_state()
         for pvdr in self.provider_booking_ids:
-            pvdr.action_booked_api_visa(pvdr.to_dict(), api_context)
+            pvdr.action_booked_api_visa(pvdr.to_dict(), api_context, self.hold_date)
         self.write(vals)
-
-    def set_expired_date(self):
-        for rec in self:
-            hold_date = datetime.now()
-            for psg in rec.passenger_ids:
-                if hold_date < datetime.now() + timedelta(days=psg.pricelist_id.duration):
-                    hold_date = datetime.now() + timedelta(days=psg.pricelist_id.duration)
-            return hold_date
 
     ######################################################################################################
     # LEDGER
@@ -1321,6 +1254,31 @@ class TtVisa(models.Model):
                     'sequence': scs.sequence,
                     'description': scs.description
                 })
+
+    def check_provider_state(self, context, pnr_list=[], hold_date=False, req={}):
+        if all(rec.state == 'booked' for rec in self.provider_booking_ids):
+            # booked
+            self.calculate_service_charge()
+            self.action_booked_api_visa(context, pnr_list, hold_date)
+        elif all(rec.state == 'issued' for rec in self.provider_booking_ids):
+            # issued
+            ##get payment acquirer
+            if req.get('seq_id'):
+                acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', req['seq_id'])])
+                if not acquirer_id:
+                    raise RequestException(1017)
+            else:
+                # raise RequestException(1017)
+                acquirer_id = self.agent_id.default_acquirer_id
+
+            if req.get('member'):
+                customer_parent_id = acquirer_id.agent_id.id
+            else:
+                customer_parent_id = self.agent_id.customer_parent_walkin_id.id
+        else:
+            # entah status apa
+            _logger.error('Entah status apa')
+            raise RequestException(1006)
 
     @api.onchange('state')
     @api.depends('state')

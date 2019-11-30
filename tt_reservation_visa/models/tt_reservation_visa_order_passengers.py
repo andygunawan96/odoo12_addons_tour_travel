@@ -83,7 +83,7 @@ class VisaOrderPassengers(models.Model):
     passenger_type = fields.Selection(PASSENGER_TYPE, 'Pax Type', readonly=1)  # readonly=1
     age = fields.Char('Age', readonly=1, compute="_compute_age", store=True)
     passport_number = fields.Char(string='Passport Number')
-    passport_expdate = fields.Datetime(string='Passport Exp Date')
+    passport_expdate = fields.Date(string='Passport Exp Date')
     passenger_domicile = fields.Char('Domicile', related='passenger_id.domicile', readonly=1)  # readonly=1
     process_status = fields.Selection(PROCESS_STATUS, string='Process Result',
                                       readonly=1)  # readonly=1
