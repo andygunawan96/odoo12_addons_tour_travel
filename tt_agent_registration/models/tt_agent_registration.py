@@ -227,9 +227,7 @@ class AgentRegistration(models.Model):
         return self.env.cr.dictfetchall()
 
     def get_promotions_api(self, context):
-        agent_type_name = context['agent_type']
-        # agent_type_name = 'Agent Citra'
-        agent_type_id = self.env['tt.agent.type'].search([('name', '=', agent_type_name)], limit=1).id
+        agent_type_id = context['agent_type_id']
         promotion_env = self.env['tt.agent.registration.promotion']
         promotion_ids = promotion_env.search([('start_date', '<=', date.today()), ('end_date', '>=', date.today()), ('agent_type_id', '=', agent_type_id)])
 
@@ -249,6 +247,8 @@ class AgentRegistration(models.Model):
             for commission in promotion.agent_type_ids:
                 comm = {
                     'recruited': commission.agent_type_id.name,
+                    'currency_id': self.env.user.company_id.currency_id.name,
+                    'registration_fee': commission.agent_type_id.registration_fee,
                     'discount_type': commission.discount_amount_type,
                     'discount_amount': commission.discount_amount,
                     'lines': []

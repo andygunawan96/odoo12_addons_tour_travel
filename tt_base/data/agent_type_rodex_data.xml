@@ -10,24 +10,28 @@
             <field name="name">Agent Citra</field>
             <field name="code">citra</field>
             <field name="active">True</field>
+            <field name="registration_fee">98000000</field>
             <field name="seq_prefix">CR</field>
         </record>
         <record id="agent_type_japro" model="tt.agent.type">
             <field name="name">Agent JaPro</field>
             <field name="code">japro</field>
             <field name="active">True</field>
+            <field name="registration_fee">2900000</field>
             <field name="seq_prefix">JP</field>
         </record>
         <record id="agent_type_btbo" model="tt.agent.type">
             <field name="name">Agent BTBO</field>
             <field name="code">btbo</field>
             <field name="active">True</field>
+            <field name="registration_fee">0</field>
             <field name="seq_prefix">BO</field>
         </record>
         <record id="agent_type_btbr" model="tt.agent.type">
             <field name="name">Agent BTBR</field>
             <field name="code">btbr</field>
             <field name="active">True</field>
+            <field name="registration_fee">0</field>
             <field name="seq_prefix">BR</field>
         </record>
     </data>

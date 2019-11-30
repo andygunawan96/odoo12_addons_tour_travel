@@ -83,7 +83,7 @@ class AgentRegistrationPromotionAgentType(models.Model):
 
     promotion_id = fields.Many2one('tt.agent.registration.promotion', 'Promotion', readonly=True)
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type')
-    currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.user.company_id)
+    currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.user.company_id.currency_id)
     discount_amount_type = fields.Selection(AMOUNT_TYPE, 'Discount Amount Type')
     discount_amount = fields.Float('Discount Amount')
     preview_price = fields.Monetary('Preview Price', default=0, compute='set_preview_price')

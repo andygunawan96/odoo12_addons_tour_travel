@@ -77,14 +77,14 @@ class TtProviderVisa(models.Model):
 
     passenger_ids = fields.One2many('tt.provider.visa.passengers', 'provider_id', 'Passengers')
 
-    def action_booked_api_visa(self, provider_data, api_context):
+    def action_booked_api_visa(self, provider_data, api_context, hold_date):
         for rec in self:
             rec.write({
                 'pnr': provider_data['pnr'],
                 'state': 'booked',
                 'booked_uid': api_context['co_uid'],
                 'booked_date': fields.Datetime.now(),
-                # 'hold_date': datetime.strptime(provider_data['hold_date'],"%Y-%m-%d %H:%M:%S"),
+                'hold_date': hold_date,
             })
 
     def action_issued_api_visa(self,context):
