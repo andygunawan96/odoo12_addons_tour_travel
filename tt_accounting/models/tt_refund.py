@@ -10,18 +10,11 @@ class TtProviderRefund(models.Model):
     _description = "Provider Refund Model"
 
     name = fields.Char('PNR', readonly=True)
-    refund_id = fields.Many2one('tt.refund', 'Refund')
+    refund_id = fields.Many2one('tt.refund', 'Refund', ondelete='cascade')
     res_model = fields.Char(
         'Related Provider Name', index=True, readonly=True)
     res_id = fields.Integer(
         'Related Provider ID', index=True, readonly=True, help='Id of the followed resource')
-
-    @api.depends('res_model', 'res_id')
-    @api.onchange('res_model', 'res_id')
-    def _compute_name(self):
-        if self.res_model and self.res_id:
-            provider_obj = self.env[self.res_model].sudo().browse(int(self.res_id))
-            self.name = provider_obj and provider_obj.pnr or ''
 
 
 class TtRefund(models.Model):
