@@ -23,6 +23,12 @@ class ErrorApi(models.Model):
         }
         return res
 
+    def get_dict_by_int_code(self):
+        _objects = self.sudo().search([('active', '=', 1)])
+        res = {}
+        [res.update({int(rec.code): rec.to_dict()}) for rec in _objects]
+        return res
+
     def get_dict_by_code(self):
         _objects = self.sudo().search([('active', '=', 1)])
         res = {}

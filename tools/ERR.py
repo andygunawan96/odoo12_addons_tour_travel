@@ -1,14 +1,13 @@
 import json
 from .api import Response
-from .db_connector import BackendConnector as db_con
+from odoo.http import request
 
 
 ERR_CODE = {}
 
 
 def _do_config():
-    _db_con = db_con()
-    data = _db_con.get_error_code_api()['response']
+    data = request.env['tt.error.api'].sudo().get_dict_by_int_code()
     if data:
         [ERR_CODE.update({int(key): val}) for key, val in data.items()]
     return True
