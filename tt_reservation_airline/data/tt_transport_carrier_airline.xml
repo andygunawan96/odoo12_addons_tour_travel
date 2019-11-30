@@ -77,7 +77,7 @@
             <field name="icao">HDA</field>
             <field name="call_sign">DRAGON</field>
             <field name="active">1</field>
-            <field name="provider_ptype_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
 
