@@ -64,6 +64,7 @@
                             <field name="cancel_message"/>
                         </group>
                         <separator string="Provider Bookings"/>
+                        <label for="provider_booking_ids" string="(Only PNRs listed below will be refunded)"/>
                         <field name="provider_booking_ids">
                             <tree>
                                 <field name="name"/>
