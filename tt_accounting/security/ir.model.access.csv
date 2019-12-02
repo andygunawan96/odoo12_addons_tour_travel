@@ -7,3 +7,4 @@ access_tt_top_up_for_agent_user,access_tt_accounting.tt_top_up_for_agent_user,mo
 access_tt_adjustment,access_tt_accounting.tt_adjustment,model_tt_adjustment,,1,1,1,1
 
 access_tt_refund,access_tt_accounting.tt_refund,model_tt_refund,,1,1,1,1
+access_tt_provider_refund,access_tt_accounting.tt_provider_refund,model_tt_provider_refund,,1,1,1,1

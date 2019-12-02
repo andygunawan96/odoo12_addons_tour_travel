@@ -9,7 +9,7 @@
                     <field name="state" widget="statusbar" statusbar_visible="draft,open,on_going,done,closed"/>
                     <button string="Validate" name="action_validate" type="object" attrs="{'invisible': [('state', '!=', 'draft')]}"/>  <!--groups="tt_base.group_tt_tour_travel_manager"-->
                     <button string="Calculate Adjustment" name="action_adjustment" type="object" attrs="{'invisible': [('state', '!=', 'done')]}"/>  <!--groups="tt_base.group_tt_tour_travel_manager"-->
-                    <button string="Cancel" name="action_cancelled" type="object" attrs="{'invisible': [('state', 'not in', ['draft','open'])]}"/>  <!--groups="tt_base.group_tt_tour_travel_operator"-->
+                    <button string="Cancel" name="action_cancel" type="object" attrs="{'invisible': [('state', 'not in', ['draft','open'])]}"/>  <!--groups="tt_base.group_tt_tour_travel_operator"-->
                     <button string="Sold Out" name="action_sold" type="object" attrs="{'invisible': [('state', 'not in', ['draft','open','definite'])]}"/>  <!--groups="tt_base.group_tt_tour_travel_operator"-->
                     <button string="Re-Open" name="action_reopen" type="object" attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>  <!--groups="tt_base.group_tt_tour_travel_manager"-->
                 </header>

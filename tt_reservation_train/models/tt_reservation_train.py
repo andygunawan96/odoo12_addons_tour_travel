@@ -451,7 +451,7 @@ class TtReservationTrain(models.Model):
         # Mengubah mekanisme update booking backend
         journey_dict = provider['journey_dict']
 
-        # create service charge, update seat
+        # create service charge, update seatf
         for idx, journey in enumerate(provider_obj.journey_ids):
             try:
                 param_journey = journey_dict[journey.journey_code]
@@ -548,8 +548,7 @@ class TtReservationTrain(models.Model):
                 'balance_due': provider['balance_due']
             })
             for journey in provider['journeys']:
-                for segment in journey['segments']:
-                    for fare in segment['fares']:
+                    for fare in journey['fares']:
                         provider_obj.create_service_charge(fare['service_charges'])
 
         book_obj = self.get_book_obj(req.get('book_id'),req.get('order_number'))

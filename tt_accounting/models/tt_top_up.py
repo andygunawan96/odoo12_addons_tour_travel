@@ -8,6 +8,19 @@ import json,os
 
 _logger = logging.getLogger(__name__)
 
+TOP_UP_STATE = [("draft", "Draft"),
+                ("request", "Request"),
+                ("valid", "Validated"),
+                ("cancel", "Cancelled"),
+                ("expired","Expired")]
+
+TOP_UP_STATE_STR = {
+    "draft": "Draft",
+    "request": "Request",
+    "valid": "Validated",
+    "cancel": "Cancelled",
+    "expired":"Expired"
+}
 class TtTopUp(models.Model):
     _name = 'tt.top.up'
     _order = 'id desc'
@@ -18,7 +31,7 @@ class TtTopUp(models.Model):
     due_date = fields.Datetime('Due Date', readonly=True)
     agent_id = fields.Many2one('tt.agent', string="Agent", required=True, readonly=True,
                                default=lambda self: self.env.user.agent_id)
-    state = fields.Selection([('draft', 'Draft'), ('request', 'Request'), ('valid', 'Validated'), ('cancel', 'Cancelled'), ('expired','Expired')],
+    state = fields.Selection(TOP_UP_STATE,
                              string='State', default='draft',
                              help='''
                              Draft, new top up
@@ -65,6 +78,10 @@ class TtTopUp(models.Model):
                 'total': tp.amount + tp.unique_amount,
                 'total_with_fees': tp.amount + tp.unique_amount + tp.fees,
             })
+
+    def get_help_by(self):
+        return self.validate_uid and self.validate_uid.name or \
+                self.cancel_uid and self.cancel_uid.name or ''
 
     def action_reject_from_button(self):
         self.action_cancel_top_up({
@@ -119,7 +136,10 @@ class TtTopUp(models.Model):
             'date': self.request_date and self.request_date.strftime('%Y-%m-%d %H:%M:%S') or '',
             'due_date': self.due_date and self.due_date.strftime('%Y-%m-%d %H:%M:%S') or '',
             'total': self.total or '',
-            'state': self.state
+            'state': self.state,
+            'state_description': TOP_UP_STATE_STR[self.state],
+            'payment_method': self.payment_id.acquirer_id.name,
+            'help_by': self.get_help_by()
         }
         return res
 
@@ -170,14 +190,27 @@ class TtTopUp(models.Model):
             _logger.error(str(e) + traceback.format_exc())
             return ERR.get_error(1015)
 
-    def get_top_up_api(self,context):
+    def get_top_up_api(self,data,context):
         try:
+            print(json.dumps(data))
             agent_obj = self.browse(context['co_agent_id'])
             if not agent_obj:
                 raise RequestException(1008)
-
             res = []
-            for rec in self.search([('agent_id','=',agent_obj.id)]):
+            dom = [('agent_id','=',agent_obj.id)]
+            if data['type'] == 'name':
+                dom.append(('name','=',data['name']))
+            elif data['type'] == 'date':
+                dom.append(('due_date','>=',data['date_from']))
+                dom.append(('due_date','<=',data['date_to']))
+            elif data['type'] == 'state':
+                dom.append(('state','=',data['state']))
+            elif data['type'] == 'state_date':
+                dom.append(('due_date','>=',data['date_from']))
+                dom.append(('due_date','<=',data['date_to']))
+                dom.append(('state', '=', data['state']))
+
+            for rec in self.search(dom):
                 res.append(rec.to_dict())
 
             return ERR.get_no_error(res)

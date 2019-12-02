@@ -168,22 +168,23 @@ class AgentRegistration(models.Model):
             raise UserError('Please Input an Address')
 
     def create_registration_documents(self):
-        vals_list = []
-        agent_regis_doc_ids = []
-        doc_type_env = self.env['tt.document.type'].sudo().search([('agent_type_ids', '=', self.agent_type_id.id),
-                                                                   ('document_type', '=', 'registration')])
-        for rec in doc_type_env:
-            vals = {
-                'state': 'draft',
-                'qty': 0,
-                'receive_qty': 0,
-                'document_id': rec.id
-            }
-            agent_regis_doc_obj = self.env['tt.agent.registration.document'].sudo().create(vals)
-            agent_regis_doc_ids.append(agent_regis_doc_obj.id)
-            vals_list.append(vals)
-        self.sudo().registration_document_ids = [(6, 0, agent_regis_doc_ids)]
-        return vals_list
+        for rec in self:
+            vals_list = []
+            agent_regis_doc_ids = []
+            doc_type_env = rec.env['tt.document.type'].sudo().search([('agent_type_ids', '=', rec.agent_type_id.id),
+                                                                       ('document_type', '=', 'registration')])
+            for rec in doc_type_env:
+                vals = {
+                    'state': 'draft',
+                    'qty': 0,
+                    'receive_qty': 0,
+                    'document_id': rec.id
+                }
+                agent_regis_doc_obj = self.env['tt.agent.registration.document'].sudo().create(vals)
+                agent_regis_doc_ids.append(agent_regis_doc_obj.id)
+                vals_list.append(vals)
+            rec.sudo().registration_document_ids = [(6, 0, agent_regis_doc_ids)]
+            return vals_list
 
     def check_registration_documents(self):
         for rec in self.registration_document_ids:
@@ -227,9 +228,7 @@ class AgentRegistration(models.Model):
         return self.env.cr.dictfetchall()
 
     def get_promotions_api(self, context):
-        agent_type_name = context['agent_type']
-        # agent_type_name = 'Agent Citra'
-        agent_type_id = self.env['tt.agent.type'].search([('name', '=', agent_type_name)], limit=1).id
+        agent_type_id = context['agent_type_id']
         promotion_env = self.env['tt.agent.registration.promotion']
         promotion_ids = promotion_env.search([('start_date', '<=', date.today()), ('end_date', '>=', date.today()), ('agent_type_id', '=', agent_type_id)])
 
@@ -249,6 +248,8 @@ class AgentRegistration(models.Model):
             for commission in promotion.agent_type_ids:
                 comm = {
                     'recruited': commission.agent_type_id.name,
+                    'currency_id': self.env.user.company_id.currency_id.name,
+                    'registration_fee': commission.agent_type_id.registration_fee,
                     'discount_type': commission.discount_amount_type,
                     'discount_amount': commission.discount_amount,
                     'lines': []
@@ -790,7 +791,6 @@ class AgentRegistration(models.Model):
                 # contact_ids = self.prepare_contact(pic)
                 agent_registration_customer_ids = self.prepare_customer(pic)
                 address_ids = self.prepare_address(address)
-                regis_doc_ids = self.input_regis_document_data(regis_doc)
                 header.update({
                     'agent_registration_customer_ids': [(6, 0, agent_registration_customer_ids)],
                     'address_ids': [(6, 0, address_ids)],
@@ -798,12 +798,15 @@ class AgentRegistration(models.Model):
                     'registration_fee': agent_type.registration_fee,
                     'registration_date': datetime.now(),
                     'promotion_id': promotion_id,
-                    'registration_document_ids': [(6, 0, regis_doc_ids)],
                     'parent_agent_id': parent_agent_id,
                     'tac': agent_type.terms_and_condition,
                     'create_uid': self.env.user.id
                 })
                 create_obj = self.create(header)
+                regis_doc_ids = create_obj.input_regis_document_data(regis_doc)
+                create_obj.write({
+                    'registration_document_ids': [(6, 0, regis_doc_ids)],
+                })
                 create_obj.get_registration_fee_api()
                 create_obj.compute_total_fee()
                 if not create_obj.registration_num:

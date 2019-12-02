@@ -1764,18 +1764,29 @@ class HotelInformation(models.Model):
 
         fac_list = []
         for img in new_hotel.get('images') or []:
-            new_img_url = 'http' in img and img or 'http://www.sunhotels.net/Sunhotels.net/HotelInfo/hotelImage.aspx' + img + '&full=1'
-            fac_list.append({'name': '', 'url': new_img_url})
+            if isinstance(img, str):
+                new_img_url = 'http' in img and img or 'http://www.sunhotels.net/Sunhotels.net/HotelInfo/hotelImage.aspx' + img + '&full=1'
+                fac_list.append({'name': '', 'url': new_img_url})
+            else:
+                # Digunakan hotel yg bisa dpet nama image nya
+                # Sampai tgl 11-11-2019 yg kyak gini (miki_api) formate sdah bener jadi bisa langsung break
+                # Lek misal formate beda mesti di format ulang
+                fac_list = new_hotel['images']
+                break
         new_hotel['images'] = fac_list
 
         for fac in new_hotel.get('facilities') or []:
-            # if isinstance(fac, dict):
-            #     if not fac.get('facility_name'):
-            #         fac['facility_name'] = fac.pop('name')
-            #     fac_name = fac['facility_name']
-            # else:
-            #     fac_name = fac
-            fac_name = isinstance(fac, dict) and fac['facility_name'] or fac
+            if isinstance(fac, dict):
+                if not fac.get('facility_name'):
+                    fac['facility_name'] = fac.pop('name')
+                fac_name = fac['facility_name']
+            else:
+                fac_name = fac
+                fac = {
+                    'facility_name': fac,
+                    'facility_id': False,
+                }
+            # fac_name = isinstance(fac, dict) and fac['facility_name'] or fac
             facility = self.env['tt.hotel.facility'].search([('name', '=ilike', fac_name)])
             fac['facility_id'] = facility and facility[0].id or False
         return new_hotel
@@ -1925,7 +1936,7 @@ class HotelInformation(models.Model):
         # provider_list = ['hotelspro', 'hotelspro_file', 'fitruums', 'webbeds_pool', 'webbeds_excel_pool',
         #                  'itank', 'quantum', 'quantum_pool', 'mgholiday', 'mg_pool', 'miki_api', 'miki_scrap', 'miki_pool',
         #                  'dida_pool', 'tbo', 'oyo']
-        provider_list = ['miki_api', 'miki_pool']
+        provider_list = ['dida_pool']
 
         need_to_add_list = [['No', 'CityName', 'RodexTrip City_id'] + provider_list + ['Total']]
         new_to_add_list2 = [['Type', 'Name', 'Similar Name']]

@@ -48,6 +48,7 @@
                             <field name="is_reversed"/>
                             <field name="reverse_id"/>
                             <field name="adjustment_id"/>
+                            <field name="refund_id"/>
                         </group>
                     </group>
                     <group>

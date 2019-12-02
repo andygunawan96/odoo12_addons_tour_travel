@@ -3,6 +3,12 @@ from ...tools import variables
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from odoo.exceptions import UserError
+from ...tools import util,variables,ERR
+from ...tools.ERR import RequestException
+import logging
+import traceback
+
+_logger = logging.getLogger(__name__)
 
 
 class TtProviderTour(models.Model):
@@ -52,17 +58,44 @@ class TtProviderTour(models.Model):
 
     notes = fields.Text('Notes', readonly=True, states={'draft': [('readonly', False)]})
 
+    def action_reverse_ledger_from_button(self):
+        if self.state == 'fail_refunded':
+            raise UserError("Cannot refund, this PNR has been refunded.")
+
+        # if not self.is_ledger_created:
+        #     raise UserError("This Provider Ledger is not Created.")
+
+        ##fixme salahhh, ini ke reverse semua provider bukan provider ini saja
+        for rec in self.booking_id.ledger_ids:
+            if rec.pnr == self.pnr and not rec.is_reversed:
+                rec.reverse_ledger()
+
+        self.write({
+            'state': 'fail_refunded',
+            # 'is_ledger_created': False,
+            'refund_uid': self.env.user.id,
+            'refund_date': datetime.now()
+        })
+
+        self.booking_id.check_provider_state({'co_uid':self.env.user.id})
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
+
     def action_booked_api_tour(self, provider_data, api_context):
         for rec in self:
             rec.write({
                 'pnr': provider_data['pnr'],
-                'pnr2': provider_data['pnr2'],
                 'state': 'booked',
                 'booked_uid': api_context['co_uid'],
                 'booked_date': fields.Datetime.now(),
-                'hold_date': datetime.strptime(provider_data['hold_date'],"%Y-%m-%d %H:%M:%S"),
-                'balance_due': provider_data['balance_due']
             })
+            for rec2 in rec.cost_service_charge_ids:
+                rec2.sudo().write({
+                    'description': provider_data['pnr']
+                })
 
     def action_issued_api_tour(self,context):
         for rec in self:
@@ -88,6 +121,10 @@ class TtProviderTour(models.Model):
 
     def action_expired(self):
         self.state = 'cancel2'
+
+    def action_refund(self):
+        self.state = 'refund'
+        self.booking_id.check_provider_state({'co_uid': self.env.user.id})
 
     def create_ticket_api(self,passengers):
         ticket_list = []
@@ -262,41 +299,46 @@ class TtProviderTour(models.Model):
             self.env['tt.ledger'].action_create_ledger(self, issued_uid)
 
     def action_create_installment_ledger(self, issued_uid, payment_rules_id, commission_ledger=False):
-        total_amount = 0
-        payment_rules_obj = self.env['tt.payment.rules'].sudo().browse(int(payment_rules_id))
-        if payment_rules_obj.payment_type == 'amount':
-            total_amount += payment_rules_obj.payment_amount
-        else:
-            total_amount += (payment_rules_obj.payment_percentage / 100) * self.booking_id.total
+        try:
+            total_amount = 0
+            payment_rules_obj = self.env['tt.payment.rules'].sudo().browse(int(payment_rules_id))
+            if payment_rules_obj.payment_type == 'amount':
+                total_amount += payment_rules_obj.payment_amount
+            else:
+                total_amount += (payment_rules_obj.payment_percentage / 100) * self.booking_id.total
 
-        is_enough = self.env['tt.agent'].check_balance_limit_api(self.booking_id.agent_id.id, total_amount)
-        if is_enough['error_code'] != 0:
-            raise UserError(_('Not Enough Balance.'))
+            is_enough = self.env['tt.agent'].check_balance_limit_api(self.booking_id.agent_id.id, total_amount)
+            if is_enough['error_code'] != 0:
+                raise UserError(_('Not Enough Balance.'))
 
-        res_model = self.booking_id._name
-        res_id = self.booking_id.id
-        name = 'Order ' + payment_rules_obj.description + ': ' + self.booking_id.name
-        ref = self.booking_id.name
-        date = datetime.now()+relativedelta(hours=7)
-        currency_id = self.booking_id.currency_id.id
-        ledger_issued_uid = issued_uid
-        agent_id = self.booking_id.agent_id.id
-        customer_parent_id = self.booking_id.customer_parent_id.id
-        description = 'Ledger for ' + str(self.booking_id.name)
-        ledger_type = 2
-        debit = 0
-        credit = total_amount
-        additional_vals = {
-            'pnr': self.booking_id.pnr,
-            'display_provider_name': self.provider_id.name,
-            'provider_type_id': self.provider_id.provider_type_id.id,
-        }
+            res_model = self.booking_id._name
+            res_id = self.booking_id.id
+            name = 'Order ' + payment_rules_obj.description + ': ' + self.booking_id.name
+            ref = self.booking_id.name
+            date = datetime.now()+relativedelta(hours=7)
+            currency_id = self.booking_id.currency_id.id
+            ledger_issued_uid = issued_uid
+            agent_id = self.booking_id.agent_id.id
+            customer_parent_id = self.booking_id.customer_parent_id.id
+            description = 'Ledger for ' + str(self.booking_id.name)
+            ledger_type = 2
+            debit = 0
+            credit = total_amount
+            additional_vals = {
+                'pnr': self.booking_id.pnr,
+                'display_provider_name': self.provider_id.name,
+                'provider_type_id': self.provider_id.provider_type_id.id,
+            }
 
-        self.env['tt.ledger'].create_ledger_vanilla(res_model, res_id, name, ref, date, ledger_type, currency_id,
-                                                    ledger_issued_uid, agent_id, customer_parent_id, debit, credit, description, **additional_vals)
+            self.env['tt.ledger'].create_ledger_vanilla(res_model, res_id, name, ref, date, ledger_type, currency_id,
+                                                        ledger_issued_uid, agent_id, customer_parent_id, debit, credit, description, **additional_vals)
 
-        if commission_ledger:
-            self.env['tt.ledger'].create_commission_ledger(self, issued_uid)
+            if commission_ledger:
+                self.env['tt.ledger'].create_commission_ledger(self, issued_uid)
+            return ERR.get_no_error()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1013)
 
     def to_dict(self):
         journey_list = []

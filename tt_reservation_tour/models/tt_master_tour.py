@@ -72,7 +72,7 @@ class MasterTour(models.Model):
 
     state = fields.Selection([('draft', 'Draft'), ('open', 'Open'), ('definite', 'Definite'), ('sold', 'Sold Out'),
                               ('on_going', 'On Going'), ('done', 'Done'), ('closed', 'Closed'),
-                              ('cancelled', 'Canceled')],
+                              ('cancel', 'Canceled')],
                              'State', copy=False, default='draft', help="draft = tidak tampil di front end"
                                                                         "definite = pasti berangkat"
                                                                         "done = sudah pulang"
@@ -184,8 +184,8 @@ class MasterTour(models.Model):
     def action_definite(self):
         self.state = 'definite'
 
-    def action_cancelled(self):
-        self.state = 'cancelled'
+    def action_cancel(self):
+        self.state = 'cancel'
 
     def action_adjustment(self):
         # Calculate Adjustment

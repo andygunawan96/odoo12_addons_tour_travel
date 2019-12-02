@@ -97,6 +97,7 @@
 <!--                            <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>-->
 <!--                            <field name="refund_id"/>-->
 <!--                            <field name="payment_date" attrs="{'readonly': [('state_visa', '!=', 'in_process')]}"/>-->
+                            <field name="document_to_ho_date"/>
                             <field name="hold_date" widget="date"/>
                             <field name="use_vendor"/>
 <!--                            <field name="state" string="State (debug)"/>  &lt;!&ndash;Debug&ndash;&gt;-->

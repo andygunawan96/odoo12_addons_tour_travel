@@ -12,7 +12,7 @@ tt_activity_booking_option_line_for_all,tt.activity.booking.option.line.for.all,
 tt_master_activity_lines_for_all,tt.master.activity.lines.for.all,model_tt_master_activity_lines,,1,0,0,0
 tt_master_activity_sku_for_all,tt.master.activity.sku.for.all,model_tt_master_activity_sku,,1,0,0,0
 tt_reservation_passenger_activity_for_all,tt.reservation.passenger.activity.for.all,model_tt_reservation_passenger_activity,,1,0,0,0
-tt_provider_activity_for_all,tt.provider.activity.for.all,model_tt_provider_activity,,1,0,0,0
+tt_provider_activity_for_all,tt.provider.activity.for.all,model_tt_provider_activity,,1,1,0,0
 tt_ticket_activity_for_all,tt.ticket.activity.for.all,model_tt_ticket_activity,,1,0,0,0
 tt_reservation_activity_option_for_all,tt.reservation.activity.option.for.all,model_tt_reservation_activity_option,,1,0,0,0
 tt_reservation_passenger_activity_option_for_all,tt.reservation.passenger.activity.option.for.all,model_tt_reservation_passenger_activity_option,,1,0,0,0

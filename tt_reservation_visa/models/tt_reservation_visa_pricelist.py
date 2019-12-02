@@ -51,6 +51,9 @@ class VisaPricelist(models.Model):
 
     requirement_ids = fields.One2many('tt.reservation.visa.requirements', 'pricelist_id', 'Requirements')
 
+    attachments_ids = fields.Many2many('tt.upload.center', 'visa_pricelist_attachment_rel', 'visa_pricelist_id',
+                                       'attachment_id', string='Attachments')
+
     visa_location_ids = fields.Many2many('tt.master.visa.locations', 'tt_master_visa_locations_rel',
                                          'master_visa_location_id', 'pricelist_id', 'Visa Locations')
 
@@ -98,12 +101,18 @@ class VisaPricelist(models.Model):
 
             for idx, rec in enumerate(self.sudo().search([('country_id.name', '=ilike', data['destination']), ('immigration_consulate', '=ilike', data['consulate'])])):
                 requirement = []
+                attachments = []
                 for rec1 in rec.requirement_ids:
                     requirement.append({
                         'name': rec1.type_id.name,
                         'description': rec1.type_id.description,
                         'required': rec1.required,
                         'id': rec1.id
+                    })
+                for attach in rec.attachments_ids:
+                    attachments.append({
+                        'name': attach.file_reference,
+                        'url': attach.url,
                     })
                 list_of_visa.append({
                     'sequence': idx,
@@ -119,6 +128,7 @@ class VisaPricelist(models.Model):
                         'address': rec.description
                     },
                     'requirements': requirement,
+                    'attachments': attachments,
                     'sale_price': {
                         'commission': rec.commission_price,
                         'total_price': rec.sale_price,

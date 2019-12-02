@@ -53,6 +53,14 @@
                             </sheet>
                         </form>
                     </field>
+                    <group string="Attachments">
+                        <field name="attachments_ids">
+                            <tree>
+                                <field name="filename"/>
+                                <field name="url"/>
+                            </tree>
+                        </field>
+                    </group>
                     <notebook colspan="4">
                         <page string="Locations">
                             <field name="visa_location_ids"/>

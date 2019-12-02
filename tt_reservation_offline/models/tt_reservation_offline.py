@@ -148,8 +148,10 @@ class IssuedOffline(models.Model):
     ho_final_amount = fields.Float('HO Amount', readonly=True, compute='compute_final_ho')
     ho_final_ledger_id = fields.Many2one('tt.ledger')
 
-    social_media_id = fields.Many2one('social.media.detail', 'Order From(Media)', readonly=True,
-                                      states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
+    # social_media_id = fields.Many2one('res.social.media.type', 'Order From(Media)', readonly=True,
+    #                                   states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
+    social_media_type = fields.Many2one('res.social.media.type', 'Order From(Media)', readonly=True,
+                                        states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
 
     sale_service_charge_ids = fields.One2many('tt.service.charge', 'booking_offline_id', 'Service Charge',
                                               readonly=True, states={'draft': [('readonly', False)]})
@@ -660,6 +662,7 @@ class IssuedOffline(models.Model):
                 "name": 'Jayakarta Hotel & Resort',
                 "room": 'Deluxe',
                 "meal_type": 'With Breakfast',
+                "pnr": 'OINMDF',
                 "qty": 1,
                 "description": 'Jemput di bandara',
                 "check_in": '2019-10-04',
@@ -669,6 +672,7 @@ class IssuedOffline(models.Model):
                 "name": 'Wina Holiday Villa',
                 "room": 'Superior',
                 "meal_type": 'Room Only',
+                "pnr": '',
                 "qty": 1,
                 "description": 'Jemput di bandara',
                 "check_in": '2019-10-04',
@@ -678,6 +682,7 @@ class IssuedOffline(models.Model):
                 "name": 'Mercure Kuta Beach Bali',
                 "room": 'Deluxe',
                 "meal_type": 'Breakfast + Dinner',
+                "pnr": '',
                 "qty": 1,
                 "description": 'Jemput di bandara',
                 "check_in": '2019-10-04',
@@ -687,6 +692,7 @@ class IssuedOffline(models.Model):
                 "name": 'Harris Resort Kuta Beach Bali',
                 "room": 'Presidential',
                 "meal_type": '',
+                "pnr": '',
                 "qty": 1,
                 "description": 'Jemput di bandara',
                 "check_in": '2019-10-04',
@@ -796,10 +802,10 @@ class IssuedOffline(models.Model):
             res = {
                 'sector_type': self._fields['sector_type'].selection,
                 'transaction_type': [{'code': rec.code, 'name': rec.name} for rec in
-                                     self.env['tt.provider.type'].search([])],
+                                     self.env['tt.provider.type'].search([('code', 'in', ['airline', 'activity', 'hotel', 'train'])])],
                 'carrier_id': [{'code': rec.code, 'name': rec.name, 'icao': rec.icao} for rec in
                                self.env['tt.transport.carrier'].search([])],
-                'social_media_id': [{'name': rec.name} for rec in self.env['social.media.detail'].search([])],
+                'social_media_id': [{'name': rec.name} for rec in self.env['res.social.media.type'].search([])],
             }
             res = Response().get_no_error(res)
         except Exception as e:
@@ -841,7 +847,7 @@ class IssuedOffline(models.Model):
                                         .search([('code', '=', data_reservation_offline.get('type'))], limit=1).id,
                 'description': data_reservation_offline.get('desc'),
                 'total': data_reservation_offline['total_sale_price'],
-                "social_media_id": self._get_social_media_id_by_name(data_reservation_offline.get('social_media_id')),
+                "social_media_type": self._get_social_media_id_by_name(data_reservation_offline.get('social_media_id')),
                 "expired_date": data_reservation_offline.get('expired_date'),
                 'state': 'confirm',
                 'agent_id': context['co_agent_id'],
@@ -904,6 +910,7 @@ class IssuedOffline(models.Model):
                 print('Destination: ' + str(destination_env.search([('code', '=', line.get('destination'))], limit=1).name))
                 print('Carrier : ' + str(provider_env.search([('name', '=', line.get('provider'))], limit=1).name))
                 line_tmp = {
+                    "pnr": line.get('pnr'),
                     "origin_id": destination_env.search([('code', '=', line.get('origin'))], limit=1).id,
                     "destination_id": destination_env.search([('code', '=', line.get('destination'))], limit=1).id,
                     "provider": line.get('provider'),
@@ -920,6 +927,7 @@ class IssuedOffline(models.Model):
         elif provider_type == 'hotel':
             for line in lines:
                 line_tmp = {
+                    "pnr": line.get('pnr'),
                     "hotel_name": line.get('name'),
                     "room": line.get('room'),
                     "meal_type": line.get('meal_type'),
@@ -933,6 +941,7 @@ class IssuedOffline(models.Model):
         elif provider_type == 'activity':
             for line in lines:
                 line_tmp = {
+                    "pnr": line.get('pnr'),
                     "activity_name": line.get('name'),
                     "activity_package": line.get('activity_package'),
                     "qty": int(line.get('qty')),
@@ -958,7 +967,7 @@ class IssuedOffline(models.Model):
         return iss_off_pas_list
 
     def _get_social_media_id_by_name(self, name):
-        social_media_id = self.env['social.media.detail'].search([('name', '=', name)], limit=1).id
+        social_media_id = self.env['res.social.media.type'].search([('name', '=', name)], limit=1).id
         return social_media_id
 
     def confirm_api(self, id):

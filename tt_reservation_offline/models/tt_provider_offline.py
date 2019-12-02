@@ -51,6 +51,10 @@ class ProviderOffline(models.Model):
 
     notes = fields.Text('Notes', readonly=True, states={'draft': [('readonly', False)]})
 
+    def action_refund(self):
+        self.state = 'refund'
+        self.booking_id.check_provider_state({'co_uid': self.env.user.id})
+
     def action_confirm(self):
         for rec in self:
             rec.write({
