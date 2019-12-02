@@ -49,44 +49,71 @@ class ReservationTour(models.Model):
     payment_method = fields.Selection(PAYMENT_METHOD, 'Payment Method')
     installment_invoice_ids = fields.One2many('tt.installment.invoice', 'booking_id', 'Installments')
 
+    def check_provider_state(self,context,pnr_list=[],hold_date=False,req={}):
+        if all(rec.state == 'booked' for rec in self.provider_booking_ids):
+            # booked
+            pass
+        elif all(rec.state == 'issued' for rec in self.provider_booking_ids):
+            # issued
+            pass
+        elif all(rec.state == 'refund' for rec in self.provider_booking_ids):
+            # refund
+            self.action_refund()
+        elif all(rec.state == 'fail_refunded' for rec in self.provider_booking_ids):
+            self.write({
+                'state':  'fail_refunded',
+                'refund_uid': context['co_uid'],
+                'refund_date': datetime.now()
+            })
+        elif any(rec.state == 'issued' for rec in self.provider_booking_ids):
+            # partial issued
+            self.action_partial_issued_api_tour()
+        elif any(rec.state == 'booked' for rec in self.provider_booking_ids):
+            # partial booked
+            self.action_partial_booked_api_tour(context, pnr_list, hold_date)
+        elif all(rec.state == 'fail_issued' for rec in self.provider_booking_ids):
+            # failed issue
+            self.action_failed_issue()
+        elif all(rec.state == 'fail_booked' for rec in self.provider_booking_ids):
+            # failed book
+            self.action_failed_book()
+        else:
+            # entah status apa
+            _logger.error('Entah status apa')
+            raise RequestException(1006)
+
     def action_issued_tour(self, pay_method=None, api_context=None):
         if not pay_method:
             pay_method = self.payment_method and self.payment_method or 'full'
         if not api_context:  # Jika dari call from backend
             api_context = {
-                'co_uid': self.env.user.id
+                'co_uid': self.env.user.id,
+                'signature': ''
             }
         if not api_context.get('co_uid'):
             api_context.update({
                 'co_uid': self.env.user.id
             })
+        if not api_context.get('signature'):
+            api_context.update({
+                'signature': ''
+            })
 
         if self.state != 'issued':
+            for rec in self.provider_booking_ids:
+                rec.action_create_ledger(api_context['co_uid'], pay_method)
+                rec.action_issued_api_tour(api_context)
             self.write({
                 'state': 'issued',
                 'issued_date': datetime.now(),
                 'issued_uid': api_context['co_uid'] or self.env.user.id,
             })
-            for rec in self.provider_booking_ids:
-                rec.action_create_ledger(self.env.user.id, pay_method)
 
     def call_create_invoice(self, acquirer_id, payment_method):
         _logger.info('Creating Invoice for ' + self.name)
 
-    def update_pnr_data(self, book_id, pnr):
-        provider_objs = self.env['tt.provider.tour'].search([('booking_id', '=', book_id)])
-        for rec in provider_objs:
-            rec.sudo().write({
-                'pnr': pnr
-            })
-            cost_service_charges = self.env['tt.service.charge'].search([('provider_tour_booking_id', '=', rec.id)])
-            for rec2 in cost_service_charges:
-                rec2.sudo().write({
-                    'description': pnr
-                })
-
     def action_reissued(self):
-        pax_amount = sum(1 for temp in self.line_ids if temp.pax_type != 'INF')
+        pax_amount = sum(1 for temp in self.passenger_ids if temp.pax_type != 'INF')
         if (self.tour_id.seat - pax_amount) >= 0:
             self.write({
                 'state': 'issued',
@@ -106,13 +133,29 @@ class ReservationTour(models.Model):
         })
         # self.message_post(body='Order REFUNDED')
 
-        pax_amount = sum(1 for temp in self.line_ids if temp.pax_type != 'INF')
-        self.tour_id.seat += pax_amount
+        pax_amount = sum(1 for temp in self.passenger_ids if temp.pax_type != 'INF')
+        temp_seat = self.tour_id.seat
+        temp_seat += pax_amount
         if self.tour_id.seat > self.tour_id.quota:
-            self.tour_id.seat = self.tour_id.quota
-        self.tour_id.state = 'open'
+            temp_seat = self.tour_id.quota
+        self.tour_id.sudo().write({
+            'seat': temp_seat,
+            'state': 'open'
+        })
 
-        print('state : ' + self.state)
+    def action_partial_booked_api_tour(self,context,pnr_list,hold_date):
+        self.write({
+            'state': 'partial_booked',
+            'booked_uid': context['co_uid'],
+            'booked_date': datetime.now(),
+            'hold_date': hold_date,
+            'pnr': ','.join(pnr_list)
+        })
+
+    def action_partial_issued_api_tour(self):
+        self.write({
+            'state': 'partial_issued'
+        })
 
     def action_cancel(self):
         self.write({
@@ -123,11 +166,15 @@ class ReservationTour(models.Model):
         # self.message_post(body='Order CANCELED')
 
         if self.state != 'refund':
-            pax_amount = sum(1 for temp in self.line_ids if temp.pax_type != 'INF')
-            self.tour_id.seat += pax_amount
+            pax_amount = sum(1 for temp in self.passenger_ids if temp.pax_type != 'INF')
+            temp_seat = self.tour_id.seat
+            temp_seat += pax_amount
             if self.tour_id.seat > self.tour_id.quota:
-                self.tour_id.seat = self.tour_id.quota
-            self.tour_id.state = 'open'
+                temp_seat = self.tour_id.quota
+            self.tour_id.sudo().write({
+                'seat': temp_seat,
+                'state': 'open'
+            })
 
         for rec in self.tour_id.passengers_ids:
             if rec.tour_id.id == self.id:
@@ -154,13 +201,23 @@ class ReservationTour(models.Model):
                 'hold_date': datetime.now() + relativedelta(days=1),
             })
 
-        # Kurangi seat sejumlah pax_amount, lalu cek sisa kuota tour
-        pax_amount = sum(1 for temp in self.passenger_ids if temp.pax_type != 'INF')  # jumlah orang yang di book
-        self.tour_id.seat -= pax_amount  # seat tersisa dikurangi jumlah orang yang di book
-        if self.tour_id.seat <= int(0.2 * self.tour_id.quota):
-            self.tour_id.state = 'definite'  # pasti berangkat jika kuota >=80%
-        if self.tour_id.seat == 0:
-            self.tour_id.state = 'sold'  # kuota habis
+            # Kurangi seat sejumlah pax_amount, lalu cek sisa kuota tour
+            pax_amount = sum(1 for temp in self.passenger_ids if temp.pax_type != 'INF')  # jumlah orang yang di book
+            temp_seat = self.tour_id.seat
+            temp_seat -= pax_amount  # seat tersisa dikurangi jumlah orang yang di book
+            temp_state = ''
+            if temp_seat <= int(0.2 * self.tour_id.quota):
+                temp_state = 'definite'  # pasti berangkat jika kuota >=80%
+            if temp_seat == 0:
+                temp_state = 'sold'  # kuota habis
+            write_vals = {
+                'seat': temp_seat
+            }
+            if temp_state:
+                write_vals.update({
+                    'state': temp_state
+                })
+            self.tour_id.sudo().write(write_vals)
 
     def action_cancel_by_manager(self):
         self.action_refund()
@@ -308,8 +365,6 @@ class ReservationTour(models.Model):
                         'booking_id': booking_obj.id
                     })
                     self.env['tt.reservation.tour.room'].sudo().create(room)
-
-                booking_obj.action_booked_tour(context)
 
                 provider_tour_vals = {
                     'booking_id': booking_obj.id,
@@ -520,6 +575,7 @@ class ReservationTour(models.Model):
         try:
             book_objs = self.env['tt.reservation.tour'].sudo().search([('name', '=', data['order_number'])])
             book_obj = book_objs[0]
+            book_obj.action_booked_tour(context)
             write_vals = {
                 'sid_booked': context.get('sid') and context['sid'] or '',
             }
@@ -529,8 +585,9 @@ class ReservationTour(models.Model):
                     'pnr': book_info.get('pnr') and book_info['pnr'] or ''
                 })
 
+            for rec in book_obj.provider_booking_ids:
+                rec.action_booked_api_tour(book_info, context)
             book_obj.sudo().write(write_vals)
-            book_obj.update_pnr_data(book_obj.id, book_info['pnr'])
             book_obj.calculate_service_charge()
             self.env.cr.commit()
 

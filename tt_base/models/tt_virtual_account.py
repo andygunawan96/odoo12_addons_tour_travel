@@ -19,8 +19,5 @@ class VirtualAccount(models.Model):
 
     @api.model
     def create(self, vals_list):
-        if len(vals_list) <= 0:
-            return self.search([], limit=1)
-        vals_list['virtual_account_number'] = ''
         vals_list['seq_id'] = self.env['ir.sequence'].next_by_code('tt.virtual.account')
         return super(VirtualAccount, self).create(vals_list)

@@ -46,6 +46,10 @@ class TransportBookingProvider(models.Model):
     is_ledger_created = fields.Boolean('Ledger Created', default=False, readonly=True, states={'draft': [('readonly', False)]})
     notes = fields.Text('Notes', readonly=True, states={'draft': [('readonly', False)]})
 
+    def action_refund(self):
+        self.state = 'refund'
+        self.booking_id.action_check_provider_state()
+
     def action_booked(self, pnr, api_context):
         for rec in self:
             rec.write({

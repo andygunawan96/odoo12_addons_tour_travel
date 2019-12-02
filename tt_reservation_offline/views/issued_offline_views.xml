@@ -84,7 +84,7 @@
                         <button string="Cancel" name="action_cancel" type="object" states="draft"/>
 <!--                        <button string="Print Invoice" name="print_invoice" type="object" states="paid,posted"/>-->
 <!--                        <button string="Print Invoice Ticket" name="print_invoice_ticket" type="object" states="paid,posted"/>-->
-<!--                        <button string="Duplicate REC" name="randomizer_rec" type="object"/>-->
+                        <button string="Get Config API" name="get_config_api" type="object"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,confirm,sent,paid,posted"/>
                     </header>
                     <sheet>
@@ -122,7 +122,7 @@
 <!--                                <field name="provider" required="1"/>-->
                                 <field name="person" invisible="1"/>
                                 <field name="segment" invisible="1"/>
-                                <field name="social_media_id" attrs="{'required': [('state', '=', 'confirm')]}"/>
+                                <field name="social_media_type" attrs="{'required': [('state', '=', 'confirm')]}"/>
                                 <field name="expired_date" required="1"/>
                                 <field name="currency_id" invisible="1"/>
                                 <label for="create_uid" string="Created"/>
@@ -242,7 +242,7 @@
             <field name="model">tt.reservation.offline</field>
             <field name="arch" type="xml">
                 <tree>
-                    <button type="object" string="Create Issued Offline" name="create_booking_reservation_offline_api"/>
+<!--                    <button type="object" string="Create Issued Offline" name="create_booking_reservation_offline_api"/>-->
                     <field name="name"/>
                     <field name="provider_type_id"/>
                     <field name="state"/>
