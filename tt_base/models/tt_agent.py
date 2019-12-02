@@ -311,18 +311,40 @@ class TtAgent(models.Model):
             else:
                 types = variables.PROVIDER_TYPE
 
+            dom = [('agent_id', '=', agent_obj.id)]
+            if req['type'] == 'name':
+                dom.append(('name', '=', req['name']))
+            elif req['type'] == 'pnr':
+                dom.append(('pnr','ilike',req['pnr']))
+            elif req['type'] == 'booker':
+                dom.append(('booker_id.name','ilike',req['booker_name']))
+            elif req['type'] == 'date':
+                dom.append(('booked_date', '>=', req['date_from']))
+                dom.append(('booked_date', '<=', req['date_to']))
+                if req.get('state') != 'all':
+                    dom.append(('state', '=', req['state']))
+            elif req['type'] == 'state':
+                if req.get('state') != 'all':
+                    dom.append(('state', '=', req['state']))
+
             res_dict = {}
             for type in types:
-                if util.get_without_empty(req,'order_or_pnr'):
-                    list_obj = self.env['tt.reservation.%s' % (type)].search(['|',('name','=',req['order_or_pnr']),
-                                                                              ('pnr', '=', req['order_or_pnr']),
-                                                                              ('agent_id','=',context['co_agent_id'])],
-                                                                             order='create_date desc')
+                # if util.get_without_empty(req,'order_or_pnr'):
+                #     list_obj = self.env['tt.reservation.%s' % (type)].search(['|',('name','=',req['order_or_pnr']),
+                #                                                               ('pnr', '=', req['order_or_pnr']),
+                #                                                               ('agent_id','=',context['co_agent_id'])],
+                #                                                              order='create_date desc')
+                # else:
+                #     list_obj = self.env['tt.reservation.%s' % (type)].search([('agent_id','=',context['co_agent_id'])],
+                #                                               offset=req['minimum'],
+                #                                               limit=req['maximum']-req['minimum'],
+                #                                             order='create_date desc')
+                if len(dom) > 1:
+                    list_obj = self.env['tt.reservation.%s'% (type)].search(dom,order='create_date desc')
                 else:
-                    list_obj = self.env['tt.reservation.%s' % (type)].search([('agent_id','=',context['co_agent_id'])],
-                                                              offset=req['minimum'],
-                                                              limit=req['maximum']-req['minimum'],
-                                                            order='create_date desc')
+                    list_obj = self.env['tt.reservation.%s'% (type)].search(dom,order='create_date desc',
+                                                                        offset=req['minimum'],
+                                                                        limit=req['maximum']-req['minimum'])
                 if len(list_obj.ids)>0:
                     res_dict[type] = []
                 for rec in list_obj:

@@ -59,8 +59,8 @@ class TtTopUp(models.Model):
     # payment_acquirer_id = fields.Many2one('payment.acquirer','Payment Type')
     request_uid = fields.Many2one('res.users','Request By')
     request_date = fields.Datetime('Request Date')
-    approve_uid = fields.Many2one('res.users','Validate By')
-    approve_date = fields.Datetime('Validate Date')
+    approve_uid = fields.Many2one('res.users','Approve By')
+    approve_date = fields.Datetime('Approve Date')
     cancel_uid = fields.Many2one('res.users', 'Cancel By')
     cancel_date = fields.Datetime('Cancel Date')
 

@@ -77,11 +77,11 @@ class PaymentTransaction(models.Model):
 
     # Tambahan
     confirm_uid = fields.Many2one('res.users', 'Confirm by',readonly=True)
-    confirm_date = fields.Datetime('Confirm on',readonly=True)
+    confirm_date = fields.Datetime('Confirm Date',readonly=True)
     validate_uid = fields.Many2one('res.users', 'Validate by',readonly=True)
-    validate_date = fields.Datetime('Validate on',readonly=True)
-    approve_uid = fields.Many2one('res.users', 'Validate by',readonly=True)
-    approve_date = fields.Datetime('Validate on',readonly=True)
+    validate_date = fields.Datetime('Validate Date',readonly=True)
+    approve_uid = fields.Many2one('res.users', 'Approve by',readonly=True)
+    approve_date = fields.Datetime('Approve Date',readonly=True)
     cancel_uid = fields.Many2one('res.users', 'Cancel By',readonly=True)
     cancel_date = fields.Datetime('Cancel Date',readonly=True)
     reference = fields.Char('Validate Ref.', help='Transaction Reference / Approval number',states={'validated': [('readonly', True)]})
@@ -148,7 +148,11 @@ class PaymentTransaction(models.Model):
                 if ({self.env.ref('tt_base.group_tt_tour_travel_operator').id,
                       self.env.ref('tt_base.group_tt_accounting_operator').id}.intersection(set(self.env.user.groups_id.ids))):
                     self.top_up_id.action_validate_top_up(self.total_amount)
-                    self.state = 'validated'
+                    self.write({
+                        'state': 'validated',
+                        'validate_uid': self.env.user.id,
+                        'validate_date': datetime.datetime.now()
+                    })
                 else:
                     raise exceptions.UserError('No permission to validate Top Up.')
             else:
@@ -166,7 +170,11 @@ class PaymentTransaction(models.Model):
                 if self.top_up_id.total_with_fees != self.real_total_amount and datetime.datetime.now().day == self.create_date.day:
                     raise exceptions.UserError('Cannot change, have to wait 1 day.')
                 self.top_up_id.action_approve_top_up()
-                self.state = 'approved'
+                self.write({
+                    'state': 'approved',
+                    'validate_uid': self.env.user.id,
+                    'validate_date': datetime.datetime.now()
+                })
             else:
                 raise exceptions.UserError('No permission to approve Top Up.')
         else:
