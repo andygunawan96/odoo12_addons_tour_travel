@@ -239,7 +239,7 @@ class TtAgent(models.Model):
 
     def generate_va_number(self):
         if len(self.virtual_ids) == 0:
-            if self.phone_ids:
+            for phone in self.phone_ids:
                 data = {
                     'number': self.phone_ids[0].calling_number[-8:],
                     'email': self.email,
@@ -255,6 +255,7 @@ class TtAgent(models.Model):
                         })
                 # res = self.env['tt.payment.api.con'].delete_VA(data)
                 # res = self.env['tt.payment.api.con'].merchant_info(data)
+                break
             pass
         else:
             UserError(_("Already set VA number for this agent!"))
