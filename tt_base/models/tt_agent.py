@@ -255,7 +255,6 @@ class TtAgent(models.Model):
                         })
                 # res = self.env['tt.payment.api.con'].delete_VA(data)
                 # res = self.env['tt.payment.api.con'].merchant_info(data)
-                break
             pass
         else:
             UserError(_("Already set VA number for this agent!"))
