@@ -15,4 +15,22 @@ class TtPaymentApiCon(models.Model):
             'email': req['email'],
             'provider': 'espay'
         }
-        return self._send_request('%s/payment' % (self.url), data,'set_va')
+        return self.send_request_to_gateway('%s/payment' % (self.url), data, 'set_va')
+
+    def delete_VA(self, req):
+        data = {
+            'phone_number': req['number'],
+            'name': req['name'],
+            'email': req['email'],
+            'provider': 'espay'
+        }
+        return self.send_request_to_gateway('%s/payment' % (self.url), data, 'delete_va')
+
+    def merchant_info(self, req):
+        data = {
+            'phone_number': req['number'],
+            'name': req['name'],
+            'email': req['email'],
+            'provider': 'espay'
+        }
+        return self.send_request_to_gateway('%s/payment' % (self.url), data, 'merchant_info')

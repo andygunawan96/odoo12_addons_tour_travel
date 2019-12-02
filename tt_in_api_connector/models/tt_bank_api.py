@@ -13,7 +13,7 @@ class TtBankApiCon(models.Model):
             'account_number': req['account_number'], # '511.01.50000'
             'provider': req['provider'] #'bca'
         }
-        return self.send_request_to_gateway('%s/bank' % (self.url),{data},'get_balance')
+        return self.send_request_to_gateway('%s/bank' % (self.url), data,'get_balance')
 
     def get_transaction(self,req):
 

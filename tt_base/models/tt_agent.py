@@ -235,12 +235,34 @@ class TtAgent(models.Model):
         if len(self.virtual_ids) == 0:
             for phone in self.phone_ids:
                 data = {
-                    'number': self.phone_ids[0].calling_number[:9],
+                    'number': self.phone_ids[0].calling_number[-8:],
                     'email': self.email,
                     'name': self.name
                 }
                 res = self.env['tt.payment.api.con'].set_VA(data)
+                if res['error_code'] == 0:
+                    for rec in res['response']:
+                        self.env['tt.virtual.account'].create({
+                            'agent_id': self.id,
+                            'bank_id': self.env['tt.bank'].search([('name', '=ilike', rec['bank'])], limit=1).id,
+                            'virtual_account_number': rec['number']
+                        })
+                # res = self.env['tt.payment.api.con'].delete_VA(data)
+                # res = self.env['tt.payment.api.con'].merchant_info(data)
                 break
+            pass
+        else:
+            UserError(_("Already set VA number for this agent!"))
+
+    def delete_va_number(self):
+        if len(self.virtual_ids) == 0:
+            for phone in self.phone_ids:
+                data = {
+                    'number': self.phone_ids[0].calling_number[-8:],
+                    'email': self.email,
+                    'name': self.name
+                }
+                res = self.env['tt.payment.api.con'].delete_VA(data)
                 if res['error_code'] == 0:
                     break
             pass
