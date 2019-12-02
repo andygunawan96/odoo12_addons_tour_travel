@@ -29,6 +29,7 @@ class PaymentTransaction(models.Model):
                               ('confirm','Confirm'),
                               ('validated','Validated by Operator'),
                               ('validated2','Validated by Supervisor'),
+                              ('approved','Approved'),
                               ('cancel','Cancelled')], 'State', default='draft', help='Draft: New payment can be edited,'
                                                                                       'Confirm: Agent Confirmed the payment'                                                                                  'Validate by Operator'
                                                                                       'Validate by Supervisor')
@@ -79,6 +80,8 @@ class PaymentTransaction(models.Model):
     confirm_date = fields.Datetime('Confirm on',readonly=True)
     validate_uid = fields.Many2one('res.users', 'Validate by',readonly=True)
     validate_date = fields.Datetime('Validate on',readonly=True)
+    approve_uid = fields.Many2one('res.users', 'Validate by',readonly=True)
+    approve_date = fields.Datetime('Validate on',readonly=True)
     cancel_uid = fields.Many2one('res.users', 'Cancel By',readonly=True)
     cancel_date = fields.Datetime('Cancel Date',readonly=True)
     reference = fields.Char('Validate Ref.', help='Transaction Reference / Approval number',states={'validated': [('readonly', True)]})
@@ -104,12 +107,12 @@ class PaymentTransaction(models.Model):
             'state': 'confirm'
         })
 
-    @api.onchange('real_total_amount','acquirer_id')
-    def _onchange_adj_validator(self):
-        print('onchange')
-        if self.create_date:
-            if datetime.datetime.now().day == self.create_date.day:
-                raise exceptions.UserError('Cannot change, have to wait 1 day.')
+    # @api.onchange('real_total_amount','acquirer_id')
+    # def _onchange_adj_validator(self):
+    #     print('onchange')
+    #     if self.create_date:
+    #         if datetime.datetime.now().day == self.create_date.day:
+    #             raise exceptions.UserError('Cannot change, have to wait 1 day.')
 
     @api.multi
     def compute_available_amount(self):
@@ -152,6 +155,22 @@ class PaymentTransaction(models.Model):
                 self.state = 'validated'
         else:
             raise exceptions.UserError('Please write down the payment reference and payment date.')
+
+    def action_approve_from_button(self):
+        if self.state != 'validated':
+            raise exceptions.UserError('Can only validate [Validated] state Payment.')
+        if self.top_up_id:
+            if ({self.env.ref('tt_base.group_tt_tour_travel_operator').id,
+                 self.env.ref('tt_base.group_tt_accounting_operator').id}.intersection(
+                set(self.env.user.groups_id.ids))):
+                if self.top_up_id.total_with_fees != self.real_total_amount and datetime.datetime.now().day == self.create_date.day:
+                    raise exceptions.UserError('Cannot change, have to wait 1 day.')
+                self.top_up_id.action_approve_top_up()
+                self.state = 'approved'
+            else:
+                raise exceptions.UserError('No permission to approve Top Up.')
+        else:
+            self.state = 'approved'
 
     def action_cancel_payment(self,context):
         if self.state != 'confirm':

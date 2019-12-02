@@ -204,8 +204,14 @@ class TtAgent(models.Model):
             raise UserError('Can only check 1 agent each time got ' + str(len(self._ids)) + ' Records instead')
         return self.balance >= amount
 
+
     def check_balance_limit_api(self, agent_id, amount):
-        partner_obj = self.env['tt.agent'].browse(agent_id)
+        partner_obj = self.env['tt.agent']
+        if type(agent_id) == int:
+            partner_obj = self.env['tt.agent'].browse(agent_id)
+        elif type(agent_id) == str:
+            partner_obj = self.env['tt.agent'].search([('seq_id','=',agent_id)],limit=1)
+
         if not partner_obj:
             return ERR.get_error(1008)
         if not partner_obj.check_balance_limit(amount):
@@ -274,25 +280,30 @@ class TtAgent(models.Model):
 
             req_provider = util.get_without_empty(req,'provider_type')
 
-            if req_provider and req_provider in variables.PROVIDER_TYPE:
-                types = req['provider_type']
+            if req_provider:
+                if (all(rec in variables.PROVIDER_TYPE for rec in req_provider)):
+                    types = req['provider_type']
+                else:
+                    raise Exception("Wrong provider type")
             else:
                 types = variables.PROVIDER_TYPE
 
-            res_list = []
+            res_dict = {}
             for type in types:
                 if util.get_without_empty(req,'order_or_pnr'):
                     list_obj = self.env['tt.reservation.%s' % (type)].search(['|',('name','=',req['order_or_pnr']),
                                                                               ('pnr', '=', req['order_or_pnr']),
                                                                               ('agent_id','=',context['co_agent_id'])],
-                                                                             order='create_date')
+                                                                             order='create_date desc')
                 else:
                     list_obj = self.env['tt.reservation.%s' % (type)].search([('agent_id','=',context['co_agent_id'])],
-                                                              # offset=req['minimum'],
-                                                              # limit=req['maximum']-req['minimum'],
+                                                              offset=req['minimum'],
+                                                              limit=req['maximum']-req['minimum'],
                                                             order='create_date desc')
+                if len(list_obj.ids)>0:
+                    res_dict[type] = []
                 for rec in list_obj:
-                    res_list.append({
+                    res_dict[type].append({
                         'order_number': rec.name,
                         'booked_date': rec.booked_date and rec.booked_date.strftime('%Y-%m-%d %H:%M:%S') or '',
                         'booked_uid': rec.booked_uid and rec.booked_uid.name or '',
@@ -307,13 +318,13 @@ class TtAgent(models.Model):
                         'state_description': variables.BOOKING_STATE_STR[rec.state],
                         'issued_date': rec.issued_date and rec.issued_date.strftime('%Y-%m-%d %H:%M:%S') or '',
                         'issued_uid': rec.issued_uid and rec.issued_uid.name or '',
-                        'create_date': rec.create_date and rec.create_date.strftime('%Y-%m-%d %H:%M:%S') or ''
                     })
 
-            res_list.sort( key=lambda i: i['create_date'],reverse=True)
+            # _logger.info('Get Transaction Resp:\n'+json.dumps(res_list[req.get('minimum',0):req.get('maximum',20)]))
+            # return ERR.get_no_error(res_list[req.get('minimum',0):req.get('maximum',20)])
 
-            _logger.info('Get Transaction Resp:\n'+json.dumps(res_list[req.get('minimum',0):req.get('maximum',20)]))
-            return ERR.get_no_error(res_list[req.get('minimum',0):req.get('maximum',20)])
+            _logger.info('Get Transaction Resp:\n' + json.dumps(res_dict))
+            return ERR.get_no_error(res_dict)
         except Exception as e:
             _logger.error(str(e)+traceback.format_exc())
             return ERR.get_error(1012)

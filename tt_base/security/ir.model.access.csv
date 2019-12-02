@@ -22,10 +22,10 @@ access_tt_customer_for_agent_user_supervisor,tt_customer.for.agent.user.supervis
 access_tt_customer_for_agent_user_manager,tt_customer.for.agent.user.manager,model_tt_customer,tt_base.group_tt_agent_user_manager,1,1,1,0
 access_tt_customer_for_agent_management_operator,tt_customer.for.agent.management.operator,model_tt_customer,tt_base.group_tt_agent_management_operator,1,1,0,0
 access_tt_customer_for_agent_management_supervisor,tt_customer.for.agent.management.supervisor,model_tt_customer,tt_base.group_tt_agent_management_supervisor,1,1,1,0
-access_tt_customer_for_agent_management_manager,tt_customer.for.agent.management.manager,model_tt_customer,tt_base.group_tt_agent_management_manager,1,1,1,0
+access_tt_customer_for_agent_management_manager,tt_customer.for.agent.management.manager,model_tt_customer,tt_base.group_tt_agent_management_manager,1,1,1,1
 access_tt_customer_for_tour_travel_operator,tt_customer.for.tour.travel.operator,model_tt_customer,tt_base.group_tt_tour_travel_operator,1,1,0,0
 access_tt_customer_for_tour_travel_supervisor,tt_customer.for.tour.travel.supervisor,model_tt_customer,tt_base.group_tt_tour_travel_supervisor,1,1,1,0
-access_tt_customer_for_tour_travel_manager,tt_customer.for.tour.travel.manager,model_tt_customer,tt_base.group_tt_tour_travel_manager,1,1,1,0
+access_tt_customer_for_tour_travel_manager,tt_customer.for.tour.travel.manager,model_tt_customer,tt_base.group_tt_tour_travel_manager,1,1,1,1
 
 access_tt_customer_identity_for_public,tt.customer.identity.for.public,model_tt_customer_identity,,1,1,1,1
 access_tt_virtual_account_for_public,tt.virtual.account.for.public,model_tt_virtual_account,,1,1,1,1

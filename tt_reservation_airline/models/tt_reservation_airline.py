@@ -791,11 +791,21 @@ class ReservationAirline(models.Model):
                 if book_obj.state != 'booked':
                     _logger.error('Cannot issue not [Booked] State.')
                     raise RequestException(1020)
+
                 #cek saldo
                 balance_res = self.env['tt.agent'].check_balance_limit_api(context['co_agent_id'],book_obj.agent_nta)
                 if balance_res['error_code']!=0:
-                    _logger.error('Balance not enough')
-                    raise RequestException(1007)
+                    _logger.error('Agent Balance not enough')
+                    raise RequestException(1007,additional_message="agent balance")
+
+
+                if req.get("member"):
+                    acquirer_seq_id = req.get('acquirer_seq_id')
+                    if acquirer_seq_id:
+                        balance_res = self.env['tt.customer.parent'].check_balance_limit_api(acquirer_seq_id,book_obj.total)
+                        if balance_res['error_code']!=0:
+                            _logger.error('Cutomer Parent credit limit not enough')
+                            raise RequestException(1007,additional_message="customer credit limit")
 
                 for provider in book_obj.provider_booking_ids:
                     provider.action_create_ledger(context['co_uid'])
@@ -977,20 +987,22 @@ class ReservationAirline(models.Model):
             self.action_booked_api_airline(context, pnr_list, hold_date)
         elif all(rec.state == 'issued' for rec in self.provider_booking_ids):
             # issued
-            ##get payment acquirer
-            if req.get('seq_id'):
-                acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', req['seq_id'])])
-                if not acquirer_id:
-                    raise RequestException(1017)
-            # ini harusnya ada tetapi di comment karena rusak ketika force issued from button di tt.provider.airlines
-            else:
-                # raise RequestException(1017)
-                acquirer_id = self.agent_id.default_acquirer_id
-
+            ##credit limit
+            acquirer_id = False
             if req.get('member'):
-                customer_parent_id = acquirer_id.agent_id.id
+                customer_parent_id = self.env['tt.customer.parent'].search([('seq_id','=',req['acquirer_seq_id'])],limit=1).id
+            ##cash / transfer
             else:
-                customer_parent_id = self.agent_id.customer_parent_walkin_id.id
+                ##get payment acquirer
+                if req.get('acquirer_seq_id'):
+                    acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', req['acquirer_seq_id'])])
+                    if not acquirer_id:
+                        raise RequestException(1017)
+                # ini harusnya ada tetapi di comment karena rusak ketika force issued from button di tt.provider.airlines
+                else:
+                    # raise RequestException(1017)
+                    acquirer_id = self.agent_id.default_acquirer_id
+                customer_parent_id = self.agent_id.customer_parent_walkin_id.id##fpo
 
             if req.get('force_issued'):
                 self.calculate_service_charge()

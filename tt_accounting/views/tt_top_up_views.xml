@@ -9,7 +9,7 @@
                     <button name="test_set_as_draft" string="set as draft" type="object" groups="base.user_admin"/>
                     <button name="test_set_as_request" string="set as request" type="object" groups="base.user_admin"/>
                     <button name="action_reject_from_button" string="Reject" attrs="{'invisible':[('state','!=','request')]}" type="object" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,request,validated"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,request,validated,approved"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
@@ -32,10 +32,10 @@
                                 <field name="request_uid" readonly="1" class="oe_inline"/> -
                                 <field name="request_date" readonly="1" class="oe_inline"/>
                             </div>
-                            <label for="validate_uid" string="Approve By"/>
+                            <label for="approve_uid" string="Approve By"/>
                             <div>
-                                <field name="validate_uid" readonly="1" class="oe_inline"/> -
-                                <field name="validate_date" readonly="1" class="oe_inline"/>
+                                <field name="approve_uid" readonly="1" class="oe_inline"/> -
+                                <field name="approve_date" readonly="1" class="oe_inline"/>
                             </div>
                             <label for="cancel_uid" string="Cancel By"/>
                             <div>

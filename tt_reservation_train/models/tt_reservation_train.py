@@ -257,11 +257,21 @@ class TtReservationTrain(models.Model):
                 if book_obj.state != 'booked':
                     _logger.error('Cannot issue not [Booked] State.')
                     raise RequestException(1020)
+
                 #cek saldo
                 balance_res = self.env['tt.agent'].check_balance_limit_api(context['co_agent_id'],book_obj.agent_nta)
                 if balance_res['error_code']!=0:
                     _logger.error('Balance not enough')
                     raise RequestException(1007)
+
+                if req.get("member"):
+                    acquirer_seq_id = req.get('acquirer_seq_id')
+                    if acquirer_seq_id:
+                        customer_parent_id = self.env['tt.customer.parent'].search([('seq_id','=',acquirer_seq_id)],limit=1)
+                        balance_res = self.env['tt.customer.parent'].check_balance_limit_api(customer_parent_id,book_obj.total)
+                        if balance_res['error_code']!=0:
+                            _logger.error('Cutomer Parent credit limit not enough')
+                            raise RequestException(1007,additional_message="customer credit limit")
 
                 for provider in book_obj.provider_booking_ids:
                     provider.action_create_ledger(context['co_uid'])
@@ -319,7 +329,7 @@ class TtReservationTrain(models.Model):
         elif all(rec.state == 'issued' for rec in self.provider_booking_ids):
             # issued
             ##get payment acquirer
-            if req.get('seq_id'):
+            if req.get('acquirer_seq_id'):
                 acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', req['seq_id'])])
                 if not acquirer_id:
                     raise RequestException(1017)

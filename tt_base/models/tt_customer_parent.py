@@ -1,5 +1,6 @@
 from odoo import fields,api,models
-
+from ...tools import ERR
+from odoo.exceptions import UserError
 
 class TtCustomerParent(models.Model):
     _inherit = 'tt.history'
@@ -54,6 +55,26 @@ class TtCustomerParent(models.Model):
             },
             'domain': [('parent_agent_id', '=', self.env.user.agent_id.id)]
         }
+
+    def check_balance_limit_api(self, customer_parent_id, amount):
+        partner_obj = self.env['tt.customer.parent']
+
+        if type(customer_parent_id) == str:
+            partner_obj = self.env['tt.customer.parent'].search([('seq_id', '=', customer_parent_id)], limit=1)
+        elif type(customer_parent_id) == int:
+            partner_obj = self.env['tt.customer.parent'].browse(customer_parent_id)
+
+        if not partner_obj:
+            return ERR.get_error(1008)
+        if not partner_obj.check_balance_limit(amount):
+            return ERR.get_error(1007)
+        else:
+            return ERR.get_no_error()
+
+    def check_balance_limit(self, amount):
+        if not self.ensure_one():
+            raise UserError('Can only check 1 agent each time got ' + str(len(self._ids)) + ' Records instead')
+        return self.actual_balance >= amount
 
     #ledger history
     #booking History

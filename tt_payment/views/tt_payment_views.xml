@@ -12,6 +12,9 @@
                     <button string="Validate" name="action_validate_from_button"
                             type="object" groups="tt_base.group_tt_tour_travel_operator"
                             attrs="{'invisible':[('state','!=','confirm')]}"/>
+                    <button string="Approve" name="action_approve_from_button"
+                            type="object" groups="tt_base.group_tt_tour_travel_operator"
+                            attrs="{'invisible':[('state','!=','validated')]}"/>
                     <button string="Reject" name="action_reject_from_button"
                             type="object" groups="tt_base.group_tt_tour_travel_operator"
                             attrs="{'invisible':[('state','!=','confirm')]}"/>
@@ -25,7 +28,7 @@
                         'default_adj_type': 1,
                         'hide_component_type': True
                    }"/>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,validated"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,validated,approved"/>
                 </header>
                 <sheet>
                     <h1>
@@ -48,6 +51,11 @@
                             <div>
                                 <field name="validate_uid" readonly="1" class="oe_inline"/> -
                                 <field name="validate_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <label for="approve_uid" string="Validate By"/>
+                            <div>
+                                <field name="approve_uid" readonly="1" class="oe_inline"/> -
+                                <field name="approve_date" readonly="1" class="oe_inline"/>
                             </div>
                             <label for="cancel_uid" string="Cancel By"/>
                             <div>

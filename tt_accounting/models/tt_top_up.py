@@ -8,19 +8,24 @@ import json,os
 
 _logger = logging.getLogger(__name__)
 
-TOP_UP_STATE = [("draft", "Draft"),
-                ("request", "Request"),
-                ("valid", "Validated"),
-                ("cancel", "Cancelled"),
-                ("expired","Expired")]
+TOP_UP_STATE = [
+    ("draft", "Draft"),
+    ("request", "Request"),
+    ("validated", "Validated"),
+    ("approved","Approved"),
+    ("cancel", "Cancelled"),
+    ("expired","Expired")
+]
 
 TOP_UP_STATE_STR = {
     "draft": "Draft",
     "request": "Request",
-    "valid": "Validated",
+    "validated": "Validated",
+    "approved": "Approved",
     "cancel": "Cancelled",
     "expired":"Expired"
 }
+
 class TtTopUp(models.Model):
     _name = 'tt.top.up'
     _order = 'id desc'
@@ -54,8 +59,8 @@ class TtTopUp(models.Model):
     # payment_acquirer_id = fields.Many2one('payment.acquirer','Payment Type')
     request_uid = fields.Many2one('res.users','Request By')
     request_date = fields.Datetime('Request Date')
-    validate_uid = fields.Many2one('res.users','Validate By')
-    validate_date = fields.Datetime('Validate Date')
+    approve_uid = fields.Many2one('res.users','Validate By')
+    approve_date = fields.Datetime('Validate Date')
     cancel_uid = fields.Many2one('res.users', 'Cancel By')
     cancel_date = fields.Datetime('Cancel Date')
 
@@ -80,7 +85,7 @@ class TtTopUp(models.Model):
             })
 
     def get_help_by(self):
-        return self.validate_uid and self.validate_uid.name or \
+        return self.approve_uid and self.approve_uid.name or \
                self.cancel_uid and self.cancel_uid.name or ''
 
     def action_reject_from_button(self):
@@ -114,17 +119,25 @@ class TtTopUp(models.Model):
         print("validate")
         if self.state != 'request':
             raise UserWarning('Can only validate [request] state Top Up.')
+        self.write({
+            'state': 'validated'
+        })
+    def action_approve_top_up(self):
+        print("approve")
+        if self.state != 'validated':
+            raise UserWarning('Can only approve [validate] state Top Up.')
 
         ledger_obj = self.env['tt.ledger']
         vals = ledger_obj.prepare_vals(self._name,self.id,'Top Up : %s' % (self.name),self.name,datetime.now(),1,self.currency_id.id,self.env.user.id,self.get_total_amount(),description='Top Up Ledger for %s' % self.name)
         vals['agent_id'] = self.agent_id.id
         new_aml = ledger_obj.create(vals)
         self.write({
-            'state': 'valid',
+            'state': 'approved',
             'ledger_id': new_aml.id,
-            'validate_uid': self.env.user.id,
-            'validate_date': datetime.now()
+            'approve_uid': self.env.user.id,
+            'approve_date': datetime.now()
         })
+
 
     def get_total_amount(self):
         return self.total
