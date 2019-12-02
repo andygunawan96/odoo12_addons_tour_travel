@@ -1,7 +1,7 @@
 from odoo import api,models,fields
 from ...tools import variables
 import logging,traceback
-from datetime import datetime
+from datetime import datetime, date
 _logger = logging.getLogger(__name__)
 
 class TtCronLogInhResv(models.Model):
@@ -19,3 +19,29 @@ class TtCronLogInhResv(models.Model):
         except Exception as e:
             self.create_cron_log_folder()
             self.write_cron_log('auto-reset payment unique amount')
+
+    def cron_expire_refund(self):
+        try:
+            new_refund = self.env['tt.refund'].search([('state', '=', 'sent')])
+            for rec in new_refund:
+                try:
+                    if datetime.now() >= rec.hold_date:
+                        rec.action_expired()
+                except Exception as e:
+                    _logger.error('%s something failed during expired cron.\n' % (rec.name) + traceback.format_exc())
+        except Exception as e:
+            self.create_cron_log_folder()
+            self.write_cron_log('auto-expired refund')
+
+    def cron_action_done_refund(self):
+        try:
+            approved_refunds = self.env['tt.refund'].search([('state', '=', 'approve')])
+            for rec in approved_refunds:
+                try:
+                    if date.today() >= rec.refund_date:
+                        rec.action_done()
+                except Exception as e:
+                    _logger.error('%s something failed during refund action done cron.\n' % (rec.name) + traceback.format_exc())
+        except Exception as e:
+            self.create_cron_log_folder()
+            self.write_cron_log('auto-action-done refund.')

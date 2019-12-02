@@ -28,7 +28,7 @@
                         'default_referenced_document': name,
                         'default_currency_id': currency_id,
                         'default_service_type': provider_type_id
-                   }"/>
+                   }" attrs="{'invisible':[('state','=','refund')]}"/>
 
 
 <!--                    <button string="Issued" name="action_issued_from_button" type="object"-->
