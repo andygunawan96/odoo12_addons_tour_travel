@@ -1012,6 +1012,12 @@ class ReservationAirline(models.Model):
                     raise RequestException(payment_res['error_code'])
 
             self.action_issued_api_airline(acquirer_id.id, customer_parent_id, context)
+        elif all(rec.state == 'refund' for rec in self.provider_booking_ids):
+            self.write({
+                'state': 'refund',
+                'refund_uid': context['co_uid'],
+                'refund_date': datetime.now()
+            })
         elif all(rec.state == 'fail_refunded' for rec in self.provider_booking_ids):
             self.write({
                 'state':  'fail_refunded',
