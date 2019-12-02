@@ -10,7 +10,10 @@
                     <button name="confirm_refund_from_button" string="Confirm" type="object" attrs="{'invisible':[('state','!=', 'draft')]}"/>
                     <button name="send_refund_from_button" string="Send to Agent" type="object" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible':[('state','!=', 'confirm')]}"/>
                     <button name="validate_refund_from_button" string="Validate" type="object" attrs="{'invisible':[('state','!=', 'sent')]}"/>
-                    <button name="cancel_refund_from_button" string="Cancel" type="object"/>
+                    <button name="approve_refund_from_button" string="Approve" type="object" groups="tt_base.group_tt_accounting_manager" attrs="{'invisible':[('state','!=', 'validate')]}"/>
+                    <button name="action_done" string="Done" type="object" groups="tt_base.group_tt_accounting_manager" attrs="{'invisible':[('state','!=', 'approve')]}"/>
+                    <button name="set_to_confirm" string="Set to Confirm" type="object" groups="tt_base.group_tt_accounting_manager" attrs="{'invisible':[('state','not in', ['sent', 'validate'])]}"/>
+                    <button name="cancel_refund_from_button" string="Cancel" type="object" attrs="{'invisible':[('state','in', ['done', 'cancel'])]}"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
@@ -26,9 +29,15 @@
                             <field name="agent_type_id" attrs="{'invisible':[('agent_id','=', False)]}"/>
                             <field name="customer_parent_id" attrs="{'invisible':[('customer_parent_id','=', False)]}"/>
                             <field name="customer_parent_type_id" attrs="{'invisible':[('customer_parent_id','=', False)]}"/>
+                            <field name="refund_date" groups="tt_base.group_tt_agent_user_operator" attrs="{'invisible':[('state','=', 'draft')]}"/>
+                            <field name="refund_date_ho" groups="tt_base.group_tt_tour_travel_operator"/>
+                            <field name="estimate_ho_refund_date" groups="tt_base.group_tt_tour_travel_operator"/>
+                            <field name="real_refund_date" groups="tt_base.group_tt_tour_travel_operator"/>
                             <field name="currency_id"/>
                             <field name="refund_amount" groups="tt_base.group_tt_agent_user_operator"/>
                             <field name="refund_amount_ho" groups="tt_base.group_tt_tour_travel_operator"/>
+                            <field name="estimate_ho_refund_amount" groups="tt_base.group_tt_tour_travel_operator"/>
+                            <field name="real_refund_amount" groups="tt_base.group_tt_tour_travel_operator"/>
                             <field name="apply_adm_fee" groups="tt_base.group_tt_tour_travel_operator"/>
                             <field name="admin_fee_type" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible':[('apply_adm_fee','=', False)]}"/>
                             <field name="admin_fee_num" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible':[('apply_adm_fee','=', False)]}"/>
@@ -41,52 +50,64 @@
                             <field name="res_id"/>
                         </group>
                         <group>
-                            <label for="confirm_uid" string="Confrim by"/>
+                            <field name="hold_date" readonly="1" class="oe_inline"/>
+                            <label for="confirm_uid" string="Confirmed by"/>
                             <div>
                                 <field name="confirm_uid" readonly="1" class="oe_inline"/> -
                                 <field name="confirm_date" readonly="1" class="oe_inline"/>
                             </div>
-                            <label for="validate_uid" string="Validate by"/>
+                            <label for="sent_uid" string="Sent by"/>
+                            <div>
+                                <field name="sent_uid" readonly="1" class="oe_inline"/> -
+                                <field name="sent_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <label for="validate_uid" string="Validated by"/>
                             <div>
                                 <field name="validate_uid" readonly="1" class="oe_inline"/> -
                                 <field name="validate_date" readonly="1" class="oe_inline"/>
                             </div>
-                            <label for="approve_uid" string="Approve by"/>
+                            <label for="approve_uid" string="Approved by"/>
                             <div>
                                 <field name="approve_uid" readonly="1" class="oe_inline"/> -
                                 <field name="approve_date" readonly="1" class="oe_inline"/>
                             </div>
-                            <label for="cancel_uid" string="Cancel by"/>
+                            <label for="done_uid" string="Done by"/>
+                            <div>
+                                <field name="done_uid" readonly="1" class="oe_inline"/> -
+                                <field name="done_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <label for="cancel_uid" string="Cancelled by"/>
                             <div>
                                 <field name="cancel_uid" readonly="1" class="oe_inline"/> -
                                 <field name="cancel_date" readonly="1" class="oe_inline"/>
                             </div>
                             <field name="cancel_message"/>
                         </group>
-                        <separator string="Provider Bookings"/>
-                        <label for="provider_booking_ids" string="(Only PNRs listed below will be refunded)"/>
-                        <field name="provider_booking_ids">
-                            <tree>
-                                <field name="name"/>
-                                <field name="res_model"/>
-                                <field name="res_id"/>
-                            </tree>
-                            <form>
-                                <group>
-                                    <group>
-                                        <field name="name"/>
-                                    </group>
-                                    <group>
-                                        <field name="res_model"/>
-                                        <field name="res_id"/>
-                                    </group>
-                                </group>
-                            </form>
-                        </field>
-                        <separator string="Ledger"/>
-                        <field name="ledger_ids"
-                               context="{'tree_view_ref': 'tt_accounting.tt_ledger_adj_tree_view'}"/>
                     </group>
+                    <separator string="Provider Bookings"/>
+                    <label for="provider_booking_ids" string="(Only PNRs listed below will be refunded)"/>
+                    <button name="reset_provider_booking" string="Reset" type="object" groups="tt_base.group_tt_agent_user_operator" attrs="{'invisible':[('state','!=', 'draft')]}"/>
+                    <field name="provider_booking_ids">
+                        <tree>
+                            <field name="name"/>
+                            <field name="res_model"/>
+                            <field name="res_id"/>
+                        </tree>
+                        <form>
+                            <group>
+                                <group>
+                                    <field name="name"/>
+                                </group>
+                                <group>
+                                    <field name="res_model"/>
+                                    <field name="res_id"/>
+                                </group>
+                            </group>
+                        </form>
+                    </field>
+                    <separator string="Ledger"/>
+                    <field name="ledger_ids"
+                           context="{'tree_view_ref': 'tt_accounting.tt_ledger_adj_tree_view'}"/>
                 </sheet>
             </form>
         </field>
@@ -97,16 +118,18 @@
         <field name="model">tt.refund</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="date"/>
+                <field name="create_date"/>
                 <field name="name"/>
                 <field name="agent_id"/>
                 <field name="customer_parent_id"/>
+                <field name="refund_date"/>
                 <field name="refund_amount"/>
                 <field name="admin_fee"/>
                 <field name="service_type"/>
                 <field name="refund_type"/>
-                <field name="approve_uid"/>
-                <field name="approve_date"/>
+                <field name="hold_date"/>
+                <field name="done_uid"/>
+                <field name="done_date"/>
                 <field name="state"/>
             </tree>
         </field>
