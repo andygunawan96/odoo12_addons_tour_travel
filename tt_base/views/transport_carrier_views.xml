@@ -21,6 +21,7 @@
                             <field name="call_sign"/>
                         </group>
                         <group string="Additional Information">
+                            <field name="is_favorite"/>
                             <field name="provider_type_id"/>
                         </group>
                     </group>
@@ -37,6 +38,7 @@
                 <field name="name"/>
                 <field name="code"/>
                 <field name="provider_type_id"/>
+                <field name="is_favorite"/>
                 <field name="active"/>
             </tree>
         </field>

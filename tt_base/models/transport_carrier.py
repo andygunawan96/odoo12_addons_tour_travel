@@ -23,7 +23,8 @@ class TransportCarrier(models.Model):
     # logo = fields.Binary('Logo', attachment=True,
     #     help='This field holds the image used as avatar for this contact, limited to 1024x1024px')
 
-    active = fields.Boolean('Active', default='True')
+    active = fields.Boolean('Active', default=True)
+    is_favorite = fields.Boolean('Favorite', default=False)
     # country_id = fields.Many2one('res.country', 'Country') masihbutuh?
 
     @api.model
@@ -46,7 +47,8 @@ class TransportCarrier(models.Model):
             'icao': self.icao,
             'provider_type_id': self.provider_type_id.to_dict(),
             'call_sign': self.transport_type,
-            'active': self.active
+            'active': self.active,
+            'is_favorite': self.is_favorite,
         }
 
     def get_carrier_data(self):
@@ -57,6 +59,7 @@ class TransportCarrier(models.Model):
             'call_sign': self.call_sign and self.call_sign or '',
             'provider_type': self.provider_type_id and self.provider_type_id.code or '',
             'active': self.active,
+            'is_favorite': self.is_favorite,
         }
         return res
 
