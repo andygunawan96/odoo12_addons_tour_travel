@@ -65,7 +65,7 @@
                     <button string="Cancel All" name="action_cancel_visa" type="object" attrs="{'invisible': [('state_visa', 'in', ['cancel'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
 <!--                    <button string="Calc. Channel Prices" name="calc_channel_service_charge_visa" type="object"/>-->
 <!--                    <button string="Pay Now" name="action_pay_now_visa" type="object" attrs="{'invisible': [('state_visa', 'not in', ['draft','confirm', 'validate'])]}"/>-->
-                    <button string="Proforma Invoice" name="action_proforma_invoice_visa" type="object"/>
+<!--                    <button string="Proforma Invoice" name="action_proforma_invoice_visa" type="object"/>-->
 <!--                    <button string="Recalculate Price" name="recalculate_price" type="object"/>-->
                 </header>
                 <sheet>

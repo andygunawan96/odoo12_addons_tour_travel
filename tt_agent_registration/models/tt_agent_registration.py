@@ -229,43 +229,44 @@ class AgentRegistration(models.Model):
         return self.env.cr.dictfetchall()
 
     def get_promotions_api(self, context):
-        agent_type_id = context['agent_type_id']
-        promotion_env = self.env['tt.agent.registration.promotion']
-        promotion_ids = promotion_env.search([('start_date', '<=', date.today()), ('end_date', '>=', date.today()), ('agent_type_id', '=', agent_type_id)])
+        res = []
+        try:
+            agent_type_id = context['agent_type_id']
+            promotion_env = self.env['tt.agent.registration.promotion']
+            promotion_ids = promotion_env.search([('start_date', '<=', date.today()), ('end_date', '>=', date.today()), ('agent_type_id', '=', agent_type_id)])
 
-        promotion_list = []
-
-        for promotion in promotion_ids:
-            val = {
-                'id': promotion.id,
-                'name': promotion.name,
-                'agent_type': promotion.agent_type_id.name,
-                'start_date': promotion.start_date.strftime("%Y-%m-%d"),
-                'end_date': promotion.end_date.strftime("%Y-%m-%d"),
-                'default_commission': promotion.default,
-                'description': promotion.description,
-                'commission': []
-            }
-            for commission in promotion.agent_type_ids:
-                comm = {
-                    'recruited': commission.agent_type_id.name,
-                    'currency_id': self.env.user.company_id.currency_id.name,
-                    'registration_fee': commission.agent_type_id.registration_fee,
-                    'discount_type': commission.discount_amount_type,
-                    'discount_amount': commission.discount_amount,
-                    'lines': []
+            for promotion in promotion_ids:
+                val = {
+                    'id': promotion.id,
+                    'name': promotion.name,
+                    'agent_type': promotion.agent_type_id.name,
+                    'start_date': promotion.start_date.strftime("%Y-%m-%d"),
+                    'end_date': promotion.end_date.strftime("%Y-%m-%d"),
+                    'default_commission': promotion.default,
+                    'description': promotion.description,
+                    'commission': []
                 }
-                for commission_line in commission.line_ids:
-                    line = {
-                        'agent_type_id': commission_line.agent_type_id.name,
-                        'amount': commission_line.amount
+                for commission in promotion.agent_type_ids:
+                    comm = {
+                        'recruited': commission.agent_type_id.name,
+                        # 'currency_id': self.env.user.company_id.currency_id.name,
+                        'currency_id': commission.currency_id.name,
+                        'registration_fee': commission.agent_type_id.registration_fee,
+                        'discount_type': commission.discount_amount_type,
+                        'discount_amount': commission.discount_amount,
+                        'lines': []
                     }
-                    comm['lines'].append(line)
-                val['commission'].append(comm)
-            promotion_list.append(val)
-
-        print(promotion_list)
-        return promotion_list
+                    for commission_line in commission.line_ids:
+                        line = {
+                            'agent_type_id': commission_line.agent_type_id.name,
+                            'amount': commission_line.amount
+                        }
+                        comm['lines'].append(line)
+                    val['commission'].append(comm)
+                res.append(val)
+        except Exception as e:
+            res = Response().get_error(str(e), 500)
+        return res
 
     def get_all_registration_documents_api(self):
         regis_doc_env = self.env['tt.document.type']
