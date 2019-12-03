@@ -47,3 +47,5 @@ access_scrap_history_ho,access_scrap_history_ho,model_scrap_history,tt_base.grou
 access_scrap_history_line_ho,access_scrap_history_line_ho,model_scrap_history_line,tt_base.group_tt_tour_travel_operator,1,1,1,0
 
 access_provider_data_ho,access_provider_data_ho,model_tt_hotel_provider_data,tt_base.group_tt_tour_travel_operator,1,1,1,0
+
+access_provider_hotel_all,access_provider_hotel_all,model_tt_provider_hotel,,1,1,1,0

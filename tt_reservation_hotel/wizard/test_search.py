@@ -660,6 +660,23 @@ class TestSearch(models.Model):
         resv_id.total_commission_amount = total_commision
         resv_id.total_nta = total_rate - total_commision
 
+        # Create provider_booking_ids
+        vend_hotel = self.env['tt.provider.hotel'].create({
+            'provider_id': provider_id or '',
+            'booking_id': resv_id.id,
+            'balance_due': '',
+            'checkin_date': check_in,
+            'checkout_date': check_out,
+            'hotel_id': resv_id.hotel_id.id,
+            'hotel_name': resv_id.hotel_name,
+            'hotel_address': resv_id.hotel_address,
+            'hotel_city': resv_id.hotel_city,
+            'hotel_phone': resv_id.hotel_phone,
+            'sid': context['sid'],
+        })
+
+        vend_hotel.create_service_charge()
+
         # resv_id.action_confirm()
         if resv_id.action_issued(acquirer_id, booker_obj.customer_parent_ids.ids[0]):
             # resv_id.action_done()
@@ -803,10 +820,10 @@ class TestSearch(models.Model):
 
     def prepare_passengers(self, customers):
         return [{
-            'title': '',
+            'title': cust['gender'] == 'male' and 'MR' or cust['marital_status'] in ['married', 'widowed'] and 'MRS' or 'MS',
             'first_name': cust['first_name'],
             'last_name': cust['last_name'] or '',
-            'pax_type': '',
+            'pax_type': 'ADT',
             'birth_date': cust['birth_date'],
         } for cust in customers]
 

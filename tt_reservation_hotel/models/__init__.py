@@ -18,7 +18,7 @@ from . import res_country
 from . import provider_code
 from . import hotel_provider_data
 
-# from . import tb_provider_hotel
+from . import tt_provider_hotel
 from . import hotel_reservation
 from . import hotel_reservation_details
 
