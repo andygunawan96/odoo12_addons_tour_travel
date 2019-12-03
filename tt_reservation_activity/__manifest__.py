@@ -17,6 +17,7 @@ TT_TRANSPORT
         'data/ir_cron_data.xml',
         'data/tt_provider_type_data.xml',
         'data/tt_provider_activity.xml',
+        'data/tt_transport_carrier_activity.xml',
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
         # 'report/printout_invoice_templates.xml',
