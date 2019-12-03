@@ -35,8 +35,8 @@ class HotelReservation(models.Model):
     #                               Canceled: Resv. Canceled by agent;
     #                               Done: Resv. Issued, Person already;
     #                           ''')
-    # provider_booking_ids = fields.One2many('tt.tb.provider.hotel', 'booking_id', string='Provider Booking',
-    #                                        readonly=True, states={'draft': [('readonly', False)]})
+    provider_booking_ids = fields.One2many('tt.provider.hotel', 'booking_id', string='Provider Booking',
+                                           readonly=True, states={'draft': [('readonly', False)]})
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', default=lambda
         x: x.env.ref('tt_reservation_hotel.tt_provider_type_hotel'))
 
@@ -204,17 +204,18 @@ class HotelReservation(models.Model):
         # Create Commission
         vals = self.env['tt.ledger'].prepare_vals(self._name,self.id,'Commission : ' + self.name, self.name, self.issued_date, 3,
                                                   self.currency_id.id, uid.id, self.total_commission_amount, 0)
-        vals = self.env['tt.ledger'].prepare_vals_for_resv(self, vals)
+        vals = self.env['tt.ledger'].prepare_vals_for_resv(self, '', vals)
         self.create_agent_ledger(vals)
 
     @api.multi
     def create_ledger(self, uid):
         for rec in self:
-            rec.create_commission_ledger(uid)
-
-            vals = self.env['tt.ledger'].prepare_vals(self._name, self.id, 'Reservation : '+ rec.name, rec.name, rec.issued_date, 2, rec.currency_id.id, uid.id, 0, rec.total)
-            vals = self.env['tt.ledger'].prepare_vals_for_resv(rec, vals)
-            rec.create_agent_ledger(vals)
+            # rec.create_commission_ledger(uid)
+            # vals = self.env['tt.ledger'].prepare_vals(self._name, self.id, 'Reservation : '+ rec.name, rec.name, rec.issued_date, 2, rec.currency_id.id, uid.id, 0, rec.total)
+            # vals = self.env['tt.ledger'].prepare_vals_for_resv(rec, vals)
+            # rec.create_agent_ledger(vals)
+            for prov in rec.provider_booking_ids:
+                prov.action_create_ledger(uid)
 
     @api.multi
     def _refund_ledger(self):
@@ -288,7 +289,7 @@ class HotelReservation(models.Model):
             self.issued_date = fields.Datetime.now()
             self.issued_uid = kwargs and kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
             # 1. Create Ledger, Commission Ledger
-            self.sudo().create_ledger(self.issued_uid)
+            self.sudo().create_ledger(self.issued_uid.id)
             # self.sudo().create_vendor_ledger()
             # 2. Jika Hotel CMS apakah kamar yg dipesan auto validation / perlu operator
             # self.check_auto_approved()
@@ -603,5 +604,5 @@ class HotelReservation(models.Model):
 class ServiceCharge(models.Model):
     _inherit = "tt.service.charge"
 
-    provider_hotel_booking_id = fields.Many2one('tt.hotel.reservation.details', 'Resv. Detail')
+    provider_hotel_booking_id = fields.Many2one('tt.provider.hotel', 'Resv. Detail')
     resv_hotel_id = fields.Many2one('tt.reservation.hotel', 'Hotel', ondelete='cascade', index=True, copy=False)
