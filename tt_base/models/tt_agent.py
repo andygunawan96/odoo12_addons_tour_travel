@@ -352,14 +352,17 @@ class TtAgent(models.Model):
                         'order_number': rec.name,
                         'booked_date': rec.booked_date and rec.booked_date.strftime('%Y-%m-%d %H:%M:%S') or '',
                         'booked_uid': rec.booked_uid and rec.booked_uid.name or '',
-                        'provider': {
-                            'provider_type': rec.provider_type_id and rec.provider_type_id.code or '',
-                            'airline_carrier_codes': list(set([seg.carrier_code for seg in rec.segment_ids]))
-                            if hasattr(rec,'segment_ids') else [],
-                        },
+                        # 'provider': {
+                        'provider_type': rec.provider_type_id and rec.provider_type_id.code or '',
+                        'carrier_names': rec.carrier_name and rec.carrier_name or '',
+                            # 'airline_carrier_codes':
+                            # 'airline_carrier_codes': list(set([seg.carrier_code for seg in rec.segment_ids]))
+                            # if hasattr(rec,'segment_ids') else [],
+                        # },
                         'hold_date': rec.hold_date and rec.hold_date.strftime('%Y-%m-%d %H:%M:%S') or '',
                         'booker': rec.booker_id and rec.booker_id.to_dict() or '',
                         'pnr': rec.pnr or '',
+                        'state': rec.state and rec.state or '',
                         'state_description': variables.BOOKING_STATE_STR[rec.state],
                         'issued_date': rec.issued_date and rec.issued_date.strftime('%Y-%m-%d %H:%M:%S') or '',
                         'issued_uid': rec.issued_uid and rec.issued_uid.name or '',

@@ -37,8 +37,6 @@ class ReservationAirline(models.Model):
 
     provider_type_id = fields.Many2one('tt.provider.type','Provider Type',
                                     default= lambda self: self.env.ref('tt_reservation_airline.tt_provider_type_airline'))
-    carrier_name = fields.Char('List of Carriers',readonly=True)
-
 
     def get_form_id(self):
         return self.env.ref("tt_reservation_airline.tt_reservation_airline_form_views")
@@ -797,7 +795,6 @@ class ReservationAirline(models.Model):
                 if balance_res['error_code']!=0:
                     _logger.error('Agent Balance not enough')
                     raise RequestException(1007,additional_message="agent balance")
-
 
                 if req.get("member"):
                     acquirer_seq_id = req.get('acquirer_seq_id')

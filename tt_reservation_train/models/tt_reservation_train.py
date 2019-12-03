@@ -33,8 +33,6 @@ class TtReservationTrain(models.Model):
     provider_type_id = fields.Many2one('tt.provider.type','Provider Type',
                                     default= lambda self: self.env.ref('tt_reservation_train.tt_provider_type_train'))
 
-    carrier_name = fields.Char('List of Carriers',readonly=True)
-
     @api.multi
     def action_set_as_draft(self):
         for rec in self:
