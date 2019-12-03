@@ -196,7 +196,7 @@ class TtCustomer(models.Model):
             dom = [('agent_id','=',context['co_agent_id'])]
 
             if req.get('name'):
-                dom.append(('name','=',req['name']))
+                dom.append(('name','ilike',req['name']))
             if req.get('email'):
                 dom.append(('email','=',req['email']))
             if req.get('cust_code'):
