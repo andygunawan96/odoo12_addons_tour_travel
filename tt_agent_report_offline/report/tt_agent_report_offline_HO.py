@@ -1,5 +1,6 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
+import pytz, datetime
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -42,9 +43,9 @@ class AgentReportOffline(models.AbstractModel):
             where += """ AND ro.state = '%s'""" % state
         if provider_type and provider_type != 'all':
             where += """ AND tpt.code = '%s'""" % provider_type
-        # if agent_id:
-        #     if self.env['tt.agent'].search([('id', '=', agent_id)], limit=1).agent_type_id != self.env['ir.model.data'].xmlid_to_res_id('tt_base.agent_type_ho'):
-        #         where += """ AND ro.agent_id = %s""" % agent_id
+        if agent_id:
+            # if self.env['tt.agent'].search([('id', '=', agent_id)], limit=1).agent_type_id != self.env['ir.model.data'].xmlid_to_res_id('tt_base.agent_type_ho'):
+            where += """ AND ro.agent_id = %s""" % agent_id
         return where
 
     @staticmethod
@@ -115,6 +116,9 @@ class AgentReportOffline(models.AbstractModel):
         return fields.Datetime.context_timestamp(self, value).strftime('%Y-%m-%d %H:%M:%S')
 
     def _convert_data(self, lines, lines_commission):
+        odoobot_user = self.env['res.users'].sudo().search([('id', '=', 1), ('active', '=', False)])
+        tz = odoobot_user.tz
+        local = pytz.timezone(tz)
         for line in lines:
             line.update({
                 'create_date': self._datetime_user_context(line['create_date']),
@@ -126,6 +130,12 @@ class AgentReportOffline(models.AbstractModel):
                 'ho_commission': 0,
                 'total_commission': 0
             })
+            if line['confirm_date']:
+                local_dt = line['confirm_date']
+                line['confirm_date'] = local_dt.astimezone(local).strftime('%Y-%m-%d %H:%M:%S')
+            if line['issued_date']:
+                local_dt = line['issued_date']
+                line['issued_date'] = local_dt.astimezone(local).strftime('%Y-%m-%d %H:%M:%S')
         return lines
 
     @staticmethod
@@ -150,17 +160,19 @@ class AgentReportOffline(models.AbstractModel):
                 line_list.append(line)
                 line_idx += 1
         for rec in lines_commission:
-            line = line_list[data_idx.get(rec['id'])]
-            if line['agent_id'] == rec['agent_id']:
-                line['agent_commission'] += rec['commission']
-            elif rec['agent_id'] == 1:
-                line['ho_commission'] += rec['commission']
-            elif line['parent_agent_id'] == rec['agent_id']:
-                line['parent_commission'] += rec['commission']
-            else:
-                continue
-            line['total_commission'] += rec['commission']
-            line['nta_amount'] -= rec['commission']
+            print(rec)
+            if rec['id'] in data_idx:
+                line = line_list[data_idx.get(rec['id'])]
+                if line['agent_id'] == rec['agent_id']:
+                    line['agent_commission'] += rec['commission']
+                elif rec['agent_id'] == 1:
+                    line['ho_commission'] += rec['commission']
+                elif line['parent_agent_id'] == rec['agent_id']:
+                    line['parent_commission'] += rec['commission']
+                else:
+                    continue
+                line['total_commission'] += rec['commission']
+                line['nta_amount'] -= rec['commission']
         return line_list
 
     @staticmethod

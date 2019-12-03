@@ -1,6 +1,7 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 from ...tt_reservation_offline.models.tt_reservation_offline import STATE_OFFLINE_STR
+import pytz, datetime
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -75,7 +76,7 @@ class AgentReportOffline(models.AbstractModel):
     def _from_lines_commission():
         return """
         tt_ledger tl
-        LEFT JOIN tt_reservation_offline ro ON tl.reservation_offline_id = ro.id OR tl.ref = ro.name
+        LEFT JOIN tt_reservation_offline ro ON tl.ref = ro.name
         LEFT JOIN tt_provider_type tpt ON tpt.id = ro.provider_type_id  
         """
 
@@ -114,6 +115,9 @@ class AgentReportOffline(models.AbstractModel):
         return fields.Datetime.context_timestamp(self, value).strftime('%Y-%m-%d %H:%M:%S')
 
     def _convert_data(self, lines):
+        odoobot_user = self.env['res.users'].sudo().search([('id', '=', 1), ('active', '=', False)])
+        tz = odoobot_user.tz
+        local = pytz.timezone(tz)
         for rec in lines:
             # STATE_OFFLINE[rec['state']] if rec['state'] else ''
             rec.update({
@@ -123,6 +127,12 @@ class AgentReportOffline(models.AbstractModel):
                 'provider_type': rec['provider_type'].capitalize() if rec['provider_type'] else rec['provider_type'],
                 'commission': 0
             })
+            if rec['confirm_date']:
+                local_dt = rec['confirm_date']
+                rec['confirm_date'] = local_dt.astimezone(local).strftime('%Y-%m-%d %H:%M:%S')
+            if rec['issued_date']:
+                local_dt = rec['issued_date']
+                rec['issued_date'] = local_dt.astimezone(local).strftime('%Y-%m-%d %H:%M:%S')
         return lines
 
     @staticmethod
@@ -135,10 +145,12 @@ class AgentReportOffline(models.AbstractModel):
             for idx, line_val in enumerate(line_list):
                 if line['name'] == line_val['name']:
                     order_num_match = True
-                    if line['pnr'] not in line_list[idx]['pnr']:
-                        line_list[idx]['pnr'] += ', ' + line['pnr']
-                    if line['provider'] not in line_list[idx]['provider']:
-                        line_list[idx]['provider'] += ', ' + line['provider']
+                    if line['pnr']:
+                        if line['pnr'] not in line_list[idx]['pnr']:
+                            line_list[idx]['pnr'] += ', ' + line['pnr']
+                    if line['provider']:
+                        if line['provider'] not in line_list[idx]['provider']:
+                            line_list[idx]['provider'] += ', ' + line['provider']
                     break
             if not order_num_match:
                 data_idx.update({line['id']: line_idx})

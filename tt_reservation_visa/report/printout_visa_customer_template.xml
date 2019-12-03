@@ -246,14 +246,16 @@
                                                         <span t-field="handling.handling_id.name"/>
                                                     </td>
                                                     <td style="border: 1px solid black;">
-                                                        <t t-if="handling.answer">
-                                                            <img t-att-src="'/tt_reservation_visa/static/src/images/checked-checkbox.png'"
+                                                        <img t-att-src="'/tt_reservation_visa/static/src/images/unchecked-checkbox.png'"
                                                                  style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>
-                                                        </t>
-                                                        <t t-else="">
-                                                            <img t-att-src="'/tt_reservation_visa/static/src/images/unchecked-checkbox.png'"
-                                                                 style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>
-                                                        </t>
+<!--                                                        <t t-if="handling.answer">-->
+<!--                                                            <img t-att-src="'/tt_reservation_visa/static/src/images/checked-checkbox.png'"-->
+<!--                                                                 style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>-->
+<!--                                                        </t>-->
+<!--                                                        <t t-else="">-->
+<!--                                                            <img t-att-src="'/tt_reservation_visa/static/src/images/unchecked-checkbox.png'"-->
+<!--                                                                 style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>-->
+<!--                                                        </t>-->
 <!--                                                        <t t-if="handling.answered">-->
 <!--                                                            -->
 <!--                                                        </t>-->
@@ -263,14 +265,16 @@
 <!--                                                        </t>-->
                                                     </td>
                                                     <td style="border: 1px solid black;">
-                                                        <t t-if="not handling.answer">
-                                                            <img t-att-src="'/tt_reservation_visa/static/src/images/checked-checkbox.png'"
+                                                        <img t-att-src="'/tt_reservation_visa/static/src/images/unchecked-checkbox.png'"
                                                                  style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>
-                                                        </t>
-                                                        <t t-else="">
-                                                            <img t-att-src="'/tt_reservation_visa/static/src/images/unchecked-checkbox.png'"
-                                                                 style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>
-                                                        </t>
+<!--                                                        <t t-if="not handling.answer">-->
+<!--                                                            <img t-att-src="'/tt_reservation_visa/static/src/images/checked-checkbox.png'"-->
+<!--                                                                 style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>-->
+<!--                                                        </t>-->
+<!--                                                        <t t-else="">-->
+<!--                                                            <img t-att-src="'/tt_reservation_visa/static/src/images/unchecked-checkbox.png'"-->
+<!--                                                                 style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>-->
+<!--                                                        </t>-->
 <!--                                                        <t t-if="handling.answered">-->
 <!--                                                            -->
 <!--                                                        </t>-->

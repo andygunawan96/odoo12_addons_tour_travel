@@ -54,7 +54,7 @@
                             <field name="meal_type" attrs="{'invisible': [('transaction_name', 'not in', ['hotel'])]}"/>
                             <field name="activity_name" attrs="{'invisible': [('transaction_name', 'not in', ['activity'])]}"/>
                             <field name="activity_package" attrs="{'invisible': [('transaction_name', 'not in', ['activity'])]}"/>
-                            <field name="activity_timeslot" attrs="{'invisible': [('transaction_name', 'not in', ['activity'])]}"/>
+<!--                            <field name="activity_timeslot" attrs="{'invisible': [('transaction_name', 'not in', ['activity'])]}"/>-->
                         </group>
                         <group>
                             <field name="visit_date" attrs="{'invisible': [('transaction_name', 'not in', ['activity'])]}"/>
