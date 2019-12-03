@@ -266,6 +266,7 @@ class AgentRegistration(models.Model):
                 res.append(val)
         except Exception as e:
             res = Response().get_error(str(e), 500)
+            _logger.error(msg=str(e) + '\n' + traceback.format_exc())
         return res
 
     def get_all_registration_documents_api(self):
