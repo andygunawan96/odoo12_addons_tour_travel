@@ -939,17 +939,16 @@ class TtVisa(models.Model):
 
             if len(psg['required']) > 0:
                 for req in psg['required']:  # pricelist_obj.requirement_ids
-                    if req['is_original'] is True or req['is_copy'] is True:
-                        req_vals = {
-                            'to_passenger_id': to_psg_obj.id,
-                            'requirement_id': req['id'],
-                            'is_ori': req['is_original'],
-                            'is_copy': req['is_copy'],
-                            'check_uid': self.env.user.id,
-                            'check_date': datetime.now()
-                        }
-                        to_req_obj = to_req_env.create(req_vals)
-                        to_req_list.append(to_req_obj.id)  # akan dipindah ke edit requirements
+                    req_vals = {
+                        'to_passenger_id': to_psg_obj.id,
+                        'requirement_id': req['id'],
+                        'is_ori': req['is_original'],
+                        'is_copy': req['is_copy'],
+                        'check_uid': self.env.user.id,
+                        'check_date': datetime.now()
+                    }
+                    to_req_obj = to_req_env.create(req_vals)
+                    to_req_list.append(to_req_obj.id)  # akan dipindah ke edit requirements
 
             to_psg_obj.write({
                 'to_requirement_ids': [(6, 0, to_req_list)]
