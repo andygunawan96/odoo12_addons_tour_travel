@@ -26,6 +26,7 @@ class ttCronTopUpValidator(models.Model):
 
                         #validate payment
                         payment_data.action_validate_from_button()
+                        payment_data.action_approve_from_button()
 
                         #connecting transaction data with respected payment
                         # i.action_validate_top_up(j.get_transaction_amount())
