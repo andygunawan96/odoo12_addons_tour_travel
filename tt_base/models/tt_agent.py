@@ -312,18 +312,17 @@ class TtAgent(models.Model):
                 types = variables.PROVIDER_TYPE
 
             dom = [('agent_id', '=', agent_obj.id)]
-            if req['type'] == 'name':
+            if req.get('name'):
                 dom.append(('name', '=', req['name']))
-            elif req['type'] == 'pnr':
-                dom.append(('pnr','ilike',req['pnr']))
-            elif req['type'] == 'booker':
+            if req.get('pnr'):
+                dom.append(('pnr','=ilike',req['pnr']))
+            if req.get('booker_name'):
                 dom.append(('booker_id.name','ilike',req['booker_name']))
-            elif req['type'] == 'date':
+            if req.get('date_from'):
                 dom.append(('booked_date', '>=', req['date_from']))
+            if req.get('date_to'):
                 dom.append(('booked_date', '<=', req['date_to']))
-                if req.get('state') != 'all':
-                    dom.append(('state', '=', req['state']))
-            elif req['type'] == 'state':
+            if req.get('state'):
                 if req.get('state') != 'all':
                     dom.append(('state', '=', req['state']))
 

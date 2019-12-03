@@ -209,18 +209,18 @@ class TtTopUp(models.Model):
             agent_obj = self.browse(context['co_agent_id'])
             if not agent_obj:
                 raise RequestException(1008)
+
             res = []
             dom = [('agent_id','=',agent_obj.id)]
-            if data['type'] == 'name':
+            if data.get( 'name'):
                 dom.append(('name','=',data['name']))
-            elif data['type'] == 'date':
-                dom.append(('due_date','>=',data['date_from']))
-                dom.append(('due_date','<=',data['date_to']))
+            if data.get('date_from'):
+                dom.append(('booked_date', '>=', data['date_from']))
+            if data.get('date_to'):
+                dom.append(('booked_date', '<=', data['date_to']))
+            if data.get('state'):
                 if data.get('state') != 'all':
                     dom.append(('state', '=', data['state']))
-            elif data['type'] == 'state':
-                if data.get('state') != 'all':
-                    dom.append(('state','=',data['state']))
 
             for rec in self.search(dom):
                 res.append(rec.to_dict())
