@@ -212,7 +212,7 @@ class TtTopUp(models.Model):
 
             res = []
             dom = [('agent_id','=',agent_obj.id)]
-            if data.get( 'name'):
+            if data.get('name'):
                 dom.append(('name','=',data['name']))
             if data.get('date_from'):
                 dom.append(('booked_date', '>=', data['date_from']))

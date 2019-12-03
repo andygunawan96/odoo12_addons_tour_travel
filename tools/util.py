@@ -89,7 +89,7 @@ def send_request(url, data=None, headers=None, method=None, cookie=None, content
         :return:
     '''
     ses = requests.Session()
-    cookie and [ses.cookies.set(key, val) for key, val in cookie.iteritems()]
+    cookie and [ses.cookies.set(key, val) for key, val in cookie.items()]
 
     data = data and data or {}
     is_data_dict = True if type(data) == dict else False
