@@ -87,7 +87,7 @@ class TtBankTransaction(models.Model):
         end_year = splits[0]
         end_month = splits[1]
 
-        result = self.env['tt.customer.api.con'].get_transaction(data)
+        result = self.env['tt.bank.api.con'].get_transaction(data)
         if result['error_code'] != 0:
             raise Exception("Unable to get bank Transaction")
 

@@ -36,8 +36,7 @@ class TtVisa(models.Model):
     _order = 'name desc'
     _description = 'Rodex Model'
 
-    provider_type_id = fields.Many2one('tt.provider.type', required=True, readonly=True,
-                                       states={'draft': [('readonly', False)]}, string='Transaction Type',
+    provider_type_id = fields.Many2one('tt.provider.type', string='Provider Type',
                                        default=lambda self: self.env.ref('tt_reservation_visa.tt_provider_type_visa'))
 
     description = fields.Char('Description', readonly=True, states={'draft': [('readonly', False)]})
@@ -174,6 +173,11 @@ class TtVisa(models.Model):
             'state_visa': 'in_process',
             # 'in_process_date': datetime.now()
         })
+        # cek saldo
+        balance_res = self.env['tt.agent'].check_balance_limit_api(self.agent_id.id, self.total)
+        if balance_res['error_code'] != 0:
+            _logger.error('Balance not enough')
+            raise RequestException(1007)
         for rec in self.passenger_ids:
             if rec.state in ['validate', 'cancel']:
                 rec.action_in_process()
@@ -811,7 +815,8 @@ class TtVisa(models.Model):
         pricelist_env = self.env['tt.reservation.visa.pricelist'].sudo()
         passenger_env = self.env['tt.reservation.visa.order.passengers']
         pricing_obj = self.env['tt.pricing.agent'].sudo()
-        agent_id = self.env['tt.agent'].search([('id', '=', context['co_agent_id'])])
+        provider_type_id = self.env.ref('tt_reservation_visa.tt_provider_type_visa')
+        agent_id = self.env['tt.agent'].search([('id', '=', context['co_agent_id'])], limit=1)
 
         for idx, psg in enumerate(passenger):
             ssc = []
@@ -840,7 +845,7 @@ class TtVisa(models.Model):
                 'passenger_visa_ids': [(6, 0, passenger_obj.ids)]
             })
             ssc.append(ssc_obj.id)
-            commission_list = pricing_obj.get_commission(pricelist_obj.commission_price, agent_id, self.provider_type_id)
+            commission_list = pricing_obj.get_commission(pricelist_obj.commission_price, agent_id, provider_type_id)
             for comm in commission_list:
                 if comm['amount'] > 0:
                     vals2 = vals.copy()
@@ -934,16 +939,17 @@ class TtVisa(models.Model):
 
             if len(psg['required']) > 0:
                 for req in psg['required']:  # pricelist_obj.requirement_ids
-                    req_vals = {
-                        'to_passenger_id': to_psg_obj.id,
-                        'requirement_id': req['id'],
-                        'is_ori': req['is_original'],
-                        'is_copy': req['is_copy'],
-                        'check_uid': self.env.user.id,
-                        'check_date': datetime.now()
-                    }
-                    to_req_obj = to_req_env.create(req_vals)
-                    to_req_list.append(to_req_obj.id)  # akan dipindah ke edit requirements
+                    if req['is_original'] is False and req['is_copy'] is False:
+                        req_vals = {
+                            'to_passenger_id': to_psg_obj.id,
+                            'requirement_id': req['id'],
+                            'is_ori': req['is_original'],
+                            'is_copy': req['is_copy'],
+                            'check_uid': self.env.user.id,
+                            'check_date': datetime.now()
+                        }
+                        to_req_obj = to_req_env.create(req_vals)
+                        to_req_list.append(to_req_obj.id)  # akan dipindah ke edit requirements
 
             to_psg_obj.write({
                 'to_requirement_ids': [(6, 0, to_req_list)]
@@ -1254,6 +1260,15 @@ class TtVisa(models.Model):
                     'sequence': scs.sequence,
                     'description': scs.description
                 })
+
+    def action_booked_api_visa(self, context, pnr_list, hold_date):
+        self.write({
+            'state': 'booked',
+            'pnr': ', '.join(pnr_list),
+            'hold_date': hold_date,
+            'booked_uid': context['co_uid'],
+            'booked_date': datetime.now()
+        })
 
     def check_provider_state(self, context, pnr_list=[], hold_date=False, req={}):
         if all(rec.state == 'booked' for rec in self.provider_booking_ids):

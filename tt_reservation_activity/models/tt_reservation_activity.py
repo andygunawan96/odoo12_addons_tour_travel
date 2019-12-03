@@ -907,7 +907,7 @@ class ReservationActivity(models.Model):
             elif activity_voucher_urls:
                 voucher_url_parsed = [url_voucher.name for url_voucher in activity_voucher_urls]
 
-            if activity_booking.state not in ['issued', 'rejected', 'cancel', 'cancel2', 'fail_issued']:
+            if activity_booking.state not in ['booked', 'issued', 'rejected', 'refund', 'cancel', 'cancel2', 'fail_issued', 'fail_refunded']:
                 activity_booking.sudo().write({
                     'state': res['status']
                 })

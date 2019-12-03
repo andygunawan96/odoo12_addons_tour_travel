@@ -73,7 +73,6 @@
             </field>
             <field name="adult" position="after">
                 <field name="senior"/>
-                <field name="child"/>
             </field>
             <xpath expr="//group[@name='paxgroup']" position="before">
                 <group>

@@ -5,6 +5,7 @@ import logging
 import traceback
 import copy
 from ...tools.api import Response
+from ...tools.ERR import RequestException
 
 _logger = logging.getLogger(__name__)
 
@@ -303,8 +304,6 @@ class IssuedOffline(models.Model):
 
     @api.one
     def action_sent(self):
-        if self.agent_commission <= 0:
-            raise UserError(_('Agent Commission can\'t be Zero (0)'))
         if self.provider_type_id_name == 'airline' or self.provider_type_id_name == 'train' or \
                 self.provider_type_id_name == 'hotel' or self.provider_type_id_name == 'activity'\
                 or self.provider_type_id_name == 'cruise':
@@ -969,6 +968,22 @@ class IssuedOffline(models.Model):
     def _get_social_media_id_by_name(self, name):
         social_media_id = self.env['res.social.media.type'].search([('name', '=', name)], limit=1).id
         return social_media_id
+
+    def check_provider_state(self, context, pnr_list=[], hold_date=False, req={}):
+        if all(rec.state == 'draft' for rec in self.provider_booking_ids):
+            pass
+        elif all(rec.state == 'confirm' for rec in self.provider_booking_ids):
+            pass
+        elif all(rec.state == 'sent' for rec in self.provider_booking_ids):
+            pass
+        elif all(rec.state == 'paid' for rec in self.provider_booking_ids):
+            pass
+        elif all(rec.state == 'posted' for rec in self.provider_booking_ids):
+            pass
+        else:
+            # entah status apa
+            _logger.error('Entah status apa')
+            raise RequestException(1006)
 
     def confirm_api(self, id):
         obj = self.sudo().browse(id)

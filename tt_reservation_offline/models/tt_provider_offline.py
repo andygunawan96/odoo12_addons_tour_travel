@@ -86,16 +86,6 @@ class ProviderOffline(models.Model):
                     pnr.append(line.pnr)
         return pnr
 
-    def get_provider_sale_price(self):
-        line_count = 0
-        provider_line_count = 0
-        for line in self.booking_id.line_ids:
-            line_count += 1
-            if line.provider_id.id == self.provider_id.id:
-                provider_line_count += 1
-        sale_price = self.booking_id.total / line_count * provider_line_count
-        return sale_price
-
     def create_service_charge(self):
         self.delete_service_charge()
 
@@ -104,7 +94,19 @@ class ProviderOffline(models.Model):
         pricing_obj = self.env['tt.pricing.agent'].search(
             [('agent_type_id', '=', self.booking_id.agent_id.agent_type_id.id),
              ('provider_type_id', '=', self.booking_id.provider_type_id.id)], limit=1)
-        sale_price = self.get_provider_sale_price()
+        sale_price = 0
+        provider_line_count = 0
+        if self.booking_id.provider_type_id_name in ['airline', 'train']:
+            line_count = 0
+            for line in self.booking_id.line_ids:
+                line_count += 1
+                if line.provider_id.id == self.provider_id.id:
+                    if line.pnr == self.pnr:
+                        provider_line_count += 1
+            sale_price = self.booking_id.total / line_count * provider_line_count
+        else:
+            sale_price = self.booking_id.total / len(self.booking_id.line_ids)
+            provider_line_count = 1
 
         # Get all pricing per pax
         for psg in self.booking_id.passenger_ids:
@@ -128,8 +130,8 @@ class ProviderOffline(models.Model):
                     vals2 = vals.copy()
                     vals2.update({
                         'commission_agent_id': comm['commission_agent_id'],
-                        'total': comm['amount'] * -1,
-                        'amount': comm['amount'] * -1,
+                        'total': comm['amount'] * -1 / len(self.booking_id.line_ids) * provider_line_count,
+                        'amount': comm['amount'] * -1 / len(self.booking_id.line_ids) * provider_line_count,
                         'charge_code': comm['code'],
                         'charge_type': 'RAC',
                     })
@@ -185,7 +187,7 @@ class ProviderOffline(models.Model):
         for line in self.booking_id.line_ids:
             scs = []
             vals = {
-                'amount': sale_price / len(self.booking_id.line_ids),
+                'amount': sale_price,
                 'charge_code': 'fare',
                 'charge_type': 'FARE',
                 'description': '',
@@ -204,8 +206,8 @@ class ProviderOffline(models.Model):
                     vals2 = vals.copy()
                     vals2.update({
                         'commission_agent_id': comm['commission_agent_id'],
-                        'total': comm['amount'] * -1,
-                        'amount': comm['amount'] * -1,
+                        'total': comm['amount'] * -1 / len(self.booking_id.line_ids),
+                        'amount': comm['amount'] * -1 / len(self.booking_id.line_ids),
                         'charge_code': comm['code'],
                         'charge_type': 'RAC',
                     })
