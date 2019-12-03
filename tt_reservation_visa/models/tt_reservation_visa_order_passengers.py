@@ -190,8 +190,9 @@ class VisaOrderPassengers(models.Model):
                 'state': 'validate'
             })
             for req in self.to_requirement_ids:
-                if req.validate_HO is False:
-                    raise UserError(_('You have to Validate All Passengers Documents.'))
+                if req.is_copy is True or req.is_ori is True:
+                    if req.validate_HO is False:
+                        raise UserError(_('You have to Validate All Passengers Documents.'))
             rec.message_post(body='Passenger VALIDATED')
 
     def action_re_validate(self):

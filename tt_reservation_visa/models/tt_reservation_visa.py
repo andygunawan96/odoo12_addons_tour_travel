@@ -176,8 +176,8 @@ class TtVisa(models.Model):
         # cek saldo
         balance_res = self.env['tt.agent'].check_balance_limit_api(self.agent_id.id, self.total)
         if balance_res['error_code'] != 0:
-            _logger.error('Balance not enough')
-            raise RequestException(1007)
+            raise UserError("Balance not enough.")
+
         for rec in self.passenger_ids:
             if rec.state in ['validate', 'cancel']:
                 rec.action_in_process()
@@ -939,7 +939,7 @@ class TtVisa(models.Model):
 
             if len(psg['required']) > 0:
                 for req in psg['required']:  # pricelist_obj.requirement_ids
-                    if req['is_original'] is False and req['is_copy'] is False:
+                    if req['is_original'] is True or req['is_copy'] is True:
                         req_vals = {
                             'to_passenger_id': to_psg_obj.id,
                             'requirement_id': req['id'],
