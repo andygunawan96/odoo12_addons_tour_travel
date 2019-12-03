@@ -56,6 +56,7 @@
                     </div>
                     <group>
                         <group>
+                            <field name="id" invisible="1"/>
                             <field name="pnr"/>
                             <field name="agent_id"/>
                             <field name="agent_type_id"/>
@@ -63,6 +64,7 @@
                             <field name="customer_parent_type_id"/>
                             <field name="provider_type_id"/>
                             <field name="provider_name"/>
+                            <field name="carrier_name"/>
                             <field name="currency_id" invisible="1"/>
 
 <!--                        ### untuk default value adjustment -->
@@ -115,6 +117,7 @@
                         </group>
                         <group string="Paxs">
                             <field name="adult"/>
+                            <field name="child"/>
                             <field name="infant"/>
                         </group>
                     </group>

@@ -14,6 +14,7 @@ class TtReservation(models.Model):
     name = fields.Char('Order Number', index=True, default='New', readonly=True)
     pnr = fields.Char('PNR', readonly=True, states={'draft': [('readonly', False)]})
     provider_name = fields.Char('List of Provider', readonly=True)
+    carrier_name = fields.Char('List of Carriers', readonly=True)
 
     date = fields.Datetime('Booking Date', default=lambda self: fields.Datetime.now(), readonly=True, states={'draft': [('readonly', False)]})
     expired_date = fields.Datetime('Expired Date', readonly=True)  # fixme terpakai?

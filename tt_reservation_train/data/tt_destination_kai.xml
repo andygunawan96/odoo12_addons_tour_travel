@@ -226,6 +226,22 @@
         </record>
 
 
+        <record id="tt_destination_airline_ngw" model="tt.destinations">
+            <field name="name">Ngawi</field>
+            <field name="code">NGW</field>
+            <field name="icao">NGW</field>
+            <field name="city">Ngawi</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
+            <field name="latitude">0</field>
+            <field name="longitude">0</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
         <record id="tt_destination_airline_pa" model="tt.destinations">
             <field name="name">Paron</field>
             <field name="code">PA</field>
@@ -322,27 +338,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_kd" model="tt.destinations">
-            <field name="name">Kediri</field>
-            <field name="code">KD</field>
-            <field name="icao">KD</field>
-            <field name="city">Kediri</field>
-            <field name="country_id" ref="base.id"/>
-            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
-            <field name="latitude">0</field>
-            <field name="longitude">0</field>
-            <field name="altitude">0</field>
-            <field name="timezone_hour">7</field>
-            <field name="tz">Asia/Jakarta</field>
-            <field name="active">1</field>
-        </record>
-
-
-        <record id="tt_destination_airline_ppr" model="tt.destinations">
-            <field name="name">Papar</field>
-            <field name="code">PPR</field>
-            <field name="icao">PPR</field>
-            <field name="city">Kediri</field>
+        <record id="tt_destination_airline_kis" model="tt.destinations">
+            <field name="name">Kisaran</field>
+            <field name="code">KIS</field>
+            <field name="icao">KIS</field>
+            <field name="city">Kisaran</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -886,6 +886,22 @@
             <field name="name">Masaran</field>
             <field name="code">MSR</field>
             <field name="icao">MSR</field>
+            <field name="city">Sragen</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
+            <field name="latitude">0</field>
+            <field name="longitude">0</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_slm" model="tt.destinations">
+            <field name="name">Salem</field>
+            <field name="code">SLM</field>
+            <field name="icao">SLM</field>
             <field name="city">Sragen</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
@@ -1554,11 +1570,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_bjr" model="tt.destinations">
-            <field name="name">Banjar</field>
-            <field name="code">BJR</field>
-            <field name="icao">BJR</field>
-            <field name="city">Banjar</field>
+        <record id="tt_destination_airline_cra" model="tt.destinations">
+            <field name="name">Cipunegara</field>
+            <field name="code">CRA</field>
+            <field name="icao">CRA</field>
+            <field name="city">Subang</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -1570,11 +1586,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_ln" model="tt.destinations">
-            <field name="name">Langen</field>
-            <field name="code">LN</field>
-            <field name="icao">LN</field>
-            <field name="city">Banjar</field>
+        <record id="tt_destination_airline_pgb" model="tt.destinations">
+            <field name="name">Pegadenbaru</field>
+            <field name="code">PGB</field>
+            <field name="icao">PGB</field>
+            <field name="city">Subang</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -1586,11 +1602,91 @@
         </record>
 
 
-        <record id="tt_destination_airline_pwt" model="tt.destinations">
-            <field name="name">Purwokerto</field>
-            <field name="code">PWT</field>
-            <field name="icao">PWT</field>
-            <field name="city">Purwokerto</field>
+        <record id="tt_destination_airline_tjs" model="tt.destinations">
+            <field name="name">Tanjungrasa</field>
+            <field name="code">TJS</field>
+            <field name="icao">TJS</field>
+            <field name="city">Subang</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
+            <field name="latitude">0</field>
+            <field name="longitude">0</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bgr" model="tt.destinations">
+            <field name="name">Bagor</field>
+            <field name="code">BGR</field>
+            <field name="icao">BGR</field>
+            <field name="city">Nganjuk</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
+            <field name="latitude">0</field>
+            <field name="longitude">0</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_brn" model="tt.destinations">
+            <field name="name">Baron</field>
+            <field name="code">BRN</field>
+            <field name="icao">BRN</field>
+            <field name="city">Nganjuk</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
+            <field name="latitude">0</field>
+            <field name="longitude">0</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kts" model="tt.destinations">
+            <field name="name">Kertosono</field>
+            <field name="code">KTS</field>
+            <field name="icao">KTS</field>
+            <field name="city">Nganjuk</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
+            <field name="latitude">0</field>
+            <field name="longitude">0</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nj" model="tt.destinations">
+            <field name="name">Nganjuk</field>
+            <field name="code">NJ</field>
+            <field name="icao">NJ</field>
+            <field name="city">Nganjuk</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
+            <field name="latitude">0</field>
+            <field name="longitude">0</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wil" model="tt.destinations">
+            <field name="name">Wilangan</field>
+            <field name="code">WIL</field>
+            <field name="icao">WIL</field>
+            <field name="city">Nganjuk</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -1762,11 +1858,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_bgr" model="tt.destinations">
-            <field name="name">Bagor</field>
-            <field name="code">BGR</field>
-            <field name="icao">BGR</field>
-            <field name="city">Nganjuk</field>
+        <record id="tt_destination_airline_kop" model="tt.destinations">
+            <field name="name">Kotapadang</field>
+            <field name="code">KOP</field>
+            <field name="icao">KOP</field>
+            <field name="city">Lubuk Linggau</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -1778,11 +1874,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_brn" model="tt.destinations">
-            <field name="name">Baron</field>
-            <field name="code">BRN</field>
-            <field name="icao">BRN</field>
-            <field name="city">Nganjuk</field>
+        <record id="tt_destination_airline_llg" model="tt.destinations">
+            <field name="name">Lubuk Linggau</field>
+            <field name="code">LLG</field>
+            <field name="icao">LLG</field>
+            <field name="city">Lubuk Linggau</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -1794,43 +1890,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_kts" model="tt.destinations">
-            <field name="name">Kertosono</field>
-            <field name="code">KTS</field>
-            <field name="icao">KTS</field>
-            <field name="city">Nganjuk</field>
-            <field name="country_id" ref="base.id"/>
-            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
-            <field name="latitude">0</field>
-            <field name="longitude">0</field>
-            <field name="altitude">0</field>
-            <field name="timezone_hour">7</field>
-            <field name="tz">Asia/Jakarta</field>
-            <field name="active">1</field>
-        </record>
-
-
-        <record id="tt_destination_airline_nj" model="tt.destinations">
-            <field name="name">Nganjuk</field>
-            <field name="code">NJ</field>
-            <field name="icao">NJ</field>
-            <field name="city">Nganjuk</field>
-            <field name="country_id" ref="base.id"/>
-            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
-            <field name="latitude">0</field>
-            <field name="longitude">0</field>
-            <field name="altitude">0</field>
-            <field name="timezone_hour">7</field>
-            <field name="tz">Asia/Jakarta</field>
-            <field name="active">1</field>
-        </record>
-
-
-        <record id="tt_destination_airline_wil" model="tt.destinations">
-            <field name="name">Wilangan</field>
-            <field name="code">WIL</field>
-            <field name="icao">WIL</field>
-            <field name="city">Nganjuk</field>
+        <record id="tt_destination_airline_msl" model="tt.destinations">
+            <field name="name">Muarasaling</field>
+            <field name="code">MSL</field>
+            <field name="icao">MSL</field>
+            <field name="city">Lubuk Linggau</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -1954,11 +2018,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_btt" model="tt.destinations">
-            <field name="name">Batu Tulis</field>
-            <field name="code">BTT</field>
-            <field name="icao">BTT</field>
-            <field name="city">Bogor</field>
+        <record id="tt_destination_airline_krr" model="tt.destinations">
+            <field name="name">Karangsari</field>
+            <field name="code">KRR</field>
+            <field name="icao">KRR</field>
+            <field name="city">Banyumas</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -1970,11 +2034,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_boo" model="tt.destinations">
-            <field name="name">Bogor</field>
-            <field name="code">BOO</field>
-            <field name="icao">BOO</field>
-            <field name="city">Bogor</field>
+        <record id="tt_destination_airline_kbs" model="tt.destinations">
+            <field name="name">Kebasen</field>
+            <field name="code">KBS</field>
+            <field name="icao">KBS</field>
+            <field name="city">Banyumas</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -1986,11 +2050,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_cgb" model="tt.destinations">
-            <field name="name">Cigombong</field>
-            <field name="code">CGB</field>
-            <field name="icao">CGB</field>
-            <field name="city">Bogor</field>
+        <record id="tt_destination_airline_kj" model="tt.destinations">
+            <field name="name">Kemranjen</field>
+            <field name="code">KJ</field>
+            <field name="icao">KJ</field>
+            <field name="city">Banyumas</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -2002,11 +2066,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_msg" model="tt.destinations">
-            <field name="name">Maseng</field>
-            <field name="code">MSG</field>
-            <field name="icao">MSG</field>
-            <field name="city">Bogor</field>
+        <record id="tt_destination_airline_ntg" model="tt.destinations">
+            <field name="name">Notog</field>
+            <field name="code">NTG</field>
+            <field name="icao">NTG</field>
+            <field name="city">Banyumas</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -2018,11 +2082,27 @@
         </record>
 
 
-        <record id="tt_destination_airline_prp" model="tt.destinations">
-            <field name="name">Parungpanjang</field>
-            <field name="code">PRP</field>
-            <field name="icao">PRP</field>
-            <field name="city">Bogor</field>
+        <record id="tt_destination_airline_sph" model="tt.destinations">
+            <field name="name">Sumpiuh</field>
+            <field name="code">SPH</field>
+            <field name="icao">SPH</field>
+            <field name="city">Banyumas</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
+            <field name="latitude">0</field>
+            <field name="longitude">0</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tbk" model="tt.destinations">
+            <field name="name">Tambak</field>
+            <field name="code">TBK</field>
+            <field name="icao">TBK</field>
+            <field name="city">Banyumas</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -2130,11 +2210,43 @@
         </record>
 
 
-        <record id="tt_destination_airline_kis" model="tt.destinations">
-            <field name="name">Kisaran</field>
-            <field name="code">KIS</field>
-            <field name="icao">KIS</field>
-            <field name="city">Kisaran</field>
+        <record id="tt_destination_airline_tnb" model="tt.destinations">
+            <field name="name">Tanjungbalai</field>
+            <field name="code">TNB</field>
+            <field name="icao">TNB</field>
+            <field name="city">Tanjung Balai</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
+            <field name="latitude">0</field>
+            <field name="longitude">0</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kd" model="tt.destinations">
+            <field name="name">Kediri</field>
+            <field name="code">KD</field>
+            <field name="icao">KD</field>
+            <field name="city">Kediri</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
+            <field name="latitude">0</field>
+            <field name="longitude">0</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ppr" model="tt.destinations">
+            <field name="name">Papar</field>
+            <field name="code">PPR</field>
+            <field name="icao">PPR</field>
+            <field name="city">Kediri</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -2210,11 +2322,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_kt" model="tt.destinations">
-            <field name="name">Klaten</field>
-            <field name="code">KT</field>
-            <field name="icao">KT</field>
-            <field name="city">Klaten</field>
+        <record id="tt_destination_airline_gdg" model="tt.destinations">
+            <field name="name">Gedangan</field>
+            <field name="code">GDG</field>
+            <field name="icao">GDG</field>
+            <field name="city">Sidoarjo</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -2226,11 +2338,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_ktx" model="tt.destinations">
-            <field name="name">Klaten</field>
-            <field name="code">KTX</field>
-            <field name="icao">KTX</field>
-            <field name="city">Klaten</field>
+        <record id="tt_destination_airline_krn" model="tt.destinations">
+            <field name="name">Krian</field>
+            <field name="code">KRN</field>
+            <field name="icao">KRN</field>
+            <field name="city">Sidoarjo</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -2242,11 +2354,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_swt" model="tt.destinations">
-            <field name="name">Srowot</field>
-            <field name="code">SWT</field>
-            <field name="icao">SWT</field>
-            <field name="city">Klaten</field>
+        <record id="tt_destination_airline_spj" model="tt.destinations">
+            <field name="name">Sepanjang</field>
+            <field name="code">SPJ</field>
+            <field name="icao">SPJ</field>
+            <field name="city">Sidoarjo</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -2258,11 +2370,139 @@
         </record>
 
 
-        <record id="tt_destination_airline_sir" model="tt.destinations">
-            <field name="name">Siantar</field>
-            <field name="code">SIR</field>
-            <field name="icao">SIR</field>
-            <field name="city">Pematang Siantar</field>
+        <record id="tt_destination_airline_sda" model="tt.destinations">
+            <field name="name">Sidoarjo</field>
+            <field name="code">SDA</field>
+            <field name="icao">SDA</field>
+            <field name="city">Sidoarjo</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
+            <field name="latitude">0</field>
+            <field name="longitude">0</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wr" model="tt.destinations">
+            <field name="name">Waru</field>
+            <field name="code">WR</field>
+            <field name="icao">WR</field>
+            <field name="city">Sidoarjo</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
+            <field name="latitude">0</field>
+            <field name="longitude">0</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gmr" model="tt.destinations">
+            <field name="name">Gambir</field>
+            <field name="code">GMR</field>
+            <field name="icao">GMR</field>
+            <field name="city">Jakarta</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
+            <field name="latitude">0</field>
+            <field name="longitude">0</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jakk" model="tt.destinations">
+            <field name="name">Jakarta Kota</field>
+            <field name="code">JAKK</field>
+            <field name="icao">JAKK</field>
+            <field name="city">Jakarta</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
+            <field name="latitude">0</field>
+            <field name="longitude">0</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jng" model="tt.destinations">
+            <field name="name">Jatinegara</field>
+            <field name="code">JNG</field>
+            <field name="icao">JNG</field>
+            <field name="city">Jakarta</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
+            <field name="latitude">0</field>
+            <field name="longitude">0</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mri" model="tt.destinations">
+            <field name="name">Manggarai</field>
+            <field name="code">MRI</field>
+            <field name="icao">MRI</field>
+            <field name="city">Jakarta</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
+            <field name="latitude">0</field>
+            <field name="longitude">0</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pse" model="tt.destinations">
+            <field name="name">Pasar Senen</field>
+            <field name="code">PSE</field>
+            <field name="icao">PSE</field>
+            <field name="city">Jakarta</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
+            <field name="latitude">0</field>
+            <field name="longitude">0</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_thb" model="tt.destinations">
+            <field name="name">Tanah Abang</field>
+            <field name="code">THB</field>
+            <field name="icao">THB</field>
+            <field name="city">Jakarta</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
+            <field name="latitude">0</field>
+            <field name="longitude">0</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tpk" model="tt.destinations">
+            <field name="name">Tanjung Priuk</field>
+            <field name="code">TPK</field>
+            <field name="icao">TPK</field>
+            <field name="city">Jakarta</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -2706,6 +2946,22 @@
         </record>
 
 
+        <record id="tt_destination_airline_pwt" model="tt.destinations">
+            <field name="name">Purwokerto</field>
+            <field name="code">PWT</field>
+            <field name="icao">PWT</field>
+            <field name="city">Purwokerto</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
+            <field name="latitude">0</field>
+            <field name="longitude">0</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
         <record id="tt_destination_airline_jn" model="tt.destinations">
             <field name="name">Jenar</field>
             <field name="code">JN</field>
@@ -2722,11 +2978,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_tnb" model="tt.destinations">
-            <field name="name">Tanjungbalai</field>
-            <field name="code">TNB</field>
-            <field name="icao">TNB</field>
-            <field name="city">Tanjung Balai</field>
+        <record id="tt_destination_airline_bdw" model="tt.destinations">
+            <field name="name">Bangoduwa</field>
+            <field name="code">BDW</field>
+            <field name="icao">BDW</field>
+            <field name="city">Jatibarang</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -2738,11 +2994,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_cra" model="tt.destinations">
-            <field name="name">Cipunegara</field>
-            <field name="code">CRA</field>
-            <field name="icao">CRA</field>
-            <field name="city">Subang</field>
+        <record id="tt_destination_airline_me" model="tt.destinations">
+            <field name="name">Muara Enim</field>
+            <field name="code">ME</field>
+            <field name="icao">ME</field>
+            <field name="city">Muara Enim</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -2754,11 +3010,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_pgb" model="tt.destinations">
-            <field name="name">Pegadenbaru</field>
-            <field name="code">PGB</field>
-            <field name="icao">PGB</field>
-            <field name="city">Subang</field>
+        <record id="tt_destination_airline_ujm" model="tt.destinations">
+            <field name="name">Ujanmas</field>
+            <field name="code">UJM</field>
+            <field name="icao">UJM</field>
+            <field name="city">Muara Enim</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -2770,11 +3026,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_tjs" model="tt.destinations">
-            <field name="name">Tanjungrasa</field>
-            <field name="code">TJS</field>
-            <field name="icao">TJS</field>
-            <field name="city">Subang</field>
+        <record id="tt_destination_airline_bjr" model="tt.destinations">
+            <field name="name">Banjar</field>
+            <field name="code">BJR</field>
+            <field name="icao">BJR</field>
+            <field name="city">Banjar</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -2786,11 +3042,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_krr" model="tt.destinations">
-            <field name="name">Karangsari</field>
-            <field name="code">KRR</field>
-            <field name="icao">KRR</field>
-            <field name="city">Banyumas</field>
+        <record id="tt_destination_airline_ln" model="tt.destinations">
+            <field name="name">Langen</field>
+            <field name="code">LN</field>
+            <field name="icao">LN</field>
+            <field name="city">Banjar</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -2802,11 +3058,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_kbs" model="tt.destinations">
-            <field name="name">Kebasen</field>
-            <field name="code">KBS</field>
-            <field name="icao">KBS</field>
-            <field name="city">Banyumas</field>
+        <record id="tt_destination_airline_btt" model="tt.destinations">
+            <field name="name">Batu Tulis</field>
+            <field name="code">BTT</field>
+            <field name="icao">BTT</field>
+            <field name="city">Bogor</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -2818,11 +3074,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_kj" model="tt.destinations">
-            <field name="name">Kemranjen</field>
-            <field name="code">KJ</field>
-            <field name="icao">KJ</field>
-            <field name="city">Banyumas</field>
+        <record id="tt_destination_airline_boo" model="tt.destinations">
+            <field name="name">Bogor</field>
+            <field name="code">BOO</field>
+            <field name="icao">BOO</field>
+            <field name="city">Bogor</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -2834,11 +3090,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_ntg" model="tt.destinations">
-            <field name="name">Notog</field>
-            <field name="code">NTG</field>
-            <field name="icao">NTG</field>
-            <field name="city">Banyumas</field>
+        <record id="tt_destination_airline_cgb" model="tt.destinations">
+            <field name="name">Cigombong</field>
+            <field name="code">CGB</field>
+            <field name="icao">CGB</field>
+            <field name="city">Bogor</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -2850,11 +3106,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_sph" model="tt.destinations">
-            <field name="name">Sumpiuh</field>
-            <field name="code">SPH</field>
-            <field name="icao">SPH</field>
-            <field name="city">Banyumas</field>
+        <record id="tt_destination_airline_msg" model="tt.destinations">
+            <field name="name">Maseng</field>
+            <field name="code">MSG</field>
+            <field name="icao">MSG</field>
+            <field name="city">Bogor</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -2866,11 +3122,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_tbk" model="tt.destinations">
-            <field name="name">Tambak</field>
-            <field name="code">TBK</field>
-            <field name="icao">TBK</field>
-            <field name="city">Banyumas</field>
+        <record id="tt_destination_airline_prp" model="tt.destinations">
+            <field name="name">Parungpanjang</field>
+            <field name="code">PRP</field>
+            <field name="icao">PRP</field>
+            <field name="city">Bogor</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -2882,11 +3138,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_kop" model="tt.destinations">
-            <field name="name">Kotapadang</field>
-            <field name="code">KOP</field>
-            <field name="icao">KOP</field>
-            <field name="city">Lubuk Linggau</field>
+        <record id="tt_destination_airline_bss" model="tt.destinations">
+            <field name="name">Bangsal Sari</field>
+            <field name="code">BSS</field>
+            <field name="icao">BSS</field>
+            <field name="city">Jember</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -2898,11 +3154,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_llg" model="tt.destinations">
-            <field name="name">Lubuk Linggau</field>
-            <field name="code">LLG</field>
-            <field name="icao">LLG</field>
-            <field name="city">Lubuk Linggau</field>
+        <record id="tt_destination_airline_jtr" model="tt.destinations">
+            <field name="name">Jatiroto</field>
+            <field name="code">JTR</field>
+            <field name="icao">JTR</field>
+            <field name="city">Jember</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -2914,11 +3170,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_msl" model="tt.destinations">
-            <field name="name">Muarasaling</field>
-            <field name="code">MSL</field>
-            <field name="icao">MSL</field>
-            <field name="city">Lubuk Linggau</field>
+        <record id="tt_destination_airline_jr" model="tt.destinations">
+            <field name="name">Jember</field>
+            <field name="code">JR</field>
+            <field name="icao">JR</field>
+            <field name="city">Jember</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -2930,11 +3186,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_gmr" model="tt.destinations">
-            <field name="name">Gambir</field>
-            <field name="code">GMR</field>
-            <field name="icao">GMR</field>
-            <field name="city">Jakarta</field>
+        <record id="tt_destination_airline_klt" model="tt.destinations">
+            <field name="name">Kalisat</field>
+            <field name="code">KLT</field>
+            <field name="icao">KLT</field>
+            <field name="city">Jember</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -2946,11 +3202,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_jakk" model="tt.destinations">
-            <field name="name">Jakarta Kota</field>
-            <field name="code">JAKK</field>
-            <field name="icao">JAKK</field>
-            <field name="city">Jakarta</field>
+        <record id="tt_destination_airline_rbp" model="tt.destinations">
+            <field name="name">Rambipuji</field>
+            <field name="code">RBP</field>
+            <field name="icao">RBP</field>
+            <field name="city">Jember</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -2962,75 +3218,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_jng" model="tt.destinations">
-            <field name="name">Jatinegara</field>
-            <field name="code">JNG</field>
-            <field name="icao">JNG</field>
-            <field name="city">Jakarta</field>
-            <field name="country_id" ref="base.id"/>
-            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
-            <field name="latitude">0</field>
-            <field name="longitude">0</field>
-            <field name="altitude">0</field>
-            <field name="timezone_hour">7</field>
-            <field name="tz">Asia/Jakarta</field>
-            <field name="active">1</field>
-        </record>
-
-
-        <record id="tt_destination_airline_mri" model="tt.destinations">
-            <field name="name">Manggarai</field>
-            <field name="code">MRI</field>
-            <field name="icao">MRI</field>
-            <field name="city">Jakarta</field>
-            <field name="country_id" ref="base.id"/>
-            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
-            <field name="latitude">0</field>
-            <field name="longitude">0</field>
-            <field name="altitude">0</field>
-            <field name="timezone_hour">7</field>
-            <field name="tz">Asia/Jakarta</field>
-            <field name="active">1</field>
-        </record>
-
-
-        <record id="tt_destination_airline_pse" model="tt.destinations">
-            <field name="name">Pasar Senen</field>
-            <field name="code">PSE</field>
-            <field name="icao">PSE</field>
-            <field name="city">Jakarta</field>
-            <field name="country_id" ref="base.id"/>
-            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
-            <field name="latitude">0</field>
-            <field name="longitude">0</field>
-            <field name="altitude">0</field>
-            <field name="timezone_hour">7</field>
-            <field name="tz">Asia/Jakarta</field>
-            <field name="active">1</field>
-        </record>
-
-
-        <record id="tt_destination_airline_thb" model="tt.destinations">
-            <field name="name">Tanah Abang</field>
-            <field name="code">THB</field>
-            <field name="icao">THB</field>
-            <field name="city">Jakarta</field>
-            <field name="country_id" ref="base.id"/>
-            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
-            <field name="latitude">0</field>
-            <field name="longitude">0</field>
-            <field name="altitude">0</field>
-            <field name="timezone_hour">7</field>
-            <field name="tz">Asia/Jakarta</field>
-            <field name="active">1</field>
-        </record>
-
-
-        <record id="tt_destination_airline_tpk" model="tt.destinations">
-            <field name="name">Tanjung Priuk</field>
-            <field name="code">TPK</field>
-            <field name="icao">TPK</field>
-            <field name="city">Jakarta</field>
+        <record id="tt_destination_airline_tgl" model="tt.destinations">
+            <field name="name">Tanggul</field>
+            <field name="code">TGL</field>
+            <field name="icao">TGL</field>
+            <field name="city">Jember</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -3063,6 +3255,118 @@
             <field name="code">IJ</field>
             <field name="icao">IJ</field>
             <field name="city">Gombong</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
+            <field name="latitude">0</field>
+            <field name="longitude">0</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cb" model="tt.destinations">
+            <field name="name">Cibatu</field>
+            <field name="code">CB</field>
+            <field name="icao">CB</field>
+            <field name="city">Garut</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
+            <field name="latitude">0</field>
+            <field name="longitude">0</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cpd" model="tt.destinations">
+            <field name="name">Cipeundeuy</field>
+            <field name="code">CPD</field>
+            <field name="icao">CPD</field>
+            <field name="city">Garut</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
+            <field name="latitude">0</field>
+            <field name="longitude">0</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_grt" model="tt.destinations">
+            <field name="name">Garut</field>
+            <field name="code">GRT</field>
+            <field name="icao">GRT</field>
+            <field name="city">Garut</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
+            <field name="latitude">0</field>
+            <field name="longitude">0</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lbj" model="tt.destinations">
+            <field name="name">Lebakjero</field>
+            <field name="code">LBJ</field>
+            <field name="icao">LBJ</field>
+            <field name="city">Garut</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
+            <field name="latitude">0</field>
+            <field name="longitude">0</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ll" model="tt.destinations">
+            <field name="name">Leles</field>
+            <field name="code">LL</field>
+            <field name="icao">LL</field>
+            <field name="city">Garut</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
+            <field name="latitude">0</field>
+            <field name="longitude">0</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ng" model="tt.destinations">
+            <field name="name">Nagreg</field>
+            <field name="code">NG</field>
+            <field name="icao">NG</field>
+            <field name="city">Garut</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
+            <field name="latitude">0</field>
+            <field name="longitude">0</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wb" model="tt.destinations">
+            <field name="name">Warung Bandrek</field>
+            <field name="code">WB</field>
+            <field name="icao">WB</field>
+            <field name="city">Garut</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -3330,22 +3634,6 @@
         </record>
 
 
-        <record id="tt_destination_airline_tw" model="tt.destinations">
-            <field name="name">Telawa</field>
-            <field name="code">TW</field>
-            <field name="icao">TW</field>
-            <field name="city">Boyolali</field>
-            <field name="country_id" ref="base.id"/>
-            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
-            <field name="latitude">0</field>
-            <field name="longitude">0</field>
-            <field name="altitude">0</field>
-            <field name="timezone_hour">7</field>
-            <field name="tz">Asia/Jakarta</field>
-            <field name="active">1</field>
-        </record>
-
-
         <record id="tt_destination_airline_kk" model="tt.destinations">
             <field name="name">Klakah</field>
             <field name="code">KK</field>
@@ -3383,118 +3671,6 @@
             <field name="code">BIJ</field>
             <field name="icao">BIJ</field>
             <field name="city">Binjai</field>
-            <field name="country_id" ref="base.id"/>
-            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
-            <field name="latitude">0</field>
-            <field name="longitude">0</field>
-            <field name="altitude">0</field>
-            <field name="timezone_hour">7</field>
-            <field name="tz">Asia/Jakarta</field>
-            <field name="active">1</field>
-        </record>
-
-
-        <record id="tt_destination_airline_cb" model="tt.destinations">
-            <field name="name">Cibatu</field>
-            <field name="code">CB</field>
-            <field name="icao">CB</field>
-            <field name="city">Garut</field>
-            <field name="country_id" ref="base.id"/>
-            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
-            <field name="latitude">0</field>
-            <field name="longitude">0</field>
-            <field name="altitude">0</field>
-            <field name="timezone_hour">7</field>
-            <field name="tz">Asia/Jakarta</field>
-            <field name="active">1</field>
-        </record>
-
-
-        <record id="tt_destination_airline_cpd" model="tt.destinations">
-            <field name="name">Cipeundeuy</field>
-            <field name="code">CPD</field>
-            <field name="icao">CPD</field>
-            <field name="city">Garut</field>
-            <field name="country_id" ref="base.id"/>
-            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
-            <field name="latitude">0</field>
-            <field name="longitude">0</field>
-            <field name="altitude">0</field>
-            <field name="timezone_hour">7</field>
-            <field name="tz">Asia/Jakarta</field>
-            <field name="active">1</field>
-        </record>
-
-
-        <record id="tt_destination_airline_grt" model="tt.destinations">
-            <field name="name">Garut</field>
-            <field name="code">GRT</field>
-            <field name="icao">GRT</field>
-            <field name="city">Garut</field>
-            <field name="country_id" ref="base.id"/>
-            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
-            <field name="latitude">0</field>
-            <field name="longitude">0</field>
-            <field name="altitude">0</field>
-            <field name="timezone_hour">7</field>
-            <field name="tz">Asia/Jakarta</field>
-            <field name="active">1</field>
-        </record>
-
-
-        <record id="tt_destination_airline_lbj" model="tt.destinations">
-            <field name="name">Lebakjero</field>
-            <field name="code">LBJ</field>
-            <field name="icao">LBJ</field>
-            <field name="city">Garut</field>
-            <field name="country_id" ref="base.id"/>
-            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
-            <field name="latitude">0</field>
-            <field name="longitude">0</field>
-            <field name="altitude">0</field>
-            <field name="timezone_hour">7</field>
-            <field name="tz">Asia/Jakarta</field>
-            <field name="active">1</field>
-        </record>
-
-
-        <record id="tt_destination_airline_ll" model="tt.destinations">
-            <field name="name">Leles</field>
-            <field name="code">LL</field>
-            <field name="icao">LL</field>
-            <field name="city">Garut</field>
-            <field name="country_id" ref="base.id"/>
-            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
-            <field name="latitude">0</field>
-            <field name="longitude">0</field>
-            <field name="altitude">0</field>
-            <field name="timezone_hour">7</field>
-            <field name="tz">Asia/Jakarta</field>
-            <field name="active">1</field>
-        </record>
-
-
-        <record id="tt_destination_airline_ng" model="tt.destinations">
-            <field name="name">Nagreg</field>
-            <field name="code">NG</field>
-            <field name="icao">NG</field>
-            <field name="city">Garut</field>
-            <field name="country_id" ref="base.id"/>
-            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
-            <field name="latitude">0</field>
-            <field name="longitude">0</field>
-            <field name="altitude">0</field>
-            <field name="timezone_hour">7</field>
-            <field name="tz">Asia/Jakarta</field>
-            <field name="active">1</field>
-        </record>
-
-
-        <record id="tt_destination_airline_wb" model="tt.destinations">
-            <field name="name">Warung Bandrek</field>
-            <field name="code">WB</field>
-            <field name="icao">WB</field>
-            <field name="city">Garut</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -3602,6 +3778,38 @@
         </record>
 
 
+        <record id="tt_destination_airline_sir" model="tt.destinations">
+            <field name="name">Siantar</field>
+            <field name="code">SIR</field>
+            <field name="icao">SIR</field>
+            <field name="city">Pematang Siantar</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
+            <field name="latitude">0</field>
+            <field name="longitude">0</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gbn" model="tt.destinations">
+            <field name="name">Gambringan</field>
+            <field name="code">GBN</field>
+            <field name="icao">GBN</field>
+            <field name="city">Grobogan</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
+            <field name="latitude">0</field>
+            <field name="longitude">0</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
         <record id="tt_destination_airline_gd" model="tt.destinations">
             <field name="name">Gundih</field>
             <field name="code">GD</field>
@@ -3682,139 +3890,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_bss" model="tt.destinations">
-            <field name="name">Bangsal Sari</field>
-            <field name="code">BSS</field>
-            <field name="icao">BSS</field>
-            <field name="city">Jember</field>
-            <field name="country_id" ref="base.id"/>
-            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
-            <field name="latitude">0</field>
-            <field name="longitude">0</field>
-            <field name="altitude">0</field>
-            <field name="timezone_hour">7</field>
-            <field name="tz">Asia/Jakarta</field>
-            <field name="active">1</field>
-        </record>
-
-
-        <record id="tt_destination_airline_jtr" model="tt.destinations">
-            <field name="name">Jatiroto</field>
-            <field name="code">JTR</field>
-            <field name="icao">JTR</field>
-            <field name="city">Jember</field>
-            <field name="country_id" ref="base.id"/>
-            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
-            <field name="latitude">0</field>
-            <field name="longitude">0</field>
-            <field name="altitude">0</field>
-            <field name="timezone_hour">7</field>
-            <field name="tz">Asia/Jakarta</field>
-            <field name="active">1</field>
-        </record>
-
-
-        <record id="tt_destination_airline_jr" model="tt.destinations">
-            <field name="name">Jember</field>
-            <field name="code">JR</field>
-            <field name="icao">JR</field>
-            <field name="city">Jember</field>
-            <field name="country_id" ref="base.id"/>
-            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
-            <field name="latitude">0</field>
-            <field name="longitude">0</field>
-            <field name="altitude">0</field>
-            <field name="timezone_hour">7</field>
-            <field name="tz">Asia/Jakarta</field>
-            <field name="active">1</field>
-        </record>
-
-
-        <record id="tt_destination_airline_klt" model="tt.destinations">
-            <field name="name">Kalisat</field>
-            <field name="code">KLT</field>
-            <field name="icao">KLT</field>
-            <field name="city">Jember</field>
-            <field name="country_id" ref="base.id"/>
-            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
-            <field name="latitude">0</field>
-            <field name="longitude">0</field>
-            <field name="altitude">0</field>
-            <field name="timezone_hour">7</field>
-            <field name="tz">Asia/Jakarta</field>
-            <field name="active">1</field>
-        </record>
-
-
-        <record id="tt_destination_airline_rbp" model="tt.destinations">
-            <field name="name">Rambipuji</field>
-            <field name="code">RBP</field>
-            <field name="icao">RBP</field>
-            <field name="city">Jember</field>
-            <field name="country_id" ref="base.id"/>
-            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
-            <field name="latitude">0</field>
-            <field name="longitude">0</field>
-            <field name="altitude">0</field>
-            <field name="timezone_hour">7</field>
-            <field name="tz">Asia/Jakarta</field>
-            <field name="active">1</field>
-        </record>
-
-
-        <record id="tt_destination_airline_tgl" model="tt.destinations">
-            <field name="name">Tanggul</field>
-            <field name="code">TGL</field>
-            <field name="icao">TGL</field>
-            <field name="city">Jember</field>
-            <field name="country_id" ref="base.id"/>
-            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
-            <field name="latitude">0</field>
-            <field name="longitude">0</field>
-            <field name="altitude">0</field>
-            <field name="timezone_hour">7</field>
-            <field name="tz">Asia/Jakarta</field>
-            <field name="active">1</field>
-        </record>
-
-
-        <record id="tt_destination_airline_bib" model="tt.destinations">
-            <field name="name">Blimbingpendopo</field>
-            <field name="code">BIB</field>
-            <field name="icao">BIB</field>
-            <field name="city">Prabumulih</field>
-            <field name="country_id" ref="base.id"/>
-            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
-            <field name="latitude">0</field>
-            <field name="longitude">0</field>
-            <field name="altitude">0</field>
-            <field name="timezone_hour">7</field>
-            <field name="tz">Asia/Jakarta</field>
-            <field name="active">1</field>
-        </record>
-
-
-        <record id="tt_destination_airline_gnm" model="tt.destinations">
-            <field name="name">Gunungmegang</field>
-            <field name="code">GNM</field>
-            <field name="icao">GNM</field>
-            <field name="city">Prabumulih</field>
-            <field name="country_id" ref="base.id"/>
-            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
-            <field name="latitude">0</field>
-            <field name="longitude">0</field>
-            <field name="altitude">0</field>
-            <field name="timezone_hour">7</field>
-            <field name="tz">Asia/Jakarta</field>
-            <field name="active">1</field>
-        </record>
-
-
-        <record id="tt_destination_airline_pbm" model="tt.destinations">
-            <field name="name">Prabumulih</field>
-            <field name="code">PBM</field>
-            <field name="icao">PBM</field>
-            <field name="city">Prabumulih</field>
+        <record id="tt_destination_airline_tw" model="tt.destinations">
+            <field name="name">Telawa</field>
+            <field name="code">TW</field>
+            <field name="icao">TW</field>
+            <field name="city">Boyolali</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -3846,6 +3926,22 @@
             <field name="name">Barat</field>
             <field name="code">BAT</field>
             <field name="icao">BAT</field>
+            <field name="city">Magetan</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
+            <field name="latitude">0</field>
+            <field name="longitude">0</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mag" model="tt.destinations">
+            <field name="name">Magetan</field>
+            <field name="code">MAG</field>
+            <field name="icao">MAG</field>
             <field name="city">Magetan</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
@@ -3970,11 +4066,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_bdw" model="tt.destinations">
-            <field name="name">Bangoduwa</field>
-            <field name="code">BDW</field>
-            <field name="icao">BDW</field>
-            <field name="city">Jatibarang</field>
+        <record id="tt_destination_airline_bj" model="tt.destinations">
+            <field name="name">Bojonegoro</field>
+            <field name="code">BJ</field>
+            <field name="icao">BJ</field>
+            <field name="city">Bojonegoro</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -3986,11 +4082,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_gdg" model="tt.destinations">
-            <field name="name">Gedangan</field>
-            <field name="code">GDG</field>
-            <field name="icao">GDG</field>
-            <field name="city">Sidoarjo</field>
+        <record id="tt_destination_airline_kit" model="tt.destinations">
+            <field name="name">Kalitidu</field>
+            <field name="code">KIT</field>
+            <field name="icao">KIT</field>
+            <field name="city">Bojonegoro</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -4002,11 +4098,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_krn" model="tt.destinations">
-            <field name="name">Krian</field>
-            <field name="code">KRN</field>
-            <field name="icao">KRN</field>
-            <field name="city">Sidoarjo</field>
+        <record id="tt_destination_airline_srj" model="tt.destinations">
+            <field name="name">Sumberrejo</field>
+            <field name="code">SRJ</field>
+            <field name="icao">SRJ</field>
+            <field name="city">Bojonegoro</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -4018,11 +4114,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_spj" model="tt.destinations">
-            <field name="name">Sepanjang</field>
-            <field name="code">SPJ</field>
-            <field name="icao">SPJ</field>
-            <field name="city">Sidoarjo</field>
+        <record id="tt_destination_airline_bib" model="tt.destinations">
+            <field name="name">Blimbingpendopo</field>
+            <field name="code">BIB</field>
+            <field name="icao">BIB</field>
+            <field name="city">Prabumulih</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -4034,11 +4130,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_sda" model="tt.destinations">
-            <field name="name">Sidoarjo</field>
-            <field name="code">SDA</field>
-            <field name="icao">SDA</field>
-            <field name="city">Sidoarjo</field>
+        <record id="tt_destination_airline_gnm" model="tt.destinations">
+            <field name="name">Gunungmegang</field>
+            <field name="code">GNM</field>
+            <field name="icao">GNM</field>
+            <field name="city">Prabumulih</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -4050,11 +4146,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_wr" model="tt.destinations">
-            <field name="name">Waru</field>
-            <field name="code">WR</field>
-            <field name="icao">WR</field>
-            <field name="city">Sidoarjo</field>
+        <record id="tt_destination_airline_pbm" model="tt.destinations">
+            <field name="name">Prabumulih</field>
+            <field name="code">PBM</field>
+            <field name="icao">PBM</field>
+            <field name="city">Prabumulih</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -4066,11 +4162,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_me" model="tt.destinations">
-            <field name="name">Muara Enim</field>
-            <field name="code">ME</field>
-            <field name="icao">ME</field>
-            <field name="city">Muara Enim</field>
+        <record id="tt_destination_airline_kt" model="tt.destinations">
+            <field name="name">Klaten</field>
+            <field name="code">KT</field>
+            <field name="icao">KT</field>
+            <field name="city">Klaten</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -4082,11 +4178,27 @@
         </record>
 
 
-        <record id="tt_destination_airline_ujm" model="tt.destinations">
-            <field name="name">Ujanmas</field>
-            <field name="code">UJM</field>
-            <field name="icao">UJM</field>
-            <field name="city">Muara Enim</field>
+        <record id="tt_destination_airline_ktx" model="tt.destinations">
+            <field name="name">Klaten</field>
+            <field name="code">KTX</field>
+            <field name="icao">KTX</field>
+            <field name="city">Klaten</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
+            <field name="latitude">0</field>
+            <field name="longitude">0</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_swt" model="tt.destinations">
+            <field name="name">Srowot</field>
+            <field name="code">SWT</field>
+            <field name="icao">SWT</field>
+            <field name="city">Klaten</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -4103,38 +4215,6 @@
             <field name="code">KW</field>
             <field name="icao">KW</field>
             <field name="city">Karawang</field>
-            <field name="country_id" ref="base.id"/>
-            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
-            <field name="latitude">0</field>
-            <field name="longitude">0</field>
-            <field name="altitude">0</field>
-            <field name="timezone_hour">7</field>
-            <field name="tz">Asia/Jakarta</field>
-            <field name="active">1</field>
-        </record>
-
-
-        <record id="tt_destination_airline_bbt" model="tt.destinations">
-            <field name="name">Babat</field>
-            <field name="code">BBT</field>
-            <field name="icao">BBT</field>
-            <field name="city">Lamongan</field>
-            <field name="country_id" ref="base.id"/>
-            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
-            <field name="latitude">0</field>
-            <field name="longitude">0</field>
-            <field name="altitude">0</field>
-            <field name="timezone_hour">7</field>
-            <field name="tz">Asia/Jakarta</field>
-            <field name="active">1</field>
-        </record>
-
-
-        <record id="tt_destination_airline_lmg" model="tt.destinations">
-            <field name="name">Lamongan</field>
-            <field name="code">LMG</field>
-            <field name="icao">LMG</field>
-            <field name="city">Lamongan</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -4199,6 +4279,22 @@
             <field name="code">BBD</field>
             <field name="icao">BBD</field>
             <field name="city">Ponorogo</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
+            <field name="latitude">0</field>
+            <field name="longitude">0</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bwi" model="tt.destinations">
+            <field name="name">Banyuwangi Kota</field>
+            <field name="code">BWI</field>
+            <field name="icao">BWI</field>
+            <field name="city">Banyuwangi</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -4278,6 +4374,22 @@
             <field name="name">Karangasem</field>
             <field name="code">KNE</field>
             <field name="icao">KNE</field>
+            <field name="city">Banyuwangi</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
+            <field name="latitude">0</field>
+            <field name="longitude">0</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ktg" model="tt.destinations">
+            <field name="name">Ketapang</field>
+            <field name="code">KTG</field>
+            <field name="icao">KTG</field>
             <field name="city">Banyuwangi</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
@@ -4610,11 +4722,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_bj" model="tt.destinations">
-            <field name="name">Bojonegoro</field>
-            <field name="code">BJ</field>
-            <field name="icao">BJ</field>
-            <field name="city">Bojonegoro</field>
+        <record id="tt_destination_airline_bbt" model="tt.destinations">
+            <field name="name">Babat</field>
+            <field name="code">BBT</field>
+            <field name="icao">BBT</field>
+            <field name="city">Lamongan</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>
@@ -4626,27 +4738,11 @@
         </record>
 
 
-        <record id="tt_destination_airline_kit" model="tt.destinations">
-            <field name="name">Kalitidu</field>
-            <field name="code">KIT</field>
-            <field name="icao">KIT</field>
-            <field name="city">Bojonegoro</field>
-            <field name="country_id" ref="base.id"/>
-            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
-            <field name="latitude">0</field>
-            <field name="longitude">0</field>
-            <field name="altitude">0</field>
-            <field name="timezone_hour">7</field>
-            <field name="tz">Asia/Jakarta</field>
-            <field name="active">1</field>
-        </record>
-
-
-        <record id="tt_destination_airline_srj" model="tt.destinations">
-            <field name="name">Sumberrejo</field>
-            <field name="code">SRJ</field>
-            <field name="icao">SRJ</field>
-            <field name="city">Bojonegoro</field>
+        <record id="tt_destination_airline_lmg" model="tt.destinations">
+            <field name="name">Lamongan</field>
+            <field name="code">LMG</field>
+            <field name="icao">LMG</field>
+            <field name="city">Lamongan</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
             <field name="latitude">0</field>

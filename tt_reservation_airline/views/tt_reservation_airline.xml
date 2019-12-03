@@ -22,15 +22,7 @@
                             string="Print Itinerary" type="object" icon="fa-print"/>
                 </div>
             </xpath>
-            <field name="provider_name" position="after">
-                <field name="carrier_name"/>
-<!--                ### SPACE FOR DEFAULT VALUE-->
-                    <field name="id" invisible="1"/>
-<!--                ###-->
-            </field>
-            <field name="adult" position="after">
-                <field name="child"/>
-            </field>
+
             <xpath expr="//group[@name='paxgroup']" position="before">
                 <separator string="Trip Information"/>
                 <group>
