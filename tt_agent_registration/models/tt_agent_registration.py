@@ -7,6 +7,7 @@ import copy
 import logging
 import traceback
 from ...tools.api import Response
+from ...tools.ERR import RequestException
 
 _logger = logging.getLogger(__name__)
 
@@ -633,8 +634,10 @@ class AgentRegistration(models.Model):
                 percentage += rec.percentage
         if percentage >= 100:
             if self.name:
-                if not self.parent_agent_id.check_balance_limit:
-                    raise UserError('Balance is not enough. Please Top Up first.')
+                balance_res = self.env['tt.agent'].check_balance_limit_api(self.parent_agent_id.id, self.total)
+                if balance_res['error_code'] != 0:
+                    _logger.error('Balance not enough')
+                    raise RequestException(1007)
                 self.calc_commission()
                 # self.partner_id = self.parent_agent_id.id
                 self.create_opening_documents()
@@ -745,12 +748,15 @@ class AgentRegistration(models.Model):
 
     param_other = {
         "social_media": "Telegram",
-        "agent_type": "Agent BTBO",
+        "agent_type": "Agent Citra",
         "promotion_id": "16"
     }
 
+    param_promotion_id = 15
+
     param_context = {
-        'co_uid': 7
+        'co_uid': 7,
+        'co_agent_id': 2
     }
 
     def create_agent_registration_api(self, data, context):  #
@@ -760,6 +766,7 @@ class AgentRegistration(models.Model):
         other = data['other']  # self.param_other
         context = context  # self.param_context
         regis_doc = data['regis_doc']  # self.param_regis_doc
+        promotion = data['promotion_id']  # self.param_promotion_id
         registration_list = self.search([('name', '=', company['name'])], order='registration_date desc', limit=1)  # data['company']
         check = 0
         response = {}
@@ -783,10 +790,10 @@ class AgentRegistration(models.Model):
         if check == 0:
             try:
                 agent_type = self.env['tt.agent.type'].sudo().search([('name', '=', other.get('agent_type'))], limit=1)
-                parent_agent_id = self.set_parent_agent_id_api(agent_type)
+                parent_agent_id = self.set_parent_agent_id_api(agent_type, context['co_agent_id'])
                 social_media_ids = self.create_social_media_agent_regis(other)
                 # promotion_id = self.env['tt.agent.registration.promotion'].sudo().search([('id', '=', 10)], limit=1)
-                promotion_id = self.get_promotion(other)
+                promotion_id = self.get_promotion(promotion)
                 header = self.prepare_header(company, other, agent_type)
                 # contact_ids = self.prepare_contact(pic)
                 agent_registration_customer_ids = self.prepare_customer(pic)
@@ -794,6 +801,7 @@ class AgentRegistration(models.Model):
                 header.update({
                     'agent_registration_customer_ids': [(6, 0, agent_registration_customer_ids)],
                     'address_ids': [(6, 0, address_ids)],
+                    'reference_id': context['co_agent_id'],
                     'social_media_ids': [(6, 0, social_media_ids)],
                     'registration_fee': agent_type.registration_fee,
                     'registration_date': datetime.now(),
@@ -845,20 +853,20 @@ class AgentRegistration(models.Model):
             })
         return header
 
-    def set_parent_agent_id_api(self, agent_type_id):
+    def set_parent_agent_id_api(self, agent_type_id, agent_id):
         if agent_type_id:
             if agent_type_id.id == self.env.ref('tt_base.agent_type_citra').id:
                 parent_agent_id = self.env.ref('tt_base.rodex_ho').id
             else:
-                parent_agent_id = self.env.user.agent_id.id
+                parent_agent_id = agent_id
         else:
-            parent_agent_id = self.env.user.agent_id.id
+            parent_agent_id = agent_id
         return parent_agent_id
 
     def get_config_api(self):
         try:
             agent_type = []
-            for rec in self.env['tt.agent.type'].search([]):
+            for rec in self.env['tt.agent.type'].search([('id', '!=', self.env.ref('tt_base.agent_type_ho').id)]):
                 agent_type.append({
                     'name': rec.name,
                     'is_allow_regis': rec.can_register_agent
@@ -895,15 +903,15 @@ class AgentRegistration(models.Model):
         address_id = self.address_ids.create({
             'zip': address.get('zip'),
             'address': address.get('address'),
-            'city_id': int(address.get('city')),
-            'type': 'home'
+            # 'city_id': int(address.get('city')),
+            'type': 'work'
         })
         address_list.append(address_id.id)
         return address_list
 
-    def get_promotion(self, other):
-        if other.get('promotion'):
-            return other.get('promotion')
+    def get_promotion(self, promotion):
+        if promotion:
+            return promotion
         else:
             return self.env['tt.agent.registration.promotion'].search([('agent_type_id', '=', self.agent_type_id.id), ('default', '=', True)], limit=1).id
 

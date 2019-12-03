@@ -20,6 +20,7 @@
                             <field name="booked_date" readonly="1"/>
                             <field name="issued_uid" readonly="1"/>
                             <field name="issued_date" readonly="1"/>
+                            <field name="hold_date" readonly="1"/>
                             <field name="expired_date" readonly="1"/>
                         </group>
                     </group>

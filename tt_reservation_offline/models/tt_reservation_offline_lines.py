@@ -137,25 +137,25 @@ class IssuedOfflineLines(models.Model):
         for rec in self:
             rec.provider = rec.carrier_id.name
 
-    @api.depends('activity_name')
-    @api.onchange('activity_name')
-    def get_activity_package(self):
-        for rec in self:
-            rec.activity_package = ''
-            if rec.activity_name:
-                return {'domain': {
-                    'activity_package': [('activity_id', '=', rec.activity_name.id)]
-                }}
+    # @api.depends('activity_name')
+    # @api.onchange('activity_name')
+    # def get_activity_package(self):
+    #     for rec in self:
+    #         rec.activity_package = ''
+    #         if rec.activity_name:
+    #             return {'domain': {
+    #                 'activity_package': [('activity_id', '=', rec.activity_name.id)]
+    #             }}
 
-    @api.depends('activity_package')
-    @api.onchange('activity_package')
-    def get_activity_timeslot(self):
-        for rec in self:
-            rec.activity_timeslot = ''
-            if rec.activity_package:
-                return {'domain': {
-                    'activity_timeslot': [('product_type_id', '=', rec.activity_package.id)]
-                }}
+    # @api.depends('activity_package')
+    # @api.onchange('activity_package')
+    # def get_activity_timeslot(self):
+    #     for rec in self:
+    #         rec.activity_timeslot = ''
+    #         if rec.activity_package:
+    #             return {'domain': {
+    #                 'activity_timeslot': [('product_type_id', '=', rec.activity_package.id)]
+    #             }}
 
     def action_create_ledger(self):
         if not self.is_ledger_created:
@@ -251,8 +251,8 @@ class IssuedOfflineLines(models.Model):
 
     def get_line_activity_description(self):
         vals = ''
-        vals += 'Activity : ' + self.activity_name.name + '\n' if self.activity_name else 'Activity : ' + '\n'
-        vals += 'Package : ' + self.activity_package.name + str(self.obj_qty) + 'x\n' if self.activity_package else 'Package : ' + '\n'
+        vals += 'Activity : ' + self.activity_name + '\n' if self.activity_name else 'Activity : ' + '\n'
+        vals += 'Package : ' + self.activity_package + str(self.obj_qty) + 'x\n' if self.activity_package else 'Package : ' + '\n'
         vals += 'Date : ' + str(self.check_in) + '\n' if self.check_in else 'Date : ' + '\n'
         vals += 'Passengers : \n' + str(self.get_passengers_list())
         vals += 'Description : ' + self.description if self.description else 'Description : '
@@ -261,8 +261,8 @@ class IssuedOfflineLines(models.Model):
     def get_all_line_activity_description(self):
         vals = ''
         for line in self.booking_id.line_ids:
-            vals += 'Activity : ' + line.activity_name.name + '\n' if line.activity_name else 'Activity : ' + '\n'
-            vals += 'Package : ' + line.activity_package.name + str(line.obj_qty) + 'x\n' if line.activity_package else 'Package : ' + '\n'
+            vals += 'Activity : ' + line.activity_name + '\n' if line.activity_name else 'Activity : ' + '\n'
+            vals += 'Package : ' + line.activity_package + str(line.obj_qty) + 'x\n' if line.activity_package else 'Package : ' + '\n'
             vals += 'Date : ' + str(line.check_in) + '\n' if line.check_in else 'Date : ' + '\n'
             vals += 'Passengers : \n' + str(self.get_passengers_list())
             vals += 'Description : ' + line.description if line.description else 'Description : '

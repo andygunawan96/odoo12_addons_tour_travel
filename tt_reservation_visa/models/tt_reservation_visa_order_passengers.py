@@ -66,7 +66,7 @@ class VisaInterviewBiometrics(models.Model):
 
     @api.model
     def get_user_HO(self):
-        return [('agent_id', '=', self.env.ref('tt_base.rodex_ho').id)]
+        return [('agent_id.name', '=', self.env.ref('tt_base.rodex_ho').name)]
 
 
 class VisaOrderPassengers(models.Model):

@@ -1,5 +1,6 @@
 from odoo import models, api, _
 from odoo.exceptions import UserError
+import pytz, datetime
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -14,7 +15,7 @@ class AgentReportVisaModel(models.AbstractModel):
         return """
         vs.id, vs.name, tcd.first_name || ' ' || tcd.last_name as contact_person, vs.contact_name, rc.name as country_name,
         top.title || ' ' || top.first_name || ' ' || top.last_name as pass_name, top.age, vs.departure_date, vs.issued_date, 
-        vs.in_process_date, vs.ready_date, vs.done_date, vs.state, rp.name as issued_name, tvp.immigration_consulate, 
+        vs.in_process_date, vs.done_date, vs.state, rp.name as issued_name, tvp.immigration_consulate, 
         tvp.visa_type, tl.debit as commission
         """
 
@@ -67,10 +68,24 @@ class AgentReportVisaModel(models.AbstractModel):
         return self.env.cr.dictfetchall()
 
     def edit_data(self, line_list):
+        odoobot_user = self.env['res.users'].sudo().search([('id', '=', 1), ('active', '=', False)])
+        tz = odoobot_user.tz
+        local = pytz.timezone(tz)
+        print(tz)
         for line in line_list:
             visa_obj = self.env['tt.reservation.visa'].search([('id', '=', line.get('id'))], limit=1)
             line['total'] = visa_obj.total
             line['total_nta'] = visa_obj.total_nta
+            if line['issued_date']:
+                local_dt = line['issued_date']
+                line['issued_date'] = local_dt.astimezone(local)
+            if line['in_process_date']:
+                local_dt = line['in_process_date']
+                line['in_process_date'] = local_dt.astimezone(local)
+            if line['done_date']:
+                local_dt = line['done_date']
+                line['done_date'] = local_dt.astimezone(local)
+            print(line)
         return line_list
 
     @staticmethod
