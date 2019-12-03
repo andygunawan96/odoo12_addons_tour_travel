@@ -54,7 +54,7 @@
                         </group>
                         <group>
                             <field name="tour_code"/>
-                            <field name="provider_id"/>
+                            <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
                             <field name="currency_id"/>
                             <field name="description"/>
                             <field name="tour_category"/>
@@ -442,7 +442,7 @@
                 <field name="seat" string="Seat Available"/>
                 <field name="state"/>
                 <field name="create_uid"/>
-                <field name="provider_id"/>
+                <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
             </tree>
         </field>
     </record>

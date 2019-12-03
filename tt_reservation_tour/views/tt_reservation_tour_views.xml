@@ -50,9 +50,6 @@
         <field name="mode">primary</field>
         <field name="inherit_id" ref="tt_reservation.tt_reservation_form_views"/>
         <field name="arch" type="xml">
-            <field name="adult" position="after">
-                <field name="child"/>
-            </field>
             <xpath expr="//group[@name='paxgroup']" position="before">
                 <separator string="Tour Information"/>
                 <group>
