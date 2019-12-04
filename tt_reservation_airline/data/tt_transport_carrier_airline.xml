@@ -473,10 +473,80 @@
 
 
         <record id="tt_transport_carrier_airline_ak" model="tt.transport.carrier">
-            <field name="name">AirAsia</field>
+            <field name="name">AirAsia Berhad</field>
             <field name="code">AK</field>
             <field name="icao">AXM</field>
             <field name="call_sign">RED CAP</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_d7" model="tt.transport.carrier">
+            <field name="name">AirAsia X Berhad</field>
+            <field name="code">D7</field>
+            <field name="icao">XAX</field>
+            <field name="call_sign">XANADU</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_fd" model="tt.transport.carrier">
+            <field name="name">Thai AirAsia</field>
+            <field name="code">FD</field>
+            <field name="icao">AIQ</field>
+            <field name="call_sign">THAI ASIA</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_qz" model="tt.transport.carrier">
+            <field name="name">Indonesia AirAsia</field>
+            <field name="code">QZ</field>
+            <field name="icao">AWQ</field>
+            <field name="call_sign">WAGON AIR</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_zz" model="tt.transport.carrier">
+            <field name="name">Phillipines AirAsia</field>
+            <field name="code">ZZ</field>
+            <field name="icao">APG</field>
+            <field name="call_sign">COOL RED</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_dj" model="tt.transport.carrier">
+            <field name="name">AirAsia Japan</field>
+            <field name="code">DJ</field>
+            <field name="icao">WAJ</field>
+            <field name="call_sign">WING ASIA</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_xj" model="tt.transport.carrier">
+            <field name="name">Thai AirAsia X</field>
+            <field name="code">XJ</field>
+            <field name="icao">TAX</field>
+            <field name="call_sign">EXPRESS WING</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_is" model="tt.transport.carrier">
+            <field name="name">Air Asia India</field>
+            <field name="code">IS</field>
+            <field name="icao">IAD</field>
+            <field name="call_sign">RED KNIGHT</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
