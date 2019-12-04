@@ -71,6 +71,11 @@ class AgentInvoice(models.Model):
                                index=True, copy=False, readonly=True)
     description = fields.Text('Description',readonly=True)
 
+    # Bill to
+    bill_name = fields.Char('Billing to')
+    bill_address = fields.Text('Billing Address')
+    bill_address_id = fields.Many2one('address.detail', 'Address')
+
     @api.model
     def create(self, vals_list):
         vals_list['name'] = self.env['ir.sequence'].next_by_code('agent.invoice')
@@ -147,3 +152,26 @@ class AgentInvoice(models.Model):
         res = res and res[0] or {}
         datas['form'] = res
         return self.env.ref('tt_report_common.action_report_printout_invoice').report_action(self, data=datas)
+
+    @api.onchange('customer_parent_id')
+    def set_default_billing_to(self):
+        for rec in self:
+            if rec.customer_parent_id.customer_parent_type_id.name != 'FPO':
+                # Klo  COR POR ambil alamat tagih dari COR/POR tsb
+                rec.bill_name = rec.customer_parent_id.name
+                rec.bill_address_id = rec.customer_parent_id.address_ids and rec.customer_parent_id.address_ids[0].id or False
+                rec.bill_address = rec.bill_address_id.address
+            else:
+                # Klo FPO ambil alamat booker tsb
+                rec.bill_name = rec.booker_id.name
+                # TODO pertimbangkan ambil yg state = Work
+                if rec.booker_id.address_ids:
+                    rec.bill_address_id = rec.booker_id.address_ids[0].id
+                    for rec2 in rec.booker_id.address_ids:
+                        if rec2.type == 'work':
+                            rec.bill_address_id = rec2.id
+                            break
+                    rec.bill_address = rec.bill_address_id.address
+                else:
+                    rec.bill_address = ''
+

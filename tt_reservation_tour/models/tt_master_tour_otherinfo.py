@@ -6,7 +6,7 @@ class TtMasterTourOtherInfoMsg(models.Model):
     _description = 'Rodex Model'
     _order = 'sequence asc'
 
-    name = fields.Char('Text', required=True, default='New')
+    name = fields.Text('Text', required=True, default='New')
     style = fields.Selection([('P','Plain'),('B','Bold'),('I','Italic'),('U','Underline')], 'Style', default='P')
     sequence = fields.Integer('Sequence', required=True, default=50)
     otherinfo_id = fields.Many2one('tt.master.tour.otherinfo', 'Other Info')
@@ -16,7 +16,7 @@ class TtMasterTourOtherInfo(models.Model):
     _name = 'tt.master.tour.otherinfo'
     _description = 'Rodex Model'
 
-    name = fields.Char('Name', related='info_message_ids.name')
+    name = fields.Text('Name', related='info_message_ids.name')
     info_message_ids = fields.One2many('tt.master.tour.otherinfo.messages', 'otherinfo_id', 'Messages')
     child_list_type = fields.Selection([('none', 'None'), ('number', 'Number (1, 2, 3)'), ('letter', 'Letter (a, b, c)'), ('dots', 'Dots (o, o, o)'), ('romans', 'Romans (I, II, III)')],'Child List Type', default='none')
     parent_id = fields.Many2one('tt.master.tour.otherinfo', 'Parent')

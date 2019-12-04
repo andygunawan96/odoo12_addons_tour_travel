@@ -18,6 +18,7 @@
         'security/ir.model.access.csv',
         'security/tt_reservation_offline_security.xml',
         'data/ir_sequence_data.xml',
+        'data/tt_provider_type_data.xml',
         'views/tt_reservation_offline_menuheader.xml',
         'views/issued_offline_views.xml',
         'views/tt_reservation_offline_lines_views.xml',
