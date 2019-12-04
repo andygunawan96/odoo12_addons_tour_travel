@@ -42,6 +42,7 @@ BANK_STATEMENT = [
 
 BOOKING_STATE = [
     ('draft', 'New'),
+    ('confirm', 'Confirmed'),
     ('cancel', 'Cancelled'),
     ('cancel2', 'Expired'),
     ('error', 'Connection Loss'), #diganti failed issue
@@ -51,7 +52,9 @@ BOOKING_STATE = [
     ('in_progress', 'In Progress'),
     ('fail_issued', 'Failed (Issue)'),
     ('partial_issued', 'Partial Issued'),
+    ('sent', 'Sent'),
     ('paid', 'Paid'),
+    ('validate', 'Validate'),
     ('issued', 'Issued'),
     ('pending', 'Pending'),
     ('done', 'Done'),
@@ -73,7 +76,9 @@ BOOKING_STATE_STR = {
     'in_progress': 'In Progress',
     'fail_issued': 'Failed (Issue)',
     'partial_issued': 'Partial Issued',
+    'sent': 'Sent',
     'paid': 'Paid',
+    'validate': 'Validate',
     'issued': 'Issued',
     'pending': 'Pending',
     'done': 'Done',

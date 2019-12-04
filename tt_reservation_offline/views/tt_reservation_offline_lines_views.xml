@@ -8,7 +8,7 @@
             <field name="arch" type="xml">
                 <form>
                     <header>
-                        <field name="state" widget="statusbar" statusbar_visible="draft,confirm,paid,posted"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,confirm,validate,done"/>
                     </header>
                     <field name="booking_id" invisible="1"/>
                     <field name="transaction_type" invisible="1"/>

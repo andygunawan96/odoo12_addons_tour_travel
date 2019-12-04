@@ -52,7 +52,7 @@ class IssuedOfflineLines(models.Model):
 
     pnr = fields.Char('PNR', readonly=True, states={'draft': [('readonly', False)],
                                                     'confirm': [('readonly', False)],
-                                                    'paid': [('readonly', False)]})
+                                                    'validate': [('readonly', False)]})
 
     booking_id = fields.Many2one('tt.reservation.offline', 'Reservation Offline')
     obj_qty = fields.Integer('Qty', readonly=True, states={'draft': [('readonly', False)],
