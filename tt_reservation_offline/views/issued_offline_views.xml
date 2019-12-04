@@ -18,8 +18,8 @@
                         <filter string="Draft" name="draft" domain="[('state','=','draft')]"/>
                         <filter string="Confirm" name="confirm" domain="[('state','=','confirm')]"/>
                         <filter string="Sent" name="sent" domain="[('state','=','sent')]"/>
-                        <filter string="Validate" name="paid" domain="[('state','=','paid')]"/>
-                        <filter string="Done" name="done" domain="[('state','=','posted')]"/>
+                        <filter string="Validate" name="validate" domain="[('state','=','validate')]"/>
+                        <filter string="Done" name="done" domain="[('state','=','done')]"/>
                         <filter string="Canceled/Expired/Refund" name="canceled_expired_refund" domain="['|', '|', ('state','=','cancel'),('state','=','expired'),('state','=','refund')]"/>
                     </group>
                     <separator/>
@@ -76,16 +76,16 @@
                         <button string="Set to Draft" name="action_draft" type="object" states="cancel" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                         <button string="Confirm" class="oe_highlight" name="action_confirm" type="object" states="draft" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                         <button string="Sent" name="action_sent" type="object" states="confirm" groups="tt_base.group_tt_tour_travel_operator"/>  <!--states="confirm"-->
-                        <button string="Validate" class="oe_highlight" name="action_issued_backend" states="sent" type="object" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>  <!--groups="tt_base.group_tt_ticketing_operator,account.group_account_user"-->
-                        <button string="Quick Validate" class="oe_highlight" name="action_quick_issued" states="draft,confirm,sent" type="object" groups="tt_base.group_tt_tour_travel_operator"/>
+                        <button string="Validate" class="oe_highlight" name="action_issued_backend" states="sent" type="object" groups="tt_base.group_tt_agent_user_operator"/>  <!-- ,tt_base.group_tt_tour_travel_operator groups="tt_base.group_tt_ticketing_operator,account.group_account_user"-->
+<!--                        <button string="Quick Validate" class="oe_highlight" name="action_quick_issued" states="draft,confirm,sent" type="object" groups="tt_base.group_tt_tour_travel_operator"/>-->
 <!--                        <button string="Post" name="action_done" states="draft,confirm,sent,paid,posted" type="object" groups="tt_base.group_tt_tour_travel_operator"/>-->
-                        <button string="Post" class="oe_highlight" name="action_done" states="paid" type="object" groups="tt_base.group_tt_ticketing_manager,account.group_account_invoice"/>
-                        <button string="Cancel" name="action_cancel" type="object" states="confirm,sent,paid" groups="tt_base.group_tt_ticketing_operator,account.group_account_invoice"/>
+                        <button string="Done" class="oe_highlight" name="action_done" states="validate" type="object" groups="tt_base.group_tt_ticketing_manager,account.group_account_invoice"/>
+                        <button string="Cancel" name="action_cancel" type="object" states="confirm,sent,validate" groups="tt_base.group_tt_ticketing_operator,account.group_account_invoice"/>
                         <button string="Cancel" name="action_cancel" type="object" states="draft"/>
 <!--                        <button string="Print Invoice" name="print_invoice" type="object" states="paid,posted"/>-->
 <!--                        <button string="Print Invoice Ticket" name="print_invoice_ticket" type="object" states="paid,posted"/>-->
 <!--                        <button string="Get Config API" name="get_config_api" type="object"/>-->
-                        <field name="state" widget="statusbar" statusbar_visible="draft,confirm,sent,paid,posted"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,confirm,sent,validate,done"/>
                     </header>
                     <sheet>
                         <div class="oe_title">
@@ -161,7 +161,7 @@
                             <group>
                                 <field name="description" attrs="{'invisible': [('provider_type_id_name', 'in', ['airline', 'train']), ('state','=','draft')]}"/>
                             </group>
-                            <group string="Booking Value" groups="tt_base.group_tt_tour_travel_operator" states="paid,posted">
+                            <group string="Booking Value" groups="tt_base.group_tt_tour_travel_operator" states="validate,done">
                                 <field name="resv_code"/>
                                 <field name="vendor_amount" groups="tt_base.group_tt_tour_travel_operator"/>
                                 <field name="ho_final_amount" groups="tt_base.group_tt_tour_travel_operator"/>
@@ -310,8 +310,8 @@
             </field>
         </record>
 
-        <record model="ir.actions.act_window" id="issued_offline_paid_action">
-            <field name="name">Reservation Offline Paid</field>
+        <record model="ir.actions.act_window" id="issued_offline_validate_action">
+            <field name="name">Reservation Offline Validate</field>
             <field name="res_model">tt.reservation.offline</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
@@ -320,7 +320,7 @@
                 {
                     'form_view_ref': 'tt_reservation_offline.issued_offline_view_form',
                     'tree_view_ref': 'tt_reservation_offline.issued_offline_view_tree',
-                    'search_default_paid':1
+                    'search_default_validate':1
                 }
             </field>
         </record>
@@ -367,8 +367,8 @@
         <menuitem id="submenu_issued_offline_side_menu_sent" parent="tt_reservation_offline.menu_offline_order"
                   name="Sent" sequence='4' action="issued_offline_sent_action"/>
 
-        <menuitem id="submenu_issued_offline_side_menu_paid" parent="tt_reservation_offline.menu_offline_order"
-                  name="Paid" sequence='5' action="issued_offline_paid_action"/>
+        <menuitem id="submenu_issued_offline_side_menu_validate" parent="tt_reservation_offline.menu_offline_order"
+                  name="Paid" sequence='5' action="issued_offline_validate_action"/>
 
         <menuitem id="submenu_issued_offline_side_menu_done" parent="tt_reservation_offline.menu_offline_order"
                   name="Done" sequence='6' action="issued_offline_done_action"/>

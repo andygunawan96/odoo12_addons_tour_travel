@@ -52,7 +52,7 @@ class IssuedOfflineLines(models.Model):
 
     pnr = fields.Char('PNR', readonly=True, states={'draft': [('readonly', False)],
                                                     'confirm': [('readonly', False)],
-                                                    'paid': [('readonly', False)]})
+                                                    'validate': [('readonly', False)]})
 
     booking_id = fields.Many2one('tt.reservation.offline', 'Reservation Offline')
     obj_qty = fields.Integer('Qty', readonly=True, states={'draft': [('readonly', False)],
@@ -231,7 +231,7 @@ class IssuedOfflineLines(models.Model):
     def get_line_hotel_description(self):
         vals = ''
         vals += 'Hotel : ' + self.hotel_name + '\n' if self.hotel_name else 'Hotel : ' + '\n'
-        vals += 'Room : ' + self.room + ' (' + self.meal_type + ') ' + str(self.obj_qty) + 'x\n' if self.room else 'Room : ' + '\n'
+        vals += 'Room : ' + (self.room if self.room else '') + ' (' + (self.meal_type if self.meal_type else '') + ') ' + str(self.obj_qty) + 'x\n'
         vals += 'Date : ' + str(self.check_in) + ' - ' if self.check_in else 'Date : - '
         vals += str(self.check_out) + '\n' if self.check_out else '\n'
         vals += 'Passengers : \n' + str(self.get_passengers_list())

@@ -134,8 +134,8 @@ class VisaPricelist(models.Model):
                         'total_price': rec.sale_price,
                         'currency': rec.currency_id.name
                     },
+                    'notes': rec.notes,
                     'id': rec.id
-
                 })
 
                 # for rec1 in self.search([('name', '=ilike', rec.country_id.id)]):

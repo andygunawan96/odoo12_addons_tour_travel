@@ -6,6 +6,7 @@ import traceback
 import copy
 from ...tools.api import Response
 from ...tools.ERR import RequestException
+from ...tools import variables
 
 _logger = logging.getLogger(__name__)
 
@@ -58,7 +59,7 @@ class IssuedOffline(models.Model):
 
     # booking_id = fields.Many2one('tt.reservation.offline', 'Booking ID', default=lambda self: self.id)
 
-    state = fields.Selection(STATE_OFFLINE, 'State', default='draft')
+    state = fields.Selection(variables.BOOKING_STATE, 'State', default='draft')
     # type = fields.Selection(TYPE, required=True, readonly=True,
     #                         states={'draft': [('readonly', False)]}, string='Transaction Type')
     provider_type_id = fields.Many2one('tt.provider.type', required=True, readonly=True,
@@ -84,7 +85,7 @@ class IssuedOffline(models.Model):
     vendor = fields.Char('Vendor Provider', readonly=True, states={'confirm': [('readonly', False)]})
     master_vendor_id = fields.Char('Master Vendor', readonly=True, states={'confirm': [('readonly', False)]})
 
-    resv_code = fields.Char('Vendor Order Number', readonly=True, states={'paid': [('readonly', False)]})
+    resv_code = fields.Char('Vendor Order Number', readonly=True, states={'validate': [('readonly', False)]})
 
     # Date and UID
     confirm_date = fields.Datetime('Confirm Date', readonly=True, copy=False)
@@ -124,7 +125,7 @@ class IssuedOffline(models.Model):
     #                                   , string='Attachments', readonly=True, states={'paid': [('readonly', False)]})
     attachment_ids = fields.Many2many('tt.upload.center', 'offline_ir_attachments_rel', 'tt_issued_id',
                                       'attachment_id', string='Attachments', readonly=True,
-                                      states={'paid': [('readonly', False)]})
+                                      states={'validate': [('readonly', False)]})
     guest_ids = fields.Many2many('tt.customer', 'tt_issued_guest_rel', 'resv_issued_id', 'tt_product_id',
                                  'Guest(s)', readonly=True, states={'draft': [('readonly', False)]})
     # passenger_qty = fields.Integer('Passenger Qty', default=1)
@@ -137,15 +138,15 @@ class IssuedOffline(models.Model):
     line_ids = fields.One2many('tt.reservation.offline.lines', 'booking_id', 'Issued Offline', readonly=True,
                                states={'draft': [('readonly', False)],
                                        'confirm': [('readonly', False)],
-                                       'paid': [('readonly', False)]})
+                                       'validate': [('readonly', False)]})
     passenger_ids = fields.One2many('tt.reservation.offline.passenger', 'booking_id', 'Issued Offline', readonly=True,
                                     states={'draft': [('readonly', False)],
                                             'confirm': [('readonly', False)],
-                                            'paid': [('readonly', False)]})
+                                            'validate': [('readonly', False)]})
 
     incentive_amount = fields.Monetary('Insentif')
     vendor_amount = fields.Float('Vendor Amount', readonly=True,
-                                 states={'paid': [('readonly', False), ('required', True)]})
+                                 states={'validate': [('readonly', False), ('required', True)]})
     ho_final_amount = fields.Float('HO Amount', readonly=True, compute='compute_final_ho')
     ho_final_ledger_id = fields.Many2one('tt.ledger')
 
@@ -214,8 +215,8 @@ class IssuedOffline(models.Model):
 
     @api.one
     def action_cancel(self):
-        if self.state != 'posted':
-            if self.state == 'paid':
+        if self.state != 'done':
+            if self.state == 'validate':
                 # # buat refund ledger
                 # self.refund_ledger()
                 # # cancel setiap invoice
@@ -256,7 +257,7 @@ class IssuedOffline(models.Model):
         self.resv_code = False
 
     @api.one
-    def action_paid(self, kwargs={}):
+    def action_validate(self, kwargs={}):
         # cek saldo sub agent
         is_enough = self.agent_id.check_balance_limit_api(self.agent_id.id, self.agent_nta)
         # jika saldo mencukupi
@@ -277,7 +278,7 @@ class IssuedOffline(models.Model):
             # create ledger
             # self.sudo().create_ledger()
             # set state = paid
-            self.state = 'paid'
+            self.state = 'validate'
             self.vendor_amount = self.nta_price
             self.compute_final_ho()
             self.issued_date = fields.Datetime.now()
@@ -328,7 +329,7 @@ class IssuedOffline(models.Model):
 
     @api.one
     def action_issued_backend(self):
-        is_enough = self.action_paid()
+        is_enough = self.action_validate()
         if is_enough[0]['error_code'] != 0:
             raise UserError(is_enough[0]['error_msg'])
 
@@ -342,8 +343,7 @@ class IssuedOffline(models.Model):
                 # self.ho_final_ledger_id = self.final_ledger()
                 # if self.agent_id.agent_type_id.id in [self.env.ref('tt_base_rodex.agent_type_citra').id, self.env.ref('tt_base_rodex.agent_type_japro').id]:
                 #     self.create_agent_invoice()
-                self.state = 'posted'
-                self.state = 'posted'
+                self.state = 'done'
                 self.done_date = fields.Datetime.now()
                 self.done_uid = kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
                 self.booked_date = fields.Datetime.now()
@@ -488,13 +488,13 @@ class IssuedOffline(models.Model):
     @api.depends('agent_commission', 'ho_commission', 'total')
     def _get_nta_price(self):
         for rec in self:
-            rec.nta_price = rec.total - rec.agent_commission - rec.ho_commission  # - rec.incentive_amount
+            rec.nta_price = rec.total - rec.agent_commission   # - rec.incentive_amount
 
     @api.onchange('agent_commission')
     @api.depends('agent_commission', 'total')
     def _get_agent_price(self):
         for rec in self:
-            rec.agent_nta_price = rec.total - rec.agent_commission
+            rec.agent_nta_price = rec.total - rec.agent_commission + rec.ho_commission
 
     @api.multi
     def get_segment_length(self):
@@ -569,9 +569,7 @@ class IssuedOffline(models.Model):
     def _get_ho_commission(self):
         for rec in self:
             rec.ho_commission = 0
-            pricing_obj = rec.env['tt.pricing.agent'].search([('agent_type_id', '=', rec.agent_type_id.id),
-                                                              ('provider_type_id', '=', rec.provider_type_id.id)],
-                                                             limit=1)
+            pricing_obj = rec.env['tt.pricing.agent'].sudo()
             commission_list = pricing_obj.get_commission(rec.agent_commission, rec.agent_id, rec.provider_type_id)
             for comm in commission_list:
                 if comm.get('agent_type_id') == rec.env.ref('tt_base.rodex_ho').agent_type_id.id:
@@ -976,9 +974,9 @@ class IssuedOffline(models.Model):
             pass
         elif all(rec.state == 'sent' for rec in self.provider_booking_ids):
             pass
-        elif all(rec.state == 'paid' for rec in self.provider_booking_ids):
+        elif all(rec.state == 'validate' for rec in self.provider_booking_ids):
             pass
-        elif all(rec.state == 'posted' for rec in self.provider_booking_ids):
+        elif all(rec.state == 'done' for rec in self.provider_booking_ids):
             pass
         else:
             # entah status apa
