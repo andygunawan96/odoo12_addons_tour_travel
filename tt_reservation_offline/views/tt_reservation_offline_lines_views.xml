@@ -2,7 +2,7 @@
 <odoo>
     <data>
 
-        <record id="tt_reservation_offline_view_form" model="ir.ui.view">
+        <record id="tt_reservation_offline_lines_view_form" model="ir.ui.view">
             <field name="name">tt.reservation.offline.lines.view.form</field>
             <field name="model">tt.reservation.offline.lines</field>
             <field name="arch" type="xml">
