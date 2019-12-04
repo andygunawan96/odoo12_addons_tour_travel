@@ -62,9 +62,10 @@ class IssuedOffline(models.Model):
     state = fields.Selection(variables.BOOKING_STATE, 'State', default='draft')
     # type = fields.Selection(TYPE, required=True, readonly=True,
     #                         states={'draft': [('readonly', False)]}, string='Transaction Type')
-    provider_type_id = fields.Many2one('tt.provider.type', required=True, readonly=True,
-                                       states={'draft': [('readonly', False)]}, string='Transaction Type')
-    provider_type_id_name = fields.Char('Transaction Name', readonly=True, related='provider_type_id.code')
+    provider_type_id = fields.Many2one('tt.provider.type', string='Provider Type',
+                                       default=lambda self: self.env.ref('tt_reservation_offline.tt_provider_type_offline'))
+    offline_provider_type_id = fields.Many2one('tt.provider.type')
+    provider_type_id_name = fields.Char('Transaction Name', readonly=True, related='offline_provider_type_id.code')
     provider_booking_ids = fields.One2many('tt.provider.offline', 'booking_id', string='Provider Booking')
 
     segment = fields.Integer('Number of Segment', compute='get_segment_length')
@@ -444,7 +445,7 @@ class IssuedOffline(models.Model):
                 vals = self.env['tt.ledger'].prepare_vals_for_resv(self, pnr, vals)
                 vals.update({
                     'pnr': pnr,
-                    'provider_type_id': self.provider_type_id,
+                    'provider_type_id': self.offline_provider_type_id,
                     'display_provider_name': self.provider_name,
                 })
                 new_aml = rec.env['tt.ledger'].create(vals)
@@ -459,7 +460,7 @@ class IssuedOffline(models.Model):
                 vals = self.env['tt.ledger'].prepare_vals_for_resv(self, pnr, vals)
                 vals.update({
                     'pnr': pnr,
-                    'provider_type_id': self.provider_type_id,
+                    'provider_type_id': self.offline_provider_type_id,
                     'display_provider_name': self.provider_name,
                 })
                 new_aml = rec.env['tt.ledger'].create(vals)
@@ -570,7 +571,7 @@ class IssuedOffline(models.Model):
         for rec in self:
             rec.ho_commission = 0
             pricing_obj = rec.env['tt.pricing.agent'].sudo()
-            commission_list = pricing_obj.get_commission(rec.agent_commission, rec.agent_id, rec.provider_type_id)
+            commission_list = pricing_obj.get_commission(rec.agent_commission, rec.agent_id, rec.offline_provider_type_id)
             for comm in commission_list:
                 if comm.get('agent_type_id') == rec.env.ref('tt_base.rodex_ho').agent_type_id.id:
                     rec.ho_commission += comm.get('amount')
@@ -840,8 +841,8 @@ class IssuedOffline(models.Model):
                 'contact_id': contact_id.id,
                 'customer_parent_id': customer_parent_id,
                 'line_ids': [(6, 0, booking_line_ids)],
-                'provider_type_id': self.env['tt.provider.type'].sudo()
-                                        .search([('code', '=', data_reservation_offline.get('type'))], limit=1).id,
+                'offline_provider_type_id': self.env['tt.provider.type'].sudo()
+                                                .search([('code', '=', data_reservation_offline.get('type'))], limit=1).id,
                 'description': data_reservation_offline.get('desc'),
                 'total': data_reservation_offline['total_sale_price'],
                 "social_media_type": self._get_social_media_id_by_name(data_reservation_offline.get('social_media_id')),
@@ -995,7 +996,7 @@ class IssuedOffline(models.Model):
             new_rec = rec.sudo().copy()
             new_rec.update({
                 'agent_id': list_agent_id[random.randrange(0, len(list_agent_id)-1, 1)],
-                'provider_type_id': list_provider_id[random.randrange(0, len(list_provider_id)-1, 1)],
+                'offline_provider_type_id': list_provider_id[random.randrange(0, len(list_provider_id)-1, 1)],
                 'total': random.randrange(100000, 2000000, 5000),
                 'agent_commission': random.randrange(1000, 20000, 500),
             })
