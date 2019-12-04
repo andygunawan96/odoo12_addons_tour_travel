@@ -408,9 +408,12 @@ class TtVisa(models.Model):
             "birth_date": "2002-10-01",
             "nationality_name": "Indonesia",
             "nationality_code": "ID",
-            "country_of_issued_code": "",
-            "passport_expdate": "2022-11-10",
-            "passport_number": "0938675340864",
+            "identity": {
+                "identity_country_of_issued_code": "ID",
+                "identity_expdate": "2022-11-10",
+                "identity_number": "0938675340864",
+                "identity_type": "passport"
+            },
             "passenger_id": "",
             "is_booker": False,
             "is_contact": False,
@@ -433,9 +436,12 @@ class TtVisa(models.Model):
             "birth_date": "2000-02-15",
             "nationality_name": "Indonesia",
             "nationality_code": "ID",
-            "country_of_issued_code": "",
-            "passport_expdate": "",
-            "passport_number": "",
+            "identity": {
+                "identity_country_of_issued_code": "ID",
+                "identity_expdate": "2022-11-10",
+                "identity_number": "0938675340864",
+                "identity_type": "passport"
+            },
             "passenger_id": "",
             "is_booker": False,
             "is_contact": False,
@@ -458,9 +464,12 @@ class TtVisa(models.Model):
             "birth_date": "2017-02-15",
             "nationality_name": "Indonesia",
             "nationality_code": "ID",
-            "country_of_issued_code": "",
-            "passport_expdate": "",
-            "passport_number": "",
+            "identity": {
+                "identity_country_of_issued_code": "ID",
+                "identity_expdate": "2022-11-10",
+                "identity_number": "0938675340864",
+                "identity_type": "passport"
+            },
             "passenger_id": "",
             "is_booker": False,
             "is_contact": False,
@@ -925,8 +934,8 @@ class TtVisa(models.Model):
                 'title': psg['title'],
                 'pricelist_id': pricelist_id,
                 'passenger_type': psg['pax_type'],
-                'passport_number': psg.get('passport_number'),
-                'passport_expdate': psg.get('passport_expdate'),
+                'passport_number': psg['identity'].get('identity_number'),
+                'passport_expdate': psg['identity'].get('identity_expdate'),
                 'notes': psg.get('notes'),
                 # Pada state request, pax akan diberi expired date dg durasi tergantung dari paket visa yang diambil
                 'expired_date': fields.Date.today() + timedelta(days=pricelist_obj.duration),

@@ -257,7 +257,7 @@ class IssuedOffline(models.Model):
         self.resv_code = False
 
     @api.one
-    def action_done(self, kwargs={}):
+    def action_validate(self, kwargs={}):
         # cek saldo sub agent
         is_enough = self.agent_id.check_balance_limit_api(self.agent_id.id, self.agent_nta)
         # jika saldo mencukupi
@@ -329,7 +329,7 @@ class IssuedOffline(models.Model):
 
     @api.one
     def action_issued_backend(self):
-        is_enough = self.action_done()
+        is_enough = self.action_validate()
         if is_enough[0]['error_code'] != 0:
             raise UserError(is_enough[0]['error_msg'])
 
@@ -488,13 +488,13 @@ class IssuedOffline(models.Model):
     @api.depends('agent_commission', 'ho_commission', 'total')
     def _get_nta_price(self):
         for rec in self:
-            rec.nta_price = rec.total - rec.agent_commission - rec.ho_commission  # - rec.incentive_amount
+            rec.nta_price = rec.total - rec.agent_commission   # - rec.incentive_amount
 
     @api.onchange('agent_commission')
     @api.depends('agent_commission', 'total')
     def _get_agent_price(self):
         for rec in self:
-            rec.agent_nta_price = rec.total - rec.agent_commission
+            rec.agent_nta_price = rec.total - rec.agent_commission + rec.ho_commission
 
     @api.multi
     def get_segment_length(self):
@@ -569,9 +569,7 @@ class IssuedOffline(models.Model):
     def _get_ho_commission(self):
         for rec in self:
             rec.ho_commission = 0
-            pricing_obj = rec.env['tt.pricing.agent'].search([('agent_type_id', '=', rec.agent_type_id.id),
-                                                              ('provider_type_id', '=', rec.provider_type_id.id)],
-                                                             limit=1)
+            pricing_obj = rec.env['tt.pricing.agent'].sudo()
             commission_list = pricing_obj.get_commission(rec.agent_commission, rec.agent_id, rec.provider_type_id)
             for comm in commission_list:
                 if comm.get('agent_type_id') == rec.env.ref('tt_base.rodex_ho').agent_type_id.id:

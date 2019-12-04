@@ -61,10 +61,10 @@
                             </tree>
                         </field>
                     </group>
-                    <notebook colspan="4">
-                        <page string="Locations">
+                    <group string="Locations">
                             <field name="visa_location_ids"/>
-                        </page>
+                    </group>
+                    <notebook colspan="4">
                         <page string="Notes">
                             <field name="notes"/>
                         </page>
