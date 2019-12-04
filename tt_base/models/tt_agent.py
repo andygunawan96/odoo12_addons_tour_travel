@@ -317,8 +317,7 @@ class TtAgent(models.Model):
             if req.get('booker_name'):
                 dom.append(('booker_id.name','ilike',req['booker_name']))
             if req.get('passenger_name'):
-                pass
-                # dom.append(('booker_ids.name', 'ilike', req['booker_name']))
+                dom.append(('booker_ids', 'ilike', req['passenger_name']))
             if req.get('date_from'):
                 dom.append(('booked_date', '>=', req['date_from']))
             if req.get('date_to'):

@@ -3,7 +3,7 @@
     <data noupdate="0">
         <record id="tt_provider_train_kai" model="tt.provider">
             <field name="name">KAI</field>
-            <field name="code">KAI</field>
+            <field name="code">kai</field>
             <field name="active" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_train"/>
         </record>
