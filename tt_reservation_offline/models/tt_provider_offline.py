@@ -91,9 +91,7 @@ class ProviderOffline(models.Model):
 
         scs_list = []
         scs_list_2 = []
-        pricing_obj = self.env['tt.pricing.agent'].search(
-            [('agent_type_id', '=', self.booking_id.agent_id.agent_type_id.id),
-             ('provider_type_id', '=', self.booking_id.provider_type_id.id)], limit=1)
+        pricing_obj = self.env['tt.pricing.agent'].sudo()
         sale_price = 0
         provider_line_count = 0
         if self.booking_id.provider_type_id_name in ['airline', 'train']:
@@ -177,41 +175,36 @@ class ProviderOffline(models.Model):
 
         scs_list = []
         scs_list_2 = []
-        pricing_obj = self.env['tt.pricing.agent'].search(
-            [('agent_type_id', '=', self.booking_id.agent_id.agent_type_id.id),
-             ('provider_type_id', '=', self.booking_id.provider_type_id.id)],
-            limit=1)
+        pricing_obj = self.env['tt.pricing.agent'].sudo()
         sale_price = self.booking_id.total / len(self.booking_id.line_ids)
 
         # Get all pricing per pax
-        for line in self.booking_id.line_ids:
-            scs = []
-            vals = {
-                'amount': sale_price,
-                'charge_code': 'fare',
-                'charge_type': 'FARE',
-                'description': '',
-                'pax_type': 'ADT',
-                'currency_id': self.currency_id.id,
-                'provider_offline_booking_id': self.id,
-                'pax_count': 1,
-                'total': sale_price / len(self.booking_id.line_ids),
-            }
-            scs_list.append(vals)
-            commission_list = pricing_obj.get_commission(
-                self.booking_id.agent_commission / len(self.booking_id.line_ids),
-                self.booking_id.agent_id, self.booking_id.provider_type_id)
-            for comm in commission_list:
-                if comm['amount'] > 0:
-                    vals2 = vals.copy()
-                    vals2.update({
-                        'commission_agent_id': comm['commission_agent_id'],
-                        'total': comm['amount'] * -1 / len(self.booking_id.line_ids),
-                        'amount': comm['amount'] * -1 / len(self.booking_id.line_ids),
-                        'charge_code': comm['code'],
-                        'charge_type': 'RAC',
-                    })
-                    scs_list.append(vals2)
+        vals = {
+            'amount': sale_price,
+            'charge_code': 'fare',
+            'charge_type': 'FARE',
+            'description': '',
+            'pax_type': 'ADT',
+            'currency_id': self.currency_id.id,
+            'provider_offline_booking_id': self.id,
+            'pax_count': 1,
+            'total': sale_price,
+        }
+        scs_list.append(vals)
+        commission_list = pricing_obj.get_commission(
+            self.booking_id.agent_commission,
+            self.booking_id.agent_id, self.booking_id.provider_type_id)
+        for comm in commission_list:
+            if comm['amount'] > 0:
+                vals2 = vals.copy()
+                vals2.update({
+                    'commission_agent_id': comm['commission_agent_id'],
+                    'total': comm['amount'] * -1 / len(self.booking_id.line_ids),
+                    'amount': comm['amount'] * -1 / len(self.booking_id.line_ids),
+                    'charge_code': comm['code'],
+                    'charge_type': 'RAC',
+                })
+                scs_list.append(vals2)
 
         # Insert into cost service charge
         scs_list_3 = []
