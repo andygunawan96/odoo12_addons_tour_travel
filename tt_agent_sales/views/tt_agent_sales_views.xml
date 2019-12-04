@@ -40,6 +40,12 @@
                         </group>
                     </group>
 
+                    <group name="billing_info">
+                        <group>
+                            <field name="bill_name"/>
+                            <field name="bill_address"/>
+                        </group>
+                    </group>
                     <group>
                         <notebook>
                             <page string="Line">

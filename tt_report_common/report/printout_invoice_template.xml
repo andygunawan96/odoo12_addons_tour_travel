@@ -64,6 +64,20 @@
             </address>
         </template>
 
+    <template id="address_layout_bill_to">
+        <address t-ignore="true" class="mb0" itemscope="itemscope" itemtype="http://schema.org/Organization">
+            <div>
+                <strong><span t-esc="doc.bill_name"/></strong>
+            </div>
+
+            <div>
+                <div>
+                    <span t-esc="doc.bill_address"/>
+                </div>
+            </div>
+        </address>
+    </template>
+
     <!-- Versi before 12 sept 2019 -->
     <template id="external_layout_header_1">
         <table width="100%">
@@ -450,8 +464,9 @@
                 <td style="width:50px;">To</td>
                 <td style="width:10px;">:</td>
                 <td style="width:400px; vertical-align: top;" rowspan="4">
-                    <t t-set="o_addr" t-value="doc.booker_id"/>
-                    <t t-call="tt_report_common.address_layout"/>
+                    <!--<t t-set="o_addr" t-value="doc.booker_id"/>-->
+                    <!--<t t-call="tt_report_common.address_layout"/>-->
+                    <t t-call="tt_report_common.address_layout_bill_to"/>
                 </td>
                 <td style="width:100px;"/>
                 <td style="width:150px;">Invoice Date</td>
