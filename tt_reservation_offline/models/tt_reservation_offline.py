@@ -85,7 +85,7 @@ class IssuedOffline(models.Model):
     vendor = fields.Char('Vendor Provider', readonly=True, states={'confirm': [('readonly', False)]})
     master_vendor_id = fields.Char('Master Vendor', readonly=True, states={'confirm': [('readonly', False)]})
 
-    resv_code = fields.Char('Vendor Order Number', readonly=True, states={'dvalidate': [('readonly', False)]})
+    resv_code = fields.Char('Vendor Order Number', readonly=True, states={'validate': [('readonly', False)]})
 
     # Date and UID
     confirm_date = fields.Datetime('Confirm Date', readonly=True, copy=False)
@@ -257,7 +257,7 @@ class IssuedOffline(models.Model):
         self.resv_code = False
 
     @api.one
-    def action_paid(self, kwargs={}):
+    def action_done(self, kwargs={}):
         # cek saldo sub agent
         is_enough = self.agent_id.check_balance_limit_api(self.agent_id.id, self.agent_nta)
         # jika saldo mencukupi
@@ -329,7 +329,7 @@ class IssuedOffline(models.Model):
 
     @api.one
     def action_issued_backend(self):
-        is_enough = self.action_paid()
+        is_enough = self.action_done()
         if is_enough[0]['error_code'] != 0:
             raise UserError(is_enough[0]['error_msg'])
 
