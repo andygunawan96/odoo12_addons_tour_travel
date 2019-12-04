@@ -229,6 +229,7 @@ class AgentRegistration(models.Model):
         return self.env.cr.dictfetchall()
 
     def get_promotions_api(self, context):
+        _logger.info('Mulai get promotions api')
         res = []
         try:
             agent_type_id = context['agent_type_id']
@@ -246,6 +247,7 @@ class AgentRegistration(models.Model):
                     'description': promotion.description,
                     'commission': []
                 }
+                _logger.info('Mulai promotion agent type ids')
                 for commission in promotion.agent_type_ids:
                     comm = {
                         'recruited': commission.agent_type_id.name,
@@ -256,16 +258,20 @@ class AgentRegistration(models.Model):
                         'discount_amount': commission.discount_amount,
                         'lines': []
                     }
+                    _logger.info('Mulai promotion line ids')
                     for commission_line in commission.line_ids:
                         line = {
                             'agent_type_id': commission_line.agent_type_id.name,
                             'amount': commission_line.amount
                         }
                         comm['lines'].append(line)
+                    _logger.info('Proses promotion line ids selesai')
                     val['commission'].append(comm)
+                _logger.info('Proses promotion agent type ids selesai')
                 res.append(val)
         except Exception as e:
             res = Response().get_error(str(e), 500)
+            _logger.error(msg=str(e) + '\n' + traceback.format_exc())
         return res
 
     def get_all_registration_documents_api(self):

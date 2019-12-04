@@ -74,7 +74,7 @@ class IssuedOfflineLines(models.Model):
 
     carrier_id = fields.Many2one('tt.transport.carrier', 'Carrier', readonly=True,
                                  states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
-    provider = fields.Char('Provider', readonly=True, required=False, states={'draft': [('required', False)],
+    provider = fields.Char('Provider', readonly=False, required=False, states={'draft': [('required', False)],
                                                                               'confirm': [('readonly', False)]})
 
     carrier_code = fields.Char('Carrier Code', help='or Flight Code', index=True,
