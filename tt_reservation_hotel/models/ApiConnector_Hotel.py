@@ -29,7 +29,7 @@ class ApiConnectorHotels:
         res = self.send_request('signin', req_post)
         try:
             if res.get('error_code') == 0:
-                self.cookie = res['response']['signature']
+                self.cookie = res['response']['result']['response']['signature']
             else:
                 res = {
                     'error_code': res['error_code'],
@@ -56,7 +56,7 @@ class ApiConnectorHotels:
             'signature': self.cookie or 'None',
             'action': action,
         }
-        return util.send_request(url, data=post, headers=headers, timeout=timeout, is_json=True)
+        return util.send_request(url, data=post, headers=headers, timeout=timeout)
 
     def get_record_by_api(self, req_post, api_context=None):
         self.credetial['co_uid'] = request.env.user.id

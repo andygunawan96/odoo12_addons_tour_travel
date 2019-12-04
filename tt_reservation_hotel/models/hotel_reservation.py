@@ -311,7 +311,7 @@ class HotelReservation(models.Model):
 
     @api.one
     def action_done(self, issued_response={}):
-        state = 'done'
+        state = 'issued'
         for room_detail in self.room_detail_ids:
             if issued_response.get(room_detail.provider_id.code):
                 provider = issued_response[room_detail.provider_id.code]
