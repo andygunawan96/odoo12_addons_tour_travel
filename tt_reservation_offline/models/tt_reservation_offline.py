@@ -75,10 +75,10 @@ class IssuedOffline(models.Model):
     sector_type = fields.Selection(SECTOR_TYPE, 'Sector', readonly=True, states={'draft': [('readonly', False)]})
 
     # 171121 CANDY: add field pnr, commission 80%, nta, nta 80%
-    agent_commission = fields.Monetary('Agent Commission', readonly=True,  # , compute='_get_agent_commission')
+    agent_commission = fields.Monetary('Agent Commission', readonly=True, compute='_get_agent_commission',
                                        states={'confirm': [('readonly', False)]})
-    parent_agent_commission = fields.Monetary('Parent Agent Commission', readonly=True)  # , compute='_get_agent_commission'
-    ho_commission = fields.Monetary('HO Commission', readonly=True, compute='_get_ho_commission')   # , compute='_get_agent_commission'
+    parent_agent_commission = fields.Monetary('Parent Agent Commission', readonly=True, compute='_get_agent_commission')
+    ho_commission = fields.Monetary('HO Commission', readonly=True, compute='_get_agent_commission')
     # states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
     nta_price = fields.Monetary('NTA Price', readonly=True, compute='_get_nta_price', store=True)
     agent_nta_price = fields.Monetary('Agent Price', readonly=True, compute='_get_agent_price', store=True)
@@ -165,6 +165,9 @@ class IssuedOffline(models.Model):
                                 states={'draft': [('readonly', False)]})
     contact_id = fields.Many2one('tt.customer', 'Contact Person', ondelete='restrict', readonly=True,
                                  states={'draft': [('readonly', False)]}, domain="[('agent_id', '=', agent_id)]")
+    customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer', readonly=True,
+                                         states={'draft': [('readonly', False)]},
+                                         help='COR / POR', domain="[('parent_agent_id', '=', agent_id)]")
 
     quick_issued = fields.Boolean('Quick Issued', default=False)
 
@@ -485,17 +488,17 @@ class IssuedOffline(models.Model):
     # Set, Get & Compute
     ####################################################################################################
 
-    @api.onchange('agent_commission', 'ho_commission')
-    @api.depends('agent_commission', 'ho_commission', 'total')
+    @api.onchange('total', 'total_commission_amount')
+    @api.depends('total', 'total_commission_amount')
     def _get_nta_price(self):
         for rec in self:
-            rec.nta_price = rec.total - rec.agent_commission   # - rec.incentive_amount
+            rec.nta_price = rec.total - rec.total_commission_amount  # - rec.incentive_amount
 
     @api.onchange('agent_commission')
     @api.depends('agent_commission', 'total')
     def _get_agent_price(self):
         for rec in self:
-            rec.agent_nta_price = rec.total - rec.agent_commission + rec.ho_commission
+            rec.agent_nta_price = rec.total - rec.total_commission_amount + rec.parent_agent_commission + rec.ho_commission
 
     @api.multi
     def get_segment_length(self):
@@ -565,16 +568,36 @@ class IssuedOffline(models.Model):
         else:
             return ''
 
-    @api.onchange('agent_commission', 'ho_commission')
-    @api.depends('agent_commission', 'ho_commission')
-    def _get_ho_commission(self):
+    @api.onchange('total_commission_amount')
+    @api.depends('total_commission_amount')
+    def _get_agent_commission(self):
         for rec in self:
-            rec.ho_commission = 0
             pricing_obj = rec.env['tt.pricing.agent'].sudo()
-            commission_list = pricing_obj.get_commission(rec.agent_commission, rec.agent_id, rec.offline_provider_type_id)
+            commission_list = pricing_obj.get_commission(rec.total_commission_amount, rec.agent_id,
+                                                         rec.offline_provider_type_id)
+            print(commission_list)
+            rec.agent_commission = 0
+            rec.parent_agent_commission = 0
+            rec.ho_commission = 0
+
             for comm in commission_list:
-                if comm.get('agent_type_id') == rec.env.ref('tt_base.rodex_ho').agent_type_id.id:
+                if comm.get('code') == 'rac':
+                    rec.agent_commission += comm.get('amount')
+                elif comm.get('agent_type_id') == rec.env.ref('tt_base.rodex_ho').agent_type_id.id:
                     rec.ho_commission += comm.get('amount')
+                else:
+                    rec.parent_agent_commission += comm.get('amount')
+
+    # @api.onchange('agent_commission', 'ho_commission')
+    # @api.depends('agent_commission', 'ho_commission')
+    # def _get_ho_commission(self):
+    #     for rec in self:
+    #         rec.ho_commission = 0
+    #         pricing_obj = rec.env['tt.pricing.agent'].sudo()
+    #         commission_list = pricing_obj.get_commission(rec.agent_commission, rec.agent_id, rec.offline_provider_type_id)
+    #         for comm in commission_list:
+    #             if comm.get('agent_type_id') == rec.env.ref('tt_base.rodex_ho').agent_type_id.id:
+    #                 rec.ho_commission += comm.get('amount')
 
     # Hitung harga final / Agent NTA Price
     @api.onchange('vendor_amount', 'nta_price')

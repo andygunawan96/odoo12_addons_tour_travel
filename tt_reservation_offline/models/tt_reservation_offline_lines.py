@@ -1,4 +1,6 @@
 from odoo import models, fields, api, _
+from odoo.exceptions import UserError
+from ...tools import variables
 
 STATE = [
     ('draft', 'Draft'),
@@ -57,7 +59,7 @@ class IssuedOfflineLines(models.Model):
     booking_id = fields.Many2one('tt.reservation.offline', 'Reservation Offline')
     obj_qty = fields.Integer('Qty', readonly=True, states={'draft': [('readonly', False)],
                                                            'confirm': [('readonly', False)]}, default=1)
-    state = fields.Selection(STATE, string='State', default='draft', related='booking_id.state')
+    state = fields.Selection(variables.BOOKING_STATE, string='State', default='draft', related='booking_id.state')
     transaction_type = fields.Many2one('tt.provider.type', 'Service Type', related='booking_id.offline_provider_type_id')
     transaction_name = fields.Char('Service Name', readonly=True, related='booking_id.provider_type_id_name')
     provider_id = fields.Many2one('tt.provider', 'Provider ID', readonly=True, states={'confirm': [('readonly', False)]})
@@ -302,3 +304,10 @@ class IssuedOfflineLines(models.Model):
         elif self.booking_id.provider_type_id_name == 'cruise':
             vals = self.get_all_line_cruise_description()
         return vals
+
+    @api.multi
+    def unlink(self):
+        for rec in self:
+            if rec.state != 'draft':
+                raise UserError(_('You cannot delete a line. You have to set state to draft.'))
+        return super(IssuedOfflineLines, self).unlink()

@@ -633,8 +633,8 @@ class TtReservationTrain(models.Model):
         res = self.read()
         res = res and res[0] or {}
         datas['form'] = res
-        return self.env.ref('tt_report_common.action_report_printout_reservation_airline').report_action(self,
-                                                                                                         data=datas)
+        return self.env.ref('tt_report_common.action_report_printout_reservation_train').report_action(self,
+                                                                                                       data=datas)
 
     @api.multi
     def print_eticket_with_price(self):
@@ -644,8 +644,8 @@ class TtReservationTrain(models.Model):
         res = res and res[0] or {}
         datas['form'] = res
         datas['is_with_price'] = True
-        return self.env.ref('tt_report_common.action_report_printout_reservation_airline').report_action(self,
-                                                                                                         data=datas)
+        return self.env.ref('tt_report_common.action_report_printout_reservation_train').report_action(self,
+                                                                                                       data=datas)
 
     @api.multi
     def print_itinerary(self):

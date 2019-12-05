@@ -234,12 +234,15 @@
                     <t t-if="doc_model == 'tt.reservation.airline'">
                         <t t-call="tt_report_common.printout_ticket_airline_template"/>
                     </t>
+                    <t t-elif="doc_model == 'tt.reservation.train'">
+                        <t t-call="tt_report_common.printout_ticket_train_template"/>
+                    </t>
                     <t t-else="">
                         <t t-call="tt_report_common.external_layout">
                             <br/>
-                            <t t-if="doc_model == 'tt.reservation.train'">
-                                <t t-call="tt_report_common.reservation_train_content_view"/>
-                            </t>
+<!--                            <t t-if="doc_model == 'tt.reservation.train'">-->
+<!--                                <t t-call="tt_report_common.printout_ticket_train_template"/>-->
+<!--                            </t>-->
                         </t>
                     </t>
                 </div>
