@@ -40,6 +40,7 @@ class TtReservationCustomer(models.Model):
                 sc['description'] = pnr
                 sc['passenger_airline_ids'] = [(4,self.id)]
                 sc['provider_airline_booking_id'] = provider_id
+                sc['is_extra_fees'] = True
                 amount += sc['amount']
                 service_chg_obj.create(sc)
 
@@ -51,7 +52,6 @@ class TtReservationCustomer(models.Model):
                 'description': json.dumps(ssr['description']),
                 'amount': amount,
                 'passenger_id': self.id,
-                'is_extra_fees': True
             }))
 
         self.write({'fee_ids': ssr_list})

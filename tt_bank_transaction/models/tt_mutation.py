@@ -89,7 +89,7 @@ class TtBankTransaction(models.Model):
 
         result = self.env['tt.bank.api.con'].get_transaction(data)
         if result['error_code'] != 0:
-            raise Exception("Unable to get bank Transaction")
+            raise Exception("Unable to get bank Transaction, %s" % (result['error_msg']))
 
         logs['data_recieve'] = len(result['response']['Data'])
 
