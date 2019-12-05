@@ -65,6 +65,14 @@
                   sequence="90"
                   groups="base.group_user"/>
                   <!--action="tt_base.res_country_action_view"-->
+
+        <!--After Sales-->
+        <menuitem id="top_transaction_aftersales"
+                  parent="tt_base.main_transaction"
+                  name="After Sales"
+                  sequence="25"
+                  groups="base.group_user"/>
+
         <!--Menu (tag) Inside Top Menu-->
         <!--Country-->
         <menuitem id="menu_tour_travel_configuration_res_country"
