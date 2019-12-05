@@ -33,6 +33,17 @@
             menu="False"
         />
         <report
+            string="Train Ticket"
+            id="action_report_printout_reservation_train"
+            model="tt.reservation.train"
+            report_type="qweb-html"
+            name="tt_report_common.printout_ticket"
+            file="tt_report_common.printout_ticket"
+            paperformat="tt_report_common.paperformat_A4"
+            print_report_name="'Train Ticket - %s' % object.name"
+            menu="False"
+        />
+        <report
             string="Airlines Itinerary Form"
             id="action_printout_itinerary_airline"
             model="tt.reservation.airline"

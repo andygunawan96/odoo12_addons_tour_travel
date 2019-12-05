@@ -464,12 +464,12 @@ class TtVisa(models.Model):
             "birth_date": "2017-02-15",
             "nationality_name": "Indonesia",
             "nationality_code": "ID",
-            "identity": {
-                "identity_country_of_issued_code": "ID",
-                "identity_expdate": "2022-11-10",
-                "identity_number": "0938675340864",
-                "identity_type": "passport"
-            },
+            # "identity": {
+            #     "identity_country_of_issued_code": "ID",
+            #     "identity_expdate": "2022-11-10",
+            #     "identity_number": "0938675340864",
+            #     "identity_type": "passport"
+            # },
             "passenger_id": "",
             "is_booker": False,
             "is_contact": False,
@@ -495,7 +495,7 @@ class TtVisa(models.Model):
 
     param_context = {
         'co_uid': 66,
-        'co_agent_id': 2
+        'co_agent_id': 3
     }
 
     param_kwargs = {
@@ -934,13 +934,16 @@ class TtVisa(models.Model):
                 'title': psg['title'],
                 'pricelist_id': pricelist_id,
                 'passenger_type': psg['pax_type'],
-                'passport_number': psg['identity'].get('identity_number'),
-                'passport_expdate': psg['identity'].get('identity_expdate'),
                 'notes': psg.get('notes'),
                 # Pada state request, pax akan diberi expired date dg durasi tergantung dari paket visa yang diambil
                 'expired_date': fields.Date.today() + timedelta(days=pricelist_obj.duration),
                 'sequence': int(idx+1)
             })
+            if 'identity' in psg:
+                psg_vals.update({
+                    'passport_number': psg['identity'].get('identity_number'),
+                    'passport_expdate': psg['identity'].get('identity_expdate')
+                })
             to_psg_obj = to_psg_env.create(psg_vals)
             to_psg_obj.action_sync_handling()
 
