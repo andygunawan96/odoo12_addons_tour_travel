@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+tt_reschedule_for_all,tt.reschedule.for.all,model_tt_reschedule,,1,1,1,0
+tt_reschedule_for_tour_travel_operator,tt.reschedule.for.tour.travel.operator,model_tt_reschedule,tt_base.group_tt_tour_travel_operator,1,1,1,1

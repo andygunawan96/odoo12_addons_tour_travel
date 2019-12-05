@@ -27,6 +27,7 @@
         'data/e_paperformat.xml',
         'data/report_data.xml',
         'report/printout_ticket_airline_template.xml',
+        'report/printout_ticket_train_template.xml',
         'report/printout_invoice_template.xml',
         'report/printout_billing_template.xml',
         'report/printout_itinerary_template.xml',

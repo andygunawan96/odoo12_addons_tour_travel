@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-    <record id="tt_refund_form_view" model="ir.ui.view">
-        <field name="name">tt.refund.form.view</field>
-        <field name="model">tt.refund</field>
+    <record id="tt_reschedule_form_view" model="ir.ui.view">
+        <field name="name">tt.reschedule.form.view</field>
+        <field name="model">tt.reschedule</field>
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="confirm_refund_from_button" string="Confirm" type="object" attrs="{'invisible':[('state','!=', 'draft')]}"/>
-                    <button name="send_refund_from_button" string="Send to Agent" type="object" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible':[('state','!=', 'confirm')]}"/>
-                    <button name="validate_refund_from_button" string="Validate" type="object" attrs="{'invisible':[('state','!=', 'sent')]}"/>
-                    <button name="approve_refund_from_button" string="Approve" type="object" groups="tt_base.group_tt_accounting_manager" attrs="{'invisible':[('state','!=', 'validate')]}"/>
+                    <button name="confirm_reschedule_from_button" string="Confirm" type="object" attrs="{'invisible':[('state','!=', 'draft')]}"/>
+                    <button name="send_reschedule_from_button" string="Send to Agent" type="object" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible':[('state','!=', 'confirm')]}"/>
+                    <button name="validate_reschedule_from_button" string="Validate" type="object" attrs="{'invisible':[('state','!=', 'sent')]}"/>
+                    <button name="approve_reschedule_from_button" string="Approve" type="object" groups="tt_base.group_tt_accounting_manager" attrs="{'invisible':[('state','!=', 'validate')]}"/>
                     <button name="action_done" string="Done" type="object" groups="tt_base.group_tt_accounting_manager" attrs="{'invisible':[('state','!=', 'approve')]}"/>
                     <button name="set_to_confirm" string="Set to Confirm" type="object" groups="tt_base.group_tt_accounting_manager" attrs="{'invisible':[('state','not in', ['sent', 'validate'])]}"/>
-                    <button name="cancel_refund_from_button" string="Cancel" type="object" attrs="{'invisible':[('state','in', ['done', 'cancel'])]}"/>
+                    <button name="cancel_reschedule_from_button" string="Cancel" type="object" attrs="{'invisible':[('state','in', ['done', 'cancel'])]}"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
@@ -29,22 +29,11 @@
                             <field name="agent_type_id" attrs="{'invisible':[('agent_id','=', False)]}"/>
                             <field name="customer_parent_id" attrs="{'invisible':[('customer_parent_id','=', False)]}"/>
                             <field name="customer_parent_type_id" attrs="{'invisible':[('customer_parent_id','=', False)]}"/>
-                            <field name="refund_date" groups="tt_base.group_tt_agent_user_operator" attrs="{'invisible':[('state','=', 'draft')]}"/>
-                            <field name="refund_date_ho" groups="tt_base.group_tt_tour_travel_operator"/>
-                            <field name="estimate_ho_refund_date" groups="tt_base.group_tt_tour_travel_operator"/>
-                            <field name="real_refund_date" groups="tt_base.group_tt_tour_travel_operator"/>
                             <field name="currency_id"/>
-                            <field name="refund_amount" groups="tt_base.group_tt_agent_user_operator"/>
-                            <field name="refund_amount_ho" groups="tt_base.group_tt_tour_travel_operator"/>
-                            <field name="estimate_ho_refund_amount" groups="tt_base.group_tt_tour_travel_operator"/>
-                            <field name="real_refund_amount" groups="tt_base.group_tt_tour_travel_operator"/>
-                            <field name="apply_adm_fee" groups="tt_base.group_tt_tour_travel_operator"/>
-                            <field name="admin_fee_type" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible':[('apply_adm_fee','=', False)]}"/>
-                            <field name="admin_fee_num" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible':[('apply_adm_fee','=', False)]}"/>
                             <field name="admin_fee"/>
                             <field name="total_amount"/>
                             <field name="service_type"/>
-                            <field name="refund_type"/>
+                            <field name="reschedule_type"/>
                             <field name="notes"/>
                             <field name="referenced_document"/>
                             <field name="res_model"/>
@@ -85,27 +74,6 @@
                             <field name="cancel_message"/>
                         </group>
                     </group>
-                    <separator string="Provider Bookings"/>
-                    <label for="provider_booking_ids" string="(Only PNRs listed below will be refunded)"/>
-                    <button name="reset_provider_booking" string="Reset" type="object" groups="tt_base.group_tt_agent_user_operator" attrs="{'invisible':[('state','!=', 'draft')]}"/>
-                    <field name="provider_booking_ids">
-                        <tree>
-                            <field name="name"/>
-                            <field name="res_model"/>
-                            <field name="res_id"/>
-                        </tree>
-                        <form>
-                            <group>
-                                <group>
-                                    <field name="name"/>
-                                </group>
-                                <group>
-                                    <field name="res_model"/>
-                                    <field name="res_id"/>
-                                </group>
-                            </group>
-                        </form>
-                    </field>
                     <separator string="Ledger"/>
                     <field name="ledger_ids"
                            context="{'tree_view_ref': 'tt_accounting.tt_ledger_adj_tree_view'}"/>
@@ -114,21 +82,19 @@
         </field>
     </record>
 
-    <record id="tt_refund_tree_view_page" model="ir.ui.view">
-        <field name="name">tt.refund.tree.view.page</field>
-        <field name="model">tt.refund</field>
+    <record id="tt_reschedule_tree_view_page" model="ir.ui.view">
+        <field name="name">tt.reschedule.tree.view.page</field>
+        <field name="model">tt.reschedule</field>
         <field name="arch" type="xml">
             <tree>
                 <field name="create_date"/>
                 <field name="name"/>
                 <field name="agent_id"/>
                 <field name="customer_parent_id"/>
-                <field name="refund_date"/>
-                <field name="refund_amount"/>
                 <field name="admin_fee"/>
                 <field name="total_amount"/>
                 <field name="service_type"/>
-                <field name="refund_type"/>
+                <field name="reschedule_type"/>
                 <field name="hold_date"/>
                 <field name="done_uid"/>
                 <field name="done_date"/>
@@ -137,20 +103,20 @@
         </field>
     </record>
 
-    <record id="tt_refund_action" model="ir.actions.act_window">
-        <field name="name">Refund</field>
-        <field name="res_model">tt.refund</field>
+    <record id="tt_reschedule_action" model="ir.actions.act_window">
+        <field name="name">Reschedule</field>
+        <field name="res_model">tt.reschedule</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="context">
             {
-            'form_view_ref': 'tt_accounting.tt_refund_form_view',
-            'tree_view_ref': 'tt_accounting.tt_refund_tree_view_page'
+            'form_view_ref': 'tt_reschedule.tt_reschedule_form_view',
+            'tree_view_ref': 'tt_reschedule.tt_reschedule_tree_view_page'
             }
         </field>
     </record>
 
-    <menuitem id="menu_transaction_refund" parent="tt_base.top_transaction_aftersales"
-              name="Refund" action="tt_refund_action" sequence="10"/>
+    <menuitem id="menu_transaction_reschedule" parent="tt_base.top_transaction_aftersales"
+              name="Reschedule" action="tt_reschedule_action" sequence="11"/>
 
 </odoo>

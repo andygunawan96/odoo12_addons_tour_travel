@@ -114,9 +114,6 @@ class PricingAgent(models.Model):
         vals_list = []  # output list of pricing
         remaining_diff = 0  # sisa diff yang jika masih ada sisa, akan dimasukkan ke HO
 
-        ho_agent = self.env['tt.agent'].sudo().search(
-            [('agent_type_id.id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
-
         """ kurangi input amount dengan fee amount. masukkan fee amount ke dalam service charge HOC """
         # if price_obj.fee_amount != 0:
         #     input_amount -= price_obj.fee_amount
@@ -157,63 +154,90 @@ class PricingAgent(models.Model):
             curr_rule = {}
 
             """ Looping uplines """
-            for line in self.line_ids:
+            for line in price_obj.line_ids:
                 """ jika amount type dari upline = percentage """
                 if line.basic_amount_type == 'percentage':
                     curr_rule[line.agent_type_id.code] = input_commission * line.basic_amount / 100  # set amount agent type
 
                     perc_remaining -= line.basic_amount  # kurangi perc_remaining dg basic amount dari line
-                    remaining_diff -= curr_rule[line.agent_type_id.code]  # kurangi nilai diff sejumlah amount dari agent type
+                    # remaining_diff -= curr_rule[line.agent_type_id.code]  # kurangi nilai diff sejumlah amount dari agent type
                 # TODO : bagaimana jika amount type = amount
                     """ jika amount type dari upline = amount """
                 elif line.basic_amount_type == 'amount':
                     pass
-            if self.loop_level:
-                curr_rule[self.agent_type_id.code] = (input_commission * perc_remaining / 100) / self.loop_level
+            if price_obj.loop_level:
+                curr_rule[price_obj.agent_type_id.code] = (input_commission * perc_remaining / 100) / price_obj.loop_level
 
-            agent_type_count = {}
-            agent_type_src = ''
-            """ Loop agent hierarchy """
+            """ Loop line ids """
+            for line in price_obj.line_ids:
+                for idx, rec in enumerate(agent_hierarchy):
+                    if idx == 0:  # 0 = index agent yang pesan
+                        continue
+
+                    if line.agent_type_id.id == rec['agent_type_id']:
+                        amount = curr_rule[line.agent_type_id.code]
+                        remaining_diff -= amount
+                        vals = {
+                            'commission_agent_id': rec['commission_agent_id'],
+                            'agent_id': rec['agent_id'],
+                            'agent_name': rec['agent_name'],
+                            'agent_type_id': rec['agent_type_id'],
+                            'type': 'RAC',
+                            'code': 'rac' + str(rac_count),
+                            'amount': amount,
+                        }
+                        vals_list.append(vals)
+                        rac_count += 1
+                        break
+
+            """ Tentukan jumlah pembagian untuk diff """
+            div = 0
             for idx, rec in enumerate(agent_hierarchy):
                 if idx == 0:  # 0 = index agent yang pesan
                     continue
+                if rec['agent_type_id'] == price_obj.agent_type_id.id:
+                    if div != price_obj.loop_level:
+                        div += 1
+                elif rec['agent_type_id'] == self.env.ref('tt_base.rodex_ho').agent_type_id.id:
+                    if div != price_obj.loop_level:
+                        div += 1
 
-                vals = {}  # vals service charge
-                agent_type_rec = rec['code']  # code ex: citra, japro
-                if not agent_type_count.get(agent_type_rec):  # jika agent_type_rec empty
-                    agent_type_count[agent_type_rec] = 0  # agent_type_count['japro'] = 0
-                agent_type_count[agent_type_rec] += 1
-
-                # agent type harus sama, dan count harus lebih kecil dr loop level
-                if agent_type_count[agent_type_rec] <= self.loop_level and agent_type_rec == agent_type_src:
-                    amount = curr_rule[agent_type_rec]  # amount = 1
-                    remaining_diff -= amount  # remaining_diff = 2 - 1 = 1
-                elif curr_rule.get(agent_type_rec) and agent_type_count[agent_type_rec] == 1:
-                    amount = curr_rule[agent_type_rec]  # amount pasti 1
-                else:
-                    amount = 0
-                vals.update({
-                    'commission_agent_id': rec['commission_agent_id'],
-                    'agent_id': rec['agent_id'],
-                    'agent_name': rec['agent_name'],
-                    'agent_type_id': rec['agent_type_id'],
-                    'type': 'RAC',
-                    'code': 'rac' + str(rac_count),
-                    'amount': amount,
-                })
-                vals_list.append(vals)
-                rac_count += 1
-            """ kalau masih ada sisa saldo, masukkan ke HO """
+            """ Cek jika remaining diff > 0"""
             if remaining_diff > 0:
-                for vals in vals_list:
-                    if vals['agent_id'] == ho_agent.id and vals['code'] != 'hoc':
-                        vals.update({
-                            'amount': vals['amount'] + remaining_diff
-                        })
-        elif self.basic_amount_type == 'amount':
+                loop_level = price_obj.loop_level
+                for idx, rec in enumerate(agent_hierarchy):
+                    if idx == 0:  # 0 = index agent yang pesan
+                        continue
+
+                    if loop_level > 0 and rec['agent_type_id'] == price_obj.agent_type_id.id:
+                        amount = remaining_diff / div
+                        vals = {
+                            'commission_agent_id': rec['commission_agent_id'],
+                            'agent_id': rec['agent_id'],
+                            'agent_name': rec['agent_name'],
+                            'agent_type_id': rec['agent_type_id'],
+                            'type': 'RAC',
+                            'code': 'remaining_diff',
+                            'amount': amount,
+                        }
+                        vals_list.append(vals)
+                    elif loop_level > 0 and rec['agent_type_id'] == self.env.ref('tt_base.rodex_ho').agent_type_id.id:
+                        amount = remaining_diff / div
+                        vals = {
+                            'commission_agent_id': rec['commission_agent_id'],
+                            'agent_id': rec['agent_id'],
+                            'agent_name': rec['agent_name'],
+                            'agent_type_id': rec['agent_type_id'],
+                            'type': 'RAC',
+                            'code': 'remaining_diff',
+                            'amount': amount,
+                        }
+                        vals_list.append(vals)
+
+        elif price_obj.basic_amount_type == 'amount':
             vals = {
-                'agent_type_id': self.agent_type_id.id,
-                'amount': self.basic_amount,
+                'agent_type_id': price_obj.agent_type_id.id,
+                'amount': price_obj.basic_amount,
                 'type': 'RAC',
                 'code': 'rac'
             }
@@ -221,7 +245,7 @@ class PricingAgent(models.Model):
 
             n = 1
 
-            for line in self.line_ids:
+            for line in price_obj.line_ids:
                 if line.agent_type_id.code == 'citra':
                     vals = {
                         'agent_type_id': line.agent_type_id.id,
@@ -232,7 +256,7 @@ class PricingAgent(models.Model):
                     vals_list.append(vals)
                     n += 1
 
-            for line in self.line_ids:
+            for line in price_obj.line_ids:
                 if line.agent_type_id.code == 'ho':
                     vals = {
                         'agent_type_id': line.agent_type_id.id,

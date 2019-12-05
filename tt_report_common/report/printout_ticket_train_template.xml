@@ -1,8 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
+    <template id="report_rodex_e_tickettrain_logo">
+        <div class="col-xs-12 text-center"  style="position: absolute; z-index:1; top:170px;">
+            <img src="/tt_report_common/static/images/logo_kai_transparan.png"
+                 style="max-height: 180px;"/>
+        </div>
+    </template>
 
+    <template id="printout_ticket_train_template">
+        <div class="article" style="margin: 0px !important; padding: 0px !important; font-family: Times New Roman, Georgia, Serif;">
+            <t t-call="tt_report_common.report_rodex_e_tickettrain_logo"/>
+            <div class="oe_structure"/>
+            <div>
+                <div class="row" style="border-top: 1px black solid; border-bottom: 1px black solid;">
+                    <div class="col-xs-2">
+                        <img src="/tt_report_common/static/images/logo_tors_small.png" style="max-height: 110px; margin-top: 9px;"/>
+                        <!--<img t-if="doc.agent_id.image" t-att-src="'data:image/png;base64,%s' % doc.agent_id.image" style="max-height: 56px; margin-top: 9px;"/>-->
+                    </div>
+                    <div class="col-xs-10" style="padding-left: 30px; font-size: 24px; font-weight: bold;">
+                        <span>BUKTI PEMBELIAN TIKET KERETA API</span><br/>
+                        <span>AGEN RESMI PT. KERETA API INDONESIA (PERSERO)</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-9" style="font-size: 25px; padding-left: 0px;">
+                        <div class="row" style="padding-top: 15px;">
+                            <div class="col-3" style="max-width: 30%;"><strong><span>Kode Booking</span></strong></div>
+                            <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
+                            <t t-if="doc.pnr">
+                                <div class="col-8" style="padding: 0px; text-transform:uppercase;"><strong><span t-esc="doc.pnr"/></strong></div><br/>
+                            </t>
+                            <t t-if="not doc.pnr">
+                                <div class="col-8" style="padding: 0px; text-transform:uppercase;"><strong><span style="color: white;">kosong</span></strong></div>
+                            </t>
+                        </div>
+                        <div class="row" style="padding: 0px;">
+                            <div class="col-3" style="max-width: 30%;"><span>Nama KA</span></div>
+                            <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
+                            <t t-if="doc.journey_ids.carrier_id.name">
+                                <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300"><span t-esc="line_ids[line_index]['carrier_name']"/> (<span t-if="line_ids[line_index]['carrier_code']" t-esc="line_ids[line_index]['carrier_code']"/>)</div>
+                            </t>
+                            <t t-if="not doc.journey_ids.carrier_id.name">
+                                <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300"><span style="color: white;">kosong</span></div>
+                            </t>
+                        </div>
+                        <div class="row" style="padding: 0px;">
+                            <div class="col-3" style="max-width: 30%;"><span>Tgl Berangkat</span></div>
+                            <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
+                            <t t-if="doc.journey_ids.departure_date">
+                                <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300">
+                                    <span t-esc="doc.journey_ids.departure_date.strftime('%d %B %Y')"/>
+                                </div>
+                            </t>
+                            <t t-if="not doc.journey_ids.departure_date">
+                                <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300"><span style="color: white;">kosong</span></div>
+                            </t>
+                        </div>
+                        <div class="row" style="padding: 0px;">
+                            <div class="col-3" style="max-width: 30%;"><span>St. Asal</span></div>
+                            <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
+                            <t t-if="doc.journey_ids.origin_id">
+                                <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300">
+                                    <t t-if="doc.journey_ids.origin_id.city == doc.journey_ids.origin_id.name">
+                                        <span t-esc="doc.journey_ids.origin_id.city"/><br/>
+                                    </t>
+                                    <t t-if="doc.journey_ids.origin_id.city != doc.journey_ids.origin_id.name">
+                                        <span t-esc="doc.journey_ids.origin_id.name"/><br/>  <!--<span t-esc="line_ids[line_index]['origin_city']"/>-->
+                                    </t>
+                                    <span t-if="doc.journey_ids.departure_date" t-esc="doc.journey_ids.departure_date.strftime('%d %B %Y  %H:%M')"/>
+                                    <span style="color: white;">..</span>
+                                </div>
+                            </t>
+                            <t t-if="not doc.journey_ids.origin_id">
+                                <div class="col-7" style="padding: 0px; text-transform:uppercase"><span style="color: white;">kosong</span></div>
+                            </t>
+                        </div>
+                        <div class="row" style="padding: 0px;">
+                            <div class="col-3" style="max-width: 30%;"><span>St. Tujuan</span></div>
+                            <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
+                            <t t-if="doc.journey_ids.destination_id">
+                                <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300">
+                                    <t t-if="doc.journey_ids.destination_id.city == doc.journey_ids.destination_id.name">
+                                        <span t-esc="doc.journey_ids.destination_id.city"/><br/>
+                                    </t>
+                                    <t t-if="doc.journey_ids.destination_id.city != doc.journey_ids.destination_id.name">
+                                        <span t-esc="doc.journey_ids.destination_id.name"/><br/>  <!--<span t-esc="line_ids[line_index]['destination_city']"/>-->
+                                    </t>
+                                    <span t-if="doc.journey_ids.return_date" t-esc="doc.journey_ids.return_date.strftime('%d %B %Y  %H:%M')"/>
+                                    <span style="color: white;">..</span>
+                                </div>
+                            </t>
+                            <t t-if="not doc.journey_ids.destination_id.name">
+                                <div class="col-7" style="padding: 0px; text-transform:uppercase"><span style="color: white;">kosong</span></div>
+                            </t>
+                        </div>
+                        <div class="row" style="padding: 0px;">
+                            <div class="col-3" style="max-width: 30%;"><span>Kelas</span></div>
+                            <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
+                            <t t-if="line_ids[line_index]['class_of_service']">
+                                <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300"><span t-esc="line_ids[line_index]['class_of_service']"/>
+                                    <span t-if="'' in line_ids[line_index]['class_of_service']">-</span></div>
+                            </t>
+                            <t t-if="not line_ids[line_index]['class_of_service']">
+                                <div class="col-8" style="padding: 0px; text-transform:uppercase"><span style="color: white;">kosong</span></div>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <t t-foreach="doc.provider_booking_ids" t-as="length">
 
-
-    </data>
+        </t>
+    </template>
 </odoo>
