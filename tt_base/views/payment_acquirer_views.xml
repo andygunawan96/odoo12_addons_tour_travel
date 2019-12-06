@@ -7,9 +7,6 @@
 
             <field name="arch" type="xml">
                 <form string="Provider">
-                    <header>
-                        <button string="Test" name="button_test_acquirer" type="object"/>
-                    </header>
                     <sheet>
                         <div class="oe_button_box" name="button_box">
                             <button name="button_test_acquirer"  string="button_test_acquirer" type="object"/>
