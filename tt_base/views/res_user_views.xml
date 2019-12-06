@@ -55,7 +55,7 @@
                         <field name="active" widget="boolean_button" options='{"terminology": "active"}'/>
                     </button>
                     <button string="Send Reset Password Link"
-                            type="object" name="action_reset_password_rodextrip" icon="fa-chain"
+                            type="object" name="action_reset_password" icon="fa-chain"
                             groups="tt_base.group_tt_agent_management_operator"
                     />
                 </div>
