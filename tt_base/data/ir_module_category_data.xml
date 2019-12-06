@@ -54,4 +54,10 @@
         <field name="sequence">2</field>
     </record>
 
+    <record model="ir.module.category" id="module_category_tour_division_system">
+        <field name="name">Tour Management</field>
+        <field name="description">For Tour Division</field>
+        <field name="sequence">2</field>
+    </record>
+
 </odoo>
