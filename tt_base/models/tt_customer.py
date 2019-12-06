@@ -192,7 +192,6 @@ class TtCustomer(models.Model):
     def get_customer_list_api(self,req,context):
         try:
             print("request teropong\n"+json.dumps((req))+json.dumps(context))
-            mode = req.get('mode','b2c')
             dom = [('agent_id','=',context['co_agent_id'])]
 
             if req.get('name'):
@@ -240,8 +239,8 @@ class TtCustomer(models.Model):
         try:
             number = data['identity_number']
             type = data['identity_type']
-            expdate = data['identity_expdate']
-            c_issued_id = data['identity_country_of_issued_code']
+            expdate = data.get('identity_expdate','')
+            c_issued_id = data.get('identity_country_of_issued_code','')
             image_seqs = data.get('identity_image',[])
         except:
             raise RequestException(1023,additional_message="Missing key.")
@@ -318,7 +317,7 @@ class TtCustomerIdentityNumber(models.Model):
 
     identity_type = fields.Selection(variables.IDENTITY_TYPE,'Type',required=True)
     identity_number = fields.Char('Number',required=True)
-    identity_expdate = fields.Date('Expire Date', required=True)
+    identity_expdate = fields.Date('Expire Date')
     identity_country_of_issued_id = fields.Many2one('res.country','Issued  Country')
     identity_image_ids = fields.Many2many('tt.upload.center','tt_customer_identity_upload_center_rel','identity_id','upload_id','Uploads')
 
