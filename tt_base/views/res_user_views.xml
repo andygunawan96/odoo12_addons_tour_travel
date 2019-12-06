@@ -54,8 +54,8 @@
                     <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-check" groups="tt_base.group_tt_agent_management_operator">
                         <field name="active" widget="boolean_button" options='{"terminology": "active"}'/>
                     </button>
-                    <button string="Send Reset Password Instructions"
-                            type="object" name="action_reset_password" icon="fa-check"
+                    <button string="Send Reset Password Link"
+                            type="object" name="action_reset_password_rodextrip" icon="fa-chain"
                             groups="tt_base.group_tt_agent_management_operator"
                     />
                 </div>

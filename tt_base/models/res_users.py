@@ -97,3 +97,5 @@ class ResUsers(models.Model):
             'user_ip_add': request.httprequest.environ['REMOTE_ADDR'],
         })
 
+    def action_reset_password_rodextrip(self):
+        super(ResUsers, self).sudo().action_reset_password()
