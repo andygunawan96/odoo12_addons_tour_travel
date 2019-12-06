@@ -1,6 +1,7 @@
 from odoo import api, models, fields
 from ...tools import variables
 from datetime import datetime
+import pytz
 import json
 from ...tools.ERR import RequestException
 from ...tools import ERR
@@ -15,6 +16,7 @@ class TtBankAccount(models.Model):
     bank_account_number_without_dot = fields.Char("Bank Number Modified")
     currency_id = fields.Many2one('res.currency', 'Currency')
     bank_id = fields.Many2one('tt.bank', 'Bank ID')
+    bank_transaction_date_ids = fields.One2many('tt.bank.transaction.date', "bank_account_id")
     bank_transaction_ids = fields.One2many('tt.bank.transaction', 'bank_account_id')
 
     def create_bank_account(self, req):
@@ -27,12 +29,29 @@ class TtBankAccount(models.Model):
 
         return result
 
+class TtBankDateTransaction(models.Model):
+    _name = 'tt.bank.transaction.date'
+    _description = "collections of date"
+
+    bank_account_id = fields.Many2one('tt.bank.accounts', 'Bank Account')
+    date = fields.Char("Date")
+    transaction_ids = fields.One2many("tt.bank.transaction", "bank_transaction_date_id")
+
+    def create_new_day(self, data):
+        result = self.env['tt.bank.transaction.date'].create({
+            'bank_account_id': int(data['bank_id']),
+            'date': data['date'],
+        })
+
+        return result
+
 class TtBankTransaction(models.Model):
     _name = 'tt.bank.transaction'
     _description = 'history and collections of bank statement'
 
     transaction_code = fields.Char('Document Number')
     bank_account_id = fields.Many2one('tt.bank.accounts', 'Bank Owners')
+    bank_transaction_date_id = fields.Many2one("tt.bank.transaction.date", "Date Transactions")
     transaction_date = fields.Datetime("Transaction Date")
     currency_id = fields.Many2one('res.currency', "Currency")
     transaction_bank_branch = fields.Char("Bank Branch Code")
@@ -49,8 +68,9 @@ class TtBankTransaction(models.Model):
     top_up_id = fields.Many2one('tt.top.up', 'Top up')
 
     def create_bank_statement(self, req):
-        result = self.create({
+        result = self.env['tt.bank.transaction'].create({
             'bank_account_id': req['bank_account_id'],
+            'bank_transaction_date_id': req['date_id'],
             'transaction_date': req['transaction_date'],
             'currency_id': req['currency_id'],
             'transaction_bank_branch': req['transaction_bank_branch'],
@@ -99,6 +119,14 @@ class TtBankTransaction(models.Model):
 
         #get bank code
         bank_code = self.env['tt.bank'].sudo().browse(int(bank_owner[0]['bank_id'][0]))
+        date_id = self.env['tt.bank.transaction.date'].sudo().search([('date', '=', data['startdate'])])
+
+        if len(date_id) < 1:
+            new_day = {
+                'bank_id': bank_owner[0]['id'],
+                'date': data['startdate']
+            }
+            date_id = self.env['tt.bank.transaction.date'].create_new_day(new_day)
 
         #get starting balance
         balance_modified = result['response']['StartBalance']
@@ -114,6 +142,7 @@ class TtBankTransaction(models.Model):
             i.pop('id')
             i.pop('transaction_code')
             i.pop('bank_account_id')
+            i.pop('bank_transaction_date_id')
             i.pop('currency_id')
             i.pop('bank_balance')
             i.pop('transaction_date')
@@ -158,6 +187,7 @@ class TtBankTransaction(models.Model):
 
                 data = {
                     'bank_account_id': bank_owner[0]['id'],
+                    'date_id': date_id.id,
                     'currency_id': currency_id[0]['id'],
                     'transaction_date': i['TransactionDate'],
                     'transaction_bank_branch': i['BranchCode'],

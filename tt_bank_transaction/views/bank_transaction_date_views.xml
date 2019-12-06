@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="bank_transaction_date_tree_view" model="ir.ui.view">
+        <field name="name">bank.transaction.date.tee.view</field>
+        <field name="model">tt.bank.transaction.date</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="date"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="bank_transaction_date_form_view" model="ir.ui.view">
+        <field name="name">bank.transaction.date.from.view</field>
+        <field name="model">tt.bank.transaction.date</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="bank_account_id"/>
+                        <field name="date"/>
+                    </group>
+                    <notebook>
+                        <page string="Bank Transactions">
+                            <field name="transaction_ids"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="bank_transaction_date_action_view" model="ir.actions.act_window">
+        <field name="name">Bank Transaction Date</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.bank.transaction.date</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+    </record>
+</odoo>
