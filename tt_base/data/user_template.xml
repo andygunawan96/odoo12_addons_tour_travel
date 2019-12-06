@@ -117,8 +117,7 @@
                     (4,ref('tt_base.able_to_top_up')),
                     (4,ref('tt_base.able_to_login')),
                     (4,ref('tt_base.able_to_psg_cache_1')),
-                    (4,ref('tt_base.able_to_psg_cache_2'))]
-"/>
+                    (4,ref('tt_base.able_to_psg_cache_2'))]"/>
         </record>
 
         <record id="citra_template_user_supervisor" model="res.users">
@@ -135,8 +134,7 @@
                     (4,ref('tt_base.able_to_top_up')),
                     (4,ref('tt_base.able_to_login')),
                     (4,ref('tt_base.able_to_psg_cache_1')),
-                    (4,ref('tt_base.able_to_psg_cache_2'))]
-"/>
+                    (4,ref('tt_base.able_to_psg_cache_2'))]"/>
         </record>
 
         <record id="citra_template_user_manager" model="res.users">
@@ -153,8 +151,7 @@
                     (4,ref('tt_base.able_to_top_up')),
                     (4,ref('tt_base.able_to_login')),
                     (4,ref('tt_base.able_to_psg_cache_1')),
-                    (4,ref('tt_base.able_to_psg_cache_2'))]
-"/>
+                    (4,ref('tt_base.able_to_psg_cache_2'))]"/>
         </record>
 
         <record id="japro_template_user_operator" model="res.users">
@@ -171,8 +168,7 @@
                     (4,ref('tt_base.able_to_top_up')),
                     (4,ref('tt_base.able_to_login')),
                     (4,ref('tt_base.able_to_psg_cache_1')),
-                    (4,ref('tt_base.able_to_psg_cache_2'))]
-"/>
+                    (4,ref('tt_base.able_to_psg_cache_2'))]"/>
         </record>
 
         <record id="japro_template_user_supervisor" model="res.users">
@@ -189,9 +185,8 @@
                     (4,ref('tt_base.able_to_top_up')),
                     (4,ref('tt_base.able_to_login')),
                     (4,ref('tt_base.able_to_psg_cache_1')),
-                    (4,ref('tt_base.able_to_psg_cache_2'))]
-"/>
-"/>        </record>
+                    (4,ref('tt_base.able_to_psg_cache_2'))]"/>
+       </record>
 
         <record id="japro_template_user_manager" model="res.users">
             <field name="name">Japro Agent Template Manager</field>
