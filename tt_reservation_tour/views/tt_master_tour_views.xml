@@ -1,4 +1,24 @@
 <odoo>
+    <record id="tt_master_tour_view_filter" model="ir.ui.view">
+        <field name="name">tt.master.tour.view.filter</field>
+        <field name="model">tt.master.tour</field>
+        <field name="arch" type="xml">
+            <search string="Search Tour Package">
+                <field name="name"/>
+                <field name="tour_code"/>
+                <field name="duration"/>
+
+                <group expand="0" string="Group By">
+                    <filter name="group_by_tour_category" string="Tour Category" domain="[]" context="{'group_by':'tour_category'}"/>
+                    <filter name="group_by_tour_type" string="Tour Type" domain="[]" context="{'group_by':'tour_type'}"/>
+                    <filter name="group_by_tour_route" string="Tour Route" domain="[]" context="{'group_by':'tour_route'}"/>
+                    <filter name="group_by_provider_id" string="Provider" domain="[]" context="{'group_by':'provider_id'}"/>
+                    <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
     <record model="ir.ui.view" id="tt_master_tour_view_form">
         <field name="name">tt.master.tour.view.form</field>
         <field name="model">tt.master.tour</field>
@@ -25,7 +45,7 @@
                     <!--TITLE-->
                     <div class="oe_button_box" name="button_box">
                         <button name="%(tt_base.tt_upload_center_wizard_action_view)d" string="Upload Document" type="action"
-                                class="oe_stat_button" icon="fa-upload"/>
+                                class="oe_stat_button" icon="fa-upload" groups="tt_base.group_tt_tour_travel_operator"/>
                         <button name="toggle_active" type="object"
                                 class="oe_stat_button" icon="fa-archive"
                                 groups="tt_base.group_tt_tour_travel_supervisor">
