@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <data noupdate="1">
-        <record id="bank_accounts" model="tt.bank.accounts">
-            <field name="name">BCA Acccount</field>
-            <field name="bank_account_owner">BCA Account</field>
+        <record id="bank_account_bca_1" model="tt.bank.accounts">
+            <field name="bank_account_owner">Rodex BCA Account</field>
             <field name="bank_account_number">51.1015.0000</field>
             <field name="bank_account_number_without_dot">5110150000</field>
             <field name="currency_id" ref="base.IDR"/>
