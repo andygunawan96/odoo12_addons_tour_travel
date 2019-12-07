@@ -239,8 +239,8 @@ class TtCustomer(models.Model):
         try:
             number = data['identity_number']
             type = data['identity_type']
-            expdate = data.get('identity_expdate','')
-            c_issued_id = data.get('identity_country_of_issued_code','')
+            expdate = util.get_without_empty(data,'identity_expdate',False)
+            c_issued_id = util.get_without_empty(data,'identity_country_of_issued_code',False)
             image_seqs = data.get('identity_image',[])
         except:
             raise RequestException(1023,additional_message="Missing key.")
@@ -251,10 +251,11 @@ class TtCustomer(models.Model):
                 exixting_identity = identity
                 break
 
-        country = self.env['res.country'].search([('code', '=', c_issued_id)])
-        c_issued_id = country and country[0].id or False
-        if not c_issued_id:
-            raise RequestException(1023,additional_message="Country not found.")
+        if c_issued_id:
+            country = self.env['res.country'].search([('code', '=', c_issued_id)])
+            c_issued_id = country and country[0].id or False
+            if not c_issued_id:
+                raise RequestException(1023,additional_message="Country not found.")
 
         #convet seq_id to id
         image_ids = []
