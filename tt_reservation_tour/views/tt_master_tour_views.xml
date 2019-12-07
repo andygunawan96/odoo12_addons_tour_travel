@@ -357,6 +357,16 @@
                         </page>
                         <page string="Other Information">
                             <separator string="Input"/>
+                            <group>
+                                <group>
+                                    <field name="import_other_info" filename="name"/>
+                                    <button name="import_other_info_json" type="object" string="Import"/>
+                                </group>
+                                <group>
+                                    <field name="export_other_info" filename="name"/>
+                                    <button name="export_other_info_json" type="object" string="Export"/>
+                                </group>
+                            </group>
                             <field name="other_info_ids"/>
                             <separator string="Preview"/>
                             <button name="generate_other_info_preview" type="object" string="Generate"/>

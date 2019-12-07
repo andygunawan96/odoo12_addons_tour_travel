@@ -3,10 +3,12 @@ from datetime import datetime
 from ...tools import util,variables,ERR
 from ...tools.ERR import RequestException
 from dateutil.relativedelta import relativedelta
+from odoo.exceptions import UserError
 from ...tools.api import Response
 import logging, traceback
 import json
 import pytz
+import base64
 
 _logger = logging.getLogger(__name__)
 
@@ -137,9 +139,11 @@ class MasterTour(models.Model):
     # quotation_ids = fields.One2many('tt.master.tour.quotation', 'tour_pricelist_id', 'Tour Quotation(s)')
 
     country_name = fields.Char('Country Name')
-    itinerary_ids = fields.One2many('tt.reservation.tour.itinerary', 'tour_pricelist_id', 'Itinerary')
+    itinerary_ids = fields.One2many('tt.reservation.tour.itinerary', 'tour_pricelist_id', 'Itinerary', ondelete='cascade')
     provider_id = fields.Many2one('tt.provider', 'Provider', domain=get_domain, required=True)
     document_url = fields.Many2one('tt.upload.center', 'Document URL')
+    import_other_info = fields.Binary('Import JSON')
+    export_other_info = fields.Binary('Export JSON')
     active = fields.Boolean('Active', default=True)
 
     @api.onchange('payment_rules_ids')
@@ -252,6 +256,51 @@ class MasterTour(models.Model):
                 diff = (datetime.strptime(str(rec.return_date), '%Y-%m-%d') - datetime.strptime(
                     str(rec.departure_date), '%Y-%m-%d')).days
                 rec.duration = str(diff)
+
+    def create_other_info_from_json(self, data):
+        message_id_list = []
+        for rec in data['message']:
+            msg_obj = self.env['tt.master.tour.otherinfo.messages'].sudo().create({
+                'name': rec['text'],
+                'style': rec['style'],
+                'sequence': rec['sequence'],
+            })
+            message_id_list.append(msg_obj.id)
+
+        other_info_obj = self.env['tt.master.tour.otherinfo'].sudo().create({
+            'child_list_type': data['child_list_type'],
+            'sequence': data['sequence'],
+            'info_message_ids': [(6, 0, message_id_list)],
+            'child_ids': [(6, 0, [self.create_other_info_from_json(chd_obj) for chd_obj in data['children']])]
+        })
+
+        return other_info_obj.id
+
+    def export_other_info_json(self):
+        list_of_dict = []
+        for rec in self.other_info_ids:
+            list_of_dict.append(rec.convert_info_to_dict())
+        json_data = json.dumps(list_of_dict)
+        self.sudo().write({
+            'export_other_info': base64.b64encode(json_data.encode())
+        })
+
+    def import_other_info_json(self):
+        if not self.import_other_info:
+            raise UserError(_('Please upload a json file before pressing this button!'))
+        try:
+            other_info_list = []
+            upload_file = json.loads(base64.b64decode(self.import_other_info))
+            for rec in self.other_info_ids:
+                rec.sudo().unlink()
+            for rec in upload_file:
+                other_info_list.append(self.create_other_info_from_json(rec))
+            self.sudo().write({
+                'import_other_info': False,
+                'other_info_ids': [(6, 0, other_info_list)]
+            })
+        except Exception as e:
+            raise UserError(_('The uploaded file cannot be read. Please upload a valid JSON file!'))
 
     def read_other_info_dict(self, data, current_list_type):
         temp_txt = ''
