@@ -5,6 +5,9 @@
         <field name="model">tt.reservation.visa.pricelist</field>
         <field name="arch" type="xml">
             <form string="">
+<!--                <header>-->
+<!--                    <button type="object" string="Search API" name="search_api"/>-->
+<!--                </header>-->
                 <sheet>
                     <div class="oe_title">
                         <h1>

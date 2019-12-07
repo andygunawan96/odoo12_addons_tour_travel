@@ -1,5 +1,6 @@
 from odoo import api, fields, models, _
 from ...tools.api import Response
+import html2text
 
 PAX_TYPE = [
     ('ADT', 'Adult'),
@@ -49,7 +50,7 @@ class VisaPricelist(models.Model):
     sale_price = fields.Monetary('Sale Price', default=0)
     commission_price = fields.Monetary('Commission Price', store=True, readonly=1, compute="_compute_commission_price")
 
-    requirement_ids = fields.One2many('tt.reservation.visa.requirements', 'pricelist_id', 'Requirements')
+    requirement_ids = fields.One2many('tt.reservation.visa.requirements', 'pricelist_id', 'Requirements', copy=True)
 
     attachments_ids = fields.Many2many('tt.upload.center', 'visa_pricelist_attachment_rel', 'visa_pricelist_id',
                                        'attachment_id', string='Attachments')
@@ -114,7 +115,7 @@ class VisaPricelist(models.Model):
                         'name': attach.file_reference,
                         'url': attach.url,
                     })
-                list_of_visa.append({
+                visa_vals = {
                     'sequence': idx,
                     'pax_type': rec.pax_type,
                     'entry_type': rec.entry_type,
@@ -136,7 +137,12 @@ class VisaPricelist(models.Model):
                     },
                     'notes': rec.notes,
                     'id': rec.id
-                })
+                }
+                # if rec.notes:
+                #     visa_vals.update({
+                #         'notes': html2text.html2text(rec.notes)
+                #     })
+                list_of_visa.append(visa_vals)
 
                 # for rec1 in self.search([('name', '=ilike', rec.country_id.id)]):
                 #

@@ -262,7 +262,7 @@ class IssuedOffline(models.Model):
 
     @api.one
     def action_validate(self, kwargs={}):
-        # cek saldo sub agent
+        # cek saldo agent
         is_enough = self.agent_id.check_balance_limit_api(self.agent_id.id, self.agent_nta)
         # jika saldo mencukupi
         if is_enough['error_code'] == 0:
@@ -364,13 +364,44 @@ class IssuedOffline(models.Model):
 
     @api.one
     def action_quick_issued(self):
-        if self.total > 0 and self.nta_price > 0:
-            for rec in self.line_ids:
-                if not rec.pnr:
-                    raise UserError(_('PNR can\'t be empty'))
-            self.action_issued_backend()
+        # cek saldo agent
+        is_enough = self.agent_id.check_balance_limit_api(self.agent_id.id, self.agent_nta)
+        # jika saldo mencukupi
+        if is_enough['error_code'] == 0:
+            if self.total > 0 and self.nta_price > 0:
+                if self.provider_type_id_name == 'airline' or self.provider_type_id_name == 'train' or \
+                        self.provider_type_id_name == 'hotel' or self.provider_type_id_name == 'activity':
+                    for rec in self.line_ids:
+                        if self.provider_type_id_name == 'airline' or self.provider_type_id_name == 'train':
+                            if not rec.pnr:
+                                raise UserError(_('PNR can\'t be empty'))
+                        if not rec.provider_id:
+                            raise UserError(_('Provider can\'t be empty'))
+                self.create_provider_offline()
+                for provider in self.provider_booking_ids:
+                    provider.confirm_date = self.confirm_date
+                    provider.confirm_uid = self.confirm_uid
+                for provider in self.provider_booking_ids:
+                    # create pricing list
+                    if self.provider_type_id_name != 'hotel':
+                        provider.create_service_charge()
+                    else:
+                        provider.create_service_charge_hotel()
+                    provider.action_create_ledger()
+                self.calculate_service_charge()
+                self.state = 'validate'
+                self.vendor_amount = self.nta_price
+                self.compute_final_ho()
+                self.issued_date = fields.Datetime.now()
+                self.issued_uid = self.env.user.id
+                for provider in self.provider_booking_ids:
+                    provider.issued_date = self.issued_date
+                    provider.issued_uid = self.issued_uid
+                # self.action_issued_backend()
+            else:
+                raise UserError(_('Sale Price or NTA Price can\'t be 0 (Zero)'))
         else:
-            raise UserError(_('Sale Price or NTA Price can\'t be 0 (Zero)'))
+            raise UserError(_('Balance not enough'))
 
     #################################################################################################
     # LEDGER & PRICES
@@ -842,6 +873,12 @@ class IssuedOffline(models.Model):
         lines = data['issued_offline_data']['line_ids']  # data_reservation_offline['line_ids']
 
         try:
+            # cek saldo
+            balance_res = self.env['tt.agent'].check_balance_limit_api(context['co_agent_id'], data_reservation_offline['total_sale_price'])
+            if balance_res['error_code'] != 0:
+                _logger.error('Agent Balance not enough')
+                raise RequestException(1007, additional_message="agent balance")
+
             user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
             # remove sementara update_api_context
             context.update({
@@ -884,6 +921,13 @@ class IssuedOffline(models.Model):
                 'id': book_obj.name
             }
             res = Response().get_no_error(response)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            try:
+                book_obj.notes += traceback.format_exc()+'\n'
+            except:
+                _logger.error('Creating Notes Error')
+            return e.error_dict()
         except Exception as e:
             self.env.cr.rollback()
             _logger.error(msg=str(e) + '\n' + traceback.format_exc())
