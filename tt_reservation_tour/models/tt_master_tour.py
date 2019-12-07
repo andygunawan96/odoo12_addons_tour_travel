@@ -445,7 +445,7 @@ class MasterTour(models.Model):
                             result.append(rec)
                     else:
                         result.append(rec)
-                if rec['start_period']:
+                if rec.get('start_period'):
                     if search_request['departure_month'] != '00':
                         if search_request['departure_year'] != '0000':
                             if str(rec['start_period'])[:7] <= search_request['departure_date'] <= str(rec['end_period'])[:7]:
@@ -458,6 +458,12 @@ class MasterTour(models.Model):
                             result.append(rec)
                     else:
                         result.append(rec)
+
+                if rec.get('import_other_info'):
+                    rec.pop('import_other_info')
+
+                if rec.get('export_other_info'):
+                    rec.pop('export_other_info')
 
             for idx, rec in enumerate(result):
                 try:
