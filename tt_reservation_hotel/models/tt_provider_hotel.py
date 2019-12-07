@@ -7,6 +7,7 @@ import copy
 
 class TransportBookingProvider(models.Model):
     _name = 'tt.provider.hotel'
+    _description = 'Provider Hotel'
     _rec_name = 'pnr'
     _order = 'checkin_date'
 

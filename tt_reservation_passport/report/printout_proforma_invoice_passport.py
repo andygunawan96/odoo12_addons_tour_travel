@@ -3,6 +3,7 @@ from odoo import models, api
 
 class PrintoutProformaInvoicePassport(models.AbstractModel):
     _name = 'report.tt_reservation_passport.printout_proforma_passport'
+    _description = 'Passport Printout Proforma Passport'
 
     """Abstract Model for report template.
 

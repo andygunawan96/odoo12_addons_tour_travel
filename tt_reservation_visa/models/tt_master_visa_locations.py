@@ -8,7 +8,7 @@ LOCATION_TYPE = [
 
 class MasterVisaLocations(models.Model):
     _name = 'tt.master.visa.locations'
-    description = 'Tour & Travel - Visa Master Locations'
+    _description = 'Tour & Travel - Visa Master Locations'
 
     name = fields.Char('Name')
     pricelist_ids = fields.Many2many('tt.reservation.visa.pricelist', 'tt_master_visa_locations_rel',

@@ -22,6 +22,7 @@ class HotelFacility(models.Model):
 
 class HotelTopFacility(models.Model):
     _name = 'tt.hotel.top.facility'
+    _description = 'Hotel Top Facility'
     _order = 'sequence, id'
 
     name = fields.Char('Name')

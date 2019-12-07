@@ -3,6 +3,7 @@ from odoo import models, api
 
 class PrintoutProformaInvoiceVisa(models.AbstractModel):
     _name = 'report.tt_reservation_visa.printout_proforma_invoice_visa'
+    _description = 'Report Proforma Visa'
 
     """Abstract Model for report template.
 

@@ -10,6 +10,7 @@ _logger = logging.getLogger(__name__)
 
 class HotelImageSettings(models.Model):
     _name = 'hotel.image.settings'
+    _description = 'Hotel Image Settings'
 
     default_url = fields.Char('Default url', default=lambda self: self.env['hotel.image.settings'].search([], limit=1).default_url)
     empty_image = fields.Char('Default Empty Image', default=lambda self: self.env['hotel.image.settings'].search([], limit=1).empty_image)
@@ -227,6 +228,7 @@ class HotelImageSettings(models.Model):
 
 class HotelContentHistory(models.Model):
     _name = 'hotel.content.history'
+    _description = 'Hotel Content History'
 
     file_name = fields.Selection([('hotels-', 'Hotel'), ('countries-', 'Country'), ('facilities-', 'Facility'),
                                   ('hoteltypes-', 'Hotel Type'), ('destinations-', 'Destination')], 'Name')

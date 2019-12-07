@@ -37,12 +37,16 @@
                         </tree>
                     </field>
                 </page>
+                            <xpath expr="//field[@name='subs']" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
             </xpath>
             <field name="partner_id" position="attributes">
                 <attribute name="groups">base.group_user</attribute>
             </field>
         </field>
     </record>
+
 
     <record id="res_user_form_simplified_view_inh" model="ir.ui.view">
         <field name="name">res.user.form.view.inh</field>
@@ -60,6 +64,7 @@
                     />
                 </div>
             </xpath>
+
         </field>
     </record>
 

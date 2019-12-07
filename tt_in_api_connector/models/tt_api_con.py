@@ -8,6 +8,7 @@ _logger = logging.getLogger(__name__)
 
 class TtApiCon(models.Model):
     _name = 'tt.api.con'
+    _description = 'Base API Con'
 
     table_name = ''
     url = tools.config.get('gateway_url', '')

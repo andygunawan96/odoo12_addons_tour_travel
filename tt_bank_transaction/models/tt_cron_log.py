@@ -41,7 +41,6 @@ class ttCronTopUpValidator(models.Model):
 
     def cron_auto_get_bank_transaction(self):
         try:
-
             #can be modified to respected account
             data = {
                 'account_number': 5110150000,
