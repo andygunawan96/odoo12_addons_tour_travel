@@ -16,8 +16,10 @@ Key Features
     'data': [
         'security/ir.model.access.csv',
         'data/ir_cron_data.xml',
+        'data/default_data.xml',
         'views/bank_accounts_views.xml',
         'views/bank_transaction_views.xml',
+        'views/bank_transaction_date_views.xml',
         'views/menu_item_views.xml',
     ],
     'demo': [],

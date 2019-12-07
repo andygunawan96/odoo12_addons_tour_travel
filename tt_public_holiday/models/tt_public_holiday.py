@@ -3,6 +3,7 @@ from odoo import api, fields, models, _
 
 class TtPublicHoliday(models.Model):
     _name = 'tt.public.holiday'
+    _description = 'Public Holiday'
     _order = 'date'
 
     name = fields.Char('Name')

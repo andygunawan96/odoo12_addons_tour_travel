@@ -3,6 +3,7 @@ from odoo import models, api
 
 class PrintoutPassportHO(models.AbstractModel):
     _name = 'report.tt_reservation_passport.printout_passport_ho'
+    _description = 'Report Printout Passport HO'
 
     """Abstract Model for report template.
 
@@ -21,7 +22,7 @@ class PrintoutPassportHO(models.AbstractModel):
 
 class PrintoutPassportCustomer(models.AbstractModel):
     _name = 'report.tt_reservation_passport.printout_passport_cust'
-
+    _description = 'Report Printout Passport Customer'
     """Abstract Model for report template.
 
         for `_name` model, please use `report.` as prefix then add `module_name.report_name`.

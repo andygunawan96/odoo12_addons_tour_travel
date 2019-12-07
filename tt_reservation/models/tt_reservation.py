@@ -344,9 +344,9 @@ class TtReservation(models.Model):
         for rec in self:
             agent_nta_total = 0
             for sale in rec.sale_service_charge_ids:
-                if sale.charge_code != 'rac':
+                if sale.charge_code == 'rac':
                     agent_nta_total += sale.total
-            rec.agent_nta = agent_nta_total
+            rec.agent_nta = agent_nta_total + rec.total
 
     def to_dict(self):
         res = {

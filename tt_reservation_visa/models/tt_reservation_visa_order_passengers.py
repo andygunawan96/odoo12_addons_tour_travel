@@ -51,6 +51,7 @@ PROCESS_STATUS = [
 
 class VisaInterviewBiometrics(models.Model):
     _name = 'tt.reservation.visa.interview.biometrics'
+    _description = 'Visa Interview Biometrics'
 
     passenger_interview_id = fields.Many2one('tt.reservation.visa.order.passengers', 'Passenger', readonly=1)
     passenger_biometrics_id = fields.Many2one('tt.reservation.visa.order.passengers', 'Passenger', readonly=1)

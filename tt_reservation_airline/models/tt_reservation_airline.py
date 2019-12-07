@@ -1286,16 +1286,25 @@ class ReservationAirline(models.Model):
     #         provider.action_expired()
 
     def pick_destination(self,data):
-        dest1 = data[0][2]['origin_id']
-        if len(data) == 1:
+        org1 = data[0][2]['origin_id']
+        dest1 = data[0][2]['destination_id']
+
+        segment_len = len(data)
+        if segment_len == 1:
             return 0
+        # elif segment_len == 2:
+        #     return 1
+        # elif segment_len > 2:
+        #     return (segment_len/2)-1
         else:
-            dest2 = dest1
+            dest2 = org1
             count = 0
-            while(dest1 == dest2):
+            while(org1 == dest2 or dest1 == dest2 and abs(count)<segment_len):
                 count -=1
                 dest2 = data[count][2]['destination_id']
             return count
+
+
     # def psg_validator(self,book_obj):
     #     for segment in book_obj.segment_ids:
     #         rule = self.env['tt.limiter.rule'].sudo().search([('code', '=', segment.carrier_code)])

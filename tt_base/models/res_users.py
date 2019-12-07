@@ -96,4 +96,3 @@ class ResUsers(models.Model):
             # 'user_ip_add': request.httprequest.headers.environ.get('HTTP_X_REAL_IP'),
             'user_ip_add': request.httprequest.environ['REMOTE_ADDR'],
         })
-

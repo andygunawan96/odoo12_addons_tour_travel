@@ -5,6 +5,7 @@ from odoo import api,fields,models
 class TtAirlineRule(models.Model):
 
     _name = 'tt.limiter.rule'
+    _description = 'Limiter Rule'
 
     name = fields.Char('Airline Name')
     code = fields.Char('Code')
@@ -15,12 +16,14 @@ class TtAirlineRule(models.Model):
 class TtWhitelistedName(models.Model):
 
     _name = 'tt.whitelisted.name'
+    _description = 'Whitelisted Name'
 
     name = fields.Char('Name')
     chances_left = fields.Integer('Chances Left')
 
 class TtWhitelistedPassport(models.Model):
     _name = 'tt.whitelisted.passport'
+    _description = 'Whitelisted Passport'
 
     passport = fields.Char('Passport Number')
     chances_left = fields.Integer('Chances Left')

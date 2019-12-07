@@ -8,6 +8,7 @@ _logger = logging.getLogger(__name__)
 
 class TtApiCon(models.Model):
     _name = 'tt.api.con'
+    _description = 'Base API Con'
 
     table_name = ''
     url = tools.config.get('gateway_url', '')
@@ -60,6 +61,8 @@ class TtApiCon(models.Model):
             self._get_header('signin'),
             content_type='json'
         )
+        if res['error_code'] != 0:
+            raise Exception(res['error_msg'])
         return res['response']['signature']
 
     def _get_header(self, service_name, signature = ''):

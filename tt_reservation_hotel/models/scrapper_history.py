@@ -5,6 +5,7 @@ from odoo.exceptions import UserError, ValidationError
 
 class ScrapHistory(models.Model):
     _name = 'scrap.history'
+    _description = 'Scrap History'
 
     provider_id = fields.Many2one('res.partner', 'Provider')
     city_id = fields.Many2one('res.city', 'City')
@@ -22,6 +23,7 @@ class ScrapHistory(models.Model):
 class ScrapHistoryLine(models.Model):
     _name = 'scrap.history.line'
     _order = 'id DESC'
+    _description = 'Scrap History Line'
 
     scrap_id = fields.Many2one('scrap.history', 'Scrap History')
     hotel_id = fields.Many2one('tt.hotel', 'Hotel')

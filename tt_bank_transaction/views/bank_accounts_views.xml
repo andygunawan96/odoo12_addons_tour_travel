@@ -26,8 +26,11 @@
                         <field name="bank_account_number"/>
                         <field name="bank_account_number_without_dot"/>
                     </group>
-                    <notebook>
-                        <page>
+                    <notebook string="Transactions List">
+                        <page string="Date list">
+                            <field name="bank_transaction_date_ids"/>
+                        </page>
+                        <page string="Transaction List">
                             <field name="bank_transaction_ids"/>
                         </page>
                     </notebook>

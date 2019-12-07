@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="seq_reschedule" model="ir.sequence">
+        <field name="name">Reschedule</field>
+        <field name="code">tt.reschedule</field>
+        <field name="prefix">RS.%(range_year)s%(range_month)s%(range_day)s%(range_sec)s</field>
+        <field name="padding">3</field>
+    </record>
+</odoo>

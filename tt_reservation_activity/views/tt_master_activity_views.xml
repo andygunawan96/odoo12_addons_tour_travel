@@ -1,4 +1,20 @@
 <odoo>
+    <record id="tt_master_activity_view_filter" model="ir.ui.view">
+        <field name="name">tt.master.activity.view.filter</field>
+        <field name="model">tt.master.activity</field>
+        <field name="arch" type="xml">
+            <search string="Search Activity">
+                <field name="name"/>
+                <field name="uuid"/>
+                <field name="provider_id"/>
+
+                <group expand="0" string="Group By">
+                    <filter name="group_by_provider_id" string="Provider" domain="[]" context="{'group_by':'provider_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
     <record model="ir.ui.view" id="tt_master_activity_view_form">
         <field name="name">tt.master.activity.view.form</field>
         <field name="model">tt.master.activity</field>

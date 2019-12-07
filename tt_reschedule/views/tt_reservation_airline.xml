@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_reservation_form_views_reschedule" model="ir.ui.view">
+        <field name="name">tt.reservation.form.view.reschedule</field>
+        <field name="model">tt.reservation</field>
+        <field name="inherit_id" ref="tt_reservation.tt_reservation_form_views"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_cancel']" position="after">
+                <button string="Reschedule" name="%(tt_reschedule.tt_reschedule_wizard_action_view)d" type="action" groups="tt_base.group_tt_agent_user_operator"
+                        context="{
+                'default_res_model': res_model,
+                'default_res_id': id,
+                'default_agent_id': agent_id,
+                'default_referenced_document': name,
+                'default_currency_id': currency_id,
+                'default_service_type': provider_type_id
+                }" attrs="{'invisible':['|', ('state','!=','issued'), ('provider_type_id','!=', %(tt_reservation_airline.tt_provider_type_airline)d)]}"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

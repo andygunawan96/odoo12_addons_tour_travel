@@ -5,7 +5,7 @@
         <field name="name">tt.refund.form.view</field>
         <field name="model">tt.refund</field>
         <field name="arch" type="xml">
-            <form>
+            <form create="false">
                 <header>
                     <button name="confirm_refund_from_button" string="Confirm" type="object" attrs="{'invisible':[('state','!=', 'draft')]}"/>
                     <button name="send_refund_from_button" string="Send to Agent" type="object" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible':[('state','!=', 'confirm')]}"/>
@@ -42,12 +42,13 @@
                             <field name="admin_fee_type" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible':[('apply_adm_fee','=', False)]}"/>
                             <field name="admin_fee_num" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible':[('apply_adm_fee','=', False)]}"/>
                             <field name="admin_fee"/>
+                            <field name="total_amount"/>
                             <field name="service_type"/>
                             <field name="refund_type"/>
                             <field name="notes"/>
                             <field name="referenced_document"/>
-                            <field name="res_model"/>
-                            <field name="res_id"/>
+                            <field name="res_model" groups="base.user_admin"/>
+                            <field name="res_id" groups="base.user_admin"/>
                         </group>
                         <group>
                             <field name="hold_date" readonly="1" class="oe_inline"/>
@@ -117,7 +118,7 @@
         <field name="name">tt.refund.tree.view.page</field>
         <field name="model">tt.refund</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree create="false">
                 <field name="create_date"/>
                 <field name="name"/>
                 <field name="agent_id"/>
@@ -125,6 +126,7 @@
                 <field name="refund_date"/>
                 <field name="refund_amount"/>
                 <field name="admin_fee"/>
+                <field name="total_amount"/>
                 <field name="service_type"/>
                 <field name="refund_type"/>
                 <field name="hold_date"/>
@@ -148,10 +150,7 @@
         </field>
     </record>
 
-    <menuitem id="top_transaction_refund" parent="tt_base.main_transaction"
-              name="Refund" sequence="25"/>
-
-    <menuitem id="menu_transaction_refund" parent="tt_accounting.top_transaction_refund"
+    <menuitem id="menu_transaction_refund" parent="tt_base.top_transaction_aftersales"
               name="Refund" action="tt_refund_action" sequence="10"/>
 
 </odoo>

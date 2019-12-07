@@ -40,4 +40,14 @@
         <field name="code">cache_version</field>
     </record>
 
+    <record id="able_to_book" model="tt.frontend.security">
+        <field name="name">Book Reservation</field>
+        <field name="code">book_reservation</field>
+    </record>
+
+    <record id="able_to_issued" model="tt.frontend.security">
+        <field name="name">Issued Reservation</field>
+        <field name="code">issued_reservation</field>
+    </record>
+
 </odoo>

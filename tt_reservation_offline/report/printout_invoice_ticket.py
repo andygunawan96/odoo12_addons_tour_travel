@@ -6,7 +6,7 @@ from datetime import timedelta
 
 class PrintoutInvoiceTicket(models.AbstractModel):
     _name = 'report.tt_reservation_offline.printout_invoice_ticket'
-
+    _description = 'Offline Printout Invoice Ticket'
     """Abstract Model for report template.
 
         for `_name` model, please use `report.` as prefix then add `module_name.report_name`.

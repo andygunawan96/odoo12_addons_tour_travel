@@ -3,6 +3,7 @@ from odoo import models, api
 
 class PrintoutVisaHO(models.AbstractModel):
     _name = 'report.tt_reservation_visa.printout_visa_ho'
+    _description = 'Report Visa HO'
 
     """Abstract Model for report template.
 
@@ -31,6 +32,7 @@ class PrintoutVisaHO(models.AbstractModel):
 
 class PrintoutVisaCustomer(models.AbstractModel):
     _name = 'report.tt_reservation_visa.printout_visa_cust'
+    _description = 'Report Visa Customer'
 
     """Abstract Model for report template.
 

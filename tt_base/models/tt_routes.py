@@ -347,7 +347,7 @@ class Routes(models.Model):
 class RoutesLeg(models.Model):
     _name = 'tt.routes.leg'
     # _rec_name = 'Leg'
-    # _description = 'Leg'
+    _description = 'Routes Leg'
     _order = 'departure_date'
 
     name = fields.Char('Name', compute='_compute_name', store=True)
@@ -398,7 +398,7 @@ class RoutesLeg(models.Model):
 class RoutesSegment(models.Model):
     _name = 'tt.routes.segment'
     # _rec_name = 'Segment'
-    # _description = 'Segment'
+    _description = 'Routes Segment'
 
     name = fields.Char('Name', compute='_compute_name', store=True)
     leg_ids = fields.One2many('tt.routes.leg', 'segment_id', 'Legs')
@@ -480,6 +480,7 @@ class RoutesSegment(models.Model):
 
 class RoutesJourney(models.Model):
     _name = 'tt.routes.journey'
+    _description = 'Routes Journey'
 
     name = fields.Char('Name', compute='_compute_name', store=True)
     segment_ids = fields.One2many('tt.routes.segment', 'journey_id', 'Segments')
@@ -561,6 +562,7 @@ class RoutesJourney(models.Model):
 
 class RoutesSchedule(models.Model):
     _name = 'tt.routes.schedule'
+    _description = 'Routes Schedule'
 
     name = fields.Char('Name', default='')
     journey_ids = fields.One2many('tt.routes.journey', 'schedule_id', 'Journeys')
@@ -603,6 +605,7 @@ class RoutesSchedule(models.Model):
 
 class RoutesFare(models.Model):
     _name = 'tt.routes.fare'
+    _description = 'Routes Fare'
 
     name = fields.Char('Name', compute='_compute_name', store=True)
     cabin_class = fields.Char('Cabin Class', default='')
@@ -643,6 +646,7 @@ class RoutesFare(models.Model):
 
 class RoutesFareDetail(models.Model):
     _name = 'tt.routes.fare.detail'
+    _description = 'Routes Fare Detail'
 
     name = fields.Char('Name', compute='_compute_name', store=True)
     detail_code = fields.Char('Detail Code', default='')
@@ -672,6 +676,7 @@ class RoutesFareDetail(models.Model):
 
 class RoutesPaxFare(models.Model):
     _name = 'tt.routes.pax.fare'
+    _description = 'Routes Pax Fare'
 
     name = fields.Char('Name', compute='_compute_name', store=True)
     pax_type = fields.Char('Pax Type', default='')
@@ -700,6 +705,7 @@ class RoutesPaxFare(models.Model):
 
 class RoutesServiceCharge(models.Model):
     _name = 'tt.routes.service.charge'
+    _description = 'Routes Service Charge'
 
     name = fields.Char('Name', compute='_compute_name', store=True)
     charge_code = fields.Char('Charge Code', default='')

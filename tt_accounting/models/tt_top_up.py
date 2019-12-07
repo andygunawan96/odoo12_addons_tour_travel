@@ -10,6 +10,7 @@ _logger = logging.getLogger(__name__)
 
 TOP_UP_STATE = [
     ("draft", "Draft"),
+    ("confirm","confirmed"),
     ("request", "Request"),
     ("validated", "Validated"),
     ("approved","Approved"),
@@ -93,6 +94,11 @@ class TtTopUp(models.Model):
             'co_uid':self.env.user.id
         })
 
+    def action_request_top_up(self,context):
+        self.write({
+            'state': 'request'
+        })
+
     def action_cancel_top_up(self,context):
         self.write({
             'state' : 'cancel',
@@ -170,7 +176,7 @@ class TtTopUp(models.Model):
                 raise RequestException(1019)
 
             data.update({
-                'state': 'request',
+                'state': 'confirm',
                 'agent_id': agent_obj.id,
                 'currency_id': self.env['res.currency'].search([('name','=',data.pop('currency_code'))]).id,
                 # 'amount_id': self.env['tt.top.up.amount'].search([('seq_id','=',data.pop('amount_seq_id'))]).id,
@@ -233,6 +239,28 @@ class TtTopUp(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1014)
 
+    def request_top_up_api(self,data,context):
+        try:
+            agent_obj = self.browse(context['co_agent_id'])
+            if not agent_obj:
+                raise RequestException(1008)
+
+            top_up_obj = self.search([('name','=',data['name'])])
+            if not top_up_obj:
+                raise RequestException(1010)
+            if top_up_obj.state != 'confirm':
+                raise RequestException(1018,additional_message="State not confirm")
+
+            top_up_obj.action_request_top_up(context) # ubah ke status cancel
+
+            return ERR.get_no_error()
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1018)
+
     def cancel_top_up_api(self,data,context):
         try:
             agent_obj = self.browse(context['co_agent_id'])
@@ -242,8 +270,8 @@ class TtTopUp(models.Model):
             top_up_obj = self.search([('name','=',data['name'])])
             if not top_up_obj:
                 raise RequestException(1010)
-            if top_up_obj.state != 'request':
-                raise RequestException(1018)
+            if top_up_obj.state not in ['request','confirm']:
+                raise RequestException(1016,additional_message="State not request or confirm")
 
             top_up_obj.action_cancel_top_up(context) # ubah ke status cancel
 

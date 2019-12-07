@@ -2,6 +2,7 @@ from odoo import api,fields,models
 
 class TtReservationErrHistory(models.Model):
     _name = 'tt.reservation.err.history'
+    _description = 'Reservation Error History'
 
     res_model = fields.Char('Related Reservation Name', required=True, index=True)
     res_id = fields.Integer('Related Reservation ID', index=True, help='Id of the followed resource')
