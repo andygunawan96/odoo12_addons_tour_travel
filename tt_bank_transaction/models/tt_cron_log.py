@@ -11,7 +11,11 @@ class ttCronTopUpValidator(models.Model):
         try:
             # get data from top up
             data = self.env['tt.top.up'].sudo().search([('state', '=', 'request')])
-            transaction = self.env['tt.bank.transaction'].sudo().search([('transaction_process', '=', 'unprocess'), ('transaction_type', '=', 'C')])
+            try:
+                date = self.env['tt.bank.transaction.date'].search([('date', '=', datetime.today().strftime("%Y-%m-%d"))])
+            except:
+                raise Exception("Date haven't been created, please run get bank cron first then try validate again")
+            transaction = self.env['tt.bank.transaction'].sudo().search([('bank_transaction_date_id', '=', date.id), ('transaction_process', '=', 'unprocess'), ('transaction_type', '=', 'C')])
 
             # check if there's an exact number
             for i in data:
@@ -41,10 +45,11 @@ class ttCronTopUpValidator(models.Model):
 
     def cron_auto_get_bank_transaction(self):
         try:
+            get_bank_account = self.env.ref('tt_bank_transaction.bank_account_bca_1')
             #can be modified to respected account
             data = {
-                'account_number': 5110150000,
-                'provider': 'bca',
+                'account_number': get_bank_account.bank_account_number_without_dot,
+                'provider': get_bank_account.bank_id.code,
                 'startdate': (datetime.today() + timedelta(hours=7)).strftime("%Y-%m-%d"),
                 'enddate': (datetime.today() + timedelta(hours=7)).strftime("%Y-%m-%d"),
             }
