@@ -634,6 +634,17 @@ class TtVisa(models.Model):
         payment = data['payment']  # self.param_payment
         context = context  # self.param_context
         try:
+            # cek saldo
+            total_price = 0
+            for psg in passengers:
+                visa_pricelist_obj = self.env['tt.reservation.visa.pricelist'].search([('id', '=', psg['master_visa_Id'])])
+                if visa_pricelist_obj:
+                    total_price += visa_pricelist_obj.sale_price
+            balance_res = self.env['tt.agent'].check_balance_limit_api(context['co_agent_id'], total_price)
+            if balance_res['error_code'] != 0:
+                _logger.error('Agent Balance not enough')
+                raise RequestException(1007, additional_message="agent balance")
+
             user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
 
             header_val = self._visa_header_normalization(search, sell_visa)
@@ -724,6 +735,9 @@ class TtVisa(models.Model):
                 'id': book_obj.name
             }
             res = Response().get_no_error(response)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
         except Exception as e:
             res = Response().get_error(str(e), 500)
             self.env.cr.rollback()

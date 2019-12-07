@@ -53,6 +53,46 @@ class PrintoutTicketForm(models.AbstractModel):
         }
 
 
+class PrintoutTicketTrainForm(models.AbstractModel):
+    _name = 'report.tt_report_common.printout_train_ticket'
+    _description = 'Rodex Model'
+
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        if not data.get('context'):
+            internal_model_id = docids.pop(0)
+            data['context'] = {}
+            data['context']['active_model'] = 'tt.reservation.train'
+            data['context']['active_ids'] = docids
+        values = {}
+        for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            values[rec.id] = []
+            a = {}
+            for rec2 in rec.sale_service_charge_ids:
+                if rec2.pax_type not in a.keys():
+                    a[rec2.pax_type] = {
+                        'pax_type': rec2.pax_type,
+                        'fare': 0,
+                        'tax': 0,
+                        'qty': 0,
+                    }
+
+                if rec2.charge_type.lower() == 'fare':
+                    a[rec2.pax_type]['fare'] += rec2.amount
+                    a[rec2.pax_type]['qty'] += 1
+                elif rec2.charge_type.lower() in ['roc', 'tax']:
+                    a[rec2.pax_type]['tax'] += rec2.amount
+            values[rec.id] = [a[new_a] for new_a in a]
+        return {
+            'doc_ids': data['context']['active_ids'],
+            'doc_model': data['context']['active_model'],
+            'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
+            'price_lines': values,
+            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'with_price': data.get('is_with_price') or False,
+        }
+
+
 class PrintoutInvoice(models.AbstractModel):
     _name = 'report.tt_report_common.printout_invoice'
     _description = 'Rodex Model'

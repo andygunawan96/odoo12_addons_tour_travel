@@ -10,10 +10,10 @@
                 <field name="parent_agent_id"/>
                 <group>
                     <filter string="All" name="all"/>
-                    <filter string="Citra" name="citra" domain="[('agent_type_id','=',2)]"/>
-                    <filter string="Japro" name="japro" domain="[('agent_type_id','=',3)]"/>
-                    <filter string="BTBO" name="btbo" domain="[('agent_type_id','=',6)]"/>
-                    <filter string="BTBR" name="btbr" domain="[('agent_type_id','=',7)]"/>
+                    <filter string="Citra" name="citra" domain="[('agent_type_id','=',[%(tt_base.agent_type_citra)d,])]"/>
+                    <filter string="Japro" name="japro" domain="[('agent_type_id','=',[%(tt_base.agent_type_japro)d,])]"/>
+                    <filter string="BTBO" name="btbo" domain="[('agent_type_id','=',[%(tt_base.agent_type_btbo)d,])]"/>
+                    <filter string="BTBR" name="btbr" domain="[('agent_type_id','=',[%(tt_base.agent_type_btbr)d,])]"/>
                 </group>
                 <separator/>
                 <filter string="Today" name="today" domain="[('date','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>

@@ -1,116 +1,441 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <template id="report_rodex_e_tickettrain_logo">
-        <div class="col-xs-12 text-center"  style="position: absolute; z-index:1; top:170px;">
+        <div class="col-12 text-center"  style="position: absolute; z-index:1; top:170px;">
             <img src="/tt_report_common/static/images/logo_kai_transparan.png"
                  style="max-height: 180px;"/>
         </div>
     </template>
 
-    <template id="printout_ticket_train_template">
-        <div class="article" style="margin: 0px !important; padding: 0px !important; font-family: Times New Roman, Georgia, Serif;">
-            <t t-call="tt_report_common.report_rodex_e_tickettrain_logo"/>
-            <div class="oe_structure"/>
-            <div>
-                <div class="row" style="border-top: 1px black solid; border-bottom: 1px black solid;">
-                    <div class="col-xs-2">
-                        <img src="/tt_report_common/static/images/logo_tors_small.png" style="max-height: 110px; margin-top: 9px;"/>
-                        <!--<img t-if="doc.agent_id.image" t-att-src="'data:image/png;base64,%s' % doc.agent_id.image" style="max-height: 56px; margin-top: 9px;"/>-->
-                    </div>
-                    <div class="col-xs-10" style="padding-left: 30px; font-size: 24px; font-weight: bold;">
-                        <span>BUKTI PEMBELIAN TIKET KERETA API</span><br/>
-                        <span>AGEN RESMI PT. KERETA API INDONESIA (PERSERO)</span>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-9" style="font-size: 25px; padding-left: 0px;">
-                        <div class="row" style="padding-top: 15px;">
-                            <div class="col-3" style="max-width: 30%;"><strong><span>Kode Booking</span></strong></div>
-                            <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
-                            <t t-if="doc.pnr">
-                                <div class="col-8" style="padding: 0px; text-transform:uppercase;"><strong><span t-esc="doc.pnr"/></strong></div><br/>
-                            </t>
-                            <t t-if="not doc.pnr">
-                                <div class="col-8" style="padding: 0px; text-transform:uppercase;"><strong><span style="color: white;">kosong</span></strong></div>
-                            </t>
-                        </div>
-                        <div class="row" style="padding: 0px;">
-                            <div class="col-3" style="max-width: 30%;"><span>Nama KA</span></div>
-                            <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
-                            <t t-if="doc.journey_ids.carrier_id.name">
-                                <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300"><span t-esc="line_ids[line_index]['carrier_name']"/> (<span t-if="line_ids[line_index]['carrier_code']" t-esc="line_ids[line_index]['carrier_code']"/>)</div>
-                            </t>
-                            <t t-if="not doc.journey_ids.carrier_id.name">
-                                <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300"><span style="color: white;">kosong</span></div>
-                            </t>
-                        </div>
-                        <div class="row" style="padding: 0px;">
-                            <div class="col-3" style="max-width: 30%;"><span>Tgl Berangkat</span></div>
-                            <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
-                            <t t-if="doc.journey_ids.departure_date">
-                                <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300">
-                                    <span t-esc="doc.journey_ids.departure_date.strftime('%d %B %Y')"/>
-                                </div>
-                            </t>
-                            <t t-if="not doc.journey_ids.departure_date">
-                                <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300"><span style="color: white;">kosong</span></div>
-                            </t>
-                        </div>
-                        <div class="row" style="padding: 0px;">
-                            <div class="col-3" style="max-width: 30%;"><span>St. Asal</span></div>
-                            <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
-                            <t t-if="doc.journey_ids.origin_id">
-                                <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300">
-                                    <t t-if="doc.journey_ids.origin_id.city == doc.journey_ids.origin_id.name">
-                                        <span t-esc="doc.journey_ids.origin_id.city"/><br/>
-                                    </t>
-                                    <t t-if="doc.journey_ids.origin_id.city != doc.journey_ids.origin_id.name">
-                                        <span t-esc="doc.journey_ids.origin_id.name"/><br/>  <!--<span t-esc="line_ids[line_index]['origin_city']"/>-->
-                                    </t>
-                                    <span t-if="doc.journey_ids.departure_date" t-esc="doc.journey_ids.departure_date.strftime('%d %B %Y  %H:%M')"/>
-                                    <span style="color: white;">..</span>
-                                </div>
-                            </t>
-                            <t t-if="not doc.journey_ids.origin_id">
-                                <div class="col-7" style="padding: 0px; text-transform:uppercase"><span style="color: white;">kosong</span></div>
-                            </t>
-                        </div>
-                        <div class="row" style="padding: 0px;">
-                            <div class="col-3" style="max-width: 30%;"><span>St. Tujuan</span></div>
-                            <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
-                            <t t-if="doc.journey_ids.destination_id">
-                                <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300">
-                                    <t t-if="doc.journey_ids.destination_id.city == doc.journey_ids.destination_id.name">
-                                        <span t-esc="doc.journey_ids.destination_id.city"/><br/>
-                                    </t>
-                                    <t t-if="doc.journey_ids.destination_id.city != doc.journey_ids.destination_id.name">
-                                        <span t-esc="doc.journey_ids.destination_id.name"/><br/>  <!--<span t-esc="line_ids[line_index]['destination_city']"/>-->
-                                    </t>
-                                    <span t-if="doc.journey_ids.return_date" t-esc="doc.journey_ids.return_date.strftime('%d %B %Y  %H:%M')"/>
-                                    <span style="color: white;">..</span>
-                                </div>
-                            </t>
-                            <t t-if="not doc.journey_ids.destination_id.name">
-                                <div class="col-7" style="padding: 0px; text-transform:uppercase"><span style="color: white;">kosong</span></div>
-                            </t>
-                        </div>
-                        <div class="row" style="padding: 0px;">
-                            <div class="col-3" style="max-width: 30%;"><span>Kelas</span></div>
-                            <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
-                            <t t-if="line_ids[line_index]['class_of_service']">
-                                <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300"><span t-esc="line_ids[line_index]['class_of_service']"/>
-                                    <span t-if="'' in line_ids[line_index]['class_of_service']">-</span></div>
-                            </t>
-                            <t t-if="not line_ids[line_index]['class_of_service']">
-                                <div class="col-8" style="padding: 0px; text-transform:uppercase"><span style="color: white;">kosong</span></div>
-                            </t>
-                        </div>
-                    </div>
-                </div>
+    <template id="train_footer">
+        <div class="footer" style="position: absolute; left: 0; right: 0;">
+            <div class="text-center" style="border-top: 1px solid black; font-size: 10px; font-weight: 300">
+                <ul class="list-inline">
+                    <li style="display: inline-block; margin-right: 20px;" t-if="doc.agent_id.phone_ids">Phone: <span t-field="doc.agent_id.phone_ids[0].phone_number"/></li>
+
+<!--                    <li t-if="agent.fax and agent.phone">&amp;bull;</li>-->
+<!--                    <li t-if="agent.fax">Fax: <span t-field="agent.fax"/></li>-->
+
+                    <li style="display: inline-block; margin-right: 20px;" t-if="doc.agent_id.email or doc.agent_id.email and doc.agent_id.phone_ids">&amp;bull;</li>  <!-- and agent.fax-->
+                    <li style="display: inline-block; margin-right: 20px;" t-if="doc.agent_id.email">Email: <span t-field="doc.agent_id.email"/></li>
+
+                    <li style="display: inline-block; margin-right: 20px;" t-if="doc.agent_id.website and doc.agent_id.email or doc.agent_id.website or doc.agent_id.website and doc.agent_id.phone_ids">&amp;bull;</li>  <!-- and agent.fax-->
+                    <li style="display: inline-block; margin-right: 20px;" t-if="doc.agent_id.website">Website: <span t-field="doc.agent_id.website"/></li>
+
+                    <li class="pull-right">Page:
+                    <span class="page"/>
+                    /
+                    <span class="topage"/>
+                    </li>
+                </ul>
             </div>
         </div>
-        <t t-foreach="doc.provider_booking_ids" t-as="length">
+    </template>
 
-        </t>
+    <template id="printout_ticket_train_template">
+        <div class="article" style="margin: 0px !important; padding: 0px !important; font-family: Times New Roman, Georgia, Serif;">
+            <t t-foreach="doc.provider_booking_ids" t-as="provider">
+                <t t-call="tt_report_common.report_rodex_e_tickettrain_logo"/>
+                <div class="oe_structure"/>
+                <div>
+                    <div class="row" style="border-top: 1px black solid; border-bottom: 1px black solid;">
+                        <div class="col-2">
+                            <img src="/tt_report_common/static/images/logo_tors_small.png" style="max-height: 110px; margin-top: 9px;"/>
+                            <!--<img t-if="doc.agent_id.image" t-att-src="'data:image/png;base64,%s' % doc.agent_id.image" style="max-height: 56px; margin-top: 9px;"/>-->
+                        </div>
+                        <div class="col-10" style="padding-left: 30px; font-size: 24px; font-weight: bold;">
+                            <span>BUKTI PEMBELIAN TIKET KERETA API</span><br/>
+                            <span>AGEN RESMI PT. KERETA API INDONESIA (PERSERO)</span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-9" style="font-size: 20px; padding-left: 0px;">
+                            <div class="row" style="padding-top: 15px;">
+                                <div class="col-3" style="max-width: 27.5%;"><strong><span>Kode Booking</span></strong></div>
+                                <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
+                                <t t-if="provider.pnr">
+                                    <div class="col-8" style="padding: 0px; text-transform:uppercase;"><strong><span t-esc="provider.pnr"/></strong></div>
+                                </t>
+                                <t t-if="not provider.pnr">
+                                    <div class="col-8" style="padding: 0px; text-transform:uppercase;"><strong><span style="color: white;">kosong</span></strong></div>
+                                </t>
+                            </div>
+                            <div class="row" style="padding: 0px; margin-top: -3px">
+                                <div class="col-3" style="max-width: 27.5%;"><span>Nama KA</span></div>
+                                <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
+                                <t t-if="provider.journey_ids.carrier_id.name">
+                                    <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300"><span t-esc="provider.journey_ids.carrier_id.name"/> (<span t-if="provider.journey_ids.carrier_id.name" t-esc="provider.journey_ids.carrier_id.code"/>)</div>
+                                </t>
+                                <t t-if="not provider.journey_ids.carrier_id.name">
+                                    <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300"><span style="color: white;">kosong</span></div>
+                                </t>
+                            </div>
+                            <div class="row" style="padding: 0px; margin-top: -3px">
+                                <div class="col-3" style="max-width: 27.5%;"><span>Tgl Berangkat</span></div>
+                                <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
+                                <t t-if="provider.journey_ids.departure_date">
+                                    <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300">
+                                        <span t-esc="provider.journey_ids.departure_date"/>
+                                    </div>
+                                </t>
+                                <t t-if="not provider.journey_ids.departure_date">
+                                    <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300"><span style="color: white;">kosong</span></div>
+                                </t>
+                            </div>
+                            <div class="row" style="padding: 0px; margin-top: -3px">
+                                <div class="col-3" style="max-width: 27.5%;"><span>St. Asal</span></div>
+                                <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
+                                <t t-if="provider.journey_ids.origin_id">
+                                    <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300">
+                                        <t t-if="provider.journey_ids.origin_id.city == provider.journey_ids.origin_id.name">
+                                            <span t-esc="provider.journey_ids.origin_id.city"/><br/>
+                                        </t>
+                                        <t t-if="provider.journey_ids.origin_id.city != provider.journey_ids.origin_id.name">
+                                            <span t-esc="provider.journey_ids.origin_id.city"/> <span t-esc="provider.journey_ids.origin_id.name"/><br/>  <!--<span t-esc="line_ids[line_index]['origin_city']"/>-->
+                                        </t>
+                                        <span t-if="provider.journey_ids.departure_date" t-esc="provider.journey_ids.departure_date"/>
+                                        <span style="color: white;">..</span>
+                                    </div>
+                                </t>
+                                <t t-if="not provider.journey_ids.origin_id">
+                                    <div class="col-7" style="padding: 0px; text-transform:uppercase"><span style="color: white;">kosong</span></div>
+                                </t>
+                            </div>
+                            <div class="row" style="padding: 0px; margin-top: -3px">
+                                <div class="col-3" style="max-width: 27.5%;"><span>St. Tujuan</span></div>
+                                <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
+                                <t t-if="provider.journey_ids.destination_id">
+                                    <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300">
+                                        <t t-if="provider.journey_ids.destination_id.city == provider.journey_ids.destination_id.name">
+                                            <span t-esc="provider.journey_ids.destination_id.city"/><br/>
+                                        </t>
+                                        <t t-if="provider.journey_ids.destination_id.city != provider.journey_ids.destination_id.name">
+                                            <span t-esc="provider.journey_ids.destination_id.city"/> <span t-esc="provider.journey_ids.destination_id.name"/><br/>  <!--<span t-esc="line_ids[line_index]['destination_city']"/>-->
+                                        </t>
+                                        <span t-if="provider.journey_ids.arrival_date" t-esc="provider.journey_ids.arrival_date"/>
+                                        <span style="color: white;">..</span>
+                                    </div>
+                                </t>
+                                <t t-if="not provider.journey_ids.destination_id.name">
+                                    <div class="col-7" style="padding: 0px; text-transform:uppercase"><span style="color: white;">kosong</span></div>
+                                </t>
+                            </div>
+                            <div class="row" style="padding: 0px; margin-top: -3px">
+                                <div class="col-3" style="max-width: 27.5%;"><span>Kelas</span></div>
+                                <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
+                                <t t-if="provider.journey_ids.class_of_service">
+                                    <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300"><span t-esc="lprovider.journey_ids.class_of_service"/>
+                                        <span t-if="'' in provider.journey_ids.class_of_service">-</span></div>
+                                </t>
+                                <t t-if="not provider.journey_ids.class_of_service">
+                                    <div class="col-8" style="padding: 0px; text-transform:uppercase"><span style="color: white;">kosong</span></div>
+                                </t>
+                            </div>
+                            <div class="row" style="padding: 0px; margin-top: -3px">
+                                <div class="col-3" style="max-width: 27.5%;margin-bottom:10px"><span>Jml Penumpang</span></div>
+                                <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
+                                <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300">
+                                    <span t-field="provider.booking_id.adult"/><span style="color: white;">.</span>DEWASA,<span/>
+                                    <span t-field="provider.booking_id.infant"/><span style="color: white;">.</span><span/>BAYI<span/>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-left:0px; width: 90%; border-top: 1px solid black; border-bottom: 1px solid #CCCCCC; padding-bottom: 2px">
+                                <div class="col-5">
+                                    <span>Nama Penumpang</span>
+                                </div>
+                                <div class="col-3">
+                                    <span>Kategori</span>
+                                </div>
+                                <div class="col-4">
+                                    <span>Seat</span>
+                                </div>
+                            </div>
+                            <t t-if="provider.journey_ids.seat_ids">
+                                <t t-foreach="provider.journey_ids.seat_ids" t-as="psg">
+                                    <div class="row" style="margin-left:0px; width: 90%;">
+                                        <div class="col-5">
+                                            <span t-field="psg.passenger_id.first_name"/><span style="color: white;">.</span><span t-field="psg.passenger_id.last_name"/>
+                                        </div>
+                                        <div class="col-3">
+                                            <t t-foreach="provider.ticket_ids" t-as="ticket">
+                                                <t t-if="ticket.passenger_id.id == psg.passenger_id.id">
+                                                    <t t-if="ticket.pax_type == 'ADT'">
+                                                        <span>Dewasa</span>
+                                                    </t>
+                                                    <t t-if="ticket.pax_type == 'INF'">
+                                                        <span>Bayi</span>
+                                                    </t>
+                                                </t>
+                                            </t>
+                                        </div>
+                                        <div class="col-4">
+                                            <span t-field="psg.seat"/>
+                                        </div>
+                                    </div>
+                                </t>
+                            </t>
+                            <t t-if="with_price">
+                                <t t-set="fare" t-value="0"/>
+                                <t t-set="discount" t-value="0"/>
+                                <t t-set="admin_agent" t-value="0"/>
+                                <t t-set="total" t-value="0"/>
+                                <t t-foreach="provider.cost_service_charge_ids" t-as="price">
+                                    <t t-if="price.charge_code">
+                                        <t t-if="price.charge_code == 'fare'">
+                                            <t t-set="fare" t-value="fare + price.total"/>
+                                            <t t-set="total" t-value="total + fare"/>
+                                        </t>
+                                        <t t-if="price.charge_code == 'roc'">
+                                            <t t-set="admin_agent" t-value="admin_agent + price.total"/>
+                                        </t>
+                                        <t t-if="price.charge_code == 'disc'">
+                                            <t t-set="discount" t-value="discount + price.total"/>
+                                            <t t-set="total" t-value="total - discount"/>
+                                        </t>
+                                    </t>
+                                </t>
+                                <div class="row" style="padding-top: 15px;">
+                                    <div class="col-3" style="max-width: 27.5%;"><span>Harga Tiket</span></div>
+                                    <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
+                                    <div class="col-8" style="padding: 0px; text-transform:uppercase;">
+                                         <span t-field="doc.currency_id.symbol"/> <span t-esc="fare"/>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top: -3px">
+                                    <div class="col-3" style="max-width: 27.5%;"><span>Diskon</span></div>
+                                    <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
+                                    <div class="col-8" style="padding: 0px; text-transform:uppercase;">
+                                        <span t-field="doc.currency_id.symbol"/> <span t-esc="discount" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top: -3px">
+                                    <div class="col-3" style="max-width: 27.5%;"><span>Admin Agen</span></div>
+                                    <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
+                                    <div class="col-8" style="padding: 0px; text-transform:uppercase;">
+                                        <span t-field="doc.currency_id.symbol"/> <span t-esc="admin_agent" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top: -3px">
+                                    <div class="col-3" style="max-width: 27.5%;"><span>Total</span></div>
+                                    <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
+                                    <div class="col-8" style="padding: 0px; text-transform:uppercase;">
+                                        <span t-field="doc.currency_id.symbol"/> <span t-esc="total" t-options='{"widget": "monetary", "display_currency": "doc.currency"}'/>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                        <div class="col-3 col-offset-1 text-right">
+                            <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('QR', provider.pnr, 180, 180)" style="width:200px;height:200px; margin-top: 20px;"/>
+                        </div>
+                    </div>
+                    <div class="row" style="font-size: 20px; border-top: 1px black solid; border-bottom: 1px black solid; margin-top: 40px; font-weight: 300">
+                        <div class="col-12">
+                            <ul>
+                                <li style=" margin-top: 5px;">Bukti pemesanan ini harus ditukarkan dengan Boarding Pass mulai 7x24 jam sebelum keberangkatan KA pada mesin check-in counter di stasiun keberangkatan.</li>
+                                <li style=" margin-top: 5px;">Untuk informasi terkait syarat dan ketentuan lain silahkan klik di www.kai.id atau hubungi Contact Center KAI (021) 121.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="row" style="font-size: 20px; margin-top: 30px; font-weight: 300">
+                        <div class="col-12">
+                            Syarat dan Ketentuan:
+                            <table style="width: 100%; line-height: normal; page-break-inside:auto">
+                                <tr style="page-break-inside:avoid; page-break-after:auto">
+                                    <td valign="top" style="width: 4%;">
+                                        1.
+                                    </td>
+                                    <td style="width: 96%;">
+                                        Setiap penumpang diperbolehkan membawa bagasi ke dalam Kereta Api dengan berat maksimum untuk tiap penumpang 20 kg dan dengan volume maksimum 100 dm3 (dengan dimensi maksimal 70 cm x 48 cm x 30 cm), serta sebanyak-banyaknya terdiri dari 4 koli (item bagasi) tanpa dikenakan bea tambahan.
+                                    </td>
+                                </tr>
+                                <tr style="page-break-inside:avoid; page-break-after:auto">
+                                    <td valign="top" style="width: 4%;">
+                                        2.
+                                    </td>
+                                    <td valign="top" style="width: 96%;">
+                                        Bagasi yang melebihi berat dan/atau ukuran sebagaimana dimaksud di atas sampai dengan setinggi-tingginya 40 kg atau dengan volume 200 dm3 (dengan dimensi maksimal 70 cm x 48 cm x 60 cm), diperbolehkan dibawa kedalam kereta penumpang dengan dikenakan bea kelebihan bagasi atau membeli tempat duduk ekstra.
+                                    </td>
+                                </tr>
+                                <tr style="page-break-inside:avoid; page-break-after:auto">
+                                    <td valign="top" style="width: 4%;">
+                                        3.
+                                    </td>
+                                    <td style="width: 96%;">
+                                        Tarif atas kelebihan berat bagasi sebagai berikut :
+                                    </td>
+                                </tr>
+                                <tr style="page-break-inside:avoid; page-break-after:auto">
+                                    <td valign="top" style="width: 4%;"> </td>
+                                    <td style="width: 96%;">
+                                        1.	Kereta Api kelas Eksekutif Rp 10.000,-/kg;
+                                    </td>
+                                </tr>
+                                <tr style="page-break-inside:avoid; page-break-after:auto">
+                                    <td valign="top" style="width: 4%;"> </td>
+                                    <td style="width: 96%;">
+                                        2.	Kereta Api kelas Bisnis Rp 6.000,-/kg;
+                                    </td>
+                                </tr>
+                                <tr style="page-break-inside:avoid; page-break-after:auto">
+                                    <td valign="top" style="width: 4%;"> </td>
+                                    <td style="width: 96%;">
+                                        3.	Kereta Api kelas Ekonomi Rp 2.000,-/kg.
+                                    </td>
+                                </tr>
+                                <tr style="page-break-inside:avoid; page-break-after:auto">
+                                    <td valign="top" style="width: 4%;">
+                                        4.
+                                    </td>
+                                    <td style="width: 96%;">
+                                        Pembayaran bagasi dilakukan di stasiun.
+                                    </td>
+                                </tr>
+                                <tr style="page-break-inside:avoid; page-break-after:auto">
+                                    <td valign="top" style="width: 4%;">
+                                        5.
+                                    </td>
+                                    <td style="width: 96%;">
+                                        Bagasi yang melebihi berat dan/atau ukuran sebagaimana dimaksud angka 2 tidak diperbolehkan dibawa ke dalam kabin Kereta kecuali :
+                                    </td>
+                                </tr>
+                                <tr style="page-break-inside:avoid; page-break-after:auto">
+                                    <td valign="top" style="width: 4%;"> </td>
+                                    <td style="width: 96%;">
+                                        1.	Sepeda lipat atau sepeda biasa yang dikemas sedemikian rupa dalam keadaan komponen-komponennya tidak dirakit menjadi sepeda utuh;
+                                    </td>
+                                </tr>
+                                <tr style="page-break-inside:avoid; page-break-after:auto">
+                                    <td valign="top" style="width: 4%;"> </td>
+                                    <td style="width: 96%;">
+                                        2.	Kursi roda manual, kereta bayi, tongkat alat bantu jalan.
+                                    </td>
+                                </tr>
+                                <tr style="page-break-inside:avoid; page-break-after:auto">
+                                    <td valign="top" style="width: 4%;">
+                                        6.
+                                    </td>
+                                    <td style="width: 96%;">
+                                        Khusus peralatan olahraga, peralatan musik dan peralatan elektronik tertentu yang dianggap pantas dibawa ke dalam kereta dengan ukuran melebihi ketentuan sebagaimana angka 2, dapat dibawa ke dalam kereta dengan membeli tempat duduk tambahan untuk menyimpan barang dimaksud dengan jumlah tempat duduk disesuaikan. Dalam hal tidak tersedia tempat duduk tambahan, maka barang tidak diperbolehkan dibawa ke dalam kabin Kereta. Pada saat reservasi tiket tambahan untuk bagasi, kolom nama diisi nama penumpang dan pada kolom identitas ditulis bagasi1 untuk kursi pertama, bagasi2 untuk kursi kedua dan seterusnya.
+                                    </td>
+                                </tr>
+                                <tr style="page-break-inside:avoid; page-break-after:auto">
+                                    <td valign="top" style="width: 4%;">
+                                        7.
+                                    </td>
+                                    <td style="width: 96%;">
+                                        Bagasi ditempatkan pada rak bagasi di atas tempat duduk penumpang atau ditempatkan di tempat lain sedemikian rupa sehingga tidak mengganggu atau membahayakan penumpang lain dan tidak akan menimbulkan kerusakan pada Kereta.
+                                    </td>
+                                </tr>
+                                <tr style="page-break-inside:avoid; page-break-after:auto">
+                                    <td valign="top" style="width: 4%;">
+                                        8.
+                                    </td>
+                                    <td style="width: 96%;">
+                                        Perusahaan tidak bertanggung jawab terhadap kerusakan dan/atau kehilangan bagasi penumpang, Setiap penumpang wajib menjaga bagasi yang dibawanya.
+                                    </td>
+                                </tr>
+                                <tr style="page-break-inside:avoid; page-break-after:auto">
+                                    <td valign="top" style="width: 4%;">
+                                        9.
+                                    </td>
+                                    <td style="width: 96%;">
+                                        Kerusakan pada kereta yang diakibatkan oleh bagasi penumpang menjadi tanggung jawab penumpang dan diwajibkan membayar ganti rugi sebesar kerugian nyata atas kerusakan dimaksud.
+                                    </td>
+                                </tr>
+                                <tr style="page-break-inside:avoid; page-break-after:auto">
+                                    <td valign="top" style="width: 4%;">
+                                        10.
+                                    </td>
+                                    <td style="width: 96%;">
+                                        Barang-barang yang tidak diperbolehkan dibawa sebagai bagasi, meliputi:
+                                    </td>
+                                </tr>
+                                <tr style="page-break-inside:avoid; page-break-after:auto">
+                                    <td valign="top" style="width: 4%;"> </td>
+                                    <td style="width: 96%;">
+                                        1.	Binatang;
+                                    </td>
+                                </tr>
+                                <tr style="page-break-inside:avoid; page-break-after:auto">
+                                    <td valign="top" style="width: 4%;"> </td>
+                                    <td style="width: 96%;">
+                                        2.	Narkotika Psikotropika dan zat adiktif lainnya;
+                                    </td>
+                                </tr>
+                                <tr style="page-break-inside:avoid; page-break-after:auto">
+                                    <td valign="top" style="width: 4%;"> </td>
+                                    <td style="width: 96%;">
+                                        3.	Senjata api dan senjata tajam;
+                                    </td>
+                                </tr>
+                                <tr style="page-break-inside:avoid; page-break-after:auto">
+                                    <td valign="top" style="width: 4%;"> </td>
+                                    <td style="width: 96%;">
+                                        4.	Papan selancar;
+                                    </td>
+                                </tr>
+                                <tr style="page-break-inside:avoid; page-break-after:auto">
+                                    <td valign="top" style="width: 4%;"> </td>
+                                    <td style="width: 96%;">
+                                        5.	Semua barang - barang yang mudah terbakar/meledak;
+                                    </td>
+                                </tr>
+                                <tr style="page-break-inside:avoid; page-break-after:auto">
+                                    <td valign="top" style="width: 4%;"> </td>
+                                    <td style="width: 96%;">
+                                        6.	Semua barang - barang yang berbau busuk, amis atau karena sifatnya dapat mengganggu/merusak kesehatan dan mengganggu kenyamanan penumpang lainnya;
+                                    </td>
+                                </tr>
+                                <tr style="page-break-inside:avoid; page-break-after:auto">
+                                    <td valign="top" style="width: 4%;"> </td>
+                                    <td style="width: 96%;">
+                                        7.	Barang - barang yang menurut pertimbangan petugas keadaan dan besarnya tidak pantas diangkut sebagai bagasi;
+                                    </td>
+                                </tr>
+                                <tr style="page-break-inside:avoid; page-break-after:auto">
+                                    <td valign="top" style="width: 4%;"> </td>
+                                    <td style="width: 96%;">
+                                        8.	Barang yang dilarang oleh peraturan perundang - undangan.
+                                    </td>
+                                </tr>
+                                <tr style="page-break-inside:avoid; page-break-after:auto">
+                                    <td valign="top" style="width: 4%;">
+                                        11.
+                                    </td>
+                                    <td style="width: 96%;">
+                                        Kedapatan di atas kereta, bagasi penumpang yang berat atau ukurannya melebihi ketentuan dan belum memiliki surat bagasi. Maka dikenakan suplisi sebesar :
+                                    </td>
+                                </tr>
+                                <tr style="page-break-inside:avoid; page-break-after:auto">
+                                    <td valign="top" style="width: 4%;"> </td>
+                                    <td style="width: 96%;">
+                                        1.	Kereta Api kelas Eksekutif sebesar Rp 50.000,- / 5kg;
+                                    </td>
+                                </tr>
+                                <tr style="page-break-inside:avoid; page-break-after:auto">
+                                    <td valign="top" style="width: 4%;"> </td>
+                                    <td style="width: 96%;">
+                                        2.	Kereta Api kelas Bisnis/Ekonomi Komersial sebesar Rp 30.000,- / 5kg;
+                                    </td>
+                                </tr>
+                                <tr style="page-break-inside:avoid; page-break-after:auto">
+                                    <td valign="top" style="width: 4%;"> </td>
+                                    <td style="width: 96%;">
+                                        3.	Kereta Api kelas Ekonomi non Komersial sebesar Rp 15.000,- / 5kg;
+                                    </td>
+                                </tr>
+                                <tr style="page-break-inside:avoid; page-break-after:auto">
+                                    <td valign="top" style="width: 4%;"> </td>
+                                    <td style="width: 96%;">
+                                        4.	Perhitungan berat bagasi dibulatkan ke atas pada kelipatan 5 kg
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <t t-call="tt_report_common.train_footer"/>
+            </t>
+        </div>
     </template>
 </odoo>
