@@ -194,7 +194,7 @@ class TtCustomer(models.Model):
             print("request teropong\n"+json.dumps((req))+json.dumps(context))
             dom = [('agent_id','=',context['co_agent_id'])]
 
-            if req.get('name'):
+            if util.get_without_empty(req,'name'):
                 dom.append(('name','ilike',req['name']))
             if req.get('email'):
                 dom.append(('email','=',req['email']))

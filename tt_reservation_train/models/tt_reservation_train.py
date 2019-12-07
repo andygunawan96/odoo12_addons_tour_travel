@@ -476,7 +476,7 @@ class TtReservationTrain(models.Model):
             journey.create_seat(param_journey['seats'])
             journey.write({
                 'cabin_class': param_journey.get('fares')[0].get('cabin_class',''),
-                'class_of_service': param_journey.get('fares')[0].get('cla  ss_of_service',''),
+                'class_of_service': param_journey.get('fares')[0].get('class_of_service',''),
                 'carrier_name': param_journey.get('carrier_name')
             })
 
