@@ -15,6 +15,7 @@ class TtMasterTourOtherInfoMsg(models.Model):
 class TtMasterTourOtherInfo(models.Model):
     _name = 'tt.master.tour.otherinfo'
     _description = 'Rodex Model'
+    _order = 'sequence asc'
 
     name = fields.Text('Name', related='info_message_ids.name')
     info_message_ids = fields.One2many('tt.master.tour.otherinfo.messages', 'otherinfo_id', 'Messages')
@@ -22,6 +23,7 @@ class TtMasterTourOtherInfo(models.Model):
     parent_id = fields.Many2one('tt.master.tour.otherinfo', 'Parent')
     child_ids = fields.One2many('tt.master.tour.otherinfo', 'parent_id', 'Children')
     master_tour_id = fields.Many2one('tt.master.tour', 'Master Tour')
+    sequence = fields.Integer('Sequence', required=True, default=50)
 
     def convert_info_to_dict(self):
         msg_list = []
@@ -39,6 +41,7 @@ class TtMasterTourOtherInfo(models.Model):
         return {
             'message': msg_list,
             'child_list_type': self.child_list_type,
+            'sequence': self.sequence,
             'children': obj_child
         }
 
