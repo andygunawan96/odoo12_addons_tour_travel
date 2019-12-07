@@ -20,7 +20,7 @@ class TtBankAccount(models.Model):
     bank_transaction_ids = fields.One2many('tt.bank.transaction', 'bank_account_id')
 
     def create_bank_account(self, req):
-        result = self.create({
+        result = self.env['tt.bank.accounts'].create({
             'bank_account_owner': req['owner_name'],
             'bank_account_number': req['account_number'],
             'currency_id': req['currency_id'],
@@ -118,7 +118,7 @@ class TtBankTransaction(models.Model):
         bank_owner = self.env['tt.bank.accounts'].sudo().search([('bank_account_number_without_dot', '=', data['account_number'])]).read()
 
         #get bank code
-        bank_code = self.env['tt.bank'].sudo().browse(int(bank_owner[0]['bank_id'][0]))
+        # bank_code = self.env['tt.bank'].sudo().browse(int(bank_owner[0]['bank_id'][0]))
         date_id = self.env['tt.bank.transaction.date'].sudo().search([('date', '=', data['startdate'])])
 
         if len(date_id) < 1:
