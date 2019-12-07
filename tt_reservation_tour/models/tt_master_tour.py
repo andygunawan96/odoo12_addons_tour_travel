@@ -144,7 +144,13 @@ class MasterTour(models.Model):
     document_url = fields.Many2one('tt.upload.center', 'Document URL')
     import_other_info = fields.Binary('Import JSON')
     export_other_info = fields.Binary('Export JSON')
+    file_name = fields.Char("Filename",compute="_compute_filename",store=True)
     active = fields.Boolean('Active', default=True)
+
+    @api.depends("name")
+    def _compute_filename(self):
+        for rec in self:
+            rec.file_name = rec.name+".json"
 
     @api.onchange('payment_rules_ids')
     def _calc_dp(self):

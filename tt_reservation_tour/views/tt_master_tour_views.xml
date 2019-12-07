@@ -359,11 +359,11 @@
                             <separator string="Input"/>
                             <group>
                                 <group>
-                                    <field name="import_other_info"/>
+                                    <field name="import_other_info" filename="file_name"/>
                                     <button name="import_other_info_json" type="object" string="Import"/>
                                 </group>
                                 <group>
-                                    <field name="export_other_info" filename="name"/>
+                                    <field name="export_other_info" filename="file_name"/>
                                     <button name="export_other_info_json" type="object" string="Export"/>
                                 </group>
                             </group>
