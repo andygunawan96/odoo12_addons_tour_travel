@@ -12,14 +12,21 @@
                     <button string="Cancel" class="oe_highlight" name="action_cancel" type="object"/>
                 </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_duplicate"
+                                class="oe_stat_button"
+                                groups="tt_base.group_tt_tour_travel_operator"
+                                string="Copy" type="object" icon="fa-clone"/>
+                    </div>
                     <div class="oe_title">
                         <h1>
-                            <field name="tour_pricelist_id" default_focus="1" placeholder="Name" readonly="True"/>
+                            <field name="tour_id" default_focus="1" placeholder="Name" readonly="True"/>
                         </h1>
                     </div>
                     <group>
                         <group>
                             <field name="pax_type"/>
+                            <field name="pax_amount"/>
                             <field name="code"/>
                             <field name="date"/>
                             <field name="start_period"/>
@@ -55,40 +62,41 @@
                             <field name="international_flight" placeholder="Original Price"/>
                             <field name="international_flight_currency" placeholder="Currency (i.e: USD, JPY)"/>
                             <field name="international_flight_rate" placeholder="Exchange Rate"/>
-                            <field name="rupiah_international_flight" placeholder="Final Price" invisible="1"/>
-                            <field name="rupiah_international_flight_rel" placeholder="Final Price"/>
+                            <field name="rupiah_international_flight" placeholder="Final Price"/>
                         </group>
 
                         <group>
                             <field name="domestic_flight" placeholder="Original Price"/>
                             <field name="domestic_flight_currency" placeholder="Currency (i.e: USD, JPY)"/>
                             <field name="domestic_flight_rate" placeholder="Exchange Rate"/>
-                            <field name="rupiah_domestic_flight" placeholder="Final Price" invisible="1"/>
-                            <field name="rupiah_domestic_flight_rel" placeholder="Final Price"/>
+                            <field name="rupiah_domestic_flight" placeholder="Final Price"/>
                         </group>
 
                         <group>
                             <field name="train_cost" placeholder="Original Price"/>
                             <field name="train_currency" placeholder="Currency (i.e: USD, JPY)"/>
                             <field name="train_rate" placeholder="Exchange Rate"/>
-                            <field name="rupiah_train_cost" placeholder="Final Price" invisible="1"/>
-                            <field name="rupiah_train_cost_rel" placeholder="Final Price"/>
+                            <field name="rupiah_train_cost" placeholder="Final Price"/>
                         </group>
 
                         <group>
                             <field name="land_package" placeholder="Original Price"/>
                             <field name="land_package_currency" placeholder="Currency (i.e: USD, JPY)"/>
                             <field name="land_package_rate" placeholder="Exchange Rate"/>
-                            <field name="rupiah_land_package" placeholder="Final Price" invisible="1"/>
-                            <field name="rupiah_land_package_rel" placeholder="Final Price"/>
+                            <field name="rupiah_land_package" placeholder="Final Price"/>
                         </group>
 
                         <group>
                             <field name="insurance_cost" placeholder="Original Price"/>
                             <field name="insurance_currency" placeholder="Currency (i.e: USD, JPY)"/>
                             <field name="insurance_rate" placeholder="Exchange Rate"/>
-                            <field name="rupiah_insurance_cost" placeholder="Final Price" invisible="1"/>
-                            <field name="rupiah_insurance_cost_rel" placeholder="Final Price"/>
+                            <field name="rupiah_insurance_cost" placeholder="Final Price"/>
+                        </group>
+
+                        <group>
+                            <field name="tipping_guide" placeholder="Tipping Guide"/>
+                            <field name="tipping_tour_leader" placeholder="Tipping Tour Leader"/>
+                            <field name="tipping_driver" placeholder="Tipping Driver"/>
                         </group>
 
                         <group>
@@ -119,8 +127,7 @@
                             <field name="tour_leader_fee_currency" placeholder="Currency (i.e: USD, JPY)"/>
                             <field name="tour_leader_fee_rate" placeholder="Exchange Rate"/>
                             <field name="tour_leader_fee_days" placeholder="Days"/>
-                            <field name="rupiah_tour_leader_fee" placeholder="Final Price" invisible="1"/>
-                            <field name="rupiah_tour_leader_fee_rel" placeholder="Final Price"/>
+                            <field name="rupiah_tour_leader_fee" placeholder="Final Price"/>
                         </group>
 
                         <group>
@@ -128,8 +135,7 @@
                             <field name="ticket_for_tour_leader_currency" placeholder="Currency (i.e: USD, JPY)"/>
                             <field name="ticket_for_tour_leader_rate" placeholder="Exchange Rate"/>
                             <field name="ticket_for_tour_leader_days" placeholder="Days"/>
-                            <field name="rupiah_ticket_for_tour_leader" placeholder="Final Price" invisible="1"/>
-                            <field name="rupiah_ticket_for_tour_leader_rel" placeholder="Final Price"/>
+                            <field name="rupiah_ticket_for_tour_leader" placeholder="Final Price"/>
                         </group>
 
                         <group>
@@ -140,8 +146,7 @@
                             <field name="single_supp_for_tour_leader" placeholder="Original Price"/>
                             <field name="single_supp_for_tour_leader_currency" placeholder="Currency (i.e: USD, JPY)"/>
                             <field name="single_supp_for_tour_leader_rate" placeholder="Exchange Rate"/>
-                            <field name="rupiah_single_supp_for_tour_leader" placeholder="Final Price" invisible="1"/>
-                            <field name="rupiah_single_supp_for_tour_leader_rel" placeholder="Final Price"/>
+                            <field name="rupiah_single_supp_for_tour_leader" placeholder="Final Price"/>
                         </group>
 
                         <group>
@@ -150,7 +155,6 @@
 
                         <group>
                             <field name="airport_tax_for_tour_leader" placeholder="Airport Tax for TL"/>
-<!--                            <field name="airport_tax_for_tour_leader_upsell" placeholder="Airport Tax for TL (Upsell)"/>-->
                         </group>
 
                         <group>
@@ -158,20 +162,47 @@
                             <field name="expense_for_tour_leader_currency" placeholder="Currency (i.e: USD, JPY)"/>
                             <field name="expense_for_tour_leader_rate" placeholder="Exchange Rate"/>
                             <field name="expense_for_tour_leader_days" placeholder="Days"/>
-                            <field name="rupiah_expense_for_tour_leader" placeholder="Final Price" invisible="1"/>
-                            <field name="rupiah_expense_for_tour_leader_rel" placeholder="Final Price"/>
+                            <field name="rupiah_expense_for_tour_leader" placeholder="Final Price"/>
                         </group>
 
                         <group>
                             <field name="insurance_for_tour_leader_cost" placeholder="Original Price"/>
                             <field name="insurance_for_tour_leader_currency" placeholder="Currency (i.e: USD, JPY)"/>
                             <field name="insurance_for_tour_leader_rate" placeholder="Exchange Rate"/>
-                            <field name="rupiah_insurance_for_tour_leader_cost" placeholder="Final Price" invisible="1"/>
-                            <field name="rupiah_insurance_for_tour_leader_cost_rel" placeholder="Final Price"/>
+                            <field name="rupiah_insurance_for_tour_leader_cost" placeholder="Final Price"/>
                         </group>
 
                         <group>
                             <field name="travel_allowance" placeholder="Travel Allowance"/>
+                        </group>
+                    </group>
+
+                    <separator string="Porters"/>
+                    <field name="porter_ids"/>
+                    <group>
+                        <group class="oe_subtotal_footer oe_right" attrs="{'invisible': [('total_porter_cost', '=', 0)]}">
+                            <field name="total_porter_cost"/>
+                        </group>
+                    </group>
+                    <separator string="Others"/>
+                    <field name="extra_ids"/>
+                    <group>
+                        <group class="oe_subtotal_footer oe_right" attrs="{'invisible': [('total_extra_cost', '=', 0)]}">
+                            <field name="total_extra_cost"/>
+                        </group>
+                    </group>
+                    <separator/>
+                    <group>
+                        <group string="Total Information" class="oe_subtotal_footer oe_right">
+                            <field name="total_tipping"/>
+                            <field name="total_merchandise"/>
+                            <field name="total_variable_cost"/>
+                            <field name="based_on_pax"/>
+                            <field name="total_exclude"/>
+                            <field name="service_charge"/>
+                            <field name="omzet"/>
+                            <field name="retail_price_exclude"/>
+                            <field name="retail_price_include" attrs="{'invisible': [('pax_type', '=', 'INF')]}"/>
                         </group>
                     </group>
                 </sheet>
@@ -184,6 +215,14 @@
         <field name="model">tt.master.tour.quotation</field>
         <field name="arch" type="xml">
             <tree>
+                <field name="tour_id"/>
+                <field name="date"/>
+                <field name="code"/>
+                <field name="currency_id"/>
+                <field name="pax_type"/>
+                <field name="start_period"/>
+                <field name="end_period"/>
+                <field name="state"/>
             </tree>
         </field>
     </record>
@@ -193,6 +232,12 @@
         <field name="model">tt.master.tour.quotation.porter</field>
         <field name="arch" type="xml">
             <tree editable="bottom">
+                <field name="currency_id" invisible="1"/>
+                <field name="porter_cost"/>
+                <field name="porter_currency"/>
+                <field name="porter_rate"/>
+                <field name="porter_days"/>
+                <field name="rupiah_porter_cost"/>
             </tree>
         </field>
     </record>
@@ -202,6 +247,14 @@
         <field name="model">tt.master.tour.quotation.extra</field>
         <field name="arch" type="xml">
             <tree editable="bottom">
+                <field name="currency_id" invisible="1"/>
+                <field name="extra_cost"/>
+                <field name="extra_currency"/>
+                <field name="extra_rate"/>
+                <field name="extra_days"/>
+                <field name="rupiah_extra_cost"/>
+                <field name="description"/>
+                <field name="extra_type"/>
             </tree>
         </field>
     </record>
