@@ -1,6 +1,10 @@
 from odoo import api, fields, models, _
 from ...tools.api import Response
 import html2text
+import json,traceback,logging
+from bs4 import BeautifulSoup
+
+_logger = logging.getLogger(__name__)
 
 PAX_TYPE = [
     ('ADT', 'Adult'),
@@ -135,23 +139,30 @@ class VisaPricelist(models.Model):
                         'total_price': rec.sale_price,
                         'currency': rec.currency_id.name
                     },
-                    'notes': rec.notes,
                     'id': rec.id
                 }
-                # if rec.notes:
-                #     visa_vals.update({
-                #         'notes': html2text.html2text(rec.notes)
-                #     })
+                # print(rec.notes)
+                if rec.notes:
+                    notes_html = BeautifulSoup(rec.notes, features="lxml")
+                    notes_html = notes_html.prettify()
+                    notes_text = html2text.html2text(notes_html)
+                    notes_text2 = notes_text.split('\n')
+                    print(notes_text)
+                    visa_vals.update({
+                        'notes': notes_text2
+                    })
+                else:
+                    visa_vals.update({
+                        'notes': []
+                    })
                 list_of_visa.append(visa_vals)
-
-                # for rec1 in self.search([('name', '=ilike', rec.country_id.id)]):
-                #
-                # pass
             response = {
                 'country': data['destination'],
                 'list_of_visa': list_of_visa
             }
             res = Response().get_no_error(response)
+            print(res)
         except Exception as e:
+            _logger.error(traceback.format_exc())
             res = Response().get_error(str(e), 500)
         return res
