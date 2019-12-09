@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="voucher_blackout_tree_view" model="ir.ui.view">
+        <field name="name">voucher.blackout.tree.view</field>
+        <field name="model">tt.voucher.detail.blackout</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="voucher_detail_id"/>
+                <field name="voucher_blackout_start"/>
+                <field name="voucher_blackout_end"/>
+                <field name="voucher_blackout_remark"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="voucher_blackout_form_view" model="ir.ui.view">
+        <field name="name">voucher.blackout.form.view</field>
+        <field name="model">tt.voucher.detail.blackout</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="voucher_detail_id"/>
+                        <field name="voucher_blackout_start"/>
+                        <field name="voucher_blackout_end"/>
+                        <field name="voucher_blackout_remark"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="voucher_detail_blackout_action_view" model="ir.actions.act_window">
+        <field name="name">voucher blackout</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.voucher.detail.blackout</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+    </record>
+</odoo>
