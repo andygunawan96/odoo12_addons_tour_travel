@@ -112,7 +112,7 @@ class MasterTour(models.Model):
     infant_fare = fields.Monetary('Infant Fare', default=0)
     infant_commission = fields.Monetary('Infant Commission', default=0)
 
-    discount_ids = fields.One2many('tt.master.tour.discount.fit', 'tour_pricelist_id')
+    discount_ids = fields.One2many('tt.master.tour.discount', 'tour_id')
     room_ids = fields.One2many('tt.master.tour.rooms', 'tour_pricelist_id', required=True)
 
     payment_rules_ids = fields.One2many('tt.payment.rules', 'pricelist_id')
@@ -136,7 +136,7 @@ class MasterTour(models.Model):
     sequence = fields.Integer('Sequence', default=3)
     adjustment_ids = fields.One2many('tt.master.tour.adjustment', 'tour_pricelist_id', required=True)
     survey_title_ids = fields.One2many('survey.survey', 'tour_id', string='Tour Surveys', copy=False)
-    # quotation_ids = fields.One2many('tt.master.tour.quotation', 'tour_pricelist_id', 'Tour Quotation(s)')
+    quotation_ids = fields.One2many('tt.master.tour.quotation', 'tour_id', 'Tour Quotation(s)')
 
     country_name = fields.Char('Country Name')
     itinerary_ids = fields.One2many('tt.reservation.tour.itinerary', 'tour_pricelist_id', 'Itinerary', ondelete='cascade')
@@ -445,7 +445,7 @@ class MasterTour(models.Model):
                             result.append(rec)
                     else:
                         result.append(rec)
-                if rec['start_period']:
+                if rec.get('start_period'):
                     if search_request['departure_month'] != '00':
                         if search_request['departure_year'] != '0000':
                             if str(rec['start_period'])[:7] <= search_request['departure_date'] <= str(rec['end_period'])[:7]:
@@ -458,6 +458,12 @@ class MasterTour(models.Model):
                             result.append(rec)
                     else:
                         result.append(rec)
+
+                if rec.get('import_other_info'):
+                    rec.pop('import_other_info')
+
+                if rec.get('export_other_info'):
+                    rec.pop('export_other_info')
 
             for idx, rec in enumerate(result):
                 try:
@@ -611,7 +617,7 @@ class MasterTour(models.Model):
                 commission_agent_type = 'other'
 
             try:
-                self.env.cr.execute("""SELECT * FROM tt_master_tour_discount_fit WHERE tour_pricelist_id = %s;""", (tour_obj.id,))
+                self.env.cr.execute("""SELECT * FROM tt_master_tour_discount WHERE tour_id = %s;""", (tour_obj.id,))
                 discount = self.env.cr.dictfetchall()
             except Exception:
                 discount = []
@@ -928,14 +934,13 @@ class MasterTour(models.Model):
                 'total_child': total_chd,
                 'total_infant': total_inf,
             })
-            if tour_data.tour_type == 'sic':
-                for rec in tour_data.discount_ids:
-                    if rec.min_pax <= grand_total_pax_no_infant <= rec.max_pax:
-                        price_itinerary.update({
-                            'discount_per_pax': rec.discount_per_pax,
-                            'commission_multiplier': 0.5,
-                            'discount_total': rec.discount_total,
-                        })
+            # if tour_data.tour_category == 'private':
+            #     for rec in tour_data.discount_ids:
+            #         if rec.min_pax <= grand_total_pax_no_infant <= rec.max_pax:
+            #             price_itinerary.update({
+            #                 'discount_per_pax': rec.discount_per_pax,
+            #                 'discount_total': rec.discount_total,
+            #             })
             return ERR.get_no_error(price_itinerary)
         except RequestException as e:
             _logger.error(traceback.format_exc())

@@ -142,6 +142,11 @@ class ReservationTour(models.Model):
             'seat': temp_seat,
             'state': 'open'
         })
+        for rec in self.tour_id.passengers_ids:
+            if rec.booking_id.id == self.id:
+                rec.sudo().write({
+                    'master_tour_id': False
+                })
 
     def action_partial_booked_api_tour(self,context,pnr_list,hold_date):
         self.write({
@@ -175,13 +180,11 @@ class ReservationTour(models.Model):
                 'seat': temp_seat,
                 'state': 'open'
             })
-
-        for rec in self.tour_id.passengers_ids:
-            if rec.tour_id.id == self.id:
-                rec.sudo().write({
-                    'tour_id': False
-                })
-    # *END STATE*
+            for rec in self.tour_id.passengers_ids:
+                if rec.booking_id.id == self.id:
+                    rec.sudo().write({
+                        'master_tour_id': False
+                    })
 
     def action_booked_tour(self, api_context=None):
         if not api_context:  # Jika dari call from backend
