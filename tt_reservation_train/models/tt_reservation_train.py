@@ -3,7 +3,8 @@ from ...tools import variables
 import json,traceback,logging
 from ...tools.ERR import RequestException
 from ...tools import ERR
-from datetime import datetime
+from datetime import date, datetime, timedelta
+import base64
 
 _logger = logging.getLogger(__name__)
 
@@ -633,8 +634,9 @@ class TtReservationTrain(models.Model):
         res = self.read()
         res = res and res[0] or {}
         datas['form'] = res
-        return self.env.ref('tt_report_common.action_report_printout_reservation_train').report_action(self,
-                                                                                                       data=datas)
+        train_ticket_id = self.env.ref('tt_report_common.action_report_printout_reservation_train')
+        pdf_report = train_ticket_id.report_action(self, data=datas)
+        return pdf_report
 
     @api.multi
     def print_eticket_with_price(self):

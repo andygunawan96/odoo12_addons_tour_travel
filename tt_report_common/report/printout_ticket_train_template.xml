@@ -64,7 +64,7 @@
                                 <div class="col-3" style="max-width: 27.5%;"><span>Nama KA</span></div>
                                 <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
                                 <t t-if="provider.journey_ids.carrier_id.name">
-                                    <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300"><span t-esc="provider.journey_ids.carrier_id.name"/> (<span t-if="provider.journey_ids.carrier_id.name" t-esc="provider.journey_ids.carrier_id.code"/>)</div>
+                                    <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300"><span t-esc="provider.journey_ids.carrier_id.name"/> (<span t-if="provider.journey_ids.carrier_id.name" t-esc="provider.journey_ids.carrier_code"/>)</div>
                                 </t>
                                 <t t-if="not provider.journey_ids.carrier_id.name">
                                     <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300"><span style="color: white;">kosong</span></div>
@@ -123,10 +123,15 @@
                             <div class="row" style="padding: 0px; margin-top: -3px">
                                 <div class="col-3" style="max-width: 27.5%;"><span>Kelas</span></div>
                                 <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
-                                <t t-if="provider.journey_ids.class_of_service">
-                                    <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300"><span t-esc="lprovider.journey_ids.class_of_service"/>
-                                        <span t-if="'' in provider.journey_ids.class_of_service">-</span></div>
-                                </t>
+                                <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300">
+                                    <t t-if="provider.journey_ids.cabin_class">
+                                        <span t-if="'B' in provider.journey_ids.cabin_class">Bisnis</span><span t-if="'K' in provider.journey_ids.cabin_class">Ekonomi</span><span t-if="'E' in provider.journey_ids.cabin_class">Eksekutif</span>
+                                        <span t-if="'' in provider.journey_ids.cabin_class">-</span>
+                                    </t>
+                                    <t t-if="provider.journey_ids.class_of_service">
+                                        <span t-esc="provider.journey_ids.class_of_service"/>
+                                    </t>
+                                </div>
                                 <t t-if="not provider.journey_ids.class_of_service">
                                     <div class="col-8" style="padding: 0px; text-transform:uppercase"><span style="color: white;">kosong</span></div>
                                 </t>
@@ -178,19 +183,19 @@
                                 <t t-set="fare" t-value="0"/>
                                 <t t-set="discount" t-value="0"/>
                                 <t t-set="admin_agent" t-value="0"/>
-                                <t t-set="total" t-value="0"/>
+                                <t t-set="total_sale" t-value="0"/>
                                 <t t-foreach="provider.cost_service_charge_ids" t-as="price">
                                     <t t-if="price.charge_code">
                                         <t t-if="price.charge_code == 'fare'">
+                                            <t t-set="total_sale" t-value="total_sale + price.total"/>
                                             <t t-set="fare" t-value="fare + price.total"/>
-                                            <t t-set="total" t-value="total + fare"/>
                                         </t>
                                         <t t-if="price.charge_code == 'roc'">
                                             <t t-set="admin_agent" t-value="admin_agent + price.total"/>
                                         </t>
                                         <t t-if="price.charge_code == 'disc'">
+                                            <t t-set="total_sale" t-value="total_sale - price.total"/>
                                             <t t-set="discount" t-value="discount + price.total"/>
-                                            <t t-set="total" t-value="total - discount"/>
                                         </t>
                                     </t>
                                 </t>
@@ -198,28 +203,28 @@
                                     <div class="col-3" style="max-width: 27.5%;"><span>Harga Tiket</span></div>
                                     <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
                                     <div class="col-8" style="padding: 0px; text-transform:uppercase;">
-                                         <span t-field="doc.currency_id.symbol"/> <span t-esc="fare"/>
+                                         <span t-esc="int(fare)" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
                                     </div>
                                 </div>
                                 <div class="row" style="margin-top: -3px">
                                     <div class="col-3" style="max-width: 27.5%;"><span>Diskon</span></div>
                                     <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
                                     <div class="col-8" style="padding: 0px; text-transform:uppercase;">
-                                        <span t-field="doc.currency_id.symbol"/> <span t-esc="discount" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                        <span t-esc="int(discount)" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
                                     </div>
                                 </div>
                                 <div class="row" style="margin-top: -3px">
                                     <div class="col-3" style="max-width: 27.5%;"><span>Admin Agen</span></div>
                                     <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
                                     <div class="col-8" style="padding: 0px; text-transform:uppercase;">
-                                        <span t-field="doc.currency_id.symbol"/> <span t-esc="admin_agent" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                        <span t-esc="int(admin_agent)" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
                                     </div>
                                 </div>
                                 <div class="row" style="margin-top: -3px">
                                     <div class="col-3" style="max-width: 27.5%;"><span>Total</span></div>
                                     <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
                                     <div class="col-8" style="padding: 0px; text-transform:uppercase;">
-                                        <span t-field="doc.currency_id.symbol"/> <span t-esc="total" t-options='{"widget": "monetary", "display_currency": "doc.currency"}'/>
+                                        <span t-esc="int(total_sale)" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
                                     </div>
                                 </div>
                             </t>
