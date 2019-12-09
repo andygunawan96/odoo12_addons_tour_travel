@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="tt_voucher_sub_menu"
+              name="Voucher"
+              sequence="1"
+              parent="tt_base.menu_tour_travel_configuration_voucher"
+              action="voucher_action_view"
+        />
+
+    <menuitem id="tt_voucher_detail_sub_menu"
+              name="Voucher Detail"
+              sequence="2"
+              parent="tt_base.menu_tour_travel_configuration_voucher"
+              action="voucher_detail_action_view"
+        />
+
+    <menuitem id="tt_voucher_detail_blackout_sub_menu"
+              name="Voucher Detail Blackout"
+              sequence="3"
+              parent="tt_base.menu_tour_travel_configuration_voucher"
+              action="voucher_detail_blackout_action_view"
+        />
+
+    <menuitem id="tt_voucher_detail_used_sub_menu"
+              name="Voucher Detail Used"
+              sequence="4"
+              parent="tt_base.menu_tour_travel_configuration_voucher"
+              action="voucher_detail_used_action_view"
+        />
+
+</odoo>

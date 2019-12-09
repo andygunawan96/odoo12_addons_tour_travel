@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="voucher_detail_tree_view" model="ir.ui.view">
+        <field name="name">voucher.detail.tree.view</field>
+        <field name="model">tt.voucher.detail</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="voucher_period_reference"/>
+                <field name="voucher_start_date"/>
+                <field name="voucher_expire_date"/>
+                <field name="voucher_used"/>
+                <field name="voucher_quota"/>
+                <field name="voucher_detail_state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="voucher_detail_form_view" model="ir.ui.view">
+        <field name="name">voucher.detail.form.view</field>
+        <field name="model">tt.voucher.detail</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="voucher_id"/>
+                        <field name="voucher_reference_code"/>
+                        <field name="voucher_period_reference"/>
+                        <field name="voucher_start_date"/>
+                        <field name="voucher_expire_date"/>
+                        <field name="voucher_used"/>
+                        <field name="voucher_quota"/>
+                        <field name="voucher_detail_state"/>
+                    </group>
+                    <notebook>
+                        <page string="Voucher Blackout">
+                            <field name="voucher_blackout_ids"/>
+                        </page>
+                        <page string="Voucher Used Detail">
+                            <field name="voucher_used_ids"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="voucher_detail_action_view" model="ir.actions.act_window">
+        <field name="name">voucher detail</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.voucher.detail</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+    </record>
+</odoo>

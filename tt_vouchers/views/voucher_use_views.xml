@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="voucher_used_tree_view" model="ir.ui.view">
+        <field name="name">voucher.used.tree.view</field>
+        <field name="model">tt.voucher.detail.used</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="voucher_detail_id"/>
+                <field name="voucher_date_use"/>
+                <field name="voucher_agent_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="voucher_used_form_view" model="ir.ui.view">
+        <field name="name">voucher.used.form.view</field>
+        <field name="model">tt.voucher.detail.used</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="voucher_detail_id"/>
+                        <field name="voucher_date_use"/>
+                        <field name="voucher_agent_type_id"/>
+                        <field name="voucher_agent_id"/>
+                        <field name="voucher_provider_type_id"/>
+                        <field name="voucher_provider_id"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="voucher_detail_used_action_view" model="ir.actions.act_window">
+        <field name="name">voucher used</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.voucher.detail.used</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+    </record>
+</odoo>
