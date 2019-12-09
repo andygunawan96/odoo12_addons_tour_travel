@@ -568,9 +568,9 @@ class MasterTour(models.Model):
             }
             if old_vals and old_vals['journey_type'] == segment.journey_type:
                 time_delta = utc_tz.localize(segment.departure_date).astimezone(user_tz) - old_vals['return_date']
-                day = time_delta.days
-                hours = time_delta.seconds/3600
-                minute = time_delta.seconds % 60
+                day = int(time_delta.days)
+                hours = int(time_delta.seconds/3600)
+                minute = int(time_delta.seconds % 60)
                 list_obj[-1]['delay'] = self.get_delay(day, hours, minute)
             list_obj.append(vals)
             old_vals = vals
@@ -629,7 +629,8 @@ class MasterTour(models.Model):
                 if location != 0:
                     self.env.cr.execute("""SELECT id, name FROM res_country WHERE id=%s""", (location['country_id'],))
                     temp = self.env.cr.dictfetchall()
-                    country_names.append(temp[0]['name'])
+                    if temp:
+                        country_names.append(temp[0]['name'])
 
             try:
                 self.env.cr.execute(
