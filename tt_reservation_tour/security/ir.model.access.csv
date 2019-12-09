@@ -28,10 +28,10 @@ flight_segment_for_tour_travel_operator,flight.segment.for.tour.travel.operator,
 flight_segment_for_tour_travel_supervisor,flight.segment.for.tour.travel.supervisor,model_flight_segment,tt_base.group_tt_tour_travel_supervisor,1,1,1,1
 flight_segment_for_tour_travel_manager,flight.segment.for.tour.travel.manager,model_flight_segment,tt_base.group_tt_tour_travel_manager,1,1,1,1
 ,,,,,,,
-tt_master_tour_discount_fit_for_all,tt.master.tour.discount.fit.for.all,model_tt_master_tour_discount_fit,,1,0,0,0
-tt_master_tour_discount_fit_for_tour_travel_operator,tt.master.tour.discount.fit.for.tour.travel.operator,model_tt_master_tour_discount_fit,tt_base.group_tt_tour_travel_operator,1,1,1,1
-tt_master_tour_discount_fit_for_tour_travel_supervisor,tt.master.tour.discount.fit.for.tour.travel.supervisor,model_tt_master_tour_discount_fit,tt_base.group_tt_tour_travel_supervisor,1,1,1,1
-tt_master_tour_discount_fit_for_tour_travel_manager,tt.master.tour.discount.fit.for.tour.travel.manager,model_tt_master_tour_discount_fit,tt_base.group_tt_tour_travel_manager,1,1,1,1
+tt_master_tour_discount_for_all,tt.master.tour.discount.for.all,model_tt_master_tour_discount,,1,0,0,0
+tt_master_tour_discount_for_tour_travel_operator,tt.master.tour.discount.for.tour.travel.operator,model_tt_master_tour_discount,tt_base.group_tt_tour_travel_operator,1,1,1,1
+tt_master_tour_discount_for_tour_travel_supervisor,tt.master.tour.discount.for.tour.travel.supervisor,model_tt_master_tour_discount,tt_base.group_tt_tour_travel_supervisor,1,1,1,1
+tt_master_tour_discount_for_tour_travel_manager,tt.master.tour.discount.for.tour.travel.manager,model_tt_master_tour_discount,tt_base.group_tt_tour_travel_manager,1,1,1,1
 ,,,,,,,
 tt_payment_rules_for_all,tt.payment.rules.for.all,model_tt_payment_rules,,1,0,0,0
 tt_payment_rules_for_tour_travel_operator,tt.payment.rules.for.tour.travel.operator,model_tt_payment_rules,tt_base.group_tt_tour_travel_operator,1,1,1,1
@@ -99,9 +99,9 @@ tt_installment_invoice_for_tour_travel_operator,tt.installment.invoice.for.tour.
 tt_installment_invoice_for_tour_travel_supervisor,tt.installment.invoice.for.tour.travel.supervisor,model_tt_installment_invoice,tt_base.group_tt_tour_travel_supervisor,1,1,1,0
 tt_installment_invoice_for_tour_travel_manager,tt.installment.invoice.for.tour.travel.manager,model_tt_installment_invoice,tt_base.group_tt_tour_travel_manager,1,1,1,0
 ,,,,,,,
-tt_master_tour_discount_fit_for_sub_agent_user_operator,tt.master.tour.discount.fit.for.sub.agent.user.operator,model_tt_master_tour_discount_fit,tt_base.group_tt_sub_agent_user_operator,1,1,1,0
-tt_master_tour_discount_fit_for_sub_agent_user_supervisor,tt.master.tour.discount.fit.for.sub.agent.user.supervisor,model_tt_master_tour_discount_fit,tt_base.group_tt_sub_agent_user_supervisor,1,1,1,0
-tt_master_tour_discount_fit_for_sub_agent_user_manager,tt.master.tour.discount.fit.for.sub.agent.user.manager,model_tt_master_tour_discount_fit,tt_base.group_tt_sub_agent_user_manager,1,1,1,0
+tt_master_tour_discount_for_sub_agent_user_operator,tt.master.tour.discount.for.sub.agent.user.operator,model_tt_master_tour_discount,tt_base.group_tt_sub_agent_user_operator,1,1,1,0
+tt_master_tour_discount_for_sub_agent_user_supervisor,tt.master.tour.discount.for.sub.agent.user.supervisor,model_tt_master_tour_discount,tt_base.group_tt_sub_agent_user_supervisor,1,1,1,0
+tt_master_tour_discount_for_sub_agent_user_manager,tt.master.tour.discount.for.sub.agent.user.manager,model_tt_master_tour_discount,tt_base.group_tt_sub_agent_user_manager,1,1,1,0
 ,,,,,,,
 tt_master_tour_adjustment_for_sub_agent_user_operator,tt.master.tour.adjustment.for.sub.agent.user.operator,model_tt_master_tour_adjustment,tt_base.group_tt_sub_agent_user_operator,1,1,1,0
 tt_master_tour_adjustment_for_sub_agent_user_supervisor,tt.master.tour.adjustment.for.sub.agent.user.supervisor,model_tt_master_tour_adjustment,tt_base.group_tt_sub_agent_user_supervisor,1,1,1,0
@@ -136,3 +136,9 @@ tt_reservation_tour_room_for_all,tt.reservation.tour.room.for.all,model_tt_reser
 tt_master_tour_otherinfo_for_all,tt.master.tour.otherinfo.for.all,model_tt_master_tour_otherinfo,,1,1,1,1
 ,,,,,,,
 tt_master_tour_otherinfo_messages_for_all,tt.master.tour.otherinfo.messages.for.all,model_tt_master_tour_otherinfo_messages,,1,1,1,1
+,,,,,,,
+tt_master_tour_quotation_for_all,tt.master.tour.quotation.for.all,model_tt_master_tour_quotation,,1,1,1,1
+,,,,,,,
+tt_master_tour_quotation_porter_for_all,tt.master.tour.quotation.porter.for.all,model_tt_master_tour_quotation_porter,,1,1,1,1
+,,,,,,,
+tt_master_tour_quotation_extra_for_all,tt.master.tour.quotation.extra.for.all,model_tt_master_tour_quotation_extra,,1,1,1,1
