@@ -48,6 +48,7 @@ class ttCronTopUpValidator(models.Model):
             get_bank_account = self.env.ref('tt_bank_transaction.bank_account_bca_1')
             #can be modified to respected account
             data = {
+                'account_id': get_bank_account.id,
                 'account_number': get_bank_account.bank_account_number_without_dot,
                 'provider': get_bank_account.bank_id.code,
                 'startdate': (datetime.today() + timedelta(hours=7)).strftime("%Y-%m-%d"),

@@ -21,6 +21,7 @@ TOP_UP_STATE = [
 TOP_UP_STATE_STR = {
     "draft": "Draft",
     "request": "Request",
+    "confirm": "Confirmed",
     "validated": "Validated",
     "approved": "Approved",
     "cancel": "Cancelled",

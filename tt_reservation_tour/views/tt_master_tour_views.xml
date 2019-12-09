@@ -175,20 +175,6 @@
                                 </group>
                             </group>
                         </page>
-                        <!--                        <page string="Quotation">  &lt;!&ndash;groups="tt_base.group_tt_tour_travel_operator"&ndash;&gt;-->
-                        <!--                            <field name="quotation_ids" context="">-->
-                        <!--                                <tree edit="false">-->
-                        <!--                                    <field name="tour_pricelist_id"/>-->
-                        <!--                                    <field name="date"/>-->
-                        <!--                                    <field name="code"/>-->
-                        <!--                                    <field name="currency_id"/>-->
-                        <!--                                    <field name="pax_type"/>-->
-                        <!--                                    <field name="start_period"/>-->
-                        <!--                                    <field name="end_period"/>-->
-                        <!--                                    <field name="state"/>-->
-                        <!--                                </tree>-->
-                        <!--                            </field>-->
-                        <!--                        </page>-->
                         <page string="Additional Charge">
                             <group>
                                 <field name="airport_tax"/>
@@ -211,28 +197,28 @@
                                 </group>
                             </group>
                         </page>
-                        <page string="Discount">
-                            <field name="discount_ids">
-                                <tree>
-                                    <field name="pax_amount"/>
-                                    <field name="discount_per_pax"/>
-                                    <field name="discount_total"/>
-                                    <field name="currency_id" invisible="1"/>
-                                </tree>
-                                <form>
-                                    <group>
-                                        <field name="tour_pricelist_id" invisible="1"/>
-                                        <field name="min_pax"/>
-                                        <field name="max_pax"/>
-                                        <field name="pax_amount" invisible="1"/>
-                                        <field name="discount_per_pax"/>
-                                        <field name="discount_total"/>
-                                        <field name="currency_id" invisible="1"/>
-                                    </group>
-                                </form>
-                            </field>
-                        </page>
-                        <page string="Payment Rules">
+<!--                        <page string="Discount" attrs="{'invisible': [('tour_category', '!=', 'private')]}">-->
+<!--                            <field name="discount_ids">-->
+<!--                                <tree>-->
+<!--                                    <field name="pax_amount"/>-->
+<!--                                    <field name="discount_per_pax"/>-->
+<!--                                    <field name="discount_total"/>-->
+<!--                                    <field name="currency_id" invisible="1"/>-->
+<!--                                </tree>-->
+<!--                                <form>-->
+<!--                                    <group>-->
+<!--                                        <field name="tour_id" invisible="1"/>-->
+<!--                                        <field name="min_pax"/>-->
+<!--                                        <field name="max_pax"/>-->
+<!--                                        <field name="pax_amount" invisible="1"/>-->
+<!--                                        <field name="discount_per_pax"/>-->
+<!--                                        <field name="discount_total"/>-->
+<!--                                        <field name="currency_id" invisible="1"/>-->
+<!--                                    </group>-->
+<!--                                </form>-->
+<!--                            </field>-->
+<!--                        </page>-->
+                        <page string="Installment Payment Rules">
                             <field name="payment_rules_ids" string="Payment Rules">
                                 <tree>
                                     <field name="name"/>
@@ -263,6 +249,9 @@
                                     </sheet>
                                 </form>
                             </field>
+                        </page>
+                        <page string="Tour Quotation" groups="tt_base.group_tt_tour_travel_operator">
+                            <field name="quotation_ids"/>
                         </page>
                     </notebook>
 
@@ -357,6 +346,16 @@
                         </page>
                         <page string="Other Information">
                             <separator string="Input"/>
+                            <group>
+                                <group>
+                                    <field name="import_other_info" filename="file_name"/>
+                                    <button name="import_other_info_json" type="object" string="Import"/>
+                                </group>
+                                <group>
+                                    <field name="export_other_info" filename="file_name"/>
+                                    <button name="export_other_info_json" type="object" string="Export"/>
+                                </group>
+                            </group>
                             <field name="other_info_ids"/>
                             <separator string="Preview"/>
                             <button name="generate_other_info_preview" type="object" string="Generate"/>

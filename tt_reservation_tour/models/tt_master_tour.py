@@ -3,10 +3,12 @@ from datetime import datetime
 from ...tools import util,variables,ERR
 from ...tools.ERR import RequestException
 from dateutil.relativedelta import relativedelta
+from odoo.exceptions import UserError
 from ...tools.api import Response
 import logging, traceback
 import json
 import pytz
+import base64
 
 _logger = logging.getLogger(__name__)
 
@@ -110,7 +112,7 @@ class MasterTour(models.Model):
     infant_fare = fields.Monetary('Infant Fare', default=0)
     infant_commission = fields.Monetary('Infant Commission', default=0)
 
-    discount_ids = fields.One2many('tt.master.tour.discount.fit', 'tour_pricelist_id')
+    discount_ids = fields.One2many('tt.master.tour.discount', 'tour_id')
     room_ids = fields.One2many('tt.master.tour.rooms', 'tour_pricelist_id', required=True)
 
     payment_rules_ids = fields.One2many('tt.payment.rules', 'pricelist_id')
@@ -134,13 +136,21 @@ class MasterTour(models.Model):
     sequence = fields.Integer('Sequence', default=3)
     adjustment_ids = fields.One2many('tt.master.tour.adjustment', 'tour_pricelist_id', required=True)
     survey_title_ids = fields.One2many('survey.survey', 'tour_id', string='Tour Surveys', copy=False)
-    # quotation_ids = fields.One2many('tt.master.tour.quotation', 'tour_pricelist_id', 'Tour Quotation(s)')
+    quotation_ids = fields.One2many('tt.master.tour.quotation', 'tour_id', 'Tour Quotation(s)')
 
     country_name = fields.Char('Country Name')
-    itinerary_ids = fields.One2many('tt.reservation.tour.itinerary', 'tour_pricelist_id', 'Itinerary')
+    itinerary_ids = fields.One2many('tt.reservation.tour.itinerary', 'tour_pricelist_id', 'Itinerary', ondelete='cascade')
     provider_id = fields.Many2one('tt.provider', 'Provider', domain=get_domain, required=True)
     document_url = fields.Many2one('tt.upload.center', 'Document URL')
+    import_other_info = fields.Binary('Import JSON')
+    export_other_info = fields.Binary('Export JSON')
+    file_name = fields.Char("Filename",compute="_compute_filename",store=True)
     active = fields.Boolean('Active', default=True)
+
+    @api.depends("name")
+    def _compute_filename(self):
+        for rec in self:
+            rec.file_name = rec.name+".json"
 
     @api.onchange('payment_rules_ids')
     def _calc_dp(self):
@@ -252,6 +262,51 @@ class MasterTour(models.Model):
                 diff = (datetime.strptime(str(rec.return_date), '%Y-%m-%d') - datetime.strptime(
                     str(rec.departure_date), '%Y-%m-%d')).days
                 rec.duration = str(diff)
+
+    def create_other_info_from_json(self, data):
+        message_id_list = []
+        for rec in data['message']:
+            msg_obj = self.env['tt.master.tour.otherinfo.messages'].sudo().create({
+                'name': rec['text'],
+                'style': rec['style'],
+                'sequence': rec['sequence'],
+            })
+            message_id_list.append(msg_obj.id)
+
+        other_info_obj = self.env['tt.master.tour.otherinfo'].sudo().create({
+            'child_list_type': data['child_list_type'],
+            'sequence': data['sequence'],
+            'info_message_ids': [(6, 0, message_id_list)],
+            'child_ids': [(6, 0, [self.create_other_info_from_json(chd_obj) for chd_obj in data['children']])]
+        })
+
+        return other_info_obj.id
+
+    def export_other_info_json(self):
+        list_of_dict = []
+        for rec in self.other_info_ids:
+            list_of_dict.append(rec.convert_info_to_dict())
+        json_data = json.dumps(list_of_dict)
+        self.sudo().write({
+            'export_other_info': base64.b64encode(json_data.encode())
+        })
+
+    def import_other_info_json(self):
+        if not self.import_other_info:
+            raise UserError(_('Please upload a json file before pressing this button!'))
+        try:
+            other_info_list = []
+            upload_file = json.loads(base64.b64decode(self.import_other_info))
+            for rec in self.other_info_ids:
+                rec.sudo().unlink()
+            for rec in upload_file:
+                other_info_list.append(self.create_other_info_from_json(rec))
+            self.sudo().write({
+                'import_other_info': False,
+                'other_info_ids': [(6, 0, other_info_list)]
+            })
+        except Exception as e:
+            raise UserError(_('The uploaded file cannot be read. Please upload a valid JSON file!'))
 
     def read_other_info_dict(self, data, current_list_type):
         temp_txt = ''
@@ -390,7 +445,7 @@ class MasterTour(models.Model):
                             result.append(rec)
                     else:
                         result.append(rec)
-                if rec['start_period']:
+                if rec.get('start_period'):
                     if search_request['departure_month'] != '00':
                         if search_request['departure_year'] != '0000':
                             if str(rec['start_period'])[:7] <= search_request['departure_date'] <= str(rec['end_period'])[:7]:
@@ -403,6 +458,12 @@ class MasterTour(models.Model):
                             result.append(rec)
                     else:
                         result.append(rec)
+
+                if rec.get('import_other_info'):
+                    rec.pop('import_other_info')
+
+                if rec.get('export_other_info'):
+                    rec.pop('export_other_info')
 
             for idx, rec in enumerate(result):
                 try:
@@ -507,9 +568,9 @@ class MasterTour(models.Model):
             }
             if old_vals and old_vals['journey_type'] == segment.journey_type:
                 time_delta = utc_tz.localize(segment.departure_date).astimezone(user_tz) - old_vals['return_date']
-                day = time_delta.days
-                hours = time_delta.seconds/3600
-                minute = time_delta.seconds % 60
+                day = int(time_delta.days)
+                hours = int(time_delta.seconds/3600)
+                minute = int(time_delta.seconds % 60)
                 list_obj[-1]['delay'] = self.get_delay(day, hours, minute)
             list_obj.append(vals)
             old_vals = vals
@@ -556,7 +617,7 @@ class MasterTour(models.Model):
                 commission_agent_type = 'other'
 
             try:
-                self.env.cr.execute("""SELECT * FROM tt_master_tour_discount_fit WHERE tour_pricelist_id = %s;""", (tour_obj.id,))
+                self.env.cr.execute("""SELECT * FROM tt_master_tour_discount WHERE tour_id = %s;""", (tour_obj.id,))
                 discount = self.env.cr.dictfetchall()
             except Exception:
                 discount = []
@@ -568,7 +629,8 @@ class MasterTour(models.Model):
                 if location != 0:
                     self.env.cr.execute("""SELECT id, name FROM res_country WHERE id=%s""", (location['country_id'],))
                     temp = self.env.cr.dictfetchall()
-                    country_names.append(temp[0]['name'])
+                    if temp:
+                        country_names.append(temp[0]['name'])
 
             try:
                 self.env.cr.execute(
@@ -873,14 +935,13 @@ class MasterTour(models.Model):
                 'total_child': total_chd,
                 'total_infant': total_inf,
             })
-            if tour_data.tour_type == 'sic':
-                for rec in tour_data.discount_ids:
-                    if rec.min_pax <= grand_total_pax_no_infant <= rec.max_pax:
-                        price_itinerary.update({
-                            'discount_per_pax': rec.discount_per_pax,
-                            'commission_multiplier': 0.5,
-                            'discount_total': rec.discount_total,
-                        })
+            # if tour_data.tour_category == 'private':
+            #     for rec in tour_data.discount_ids:
+            #         if rec.min_pax <= grand_total_pax_no_infant <= rec.max_pax:
+            #             price_itinerary.update({
+            #                 'discount_per_pax': rec.discount_per_pax,
+            #                 'discount_total': rec.discount_total,
+            #             })
             return ERR.get_no_error(price_itinerary)
         except RequestException as e:
             _logger.error(traceback.format_exc())

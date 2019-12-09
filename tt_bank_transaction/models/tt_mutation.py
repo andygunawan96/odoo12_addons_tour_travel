@@ -115,62 +115,62 @@ class TtBankTransaction(models.Model):
 
         #look for currency_id
         currency_id = self.env['res.currency'].sudo().search([('name', 'ilike', result['response']['Currency'])]).read()
-        bank_owner = self.env['tt.bank.accounts'].sudo().search([('bank_account_number_without_dot', '=', data['account_number'])]).read()
+        bank_owner = self.env['tt.bank.accounts'].sudo().browse(int(data['account_id']))
 
         #get bank code
         # bank_code = self.env['tt.bank'].sudo().browse(int(bank_owner[0]['bank_id'][0]))
-        date_id = self.env['tt.bank.transaction.date'].sudo().search([('date', '=', data['startdate'])])
+        date = bank_owner.bank_transaction_date_ids.filtered(lambda x: x.date == data['startdate'])
 
-        if len(date_id) < 1:
+        if not date:
             new_day = {
-                'bank_id': bank_owner[0]['id'],
+                'bank_id': bank_owner.id,
                 'date': data['startdate']
             }
-            date_id = self.env['tt.bank.transaction.date'].create_new_day(new_day)
+            date = self.env['tt.bank.transaction.date'].create_new_day(new_day)
 
         #get starting balance
         balance_modified = result['response']['StartBalance']
 
         #compare if data already exist in our database
-        transaction = self.env['tt.bank.transaction'].sudo().search([('transaction_date', '>=', data['startdate']), ('transaction_date', '<=', data['enddate'])]).read()
+        # transaction = self.env['tt.bank.transaction'].sudo().search([('bank_transaction_date_ids', '=', date.id)])
 
         #modified transaction to match the
         # content of transaction
         # [( transaction_bank_branch, transaction_type, transaction_amount, transaction_name, transaction_message)]
 
-        for i in transaction:
-            i.pop('id')
-            i.pop('transaction_code')
-            i.pop('bank_account_id')
-            i.pop('bank_transaction_date_id')
-            i.pop('currency_id')
-            i.pop('bank_balance')
-            i.pop('transaction_date')
-            i.pop('transaction_debit')
-            i.pop('transaction_credit')
-            i.pop('transaction_connection')
-            i.pop('transaction_process')
-            i.pop('top_up_id')
-            i.pop('create_uid')
-            i.pop('create_date')
-            i.pop('write_uid')
-            i.pop('write_date')
-            i.pop('display_name')
-            i.pop('__last_update')
+        # for i in transaction:
+        #     i.pop('id')
+        #     i.pop('transaction_code')
+        #     i.pop('bank_account_id')
+        #     i.pop('bank_transaction_date_id')
+        #     i.pop('currency_id')
+        #     i.pop('bank_balance')
+        #     i.pop('transaction_date')
+        #     i.pop('transaction_debit')
+        #     i.pop('transaction_credit')
+        #     i.pop('transaction_connection')
+        #     i.pop('transaction_process')
+        #     i.pop('top_up_id')
+        #     i.pop('create_uid')
+        #     i.pop('create_date')
+        #     i.pop('write_uid')
+        #     i.pop('write_date')
+        #     i.pop('display_name')
+        #     i.pop('__last_update')
 
         #add data to transaction
         for i in result['response']['Data']:
 
-            temp_dictionary = {
-                'transaction_bank_branch': i['BranchCode'],
-                'transaction_type': i['TransactionType'],
-                'transaction_original': str(i['TransactionAmount']),
-                'transaction_amount': round(float(i['TransactionAmount'])),
-                'transaction_name': i['TransactionName'],
-                'transaction_message': i['Trailer']
-            }
-
-            if temp_dictionary not in transaction:
+            # temp_dictionary = {
+            #     'transaction_bank_branch': i['BranchCode'],
+            #     'transaction_type': i['TransactionType'],
+            #     'transaction_original': str(i['TransactionAmount']),
+            #     'transaction_amount': round(float(i['TransactionAmount'])),
+            #     'transaction_name': i['TransactionName'],
+            #     'transaction_message': i['Trailer']
+            # }
+            is_exist = date.transaction_ids.filtered(lambda x: x.transaction_original == str(i['TransactionAmount']) and x.transaction_type == i['TransactionType'] and x.transaction_name == i['TransactionName'])
+            if not is_exist:
 
                 logs['process'] += 1;
 
@@ -187,7 +187,7 @@ class TtBankTransaction(models.Model):
 
                 data = {
                     'bank_account_id': bank_owner[0]['id'],
-                    'date_id': date_id.id,
+                    'date_id': date.id,
                     'currency_id': currency_id[0]['id'],
                     'transaction_date': i['TransactionDate'],
                     'transaction_bank_branch': i['BranchCode'],
