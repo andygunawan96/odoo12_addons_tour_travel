@@ -196,11 +196,11 @@ class ReservationActivity(models.Model):
     def action_issued_vendor(self):
         req = {
             'uuid': self.booking_uuid,
-            'provider': self.provider_name,
+            'provider': self.activity_id.provider_id.code,
             'order_id': self.id,
             'pnr': self.pnr,
         }
-        res = self.env['tt.activity.api.con'].update_booking(req)
+        res = self.env['tt.activity.api.con'].issued_booking_vendor(req)
 
     def action_waiting(self):
         self.write({
@@ -265,11 +265,11 @@ class ReservationActivity(models.Model):
             'cancelled_uid': self.env.user.id
         })
 
-    def action_failed(self, booking_id, error_msg):
-        booking_rec = self.browse(booking_id)
+    def action_failed(self, data):
+        booking_rec = self.browse(int(data['order_id']))
         booking_rec.write({
-            'state': 'fail_issued',
-            'error_msg': error_msg
+            'state': data['state'],
+            'error_msg': data['error_msg']
         })
         self.send_push_notif('failed')
         return {
@@ -314,26 +314,18 @@ class ReservationActivity(models.Model):
     def update_booking_by_api(self, req, api_context):
         try:
             booking_id = req['order_id'],
-            prices = req['prices']
             book_info = req['book_info']
-            if req.get('seq_id'):
-                acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', req['seq_id'])])
-                if not acquirer_id:
-                    raise RequestException(1017)
-            else:
-                raise RequestException(1017)
-
             booking_obj = self.browse(booking_id)
-            booking_obj.write({
+            for rec in booking_obj.provider_booking_ids:
+                rec.action_booked_api_activity(book_info, api_context)
+            booking_obj.sudo().write({
                 'pnr': book_info.get('code') and book_info['code'] or '',
                 'booking_uuid': book_info.get('uuid') and book_info['uuid'] or '',
                 'sid_booked': api_context.get('sid') and api_context['sid'] or '',
                 'state': book_info['status']
             })
-            booking_obj.update_pnr_data(booking_id, book_info['code'])
             booking_obj.calculate_service_charge()
             self.env.cr.commit()
-            booking_obj.call_create_invoice(acquirer_id)
 
             if not api_context or api_context['co_uid'] == 1:
                 api_context['co_uid'] = booking_obj.booked_uid.id
@@ -360,12 +352,14 @@ class ReservationActivity(models.Model):
                 _logger.error('Creating Notes Error')
             return ERR.get_error(1005)
 
-    def update_booking_by_api2(self, booking_id, book_info):
-        booking_obj = self.browse(booking_id)
-        booking_obj.write({
-            'state': book_info['status']
-        })
-        self.env.cr.commit()
+    def update_booking_by_api2(self, req_data):
+        booking_obj = self.env['tt.reservation.activity'].sudo().search([('name', '=', req_data['order_number'])], limit=1)
+        if booking_obj:
+            booking_obj = booking_obj[0]
+            booking_obj.sudo().write({
+                'state': req_data['status']
+            })
+            self.env.cr.commit()
         return True
 
     def send_push_notif(self, type):
@@ -465,12 +459,6 @@ class ReservationActivity(models.Model):
                     agent_obj = self.env['res.users'].browse(int(context['co_uid'])).agent_id
             except Exception:
                 agent_obj = self.env['res.users'].browse(int(context['co_uid'])).agent_id
-
-            if req['force_issued']:
-                is_enough = self.env['tt.agent'].check_balance_limit_api(agent_obj.id, req['amount'])
-                if is_enough['error_code'] != 0:
-                    _logger.error('Balance not enough')
-                    raise RequestException(1007)
 
             header_val = search_request
             booker_obj = self.create_booker_api(booker_data, context)
@@ -588,15 +576,6 @@ class ReservationActivity(models.Model):
             # create header & Update customer_parent_id
             book_obj = self.sudo().create(header_val)
 
-            if req.get('member'):
-                customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', req['seq_id'])])
-            else:
-                customer_parent_id = book_obj.agent_id.customer_parent_walkin_id.id
-
-            book_obj.sudo().write({
-                'customer_parent_id': customer_parent_id,
-            })
-
             if option['perBooking']:
                 for rec in option['perBooking']:
                     temp_opt_obj = self.env['tt.activity.booking.option'].sudo().search([('uuid', '=', rec['uuid']), ('type', '=', 'perBooking')], limit=1)
@@ -632,10 +611,6 @@ class ReservationActivity(models.Model):
                 provider_activity_obj.create_service_charge(rec)
 
             book_obj.action_booked_activity(context)
-            context['order_id'] = book_obj.id
-            if req['force_issued']:
-                book_obj.action_paid_activity(context)
-
             self.env.cr.commit()
 
             response = {
@@ -654,6 +629,69 @@ class ReservationActivity(models.Model):
                     'infant': book_obj.infant,
                     'skus': skus,
                 }
+            }
+
+            return ERR.get_no_error(response)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            try:
+                book_obj.notes += traceback.format_exc()+'\n'
+            except:
+                _logger.error('Creating Notes Error')
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            try:
+                book_obj.notes += traceback.format_exc()+'\n'
+            except:
+                _logger.error('Creating Notes Error')
+            return ERR.get_error(1004)
+
+    def issued_booking_by_api(self, req, context):
+        try:
+            book_objs = self.env['tt.reservation.activity'].sudo().search([('name', '=', req['order_number'])], limit=1)
+            book_obj = book_objs[0]
+
+            try:
+                agent_obj = self.env['tt.customer'].browse(int(self.booker_id.id)).agent_id
+                if not agent_obj:
+                    agent_obj = self.env['res.users'].browse(int(context['co_uid'])).agent_id
+            except Exception:
+                agent_obj = self.env['res.users'].browse(int(context['co_uid'])).agent_id
+
+            is_enough = self.env['tt.agent'].check_balance_limit_api(agent_obj.id, book_obj.agent_nta)
+            if is_enough['error_code'] != 0:
+                _logger.error('Balance not enough')
+                raise RequestException(1007)
+
+            if req.get('member'):
+                customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', req['seq_id'])])
+            else:
+                customer_parent_id = book_obj.agent_id.customer_parent_walkin_id.id
+
+            vals = {
+                'customer_parent_id': customer_parent_id,
+            }
+            book_obj.sudo().write(vals)
+            book_obj.action_paid_activity(context)
+            self.env.cr.commit()
+
+            if req.get('seq_id'):
+                acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', req['seq_id'])])
+                if not acquirer_id:
+                    raise RequestException(1017)
+            else:
+                raise RequestException(1017)
+
+            book_obj.call_create_invoice(acquirer_id)
+
+            response = {
+                'order_id': book_obj.id,
+                'order_number': book_obj.name,
+                'status': book_obj.state,
+                'pnr': book_obj.pnr,
+                'provider': book_obj.activity_id.provider_id.code,
+                'uuid': book_obj.booking_uuid,
             }
 
             return ERR.get_no_error(response)
@@ -907,13 +945,14 @@ class ReservationActivity(models.Model):
             elif activity_voucher_urls:
                 voucher_url_parsed = [url_voucher.name for url_voucher in activity_voucher_urls]
 
-            if activity_booking.state not in ['booked', 'issued', 'rejected', 'refund', 'cancel', 'cancel2', 'fail_issued', 'fail_refunded']:
+            if activity_booking.state not in ['booked', 'issued', 'rejected', 'refund', 'cancel', 'cancel2', 'fail_booked', 'fail_issued', 'fail_refunded']:
                 activity_booking.sudo().write({
                     'state': res['status']
                 })
                 self.env.cr.commit()
 
             response = {
+                'booker_seq_id': activity_booking.booker_id.seq_id,
                 'contacts': {
                     'email': activity_booking.contact_email,
                     'name': activity_booking.contact_name,
@@ -972,16 +1011,22 @@ class ReservationActivity(models.Model):
             api_context.update({
                 'co_uid': self.env.user.id
             })
+        if not api_context.get('signature'):
+            api_context.update({
+                'signature': ''
+            })
 
-        vals = {
-            'state': 'paid',
-            'issued_uid': api_context['co_uid'] or self.env.user.id,
-            'issued_date': datetime.now(),
-        }
-        self.sudo().write(vals)
-        for rec in self.provider_booking_ids:
-            rec.action_create_ledger(vals['issued_uid'])
-        self.send_push_notif('Activity Paid')
+        if self.state != 'paid':
+            vals = {
+                'state': 'paid',
+                'issued_uid': api_context['co_uid'] or self.env.user.id,
+                'issued_date': datetime.now(),
+            }
+            self.sudo().write(vals)
+            for rec in self.provider_booking_ids:
+                rec.action_create_ledger(vals['issued_uid'])
+                rec.action_issued_api_activity(api_context)
+            self.send_push_notif('Activity Paid')
 
     def get_id(self, booking_number):
         row = self.env['tt.reservation.activity'].search([('name', '=', booking_number)])
