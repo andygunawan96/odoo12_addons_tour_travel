@@ -82,14 +82,15 @@ class TtProviderActivity(models.Model):
     def action_booked_api_activity(self, provider_data, api_context):
         for rec in self:
             rec.write({
-                'pnr': provider_data['pnr'],
-                'pnr2': provider_data['pnr2'],
+                'pnr': provider_data['code'],
                 'state': 'booked',
                 'booked_uid': api_context['co_uid'],
                 'booked_date': fields.Datetime.now(),
-                'hold_date': datetime.strptime(provider_data['hold_date'],"%Y-%m-%d %H:%M:%S"),
-                'balance_due': provider_data['balance_due']
             })
+            for rec2 in rec.cost_service_charge_ids:
+                rec2.sudo().write({
+                    'description': provider_data['code']
+                })
 
     def action_issued_api_activity(self,context):
         for rec in self:

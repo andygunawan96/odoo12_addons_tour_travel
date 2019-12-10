@@ -141,13 +141,11 @@ class VisaPricelist(models.Model):
                     },
                     'id': rec.id
                 }
-                # print(rec.notes)
                 if rec.notes:
                     notes_html = BeautifulSoup(rec.notes, features="lxml")
                     notes_html = notes_html.prettify()
                     notes_text = html2text.html2text(notes_html)
                     notes_text2 = notes_text.split('\n')
-                    print(notes_text)
                     visa_vals.update({
                         'notes': notes_text2
                     })
@@ -161,7 +159,6 @@ class VisaPricelist(models.Model):
                 'list_of_visa': list_of_visa
             }
             res = Response().get_no_error(response)
-            print(res)
         except Exception as e:
             _logger.error(traceback.format_exc())
             res = Response().get_error(str(e), 500)

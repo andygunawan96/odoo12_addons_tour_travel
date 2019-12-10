@@ -36,7 +36,7 @@
             string="Train Ticket"
             id="action_report_printout_reservation_train"
             model="tt.reservation.train"
-            report_type="qweb-html"
+            report_type="qweb-pdf"
             name="tt_report_common.printout_train_ticket"
             file="tt_report_common.printout_train_ticket"
             paperformat="tt_report_common.paperformat_A4"

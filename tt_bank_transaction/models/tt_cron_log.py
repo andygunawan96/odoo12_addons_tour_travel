@@ -1,6 +1,7 @@
 from odoo import api,models,fields
 from ...tools import variables
 import logging,traceback
+import re
 from datetime import datetime, timedelta
 _logger = logging.getLogger(__name__)
 
@@ -11,8 +12,13 @@ class ttCronTopUpValidator(models.Model):
         try:
             # get data from top up
             data = self.env['tt.top.up'].sudo().search([('state', '=', 'request')])
+            number_checker = re.compile("^[0-9]*$")
             for i in data:
-                transaction = self.env['tt.bank.accounts'].search([('bank_account_number_without_dot', '=', i.payment_id.acquirer_id.account_number)])
+                account_number = ""
+                for j in i.payment_id.acquirer_id.account_number:
+                    if number_checker.match(j):
+                        account_number += j
+                transaction = self.env['tt.bank.accounts'].search([('bank_account_number_without_dot', '=', account_number)])
                 if transaction:
                     date_exist = transaction.bank_transaction_date_ids.filtered(lambda x: x.date == datetime.today().strftime("%Y-%m-%d"))
                     if date_exist:
