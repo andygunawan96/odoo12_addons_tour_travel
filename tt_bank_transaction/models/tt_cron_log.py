@@ -11,10 +11,12 @@ class ttCronTopUpValidator(models.Model):
         try:
             # get data from top up
             data = self.env['tt.top.up'].sudo().search([('state', '=', 'request')])
-            try:
-                date = self.env['tt.bank.transaction.date'].search([('date', '=', datetime.today().strftime("%Y-%m-%d"))])
-            except:
-                raise Exception("Date haven't been created, please run get bank cron first then try validate again")
+
+            date = self.env['tt.bank.transaction.date'].search([('date', '=', datetime.today().strftime("%Y-%m-%d"))])
+            if not date.id:
+                self.create_cron_log_folder()
+                self.write_cron_log("auto tup-up validator by system, Date haven't been created, please run get bank cron first then try validate again")
+                return False
             transaction = self.env['tt.bank.transaction'].sudo().search([('bank_transaction_date_id', '=', date.id), ('transaction_process', '=', 'unprocess'), ('transaction_type', '=', 'C')])
 
             # check if there's an exact number
