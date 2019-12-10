@@ -952,6 +952,7 @@ class ReservationActivity(models.Model):
                 self.env.cr.commit()
 
             response = {
+                'booker_seq_id': activity_booking.booker_id.seq_id,
                 'contacts': {
                     'email': activity_booking.contact_email,
                     'name': activity_booking.contact_name,
