@@ -384,8 +384,8 @@ class TtAgent(models.Model):
             'view_type': 'form',
             'view_mode': 'kanban,form',
             'res_model': 'tt.agent',
-            'views': [(self.env.ref('tt_base.tt_agent_kanban_view').id, 'kanban'),
-                      (self.env.ref('tt_base.tt_agent_form_view').id, 'form')],
+            'views': [(self.env.ref('tt_base.tt_agent_kanban_view_customer').id, 'kanban'),
+                      (self.env.ref('tt_base.tt_agent_form_view_customer').id, 'form')],
             'context': {},
             'domain': ['|', ('parent_agent_id', '=', self.env.user.agent_id.id), ('id', '=', self.env.user.agent_id.id)]
         }

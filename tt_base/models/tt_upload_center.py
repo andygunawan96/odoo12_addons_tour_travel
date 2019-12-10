@@ -16,6 +16,7 @@ class TtUploadFile(models.Model):
     agent_id = fields.Many2one('tt.agent','Owner')
     active = fields.Boolean('Active',default=True)
     will_be_deleted_date = fields.Date('Will be deleted on')
+    will_be_deleted_time = fields.Datetime('Will be deleted on')
 
 
     @api.model

@@ -3,7 +3,7 @@
     <record id="tt_customer_parent_form_view_customer" model="ir.ui.view">
         <field name="name">tt.customer.parent.form.view.customer</field>
         <field name="model">tt.customer.parent</field>
-        <field name="priority">1</field>
+        <field name="priority">30</field>
         <field name="arch" type="xml">
             <form>
                 <header/>
@@ -51,7 +51,7 @@
         <field name="model">tt.customer.parent</field>
         <field name="inherit_id" ref="tt_base.tt_customer_parent_form_view_customer"/>
         <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_user_manager') ])]" />
-        <field name="priority">2</field>
+        <field name="priority">40</field>
         <field name="arch" type="xml">
             <field name="credit_limit" position="replace">
                 <field name="credit_limit" readonly="0"/>
