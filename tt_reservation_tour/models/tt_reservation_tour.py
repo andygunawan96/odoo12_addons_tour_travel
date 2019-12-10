@@ -34,7 +34,6 @@ class ReservationTour(models.Model):
     _description = 'Rodex Model'
 
     tour_id = fields.Many2one('tt.master.tour', 'Tour ID')
-    # tour_id = fields.Char('Tour ID')
 
     room_ids = fields.One2many('tt.reservation.tour.room', 'booking_id', 'Rooms')
 

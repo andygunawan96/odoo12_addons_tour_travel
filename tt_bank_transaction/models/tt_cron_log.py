@@ -1,6 +1,7 @@
 from odoo import api,models,fields
 from ...tools import variables
 import logging,traceback
+import re
 from datetime import datetime, timedelta
 _logger = logging.getLogger(__name__)
 
@@ -11,33 +12,46 @@ class ttCronTopUpValidator(models.Model):
         try:
             # get data from top up
             data = self.env['tt.top.up'].sudo().search([('state', '=', 'request')])
-            try:
-                date = self.env['tt.bank.transaction.date'].search([('date', '=', datetime.today().strftime("%Y-%m-%d"))])
-            except:
-                raise Exception("Date haven't been created, please run get bank cron first then try validate again")
-            transaction = self.env['tt.bank.transaction'].sudo().search([('bank_transaction_date_id', '=', date.id), ('transaction_process', '=', 'unprocess'), ('transaction_type', '=', 'C')])
-
-            # check if there's an exact number
+            number_checker = re.compile("^[0-9]*$")
             for i in data:
-                for j in transaction:
-                    if i.total == j.get_transaction_amount():
-                        # get payment data
-                        payment_data = self.env['tt.payment'].browse(int(i.payment_id))
+                account_number = ""
+                for j in i.payment_id.acquirer_id.account_number:
+                    if number_checker.match(j):
+                        account_number += j
+                transaction = self.env['tt.bank.accounts'].search([('bank_account_number_without_dot', '=', account_number)])
+                if transaction:
+                    date_exist = transaction.bank_transaction_date_ids.filtered(lambda x: x.date == datetime.today().strftime("%Y-%m-%d"))
+                    if date_exist:
+                        result = date_exist.transaction_ids.filtered(lambda x: x.transaction_amount == i.total and x.transaction_type == 'C')
+                        if result:
+                            if result.transaction_code:
+                                reference_code = result.transaction_code
+                            else:
+                                _logger.error("payment ID %s, no transaction code provided, cannot assign reference code for payment" % result.id)
+                                continue
+                            transaction_date = result.transaction_date
 
-                        #set value for payment data
-                        payment_data.reference = j.transaction_code
-                        payment_data.payment_date = j.transaction_date
+                            # get payment data
+                            payment_data = self.env['tt.payment'].browse(int(i.payment_id))
 
-                        #validate payment
-                        payment_data.action_validate_from_button()
-                        payment_data.action_approve_from_button()
+                            # set value for payment data
+                            payment_data.reference = reference_code
+                            payment_data.payment_date = transaction_date
 
-                        #connecting transaction data with respected payment
-                        # i.action_validate_top_up(j.get_transaction_amount())
-                        j.top_up_validated(i.id)
+                            # validate payment
+                            payment_data.action_validate_from_button()
+                            payment_data.action_approve_from_button()
 
-                        #break inside loop, continue to next data
-                        break
+                            result.top_up_validated(i.id)
+                        else:
+                            _logger.error("%s ID, is not found within transaction" % i.id)
+                            continue
+                    else:
+                        _logger.error("%s is not found within date inside date" % datetime.today().strftime("%Y-%m-%d"))
+                        continue
+                else:
+                    _logger.error("%s ID, bank not found" % i.id)
+                    continue
 
         except Exception as e:
             self.create_cron_log_folder()

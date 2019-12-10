@@ -15,16 +15,14 @@ class TtActivityApiCon(models.Model):
             res = table_obj.get_vouchers_by_api2(data,context)
         elif action == 'create_booking':
             res = table_obj.create_booking_activity_api(data,context)
+        elif action == 'issued_booking':
+            res = table_obj.issued_booking_by_api(data,context)
         elif action == 'update_booking':
             res = table_obj.update_booking_by_api(data,context)
         elif action == 'update_booking2':
-            order_id = data['order_id']
-            book_info = data['book_info']
-            res = table_obj.update_booking_by_api2(order_id, book_info)
+            res = table_obj.update_booking_by_api2(data)
         elif action == 'action_failed':
-            order_id = data['order_id']
-            error_msg = data['error_msg']
-            res = table_obj.action_failed(order_id, error_msg)
+            res = table_obj.action_failed(data)
         elif action == 'get_booking':
             order_number = data['order_number']
             res = table_obj.get_booking(order_number)
@@ -44,8 +42,8 @@ class TtActivityApiCon(models.Model):
     def resend_voucher(self, data):
         return self.send_request_to_gatweay('%s/booking/activity' % (self.url), data, 'resend_voucher')
 
-    def update_booking(self, data):
-        return self.send_request_to_gateway('%s/booking/activity' % (self.url), data, 'update_booking')
+    def issued_booking_vendor(self, data):
+        return self.send_request_to_gateway('%s/booking/activity' % (self.url), data, 'issued_booking_vendor')
 
     def get_booking(self, data):
         req_post = {

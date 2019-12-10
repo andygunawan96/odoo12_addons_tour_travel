@@ -172,7 +172,7 @@ class TtTopUp(models.Model):
 
             ##check apakah ada 3 active request
 
-            top_up_objs = self.search([('agent_id','=',context['co_agent_id']),('state','=','request')])
+            top_up_objs = self.search([('agent_id','=',context['co_agent_id']),('state','in',['request','confirm'])])
             if len(top_up_objs.ids) >= 3:
                 raise RequestException(1019)
 
@@ -254,7 +254,7 @@ class TtTopUp(models.Model):
 
             top_up_obj.action_request_top_up(context) # ubah ke status cancel
 
-            return ERR.get_no_error()
+            return ERR.get_no_error({'amount':top_up_obj.total_with_fees})
         except RequestException as e:
             _logger.error(traceback.format_exc())
             return e.error_dict()

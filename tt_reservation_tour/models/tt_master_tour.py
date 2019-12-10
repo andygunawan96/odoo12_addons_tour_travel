@@ -21,27 +21,34 @@ class Survey(models.Model):
 
 class TourItineraryItem(models.Model):
     _name = 'tt.reservation.tour.itinerary.item'
+    _description = 'Rodex Model'
+    _order = 'sequence asc'
 
     name = fields.Char('Title')
     description = fields.Text('Description')
     timeslot = fields.Char('Timeslot')
     image_id = fields.Many2one('tt.upload.center', 'Image')
     itinerary_id = fields.Many2one('tt.reservation.tour.itinerary', 'Tour Itinerary')
+    sequence = fields.Integer('Sequence', required=True, default=50)
 
 
 class TourItinerary(models.Model):
     _name = 'tt.reservation.tour.itinerary'
+    _description = 'Rodex Model'
+    _order = 'sequence asc'
 
     name = fields.Char('Title')
     day = fields.Integer('Day')
     date = fields.Date('Date')
     tour_pricelist_id = fields.Many2one('tt.master.tour', 'Tour')
     item_ids = fields.One2many('tt.reservation.tour.itinerary.item', 'itinerary_id', 'Items')
+    sequence = fields.Integer('Sequence', required=True, default=50)
 
 
 class MasterTour(models.Model):
     _inherit = ['tt.history']
     _name = 'tt.master.tour'
+    _description = 'Rodex Model'
     _order = 'sequence'
 
     def get_domain(self):
@@ -569,8 +576,8 @@ class MasterTour(models.Model):
             if old_vals and old_vals['journey_type'] == segment.journey_type:
                 time_delta = utc_tz.localize(segment.departure_date).astimezone(user_tz) - old_vals['return_date']
                 day = int(time_delta.days)
-                hours = int(time_delta.seconds/3600)
-                minute = int(time_delta.seconds % 60)
+                hours = int(time_delta.seconds / 3600)
+                minute = int((time_delta.seconds / 60) % 60)
                 list_obj[-1]['delay'] = self.get_delay(day, hours, minute)
             list_obj.append(vals)
             old_vals = vals

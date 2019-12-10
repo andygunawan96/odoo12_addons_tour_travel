@@ -22,4 +22,3 @@ class TtAirlineApiCon(models.Model):
         else:
             raise RequestException(999)
         return res
-

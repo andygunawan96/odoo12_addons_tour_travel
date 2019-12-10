@@ -85,7 +85,7 @@
                                        attrs="{'invisible': [('customer_parent_id', '!=', False)]}"/>
                             </group>
                         </page>
-                        <page string="Adjsutments">
+                        <page string="Adjustments">
                             <separator string="Adjustment"/>
                             <field name="adjustment_ids"/>
                         </page>
