@@ -9,7 +9,8 @@
                 <group>
                     <field name="filename"/>
                     <field name="file_reference"/>
-                    <field name="delete_date"/>
+<!--                    <field name="delete_date"/>-->
+                    <field name="delete_time"/>
                     <field name="file" filename="filename"/>
                 </group>
                 <footer>

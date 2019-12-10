@@ -59,7 +59,9 @@
                                     </field>
                                 </page>
                                 <page string="Customer Parent">
-                                    <field name="customer_parent_ids" domain="[('parent_agent_id', '=', agent_id)]"/>
+                                    <field name="customer_parent_ids"
+                                           domain="[('parent_agent_id', '=', agent_id)]"
+                                           context="{'form_view_ref' : 'tt_base.tt_customer_parent_form_view_customer'}"/>
                                 </page>
                                 <page string="Addresses">
                                     <field name="address_ids"/>

@@ -13,17 +13,18 @@ class SplitInvoice(models.TransientModel):
     filename = fields.Char('Filename',required=True, default='filename')
     file_reference = fields.Text('File Description',required=True)
     delete_date = fields.Date('Delete Date')
+    delete_time = fields.Datetime('Deleted Time')
     file = fields.Binary('File',required=True)
 
     def upload_from_button(self):
         # self.upload(self.filename,self.file_reference,base64.b64decode(self.file))
-        self.upload(self.filename,self.file_reference,self.file,{'co_agent_id': self.env.user.agent_id.id},self.delete_date)
+        self.upload(self.filename,self.file_reference,self.file,{'co_agent_id': self.env.user.agent_id.id},self.delete_time)
 
     def upload_file_api(self,data,context):
         return self.upload(data['filename'],data['file_reference'],data['file'],context,data.get('delete_date'))
 
     #file is encoded in base64
-    def upload(self,filename,file_reference,file,context,delete_date=False):
+    def upload(self,filename,file_reference,file,context,delete_time=False):
         pattern = re.compile('^[a-zA-Z0-9](?:[a-zA-Z0-9 ()._-]*[a-zA-Z0-9)])?\.[a-zA-Z0-9_-]+$')
         if not pattern.match(filename):
             raise UserError('Filename Is Not Valid')
@@ -41,7 +42,7 @@ class SplitInvoice(models.TransientModel):
                 'path': path,
                 'url': url,
                 'agent_id': context['co_agent_id'],
-                'will_be_deleted_date': delete_date
+                'will_be_deleted_time': delete_time
             })
 
             _logger.info('Finish Upload')

@@ -60,7 +60,7 @@ class PrintoutTicketTrainForm(models.AbstractModel):
     @api.model
     def _get_report_values(self, docids, data=None):
         if not data.get('context'):
-            internal_model_id = docids.pop(0)
+            # internal_model_id = docids.pop(0)
             data['context'] = {}
             data['context']['active_model'] = 'tt.reservation.train'
             data['context']['active_ids'] = docids
@@ -83,14 +83,26 @@ class PrintoutTicketTrainForm(models.AbstractModel):
                 elif rec2.charge_type.lower() in ['roc', 'tax']:
                     a[rec2.pax_type]['tax'] += rec2.amount
             values[rec.id] = [a[new_a] for new_a in a]
-        return {
+        vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
             'price_lines': values,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
-            'with_price': data.get('is_with_price') or False,
         }
+        if 'is_with_price' in data:
+            vals.update({
+                'with_price': data.get('is_with_price') or False,
+            })
+        elif 'is_with_price' in data['data']:
+            vals.update({
+                'with_price': data['data'].get('is_with_price') or False,
+            })
+        else:
+            vals.update({
+                'with_price': False,
+            })
+        return vals
 
 
 class PrintoutInvoice(models.AbstractModel):
