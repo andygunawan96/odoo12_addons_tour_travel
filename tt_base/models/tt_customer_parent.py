@@ -12,7 +12,7 @@ class TtCustomerParent(models.Model):
     logo_thumb = fields.Binary('Agent Logo Thumb', compute="_get_logo_image", store=True, attachment=True) #fixme later
 
     customer_parent_type_id = fields.Many2one('tt.customer.parent.type', 'Customer Parent Type', required=True)
-    parent_agent_id = fields.Many2one('tt.agent', 'Parent', required=True)  # , default=lambda self: self.env.user.agent_id
+    parent_agent_id = fields.Many2one('tt.agent', 'Parent', required=True, readonly=False)  # , default=lambda self: self.env.user.agent_id
 
     balance = fields.Monetary(string="Balance")
     actual_balance = fields.Monetary(string="Actual Balance", readonly=True, compute="_compute_actual_balance")

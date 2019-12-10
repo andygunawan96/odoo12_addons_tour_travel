@@ -33,21 +33,21 @@ class PaymentAcquirer(models.Model):
     def generate_unique_amount(self):
         return int(self.env['ir.sequence'].next_by_code('tt.payment.unique.amount'))
 
-    def compute_fee(self, amount):
-        fee = uniq= 0
+    def compute_fee(self, unique):
+        fee = uniq = 0
         if self.type == 'transfer':
-            uniq = self.generate_unique_amount()
+            uniq = unique
         elif self.type != 'cash':
             # TODO perhitungan per acquirer (Charge dari agent brapa, charge dari rodex brpa)
             fee = 5000
         return fee, uniq
 
-    def acquirer_format(self, amount):
+    def acquirer_format(self, amount,unique):
         # NB:  CASH /payment/cash/feedback?acq_id=41
         # NB:  BNI /payment/tt_transfer/feedback?acq_id=68
         # NB:  BCA /payment/tt_transfer/feedback?acq_id=27
         # NB:  MANDIRI /payment/tt_transfer/feedback?acq_id=28
-        fee, uniq = self.compute_fee(amount)
+        fee, uniq = self.compute_fee(unique)
         return {
             'seq_id': self.seq_id,
             'name': self.name,
@@ -104,11 +104,12 @@ class PaymentAcquirer(models.Model):
             elif req['transaction_type'] == 'billing':
                 dom.append(('agent_id', '=', context['co_agent_id']))
 
+            unique = self.generate_unique_amount()
             values = {}
             for acq in self.sudo().search(dom):
                 if not values.get(acq.type):
                     values[acq.type] = []
-                values[acq.type].append(acq.acquirer_format(amount))
+                values[acq.type].append(acq.acquirer_format(amount,unique))
             res = {}
             res['non_member'] = values
             res['member'] = {}

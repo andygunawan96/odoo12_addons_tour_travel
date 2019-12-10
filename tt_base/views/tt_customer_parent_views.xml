@@ -64,7 +64,11 @@
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[]</field>
-        <field name="context"/>
+        <field name="context">
+            {
+                'form_view_ref': 'tt_base.tt_customer_parent_form_view',
+            }
+        </field>
     </record>
 
     <menuitem id="menu_customer_customer_parent"

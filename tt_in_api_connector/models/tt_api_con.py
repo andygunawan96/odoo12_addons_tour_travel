@@ -79,7 +79,7 @@ class TtApiCon(models.Model):
             credential = util.decode_authorization(authorization)
             self.uid = credential.get('uid', -1)
             self.username = credential.get('username','')
-            self.password = credential.get('password', '')
+            self.password = credential.get('password','')
             self.api_key = self.env['tt.api.credential'].search([('user_id','=',self.uid),('api_role','=','admin')],limit=1).api_key
         except Exception as e:
             _logger.error('Backend Connector Config Error, %s' % str(e))

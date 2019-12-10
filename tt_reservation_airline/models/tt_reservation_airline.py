@@ -686,7 +686,7 @@ class ReservationAirline(models.Model):
                         curr_state = seg.state
                     except:
                         curr_state = 'booked'
-                        print('cache miss error')
+                        _logger.error("Passenger Validator Cache Miss Error")
 
                     if curr_state in ['booked', 'issued', 'cancel2', 'fail_issue']:
                         valid_segments.append(seg)
@@ -717,10 +717,7 @@ class ReservationAirline(models.Model):
                         whitelist_passport.chances_left -= 1
                         return True
 
-                    raise Exception("Passenger validator failed on %s because of rebooking with same name and same route. %s will be charged for more addtional booking." % (name.name,rule.adm))
-                else:
-                    return False
-                print('safe')
+                    raise RequestException(1004,additional_message="Passenger validator failed on %s because of rebooking with same name and same route. %s will be charged for more addtional booking." % (name.name,rule.adm))
 
     def update_pnr_provider_airline_api(self, req, context):
         ### dapatkan PNR dan ubah ke booked

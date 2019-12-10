@@ -10,6 +10,7 @@ from ...tools import ERR
 class TtBankAccount(models.Model):
     _name = 'tt.bank.accounts'
     _description = 'collections of bank accounts'
+    _rec_name = 'bank_account_owner'
 
     bank_account_owner = fields.Char('Owner Name')
     bank_account_number = fields.Char('Bank Number')
@@ -32,6 +33,8 @@ class TtBankAccount(models.Model):
 class TtBankDateTransaction(models.Model):
     _name = 'tt.bank.transaction.date'
     _description = "collections of date"
+    _order = 'id DESC'
+    _rec_name = 'date'
 
     bank_account_id = fields.Many2one('tt.bank.accounts', 'Bank Account')
     date = fields.Char("Date")
@@ -48,6 +51,8 @@ class TtBankDateTransaction(models.Model):
 class TtBankTransaction(models.Model):
     _name = 'tt.bank.transaction'
     _description = 'history and collections of bank statement'
+    _rec_name = 'transaction_code'
+    _order = 'id DESC'
 
     transaction_code = fields.Char('Document Number')
     bank_account_id = fields.Many2one('tt.bank.accounts', 'Bank Owners')

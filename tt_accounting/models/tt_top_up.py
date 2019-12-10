@@ -1,5 +1,5 @@
 from odoo import api,fields,models
-from random import randint
+from odoo.exceptions import UserError
 from datetime import datetime,timedelta
 from ...tools import ERR
 from ...tools.ERR import RequestException
@@ -10,7 +10,7 @@ _logger = logging.getLogger(__name__)
 
 TOP_UP_STATE = [
     ("draft", "Draft"),
-    ("confirm","confirmed"),
+    ("confirm","Confirmeds"),
     ("request", "Request"),
     ("validated", "Validated"),
     ("approved","Approved"),
@@ -125,14 +125,14 @@ class TtTopUp(models.Model):
     def action_validate_top_up(self):
         print("validate")
         if self.state != 'request':
-            raise UserWarning('Can only validate [request] state Top Up.')
+            raise UserError('Can only validate [request] state Top Up.')
         self.write({
             'state': 'validated'
         })
     def action_approve_top_up(self):
         print("approve")
         if self.state != 'validated':
-            raise UserWarning('Can only approve [validate] state Top Up.')
+            raise UserError('Can only approve [validate] state Top Up.')
 
         ledger_obj = self.env['tt.ledger']
         vals = ledger_obj.prepare_vals(self._name,self.id,'Top Up : %s' % (self.name),self.name,datetime.now(),1,self.currency_id.id,self.env.user.id,self.get_total_amount(),description='Top Up Ledger for %s' % self.name)
@@ -144,6 +144,12 @@ class TtTopUp(models.Model):
             'approve_uid': self.env.user.id,
             'approve_date': datetime.now()
         })
+
+        try:
+            self.env['tt.top.up.api.con'].send_approve_notification(self.name,self.env.user.name,self.get_total_amount())
+        except Exception as e:
+            _logger.error("Send TOP UP Approve Notification Telegram Error")
+
 
 
     def get_total_amount(self):
