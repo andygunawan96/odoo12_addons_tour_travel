@@ -641,6 +641,9 @@ class ReservationAirline(models.Model):
                 'carrier_name': ','.join(name_ids['carrier'])
             })
 
+            ##pengecekan segment kembar airline dengan nama passengers
+            self.psg_validator(book_obj)
+
             response = {
                 'book_id': book_obj.id,
                 'order_number': book_obj.name,
@@ -661,6 +664,63 @@ class ReservationAirline(models.Model):
             except:
                 _logger.error('Creating Notes Error')
             return ERR.get_error(1004)
+
+    def psg_validator(self,book_obj):
+        for segment in book_obj.segment_ids:
+            rule = self.env['tt.limiter.rule'].sudo().search([('code', '=', segment.carrier_code), ('provider_type_id', '=', book_obj.provider_type_id.code)])
+
+            if rule:
+                limit = rule.rebooking_limit
+            else:
+                continue
+
+            for name in segment.booking_id.passenger_ids:
+                found_segments = self.env['tt.segment.airline'].search([('segment_code','=',segment.segment_code),
+                                                                   '|',
+                                                                   ('booking_id.passenger_ids.identity_number','ilike',name.identity_number),
+                                                                   ('booking_id.passenger_ids.name','ilike',name.name)],order='id DESC')
+
+                valid_segments = []
+                for seg in found_segments:
+                    try:
+                        curr_state = seg.state
+                    except:
+                        curr_state = 'booked'
+                        print('cache miss error')
+
+                    if curr_state in ['booked', 'issued', 'cancel2', 'fail_issue']:
+                        valid_segments.append(seg)
+
+                safe = False
+
+                if len(valid_segments) < limit:
+                    safe = True
+                else:
+                    for idx,valid_segment in enumerate(valid_segments[:limit]):
+                        if valid_segment.booking_id.state == 'issued':
+                            safe=True
+                            break
+
+                if not safe:
+                    # whitelist di sini
+                    whitelist_name = self.env['tt.whitelisted.name'].sudo().search(
+                        [('name', 'ilike', name.name), ('chances_left', '>', 0)],limit=1)
+
+                    if whitelist_name:
+                        whitelist_name.chances_left -= 1
+                        return True
+
+                    whitelist_passport = self.env['tt.whitelisted.passport'].sudo().search(
+                        [('passport','=',name.identity_number),('chances_left','>',0)],limit=1)
+
+                    if whitelist_passport:
+                        whitelist_passport.chances_left -= 1
+                        return True
+
+                    raise Exception("Passenger validator failed on %s because of rebooking with same name and same route. %s will be charged for more addtional booking." % (name.name,rule.adm))
+                else:
+                    return False
+                print('safe')
 
     def update_pnr_provider_airline_api(self, req, context):
         ### dapatkan PNR dan ubah ke booked
