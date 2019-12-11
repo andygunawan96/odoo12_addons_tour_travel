@@ -1,5 +1,6 @@
 from odoo import api, fields, models, _
 from ...tools import variables, util, ERR
+import json
 from ...tools.ERR import RequestException
 import logging, traceback
 
@@ -432,3 +433,52 @@ class TtReservation(models.Model):
     def update_ledger_pnr(self, new_pnr):
         for rec in self.ledger_ids:
             rec.update({'pnr': new_pnr})
+
+    ##ini potong ledger
+    def payment_reservation_api(self,table_name,req,context):
+        _logger.info("Payment\n" + json.dumps(req))
+        try:
+            book_obj = self.env[table_name].browse(req.get('book_id'))
+            if book_obj and book_obj.agent_id.id == context.get('co_agent_id',-1):
+                #cek balance due book di sini, mungkin suatu saat yang akan datang
+                if book_obj.state == 'issued':
+                    _logger.error('Transaction Has been paid.')
+                    raise RequestException(1009)
+                if book_obj.state != 'booked':
+                    _logger.error('Cannot issue not [Booked] State.')
+                    raise RequestException(1020)
+
+                #cek saldo
+                balance_res = self.env['tt.agent'].check_balance_limit_api(context['co_agent_id'],book_obj.agent_nta)
+                if balance_res['error_code']!=0:
+                    _logger.error('Agent Balance not enough')
+                    raise RequestException(1007,additional_message="agent balance")
+
+                if req.get("member"):
+                    acquirer_seq_id = req.get('acquirer_seq_id')
+                    if acquirer_seq_id:
+                        balance_res = self.env['tt.customer.parent'].check_balance_limit_api(acquirer_seq_id,book_obj.total)
+                        if balance_res['error_code']!=0:
+                            _logger.error('Cutomer Parent credit limit not enough')
+                            raise RequestException(1007,additional_message="customer credit limit")
+
+                for provider in book_obj.provider_booking_ids:
+                    provider.action_create_ledger(context['co_uid'])
+
+                return ERR.get_no_error()
+            else:
+                RequestException(1001)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            try:
+                book_obj.notes += traceback.format_exc() + '\n'
+            except:
+                _logger.error('Creating Notes Error')
+            return e.error_dict()
+        except Exception as e:
+            _logger.info(str(e) + traceback.format_exc())
+            try:
+                book_obj.notes += str(e)+traceback.format_exc() + '\n'
+            except:
+                _logger.error('Creating Notes Error')
+            return ERR.get_error(1011)

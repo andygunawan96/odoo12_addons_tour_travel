@@ -6,11 +6,13 @@ class TtAirlineRule(models.Model):
 
     _name = 'tt.limiter.rule'
     _description = 'Limiter Rule'
+    _rec_name = 'carrier_id'
 
-    name = fields.Char('Airline Name')
-    code = fields.Char('Code')
-    rebooking_limit = fields.Integer('Rebooking Limit')
-    adm = fields.Char('ADM /P/R')
+    carrier_id = fields.Many2one('tt.transport.carrier','Carrier', required=True)
+    carrier_code = fields.Char('Code',related="carrier_id.code")
+    provider_type_id = fields.Many2one('tt.provider.type','Provider Type',related='carrier_id.provider_type_id')
+    rebooking_limit = fields.Integer('Rebooking Limit',default=2)
+    adm = fields.Char('ADM /P/R', default="5USD")
 
 
 class TtWhitelistedName(models.Model):

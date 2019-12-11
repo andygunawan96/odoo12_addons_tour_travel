@@ -10,7 +10,7 @@ _logger = logging.getLogger(__name__)
 
 TOP_UP_STATE = [
     ("draft", "Draft"),
-    ("confirm","Confirmeds"),
+    ("confirm","Confirmed"),
     ("request", "Request"),
     ("validated", "Validated"),
     ("approved","Approved"),

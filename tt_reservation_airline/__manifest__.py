@@ -18,6 +18,7 @@ TT_TRANSPORT
         'data/tt_provider_airline.xml',
         'data/tt_destination_airline.xml',
         'data/tt_transport_carrier_airline.xml',
+        'data/tt_psg_limiter_rule_data.xml',
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
 

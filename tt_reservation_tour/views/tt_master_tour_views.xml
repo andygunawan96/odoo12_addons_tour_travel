@@ -301,7 +301,6 @@
                         <page string="Itinerary">
                             <field name="itinerary_ids">
                                 <tree>
-                                    <field name="sequence" widget="handle"/>
                                     <field name="day"/>
                                     <field name="name"/>
                                     <field name="date"/>
@@ -329,6 +328,7 @@
                                                     <sheet>
                                                         <group>
                                                             <group>
+                                                                <field name="sequence"/>
                                                                 <field name="name"/>
                                                                 <field name="description"/>
                                                             </group>

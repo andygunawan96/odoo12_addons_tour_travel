@@ -542,7 +542,6 @@ class ReservationActivity(models.Model):
                 'contact_email': contact_data.get('email') and contact_data['email'] or '',
                 'contact_phone': contact_data.get('mobile') and str(contact_data['calling_code']) + str(
                     contact_data['mobile']),
-                'state': 'booked',
                 'date': datetime.now(),
                 'agent_id': context['co_agent_id'],
                 'user_id': context['co_uid'],
@@ -996,6 +995,7 @@ class ReservationActivity(models.Model):
                 'children': activity_booking.child,
                 'seniors': activity_booking.senior,
                 'pnr': activity_booking.pnr,
+                'hold_date': activity_booking.hold_date,
                 'visit_date': str(activity_booking.visit_date)[:10],
                 'timeslot': activity_booking.timeslot and activity_booking.timeslot or False,
                 'passengers': passengers,
@@ -1022,13 +1022,14 @@ class ReservationActivity(models.Model):
                 'co_uid': self.env.user.id
             }
 
-        vals = {
-            'state': 'booked',
-            'booked_uid': api_context and api_context['co_uid'],
-            'booked_date': datetime.now(),
-            'hold_date': datetime.now() + relativedelta(days=1),
-        }
-        self.write(vals)
+        if self.state != 'booked':
+            vals = {
+                'state': 'booked',
+                'booked_uid': api_context and api_context['co_uid'],
+                'booked_date': datetime.now(),
+                'hold_date': datetime.now() + relativedelta(days=1),
+            }
+            self.write(vals)
 
     def action_paid_activity(self, api_context=None):
         if not api_context:  # Jika dari call from backend

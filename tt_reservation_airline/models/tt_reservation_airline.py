@@ -668,7 +668,7 @@ class ReservationAirline(models.Model):
 
     def psg_validator(self,book_obj):
         for segment in book_obj.segment_ids:
-            rule = self.env['tt.limiter.rule'].sudo().search([('code', '=', segment.carrier_code), ('provider_type_id', '=', book_obj.provider_type_id.code)])
+            rule = self.env['tt.limiter.rule'].sudo().search([('carrier_code', '=', segment.carrier_code), ('provider_type_id.code', '=', book_obj.provider_type_id.code)])
 
             if rule:
                 limit = rule.rebooking_limit
@@ -678,19 +678,19 @@ class ReservationAirline(models.Model):
             for name in segment.booking_id.passenger_ids:
                 found_segments = self.env['tt.segment.airline'].search([('segment_code','=',segment.segment_code),
                                                                    '|',
-                                                                   ('booking_id.passenger_ids.identity_number','ilike',name.identity_number),
-                                                                   ('booking_id.passenger_ids.name','ilike',name.name)],order='id DESC')
+                                                                   ('booking_id.passenger_ids.identity_number','=ilike',name.identity_number),
+                                                                   ('booking_id.passenger_ids.name','=ilike',name.name)],order='id DESC')
 
-                valid_segments = []
-                for seg in found_segments:
-                    try:
-                        curr_state = seg.state
-                    except:
-                        curr_state = 'booked'
-                        _logger.error("Passenger Validator Cache Miss Error")
-
-                    if curr_state in ['booked', 'issued', 'cancel2', 'fail_issue']:
-                        valid_segments.append(seg)
+                valid_segments = found_segments.filtered(lambda x: x.booking_id.state in ['booked', 'issued', 'cancel2', 'fail_issue'])
+                # for seg in found_segments:
+                #     try:
+                #         curr_state = seg.state
+                #     except:
+                #         curr_state = 'booked'
+                #         _logger.error("Passenger Validator Cache Miss Error")
+                #
+                #     if curr_state in ['booked', 'issued', 'cancel2', 'fail_issue']:
+                #         valid_segments.append(seg)
 
                 safe = False
 
@@ -834,54 +834,8 @@ class ReservationAirline(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1013)
 
-    ##ini potong ledger
     def payment_airline_api(self,req,context):
-        _logger.info("Payment\n" + json.dumps(req))
-        try:
-            book_obj = self.env['tt.reservation.airline'].browse(req.get('book_id'))
-            if book_obj and book_obj.agent_id.id == context.get('co_agent_id',-1):
-                #cek balance due book di sini, mungkin suatu saat yang akan datang
-                if book_obj.state == 'issued':
-                    _logger.error('Transaction Has been paid.')
-                    raise RequestException(1009)
-                if book_obj.state != 'booked':
-                    _logger.error('Cannot issue not [Booked] State.')
-                    raise RequestException(1020)
-
-                #cek saldo
-                balance_res = self.env['tt.agent'].check_balance_limit_api(context['co_agent_id'],book_obj.agent_nta)
-                if balance_res['error_code']!=0:
-                    _logger.error('Agent Balance not enough')
-                    raise RequestException(1007,additional_message="agent balance")
-
-                if req.get("member"):
-                    acquirer_seq_id = req.get('acquirer_seq_id')
-                    if acquirer_seq_id:
-                        balance_res = self.env['tt.customer.parent'].check_balance_limit_api(acquirer_seq_id,book_obj.total)
-                        if balance_res['error_code']!=0:
-                            _logger.error('Cutomer Parent credit limit not enough')
-                            raise RequestException(1007,additional_message="customer credit limit")
-
-                for provider in book_obj.provider_booking_ids:
-                    provider.action_create_ledger(context['co_uid'])
-
-                return ERR.get_no_error()
-            else:
-                RequestException(1001)
-        except RequestException as e:
-            _logger.error(traceback.format_exc())
-            try:
-                book_obj.notes += traceback.format_exc() + '\n'
-            except:
-                _logger.error('Creating Notes Error')
-            return e.error_dict()
-        except Exception as e:
-            _logger.info(str(e) + traceback.format_exc())
-            try:
-                book_obj.notes += str(e)+traceback.format_exc()+'\n'
-            except:
-                _logger.error('Creating Notes Error')
-            return ERR.get_error(1011)
+        return self.payment_reservation_api('tt.reservation.airline',req,context)
 
     def update_cost_service_charge_airline_api(self,req,context):
         _logger.info('update cost\n' + json.dumps(req))
@@ -1442,59 +1396,3 @@ class ReservationAirline(models.Model):
                 count -=1
                 dest2 = data[count][2]['destination_id']
             return count
-
-
-    # def psg_validator(self,book_obj):
-    #     for segment in book_obj.segment_ids:
-    #         rule = self.env['tt.limiter.rule'].sudo().search([('code', '=', segment.carrier_code)])
-    #
-    #         if rule:
-    #             limit = rule.rebooking_limit
-    #         else:
-    #             continue
-    #
-    #         for name in segment.booking_id.passenger_ids:
-    #             found_segments = self.env['tt.segment.airline'].search([('segment_code','=',segment.segment_code),
-    #                                                                '|',
-    #                                                                ('booking_id.passenger_ids.passport_number','ilike',name.passport_number),
-    #                                                                ('booking_id.passenger_ids.name','ilike',name.name)],order='id DESC')
-    #
-    #             valid_segments = []
-    #             for seg in found_segments:
-    #                 try:
-    #                     curr_state = seg.state
-    #                 except:
-    #                     curr_state = 'booked'
-    #                     print('cache miss error')
-    #
-    #                 if curr_state in ['booked', 'issued', 'cancel2', 'fail_issue']:
-    #                     valid_segments.append(seg)
-    #
-    #             safe = False
-    #
-    #             if len(valid_segments) < limit:
-    #                 safe = True
-    #             else:
-    #                 for idx,valid_segment in enumerate(valid_segments[:limit]):
-    #                     if valid_segment.booking_id.state == 'issued':
-    #                         safe=True
-    #                         break
-    #
-    #             if not safe:
-    #                 # whitelist di sini
-    #                 whitelist_name = self.env['tt.whitelisted.name'].sudo().search(
-    #                     [('name', 'ilike', name.name), ('chances_left', '>', 0)],limit=1)
-    #
-    #                 if whitelist_name:
-    #                     whitelist_name.chances_left -= 1
-    #                     return True
-    #
-    #                 whitelist_passport = self.env['tt.whitelisted.passport'].sudo().search(
-    #                     [('passport','=',name.passport_number),('chances_left','>',0)],limit=1)
-    #
-    #                 if whitelist_passport:
-    #                     whitelist_passport.chances_left -= 1
-    #                     return True
-    #
-    #                 raise Exception("Passenger validator failed on %s because of rebooking with same name and same route. %s will be charged for more addtional booking." % (name.name,rule.adm))
-    #             print('safe')
