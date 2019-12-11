@@ -365,7 +365,14 @@
                             <field name="other_info_preview"/>
                         </page>
                         <page string="Images">
-                            <field name="image_ids"/>
+                            <field name="image_ids">
+                                <tree>
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="seq_id"/>
+                                    <field name="create_date"/>
+                                </tree>
+                            </field>
+
                         </page>
                     </notebook>
 

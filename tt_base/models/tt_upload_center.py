@@ -17,7 +17,7 @@ class TtUploadFile(models.Model):
     active = fields.Boolean('Active',default=True)
     will_be_deleted_date = fields.Date('Will be deleted on')
     will_be_deleted_time = fields.Datetime('Will be deleted on')
-    sequence = fields.Integer('Sequence')
+    sequence = fields.Integer('Sequence',default=100)
 
     @api.model
     def create(self, vals_list):
