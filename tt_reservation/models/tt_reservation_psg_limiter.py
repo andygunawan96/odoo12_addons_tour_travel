@@ -7,7 +7,8 @@ class TtAirlineRule(models.Model):
     _name = 'tt.limiter.rule'
     _description = 'Limiter Rule'
 
-    name = fields.Char('Airline Name')
+    name = fields.Char('Name')
+    provider_type_id = fields.Char('Provider Type Id')
     code = fields.Char('Code')
     rebooking_limit = fields.Integer('Rebooking Limit')
     adm = fields.Char('ADM /P/R')
