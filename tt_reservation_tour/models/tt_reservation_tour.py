@@ -200,7 +200,7 @@ class ReservationTour(models.Model):
                 'state': 'booked',
                 'booked_date': datetime.now(),
                 'booked_uid': api_context['co_uid'] or self.env.user.id,
-                'hold_date': datetime.now() + relativedelta(days=1),
+                'hold_date': datetime.now() + relativedelta(hours=6),
             })
 
             # Kurangi seat sejumlah pax_amount, lalu cek sisa kuota tour
