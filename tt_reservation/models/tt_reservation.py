@@ -97,8 +97,10 @@ class TtReservation(models.Model):
     customer_parent_type_id = fields.Many2one('tt.customer.parent.type', 'Customer Type', related='customer_parent_id.customer_parent_type_id',
                                         store=True, readonly=True)
 
-    ticket_id = fields.Many2one('tt.upload.center', 'Ticket', readonly=True)
-    ticket_price_id = fields.Many2one('tt.upload.center', 'Ticket (Price)', readonly=True)
+    printout_ticket_id = fields.Many2one('tt.upload.center', 'Ticket', readonly=True)
+    printout_ticket_price_id = fields.Many2one('tt.upload.center', 'Ticket (Price)', readonly=True)
+    printout_itinerary_id = fields.Many2one('tt.upload.center', 'Itinerary', readonly=True)
+    printout_voucher_id = fields.Many2one('tt.upload.center', 'Voucher', readonly=True)
 
     @api.model
     def create(self, vals_list):
