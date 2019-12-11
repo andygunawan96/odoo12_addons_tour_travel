@@ -241,57 +241,7 @@ class TtReservationTrain(models.Model):
             return ERR.get_error(1005)
 
     def payment_train_api(self,req,context):
-        _logger.info("Payment\n" + json.dumps(req))
-        try:
-            # book_obj = self.env['tt.reservation.train'].browse(req.get('book_id'))
-            if req.get('book_id'):
-                book_obj = self.env['tt.reservation.train'].browse(req.get('book_id'))
-            else:
-                book_obj = self.env['tt.reservation.train'].search([('name','=',req.get('order_number'))],limit=1)
-            if book_obj and book_obj.agent_id.id == context.get('co_agent_id',-1):
-                #cek balance due book di sini, mungkin suatu saat yang akan datang
-                if book_obj.state == 'issued':
-                    _logger.error('Transaction Has been paid.')
-                    raise RequestException(1009)
-                if book_obj.state != 'booked':
-                    _logger.error('Cannot issue not [Booked] State.')
-                    raise RequestException(1020)
-
-                #cek saldo
-                balance_res = self.env['tt.agent'].check_balance_limit_api(context['co_agent_id'],book_obj.agent_nta)
-                if balance_res['error_code']!=0:
-                    _logger.error('Balance not enough')
-                    raise RequestException(1007)
-
-                if req.get("member"):
-                    acquirer_seq_id = req.get('acquirer_seq_id')
-                    if acquirer_seq_id:
-                        customer_parent_id = self.env['tt.customer.parent'].search([('seq_id','=',acquirer_seq_id)],limit=1)
-                        balance_res = self.env['tt.customer.parent'].check_balance_limit_api(customer_parent_id,book_obj.total)
-                        if balance_res['error_code']!=0:
-                            _logger.error('Cutomer Parent credit limit not enough')
-                            raise RequestException(1007,additional_message="customer credit limit")
-
-                for provider in book_obj.provider_booking_ids:
-                    provider.action_create_ledger(context['co_uid'])
-
-                return ERR.get_no_error()
-            else:
-                raise RequestException(1001)
-        except RequestException as e:
-            _logger.error(traceback.format_exc())
-            try:
-                book_obj.notes += traceback.format_exc() + '\n'
-            except:
-                _logger.error('Creating Notes Error')
-            return e.error_dict()
-        except Exception as e:
-            _logger.info(str(e) + traceback.format_exc())
-            try:
-                book_obj.notes += str(e)+traceback.format_exc()+'\n'
-            except:
-                _logger.error('Creating Notes Error')
-            return ERR.get_error(1011)
+        return self.payment_reservation_api('tt.reservation.airline', req, context)
 
     def _prepare_booking_api(self, searchRQ, context_gateway):
         dest_obj = self.env['tt.destinations']

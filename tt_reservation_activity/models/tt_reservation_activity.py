@@ -651,6 +651,7 @@ class ReservationActivity(models.Model):
             book_objs = self.env['tt.reservation.activity'].sudo().search([('name', '=', req['order_number'])], limit=1)
             book_obj = book_objs[0]
 
+
             try:
                 agent_obj = self.env['tt.customer'].browse(int(self.booker_id.id)).agent_id
                 if not agent_obj:
