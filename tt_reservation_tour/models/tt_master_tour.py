@@ -473,7 +473,7 @@ class MasterTour(models.Model):
 
             for idx, rec in enumerate(result):
                 try:
-                    self.env.cr.execute("""SELECT tuc.* FROM tt_upload_center tuc LEFT JOIN tour_images_rel tir ON tir.image_id = tuc.id WHERE tir.tour_id = %s; ORDER BY sequence""", (rec['id'],))
+                    self.env.cr.execute("""SELECT tuc.* FROM tt_upload_center tuc LEFT JOIN tour_images_rel tir ON tir.image_id = tuc.id WHERE tir.tour_id = %s; ORDER BY tuc.sequence""", (rec['id'],))
                     images = self.env.cr.dictfetchall()
                 except Exception:
                     images = []
