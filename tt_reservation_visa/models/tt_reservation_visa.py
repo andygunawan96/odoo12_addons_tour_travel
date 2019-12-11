@@ -5,6 +5,7 @@ import logging
 import traceback
 import copy
 import json
+import base64
 from ...tools.api import Response
 from ...tools import util,variables,ERR
 from ...tools.ERR import RequestException
@@ -111,6 +112,9 @@ class TtVisa(models.Model):
     immigration_consulate = fields.Char('Immigration Consulate', readonly=1, compute="_compute_immigration_consulate")
 
     agent_commission = fields.Monetary('Agent Commission', default=0, compute="_compute_agent_commission")
+
+    printout_handling_ho_id = fields.Many2one('tt.upload.center', readonly=True)
+    printout_handling_customer_id = fields.Many2one('tt.upload.center', readonly=True)
 
     ######################################################################################################
     # STATE
@@ -1189,7 +1193,39 @@ class TtVisa(models.Model):
             'ids': self.ids,
             'model': self._name,
         }
-        return self.env.ref('tt_reservation_visa.action_report_printout_tt_visa_ho').report_action(self, data=data)
+        visa_handling_ho_id = self.env.ref('tt_reservation_visa.action_report_printout_tt_visa_ho')
+        if not self.printout_handling_ho_id:
+            pdf_report = visa_handling_ho_id.report_action(self, data=data)
+            pdf_report['context'].update({
+                'active_model': self._name,
+                'active_id': self.id
+            })
+            pdf_report.update({
+                'ids': self.ids,
+                'model': self._name,
+            })
+            pdf_report_bytes = visa_handling_ho_id.render_qweb_pdf(data=pdf_report)
+            res = self.env['tt.upload.center.wizard'].upload_file_api(
+                {
+                    'filename': 'Visa HO %s.pdf' % self.name,
+                    'file_reference': 'Visa HO Handling',
+                    'file': base64.b64encode(pdf_report_bytes[0]),
+                    'delete_date': datetime.today() + timedelta(minutes=10)
+                },
+                {
+                    'co_agent_id': self.env.user.agent_id.id,
+                }
+            )
+            upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+            self.printout_handling_ho_id = upc_id.id
+        url = {
+            'type': 'ir.actions.act_url',
+            'name': "ZZZ",
+            'target': 'new',
+            'url': self.printout_handling_ho_id.url,
+        }
+        return url
+        # return self.env.ref('tt_reservation_visa.action_report_printout_tt_visa_ho').report_action(self, data=data)
 
     def do_print_out_visa_cust(self):
         self.ensure_one()
@@ -1197,7 +1233,39 @@ class TtVisa(models.Model):
             'ids': self.ids,
             'model': self._name,
         }
-        return self.env.ref('tt_reservation_visa.action_report_printout_tt_visa_cust').report_action(self, data=data)
+        visa_handling_customer_id = self.env.ref('tt_reservation_visa.action_report_printout_tt_visa_cust')
+        if not self.printout_handling_customer_id:
+            pdf_report = visa_handling_customer_id.report_action(self, data=data)
+            pdf_report['context'].update({
+                'active_model': self._name,
+                'active_id': self.id
+            })
+            pdf_report.update({
+                'ids': self.ids,
+                'model': self._name,
+            })
+            pdf_report_bytes = visa_handling_customer_id.render_qweb_pdf(data=pdf_report)
+            res = self.env['tt.upload.center.wizard'].upload_file_api(
+                {
+                    'filename': 'Visa Customer %s.pdf' % self.name,
+                    'file_reference': 'Visa Customer Handling',
+                    'file': base64.b64encode(pdf_report_bytes[0]),
+                    'delete_date': datetime.today() + timedelta(minutes=10)
+                },
+                {
+                    'co_agent_id': self.env.user.agent_id.id,
+                }
+            )
+            upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+            self.printout_handling_ho_id = upc_id.id
+        url = {
+            'type': 'ir.actions.act_url',
+            'name': "ZZZ",
+            'target': 'new',
+            'url': self.printout_handling_ho_id.url,
+        }
+        return url
+        # return self.env.ref('tt_reservation_visa.action_report_printout_tt_visa_cust').report_action(self, data=data)
 
     def action_proforma_invoice_visa(self):
         self.ensure_one()
