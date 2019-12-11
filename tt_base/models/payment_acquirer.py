@@ -114,14 +114,14 @@ class PaymentAcquirer(models.Model):
             res['non_member'] = values
             res['member'] = {}
             if req.get('booker_seq_id'):
-                res['member']['credit_limit'] = self.generate_credit_limit(req['booker_seq_id']) if util.get_without_empty(req,'booker_seq_id') else []
+                res['member']['credit_limit'] = self.generate_credit_limit(req['booker_seq_id'], amount) if util.get_without_empty(req,'booker_seq_id') else []
             _logger.info("payment acq resp\n"+ json.dumps(res))
             return ERR.get_no_error(res)
         except Exception as e:
             _logger.error(str(e) + traceback.format_exc())
             return ERR.get_error()
 
-    def generate_credit_limit(self,booker_seq_id):
+    def generate_credit_limit(self,booker_seq_id, amount):
         booker_obj = self.env['tt.customer'].search([('seq_id','=',booker_seq_id)])
         if not booker_obj:
             raise Exception('Booker not found')
@@ -133,6 +133,12 @@ class PaymentAcquirer(models.Model):
                     'actual_balance': rec.actual_balance,
                     'credit_limit': rec.credit_limit,
                     'currency': rec.currency_id.name,
-                    'seq_id': rec.seq_id
+                    'seq_id': rec.seq_id,
+                    'price_component': {
+                        'amount': amount,
+                        'fee': 0,
+                        'unique_amount': 0
+                    },
+                    'total_amount': amount
                 })
         return values
