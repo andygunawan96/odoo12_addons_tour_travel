@@ -47,6 +47,21 @@
         </field>
     </record>
 
+    <record id="tt_upload_center_simple_tree_view" model="ir.ui.view">
+        <field name="name">tt.upload.center.tree.view</field>
+        <field name="model">tt.upload.center</field>
+        <field name="priority">5</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle"/>
+                <field name="seq_id"/>
+                <field name="name"/>
+                <field name="create_date"/>
+                <field name="active" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
     <record id="tt_upload_center_tree_view" model="ir.ui.view">
         <field name="name">tt.upload.center.tree.view</field>
         <field name="model">tt.upload.center</field>
@@ -71,7 +86,8 @@
         <field name="domain">['|',('active','=',True),('active','=',False)]</field>
         <field name="context">
             {
-                'form_view_ref':'tt_base.tt_upload_center_form_view'
+                'form_view_ref':'tt_base.tt_upload_center_form_view',
+                'tree_view_ref':'tt_base.tt_upload_center_tree_view'
             }
         </field>
     </record>
