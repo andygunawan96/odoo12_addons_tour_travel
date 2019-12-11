@@ -35,14 +35,13 @@ class TourItineraryItem(models.Model):
 class TourItinerary(models.Model):
     _name = 'tt.reservation.tour.itinerary'
     _description = 'Rodex Model'
-    _order = 'sequence asc'
+    _order = 'day asc'
 
     name = fields.Char('Title')
-    day = fields.Integer('Day')
+    day = fields.Integer('Day', default=1, required=True)
     date = fields.Date('Date')
     tour_pricelist_id = fields.Many2one('tt.master.tour', 'Tour')
     item_ids = fields.One2many('tt.reservation.tour.itinerary.item', 'itinerary_id', 'Items')
-    sequence = fields.Integer('Sequence', required=True, default=50)
 
 
 class MasterTour(models.Model):
