@@ -1,8 +1,9 @@
 from odoo import api, fields, models, _
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from odoo.exceptions import UserError
+import base64
 
 from .ApiConnector_Hotel import ApiConnectorHotels
 API_CN_HOTEL = ApiConnectorHotels()
@@ -141,7 +142,35 @@ class HotelReservation(models.Model):
         res = self.read()
         res = res and res[0] or {}
         datas['form'] = res
-        return self.env.ref('tt_report_common.action_report_printout_reservation_hotel').report_action([], data=datas)
+        hotel_voucher_id = self.env.ref('tt_report_common.action_report_printout_reservation_hotel')
+        if not self.printout_voucher_id:
+            pdf_report = hotel_voucher_id.report_action(self, data=datas)
+            pdf_report['context'].update({
+                'active_model': self._name,
+                'active_id': self.id
+            })
+            pdf_report_bytes = hotel_voucher_id.render_qweb_pdf(data=pdf_report)
+            res = self.env['tt.upload.center.wizard'].upload_file_api(
+                {
+                    'filename': 'Hotel Voucher %s.pdf' % self.name,
+                    'file_reference': 'Hotel Voucher',
+                    'file': base64.b64encode(pdf_report_bytes[0]),
+                    'delete_date': datetime.today() + timedelta(minutes=10)
+                },
+                {
+                    'co_agent_id': self.env.user.agent_id.id,
+                }
+            )
+            upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+            self.printout_voucher_id = upc_id.id
+        url = {
+            'type': 'ir.actions.act_url',
+            'name': "ZZZ",
+            'target': 'new',
+            'url': self.printout_voucher_id.url,
+        }
+        return url
+        # return self.env.ref('tt_report_common.action_report_printout_reservation_hotel').report_action([], data=datas)
 
     @api.multi
     def print_itinerary(self):
@@ -149,7 +178,34 @@ class HotelReservation(models.Model):
         res = self.read()
         res = res and res[0] or {}
         datas['form'] = res
-        return self.env.ref('tt_report_common.action_printout_itinerary_hotel').report_action(self, data=datas)
+        hotel_itinerary_id = self.env.ref('tt_report_common.action_printout_itinerary_hotel')
+        if not self.printout_itinerary_id:
+            pdf_report = hotel_itinerary_id.report_action(self, data=datas)
+            pdf_report['context'].update({
+                'active_model': self._name,
+                'active_id': self.id
+            })
+            pdf_report_bytes = hotel_itinerary_id.render_qweb_pdf(data=pdf_report)
+            res = self.env['tt.upload.center.wizard'].upload_file_api(
+                {
+                    'filename': 'Hotel Itinerary %s.pdf' % self.name,
+                    'file_reference': 'Hotel Itinerary',
+                    'file': base64.b64encode(pdf_report_bytes[0]),
+                    'delete_date': datetime.today() + timedelta(minutes=10)
+                },
+                {
+                    'co_agent_id': self.env.user.agent_id.id,
+                }
+            )
+            upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+            self.printout_itinerary_id = upc_id.id
+        url = {
+            'type': 'ir.actions.act_url',
+            'name': "ZZZ",
+            'target': 'new',
+            'url': self.printout_itinerary_id.url,
+        }
+        return url
 
     # @api.depends('room_detail_ids.commission_amount', 'room_detail_ids.qty')
     def _compute_total_commission_amount(self):
