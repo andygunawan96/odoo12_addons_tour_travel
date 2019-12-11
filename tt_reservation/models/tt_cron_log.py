@@ -11,7 +11,7 @@ class TtCronLogInhResv(models.Model):
         try:
             for rec in variables.PROVIDER_TYPE:
                 new_bookings = self.env['tt.reservation.%s' % rec].search(
-                    ['|', ('state', '=', 'draft'), ('state', '=', 'booked')])
+                    [('state', '=', 'booked')])
                 for booking in new_bookings:
                     try:
                         if datetime.now() >= (booking.hold_date or datetime.min):
