@@ -94,10 +94,10 @@ class ReservationOffline(models.Model):
             'real_total_amount': inv_line_obj.total,
             'customer_parent_id': self.customer_parent_id.id
         })
-        # if self.acquirer_id:
-        #     payment_obj.update({
-        #         'acquirer_id': self.acquirer_id.id,
-        #     })
+        if self.acquirer_id:
+            payment_obj.update({
+                'acquirer_id': self.acquirer_id.id,
+            })
 
         self.env['tt.payment.invoice.rel'].create({
             'invoice_id': invoice_id.id,

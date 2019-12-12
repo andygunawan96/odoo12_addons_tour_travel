@@ -1,4 +1,6 @@
 from odoo import models, fields, api, _
+from odoo.exceptions import UserError
+from ...tools import variables
 
 PAX_TYPE = [
     ('ADT', 'Adult'),
@@ -8,11 +10,13 @@ PAX_TYPE = [
 
 STATE = [
     ('draft', 'Draft'),
-    ('confirm', 'Request'),
-    ('valid', 'Validated'),
-    ('final', 'Finalization'),
+    ('confirm', 'Confirm'),
+    ('sent', 'Sent'),
+    ('validate', 'Validate'),
     ('done', 'Done'),
-    ('cancel', 'Cancelled')
+    ('refund', 'Refund'),
+    ('expired', 'Expired'),
+    ('cancel', 'Canceled')
 ]
 
 
@@ -30,7 +34,8 @@ class IssuedOfflinePassenger(models.Model):
                                                                          'confirm': [('readonly', False)]})
     seat = fields.Char('Seat', readonly=True, states={'draft': [('readonly', False)],
                                                       'confirm': [('readonly', False)]})
-    state = fields.Selection(STATE, string='State', default='draft', related='booking_id.state')
+    state = fields.Selection(variables.BOOKING_STATE, string='State', default='draft', related='booking_id.state')
+    state_offline = fields.Selection(STATE, string='State', default='draft', related='booking_id.state_offline')
     first_name = fields.Char('First Name', related='passenger_id.first_name')
     last_name = fields.Char('Last Name', related='passenger_id.last_name')
 

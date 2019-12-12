@@ -119,18 +119,19 @@ class TtProviderVisa(models.Model):
                     scs['pax_count'] += 1
                     scs['total'] += scs['amount']
             scs['passenger_visa_ids'] = [(6, 0, scs['passenger_visa_ids'])]
+            if 'commission_agent_id' in scs:
+                scs['commission_agent_id'] = scs['commission_agent_id']
             scs['description'] = self.pnr and self.pnr or ''
             if scs['total'] != 0:
-                service_chg_obj.create(scs)
+                scs_obj = service_chg_obj.create(scs)
+                print(scs_obj)
 
     def delete_service_charge(self):
         for rec in self.cost_service_charge_ids:
             rec.unlink()
 
-    def action_create_ledger(self):
-        if not self.is_ledger_created:
-            self.write({'is_ledger_created': True})
-            self.env['tt.ledger'].action_create_ledger(self, self.env.user.id)
+    def action_create_ledger(self, issued_uid, pay_method=None):
+        self.env['tt.ledger'].action_create_ledger(self, issued_uid)
 
     def to_dict(self):
         passenger_list = []

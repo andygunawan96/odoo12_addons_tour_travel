@@ -6,8 +6,8 @@ STATE = [
     ('draft', 'Draft'),
     ('confirm', 'Confirm'),
     ('sent', 'Sent'),
-    ('paid', 'Validate'),
-    ('posted', 'Done'),
+    ('validate', 'Validate'),
+    ('done', 'Done'),
     ('refund', 'Refund'),
     ('expired', 'Expired'),
     ('cancel', 'Canceled')
@@ -57,70 +57,45 @@ class IssuedOfflineLines(models.Model):
                                                     'validate': [('readonly', False)]})
 
     booking_id = fields.Many2one('tt.reservation.offline', 'Reservation Offline')
-    obj_qty = fields.Integer('Qty', readonly=True, states={'draft': [('readonly', False)],
-                                                           'confirm': [('readonly', False)]}, default=1)
+    obj_qty = fields.Integer('Qty', readonly=False, default=1)
     state = fields.Selection(variables.BOOKING_STATE, string='State', default='draft', related='booking_id.state')
+    state_offline = fields.Selection(variables.BOOKING_STATE, string='State', default='draft', related='booking_id.state_offline')
     transaction_type = fields.Many2one('tt.provider.type', 'Service Type', related='booking_id.offline_provider_type_id')
     transaction_name = fields.Char('Service Name', readonly=True, related='booking_id.provider_type_id_name')
-    provider_id = fields.Many2one('tt.provider', 'Provider ID', readonly=True, states={'confirm': [('readonly', False)]})
+    provider_id = fields.Many2one('tt.provider', 'Provider ID', readonly=False)
 
     # Airplane / Train
-    departure_date = fields.Datetime('Departure Date', readonly=True, states={'draft': [('readonly', False)],
-                                                                              'confirm': [('readonly', False)]})
-    return_date = fields.Datetime('Return Date', readonly=True, states={'draft': [('readonly', False)],
-                                                                        'confirm': [('readonly', False)]})
-    origin_id = fields.Many2one('tt.destinations', 'Origin', readonly=True, states={'draft': [('readonly', False)],
-                                                                                    'confirm': [('readonly', False)]})
-    destination_id = fields.Many2one('tt.destinations', 'Destination', readonly=True,
-                                     states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
+    departure_date = fields.Datetime('Departure Date', readonly=False)
+    return_date = fields.Datetime('Return Date', readonly=False)
+    origin_id = fields.Many2one('tt.destinations', 'Origin', readonly=False)
+    destination_id = fields.Many2one('tt.destinations', 'Destination', readonly=False)
 
-    carrier_id = fields.Many2one('tt.transport.carrier', 'Carrier', readonly=True,
-                                 states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
+    carrier_id = fields.Many2one('tt.transport.carrier', 'Carrier', readonly=False)
     provider = fields.Char('Provider', readonly=False, required=False, states={'draft': [('required', False)],
                                                                               'confirm': [('readonly', False)]})
 
-    carrier_code = fields.Char('Carrier Code', help='or Flight Code', index=True,
-                               states={'draft': [('required', False)],
-                                       'confirm': [('readonly', False)]})
-    carrier_number = fields.Char('Carrier Number', help='or Flight Number', index=True,
-                                 states={'draft': [('required', False)],
-                                         'confirm': [('readonly', False)]})
-    class_of_service = fields.Selection(CLASS_OF_SERVICE, 'Class', states={'draft': [('required', False)],
-                                                                           'confirm': [('readonly', False)]})
-    subclass = fields.Char('SubClass', states={'draft': [('required', False)],
-                                               'confirm': [('readonly', False)]})
+    carrier_code = fields.Char('Carrier Code', help='or Flight Code', index=True, readonly=False)
+    carrier_number = fields.Char('Carrier Number', help='or Flight Number', index=True, readonly=False)
+    class_of_service = fields.Selection(CLASS_OF_SERVICE, 'Class', readonly=False)
+    subclass = fields.Char('SubClass', readonly=False)
 
     # Hotel / Activity / Cruise
-    visit_date = fields.Date('Visit Date', readonly=True, states={'draft': [('readonly', False)],
-                                                                  'confirm': [('readonly', False)]})
-    check_in = fields.Date('Check In', readonly=True, states={'draft': [('readonly', False)],
-                                                              'confirm': [('readonly', False)]})
-    check_out = fields.Date('Check Out', readonly=True, states={'draft': [('readonly', False)],
-                                                                'confirm': [('readonly', False)]})
-    hotel_name = fields.Char('Name', readonly=True, states={'draft': [('readonly', False)],
-                                                            'confirm': [('readonly', False)]})
-    room = fields.Char('Room Type', readonly=True, states={'draft': [('readonly', False)],
-                                                           'confirm': [('readonly', False)]})
-    meal_type = fields.Char('Meal Type', states={'draft': [('readonly', False)],
-                                                 'confirm': [('readonly', False)]})
-    activity_name = fields.Char('Activity Name', readonly=True,
-                                states={'draft': [('readonly', False)],
-                                        'confirm': [('readonly', False)]})
-    activity_package = fields.Char('Activity Package', readonly=True,
-                                   states={'draft': [('readonly', False)],
-                                           'confirm': [('readonly', False)]})
-    activity_timeslot = fields.Char('Timeslot')
-    cruise_name = fields.Char('Cruise Name', readonly=True, states={'draft': [('readonly', False)],
-                                                                    'confirm': [('readonly', False)]})
-    departure_location = fields.Char('Departure Location', readonly=True, states={'draft': [('readonly', False)],
-                                                                                  'confirm': [('readonly', False)]})
-    arrival_location = fields.Char('Arrival Location', readonly=True, states={'draft': [('readonly', False)],
-                                                                              'confirm': [('readonly', False)]})
+    visit_date = fields.Date('Visit Date', readonly=False)
+    check_in = fields.Date('Check In', readonly=False)
+    check_out = fields.Date('Check Out', readonly=False)
+    hotel_name = fields.Char('Name', readonly=False)
+    room = fields.Char('Room Type', readonly=False)
+    meal_type = fields.Char('Meal Type', readonly=False)
+    activity_name = fields.Char('Activity Name', readonly=False)
+    activity_package = fields.Char('Activity Package', readonly=False)
+    activity_timeslot = fields.Char('Timeslot', readonly=False)
+    cruise_name = fields.Char('Cruise Name', readonly=False)
+    departure_location = fields.Char('Departure Location', readonly=False)
+    arrival_location = fields.Char('Arrival Location', readonly=False)
 
-    description = fields.Text('Description')
+    description = fields.Text('Description', readonly=False)
 
-    is_ledger_created = fields.Boolean('Ledger Created', default=False, readonly=True,
-                                       states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
+    is_ledger_created = fields.Boolean('Ledger Created', default=False, readonly=True)
 
     sale_service_charge_ids = fields.One2many('tt.service.charge', 'provider_offline_booking_id',
                                               'Cost Service Charges')

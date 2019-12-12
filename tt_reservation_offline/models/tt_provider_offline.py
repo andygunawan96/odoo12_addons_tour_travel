@@ -217,7 +217,5 @@ class ProviderOffline(models.Model):
         for rec in self.cost_service_charge_ids:
             rec.unlink()
 
-    def action_create_ledger(self):
-        if not self.is_ledger_created:
-            self.write({'is_ledger_created': True})
-            self.env['tt.ledger'].action_create_ledger(self, self.env.user.id)
+    def action_create_ledger(self, issued_uid, pay_method=None):
+        self.env['tt.ledger'].action_create_ledger(self, issued_uid)

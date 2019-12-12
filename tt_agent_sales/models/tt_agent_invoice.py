@@ -1,7 +1,8 @@
 from odoo import models, api, fields, _
-import datetime
+from datetime import datetime, timedelta
 from odoo import exceptions
 from odoo.exceptions import UserError
+import base64
 
 
 class Ledger(models.Model):
@@ -70,6 +71,8 @@ class AgentInvoice(models.Model):
     date_invoice = fields.Date(string='Invoice Date', default=fields.Date.context_today,
                                index=True, copy=False, readonly=True)
     description = fields.Text('Description',readonly=True)
+
+    printout_invoice_id = fields.Many2one('tt.upload.center', 'Printout Invoice')
 
     # Bill to
     bill_name = fields.Char('Billing to')
@@ -151,7 +154,35 @@ class AgentInvoice(models.Model):
         res = self.read()
         res = res and res[0] or {}
         datas['form'] = res
-        return self.env.ref('tt_report_common.action_report_printout_invoice').report_action(self, data=datas)
+        invoice_id = self.env.ref('tt_report_common.action_report_printout_invoice')
+        if not self.printout_invoice_id:
+            pdf_report = invoice_id.report_action(self, data=datas)
+            pdf_report['context'].update({
+                'active_model': self._name,
+                'active_id': self.id
+            })
+            pdf_report_bytes = invoice_id.render_qweb_pdf(data=pdf_report)
+            res = self.env['tt.upload.center.wizard'].upload_file_api(
+                {
+                    'filename': 'Agent Invoice %s.pdf' % self.name,
+                    'file_reference': 'Agent Invoice for %s' % self.name,
+                    'file': base64.b64encode(pdf_report_bytes[0]),
+                    'delete_date': datetime.today() + timedelta(minutes=10)
+                },
+                {
+                    'co_agent_id': self.env.user.agent_id.id,
+                }
+            )
+            upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+            self.printout_invoice_id = upc_id.id
+        url = {
+            'type': 'ir.actions.act_url',
+            'name': "ZZZ",
+            'target': 'new',
+            'url': self.printout_invoice_id.url,
+        }
+        return url
+        # return self.env.ref('tt_report_common.action_report_printout_invoice').report_action(self, data=datas)
 
     @api.onchange('customer_parent_id')
     def set_default_billing_to(self):

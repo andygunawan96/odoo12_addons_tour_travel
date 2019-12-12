@@ -14,8 +14,8 @@ STATE_OFFLINE = [
     ('draft', 'Draft'),
     ('confirm', 'Confirm'),
     ('sent', 'Sent'),
-    ('paid', 'Validate'),
-    ('posted', 'Done'),
+    ('validate', 'Validate'),
+    ('done', 'Done'),
     ('refund', 'Refund'),
     ('expired', 'Expired'),
     ('cancel', 'Canceled')
@@ -60,6 +60,7 @@ class IssuedOffline(models.Model):
     # booking_id = fields.Many2one('tt.reservation.offline', 'Booking ID', default=lambda self: self.id)
 
     state = fields.Selection(variables.BOOKING_STATE, 'State', default='draft')
+    state_offline = fields.Selection(STATE_OFFLINE, 'State Offline', default='draft')
     # type = fields.Selection(TYPE, required=True, readonly=True,
     #                         states={'draft': [('readonly', False)]}, string='Transaction Type')
     provider_type_id = fields.Many2one('tt.provider.type', string='Provider Type',
@@ -75,8 +76,7 @@ class IssuedOffline(models.Model):
     sector_type = fields.Selection(SECTOR_TYPE, 'Sector', readonly=True, states={'draft': [('readonly', False)]})
 
     # 171121 CANDY: add field pnr, commission 80%, nta, nta 80%
-    agent_commission = fields.Monetary('Agent Commission', readonly=True, compute='_get_agent_commission',
-                                       states={'confirm': [('readonly', False)]})
+    agent_commission = fields.Monetary('Agent Commission', readonly=True, compute='_get_agent_commission')
     parent_agent_commission = fields.Monetary('Parent Agent Commission', readonly=True, compute='_get_agent_commission')
     ho_commission = fields.Monetary('HO Commission', readonly=True, compute='_get_agent_commission')
     # states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
@@ -86,7 +86,7 @@ class IssuedOffline(models.Model):
     vendor = fields.Char('Vendor Provider', readonly=True, states={'confirm': [('readonly', False)]})
     master_vendor_id = fields.Char('Master Vendor', readonly=True, states={'confirm': [('readonly', False)]})
 
-    resv_code = fields.Char('Vendor Order Number', readonly=True, states={'validate': [('readonly', False)]})
+    resv_code = fields.Char('Vendor Order Number')
 
     # Date and UID
     confirm_date = fields.Datetime('Confirm Date', readonly=True, copy=False)
@@ -105,10 +105,8 @@ class IssuedOffline(models.Model):
     # Monetary
     currency_id = fields.Many2one('res.currency', 'Currency', default=lambda self: self.env.user.company_id.currency_id,
                                   readonly=True, states={'draft': [('readonly', False)]})
-    total = fields.Monetary('Total Sale Price', readonly=True, store=True,
-                            states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
-    total_commission_amount = fields.Monetary('Total Commission Amount', readonly=True,
-                                              states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
+    total = fields.Monetary('Total Sale Price', store=True)
+    total_commission_amount = fields.Monetary('Total Commission Amount')
     # total_supplementary_price = fields.Monetary('Total Supplementary', compute='_get_total_supplement')
     total_tax = fields.Monetary('Total Taxes')
 
@@ -125,8 +123,7 @@ class IssuedOffline(models.Model):
     #                                   'tt_issued_id', 'attachment_id', domain=[('res_model', '=', 'tt.reservation.offline')]
     #                                   , string='Attachments', readonly=True, states={'paid': [('readonly', False)]})
     attachment_ids = fields.Many2many('tt.upload.center', 'offline_ir_attachments_rel', 'tt_issued_id',
-                                      'attachment_id', string='Attachments', readonly=True,
-                                      states={'validate': [('readonly', False)]})
+                                      'attachment_id', string='Attachments')
     guest_ids = fields.Many2many('tt.customer', 'tt_issued_guest_rel', 'resv_issued_id', 'tt_product_id',
                                  'Guest(s)', readonly=True, states={'draft': [('readonly', False)]})
     # passenger_qty = fields.Integer('Passenger Qty', default=1)
@@ -136,25 +133,17 @@ class IssuedOffline(models.Model):
     description = fields.Text('Description', help='Itinerary Description like promo code, how many night or other info',
                               readonly=True, states={'draft': [('readonly', False)]})
 
-    line_ids = fields.One2many('tt.reservation.offline.lines', 'booking_id', 'Issued Offline', readonly=True,
-                               states={'draft': [('readonly', False)],
-                                       'confirm': [('readonly', False)],
-                                       'validate': [('readonly', False)]})
-    passenger_ids = fields.One2many('tt.reservation.offline.passenger', 'booking_id', 'Issued Offline', readonly=True,
-                                    states={'draft': [('readonly', False)],
-                                            'confirm': [('readonly', False)],
-                                            'validate': [('readonly', False)]})
+    line_ids = fields.One2many('tt.reservation.offline.lines', 'booking_id', 'Issued Offline')
+    passenger_ids = fields.One2many('tt.reservation.offline.passenger', 'booking_id', 'Issued Offline')
 
     incentive_amount = fields.Monetary('Insentif')
-    vendor_amount = fields.Float('Vendor Amount', readonly=True,
-                                 states={'validate': [('readonly', False), ('required', True)]})
+    vendor_amount = fields.Float('Vendor Amount')
     ho_final_amount = fields.Float('HO Amount', readonly=True, compute='compute_final_ho')
     ho_final_ledger_id = fields.Many2one('tt.ledger')
 
     # social_media_id = fields.Many2one('res.social.media.type', 'Order From(Media)', readonly=True,
     #                                   states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
-    social_media_type = fields.Many2one('res.social.media.type', 'Order From(Media)', readonly=True,
-                                        states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
+    social_media_type = fields.Many2one('res.social.media.type', 'Order From(Media)')
 
     sale_service_charge_ids = fields.One2many('tt.service.charge', 'booking_offline_id', 'Service Charge',
                                               readonly=True, states={'draft': [('readonly', False)]})
@@ -170,6 +159,8 @@ class IssuedOffline(models.Model):
                                          help='COR / POR', domain="[('parent_agent_id', '=', agent_id)]")
 
     quick_issued = fields.Boolean('Quick Issued', default=False)
+
+    acquirer_id = fields.Many2one('payment.acquirer', 'Payment Acquirer', readonly=True)
 
     # display_mobile = fields.Char('Contact Person for Urgent Situation',
     #                              readonly=True, states={'draft': [('readonly', False)]})
@@ -206,9 +197,10 @@ class IssuedOffline(models.Model):
         if not self.check_line_empty():
             if not self.check_passenger_empty():
                 if self.total != 0:
-                    self.state = 'confirm'
+                    self.state_offline = 'confirm'
                     self.confirm_date = fields.Datetime.now()
                     self.confirm_uid = kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
+                    self.acquirer_id = self.agent_id.default_acquirer_id
                     # self.send_push_notif()
                 else:
                     raise UserError(_('Sale Price can\'t be 0 (Zero)'))
@@ -241,6 +233,7 @@ class IssuedOffline(models.Model):
     @api.one
     def action_draft(self):
         self.state = 'draft'
+        self.state_offline = 'draft'
         self.confirm_date = False
         self.confirm_uid = False
         self.sent_date = False
@@ -275,14 +268,29 @@ class IssuedOffline(models.Model):
                     provider.create_service_charge()
                 else:
                     provider.create_service_charge_hotel()
-                provider.action_create_ledger()
-            self.calculate_service_charge()
+                # provider.action_create_ledger()
 
-            # self.create_ssc_ledger()
-            # create ledger
-            # self.sudo().create_ledger()
-            # set state = paid
-            self.state = 'validate'
+            req = {
+                'book_id': self.id,
+                'order_number': self.name,
+                'acquirer_seq_id': self.acquirer_id.seq_id,
+                'member': False
+            }
+            if self.customer_parent_id.customer_parent_type_id.id != self.env.ref('tt_base.customer_type_fpo').id:
+                req.update({
+                    'member': True
+                })
+            context = {
+                'co_uid': self.env.user.id,
+                'co_agent_id': self.agent_id.id
+            }
+            payment = self.payment_reservation_api('tt.reservation.offline', req, context)
+            if payment['error_code'] != 0:
+                _logger.error(payment['error_msg'])
+                raise UserError(_(payment['error_msg']))
+
+            self.calculate_service_charge()
+            self.state_offline = 'validate'
             self.vendor_amount = self.nta_price
             self.compute_final_ho()
             self.issued_date = fields.Datetime.now()
@@ -320,7 +328,9 @@ class IssuedOffline(models.Model):
                         raise UserError(_('PNR(s) can\'t be Empty'))
             else:
                 raise UserError(_('Provider(s) can\'t be Empty'))
-        self.state = 'sent'
+        self.state = 'booked'
+        self.state_offline = 'sent'
+        self.hold_date = datetime.now() + timedelta(days=1)
         self.sent_date = fields.Datetime.now()
         self.sent_uid = self.env.user.id
         self.create_provider_offline()
@@ -347,7 +357,8 @@ class IssuedOffline(models.Model):
                 # self.ho_final_ledger_id = self.final_ledger()
                 # if self.agent_id.agent_type_id.id in [self.env.ref('tt_base_rodex.agent_type_citra').id, self.env.ref('tt_base_rodex.agent_type_japro').id]:
                 #     self.create_agent_invoice()
-                self.state = 'done'
+                self.state = 'issued'
+                self.state_offline = 'done'
                 self.done_date = fields.Datetime.now()
                 self.done_uid = kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
                 self.booked_date = fields.Datetime.now()
@@ -364,44 +375,11 @@ class IssuedOffline(models.Model):
 
     @api.one
     def action_quick_issued(self):
-        # cek saldo agent
-        is_enough = self.agent_id.check_balance_limit_api(self.agent_id.id, self.agent_nta)
-        # jika saldo mencukupi
-        if is_enough['error_code'] == 0:
-            if self.total > 0 and self.nta_price > 0:
-                if self.provider_type_id_name == 'airline' or self.provider_type_id_name == 'train' or \
-                        self.provider_type_id_name == 'hotel' or self.provider_type_id_name == 'activity':
-                    for rec in self.line_ids:
-                        if self.provider_type_id_name == 'airline' or self.provider_type_id_name == 'train':
-                            if not rec.pnr:
-                                raise UserError(_('PNR can\'t be empty'))
-                        if not rec.provider_id:
-                            raise UserError(_('Provider can\'t be empty'))
-                self.create_provider_offline()
-                for provider in self.provider_booking_ids:
-                    provider.confirm_date = self.confirm_date
-                    provider.confirm_uid = self.confirm_uid
-                for provider in self.provider_booking_ids:
-                    # create pricing list
-                    if self.provider_type_id_name != 'hotel':
-                        provider.create_service_charge()
-                    else:
-                        provider.create_service_charge_hotel()
-                    provider.action_create_ledger()
-                self.calculate_service_charge()
-                self.state = 'validate'
-                self.vendor_amount = self.nta_price
-                self.compute_final_ho()
-                self.issued_date = fields.Datetime.now()
-                self.issued_uid = self.env.user.id
-                for provider in self.provider_booking_ids:
-                    provider.issued_date = self.issued_date
-                    provider.issued_uid = self.issued_uid
-                # self.action_issued_backend()
-            else:
-                raise UserError(_('Sale Price or NTA Price can\'t be 0 (Zero)'))
+        if self.total > 0 and self.nta_price > 0:
+            self.action_sent()
+            self.action_issued_backend()
         else:
-            raise UserError(_('Balance not enough'))
+            raise UserError(_('Sale Price or NTA Price can\'t be 0 (Zero)'))
 
     #################################################################################################
     # LEDGER & PRICES
@@ -849,6 +827,12 @@ class IssuedOffline(models.Model):
         'co_agent_id': 3
     }
 
+    param_payment = {
+        "member": False,
+        "seq_id": "PQR.0429001"
+        # "seq_id": "PQR.9999999"
+    }
+
     def get_config_api(self):
         try:
             res = {
@@ -871,6 +855,7 @@ class IssuedOffline(models.Model):
         contact = data['contact']  # self.param_contact
         context = context  # self.param_context
         lines = data['issued_offline_data']['line_ids']  # data_reservation_offline['line_ids']
+        # payment = data['payment']  # self.param_payment
 
         try:
             # cek saldo
@@ -907,7 +892,8 @@ class IssuedOffline(models.Model):
                 'total': data_reservation_offline['total_sale_price'],
                 "social_media_type": self._get_social_media_id_by_name(data_reservation_offline.get('social_media_id')),
                 "expired_date": data_reservation_offline.get('expired_date'),
-                'state': 'confirm',
+                'state': 'draft',
+                'state_offline': 'confirm',
                 'agent_id': context['co_agent_id'],
                 'user_id': context['co_uid'],
             }
