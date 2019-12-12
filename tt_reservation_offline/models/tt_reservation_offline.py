@@ -284,7 +284,7 @@ class IssuedOffline(models.Model):
                 'co_uid': self.env.user.id,
                 'co_agent_id': self.agent_id.id
             }
-            payment = self.payment_reservation_api('tt.reservation.offline', req, context)
+            payment = self.payment_reservation_api('offline', req, context)
             if payment['error_code'] != 0:
                 _logger.error(payment['error_msg'])
                 raise UserError(_(payment['error_msg']))

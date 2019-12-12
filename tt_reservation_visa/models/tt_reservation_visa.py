@@ -1071,7 +1071,7 @@ class TtVisa(models.Model):
 
             self._compute_commercial_state()
 
-            payment = self.payment_reservation_api('tt.reservation.visa', req, api_context)
+            payment = self.payment_reservation_api('visa', req, api_context)
             if payment['error_code'] != 0:
                 _logger.error(payment['error_msg'])
                 raise UserError(_(payment['error_msg']))
