@@ -15,6 +15,7 @@ from ...tools import variables
 
 class TtAdjustment(models.Model):
     _name = "tt.adjustment"
+    _inherit = 'tt.history'
     _description = "Adjustment Model"
     _order = 'id DESC'
 

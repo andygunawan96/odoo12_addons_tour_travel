@@ -110,6 +110,10 @@
                     <field name="ledger_ids"
                            context="{'tree_view_ref': 'tt_accounting.tt_ledger_adj_tree_view'}"/>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
             </form>
         </field>
     </record>

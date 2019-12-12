@@ -12,6 +12,7 @@ class Ledger(models.Model):
 
 class AgentInvoice(models.Model):
     _name = 'tt.agent.invoice'
+    _inherit = 'tt.history'
     _description = 'Rodex Model'
 
     name = fields.Char('Name', default='New', readonly=True)

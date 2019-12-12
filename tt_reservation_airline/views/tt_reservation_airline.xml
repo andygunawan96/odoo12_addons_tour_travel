@@ -1,5 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <record id="tt_reservation_airline_filter_views" model="ir.ui.view">
+        <field name="name">tt.reservation.airline.filter.view</field>
+        <field name="model">tt.reservation.airline</field>
+        <field name="arch" type="xml">
+            <search string="Search Airline Booking">
+                <field name="name"/>
+                <field name="pnr"/>
+                <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                <field name="customer_parent_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                <field name="contact_id"/>
+                <group>
+                    <filter string="All" name="all"/>
+                    <filter string="Booked" name="booked" domain="[('state','=','booked')]"/>
+                    <filter string="Issued" name="issued" domain="[('state','=','issued')]"/>
+                    <filter string="Failed/Expired" name="failed_expired" domain="['|', '|', '|', ('state','=','fail_booked'),('state','=','fail_issued'),('state','=','fail_refunded'),('state','=','cancel2')]"/>
+                    <filter string="Cancelled/Refunded" name="cancel" domain="['|', '|', ('state','=','cancel'),('state','=','refund')]"/>
+                </group>
+                <separator/>
+                <filter name="today" string="Today" domain="[('date','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>
+                <filter name="yesterday" string="Yesterday"
+                        domain="[
+                                ('date', '&lt;', (context_today()).strftime('%Y-%m-%d')),
+                                ('date', '&gt;=', (context_today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d'))
+                        ]"/>
+                <filter name="week" string="This Week"
+                        domain="[
+                                '&amp;',
+                                ('date', '>=', (context_today() + relativedelta(weeks=-1,days=1,weekday=0)).strftime('%Y-%m-%d')),
+                                ('date', '&lt;=', (context_today() + relativedelta(weekday=6)).strftime('%Y-%m-%d')),
+                            ]"/>
+                <filter string="This Month" name="thismonth" domain="[('date','&gt;=',time.strftime('%%Y-%%m-01'))]"/>
+                <filter string="This Year" name="thisyear" domain="[('date','&gt;=',time.strftime('%%Y-01-01'))]"/>
+
+                <group expand="0" string="Group By">
+                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <filter name="group_by_agent_type_id" string="Agent Type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <filter name="group_by_customer_parent_id" string="Customer Parent" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                    <filter name="group_by_customer_parent_type_id" string="Customer Parent Type" domain="[]" context="{'group_by':'customer_parent_type_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                    <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
     <record id="tt_reservation_airline_form_views" model="ir.ui.view">
         <field name="name">tt.reservation.airline.form.view</field>
         <field name="model">tt.reservation.airline</field>
@@ -134,7 +178,7 @@
     </record>
 
     <record id="tt_reservation_airline_action_views" model="ir.actions.act_window" >
-        <field name="name">Reservation airline</field>
+        <field name="name">Reservation Airline</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">tt.reservation.airline</field>
         <field name="view_type">form</field>
@@ -144,6 +188,67 @@
             {
             'form_view_ref': 'tt_reservation_airline.tt_reservation_airline_form_views',
             'tree_view_ref': 'tt_reservation_airline.tt_reservation_airline_tree_views',
+            'search_default_all': 1
+            }
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_reservation_airline_action_views_booked">
+        <field name="name">Reservation Airline (Booked)</field>
+        <field name="res_model">tt.reservation.airline</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_airline.tt_reservation_airline_form_view',
+            'tree_view_ref': 'tt_reservation_airline.tt_reservation_airline_tree_view',
+            'search_default_booked': 1
+            }
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_reservation_airline_action_views_issued">
+        <field name="name">Reservation Airline (Issued)</field>
+        <field name="res_model">tt.reservation.airline</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_airline.tt_reservation_airline_form_view',
+            'tree_view_ref': 'tt_reservation_airline.tt_reservation_airline_tree_view',
+            'search_default_issued': 1
+            }
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_reservation_airline_action_views_failed_expired">
+        <field name="name">Reservation Airline (Failed/Expired)</field>
+        <field name="res_model">tt.reservation.airline</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_airline.tt_reservation_airline_form_view',
+            'tree_view_ref': 'tt_reservation_airline.tt_reservation_airline_tree_view',
+            'search_default_failed_expired': 1
+            }
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_reservation_airline_action_views_cancel">
+        <field name="name">Reservation Airline (Cancelled/Refunded)</field>
+        <field name="res_model">tt.reservation.airline</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_airline.tt_reservation_airline_form_view',
+            'tree_view_ref': 'tt_reservation_airline.tt_reservation_airline_tree_view',
+            'search_default_cancel': 1
             }
         </field>
     </record>
@@ -154,4 +259,16 @@
               name="All"
               sequence="1"
               groups="base.group_user"/>
+
+    <menuitem id="submenu_reservations_airline_booked" parent="tt_reservation_airline.menu_reservations_airline"
+              name="Booked" action="tt_reservation_airline.tt_reservation_airline_action_views_booked" sequence="2"/>
+
+    <menuitem id="submenu_reservations_airline_issued" parent="tt_reservation_airline.menu_reservations_airline"
+              name="Issued" action="tt_reservation_airline.tt_reservation_airline_action_views_issued" sequence="3"/>
+
+    <menuitem id="submenu_reservations_airline_failed_expired" parent="tt_reservation_airline.menu_reservations_airline"
+              name="Failed/Expired" action="tt_reservation_airline.tt_reservation_airline_action_views_failed_expired" sequence="4"/>
+
+    <menuitem id="submenu_reservations_airline_cancel" parent="tt_reservation_airline.menu_reservations_airline"
+              name="Cancelled/Refunded" action="tt_reservation_airline.tt_reservation_airline_action_views_cancel" sequence="5"/>
 </odoo>

@@ -19,6 +19,7 @@ class TtProviderRefund(models.Model):
 
 class TtRefund(models.Model):
     _name = "tt.refund"
+    _inherit = 'tt.history'
     _description = "Refund Model"
     _order = 'id DESC'
 

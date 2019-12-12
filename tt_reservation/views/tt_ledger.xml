@@ -9,4 +9,14 @@
             </field>
         </field>
     </record>
+    <record id="tt_ledger_filter_view_inh" model="ir.ui.view">
+        <field name="name">tt.ledger.filter.view.inh</field>
+        <field name="model">tt.ledger</field>
+        <field name="inherit_id" ref="tt_accounting.tt_ledger_filter_views"/>
+        <field name="arch" type="xml">
+            <field name="ref" position="after">
+                <field name="provider_type_id"/>
+            </field>
+        </field>
+    </record>
 </odoo>
