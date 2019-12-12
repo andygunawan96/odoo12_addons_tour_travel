@@ -646,25 +646,21 @@ class ReservationActivity(models.Model):
                 _logger.error('Creating Notes Error')
             return ERR.get_error(1004)
 
+    def payment_activity_api(self,req,context):
+        return self.payment_reservation_api('activity',req,context)
+
     def issued_booking_by_api(self, req, context):
         try:
-            book_objs = self.env['tt.reservation.activity'].sudo().search([('name', '=', req['order_number'])], limit=1)
-            book_obj = book_objs[0]
-
-            try:
-                agent_obj = self.env['tt.customer'].browse(int(self.booker_id.id)).agent_id
-                if not agent_obj:
-                    agent_obj = self.env['res.users'].browse(int(context['co_uid'])).agent_id
-            except Exception:
-                agent_obj = self.env['res.users'].browse(int(context['co_uid'])).agent_id
-
-            is_enough = self.env['tt.agent'].check_balance_limit_api(agent_obj.id, book_obj.agent_nta)
-            if is_enough['error_code'] != 0:
-                _logger.error('Balance not enough')
-                raise RequestException(1007)
+            if req.get('order_id'):
+                book_obj = self.env['tt.reservation.activity'].sudo().browse(int(req['order_id']))
+            else:
+                book_objs = self.env['tt.reservation.activity'].sudo().search([('name', '=', req['order_number'])], limit=1)
+                book_obj = book_objs[0]
 
             if req.get('member'):
-                customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', req['seq_id'])])
+                customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', req['seq_id'])], limit=1)
+                if customer_parent_id:
+                    customer_parent_id = customer_parent_id[0].id
             else:
                 customer_parent_id = book_obj.agent_id.customer_parent_walkin_id.id
 
@@ -1053,7 +1049,6 @@ class ReservationActivity(models.Model):
             }
             self.sudo().write(vals)
             for rec in self.provider_booking_ids:
-                rec.action_create_ledger(vals['issued_uid'])
                 rec.action_issued_api_activity(api_context)
             self.send_push_notif('Activity Paid')
 
