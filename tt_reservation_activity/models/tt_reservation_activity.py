@@ -651,7 +651,6 @@ class ReservationActivity(models.Model):
             book_objs = self.env['tt.reservation.activity'].sudo().search([('name', '=', req['order_number'])], limit=1)
             book_obj = book_objs[0]
 
-
             try:
                 agent_obj = self.env['tt.customer'].browse(int(self.booker_id.id)).agent_id
                 if not agent_obj:
@@ -1028,7 +1027,7 @@ class ReservationActivity(models.Model):
                 'state': 'booked',
                 'booked_uid': api_context and api_context['co_uid'],
                 'booked_date': datetime.now(),
-                'hold_date': datetime.now() + relativedelta(days=1),
+                'hold_date': datetime.now() + relativedelta(hours=23, minutes=45),
             }
             self.write(vals)
 
