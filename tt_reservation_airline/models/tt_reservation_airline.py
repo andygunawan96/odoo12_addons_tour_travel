@@ -835,7 +835,7 @@ class ReservationAirline(models.Model):
             return ERR.get_error(1013)
 
     def payment_airline_api(self,req,context):
-        return self.payment_reservation_api('tt.reservation.airline',req,context)
+        return self.payment_reservation_api('airline',req,context)
 
     def update_cost_service_charge_airline_api(self,req,context):
         _logger.info('update cost\n' + json.dumps(req))

@@ -29,7 +29,7 @@ class TtCronLog(models.Model):
 
     def cron_delete_expired_file(self):
         try:
-            files = self.env['tt.upload.center'].with_context({'active_test':False}).search([('will_be_deleted_time', '<=', datetime.today())])
+            files = self.env['tt.upload.center'].with_context({'active_test':False}).search([('will_be_deleted_time', '<=', datetime.now())])
             for rec in files:
                 rec.unlink()
         except:

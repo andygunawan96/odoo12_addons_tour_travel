@@ -369,10 +369,10 @@
                                 <tree>
                                     <field name="sequence" widget="handle"/>
                                     <field name="seq_id"/>
+                                    <field name="file_reference"/>
                                     <field name="create_date"/>
                                 </tree>
                             </field>
-
                         </page>
                     </notebook>
 

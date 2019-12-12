@@ -241,7 +241,7 @@ class TtReservationTrain(models.Model):
             return ERR.get_error(1005)
 
     def payment_train_api(self,req,context):
-        return self.payment_reservation_api('tt.reservation.airline', req, context)
+        return self.payment_reservation_api('train', req, context)
 
     def _prepare_booking_api(self, searchRQ, context_gateway):
         dest_obj = self.env['tt.destinations']
