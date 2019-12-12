@@ -1,0 +1,47 @@
+<odoo>
+    <record id="transport_carrier_search_view_form" model="ir.ui.view">
+        <field name="name">transport.carrier.search.view.form</field>
+        <field name="model">tt.transport.carrier.search</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="transport_carrier_search_view_tree" model="ir.ui.view">
+        <field name="name">transport.carrier.search.view.tree</field>
+        <field name="model">tt.transport.carrier.search</field>
+        <field name="arch" type="xml">
+            <tree decoration-muted="active == False">
+                <field name="carrier_id"/>
+                <field name="provider_type_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="transport_carrier_view_search" model="ir.ui.view">
+        <field name="name">transport.carrier.view.search</field>
+        <field name="model">tt.transport.carrier.search</field>
+        <field name="arch" type="xml">
+        <search>
+            <field name="name"/>
+            <field name="code"/>
+            <filter name="inactive" string="Archived" domain="[('active','=',False)]"/>
+        </search>
+        </field>
+    </record>
+
+    <record id="transport_carrier_search_action" model="ir.actions.act_window">
+        <field name="name">Transport Carrier</field>
+        <field name="res_model">tt.transport.carrier</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">['|',('active', '=', 1),('active', '=', 0)]</field>
+    </record>
+
+    <menuitem id="transport_carrier_search_menu" parent="tt_base.menu_tour_travel_carrier"
+              name="Transport Carrier Search" action="transport_carrier_search_action" sequence="21"/>
+</odoo>

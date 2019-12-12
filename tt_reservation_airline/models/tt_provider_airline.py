@@ -31,9 +31,6 @@ class TtProviderAirline(models.Model):
     currency_id = fields.Many2one('res.currency', 'Currency', readonly=True, states={'draft': [('readonly', False)]},
                                   default=lambda self: self.env.user.company_id.currency_id)
 
-    # total = fields.Monetary(string='Total', readonly=True)
-    # total_fare = fields.Monetary(string='Total Fare', compute="_compute_provider_total_fare", readonly=True)
-    # total_orig = fields.Monetary(string='Total (Original)', readonly=True)
     promotion_code = fields.Char(string='Promotion Code')
 
 

@@ -197,27 +197,27 @@
                                 </group>
                             </group>
                         </page>
-<!--                        <page string="Discount" attrs="{'invisible': [('tour_category', '!=', 'private')]}">-->
-<!--                            <field name="discount_ids">-->
-<!--                                <tree>-->
-<!--                                    <field name="pax_amount"/>-->
-<!--                                    <field name="discount_per_pax"/>-->
-<!--                                    <field name="discount_total"/>-->
-<!--                                    <field name="currency_id" invisible="1"/>-->
-<!--                                </tree>-->
-<!--                                <form>-->
-<!--                                    <group>-->
-<!--                                        <field name="tour_id" invisible="1"/>-->
-<!--                                        <field name="min_pax"/>-->
-<!--                                        <field name="max_pax"/>-->
-<!--                                        <field name="pax_amount" invisible="1"/>-->
-<!--                                        <field name="discount_per_pax"/>-->
-<!--                                        <field name="discount_total"/>-->
-<!--                                        <field name="currency_id" invisible="1"/>-->
-<!--                                    </group>-->
-<!--                                </form>-->
-<!--                            </field>-->
-<!--                        </page>-->
+                        <!--                        <page string="Discount" attrs="{'invisible': [('tour_category', '!=', 'private')]}">-->
+                        <!--                            <field name="discount_ids">-->
+                        <!--                                <tree>-->
+                        <!--                                    <field name="pax_amount"/>-->
+                        <!--                                    <field name="discount_per_pax"/>-->
+                        <!--                                    <field name="discount_total"/>-->
+                        <!--                                    <field name="currency_id" invisible="1"/>-->
+                        <!--                                </tree>-->
+                        <!--                                <form>-->
+                        <!--                                    <group>-->
+                        <!--                                        <field name="tour_id" invisible="1"/>-->
+                        <!--                                        <field name="min_pax"/>-->
+                        <!--                                        <field name="max_pax"/>-->
+                        <!--                                        <field name="pax_amount" invisible="1"/>-->
+                        <!--                                        <field name="discount_per_pax"/>-->
+                        <!--                                        <field name="discount_total"/>-->
+                        <!--                                        <field name="currency_id" invisible="1"/>-->
+                        <!--                                    </group>-->
+                        <!--                                </form>-->
+                        <!--                            </field>-->
+                        <!--                        </page>-->
                         <page string="Installment Payment Rules">
                             <field name="payment_rules_ids" string="Payment Rules">
                                 <tree>

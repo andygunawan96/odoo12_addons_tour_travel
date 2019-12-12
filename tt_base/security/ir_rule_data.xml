@@ -17,12 +17,14 @@
 <!--        <field name="domain_force">['|',('parent_agent_id','=',user.agent_id.id),('id','=',user.agent_id.id)]</field>  &lt;!&ndash;['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]&ndash;&gt;  &lt;!&ndash;[('agent_id','=',user.agent_id.id)]&ndash;&gt;-->
 <!--        <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user_operator'))]"/>  &lt;!&ndash;,(4,ref('tt_base.group_tt_sub_agent_user_operator'))&ndash;&gt;-->
 <!--    </record>-->
+
     <record id="tt_res_users_for_agent" model="ir.rule">
         <field name="name">Res Users For Agent</field>
         <field name="model_id" ref="model_res_users"/>
         <field name="domain_force">['|',('agent_id','=',user.agent_id.id),('name', 'ilike', ' Agent Template')]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
         <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user_operator'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
     </record>
+
     <record id="tt_upload_center_for_agent" model="ir.rule">
         <field name="name">Upload Center For Agent</field>
         <field name="model_id" ref="model_tt_upload_center"/>
