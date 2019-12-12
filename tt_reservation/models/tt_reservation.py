@@ -428,6 +428,12 @@ class TtReservation(models.Model):
     def action_cancel(self):
         self.state = 'cancel'
 
+    def get_installment_dp_amount(self):
+        return self.agent_nta
+
+    def get_installment_dp_amount_cor(self):
+        return self.total
+
     ## Digunakan untuk mengupdate PNR seluruh ledger untuk resv ini
     # Digunakan di hotel dan activity
     def update_ledger_pnr(self, new_pnr):
@@ -451,22 +457,41 @@ class TtReservation(models.Model):
                     _logger.error('Cannot issue not [Booked] State.')
                     raise RequestException(1020)
 
+                payment_method = req.get('payment_method', 'full')
+
                 #cek saldo
-                balance_res = self.env['tt.agent'].check_balance_limit_api(context['co_agent_id'],book_obj.agent_nta)
-                if balance_res['error_code']!=0:
-                    _logger.error('Agent Balance not enough')
-                    raise RequestException(1007,additional_message="agent balance")
+                if payment_method == 'full':
+                    balance_res = self.env['tt.agent'].check_balance_limit_api(context['co_agent_id'],book_obj.agent_nta)
+                    if balance_res['error_code']!=0:
+                        _logger.error('Agent Balance not enough')
+                        raise RequestException(1007,additional_message="agent balance")
 
-                if req.get("member"):
-                    acquirer_seq_id = req.get('acquirer_seq_id')
-                    if acquirer_seq_id:
-                        balance_res = self.env['tt.customer.parent'].check_balance_limit_api(acquirer_seq_id,book_obj.total)
-                        if balance_res['error_code']!=0:
-                            _logger.error('Cutomer Parent credit limit not enough')
-                            raise RequestException(1007,additional_message="customer credit limit")
+                    if req.get("member"):
+                        acquirer_seq_id = req.get('acquirer_seq_id')
+                        if acquirer_seq_id:
+                            balance_res = self.env['tt.customer.parent'].check_balance_limit_api(acquirer_seq_id,book_obj.total)
+                            if balance_res['error_code']!=0:
+                                _logger.error('Cutomer Parent credit limit not enough')
+                                raise RequestException(1007,additional_message="customer credit limit")
 
-                for provider in book_obj.provider_booking_ids:
-                    provider.action_create_ledger(context['co_uid'])
+                    for provider in book_obj.provider_booking_ids:
+                        provider.action_create_ledger(context['co_uid'])
+                else:
+                    balance_res = self.env['tt.agent'].check_balance_limit_api(context['co_agent_id'],book_obj.get_installment_dp_amount())
+                    if balance_res['error_code']!=0:
+                        _logger.error('Agent Balance not enough')
+                        raise RequestException(1007,additional_message="agent balance")
+
+                    if req.get("member"):
+                        acquirer_seq_id = req.get('acquirer_seq_id')
+                        if acquirer_seq_id:
+                            balance_res = self.env['tt.customer.parent'].check_balance_limit_api(acquirer_seq_id,book_obj.get_installment_dp_amount_cor())
+                            if balance_res['error_code']!=0:
+                                _logger.error('Cutomer Parent credit limit not enough')
+                                raise RequestException(1007,additional_message="customer credit limit")
+
+                    for provider in book_obj.provider_booking_ids:
+                        provider.action_create_ledger(context['co_uid'], payment_method)
 
                 return ERR.get_no_error()
             else:

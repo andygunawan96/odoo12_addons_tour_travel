@@ -100,7 +100,6 @@ class ReservationTour(models.Model):
 
         if self.state != 'issued':
             for rec in self.provider_booking_ids:
-                rec.action_create_ledger(api_context['co_uid'], pay_method)
                 rec.action_issued_api_tour(api_context)
             self.write({
                 'state': 'issued',
@@ -395,6 +394,7 @@ class ReservationTour(models.Model):
                 }
             else:
                 response = {
+                    'order_id': 0,
                     'order_number': 0
                 }
             return ERR.get_no_error(response)
@@ -415,35 +415,18 @@ class ReservationTour(models.Model):
 
     def issued_booking_api(self, data, context, **kwargs):
         try:
-            book_objs = self.env['tt.reservation.tour'].sudo().search([('name', '=', data['order_number'])], limit=1)
-            book_obj = book_objs[0]
-
-            try:
-                agent_obj = self.env['tt.customer'].browse(int(self.booker_id.id)).agent_id
-                if not agent_obj:
-                    agent_obj = self.env['res.users'].browse(int(context['co_uid'])).agent_id
-            except Exception:
-                agent_obj = self.env['res.users'].browse(int(context['co_uid'])).agent_id
+            if data.get('order_id'):
+                book_obj = self.env['tt.reservation.tour'].sudo().browse(int(data['order_id']))
+            else:
+                book_objs = self.env['tt.reservation.tour'].sudo().search([('name', '=', data['order_number'])], limit=1)
+                book_obj = book_objs[0]
 
             payment_method = data.get('payment_method') and data['payment_method'] or 'full'
 
-            if payment_method == 'full':
-                is_enough = self.env['tt.agent'].check_balance_limit_api(agent_obj.id, book_obj.agent_nta)
-            else:
-                total_dp = 0
-                for rec in book_obj.tour_id.payment_rules_ids:
-                    if rec.is_dp:
-                        if rec.payment_type == 'amount':
-                            total_dp += rec.payment_amount
-                        else:
-                            total_dp += (rec.payment_percentage / 100) * book_obj.agent_nta
-                is_enough = self.env['tt.agent'].check_balance_limit_api(agent_obj.id, total_dp)
-            if is_enough['error_code'] != 0:
-                _logger.error('Balance not enough')
-                raise RequestException(1007)
-
             if data.get('member'):
-                customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', data['seq_id'])])
+                customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', data['seq_id'])], limit=1)
+                if customer_parent_id:
+                    customer_parent_id = customer_parent_id[0].id
             else:
                 customer_parent_id = book_obj.agent_id.customer_parent_walkin_id.id
 
@@ -485,6 +468,9 @@ class ReservationTour(models.Model):
             except:
                 _logger.error('Creating Notes Error')
             return ERR.get_error(1004)
+
+    def payment_tour_api(self,req,context):
+        return self.payment_reservation_api('tour',req,context)
 
     def get_booking_api(self, data, context, **kwargs):
         try:
@@ -613,4 +599,22 @@ class ReservationTour(models.Model):
                 _logger.error('Creating Notes Error')
             return ERR.get_error(1005)
 
+    def get_installment_dp_amount(self):
+        total_dp = 0
+        for rec in self.tour_id.payment_rules_ids:
+            if rec.is_dp:
+                if rec.payment_type == 'amount':
+                    total_dp += rec.payment_amount
+                else:
+                    total_dp += (rec.payment_percentage / 100) * self.agent_nta
+        return total_dp
 
+    def get_installment_dp_amount_cor(self):
+        total_dp = 0
+        for rec in self.tour_id.payment_rules_ids:
+            if rec.is_dp:
+                if rec.payment_type == 'amount':
+                    total_dp += rec.payment_amount
+                else:
+                    total_dp += (rec.payment_percentage / 100) * self.total
+        return total_dp

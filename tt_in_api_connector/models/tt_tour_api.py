@@ -22,6 +22,8 @@ class TtTourApiCon(models.Model):
             res = table_obj.issued_booking_api(data,context)
         elif action == 'update_booking':
             res = table_obj.update_booking_api(data,context)
+        elif action == 'payment':
+            res = table_obj.payment_tour_api(data,context)
         else:
             raise RequestException(999)
 

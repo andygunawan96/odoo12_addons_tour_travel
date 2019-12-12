@@ -21,7 +21,7 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="is_ledger_created"/>
+<!--                            <field name="is_ledger_created"/>-->
                             <field name="booking_id"/>
                             <field name="pnr"/>
                             <field name="pnr2"/>
