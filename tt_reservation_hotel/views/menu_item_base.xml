@@ -7,10 +7,8 @@
 
         <menuitem id="menu_reservations_hotel"
                   parent="top_reservations_hotel"
-                  name="All"
-                  sequence="10"
-                  action="tt_reservation_hotel.tt_hotel_reservation_action"
-        />
+                  name="Booking"
+                  sequence="10"/>
 
     <!--Top Menu Tour & Travel Hotel-->
     <menuitem id="top_tour_travel_hotel"

@@ -30,6 +30,7 @@ TOP_UP_STATE_STR = {
 
 class TtTopUp(models.Model):
     _name = 'tt.top.up'
+    _inherit = 'tt.history'
     _order = 'id desc'
     _description = 'Top Up'
 

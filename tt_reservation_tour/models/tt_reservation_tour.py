@@ -134,7 +134,7 @@ class ReservationTour(models.Model):
         pax_amount = sum(1 for temp in self.passenger_ids if temp.pax_type != 'INF')
         temp_seat = self.tour_id.seat
         temp_seat += pax_amount
-        if self.tour_id.seat > self.tour_id.quota:
+        if temp_seat > self.tour_id.quota:
             temp_seat = self.tour_id.quota
         self.tour_id.sudo().write({
             'seat': temp_seat,
@@ -172,7 +172,7 @@ class ReservationTour(models.Model):
             pax_amount = sum(1 for temp in self.passenger_ids if temp.pax_type != 'INF')
             temp_seat = self.tour_id.seat
             temp_seat += pax_amount
-            if self.tour_id.seat > self.tour_id.quota:
+            if temp_seat > self.tour_id.quota:
                 temp_seat = self.tour_id.quota
             self.tour_id.sudo().write({
                 'seat': temp_seat,
@@ -183,6 +183,28 @@ class ReservationTour(models.Model):
                     rec.sudo().write({
                         'master_tour_id': False
                     })
+
+    def action_expired(self):
+        self.state = 'cancel2'
+        pax_amount = sum(1 for temp in self.passenger_ids if temp.pax_type != 'INF')
+        temp_seat = self.tour_id.seat
+        temp_seat += pax_amount
+        if temp_seat > self.tour_id.quota:
+            temp_seat = self.tour_id.quota
+        self.tour_id.sudo().write({
+            'seat': temp_seat,
+            'state': 'open'
+        })
+        for rec in self.tour_id.passengers_ids:
+            if rec.booking_id.id == self.id:
+                rec.sudo().write({
+                    'master_tour_id': False
+                })
+        try:
+            for rec in self.provider_booking_ids.filtered(lambda x: x.state != 'cancel2'):
+                rec.action_expired()
+        except:
+            _logger.error("provider type %s failed to expire vendor" % (self._name))
 
     def action_booked_tour(self, api_context=None):
         if not api_context:  # Jika dari call from backend

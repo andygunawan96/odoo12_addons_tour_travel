@@ -11,6 +11,7 @@
                 <field name="contact_id"/>
                 <group>
                     <filter string="All" name="all"/>
+                    <filter string="Booked" name="booked" domain="[('state','=','booked')]"/>
                     <filter string="Paid" name="paid" domain="[('state','=','paid')]"/>
                     <filter string="Issued" name="approved_issued" domain="[('state','=','issued')]"/>
                     <filter string="Failed/Expired" name="failed_expired" domain="['|', '|', '|', ('state','=','fail_booked'),('state','=','fail_issued'),('state','=','fail_refunded'),('state','=','cancel2')]"/>
@@ -206,6 +207,21 @@
         </field>
     </record>
 
+    <record model="ir.actions.act_window" id="tt_reservation_activity_view_action_booked">
+        <field name="name">Reservation Activity (Booked)</field>
+        <field name="res_model">tt.reservation.activity</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_activity.tt_reservation_activity_form_view',
+            'tree_view_ref': 'tt_reservation_activity.tt_reservation_activity_tree_view',
+            'search_default_booked': 1
+            }
+        </field>
+    </record>
+
     <record model="ir.actions.act_window" id="tt_reservation_activity_view_action_paid">
         <field name="name">Reservation Activity (Paid)</field>
         <field name="res_model">tt.reservation.activity</field>
@@ -269,15 +285,18 @@
     <menuitem id="submenu_reservation_activity_all" parent="tt_reservation_activity.menu_reservations_activity"
               name="ALL" action="tt_reservation_activity.tt_reservation_activity_view_action_all" sequence="1"/>
 
+    <menuitem id="submenu_reservation_activity_booked" parent="tt_reservation_activity.menu_reservations_activity"
+              name="Booked" action="tt_reservation_activity.tt_reservation_activity_view_action_booked" sequence="2"/>
+
     <menuitem id="submenu_reservation_activity_paid" parent="tt_reservation_activity.menu_reservations_activity"
-              name="Paid" action="tt_reservation_activity.tt_reservation_activity_view_action_paid" sequence="2"/>
+              name="Paid" action="tt_reservation_activity.tt_reservation_activity_view_action_paid" sequence="3"/>
 
     <menuitem id="submenu_reservation_activity_approved_issued" parent="tt_reservation_activity.menu_reservations_activity"
-              name="Issued" action="tt_reservation_activity.tt_reservation_activity_view_action_approved_issued" sequence="3"/>
+              name="Issued" action="tt_reservation_activity.tt_reservation_activity_view_action_approved_issued" sequence="4"/>
 
     <menuitem id="submenu_reservation_activity_failed_expired" parent="tt_reservation_activity.menu_reservations_activity"
-              name="Failed/Expired" action="tt_reservation_activity.tt_reservation_activity_view_action_failed_expired" sequence="4"/>
+              name="Failed/Expired" action="tt_reservation_activity.tt_reservation_activity_view_action_failed_expired" sequence="5"/>
 
     <menuitem id="submenu_reservation_activity_cancel" parent="tt_reservation_activity.menu_reservations_activity"
-              name="Cancelled/Rejected/Refunded" action="tt_reservation_activity.tt_reservation_activity_view_action_cancel" sequence="5"/>
+              name="Cancelled/Rejected/Refunded" action="tt_reservation_activity.tt_reservation_activity_view_action_cancel" sequence="6"/>
 </odoo>

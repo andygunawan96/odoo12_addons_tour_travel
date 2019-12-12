@@ -21,6 +21,7 @@ _logger = logging.getLogger(__name__)
 
 class Ledger(models.Model):
     _name = 'tt.ledger'
+    _inherit = 'tt.history'
     _order = 'id DESC'
     _description = 'Ledger'
     # _order = 'date, id'
