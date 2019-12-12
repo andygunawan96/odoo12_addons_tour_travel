@@ -34,6 +34,8 @@ class TtActivityApiCon(models.Model):
             res = table_obj.get_booking_by_api(temp_res, temp_req, context)
         elif action == 'confirm_booking_webhook':
             res = table_obj.confirm_booking_webhook(data)
+        elif action == 'payment':
+            res = table_obj.payment_activity_api(data,context)
         else:
             raise RequestException(999)
 

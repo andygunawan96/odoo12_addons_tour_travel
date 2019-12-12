@@ -54,7 +54,7 @@ class TtProviderTour(models.Model):
 
     error_msg = fields.Text('Message Error', readonly=True, states={'draft': [('readonly', False)]})
 
-    is_ledger_created = fields.Boolean('Ledger Created', default=False, readonly=True, states={'draft': [('readonly', False)]})
+    # is_ledger_created = fields.Boolean('Ledger Created', default=False, readonly=True, states={'draft': [('readonly', False)]})
 
     notes = fields.Text('Notes', readonly=True, states={'draft': [('readonly', False)]})
 
