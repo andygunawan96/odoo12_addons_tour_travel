@@ -17,7 +17,7 @@ TYPE = [
 class PaymentAcquirer(models.Model):
     _inherit = 'payment.acquirer'
 
-    seq_id = fields.Char('Sequence ID', index=True)
+    seq_id = fields.Char('Sequence ID', index=True, readonly=True)
     type = fields.Selection(TYPE, 'Payment Type')
     provider_id = fields.Many2one('tt.provider', 'Provider')
     agent_id = fields.Many2one('tt.agent', 'Agent')

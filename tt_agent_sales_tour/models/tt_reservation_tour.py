@@ -38,7 +38,7 @@ class ReservationTour(models.Model):
         tmp += '\n'
         return tmp
 
-    def action_create_invoice(self, acquirer_id, payment_method):
+    def action_create_invoice(self, acquirer_id,co_uid, payment_method):
         if payment_method == 'full':
             invoice_id = False
 
@@ -47,7 +47,10 @@ class ReservationTour(models.Model):
                     'booker_id': self.booker_id.id,
                     'agent_id': self.agent_id.id,
                     'customer_parent_id': self.customer_parent_id.id,
-                    'customer_parent_type_id': self.customer_parent_type_id.id
+                    'customer_parent_type_id': self.customer_parent_type_id.id,
+                    'state': 'confirm',
+                    'confirmed_uid': co_uid,
+                    'confirmed_date': datetime.now()
                 })
 
             inv_line_obj = self.env['tt.agent.invoice.line'].create({
@@ -97,7 +100,10 @@ class ReservationTour(models.Model):
                     'booker_id': self.booker_id.id,
                     'agent_id': self.agent_id.id,
                     'customer_parent_id': self.customer_parent_id.id,
-                    'customer_parent_type_id': self.customer_parent_type_id.id
+                    'customer_parent_type_id': self.customer_parent_type_id.id,
+                    'state': 'confirm',
+                    'confirmed_uid': co_uid,
+                    'confirmed_date': datetime.now()
                 })
                 inv_line_obj = self.env['tt.agent.invoice.line'].create({
                     'res_model_resv': self._name,
@@ -167,6 +173,6 @@ class ReservationTour(models.Model):
                     'payment_rules_id': rec.id,
                 })
 
-    def call_create_invoice(self, acquirer_id, payment_method):
-        super(ReservationTour, self).call_create_invoice(acquirer_id, payment_method)
-        self.action_create_invoice(acquirer_id, payment_method)
+    def call_create_invoice(self, acquirer_id, co_uid, payment_method):
+        super(ReservationTour, self).call_create_invoice(acquirer_id, co_uid, payment_method)
+        self.action_create_invoice(acquirer_id, co_uid, payment_method)

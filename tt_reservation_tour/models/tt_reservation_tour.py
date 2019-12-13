@@ -107,7 +107,7 @@ class ReservationTour(models.Model):
                 'issued_uid': api_context['co_uid'] or self.env.user.id,
             })
 
-    def call_create_invoice(self, acquirer_id, payment_method):
+    def call_create_invoice(self, acquirer_id, co_uid, payment_method):
         _logger.info('Creating Invoice for ' + self.name)
 
     def action_reissued(self):
@@ -466,7 +466,7 @@ class ReservationTour(models.Model):
             else:
                 raise RequestException(1017)
 
-            book_obj.call_create_invoice(acquirer_id, payment_method)
+            book_obj.call_create_invoice(acquirer_id, context['co_uid'], payment_method)
 
             response = {
                 'order_id': book_obj.id,

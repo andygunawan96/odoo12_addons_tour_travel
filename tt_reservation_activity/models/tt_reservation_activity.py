@@ -290,7 +290,7 @@ class ReservationActivity(models.Model):
         })
         self.send_push_notif('Activity Booking Issued')
 
-    def call_create_invoice(self, acquirer_id):
+    def call_create_invoice(self, acquirer_id,co_uid):
         _logger.info('Creating Invoice for ' + self.name)
 
     def update_pnr_data(self, book_id, pnr):
@@ -678,7 +678,7 @@ class ReservationActivity(models.Model):
             else:
                 raise RequestException(1017)
 
-            book_obj.call_create_invoice(acquirer_id)
+            book_obj.call_create_invoice(acquirer_id,context['co_uid'])
 
             response = {
                 'order_id': book_obj.id,

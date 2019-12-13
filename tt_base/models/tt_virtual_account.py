@@ -11,7 +11,7 @@ class VirtualAccount(models.Model):
     _description = 'Rodextrip Virtual Account'
     # _rec_name = 'Virtual Account'
 
-    seq_id = fields.Char('Sequence Code', index=True)
+    seq_id = fields.Char('Sequence Code', index=True, readonly=True)
     agent_id = fields.Many2one('tt.agent', 'Agent', readonly=True)
     bank_id = fields.Many2one('tt.bank', 'Bank', readonly=True)
     virtual_account_number = fields.Char('Virtual Account Number')

@@ -7,18 +7,30 @@ _logger = logging.getLogger(__name__)
 class TransportCarrier(models.Model):
     _name = 'tt.transport.carrier.search'
     _description = "List of Search Carrier Code"
-    _rec_name = 'carrier_id'
+    _rec_name = 'name'
 
+
+    name = fields.Char("Search Display")
     carrier_id = fields.Many2one('tt.transport.carrier','Carrier',required=True)
-    provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type',related=carrier_id.provider_type_id)
-
-    provider_ids = fields.Many2many('tt.provider','tt_transport_provider_rel','search_carrier_id','provider_id','Provider',
-                                    domain=lambda self: self.get_provider_type_domain())
-    active = fields.Boolean('Active', default=True)
-
+    provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type',related="carrier_id.provider_type_id")
 
     def get_provider_type_domain(self):
-        return [('provider_type_id','=',self.provider_type_id)]
+        return [('provider_type_id','=',self.provider_type_id.id)]
+
+    provider_ids = fields.Many2many('tt.provider','tt_transport_provider_rel','search_carrier_id','provider_id','Provider',
+                                    domain=get_provider_type_domain)
+    active = fields.Boolean('Active', default=True)
+
+    @api.onchange('carrier_id')
+    def _onchange_search_display_name(self):
+        if self.carrier_id:
+            self.name = self.carrier_id.name
+
+    @api.onchange('provider_type_id')
+    def _onchange_domain_agent_id(self):
+        return {'domain': {
+            'provider_ids': self.get_provider_type_domain()
+        }}
 
     def to_dict(self):
         res = self.carrier_id and self.carrier_id.to_dict() or {}

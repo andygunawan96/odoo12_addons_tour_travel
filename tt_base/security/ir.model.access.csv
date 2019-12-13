@@ -268,3 +268,6 @@ access_payment_accquirer_for_tour_travel_supervisor,payment.acquirer.for.tour.tr
 access_payment_accquirer_for_agent_user_supervisor,payment.acquirer.for.agent.user.supervisor,model_payment_acquirer,tt_base.group_tt_agent_user_supervisor,1,1,1,1
 
 access_res_partner_for_agent_management_operator,res.partner.for.agent.management.operator,base.model_res_partner,tt_base.group_tt_agent_management_operator,1,1,1,0
+
+tt_transport_carrier_search_for_tour_travel_operator,tt.transport.carrier.search.for.tour.travel.operator,model_tt_transport_carrier_search,tt_base.group_tt_tour_travel_operator,1,0,0,0
+tt_transport_carrier_search_for_tour_travel_manager,tt.transport.carrier.search.for.tour.travel.manager,model_tt_transport_carrier_search,tt_base.group_tt_tour_travel_manager,1,1,1,1

@@ -16,7 +16,7 @@ class TtAgent(models.Model):
     name = fields.Char('Name', required=True, default='')
     logo = fields.Binary('Agent Logo')  # , attachment=True
 
-    seq_id = fields.Char('Sequence ID', index=True)
+    seq_id = fields.Char('Sequence ID', index=True, readonly=True)
     reference = fields.Many2one('tt.agent', 'Reference', help="Agent who Refers This Agent")
     # balance = fields.Monetary(string="Balance",  compute="_compute_balance_agent" )
     balance = fields.Monetary(string="Balance", related="" )

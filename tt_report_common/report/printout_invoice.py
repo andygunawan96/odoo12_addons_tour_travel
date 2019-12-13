@@ -106,7 +106,7 @@ class PrintoutTicketTrainForm(models.AbstractModel):
             vals.update({
                 'with_price': data.get('is_with_price') or False,
             })
-        elif 'is_with_price' in data['data']:
+        elif 'is_with_price' in data.get('data',''):
             vals.update({
                 'with_price': data['data'].get('is_with_price') or False,
             })

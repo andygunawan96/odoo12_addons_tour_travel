@@ -47,7 +47,7 @@ Key Features
         'views/tt_provider_code_views.xml',
         'views/tt_provider_type_views.xml',
         'views/transport_carrier_views.xml',
-        # 'views/search_transport_carrier_views.xml',
+        'views/search_transport_carrier_views.xml',
         'views/tt_agent_views.xml',
         'views/tt_agent_views_customer.xml',
         'views/tt_agent_type_views.xml',
