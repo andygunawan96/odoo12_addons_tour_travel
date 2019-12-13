@@ -16,6 +16,7 @@ def _tz_get(self):
 
 class Destinations(models.Model):
     _name = 'tt.destinations'
+    _inherit = 'tt.history'
     _rec_name = 'display_name'
     _order = 'display_name'
     _description = 'Rodex Model'
