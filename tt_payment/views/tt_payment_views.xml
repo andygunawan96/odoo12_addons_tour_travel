@@ -1,6 +1,48 @@
 <?xml version="1.0" encoding="utf-8" ?>
 
 <odoo>
+    <record id="tt_payment_filter_view" model="ir.ui.view">
+        <field name="name">tt.payment.filter.view</field>
+        <field name="model">tt.payment</field>
+        <field name="arch" type="xml">
+            <search string="Search Payment">
+                <field name="name"/>
+                <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                <field name="customer_parent_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                <field name="acquirer_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                <separator/>
+                <filter string="All" name='all'/>
+                <filter string="Draft" name='draft' domain="[('state', '=', 'draft')]"/>
+                <filter string="Confirmed" name='confirm' domain="[('state', '=', 'confirm')]"/>
+                <filter string="Validated" name='validated' domain="['|', ('state', '=', 'validated'), ('state', '=', 'validated2')]"/>
+                <filter string="Approved" name='approved' domain="[('state', '=', 'approved')]"/>
+                <filter string="Cancelled" name='cancel' domain="[('state', '=', 'cancel')]"/>
+                <separator/>
+                <filter name="today" string="Today" domain="[('create_date','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>
+                <filter name="yesterday" string="Yesterday"
+                        domain="[
+                                ('create_date', '&lt;', (context_today()).strftime('%Y-%m-%d')),
+                                ('create_date', '&gt;=', (context_today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d'))
+                        ]"/>
+                <filter name="week" string="This Week"
+                        domain="[
+                                '&amp;',
+                                ('create_date', '>=', (context_today() + relativedelta(weeks=-1,days=1,weekday=0)).strftime('%Y-%m-%d')),
+                                ('create_date', '&lt;=', (context_today() + relativedelta(weekday=6)).strftime('%Y-%m-%d')),
+                            ]"/>
+                <filter string="This Month" name="thismonth" domain="[('create_date','&gt;=',time.strftime('%%Y-%%m-01'))]"/>
+                <filter string="This Year" name="thisyear" domain="[('create_date','&gt;=',time.strftime('%%Y-01-01'))]"/>
+
+                <group expand="0" string="Group By">
+                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <filter name="group_by_customer_parent_id" string="Customer Parent" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                    <filter name="group_by_acquirer_id" string="Payment Acquirer" domain="[]" context="{'group_by':'acquirer_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                    <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
     <record id="tt_payment_form_view" model="ir.ui.view">
         <field name="name">tt.payment.form.view</field>
         <field name="model">tt.payment</field>

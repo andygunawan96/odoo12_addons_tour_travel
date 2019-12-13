@@ -15,7 +15,7 @@
                     <filter string="Booked" name="booked" domain="[('state','=','booked')]"/>
                     <filter string="Issued" name="issued" domain="[('state','=','issued')]"/>
                     <filter string="Failed/Expired" name="failed_expired" domain="['|', '|', '|', ('state','=','fail_booked'),('state','=','fail_issued'),('state','=','fail_refunded'),('state','=','cancel2')]"/>
-                    <filter string="Cancelled/Refunded" name="cancel" domain="['|', '|', ('state','=','cancel'),('state','=','refund')]"/>
+                    <filter string="Cancelled/Refunded" name="cancel" domain="['|', ('state','=','cancel'),('state','=','refund')]"/>
                 </group>
                 <separator/>
                 <filter name="today" string="Today" domain="[('date','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>
