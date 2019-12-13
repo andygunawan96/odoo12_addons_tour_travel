@@ -101,6 +101,10 @@
                             </page>
                         </notebook>
                     </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
                 </form>
             </field>
         </record>
@@ -153,7 +157,7 @@
                 }
             </field>
         </record>
-<!--'form_view_ref': 'tt_base.tt_provider_form_view',-->
+        <!--'form_view_ref': 'tt_base.tt_provider_form_view',-->
         <menuitem id="sub_menu_tour_travel_provider"
                   parent="tt_base.menu_tour_travel_provider"
                   groups="base.group_user"

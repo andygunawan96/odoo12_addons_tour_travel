@@ -13,6 +13,7 @@ _UPDATE_TIME = 300 # 5 x 60 seconds
 
 class Routes(models.Model):
     _name = 'tt.routes'
+    _inherit = 'tt.history'
     _description = 'Rodex Model'
 
     name = fields.Char('Name', help="Usage for flight number, train name", compute='_compute_name', store=True)

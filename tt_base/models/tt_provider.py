@@ -4,6 +4,7 @@ import time
 
 class TtProvider(models.Model):
     _name = 'tt.provider'
+    _inherit = 'tt.history'
     _description = 'Rodex Model'
 
     name = fields.Char('Name', required=True)
