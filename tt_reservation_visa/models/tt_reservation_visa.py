@@ -105,7 +105,7 @@ class TtVisa(models.Model):
     contact_ids = fields.One2many('tt.customer', 'visa_id', 'Contacts', readonly=True)
     booker_id = fields.Many2one('tt.customer', 'Booker', ondelete='restrict', readonly=True)
 
-    acquirer_id = fields.Char('Payment Method', readonly=True)
+    acquirer_id = fields.Many2one('payment.acquirer', 'Payment Method', readonly=True)
 
     proof_of_consulate = fields.Many2many('ir.attachment', string="Proof of Consulate")
 
@@ -178,9 +178,9 @@ class TtVisa(models.Model):
             # 'in_process_date': datetime.now()
         })
         # cek saldo
-        balance_res = self.env['tt.agent'].check_balance_limit_api(self.agent_id.id, self.total)
-        if balance_res['error_code'] != 0:
-            raise UserError("Balance not enough.")
+        # balance_res = self.env['tt.agent'].check_balance_limit_api(self.agent_id.id, self.total)
+        # if balance_res['error_code'] != 0:
+        #     raise UserError("Balance not enough.")
 
         for rec in self.passenger_ids:
             if rec.state in ['validate', 'cancel']:
@@ -422,7 +422,7 @@ class TtVisa(models.Model):
             "is_booker": False,
             "is_contact": False,
             "number": 1,
-            "master_visa_Id": "17",
+            "master_visa_Id": "19",
             "notes": "Pax Notes",
             "required": [
                 {
@@ -450,7 +450,7 @@ class TtVisa(models.Model):
             "is_booker": False,
             "is_contact": False,
             "number": 1,
-            "master_visa_Id": "17",
+            "master_visa_Id": "19",
             "notes": "Pax Notes2",
             "required": [
                 {
@@ -478,7 +478,7 @@ class TtVisa(models.Model):
             "is_booker": False,
             "is_contact": False,
             "number": 1,
-            "master_visa_Id": "18",
+            "master_visa_Id": "20",
             "notes": "Pax Notes3",
             "required": [
                 {
@@ -491,7 +491,7 @@ class TtVisa(models.Model):
     ]
 
     param_search = {
-        "destination": "United Kingdom",
+        "destination": "Germany",
         "consulate": "Surabaya",
         "departure_date": "2019-10-04",
         "provider": "visa_rodextrip"
@@ -696,9 +696,11 @@ class TtVisa(models.Model):
             else:
                 customer_parent_id = book_obj.agent_id.customer_parent_walkin_id.id
             if payment.get('seq_id'):
-                acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', payment['seq_id'])], limit=1).id
+                acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', payment['seq_id'])], limit=1)
                 if not acquirer_id:
                     raise RequestException(1017)
+                else:
+                    book_obj.acquirer_id = acquirer_id.id
 
             book_obj.sudo().write({
                 'customer_parent_id': customer_parent_id,
@@ -877,6 +879,7 @@ class TtVisa(models.Model):
                 if comm['amount'] > 0:
                     vals2 = vals.copy()
                     vals2.update({
+                        'commission_agent_id': comm['commission_agent_id'],
                         'total': comm['amount'] * -1,
                         'amount': comm['amount'] * -1,
                         'charge_code': comm['code'],
@@ -891,6 +894,27 @@ class TtVisa(models.Model):
             passenger_obj.write({
                 'cost_service_charge_ids': [(6, 0, ssc)]
             })
+            vals_fixed = {
+                'commission_agent_id': self.env.ref('tt_base.rodex_ho').id,
+                'amount': pricelist_obj.cost_price - pricelist_obj.nta_price,
+                'charge_code': 'fixed',
+                'charge_type': 'RAC',
+                'passenger_visa_id': passenger_ids[idx],
+                'description': pricelist_obj.description,
+                'pax_type': pricelist_obj.pax_type,
+                'currency_id': pricelist_obj.currency_id.id,
+                'pax_count': 1,
+                'total': pricelist_obj.sale_price,
+                'pricelist_id': pricelist_id,
+                'sequence': passenger_obj.sequence,
+                # 'passenger_visa_ids': []
+            }
+            ssc_list.append(vals_fixed)
+            ssc_obj3 = passenger_obj.cost_service_charge_ids.create(vals)
+            ssc_obj3.write({
+                'passenger_visa_ids': [(6, 0, passenger_obj.ids)]
+            })
+            ssc.append(ssc_obj3.id)
 
         # susun daftar ssc yang sudah dibuat
         for ssc in ssc_list:
@@ -920,6 +944,10 @@ class TtVisa(models.Model):
                     'total': ssc['total'],
                     'pricelist_id': ssc['pricelist_id']
                 }
+                if 'commission_agent_id' in ssc:
+                    vals.update({
+                        'commission_agent_id': ssc['commission_agent_id']
+                    })
                 vals['passenger_visa_ids'].append(ssc['passenger_visa_id'])
                 ssc_list_2.append(vals)
         print('SSC 2 : ' + str(ssc_list_2))
@@ -1018,12 +1046,35 @@ class TtVisa(models.Model):
         for rec in self:
             if not api_context:  # Jika dari call from backend
                 api_context = {
-                    'co_uid': rec.env.user.id
+                    'co_uid': rec.env.user.id,
+
                 }
             if not api_context.get('co_uid'):
                 api_context.update({
-                    'co_uid': rec.env.user.id
+                    'co_uid': rec.env.user.id,
                 })
+
+            api_context.update({
+                'co_agent_id': rec.agent_id.id
+            })
+
+            req = {
+                'book_id': rec.id,
+                'order_number': rec.name,
+                'acquirer_seq_id': rec.acquirer_id.seq_id,
+                'member': False
+            }
+            if self.customer_parent_id.customer_parent_type_id.id != self.env.ref('tt_base.customer_type_fpo').id:
+                req.update({
+                    'member': True
+                })
+
+            self._compute_commercial_state()
+
+            payment = self.payment_reservation_api('visa', req, api_context)
+            if payment['error_code'] != 0:
+                _logger.error(payment['error_msg'])
+                raise UserError(_(payment['error_msg']))
 
             vals = {}
 
@@ -1036,12 +1087,10 @@ class TtVisa(models.Model):
             })
 
             self.write(vals)
-
-            self._compute_commercial_state()
-            for pvdr in rec.provider_booking_ids:
-                pvdr.action_issued_api_visa(api_context)
-                pvdr.action_create_ledger()
-            self._create_ho_ledger_visa()  # sementara diaktifkan
+            # for pvdr in rec.provider_booking_ids:
+            #     pvdr.action_issued_api_visa(api_context)
+            #     pvdr.action_create_ledger()
+            # self._create_ho_ledger_visa()  # sementara diaktifkan
 
     def _create_ho_ledger_visa(self):
         ledger = self.env['tt.ledger']

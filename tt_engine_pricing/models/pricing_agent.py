@@ -217,7 +217,7 @@ class PricingAgent(models.Model):
                             'agent_name': rec['agent_name'],
                             'agent_type_id': rec['agent_type_id'],
                             'type': 'RAC',
-                            'code': 'remaining_diff',
+                            'code': 'dif',
                             'amount': amount,
                         }
                         vals_list.append(vals)
@@ -229,7 +229,19 @@ class PricingAgent(models.Model):
                             'agent_name': rec['agent_name'],
                             'agent_type_id': rec['agent_type_id'],
                             'type': 'RAC',
-                            'code': 'remaining_diff',
+                            'code': 'dif',
+                            'amount': amount,
+                        }
+                        vals_list.append(vals)
+                    elif loop_level == 0 and rec['agent_type_id'] == self.env.ref('tt_base.rodex_ho').agent_type_id.id:
+                        amount = remaining_diff
+                        vals = {
+                            'commission_agent_id': rec['commission_agent_id'],
+                            'agent_id': rec['agent_id'],
+                            'agent_name': rec['agent_name'],
+                            'agent_type_id': rec['agent_type_id'],
+                            'type': 'RAC',
+                            'code': 'dif',
                             'amount': amount,
                         }
                         vals_list.append(vals)

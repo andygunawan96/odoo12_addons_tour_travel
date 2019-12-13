@@ -37,6 +37,7 @@
                             <field name="agent_id"/>
                             <field name="confirmed_uid"/>
                             <field name="confirmed_date"/>
+                            <field name="printout_invoice_id"/>
                         </group>
                     </group>
 

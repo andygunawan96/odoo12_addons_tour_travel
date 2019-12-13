@@ -100,6 +100,7 @@
                             <field name="document_to_ho_date"/>
                             <field name="hold_date" widget="date"/>
                             <field name="use_vendor"/>
+<!--                            <field name="acquirer_id"/>-->
 <!--                            <field name="state" string="State (debug)"/>  &lt;!&ndash;Debug&ndash;&gt;-->
 <!--                            <field name="proof_of_consulate" widget="many2many_binary"/>-->
 <!--                            <field name="vendor_ids" attrs="{'required': [('use_vendor', '=', True)], 'readonly': [('state_visa', 'in', ['delivered','ready','done'])]}" groups="tt_base.group_tt_tour_travel_operator,account.group_account_user">-->

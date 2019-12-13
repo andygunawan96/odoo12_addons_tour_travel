@@ -15,12 +15,12 @@
                     <field name="pnr"/>
                     <group>
                         <filter string="All" name="all"/>
-                        <filter string="Draft" name="draft" domain="[('state','=','draft')]"/>
-                        <filter string="Confirm" name="confirm" domain="[('state','=','confirm')]"/>
-                        <filter string="Sent" name="sent" domain="[('state','=','sent')]"/>
-                        <filter string="Validate" name="validate" domain="[('state','=','validate')]"/>
-                        <filter string="Done" name="done" domain="[('state','=','done')]"/>
-                        <filter string="Canceled/Expired/Refund" name="canceled_expired_refund" domain="['|', '|', ('state','=','cancel'),('state','=','expired'),('state','=','refund')]"/>
+                        <filter string="Draft" name="draft" domain="[('state_offline','=','draft')]"/>
+                        <filter string="Confirm" name="confirm" domain="[('state_offline','=','confirm')]"/>
+                        <filter string="Sent" name="sent" domain="[('state_offline','=','sent')]"/>
+                        <filter string="Validate" name="validate" domain="[('state_offline','=','validate')]"/>
+                        <filter string="Done" name="done" domain="[('state_offline','=','done')]"/>
+                        <filter string="Canceled/Expired/Refund" name="canceled_expired_refund" domain="['|', '|', ('state_offline','=','cancel'),('state_offline','=','expired'),('state_offline','=','refund')]"/>
                     </group>
                     <separator/>
                     <filter string="Today" name="today" domain="[('date','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>
@@ -44,7 +44,7 @@
                         <filter string="Customer Parent" name="customer_parent_id" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                         <filter string="Customer Parent Type" name="customer_parent_type_id" domain="[]" context="{'group_by':'customer_parent_type_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                         <filter string="Sector" name="sector" domain="[]" context="{'group_by':'sector_type'}"/>
-                        <filter string="State" name="state" domain="[]" context="{'group_by':'state'}"/>
+                        <filter string="State Offline" name="state_offline" domain="[]" context="{'group_by':'state_offline'}"/>
                     </group>
                </search>
            </field>
@@ -61,7 +61,6 @@
                     <field name="customer_parent_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                     <field name="customer_parent_type_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                     <field name="contact_id"/>
-                    <field name="state"/>
                 </tree>
             </field>
         </record>
@@ -74,24 +73,24 @@
                 <form>
                     <header>
                         <button string="Set to Draft" name="action_draft" type="object" states="cancel" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
-                        <button string="Confirm" class="oe_highlight" name="action_confirm" type="object" states="draft" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
-                        <button string="Sent" name="action_sent" type="object" states="confirm" groups="tt_base.group_tt_tour_travel_operator"/>  <!--states="confirm"-->
-                        <button string="Validate" class="oe_highlight" name="action_issued_backend" states="sent" type="object" groups="tt_base.group_tt_agent_user_operator"/>  <!-- ,tt_base.group_tt_tour_travel_operator groups="tt_base.group_tt_ticketing_operator,account.group_account_user"-->
-                        <button string="Quick Validate" class="oe_highlight" name="action_quick_issued" states="draft,confirm,sent" type="object" groups="tt_base.group_tt_tour_travel_operator"/>
+                        <button string="Confirm" class="oe_highlight" name="action_confirm" type="object" attrs="{'invisible':[('state_offline','!=','draft')]}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                        <button string="Sent" name="action_sent" type="object" attrs="{'invisible':[('state_offline','!=','confirm')]}" groups="tt_base.group_tt_tour_travel_operator"/>  <!--states="confirm"-->
+                        <button string="Validate" class="oe_highlight" name="action_issued_backend" attrs="{'invisible':[('state_offline','!=','sent')]}" type="object" groups="tt_base.group_tt_agent_user_operator"/>  <!-- ,tt_base.group_tt_tour_travel_operator groups="tt_base.group_tt_ticketing_operator,account.group_account_user"-->
+                        <button string="Quick Validate" class="oe_highlight" name="action_quick_issued" attrs="{'invisible':[('state_offline','!=','confirm')]}" type="object" groups="tt_base.group_tt_tour_travel_operator"/>
 <!--                        <button string="Post" name="action_done" states="draft,confirm,sent,paid,posted" type="object" groups="tt_base.group_tt_tour_travel_operator"/>-->
-                        <button string="Done" class="oe_highlight" name="action_done" states="validate" type="object" groups="tt_base.group_tt_ticketing_manager,account.group_account_invoice"/>
-                        <button string="Cancel" name="action_cancel" type="object" states="confirm,sent,validate" groups="tt_base.group_tt_ticketing_operator,account.group_account_invoice"/>
-                        <button string="Cancel" name="action_cancel" type="object" states="draft"/>
+                        <button string="Done" class="oe_highlight" name="action_done" attrs="{'invisible':[('state_offline','!=','validate')]}" type="object" groups="tt_base.group_tt_ticketing_manager,account.group_account_invoice"/>
+                        <button string="Cancel" name="action_cancel" type="object" attrs="{'invisible':[('state_offline','not in',['confirm','sent','validate'])]}" groups="tt_base.group_tt_ticketing_operator,account.group_account_invoice"/>
+                        <button string="Cancel" name="action_cancel" type="object"  attrs="{'invisible':[('state_offline','!=','draft')]}"/>
 <!--                        <button string="Print Invoice" name="print_invoice" type="object" states="paid,posted"/>-->
 <!--                        <button string="Print Invoice Ticket" name="print_invoice_ticket" type="object" states="paid,posted"/>-->
 <!--                        <button string="Get Config API" name="get_config_api" type="object"/>-->
-                        <field name="state" widget="statusbar" statusbar_visible="draft,confirm,sent,validate,done"/>
+                        <field name="state_offline" widget="statusbar" statusbar_visible="draft,confirm,sent,validate,done"/>
                     </header>
                     <sheet>
                         <div class="oe_button_box" name="button_box">
                             <button name="%(tt_base.tt_upload_center_wizard_action_view)d" string="Upload Document" type="action"
                                     class="oe_stat_button" icon="fa-upload" groups="tt_base.group_tt_tour_travel_operator"
-                                     states="validate"/>
+                                    attrs="{'invisible': [('state_offline', 'not in', ['validate'])]}"/>
                         </div>
                         <div class="oe_title">
                             <h1>
@@ -100,11 +99,12 @@
                         </div>
                         <group>
                             <group>
+                                <field name="state" invisible="1"/>
                                 <field name="agent_id" readonly="1" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                                 <field name="booker_id" required="1"/>
                                 <field name="contact_id" required="1" context="{'default_commercial_agent_id': agent_id}" options="{'no_quick_create': True}"/>
                                 <field name="customer_parent_id" readonly="0" required="1" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
-                                <field name="offline_provider_type_id" required="1" domain="[('code', 'not in', ['tour','visa','passport','offline','cruise'])]"/>
+                                <field name="offline_provider_type_id" required="1" domain="[('code', 'not in', ['tour','visa','passport','offline','cruise'])]" attrs="{'readonly': [('state_offline', 'not in', ['draft'])]}"/>
                                 <field name="provider_type_id_name" invisible="1"/>
                                 <field name="provider_type_id" invisible="1"/>
                                 <field name="provider_name" groups="tt_base.group_tt_tour_travel_operator"/>
@@ -112,14 +112,13 @@
                                 <field name="cancel_message" states="cancel"
                                        attrs="{'readonly':[('cancel_can_edit','=',False)]}"/>
                                 <field name="cancel_can_edit" invisible="1"/>
-                                <field name="total" required="1"/>
-                                <field name="total_commission_amount" invisible="0" attrs="{'invisible': [('state', '=', 'draft')]}"
+                                <field name="total" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}" required="1"/>
+                                <field name="total_commission_amount" invisible="0" attrs="{'invisible': [('state_offline', '=', 'draft')], 'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"
                                        groups="tt_base.group_tt_tour_travel_operator"/>
-                                <field name="agent_commission" groups="tt_base.group_tt_agent_user_operator" readonly="1"/>
-                                <field name="agent_commission" groups="tt_base.group_tt_tour_travel_operator" readonly="1"/>
+                                <field name="agent_commission" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator" readonly="1"/>
                                 <field name="parent_agent_commission" groups="tt_base.group_tt_tour_travel_operator" invisible="0"/>
                                 <field name="ho_commission" groups="tt_base.group_tt_tour_travel_operator" invisible="0"/>
-                                <field name="incentive_amount" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible': [('state', '=', 'draft')]}"/>
+                                <field name="incentive_amount" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible': [('state_offline', '=', 'draft')]}"/>
                                 <field name="nta_price" groups="tt_base.group_tt_tour_travel_operator"/>
                                 <field name="agent_nta_price"/>
                             </group>
@@ -128,7 +127,8 @@
 <!--                                <field name="provider" required="1"/>-->
                                 <field name="person" invisible="1"/>
                                 <field name="segment" invisible="1"/>
-                                <field name="social_media_type" attrs="{'required': [('state', '=', 'confirm')]}"/>
+                                <field name="social_media_type" attrs="{'required': [('state_offline', '=', 'confirm')], 'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
+                                <field name="hold_date" invisible="1"/>
                                 <field name="expired_date" required="1"/>
                                 <field name="currency_id" invisible="1"/>
                                 <label for="create_uid" string="Created"/>
@@ -137,7 +137,7 @@
                                     <field name="create_uid" readonly="1" class="oe_inline"/>
                                 </div>
                                 <label for="confirm_uid" string="Confirmed"/>
-                                <div attrs="{'invisible': [('state', '=', False)]}">
+                                <div attrs="{'invisible': [('state_offline', '=', False)]}">
                                     <field name="confirm_date" readonly="1" class="oe_inline"/> -
                                     <field name="confirm_uid" readonly="1" class="oe_inline"/>
                                 </div>
@@ -165,11 +165,11 @@
                         </group>
                         <group>
                             <group>
-                                <field name="description" attrs="{'invisible': [('provider_type_id_name', 'in', ['airline', 'train']), ('state','=','draft')]}"/>
+                                <field name="description" attrs="{'invisible': [('provider_type_id_name', 'in', ['airline', 'train']), ('state_offline','=','draft')]}"/>
                             </group>
-                            <group string="Booking Value" groups="tt_base.group_tt_tour_travel_operator" states="validate,done">
-                                <field name="resv_code"/>
-                                <field name="vendor_amount" groups="tt_base.group_tt_tour_travel_operator"/>
+                            <group string="Booking Value" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible': [('state_offline', 'not in', ['validate','done'])]}">
+                                <field name="resv_code" attrs="{'readonly': [('state_offline', 'not in', ['validate'])]}"/>
+                                <field name="vendor_amount" attrs="{'readonly': [('state_offline', 'not in', ['validate'])], 'required': [('state_offline', 'in', ['validate'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
                                 <field name="ho_final_amount" groups="tt_base.group_tt_tour_travel_operator"/>
                                 <label for="booked_date" string="Booked"/>
                                 <div>
@@ -180,19 +180,20 @@
                         </group>
                         <notebook>
                             <page string="Line(s)" attrs="{'invisible': [('provider_type_id_name', 'not in', ['airline','train','hotel','activity','cruise'])]}">  <!--Airlines, Train, Hotel, Activity-->
-                                <field name="line_ids"/>
+                                <field name="line_ids" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm', 'validate'])]}"/>
                             </page>
                             <page string="Passenger(s)">
-                                <field name="passenger_ids">  <!--context="{'default_agent_id': sub_agent_id}"-->
+                                <field name="passenger_ids" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm', 'validate'])]}">  <!--context="{'default_agent_id': sub_agent_id}"-->
                                     <tree editable="bottom">
                                         <field name="booking_id" invisible="1"/>
                                         <field name="transaction_name" invisible="1"/>
-                                        <field name="ticket_number"/>
-                                        <field name="seat"/>  <!--attrs="{'invisible': [('transaction_name', 'not in', ['airline','train'])]}"-->
+                                        <field name="ticket_number" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
+                                        <field name="seat" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>  <!--attrs="{'invisible': [('transaction_name', 'not in', ['airline','train'])]}"-->
                                         <field name="agent_id" readonly="1"/>
                                         <field name="passenger_id" string="Name" context="{'default_commercial_agent_id': agent_id}"/>
                                         <field name="pax_type"/>
-                                        <field name="state" readonly="1"/>
+                                        <field name="state" readonly="1" invisible="1"/>
+                                        <field name="state_offline" readonly="1"/>
                                     </tree>
                                 </field>
                             </page>
@@ -218,7 +219,7 @@
                                 </group>
                             </page>
                             <page name="attachment" string="Attachment">
-                                <field name="attachment_ids"/>  <!-- string="Attach a File" widget="many2many_tags"-->
+                                <field name="attachment_ids" attrs="{'readonly': [('state_offline', 'not in', ['validate'])]}"/>  <!-- string="Attach a File" widget="many2many_tags"-->
                             </page>
                         </notebook>
                     </sheet>
@@ -251,7 +252,7 @@
 <!--                    <button type="object" string="Create Issued Offline" name="create_booking_reservation_offline_api"/>-->
                     <field name="name"/>
                     <field name="offline_provider_type_id"/>
-                    <field name="state"/>
+                    <field name="state_offline" string="State Offline"/>
                 </tree>
             </field>
         </record>
