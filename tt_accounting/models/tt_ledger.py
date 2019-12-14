@@ -111,6 +111,8 @@ class Ledger(models.Model):
             'agent_id': self.agent_id.id,
             'issued_uid': self.issued_uid.id,
             'is_reversed': True,
+            'adjustment_id': self.adjustment_id and self.adjustment_id.id or False,
+            'refund_id': self.refund_id and self.refund.id or False
         }])
         self.update({
             'reverse_id': reverse_id.id,

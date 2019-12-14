@@ -47,9 +47,9 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="confirm_adj_from_button" string="Confirm" type="object"/>
-                    <button name="validate_adj_from_button" string="Validate" type="object"/>
-                    <button name="approve_adj_from_button" string="Approve" type="object"/>
+                    <button name="confirm_adj_from_button" string="Confirm" type="object" states="draft"/>
+                    <button name="validate_adj_from_button" string="Validate" type="object" states="confirm"/>
+                    <button name="approve_adj_from_button" string="Approve" type="object" states="validate"/>
                     <button name="cancel_adj_from_button" string="Cancel" type="object"/>
                     <field name="state" widget="statusbar"/>
                 </header>
