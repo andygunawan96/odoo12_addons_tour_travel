@@ -266,13 +266,7 @@ class TtProviderTour(models.Model):
 
     def action_create_ledger(self, issued_uid, pay_method=None):
         if pay_method == 'installment':
-            total_amount = 0
-            for rec in self.booking_id.tour_id.payment_rules_ids:
-                if rec.is_dp:
-                    if rec.payment_type == 'amount':
-                        total_amount += rec.payment_amount
-                    else:
-                        total_amount += (rec.payment_percentage / 100) * self.booking_id.total
+            total_amount = (self.booking_id.tour_id.down_payment / 100) * self.booking_id.total
 
             res_model = self.booking_id._name
             res_id = self.booking_id.id
@@ -300,12 +294,8 @@ class TtProviderTour(models.Model):
 
     def action_create_installment_ledger(self, issued_uid, payment_rules_id, commission_ledger=False):
         try:
-            total_amount = 0
             payment_rules_obj = self.env['tt.payment.rules'].sudo().browse(int(payment_rules_id))
-            if payment_rules_obj.payment_type == 'amount':
-                total_amount += payment_rules_obj.payment_amount
-            else:
-                total_amount += (payment_rules_obj.payment_percentage / 100) * self.booking_id.total
+            total_amount = (payment_rules_obj.payment_percentage / 100) * self.booking_id.total
 
             is_enough = self.env['tt.agent'].check_balance_limit_api(self.booking_id.agent_id.id, total_amount)
             if is_enough['error_code'] != 0:

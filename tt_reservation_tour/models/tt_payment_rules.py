@@ -7,11 +7,8 @@ class PaymentRules(models.Model):
     _order = 'due_date'
     _description = 'Rodex Model'
 
-    name = fields.Char('Name', required=True, default='Payment')
+    name = fields.Char('Name', required=True, default='Full Payment')
     description = fields.Char('Description')
-    payment_type = fields.Selection([('percentage', 'Percentage'), ('amount', 'Amount')], 'Payment Type', default="percentage")
-    payment_percentage = fields.Float('Payment Percentage (%)', default=0)
-    payment_amount = fields.Float('Payment Amount', default=0)
-    is_dp = fields.Boolean('Is Down Payment', default=False)
+    payment_percentage = fields.Float('Payment Percentage (%)', default=0, required=True)
     due_date = fields.Date('Due Date', required=True)
     pricelist_id = fields.Many2one('tt.master.tour', 'Tour Package ID', readonly=True)

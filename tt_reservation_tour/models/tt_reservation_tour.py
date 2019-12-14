@@ -550,6 +550,25 @@ class ReservationTour(models.Model):
             for temp_room in rooms:
                 temp_room.pop('room_id')
 
+            payment_rules = [
+                {
+                    'name': 'Down Payment',
+                    'description': 'Down Payment',
+                    'payment_percentage': book_obj.tour_id.down_payment,
+                    'due_date': date.today(),
+                    'is_dp': True
+                }
+            ]
+            for payment in book_obj.tour_id.payment_rules_ids:
+                temp_pay = {
+                    'name': payment.name,
+                    'description': payment.description,
+                    'payment_percentage': payment.payment_percentage,
+                    'due_date': payment.due_date,
+                    'is_dp': False
+                }
+                payment_rules.append(temp_pay)
+
             response = {
                 'booker_seq_id': book_obj.booker_id.seq_id,
                 'contacts': {
@@ -571,6 +590,7 @@ class ReservationTour(models.Model):
                 'hold_date': book_obj.hold_date,
                 'tour_details': tour_package,
                 'rooms': rooms,
+                'payment_rules': payment_rules,
                 'grand_total': book_obj.total,
             }
             return ERR.get_no_error(response)
@@ -622,21 +642,9 @@ class ReservationTour(models.Model):
             return ERR.get_error(1005)
 
     def get_installment_dp_amount(self):
-        total_dp = 0
-        for rec in self.tour_id.payment_rules_ids:
-            if rec.is_dp:
-                if rec.payment_type == 'amount':
-                    total_dp += rec.payment_amount
-                else:
-                    total_dp += (rec.payment_percentage / 100) * self.agent_nta
+        total_dp = (self.tour_id.down_payment / 100) * self.agent_nta
         return total_dp
 
     def get_installment_dp_amount_cor(self):
-        total_dp = 0
-        for rec in self.tour_id.payment_rules_ids:
-            if rec.is_dp:
-                if rec.payment_type == 'amount':
-                    total_dp += rec.payment_amount
-                else:
-                    total_dp += (rec.payment_percentage / 100) * self.total
+        total_dp = (self.tour_id.down_payment / 100) * self.total
         return total_dp
