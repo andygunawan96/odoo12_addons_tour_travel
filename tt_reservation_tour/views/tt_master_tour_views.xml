@@ -219,13 +219,18 @@
                         <!--                            </field>-->
                         <!--                        </page>-->
                         <page string="Installment Payment Rules">
+                            <group>
+                                <group>
+                                    <field name="down_payment"/>
+                                </group>
+                                <group>
+
+                                </group>
+                            </group>
                             <field name="payment_rules_ids" string="Payment Rules">
                                 <tree>
                                     <field name="name"/>
-                                    <field name="payment_type"/>
-                                    <field name="payment_percentage" attrs="{'invisible': [('payment_type', '!=', 'percentage')], 'required': [('payment_type', '=', 'percentage')]}"/>
-                                    <field name="payment_amount" attrs="{'invisible': [('payment_type', '!=', 'amount')], 'required': [('payment_type', '=', 'amount')]}"/>
-                                    <field name="is_dp"/>
+                                    <field name="payment_percentage"/>
                                     <field name="description"/>
                                     <field name="due_date"/>
                                     <field name="pricelist_id" invisible="1"/>
@@ -235,12 +240,9 @@
                                         <group>
                                             <group>
                                                 <field name="name"/>
-                                                <field name="payment_type"/>
-                                                <field name="payment_percentage" attrs="{'invisible': [('payment_type', '!=', 'percentage')], 'required': [('payment_type', '=', 'percentage')]}"/>
-                                                <field name="payment_amount" attrs="{'invisible': [('payment_type', '!=', 'amount')], 'required': [('payment_type', '=', 'amount')]}"/>
+                                                <field name="payment_percentage"/>
                                             </group>
                                             <group>
-                                                <field name="is_dp"/>
                                                 <field name="description"/>
                                                 <field name="due_date"/>
                                                 <field name="pricelist_id" invisible="1"/>
