@@ -56,7 +56,7 @@ class TtAdjustment(models.Model):
 
     adjust_side = fields.Selection([('debit', 'Debit'), ('credit', 'Credit')], 'Side', default='debit', readonly=True, states={'draft': [('readonly',False)]})
 
-    adjust_amount = fields.Monetary('Credit Amount', readonly=True, states={'draft': [('readonly', False)]},
+    adjust_amount = fields.Monetary('Amount', readonly=True, states={'draft': [('readonly', False)]},
                              help="Amount to be adjusted")
 
     description = fields.Text('Description', readonly=True, states={'draft': [('readonly', False)]})
@@ -157,3 +157,12 @@ class TtAdjustment(models.Model):
             'approve_date': datetime.now()
         })
 
+    def cancel_adj_from_button(self):
+        for rec in self.ledger_ids:
+            rec.reverse_ledger()
+
+        self.write({
+            'state': 'cancel',
+            'cancel_uid': self.env.user.id,
+            'cancel_date': datetime.now()
+        })
