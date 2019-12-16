@@ -23,6 +23,7 @@
                             <field name="actual_balance"/>
                             <field name="balance"/>
                             <field name="credit_limit"/>
+                            <field name="unprocessed_amount"/>
                             <field name="currency_id"/>
                         </group>
                     </group>
