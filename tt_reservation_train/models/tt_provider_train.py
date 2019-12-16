@@ -257,7 +257,7 @@ class TtProviderTrain(models.Model):
     #             'total_orig': total_orig
     #         })
 
-    def action_create_ledger(self,issued_uid):
+    def action_create_ledger(self,issued_uid,pay_method=None):
         self.env['tt.ledger'].action_create_ledger(self,issued_uid)
         # else:
         #     raise UserError("Cannot create ledger, ledger has been created before.")
