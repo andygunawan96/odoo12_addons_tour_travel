@@ -89,6 +89,7 @@ class ProviderOffline(models.Model):
     def create_service_charge(self):
         self.delete_service_charge()
 
+        provider_type_id = self.env['tt.provider.type'].search([('code', '=', self.booking_id.offline_provider_type)], limit=1)
         scs_list = []
         scs_list_2 = []
         pricing_obj = self.env['tt.pricing.agent'].sudo()
@@ -122,7 +123,7 @@ class ProviderOffline(models.Model):
             }
             scs_list.append(vals)
             commission_list = pricing_obj.get_commission(self.booking_id.total_commission_amount / len(self.booking_id.passenger_ids),
-                                                         self.booking_id.agent_id, self.booking_id.offline_provider_type_id)
+                                                         self.booking_id.agent_id, provider_type_id)
             for comm in commission_list:
                 if comm['amount'] > 0:
                     vals2 = vals.copy()
@@ -173,6 +174,8 @@ class ProviderOffline(models.Model):
     def create_service_charge_hotel(self):
         self.delete_service_charge()
 
+        provider_type_id = self.env['tt.provider.type'].search([('code', '=', self.booking_id.offline_provider_type)], limit=1)
+
         scs_list = []
         scs_list_2 = []
         pricing_obj = self.env['tt.pricing.agent'].sudo()
@@ -193,7 +196,7 @@ class ProviderOffline(models.Model):
         scs_list.append(vals)
         commission_list = pricing_obj.get_commission(
             self.booking_id.total_commission_amount,
-            self.booking_id.agent_id, self.booking_id.offline_provider_type_id)
+            self.booking_id.agent_id, provider_type_id)
         for comm in commission_list:
             if comm['amount'] > 0:
                 vals2 = vals.copy()

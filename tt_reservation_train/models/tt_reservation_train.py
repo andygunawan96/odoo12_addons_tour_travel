@@ -658,6 +658,18 @@ class TtReservationTrain(models.Model):
         #                                                                                                data=datas)
 
     @api.multi
+    def print_ho_invoice(self):
+        datas = {
+            'ids': self.env.context.get('active_ids', []),
+            'model': self._name
+        }
+        res = self.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        train_ho_invoice_id = self.env.ref('tt_report_common.action_report_printout_invoice_ho_train')
+        return train_ho_invoice_id.report_action(self, data=datas)
+
+    @api.multi
     def print_itinerary(self):
         datas = {'ids': self.env.context.get('active_ids', [])}
         res = self.read()

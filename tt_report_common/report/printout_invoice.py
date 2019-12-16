@@ -121,28 +121,46 @@ class PrintoutInvoiceHO(models.AbstractModel):
     _name = 'report.tt_report_common.printout_invoice_ho'
     _description = 'Rodex Model'
 
-    def get_invoice_data(self, rec, paxs, context):
+    def get_invoice_data(self, rec, paxs, context, data):
         a = {}
         if rec.provider_booking_ids:
-            for provider in rec.provider_booking_ids:
-                pnr = provider.pnr if provider.pnr else '-'
-                if not a.get(pnr):
-                    a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'provider_type': ''}
-                # a[pnr]['descs'].append(line.desc if line.desc else '')
-                a[pnr]['provider_type'] = rec.provider_type_id.name
-                # untuk harga fare per passenger
-                for psg in rec.passenger_ids:
-                    desc_text = '%s, %s' % (' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '')
-                    price_unit = 0
-                    for cost_charge in psg.cost_service_charge_ids:
-                        if cost_charge.charge_type != 'RAC':
-                            price_unit += cost_charge.amount
-                    for channel_charge in psg.channel_service_charge_ids:
-                        price_unit += channel_charge.amount
-                    a[pnr]['pax_data'].append({
-                        'name': '%s, %s' % (' '.join((psg.first_name or '', psg.last_name or '')), psg.title or ''),
-                        'total': price_unit
-                    })
+            if rec._name == 'tt.reservation.hotel':
+                if rec.room_detail_ids:
+                    for rec2 in rec.room_detail_ids:
+                        issued_name = rec2.issued_name if rec2.issued_name else '-'
+                        if not a.get(issued_name):
+                            a[issued_name] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [],
+                                              'provider_type': ''}
+                        a[issued_name]['descs'].append(self.get_description(rec, data))
+                        a[issued_name]['provider_type'] = rec.provider_type_id.name
+                        for room in rec.room_detail_ids:
+                            meal = room.meal_type or 'Room Only'
+                            a[issued_name]['pax_data'].append({
+                                'name': room.room_name + ' (' + meal + ') ',
+                                'total': room.sale_price
+                            })
+            elif rec._name == 'tt.reservation.offline':
+                pass
+            else:
+                for provider in rec.provider_booking_ids:
+                    pnr = provider.pnr if provider.pnr else '-'
+                    if not a.get(pnr):
+                        a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'provider_type': ''}
+                    a[pnr]['descs'].append(self.get_description(rec, data))
+                    a[pnr]['provider_type'] = rec.provider_type_id.name
+                    # untuk harga fare per passenger
+                    for psg in rec.passenger_ids:
+                        desc_text = '%s, %s' % (' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '')
+                        price_unit = 0
+                        for cost_charge in psg.cost_service_charge_ids:
+                            if cost_charge.charge_type != 'RAC':
+                                price_unit += cost_charge.amount
+                        for channel_charge in psg.channel_service_charge_ids:
+                            price_unit += channel_charge.amount
+                        a[pnr]['pax_data'].append({
+                            'name': '%s, %s' % (' '.join((psg.first_name or '', psg.last_name or '')), psg.title or ''),
+                            'total': price_unit
+                        })
         return a
 
     def get_pax_data(self):
@@ -166,15 +184,15 @@ class PrintoutInvoiceHO(models.AbstractModel):
     def get_description(self, rec, data):
         desc = ''
         if data['context']['active_model'] == 'tt.reservation.airline':
-            for rec in rec.journey_ids:
+            for journey in rec.journey_ids:
                 desc += '%s(%s) - %s(%s),' % (
-                    rec.origin_id.city, rec.origin_id.code, rec.destination_id.city, rec.destination_id.code)
-                desc += '%s - %s\n ' % (rec.departure_date[:16], rec.arrival_date[:16])
+                    journey.origin_id.city, journey.origin_id.code, journey.destination_id.city, journey.destination_id.code)
+                desc += '%s - %s\n ' % (journey.departure_date[:16], journey.arrival_date[:16])
         elif data['context']['active_model'] == 'tt.reservation.train':
-            for rec in self.journey_ids:
+            for journey in rec.journey_ids:
                 desc += '%s(%s) - %s(%s),' % (
-                    rec.origin_id.city, rec.origin_id.code, rec.destination_id.city, rec.destination_id.code)
-                desc += '%s - %s\n ' % (rec.departure_date[:16], rec.arrival_date[:16])
+                    journey.origin_id.city, journey.origin_id.code, journey.destination_id.city, journey.destination_id.code)
+                desc += '%s - %s\n ' % (journey.departure_date[:16], journey.arrival_date[:16])
         elif data['context']['active_model'] == 'tt.reservation.activity':
             desc = ''
             desc += '%s (%s), ' % (self.activity_id.name, self.activity_product,)
@@ -195,16 +213,16 @@ class PrintoutInvoiceHO(models.AbstractModel):
                 desc = 'Reservation Visa Country : ' + self.country_id.name + ' ' + 'Consulate : ' + \
                             rec.immigration_consulate + ' ' + 'Journey Date : ' + str(rec.departure_date)
         elif data['context']['active_model'] == 'tt.reservation.hotel':
-            for rec in self.room_detail_ids:
+            for room in rec.room_detail_ids:
                 desc += 'Hotel : %s\nRoom : %s %s(%s),\n' % (
-                    self.hotel_name, rec.room_name, rec.room_type, rec.meal_type if rec.meal_type else 'Room Only')
-                desc += 'Date  : %s - %s\n' % (str(self.checkin_date)[:10], str(self.checkout_date)[:10])
+                    rec.hotel_name, room.room_name, room.room_type, room.meal_type if room.meal_type else 'Room Only')
+                desc += 'Date  : %s - %s\n' % (str(rec.checkin_date)[:10], str(rec.checkout_date)[:10])
                 desc += 'Guest :\n'
-                for idx, guest in enumerate(self.passenger_ids):
+                for idx, guest in enumerate(rec.passenger_ids):
                     desc += str(idx + 1) + '. ' + guest.name + '\n'
-                spc = rec.special_request or '-'
+                spc = room.special_request or '-'
                 desc += 'Special Request: ' + spc + '\n'
-        return desc,
+        return desc
 
     def _get_report_values(self, docids, data=None):
         if not data.get('context'):
@@ -225,8 +243,8 @@ class PrintoutInvoiceHO(models.AbstractModel):
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
             a = {}
-            values['pax_data'] = self.get_invoice_data(rec, rec.passenger_ids, data.get('context'))
-            values['desc'] = self.get_description(rec, data)
+            pax_data = self.get_invoice_data(rec, rec.passenger_ids, data.get('context'), data)
+            values[rec.id].append(pax_data)
         vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -474,6 +492,7 @@ class PrintoutInvoice(models.AbstractModel):
                     for pax in a[rec2.pnr]['pax_data']:
                         pax['total'] = rec.total / len(rec.passenger_ids)
         return a
+
     # Get Terbilang dkk di hapus
     def compute_terbilang_from_objs(self, recs, currency_str='rupiah'):
         a = {}

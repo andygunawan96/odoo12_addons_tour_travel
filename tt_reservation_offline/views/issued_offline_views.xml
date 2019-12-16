@@ -104,7 +104,8 @@
                                 <field name="booker_id" required="1"/>
                                 <field name="contact_id" required="1" context="{'default_commercial_agent_id': agent_id}" options="{'no_quick_create': True}"/>
                                 <field name="customer_parent_id" readonly="0" required="1" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
-                                <field name="offline_provider_type_id" required="1" domain="[('code', 'not in', ['tour','visa','passport','offline','cruise'])]" attrs="{'readonly': [('state_offline', 'not in', ['draft'])]}"/>
+                                <field name="offline_provider_type" required="1" domain="[('code', 'not in', ['tour','visa','passport','offline','cruise'])]" attrs="{'readonly': [('state_offline', 'not in', ['draft'])]}"/>
+                                <field name="offline_provider_type_name" attrs="{'invisible': [('offline_provider_type', 'not in', ['other'])]}"/>
                                 <field name="provider_type_id_name" invisible="1"/>
                                 <field name="provider_type_id" invisible="1"/>
                                 <field name="provider_name" groups="tt_base.group_tt_tour_travel_operator"/>
@@ -251,7 +252,7 @@
                 <tree>
 <!--                    <button type="object" string="Create Issued Offline" name="create_booking_reservation_offline_api"/>-->
                     <field name="name"/>
-                    <field name="offline_provider_type_id"/>
+                    <field name="offline_provider_type"/>
                     <field name="state_offline" string="State Offline"/>
                 </tree>
             </field>

@@ -61,12 +61,12 @@ class IssuedOffline(models.Model):
 
     state = fields.Selection(variables.BOOKING_STATE, 'State', default='draft')
     state_offline = fields.Selection(STATE_OFFLINE, 'State Offline', default='draft')
-    # type = fields.Selection(TYPE, required=True, readonly=True,
-    #                         states={'draft': [('readonly', False)]}, string='Transaction Type')
+
     provider_type_id = fields.Many2one('tt.provider.type', string='Provider Type',
                                        default=lambda self: self.env.ref('tt_reservation_offline.tt_provider_type_offline'))
-    offline_provider_type_id = fields.Many2one('tt.provider.type')
-    provider_type_id_name = fields.Char('Transaction Name', readonly=True, related='offline_provider_type_id.code')
+    offline_provider_type = fields.Selection(lambda self: self.get_offline_type(), 'Offline Provider Type')
+    offline_provider_type_name = fields.Char('Offline Provider Type Name', compute='offline_type_to_char2', readonly=False)
+    provider_type_id_name = fields.Char('Transaction Name', readonly=True, compute='offline_type_to_char')
     provider_booking_ids = fields.One2many('tt.provider.offline', 'booking_id', string='Provider Booking')
 
     segment = fields.Integer('Number of Segment', compute='get_segment_length')
@@ -169,6 +169,26 @@ class IssuedOffline(models.Model):
     ####################################################################################################
     # REPORT
     ####################################################################################################
+
+    @api.depends('offline_provider_type')
+    def offline_type_to_char(self):
+        if self.offline_provider_type:
+            self.provider_type_id_name = self.offline_provider_type
+        else:
+            self.provider_type_id_name = ''
+
+    @api.depends('offline_provider_type')
+    def offline_type_to_char2(self):
+        if self.offline_provider_type:
+            if self.offline_provider_type != 'other':
+                self.offline_provider_type_name = self.offline_provider_type
+            else:
+                self.offline_provider_type_name = ''
+        else:
+            self.offline_provider_type_name = ''
+
+    def get_offline_type(self):
+        return [(rec, rec.capitalize()) for rec in self.env['tt.provider.type'].get_provider_type()]+[('other', 'Other')]
 
     def print_invoice(self):
         data = {
@@ -457,7 +477,7 @@ class IssuedOffline(models.Model):
                 vals = self.env['tt.ledger'].prepare_vals_for_resv(self, pnr, vals)
                 vals.update({
                     'pnr': pnr,
-                    'provider_type_id': self.offline_provider_type_id,
+                    'provider_type_id': self.offline_provider_type,
                     'display_provider_name': self.provider_name,
                 })
                 new_aml = rec.env['tt.ledger'].create(vals)
@@ -472,7 +492,7 @@ class IssuedOffline(models.Model):
                 vals = self.env['tt.ledger'].prepare_vals_for_resv(self, pnr, vals)
                 vals.update({
                     'pnr': pnr,
-                    'provider_type_id': self.offline_provider_type_id,
+                    'provider_type_id': self.offline_provider_type,
                     'display_provider_name': self.provider_name,
                 })
                 new_aml = rec.env['tt.ledger'].create(vals)
@@ -581,21 +601,23 @@ class IssuedOffline(models.Model):
     @api.depends('total_commission_amount')
     def _get_agent_commission(self):
         for rec in self:
-            pricing_obj = rec.env['tt.pricing.agent'].sudo()
-            commission_list = pricing_obj.get_commission(rec.total_commission_amount, rec.agent_id,
-                                                         rec.offline_provider_type_id)
-            print(commission_list)
-            rec.agent_commission = 0
-            rec.parent_agent_commission = 0
-            rec.ho_commission = 0
+            if rec.offline_provider_type and rec.offline_provider_type != 'other':
+                pricing_obj = rec.env['tt.pricing.agent'].sudo()
+                provider_type_id = self.env['tt.provider.type'].search([('code', '=', rec.offline_provider_type)], limit=1)
+                commission_list = pricing_obj.get_commission(rec.total_commission_amount, rec.agent_id,
+                                                             provider_type_id)
+                print(commission_list)
+                rec.agent_commission = 0
+                rec.parent_agent_commission = 0
+                rec.ho_commission = 0
 
-            for comm in commission_list:
-                if comm.get('code') == 'rac':
-                    rec.agent_commission += comm.get('amount')
-                elif comm.get('agent_type_id') == rec.env.ref('tt_base.rodex_ho').agent_type_id.id:
-                    rec.ho_commission += comm.get('amount')
-                else:
-                    rec.parent_agent_commission += comm.get('amount')
+                for comm in commission_list:
+                    if comm.get('code') == 'rac':
+                        rec.agent_commission += comm.get('amount')
+                    elif comm.get('agent_type_id') == rec.env.ref('tt_base.rodex_ho').agent_type_id.id:
+                        rec.ho_commission += comm.get('amount')
+                    else:
+                        rec.parent_agent_commission += comm.get('amount')
 
     # @api.onchange('agent_commission', 'ho_commission')
     # @api.depends('agent_commission', 'ho_commission')
@@ -887,8 +909,8 @@ class IssuedOffline(models.Model):
                 'contact_id': contact_id.id,
                 # 'customer_parent_id': customer_parent_id,
                 'line_ids': [(6, 0, booking_line_ids)],
-                'offline_provider_type_id': self.env['tt.provider.type'].sudo()
-                                                .search([('code', '=', data_reservation_offline.get('type'))], limit=1).id,
+                'offline_provider_type': self.env['tt.provider.type'].sudo()
+                                             .search([('code', '=', data_reservation_offline.get('type'))], limit=1).code,
                 'description': data_reservation_offline.get('desc'),
                 'total': data_reservation_offline['total_sale_price'],
                 "social_media_type": self._get_social_media_id_by_name(data_reservation_offline.get('social_media_id')),
@@ -1070,7 +1092,7 @@ class IssuedOffline(models.Model):
             new_rec = rec.sudo().copy()
             new_rec.update({
                 'agent_id': list_agent_id[random.randrange(0, len(list_agent_id)-1, 1)],
-                'offline_provider_type_id': list_provider_id[random.randrange(0, len(list_provider_id)-1, 1)],
+                'offline_provider_type': list_provider_id[random.randrange(0, len(list_provider_id)-1, 1)],
                 'total': random.randrange(100000, 2000000, 5000),
                 'agent_commission': random.randrange(1000, 20000, 500),
             })
