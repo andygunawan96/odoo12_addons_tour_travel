@@ -22,6 +22,26 @@
             print_report_name="'HO Invoice - %s' % (object.name)"
         />
         <report
+            string="HO Invoice Train"
+            id="action_report_printout_invoice_ho_train"
+            model="tt.reservation.train"
+            report_type="qweb-html"
+            name="tt_report_common.printout_invoice_ho"
+            file="tt_report_common.printout_invoice_ho"
+            paperformat="tt_report_common.paperformat_A4_no_margin"
+            print_report_name="'HO Invoice - %s' % (object.name)"
+        />
+        <report
+            string="HO Invoice Hotel"
+            id="action_report_printout_invoice_ho_hotel"
+            model="tt.reservation.hotel"
+            report_type="qweb-html"
+            name="tt_report_common.printout_invoice_ho"
+            file="tt_report_common.printout_invoice_ho"
+            paperformat="tt_report_common.paperformat_A4_no_margin"
+            print_report_name="'HO Invoice - %s' % (object.name)"
+        />
+        <report
             string="Hotel Voucher"
             id="action_report_printout_reservation_hotel"
             model="tt.reservation.hotel"

@@ -1206,7 +1206,6 @@ class ReservationAirline(models.Model):
                         'segment_addons_ids': this_segment_fare_details
                     })
 
-
     #to generate sale service charge
     def calculate_service_charge(self):
         for service_charge in self.sale_service_charge_ids:
@@ -1266,76 +1265,90 @@ class ReservationAirline(models.Model):
             })
 
     @api.multi
-    def print_eticket(self):
-        datas = {'ids': self.env.context.get('active_ids', [])}
+    def print_eticket(self, data):
+        # jika panggil dari backend
+        if 'order_number' not in data:
+            data['order_number'] = self.name
+        if 'provider_type' not in data:
+            data['provider_type'] = self.provider_type_id.name
+
+        book_obj = self.env['tt.reservation.airline'].search([('name', '=', data['order_number'])], limit=1)
+        datas = {'ids': book_obj.env.context.get('active_ids', [])}
         # res = self.read(['price_list', 'qty1', 'qty2', 'qty3', 'qty4', 'qty5'])
-        res = self.read()
+        res = book_obj.read()
         res = res and res[0] or {}
         datas['form'] = res
-        airline_ticket_id = self.env.ref('tt_report_common.action_report_printout_reservation_airline')
+        airline_ticket_id = book_obj.env.ref('tt_report_common.action_report_printout_reservation_airline')
 
-        if not self.printout_ticket_id:
-            pdf_report = airline_ticket_id.report_action(self, data=datas)
+        if not book_obj.printout_ticket_id:
+            pdf_report = airline_ticket_id.report_action(book_obj, data=datas)
             pdf_report['context'].update({
-                'active_model': self._name,
-                'active_id': self.id
+                'active_model': book_obj._name,
+                'active_id': book_obj.id
             })
             pdf_report_bytes = airline_ticket_id.render_qweb_pdf(data=pdf_report)
-            res = self.env['tt.upload.center.wizard'].upload_file_api(
+            res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
                 {
-                    'filename': 'Airline Ticket %s.pdf' % self.name,
+                    'filename': 'Airline Ticket %s.pdf' % book_obj.name,
                     'file_reference': 'Airline Ticket',
                     'file': base64.b64encode(pdf_report_bytes[0]),
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },
                 {
-                    'co_agent_id': self.env.user.agent_id.id,
+                    'co_agent_id': book_obj.env.user.agent_id.id,
                 }
             )
-            upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
-            self.printout_ticket_id = upc_id.id
+            upc_id = book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+            book_obj.printout_ticket_id = upc_id.id
         url = {
             'type': 'ir.actions.act_url',
             'name': "ZZZ",
             'target': 'new',
-            'url': self.printout_ticket_id.url,
+            'url': book_obj.printout_ticket_id.url,
         }
         return url
 
     @api.multi
-    def print_eticket_with_price(self):
-        datas = {'ids': self.env.context.get('active_ids', [])}
+    def print_eticket_with_price(self, data):
+        # jika panggil dari backend
+        if 'order_number' not in data:
+            data['order_number'] = self.name
+        if 'provider_type' not in data:
+            data['provider_type'] = self.provider_type_id.name
+
+        book_obj = self.env['tt.reservation.airline'].search([('name', '=', data['order_number'])], limit=1)
+        datas = {'ids': book_obj.env.context.get('active_ids', [])}
         # res = self.read(['price_list', 'qty1', 'qty2', 'qty3', 'qty4', 'qty5'])
-        res = self.read()
+        res = book_obj.read()
         res = res and res[0] or {}
         datas['form'] = res
         datas['is_with_price'] = True
-        airline_ticket_id = self.env.ref('tt_report_common.action_report_printout_reservation_airline')
-        if not self.printout_ticket_price_id:
-            pdf_report = airline_ticket_id.report_action(self, data=datas)
+        airline_ticket_id = book_obj.env.ref('tt_report_common.action_report_printout_reservation_airline')
+        if not book_obj.printout_ticket_price_id:
+            pdf_report = airline_ticket_id.report_action(book_obj, data=datas)
             pdf_report['context'].update({
-                'active_model': self._name,
-                'active_id': self.id
+                'active_model': book_obj._name,
+                'active_id': book_obj.id
             })
             pdf_report_bytes = airline_ticket_id.render_qweb_pdf(data=pdf_report)
-            res = self.env['tt.upload.center.wizard'].upload_file_api(
+            res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
                 {
-                    'filename': 'Airline Ticket (Price) %s.pdf' % self.name,
+                    'filename': 'Airline Ticket (Price) %s.pdf' % book_obj.name,
                     'file_reference': 'Airline Ticket with Price',
                     'file': base64.b64encode(pdf_report_bytes[0]),
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },
                 {
-                    'co_agent_id': self.env.user.agent_id.id,
+                    'co_agent_id': book_obj.env.user.agent_id.id,
                 }
             )
-            upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
-            self.printout_ticket_price_id = upc_id.id
+            upc_id = book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+            book_obj.printout_ticket_price_id = upc_id.id
         url = {
             'type': 'ir.actions.act_url',
             'name': "ZZZ",
             'target': 'new',
-            'url': self.printout_ticket_price_id.url,
+            'url': book_obj.printout_ticket_price_id.url,
         }
         return url
 
@@ -1352,37 +1365,44 @@ class ReservationAirline(models.Model):
         return airline_ho_invoice_id.report_action(self, data=datas)
 
     @api.multi
-    def print_itinerary(self):
-        datas = {'ids': self.env.context.get('active_ids', [])}
-        res = self.read()
+    def print_itinerary(self, data):
+        # jika panggil dari backend
+        if 'order_number' not in data:
+            data['order_number'] = self.name
+        if 'provider_type' not in data:
+            data['provider_type'] = self.provider_type_id.name
+
+        book_obj = self.env['tt.reservation.airline'].search([('name', '=', data['order_number'])], limit=1)
+        datas = {'ids': book_obj.env.context.get('active_ids', [])}
+        res = book_obj.read()
         res = res and res[0] or {}
         datas['form'] = res
-        airline_itinerary_id = self.env.ref('tt_report_common.action_printout_itinerary_airline')
-        if not self.printout_itinerary_id:
-            pdf_report = airline_itinerary_id.report_action(self, data=datas)
+        airline_itinerary_id = book_obj.env.ref('tt_report_common.action_printout_itinerary_airline')
+        if not book_obj.printout_itinerary_id:
+            pdf_report = airline_itinerary_id.report_action(book_obj, data=datas)
             pdf_report['context'].update({
-                'active_model': self._name,
-                'active_id': self.id
+                'active_model': book_obj._name,
+                'active_id': book_obj.id
             })
             pdf_report_bytes = airline_itinerary_id.render_qweb_pdf(data=pdf_report)
-            res = self.env['tt.upload.center.wizard'].upload_file_api(
+            res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
                 {
-                    'filename': 'Airline Itinerary %s.pdf' % self.name,
+                    'filename': 'Airline Itinerary %s.pdf' % book_obj.name,
                     'file_reference': 'Airline Itinerary',
                     'file': base64.b64encode(pdf_report_bytes[0]),
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },
                 {
-                    'co_agent_id': self.env.user.agent_id.id,
+                    'co_agent_id': book_obj.env.user.agent_id.id,
                 }
             )
-            upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
-            self.printout_itinerary_id = upc_id.id
+            upc_id = book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+            book_obj.printout_itinerary_id = upc_id.id
         url = {
             'type': 'ir.actions.act_url',
             'name': "ZZZ",
             'target': 'new',
-            'url': self.printout_itinerary_id.url,
+            'url': book_obj.printout_itinerary_id.url,
         }
         return url
 

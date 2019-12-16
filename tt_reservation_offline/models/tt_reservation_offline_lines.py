@@ -60,7 +60,7 @@ class IssuedOfflineLines(models.Model):
     obj_qty = fields.Integer('Qty', readonly=False, default=1)
     state = fields.Selection(variables.BOOKING_STATE, string='State', default='draft', related='booking_id.state')
     state_offline = fields.Selection(variables.BOOKING_STATE, string='State', default='draft', related='booking_id.state_offline')
-    transaction_type = fields.Many2one('tt.provider.type', 'Service Type', related='booking_id.offline_provider_type_id')
+    transaction_type = fields.Selection('tt.provider.type', 'Service Type', related='booking_id.offline_provider_type')
     transaction_name = fields.Char('Service Name', readonly=True, related='booking_id.provider_type_id_name')
     provider_id = fields.Many2one('tt.provider', 'Provider ID', readonly=False)
 
@@ -100,13 +100,14 @@ class IssuedOfflineLines(models.Model):
     sale_service_charge_ids = fields.One2many('tt.service.charge', 'provider_offline_booking_id',
                                               'Cost Service Charges')
 
-    @api.onchange('transaction_type', 'booking_id.offline_provider_type_id')
+    @api.onchange('booking_id.offline_provider_type')
     def onchange_domain(self):
+        provider_type_id = self.env['tt.provider.type'].search([('code', '=', self.booking_id.offline_provider_type)], limit=1)
         return {'domain': {
-            'carrier_id': [('provider_type_id', '=', self.booking_id.offline_provider_type_id.id)],
-            'origin_id': [('provider_type_id', '=', self.booking_id.offline_provider_type_id.id)],
-            'destination_id': [('provider_type_id', '=', self.booking_id.offline_provider_type_id.id)],
-            'provider_id': [('provider_type_id', '=', self.booking_id.offline_provider_type_id.id)]
+            'carrier_id': [('provider_type_id', '=', provider_type_id.id)],
+            'origin_id': [('provider_type_id', '=', provider_type_id.id)],
+            'destination_id': [('provider_type_id', '=', provider_type_id.id)],
+            'provider_id': [('provider_type_id', '=', provider_type_id.id)]
         }}
 
     @api.onchange('carrier_id')
