@@ -179,7 +179,11 @@ class PaymentTransaction(models.Model):
             else:
                 raise exceptions.UserError('No permission to approve Top Up.')
         else:
-            self.state = 'approved'
+            self.invoice_approve_action()
+
+
+    def invoice_approve_action(self):
+        self.state = 'approved'
 
     def action_cancel_payment(self,context):
         if self.state != 'confirm':

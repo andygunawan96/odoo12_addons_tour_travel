@@ -90,14 +90,14 @@ class AgentInvoice(models.Model):
         #jika tidak, saat pilih payment sebelum save bisa lgsg berubah jadi paid
         super(AgentInvoice, self).write(vals)
         # if 'payment_ids' in vals:
-        if self.check_paid_status():
-            self.state = 'paid'
+        self.check_paid_status()
+
 
     def set_as_confirm(self):
         self.write({
             'state': "confirm",
             'confirmed_uid': self.env.user.id,
-            'confirmed_date': datetime.datetime.now()
+            'confirmed_date': datetime.now()
         })
 
     def set_as_paid(self):
@@ -110,7 +110,9 @@ class AgentInvoice(models.Model):
             self.confirmed_uid = self.env.user.id
 
     def check_paid_status(self):
-        return self.paid_amount >= self.total and self.total != 0
+        if self.state != 'paid' and (self.paid_amount >= self.total and self.total != 0):
+            self.state = 'paid'
+        # return
 
     @api.multi
     @api.depends('invoice_line_ids.total', 'invoice_line_ids')
@@ -127,7 +129,7 @@ class AgentInvoice(models.Model):
             paid_amount = 0
             # paid_amount = sum(rec.pay_amount for rec in inv.payment_ids if (rec.create_date and rec.state in ['validate','validate2']))
             for rec in inv.payment_ids:
-                if rec.state in ['validated','validated2']:
+                if rec.state in ['approved']:
                     paid_amount += rec.pay_amount
             inv.paid_amount = paid_amount
 

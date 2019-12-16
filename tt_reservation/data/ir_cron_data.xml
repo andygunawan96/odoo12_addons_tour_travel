@@ -3,7 +3,7 @@
     <record model="ir.cron" id="cron_expired_booking">
         <field name='name'>Auto-cancel Hold Booking</field>
         <field name="user_id" ref="base.user_root"/>
-        <field name='interval_number'>10</field>
+        <field name='interval_number'>4</field>
         <field name='interval_type'>minutes</field>
         <field name="numbercall">-1</field>
         <field name="nextcall" eval="(datetime.now().isoformat())"/>
