@@ -446,10 +446,14 @@ class TtReservation(models.Model):
     def action_cancel(self):
         self.state = 'cancel'
 
-    def get_installment_dp_amount(self):
+    # def get_installment_dp_amount(self):
+    ##overwrite this method for installment
+    def get_nta_amount(self):
         return self.agent_nta
 
-    def get_installment_dp_amount_cor(self):
+    # def get_installment_dp_amount_cor(self):
+    ##overwrite this method for installment
+    def get_total_amount(self):
         return self.total
 
     ## Digunakan untuk mengupdate PNR seluruh ledger untuk resv ini
@@ -477,39 +481,30 @@ class TtReservation(models.Model):
 
                 payment_method = req.get('payment_method', 'full')
 
-                #cek saldo
-                if payment_method == 'full':
-                    balance_res = self.env['tt.agent'].check_balance_limit_api(context['co_agent_id'],book_obj.agent_nta)
-                    if balance_res['error_code']!=0:
-                        _logger.error('Agent Balance not enough')
-                        raise RequestException(1007,additional_message="agent balance")
+                agent_check_amount = book_obj.get_nta_amount()
 
-                    if req.get("member"):
-                        acquirer_seq_id = req.get('acquirer_seq_id')
-                        if acquirer_seq_id:
-                            balance_res = self.env['tt.customer.parent'].check_balance_limit_api(acquirer_seq_id,book_obj.total)
-                            if balance_res['error_code']!=0:
-                                _logger.error('Cutomer Parent credit limit not enough')
-                                raise RequestException(1007,additional_message="customer credit limit")
+                ### voucher agent here##
 
-                    for provider in book_obj.provider_booking_ids:
-                        provider.action_create_ledger(context['co_uid'])
-                else:
-                    balance_res = self.env['tt.agent'].check_balance_limit_api(context['co_agent_id'],book_obj.get_installment_dp_amount())
-                    if balance_res['error_code']!=0:
-                        _logger.error('Agent Balance not enough')
-                        raise RequestException(1007,additional_message="agent balance")
 
-                    if req.get("member"):
-                        acquirer_seq_id = req.get('acquirer_seq_id')
-                        if acquirer_seq_id:
-                            balance_res = self.env['tt.customer.parent'].check_balance_limit_api(acquirer_seq_id,book_obj.get_installment_dp_amount_cor())
-                            if balance_res['error_code']!=0:
-                                _logger.error('Cutomer Parent credit limit not enough')
-                                raise RequestException(1007,additional_message="customer credit limit")
+                balance_res = self.env['tt.agent'].check_balance_limit_api(context['co_agent_id'],agent_check_amount)
+                if balance_res['error_code']!=0:
+                    _logger.error('Agent Balance not enough')
+                    raise RequestException(1007,additional_message="agent balance")
 
-                    for provider in book_obj.provider_booking_ids:
-                        provider.action_create_ledger(context['co_uid'], payment_method)
+                if req.get("member"):
+                    acquirer_seq_id = req.get('acquirer_seq_id')
+                    if acquirer_seq_id:
+                        cor_check_amount = book_obj.get_total_amount()
+
+                        ### voucher cor here
+
+                        balance_res = self.env['tt.customer.parent'].check_balance_limit_api(acquirer_seq_id,cor_check_amount)
+                        if balance_res['error_code']!=0:
+                            _logger.error('Cutomer Parent credit limit not enough')
+                            raise RequestException(1007,additional_message="customer credit limit")
+
+                for provider in book_obj.provider_booking_ids:
+                    provider.action_create_ledger(context['co_uid'], payment_method)
 
                 return ERR.get_no_error()
             else:

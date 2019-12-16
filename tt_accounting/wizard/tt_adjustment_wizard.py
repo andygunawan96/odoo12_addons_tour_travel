@@ -10,7 +10,7 @@ class TtAdjustmentWizard(models.TransientModel):
     _description = 'Adjustment Wizard'
 
 
-    agent_id = fields.Many2one('tt.agent', 'Agent', readonly=True)
+    agent_id = fields.Many2one('tt.agent', 'Agent')
 
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', related='agent_id.agent_type_id',
                                     readonly=True)

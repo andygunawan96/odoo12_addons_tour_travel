@@ -8,6 +8,7 @@ class PaymentTransaction(models.Model):
     _rec_name = 'display_name'
     _inherit = 'tt.history'
     _description = 'Rodex Model'
+    _order = 'id desc'
 
     name = fields.Char('Name', default='New', help='Sequence number set on Confirm state example:PAY.XXX',readonly=True)
     fee = fields.Monetary('Fee', help='Third party fee',readonly=True, states={'draft': [('readonly', False)]}) # g dihitung sebagai uang yg bisa digunakan

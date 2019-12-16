@@ -15,6 +15,7 @@ class AgentInvoice(models.Model):
     _name = 'tt.agent.invoice'
     _inherit = 'tt.history'
     _description = 'Rodex Model'
+    _order = 'id desc'
 
     name = fields.Char('Name', default='New', readonly=True)
     total = fields.Monetary('Total', compute="_compute_total",store=True)

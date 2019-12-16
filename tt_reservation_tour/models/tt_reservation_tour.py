@@ -641,10 +641,10 @@ class ReservationTour(models.Model):
                 _logger.error('Creating Notes Error')
             return ERR.get_error(1005)
 
-    def get_installment_dp_amount(self):
+    def get_nta_amount(self):
         total_dp = (self.tour_id.down_payment / 100) * self.agent_nta
         return total_dp
 
-    def get_installment_dp_amount_cor(self):
+    def get_total_amount(self):
         total_dp = (self.tour_id.down_payment / 100) * self.total
         return total_dp
