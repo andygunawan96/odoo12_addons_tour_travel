@@ -1,0 +1,508 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <record id="tt_transport_carrier_search_sq_all" model="tt.transport.carrier.search">
+            <field name="name">Singapore Airlines</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_sq"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="True"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_singaporeairlines')),
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_sq_amadeus" model="tt.transport.carrier.search">
+            <field name="name">Singapore Airlines GDS</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_sq"/>
+            <field name="is_default" eval="False"/>
+            <field name="is_favorite" eval="True"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+
+        </record>
+
+        <record id="tt_transport_carrier_search_sq_sia" model="tt.transport.carrier.search">
+            <field name="name">Singapore Airlines NDC</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_sq"/>
+            <field name="is_default" eval="False"/>
+            <field name="is_favorite" eval="True"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_singaporeairlines'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_cx_all" model="tt.transport.carrier.search">
+            <field name="name">Cathay Pacific</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_cx"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="True"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_ci_all" model="tt.transport.carrier.search">
+            <field name="name">China Airlines</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ci"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_ga_all" model="tt.transport.carrier.search">
+            <field name="name">Garuda Indonesia</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ga"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus')),
+                (4, ref('tt_reservation_airline.tt_provider_airline_garuda'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_tr_all" model="tt.transport.carrier.search">
+            <field name="name">Scoot</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_tr"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_mi_all" model="tt.transport.carrier.search">
+            <field name="name">Silk Air</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_mi"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_jt_all" model="tt.transport.carrier.search">
+            <field name="name">Lion Air</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_jt"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_lionair'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_ka_all" model="tt.transport.carrier.search">
+            <field name="name">Cathay Dragon</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ka"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_bi_all" model="tt.transport.carrier.search">
+            <field name="name">Royal Brunei</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_bi"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_tk_all" model="tt.transport.carrier.search">
+            <field name="name">Turkish Airlines</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_tk"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_br_all" model="tt.transport.carrier.search">
+            <field name="name">Eva Airways</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_br"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_cz_all" model="tt.transport.carrier.search">
+            <field name="name">China Southern</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_cz"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_aa_all" model="tt.transport.carrier.search">
+            <field name="name">American Airlines</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_aa"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_px_all" model="tt.transport.carrier.search">
+            <field name="name">Air Niugini</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_px"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_dl_all" model="tt.transport.carrier.search">
+            <field name="name">Delta Airlines</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_dl"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_ms_all" model="tt.transport.carrier.search">
+            <field name="name">Egypt Air</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ms"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_ha_all" model="tt.transport.carrier.search">
+            <field name="name">Hawaiian Airlines</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ha"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_fj_all" model="tt.transport.carrier.search">
+            <field name="name">Air Pacific Limited</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_fj"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_ps_all" model="tt.transport.carrier.search">
+            <field name="name">Ukraine International Airlines</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ps"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_od_all" model="tt.transport.carrier.search">
+            <field name="name">Malindo Air</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_od"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_mh_all" model="tt.transport.carrier.search">
+            <field name="name">Malaysia Airlines</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_mh"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_pr_all" model="tt.transport.carrier.search">
+            <field name="name">Philippine Airlines</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_pr"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_qr_all" model="tt.transport.carrier.search">
+            <field name="name">Qatar Airways</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_qr"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_os_all" model="tt.transport.carrier.search">
+            <field name="name">Austrian Airlines AG</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_os"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_et_all" model="tt.transport.carrier.search">
+            <field name="name">Ethiopian Airlines</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_et"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_ey_all" model="tt.transport.carrier.search">
+            <field name="name">Etihad Airways</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ey"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_nh_all" model="tt.transport.carrier.search">
+            <field name="name">All Nippon Airways</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_nh"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_ke_all" model="tt.transport.carrier.search">
+            <field name="name">Korean Airlines</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ke"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_mu_all" model="tt.transport.carrier.search">
+            <field name="name">China Eastern</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_mu"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_dl_all" model="tt.transport.carrier.search">
+            <field name="name">Delta Airlines</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_dl"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_7c_all" model="tt.transport.carrier.search">
+            <field name="name">Jeju Air</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_7c"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_qf_all" model="tt.transport.carrier.search">
+            <field name="name">Qantas</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_qf"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_vn_all" model="tt.transport.carrier.search">
+            <field name="name">Vietnam Airlines</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_vn"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_hr_all" model="tt.transport.carrier.search">
+            <field name="name">Hahn Air</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_hr"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_tg_all" model="tt.transport.carrier.search">
+            <field name="name">Thai Airways</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_tg"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_va_all" model="tt.transport.carrier.search">
+            <field name="name">Virgin Australia</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_va"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_mf_all" model="tt.transport.carrier.search">
+            <field name="name">Xiamen Airlines</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_mf"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_oz_all" model="tt.transport.carrier.search">
+            <field name="name">Asiana Airlines</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_oz"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_ac_all" model="tt.transport.carrier.search">
+            <field name="name">Air Canada</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ac"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_lh_all" model="tt.transport.carrier.search">
+            <field name="name">Lufthansa</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_lh"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_jl_all" model="tt.transport.carrier.search">
+            <field name="name">Japan Airlines</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_jl"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_nz_all" model="tt.transport.carrier.search">
+            <field name="name">Air New Zealand</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_nz"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_qg_all" model="tt.transport.carrier.search">
+            <field name="name">Citilink</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_qg"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_citilink'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_8b_all" model="tt.transport.carrier.search">
+            <field name="name">TransNusa Air</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_8b"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_transnusa'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_il_all" model="tt.transport.carrier.search">
+            <field name="name">Trigana Air</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_il"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_trigana'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_sj_all" model="tt.transport.carrier.search">
+            <field name="name">Sriwijaya Air</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_sj"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_sriwijaya'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_ak_all" model="tt.transport.carrier.search">
+            <field name="name">AirAsia</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ak"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_airasia'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_3k_all" model="tt.transport.carrier.search">
+            <field name="name">Jet Star</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_3k"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_jetstar'))
+            ]"/>
+        </record>
+
+    </data>
+</odoo>

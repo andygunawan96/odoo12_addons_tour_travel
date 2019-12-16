@@ -106,6 +106,23 @@ class TtProviderAirline(models.Model):
             'tag': 'reload',
         }
 
+    def action_set_to_book_from_button(self):
+        if self.state == 'booked':
+            raise UserError("Has been Booked.")
+
+        self.write({
+            'state': 'booked',
+            'booked_uid': self.env.user.id,
+            'booked_date': datetime.now()
+        })
+
+        self.booking_id.check_provider_state({'co_uid':self.env.user.id})
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
+
     ###
     def action_booked_api_airline(self, provider_data, api_context):
         for rec in self:

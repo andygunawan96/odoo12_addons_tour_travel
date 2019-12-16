@@ -18,8 +18,9 @@
                     <!--<field name="state" widget="statusbar" statusbar_visible="draft,booked,issued"/>-->
                 <!--</header>-->
                 <header>
+                    <button string="Set To Booked" name="action_set_to_book_from_button" states="cancel2" type="object"/>
                     <button string="Force Issued (Create Ledger)" name="action_force_issued_from_button" states="booked" type="object"/>
-                    <button string="Set To Issued (No Create Ledger)" name="action_set_to_issued_from_button" type="object"/>
+                    <button string="Set To Issued (No Create Ledger)" name="action_set_to_issued_from_button" states="booked" type="object"/>
                     <button string="Reverse Ledger" name="action_reverse_ledger_from_button" states="issued" type="object"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,booked,issued"/>
                 </header>

@@ -4,8 +4,21 @@
         <field name="model">tt.transport.carrier.search</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <button name="get_carrier_list_search_api" string="Test Search API" type="object"/>
+                </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
+                        <button name="toggle_default" type="object" groups="base.group_user"
+                                class="oe_stat_button" icon="fa-copy">
+                            <field name="is_default" widget="boolean_button"
+                                   options='{"terminology": "default"}'/>
+                        </button>
+                        <button name="toggle_favorite" type="object" groups="base.group_user"
+                                class="oe_stat_button" icon="fa-star">
+                            <field name="is_favorite" widget="boolean_button"
+                                   options='{"terminology": "default"}'/>
+                        </button>
                         <button name="toggle_active" type="object" groups="base.group_user"
                                 class="oe_stat_button" icon="fa-archive">
                             <field name="active" widget="boolean_button"
@@ -33,8 +46,11 @@
         <field name="model">tt.transport.carrier.search</field>
         <field name="arch" type="xml">
             <tree decoration-muted="active == False">
+                <field name="name"/>
                 <field name="carrier_id"/>
                 <field name="provider_type_id"/>
+                <field name="is_default"/>
+                <field name="is_favorite"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>

@@ -305,8 +305,6 @@
         <record id="tt_transport_carrier_airline_w2" model="tt.transport.carrier">
             <field name="name">Flex Flight</field>
             <field name="code">W2</field>
-            <field name="icao"></field>
-            <field name="call_sign"></field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
