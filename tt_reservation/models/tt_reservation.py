@@ -470,6 +470,10 @@ class TtReservation(models.Model):
                 book_obj = self.env['tt.reservation.%s' % (table_name)].browse(req.get('book_id'))
             else:
                 book_obj = self.env['tt.reservation.%s' % (table_name)].search([('name','=',req.get('order_number'))],limit=1)
+            voucher = req['voucher']
+            discount = {'error_code': -1}
+            total_discount = 0
+
             if book_obj and book_obj.agent_id.id == context.get('co_agent_id',-1):
                 #cek balance due book di sini, mungkin suatu saat yang akan datang
                 if book_obj.state == 'issued':
@@ -481,31 +485,77 @@ class TtReservation(models.Model):
 
                 payment_method = req.get('payment_method', 'full')
 
-                agent_check_amount = book_obj.get_nta_amount()
-
                 ### voucher agent here##
+                if req['voucher']:
+                    voucher.update({
+                        'order_number': book_obj.name
+                    })
+                    discount = self.env['tt.voucher.detail'].simulate_voucher(voucher, context)
+                    if discount['error_code'] == 0:
+                        for rec in discount['response']:
+                            total_discount = total_discount + rec['provider_total_discount']
 
+                if payment_method == 'full':
+                    agent_check_amount = book_obj.get_nta_amount()
+                    agent_check_amount -= total_discount
+                    balance_res = self.env['tt.agent'].check_balance_limit_api(context['co_agent_id'], agent_check_amount)
+                    if balance_res['error_code']!=0:
+                        _logger.error('Agent Balance not enough')
+                        raise RequestException(1007,additional_message="agent balance")
 
-                balance_res = self.env['tt.agent'].check_balance_limit_api(context['co_agent_id'],agent_check_amount)
-                if balance_res['error_code']!=0:
-                    _logger.error('Agent Balance not enough')
-                    raise RequestException(1007,additional_message="agent balance")
+                    if req.get("member"):
+                        acquirer_seq_id = req.get('acquirer_seq_id')
+                        if acquirer_seq_id:
+                            cor_check_amount = book_obj.get_total_amount()
+                            cor_check_amount -= total_discount
 
-                if req.get("member"):
-                    acquirer_seq_id = req.get('acquirer_seq_id')
-                    if acquirer_seq_id:
-                        cor_check_amount = book_obj.get_total_amount()
+                            balance_res = self.env['tt.customer.parent'].check_balance_limit_api(acquirer_seq_id, cor_check_amount)
+                            if balance_res['error_code']!=0:
+                                _logger.error('Cutomer Parent credit limit not enough')
+                                raise RequestException(1007,additional_message="customer credit limit")
 
-                        ### voucher cor here
+                    for provider in book_obj.provider_booking_ids:
+                        provider.action_create_ledger(context['co_uid'], payment_method)
+                else:
 
-                        balance_res = self.env['tt.customer.parent'].check_balance_limit_api(acquirer_seq_id,cor_check_amount)
-                        if balance_res['error_code']!=0:
-                            _logger.error('Cutomer Parent credit limit not enough')
-                            raise RequestException(1007,additional_message="customer credit limit")
+                    agent_check_amount = book_obj.get_installment_dp_amount()
+                    agent_check_amount -= total_discount
+                    balance_res = self.env['tt.agent'].check_balance_limit_api(context['co_agent_id'], agent_check_amount)
+                    if balance_res['error_code'] != 0:
+                        _logger.error('Agent Balance not enough')
+                        raise RequestException(1007, additional_message="agent balance")
 
-                for provider in book_obj.provider_booking_ids:
-                    provider.action_create_ledger(context['co_uid'], payment_method)
+                    if req.get("member"):
+                        acquirer_seq_id = req.get('acquirer_seq_id')
+                        if acquirer_seq_id:
+                            cor_check_amount = book_obj.get_installment_dp_amount()
+                            cor_check_amount -= total_discount
 
+                            balance_res = self.env['tt.customer.parent'].check_balance_limit_api(acquirer_seq_id, cor_check_amount)
+                            if balance_res['error_code'] != 0:
+                                _logger.error('Cutomer Parent credit limit not enough')
+                                raise RequestException(1007, additional_message="customer credit limit")
+
+                    for provider in book_obj.provider_booking_ids:
+                        provider.action_create_ledger(context['co_uid'], payment_method)
+                if discount['error_code'] == 0:
+                    discount = self.env['tt.voucher.detail'].use_voucher_new(voucher, context)
+                    if discount['error_code'] == 0:
+                        for idx, rec in enumerate(discount['response']):
+                            service_charge = [{
+                                "charge_code": "disc %s" % rec['pnr'],
+                                "charge_type": "DISC",
+                                "currency": "IDR",
+                                "pax_type": "ADT",
+                                "pax_count": 1,
+                                "amount": rec['provider_total_discount'] / len(book_obj.passenger_ids),
+                                "foreign_currency": "IDR",
+                                "foreign_amount": rec['provider_total_discount'] / len(book_obj.passenger_ids),
+                                "total": rec['provider_total_discount'] / len(book_obj.passenger_ids),
+                                "sequence": idx
+                            }]
+                            book_obj.provider_booking_ids[idx].create_service_charge(service_charge)
+                    book_obj.calculate_service_charge()
                 return ERR.get_no_error()
             else:
                 raise RequestException(1001)

@@ -1223,6 +1223,17 @@ class TtVisa(models.Model):
                             sale['TOTAL'].update({
                                 'currency': ssc.currency_id.name
                             })
+                for ssc in pax.channel_service_charge_ids:
+                    csc = {
+                        'amount': 0,
+                        'charge_code': ''
+                    }
+                    if ssc.charge_code == 'csc':
+                        csc = {
+                            'charge_code': ssc.charge_code,
+                            'amount': csc['amount'] + abs(ssc.amount)
+                        }
+                    sale['CSC'] = csc
                 """ Requirements """
                 for require in pax.to_requirement_ids:
                     requirement.append({
