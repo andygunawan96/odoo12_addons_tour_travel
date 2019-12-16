@@ -25,8 +25,8 @@ STATE_OFFLINE_STR = {
     'draft': 'Draft',
     'confirm': 'Confirm',
     'sent': 'Sent',
-    'paid': 'Validate',
-    'posted': 'Done',
+    'validate': 'Validate',
+    'done': 'Done',
     'refund': 'Refund',
     'expired': 'Expired',
     'cancel': 'Canceled'
@@ -823,8 +823,8 @@ class IssuedOffline(models.Model):
     ]
 
     param_context = {
-        'co_uid': 6,
-        'co_agent_id': 3
+        'co_uid': 308,
+        'co_agent_id': 80
     }
 
     param_payment = {
@@ -846,6 +846,7 @@ class IssuedOffline(models.Model):
             res = Response().get_no_error(res)
         except Exception as e:
             res = Response().get_error(str(e), 500)
+            _logger.error(msg=str(e) + '\n' + traceback.format_exc())
         return res
 
     def create_booking_reservation_offline_api(self, data, context):  #
@@ -855,7 +856,7 @@ class IssuedOffline(models.Model):
         contact = data['contact']  # self.param_contact
         context = context  # self.param_context
         lines = data['issued_offline_data']['line_ids']  # data_reservation_offline['line_ids']
-        # payment = data['payment']  # self.param_payment
+        payment = data['payment']  # self.param_payment
 
         try:
             # cek saldo
@@ -876,7 +877,7 @@ class IssuedOffline(models.Model):
             # contact_id = self._create_contact(context, contact[0])
             contact_id = self.create_contact_api(contact[0], booker_id, context)
             passenger_ids = self.create_customer_api(passengers, context, booker_id, contact_id)  # create passenger
-            customer_parent_id = self._set_customer_parent(context, contact_id)
+            # customer_parent_id = self._set_customer_parent(context, contact_id)
             booking_line_ids = self._create_line(lines, data_reservation_offline)  # create booking line
             iss_off_psg_ids = self._create_reservation_offline_order(passengers, passenger_ids)
             header_val = {
@@ -884,7 +885,7 @@ class IssuedOffline(models.Model):
                 'passenger_ids': [(6, 0, iss_off_psg_ids)],
                 # 'contact_ids': [(6, 0, contact_ids)],
                 'contact_id': contact_id.id,
-                'customer_parent_id': customer_parent_id,
+                # 'customer_parent_id': customer_parent_id,
                 'line_ids': [(6, 0, booking_line_ids)],
                 'offline_provider_type_id': self.env['tt.provider.type'].sudo()
                                                 .search([('code', '=', data_reservation_offline.get('type'))], limit=1).id,
@@ -894,14 +895,34 @@ class IssuedOffline(models.Model):
                 "expired_date": data_reservation_offline.get('expired_date'),
                 'state': 'draft',
                 'state_offline': 'confirm',
-                'agent_id': context['co_agent_id'],
-                'user_id': context['co_uid'],
+                # 'agent_id': context['co_agent_id'],
+                # 'user_id': context['co_uid'],
             }
+
             if data_reservation_offline['type'] == 'airline':
                 header_val.update({
                     'sector_type': data_reservation_offline.get('sector_type'),
                 })
             book_obj = self.create(header_val)
+            book_obj.update({
+                'total': data_reservation_offline['total_sale_price']
+            })
+
+            if payment.get('member'):
+                customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', payment['seq_id'])])
+            else:
+                customer_parent_id = book_obj.agent_id.customer_parent_walkin_id.id
+            if payment.get('seq_id'):
+                acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', payment['seq_id'])], limit=1)
+                if not acquirer_id:
+                    raise RequestException(1017)
+                else:
+                    book_obj.acquirer_id = acquirer_id.id
+
+            book_obj.sudo().write({
+                'customer_parent_id': customer_parent_id,
+            })
+
             book_obj.action_confirm(context)
             response = {
                 'id': book_obj.name

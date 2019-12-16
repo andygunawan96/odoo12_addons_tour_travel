@@ -366,6 +366,680 @@ class TtVisa(models.Model):
     ######################################################################################################
 
     param_sell_visa = {
+        "search_data": [
+            {
+                "sequence": 0,
+                "pax_type": "ADT",
+                "entry_type": "single",
+                "visa_type": "tourist",
+                "type": {
+                    "process_type": "regular",
+                    "duration": 5
+                },
+                "consulate": {
+                    "city": "Surabaya",
+                    "address": "Jl. Sumatera No.93, Gubeng"
+                },
+                "requirements": [
+                    {
+                        "name": "Formulir Aplikasi",
+                        "description": "** Harus ditandatangani oleh pemohon",
+                        "required": False,
+                        "id": 2
+                    },
+                    {
+                        "name": "Pasport",
+                        "description": "-",
+                        "required": False,
+                        "id": 3
+                    },
+                    {
+                        "name": "Paspor Lama",
+                        "description": "Jika Ada",
+                        "required": False,
+                        "id": 4
+                    },
+                    {
+                        "name": "Foto",
+                        "description": "-",
+                        "required": False,
+                        "id": 5
+                    },
+                    {
+                        "name": "KTP",
+                        "description": "-",
+                        "required": False,
+                        "id": 6
+                    },
+                    {
+                        "name": "Kartu Keluarga",
+                        "description": "-",
+                        "required": False,
+                        "id": 7
+                    },
+                    {
+                        "name": "Surat Ganti nama",
+                        "description": "** Jika pernah ganti nama",
+                        "required": False,
+                        "id": 8
+                    },
+                    {
+                        "name": "Surat Keterangan WNI",
+                        "description": "**Jika pemohon sebelumnya adalah warga negara asing dan berubah menjadi warga negara Indonesia",
+                        "required": False,
+                        "id": 9
+                    },
+                    {
+                        "name": "Akta Lahir",
+                        "description": "-",
+                        "required": False,
+                        "id": 10
+                    },
+                    {
+                        "name": "Akta Nikah",
+                        "description": "-",
+                        "required": False,
+                        "id": 11
+                    },
+                    {
+                        "name": "Surat Sponsor",
+                        "description": "** Jika perusahaan harus ada Logo dan stampel perusahaan",
+                        "required": False,
+                        "id": 12
+                    },
+                    {
+                        "name": "Surat Keterangan Kerja",
+                        "description": "** Jika pemohon adalah pegawai (Jika ada)",
+                        "required": False,
+                        "id": 13
+                    },
+                    {
+                        "name": "Tanda Daftar Perusahaan (TDP)",
+                        "description": "-",
+                        "required": False,
+                        "id": 14
+                    },
+                    {
+                        "name": "Surat Izin Usaha Perdagangan (SIUP)",
+                        "description": "-",
+                        "required": False,
+                        "id": 15
+                    },
+                    {
+                        "name": "N.P.W.P (Nomor Pokok Wajib Pajak)",
+                        "description": "-",
+                        "required": False,
+                        "id": 16
+                    },
+                    {
+                        "name": "Laporan Keuangan 3 Bulan Terakhir",
+                        "description": "-",
+                        "required": False,
+                        "id": 17
+                    },
+                    {
+                        "name": "Tiket pesawat",
+                        "description": "-",
+                        "required": False,
+                        "id": 18
+                    },
+                    {
+                        "name": "Voucher Hotel",
+                        "description": "-",
+                        "required": False,
+                        "id": 19
+                    },
+                    {
+                        "name": "Itinerary",
+                        "description": "-",
+                        "required": False,
+                        "id": 20
+                    },
+                    {
+                        "name": "Surat Kuasa",
+                        "description": "Harus di tanda tangan oleh pemohon",
+                        "required": False,
+                        "id": 21
+                    }
+                ],
+                "attachments": [],
+                "sale_price": {
+                    "commission": 65000,
+                    "total_price": 485000,
+                    "currency": "IDR"
+                },
+                "id": 19,
+                "notes": [],
+                "commission": [
+                    {
+                        "charge_type": "RAC",
+                        "charge_code": "rac",
+                        "amount": -65000,
+                        "currency": "IDR",
+                        "commission_agent_id": 2
+                    }
+                ]
+            },
+            {
+                "sequence": 1,
+                "pax_type": "CHD",
+                "entry_type": "single",
+                "visa_type": "tourist",
+                "type": {
+                    "process_type": "regular",
+                    "duration": 5
+                },
+                "consulate": {
+                    "city": "Surabaya",
+                    "address": "Jl. Sumatera No.93, Gubeng"
+                },
+                "requirements": [
+                    {
+                        "name": "Formulir Aplikasi",
+                        "description": "** Harus ditandatangani oleh pemohon",
+                        "required": False,
+                        "id": 22
+                    },
+                    {
+                        "name": "Pasport",
+                        "description": "-",
+                        "required": False,
+                        "id": 23
+                    },
+                    {
+                        "name": "Paspor Lama",
+                        "description": "Jika Ada",
+                        "required": False,
+                        "id": 24
+                    },
+                    {
+                        "name": "Foto",
+                        "description": "-",
+                        "required": False,
+                        "id": 25
+                    },
+                    {
+                        "name": "KTP Ibu",
+                        "description": "**Jika pemohon berusia di bawah 18 tahun",
+                        "required": False,
+                        "id": 26
+                    },
+                    {
+                        "name": "KTP Ayah",
+                        "description": "**Jika pemohon berusia di bawah 18 tahun",
+                        "required": False,
+                        "id": 27
+                    },
+                    {
+                        "name": "Kartu Keluarga",
+                        "description": "-",
+                        "required": False,
+                        "id": 28
+                    },
+                    {
+                        "name": "Surat Ganti nama",
+                        "description": "** Jika pernah ganti nama",
+                        "required": False,
+                        "id": 29
+                    },
+                    {
+                        "name": "Surat Keterangan WNI",
+                        "description": "**Jika pemohon sebelumnya adalah warga negara asing dan berubah menjadi warga negara Indonesia",
+                        "required": False,
+                        "id": 30
+                    },
+                    {
+                        "name": "Akta Lahir",
+                        "description": "-",
+                        "required": False,
+                        "id": 31
+                    },
+                    {
+                        "name": "Akta Nikah",
+                        "description": "-",
+                        "required": False,
+                        "id": 32
+                    },
+                    {
+                        "name": "Surat Keterangan Sekolah",
+                        "description": "** Jika pemohon adalah murid dan harus berbahasa inggris",
+                        "required": False,
+                        "id": 33
+                    },
+                    {
+                        "name": "Surat Sponsor",
+                        "description": "** Jika perusahaan harus ada Logo dan stampel perusahaan",
+                        "required": False,
+                        "id": 34
+                    },
+                    {
+                        "name": "Surat Keterangan Kerja",
+                        "description": "** Jika pemohon adalah pegawai (Jika ada)",
+                        "required": False,
+                        "id": 35
+                    },
+                    {
+                        "name": "Tanda Daftar Perusahaan (TDP)",
+                        "description": "-",
+                        "required": False,
+                        "id": 36
+                    },
+                    {
+                        "name": "Surat Izin Usaha Perdagangan (SIUP)",
+                        "description": "-",
+                        "required": False,
+                        "id": 37
+                    },
+                    {
+                        "name": "N.P.W.P (Nomor Pokok Wajib Pajak)",
+                        "description": "-",
+                        "required": False,
+                        "id": 38
+                    },
+                    {
+                        "name": "Laporan Keuangan 3 Bulan Terakhir",
+                        "description": "-",
+                        "required": False,
+                        "id": 39
+                    },
+                    {
+                        "name": "Tiket pesawat",
+                        "description": "-",
+                        "required": False,
+                        "id": 40
+                    },
+                    {
+                        "name": "Voucher Hotel",
+                        "description": "-",
+                        "required": False,
+                        "id": 41
+                    },
+                    {
+                        "name": "Itinerary",
+                        "description": "-",
+                        "required": False,
+                        "id": 42
+                    },
+                    {
+                        "name": "Surat Ijin Suami/Orang Tua",
+                        "description": "-",
+                        "required": False,
+                        "id": 43
+                    },
+                    {
+                        "name": "Surat Kuasa",
+                        "description": "Harus di tanda tangan oleh pemohon",
+                        "required": False,
+                        "id": 44
+                    }
+                ],
+                "attachments": [],
+                "sale_price": {
+                    "commission": 65000,
+                    "total_price": 485000,
+                    "currency": "IDR"
+                },
+                "id": 20,
+                "notes": [],
+                "commission": [
+                    {
+                        "charge_type": "RAC",
+                        "charge_code": "rac",
+                        "amount": -65000,
+                        "currency": "IDR",
+                        "commission_agent_id": 2
+                    }
+                ]
+            },
+            {
+                "sequence": 2,
+                "pax_type": "ADT",
+                "entry_type": "multiple",
+                "visa_type": "tourist",
+                "type": {
+                    "process_type": "regular",
+                    "duration": 5
+                },
+                "consulate": {
+                    "city": "Surabaya",
+                    "address": "Jl. Sumatera No.93, Gubeng"
+                },
+                "requirements": [
+                    {
+                        "name": "Formulir Aplikasi",
+                        "description": "** Harus ditandatangani oleh pemohon",
+                        "required": False,
+                        "id": 45
+                    },
+                    {
+                        "name": "Pasport",
+                        "description": "-",
+                        "required": False,
+                        "id": 46
+                    },
+                    {
+                        "name": "Paspor Lama",
+                        "description": "Jika Ada",
+                        "required": False,
+                        "id": 47
+                    },
+                    {
+                        "name": "Foto",
+                        "description": "-",
+                        "required": False,
+                        "id": 48
+                    },
+                    {
+                        "name": "KTP",
+                        "description": "-",
+                        "required": False,
+                        "id": 49
+                    },
+                    {
+                        "name": "Kartu Keluarga",
+                        "description": "-",
+                        "required": False,
+                        "id": 50
+                    },
+                    {
+                        "name": "Surat Ganti nama",
+                        "description": "** Jika pernah ganti nama",
+                        "required": False,
+                        "id": 51
+                    },
+                    {
+                        "name": "Surat Keterangan WNI",
+                        "description": "**Jika pemohon sebelumnya adalah warga negara asing dan berubah menjadi warga negara Indonesia",
+                        "required": False,
+                        "id": 52
+                    },
+                    {
+                        "name": "Akta Lahir",
+                        "description": "-",
+                        "required": False,
+                        "id": 53
+                    },
+                    {
+                        "name": "Akta Nikah",
+                        "description": "-",
+                        "required": False,
+                        "id": 54
+                    },
+                    {
+                        "name": "Surat Sponsor",
+                        "description": "** Jika perusahaan harus ada Logo dan stampel perusahaan",
+                        "required": False,
+                        "id": 55
+                    },
+                    {
+                        "name": "Surat Keterangan Kerja",
+                        "description": "** Jika pemohon adalah pegawai (Jika ada)",
+                        "required": False,
+                        "id": 56
+                    },
+                    {
+                        "name": "Tanda Daftar Perusahaan (TDP)",
+                        "description": "-",
+                        "required": False,
+                        "id": 57
+                    },
+                    {
+                        "name": "Surat Izin Usaha Perdagangan (SIUP)",
+                        "description": "-",
+                        "required": False,
+                        "id": 58
+                    },
+                    {
+                        "name": "N.P.W.P (Nomor Pokok Wajib Pajak)",
+                        "description": "-",
+                        "required": False,
+                        "id": 59
+                    },
+                    {
+                        "name": "Laporan Keuangan 3 Bulan Terakhir",
+                        "description": "-",
+                        "required": False,
+                        "id": 60
+                    },
+                    {
+                        "name": "Tiket pesawat",
+                        "description": "-",
+                        "required": False,
+                        "id": 61
+                    },
+                    {
+                        "name": "Voucher Hotel",
+                        "description": "-",
+                        "required": False,
+                        "id": 62
+                    },
+                    {
+                        "name": "Itinerary",
+                        "description": "-",
+                        "required": False,
+                        "id": 63
+                    },
+                    {
+                        "name": "Surat Kuasa",
+                        "description": "Harus di tanda tangan oleh pemohon",
+                        "required": False,
+                        "id": 64
+                    },
+                    {
+                        "name": "Itinerary perjalanan",
+                        "description": "Tuliskan detail perjalanan selama dinegara tujuan",
+                        "required": False,
+                        "id": 65
+                    },
+                    {
+                        "name": "Surat Ijin Orang Tua",
+                        "description": "** Jika pemohon berusia di bawah 18 tahun dan jika salah satu orang tua tidak dapat hadir selama wawancara",
+                        "required": False,
+                        "id": 66
+                    },
+                    {
+                        "name": "Surat Ganti nama",
+                        "description": "** Jika pernah ganti nama",
+                        "required": False,
+                        "id": 96
+                    },
+                    {
+                        "name": "Akta Nikah",
+                        "description": "-",
+                        "required": False,
+                        "id": 99
+                    }
+                ],
+                "attachments": [],
+                "sale_price": {
+                    "commission": 70000,
+                    "total_price": 865000,
+                    "currency": "IDR"
+                },
+                "id": 21,
+                "notes": [],
+                "commission": [
+                    {
+                        "charge_type": "RAC",
+                        "charge_code": "rac",
+                        "amount": -70000,
+                        "currency": "IDR",
+                        "commission_agent_id": 2
+                    }
+                ]
+            },
+            {
+                "sequence": 3,
+                "pax_type": "CHD",
+                "entry_type": "multiple",
+                "visa_type": "tourist",
+                "type": {
+                    "process_type": "regular",
+                    "duration": 5
+                },
+                "consulate": {
+                    "city": "Surabaya",
+                    "address": "Jl. Sumatera No.93, Gubeng"
+                },
+                "requirements": [
+                    {
+                        "name": "Formulir Aplikasi",
+                        "description": "** Harus ditandatangani oleh pemohon",
+                        "required": False,
+                        "id": 67
+                    },
+                    {
+                        "name": "Pasport",
+                        "description": "-",
+                        "required": False,
+                        "id": 68
+                    },
+                    {
+                        "name": "Paspor Lama",
+                        "description": "Jika Ada",
+                        "required": False,
+                        "id": 69
+                    },
+                    {
+                        "name": "Foto",
+                        "description": "-",
+                        "required": False,
+                        "id": 70
+                    },
+                    {
+                        "name": "KTP Ibu",
+                        "description": "**Jika pemohon berusia di bawah 18 tahun",
+                        "required": False,
+                        "id": 71
+                    },
+                    {
+                        "name": "KTP Ayah",
+                        "description": "**Jika pemohon berusia di bawah 18 tahun",
+                        "required": False,
+                        "id": 72
+                    },
+                    {
+                        "name": "Kartu Keluarga",
+                        "description": "-",
+                        "required": False,
+                        "id": 73
+                    },
+                    {
+                        "name": "Surat Ganti nama",
+                        "description": "** Jika pernah ganti nama",
+                        "required": False,
+                        "id": 74
+                    },
+                    {
+                        "name": "Surat Keterangan WNI",
+                        "description": "**Jika pemohon sebelumnya adalah warga negara asing dan berubah menjadi warga negara Indonesia",
+                        "required": False,
+                        "id": 75
+                    },
+                    {
+                        "name": "Akta Lahir",
+                        "description": "-",
+                        "required": False,
+                        "id": 76
+                    },
+                    {
+                        "name": "Akta Nikah",
+                        "description": "-",
+                        "required": False,
+                        "id": 77
+                    },
+                    {
+                        "name": "Surat Keterangan Sekolah",
+                        "description": "** Jika pemohon adalah murid dan harus berbahasa inggris",
+                        "required": False,
+                        "id": 78
+                    },
+                    {
+                        "name": "Surat Sponsor",
+                        "description": "** Jika perusahaan harus ada Logo dan stampel perusahaan",
+                        "required": False,
+                        "id": 79
+                    },
+                    {
+                        "name": "Surat Keterangan Kerja",
+                        "description": "** Jika pemohon adalah pegawai (Jika ada)",
+                        "required": False,
+                        "id": 80
+                    },
+                    {
+                        "name": "Tanda Daftar Perusahaan (TDP)",
+                        "description": "-",
+                        "required": False,
+                        "id": 81
+                    },
+                    {
+                        "name": "Surat Izin Usaha Perdagangan (SIUP)",
+                        "description": "-",
+                        "required": False,
+                        "id": 82
+                    },
+                    {
+                        "name": "N.P.W.P (Nomor Pokok Wajib Pajak)",
+                        "description": "-",
+                        "required": False,
+                        "id": 83
+                    },
+                    {
+                        "name": "Laporan Keuangan 3 Bulan Terakhir",
+                        "description": "-",
+                        "required": False,
+                        "id": 84
+                    },
+                    {
+                        "name": "Tiket pesawat",
+                        "description": "-",
+                        "required": False,
+                        "id": 85
+                    },
+                    {
+                        "name": "Voucher Hotel",
+                        "description": "-",
+                        "required": False,
+                        "id": 86
+                    },
+                    {
+                        "name": "Itinerary",
+                        "description": "-",
+                        "required": False,
+                        "id": 87
+                    },
+                    {
+                        "name": "Surat Ijin Suami/Orang Tua",
+                        "description": "-",
+                        "required": False,
+                        "id": 88
+                    },
+                    {
+                        "name": "Surat Kuasa",
+                        "description": "Harus di tanda tangan oleh pemohon",
+                        "required": False,
+                        "id": 89
+                    }
+                ],
+                "attachments": [],
+                "sale_price": {
+                    "commission": 70000,
+                    "total_price": 865000,
+                    "currency": "IDR"
+                },
+                "id": 22,
+                "notes": [],
+                "commission": [
+                    {
+                        "charge_type": "RAC",
+                        "charge_code": "rac",
+                        "amount": -70000,
+                        "currency": "IDR",
+                        "commission_agent_id": 2
+                    }
+                ]
+            }
+        ],
         "total_cost": 25,
         "provider": "visa_rodextrip",
         "pax": {
@@ -499,7 +1173,7 @@ class TtVisa(models.Model):
 
     param_context = {
         'co_uid': 66,
-        'co_agent_id': 3
+        'co_agent_id': 2
     }
 
     param_kwargs = {
@@ -657,7 +1331,7 @@ class TtVisa(models.Model):
             contact_id = self.create_contact_api(contact[0], booker_id, context)
             passenger_ids = self.create_customer_api(passengers, context, booker_id, contact_id)  # create passenger
             to_psg_ids = self._create_visa_order(passengers, passenger_ids)  # create visa order data['passenger']
-            pricing = self.create_sale_service_charge_value(passengers, to_psg_ids, context)  # create pricing dict
+            pricing = self.create_sale_service_charge_value(passengers, to_psg_ids, context, sell_visa)  # create pricing dict
 
             header_val.update({
                 'country_id': self.env['res.country'].sudo().search([('name', '=', search['destination'])], limit=1).id,
@@ -837,7 +1511,7 @@ class TtVisa(models.Model):
 
         return res
 
-    def create_sale_service_charge_value(self, passenger, passenger_ids, context):
+    def create_sale_service_charge_value(self, passenger, passenger_ids, context, sell_visa):
         ssc_list = []
         ssc_list_2 = []
 
@@ -874,23 +1548,27 @@ class TtVisa(models.Model):
                 'passenger_visa_ids': [(6, 0, passenger_obj.ids)]
             })
             ssc.append(ssc_obj.id)
-            commission_list = pricing_obj.get_commission(pricelist_obj.commission_price, agent_id, provider_type_id)
-            for comm in commission_list:
-                if comm['amount'] > 0:
-                    vals2 = vals.copy()
-                    vals2.update({
-                        'commission_agent_id': comm['commission_agent_id'],
-                        'total': comm['amount'] * -1,
-                        'amount': comm['amount'] * -1,
-                        'charge_code': comm['code'],
-                        'charge_type': 'RAC',
-                    })
-                    ssc_list.append(vals2)
-                    ssc_obj2 = passenger_obj.cost_service_charge_ids.create(vals2)
-                    ssc_obj2.write({
-                        'passenger_visa_ids': [(6, 0, passenger_obj.ids)]
-                    })
-                    ssc.append(ssc_obj2.id)
+            commission_list2 = []
+            for sell in sell_visa['search_data']:
+                if str(sell['id']) == psg['master_visa_Id']:
+                    commission_list2 = sell['commission']
+                    break
+            # commission_list = pricing_obj.get_commission(pricelist_obj.commission_price, agent_id, provider_type_id)
+            for comm in commission_list2:
+                vals2 = vals.copy()
+                vals2.update({
+                    'commission_agent_id': comm['commission_agent_id'],
+                    'total': comm['amount'],
+                    'amount': comm['amount'],
+                    'charge_code': comm['charge_code'],
+                    'charge_type': 'RAC',
+                })
+                ssc_list.append(vals2)
+                ssc_obj2 = passenger_obj.cost_service_charge_ids.create(vals2)
+                ssc_obj2.write({
+                    'passenger_visa_ids': [(6, 0, passenger_obj.ids)]
+                })
+                ssc.append(ssc_obj2.id)
             passenger_obj.write({
                 'cost_service_charge_ids': [(6, 0, ssc)]
             })
