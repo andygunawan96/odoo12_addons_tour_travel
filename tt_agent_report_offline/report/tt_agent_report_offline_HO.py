@@ -16,7 +16,7 @@ class AgentReportOffline(models.AbstractModel):
         ro.id, ro.create_date, ro.name, agent.id agent_id, p_agent.id parent_agent_id, p_agent.name parent_agent, 
         agent.name agent_name, tcd.first_name || ' ' || tcd.last_name contact_person, tpt.code as provider_type, 
         COALESCE(ttc.name, tp.name) provider, rol.pnr, ro.description, ro.confirm_date, pconf.name confirm_by, 
-        ro.issued_date, piss.name issued_by, ro.total total, ro.state
+        ro.issued_date, piss.name issued_by, ro.total total, ro.state, ro.state_offline
         """
 
     @staticmethod
@@ -124,6 +124,7 @@ class AgentReportOffline(models.AbstractModel):
                 'create_date': self._datetime_user_context(line['create_date']),
                 'nta_amount': line['total'] if line['total'] else 0,
                 'state': line['state'].capitalize() if line['state'] else line['state'],
+                'state_offline': line['state_offline'].capitalize() if line['state_offline'] else line['state_offline'],
                 'provider_type': line['provider_type'].capitalize() if line['provider_type'] else line['provider_type'],
                 'agent_commission': 0,
                 'parent_commission': 0,

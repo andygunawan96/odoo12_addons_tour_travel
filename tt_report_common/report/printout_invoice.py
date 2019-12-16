@@ -117,6 +117,129 @@ class PrintoutTicketTrainForm(models.AbstractModel):
         return vals
 
 
+class PrintoutInvoiceHO(models.AbstractModel):
+    _name = 'report.tt_report_common.printout_invoice_ho'
+    _description = 'Rodex Model'
+
+    def get_invoice_data(self, rec, paxs, context):
+        a = {}
+        if rec.provider_booking_ids:
+            for provider in rec.provider_booking_ids:
+                pnr = provider.pnr if provider.pnr else '-'
+                if not a.get(pnr):
+                    a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'provider_type': ''}
+                # a[pnr]['descs'].append(line.desc if line.desc else '')
+                a[pnr]['provider_type'] = rec.provider_type_id.name
+                # untuk harga fare per passenger
+                for psg in rec.passenger_ids:
+                    desc_text = '%s, %s' % (' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '')
+                    price_unit = 0
+                    for cost_charge in psg.cost_service_charge_ids:
+                        if cost_charge.charge_type != 'RAC':
+                            price_unit += cost_charge.amount
+                    for channel_charge in psg.channel_service_charge_ids:
+                        price_unit += channel_charge.amount
+                    a[pnr]['pax_data'].append({
+                        'name': '%s, %s' % (' '.join((psg.first_name or '', psg.last_name or '')), psg.title or ''),
+                        'total': price_unit
+                    })
+        return a
+
+    def get_pax_data(self):
+        # untuk harga fare per passenger
+        for psg in self.passenger_ids:
+            desc_text = '%s, %s' % (' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '')
+            price_unit = 0
+            for cost_charge in psg.cost_service_charge_ids:
+                if cost_charge.charge_type != 'RAC':
+                    price_unit += cost_charge.amount
+            for channel_charge in psg.channel_service_charge_ids:
+                price_unit += channel_charge.amount
+
+    # Get Terbilang dkk di hapus
+    def compute_terbilang_from_objs(self, recs, currency_str='rupiah'):
+        a = {}
+        for rec2 in recs:
+            a.update({rec2.name: num2words(rec2.total) + ' Rupiah'})
+        return a
+
+    def get_description(self, rec, data):
+        desc = ''
+        if data['context']['active_model'] == 'tt.reservation.airline':
+            for rec in rec.journey_ids:
+                desc += '%s(%s) - %s(%s),' % (
+                    rec.origin_id.city, rec.origin_id.code, rec.destination_id.city, rec.destination_id.code)
+                desc += '%s - %s\n ' % (rec.departure_date[:16], rec.arrival_date[:16])
+        elif data['context']['active_model'] == 'tt.reservation.train':
+            for rec in self.journey_ids:
+                desc += '%s(%s) - %s(%s),' % (
+                    rec.origin_id.city, rec.origin_id.code, rec.destination_id.city, rec.destination_id.code)
+                desc += '%s - %s\n ' % (rec.departure_date[:16], rec.arrival_date[:16])
+        elif data['context']['active_model'] == 'tt.reservation.activity':
+            desc = ''
+            desc += '%s (%s), ' % (self.activity_id.name, self.activity_product,)
+            desc += '%s ' % (self.visit_date,)
+            if self.timeslot:
+                desc += '(%s) ' % (self.timeslot,)
+            desc += '\n '
+            return desc
+        elif data['context']['active_model'] == 'tt.reservation.tour':
+            desc = ''
+            desc += '%s' % (self.tour_id.name,)
+            desc += '\n'
+            desc += '%s - %s ' % (self.departure_date, self.return_date,)
+            desc += '\n'
+        elif data['context']['active_model'] == 'tt.reservation.visa':
+            desc = ''
+            for rec in self:
+                desc = 'Reservation Visa Country : ' + self.country_id.name + ' ' + 'Consulate : ' + \
+                            rec.immigration_consulate + ' ' + 'Journey Date : ' + str(rec.departure_date)
+        elif data['context']['active_model'] == 'tt.reservation.hotel':
+            for rec in self.room_detail_ids:
+                desc += 'Hotel : %s\nRoom : %s %s(%s),\n' % (
+                    self.hotel_name, rec.room_name, rec.room_type, rec.meal_type if rec.meal_type else 'Room Only')
+                desc += 'Date  : %s - %s\n' % (str(self.checkin_date)[:10], str(self.checkout_date)[:10])
+                desc += 'Guest :\n'
+                for idx, guest in enumerate(self.passenger_ids):
+                    desc += str(idx + 1) + '. ' + guest.name + '\n'
+                spc = rec.special_request or '-'
+                desc += 'Special Request: ' + spc + '\n'
+        return desc,
+
+    def _get_report_values(self, docids, data=None):
+        if not data.get('context'):
+            internal_model_id = docids.pop(0)
+            data['context'] = {}
+            if internal_model_id == 1:
+                data['context']['active_model'] = 'tt.reservation.airline'
+            elif internal_model_id == 2:
+                data['context']['active_model'] = 'tt.reservation.train'
+            elif internal_model_id == 3:
+                data['context']['active_model'] = 'tt.reservation.hotel'
+            elif internal_model_id == 4:
+                data['context']['active_model'] = 'tt.reservation.activity'
+            elif internal_model_id == 5:
+                data['context']['active_model'] = 'tt.reservation.tour'
+            data['context']['active_ids'] = docids
+        values = {}
+        for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            values[rec.id] = []
+            a = {}
+            values['pax_data'] = self.get_invoice_data(rec, rec.passenger_ids, data.get('context'))
+            values['desc'] = self.get_description(rec, data)
+        vals = {
+            'doc_ids': data['context']['active_ids'],
+            'doc_model': data['context']['active_model'],
+            'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
+            'price_lines': values,
+            'inv_lines': values,
+            'terbilang': self.compute_terbilang_from_objs(
+                self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
+            'date_now': fields.Date.today().strftime('%d %b %Y'),
+        }
+        return vals
+
+
 class PrintoutInvoice(models.AbstractModel):
     _name = 'report.tt_report_common.printout_invoice'
     _description = 'Rodex Model'

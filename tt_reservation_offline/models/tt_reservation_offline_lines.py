@@ -175,7 +175,8 @@ class IssuedOfflineLines(models.Model):
         psg_count = 0
         for rec in self.booking_id.passenger_ids:
             psg_count += 1
-            passengers += str(psg_count) + '. ' + (rec.passenger_id.name if rec.passenger_id else '') + ' \n'
+            passengers += str(psg_count) + '. ' + (rec.first_name if rec.first_name else '') + ' ' +\
+                          (rec.last_name if rec.last_name else '') + ' \n'
         return passengers
 
     def get_meal_type(self):

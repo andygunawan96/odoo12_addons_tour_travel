@@ -37,6 +37,7 @@
                                     <th class="text-right" style="padding: 2px; font-size: 14px; text-align: center">Commission</th>
                                     <th class="text-right" style="padding: 2px; font-size: 14px; text-align: center">NTA Amount</th>
                                     <th class="text-right" style="padding: 2px; font-size: 14px; text-align: center">State</th>
+                                    <th class="text-right" style="padding: 2px; font-size: 14px; text-align: center">State Offline</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -62,6 +63,7 @@
                                         <span t-esc="line['nta_amount']"/>
                                     </td>
                                     <td style="padding: 2px; font-weight: 200; font-size: 14px"><t t-esc="line['state']"/></td>
+                                    <td style="padding: 2px; font-weight: 200; font-size: 14px"><t t-esc="line['state_offline']"/></td>
                                 </tr>
                             </tbody>
                         </table>
