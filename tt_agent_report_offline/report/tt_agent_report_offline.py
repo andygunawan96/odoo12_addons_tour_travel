@@ -1,5 +1,6 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
+from ...tools import variables, util
 from ...tt_reservation_offline.models.tt_reservation_offline import STATE_OFFLINE_STR
 import pytz, datetime
 
@@ -16,7 +17,7 @@ class AgentReportOffline(models.AbstractModel):
         return """ro.id, ro.create_date, ro.name, agent.id agent_id, agent.name agent_name, 
         tcd.first_name || ' ' || tcd.last_name contact_person, tpt.code as provider_type, 
         COALESCE(ttc.name, tp.name) provider, rol.pnr, ro.description, ro.confirm_date, pconf.name confirm_by, 
-        ro.issued_date, piss.name issued_by, ro.total total, ro.state """
+        ro.issued_date, piss.name issued_by, ro.total total, ro.state, ro.state_offline """
 
     @staticmethod
     def _from_lines():
@@ -123,7 +124,8 @@ class AgentReportOffline(models.AbstractModel):
             rec.update({
                 'create_date': self._datetime_user_context(rec['create_date']),
                 'nta_amount': rec['total'] if rec['total'] else 0,
-                'state': STATE_OFFLINE_STR[rec['state']] if rec['state'] else '',
+                'state': variables.BOOKING_STATE_STR[rec['state']] if rec['state'] else '',
+                'state_offline': STATE_OFFLINE_STR[rec['state_offline']] if rec['state_offline'] else '',
                 'provider_type': rec['provider_type'].capitalize() if rec['provider_type'] else rec['provider_type'],
                 'commission': 0
             })

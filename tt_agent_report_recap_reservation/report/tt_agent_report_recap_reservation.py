@@ -209,10 +209,7 @@ class AgentReportRecapReservation(models.Model):
     def _convert_data(self, lines, provider_type):
         for rec in lines:
             rec['create_date'] = self._datetime_user_context(rec['create_date'])
-            if provider_type != 'offline':
-                rec['state'] = variables.BOOKING_STATE_STR[rec['state']] if rec['state'] else ''
-            else:
-                rec['state'] = STATE_OFFLINE_STR[rec['state']] if rec['state'] else ''
+            rec['state'] = variables.BOOKING_STATE_STR[rec['state']] if rec['state'] else ''  # STATE_OFFLINE_STR[rec['state']]
         return lines
 
     @staticmethod
