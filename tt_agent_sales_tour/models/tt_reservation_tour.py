@@ -95,6 +95,66 @@ class ReservationTour(models.Model):
                 'pay_amount': inv_line_obj.total,
             })
         else:
+            invoice_id = self.env['tt.agent.invoice'].create({
+                'booker_id': self.booker_id.id,
+                'agent_id': self.agent_id.id,
+                'customer_parent_id': self.customer_parent_id.id,
+                'customer_parent_type_id': self.customer_parent_type_id.id,
+                'state': 'confirm',
+                'confirmed_uid': co_uid,
+                'confirmed_date': datetime.now()
+            })
+            inv_line_obj = self.env['tt.agent.invoice.line'].create({
+                'res_model_resv': self._name,
+                'res_id_resv': self.id,
+                'invoice_id': invoice_id.id,
+                'desc': 'Down Payment\n' + self.get_tour_description()
+            })
+            invoice_line_id = inv_line_obj.id
+
+            # untuk harga fare per passenger
+            for psg in self.passenger_ids:
+                desc_text = '%s, %s' % (' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '')
+                price_unit = 0
+                for cost_charge in psg.cost_service_charge_ids:
+                    if cost_charge.charge_type != 'RAC':
+                        price_unit += cost_charge.amount
+                for channel_charge in psg.channel_service_charge_ids:
+                    price_unit += channel_charge.amount
+
+                inv_line_obj.write({
+                    'invoice_line_detail_ids': [(0, 0, {
+                        'desc': desc_text,
+                        'price_unit': (self.tour_id.down_payment / 100) * price_unit,
+                        'quantity': 1,
+                        'invoice_line_id': invoice_line_id,
+                    })]
+                })
+
+            ##membuat payment dalam draft
+            payment_obj = self.env['tt.payment'].create({
+                'agent_id': self.agent_id.id,
+                'acquirer_id': acquirer_id.id,
+                'real_total_amount': inv_line_obj.total,
+                'customer_parent_id': self.customer_parent_id.id
+            })
+
+            self.env['tt.payment.invoice.rel'].create({
+                'invoice_id': invoice_id.id,
+                'payment_id': payment_obj.id,
+                'pay_amount': inv_line_obj.total,
+            })
+
+            self.env['tt.installment.invoice'].create({
+                'agent_invoice_id': invoice_id.id,
+                'booking_id': self.id,
+                'amount': inv_line_obj.total,
+                'due_date': date.today(),
+                'description': 'Down Payment',
+                'state_invoice': 'done',
+                'payment_rules_id': False,
+            })
+
             for rec in self.tour_id.payment_rules_ids:
                 invoice_id = self.env['tt.agent.invoice'].create({
                     'booker_id': self.booker_id.id,
@@ -113,18 +173,6 @@ class ReservationTour(models.Model):
                 })
                 invoice_line_id = inv_line_obj.id
 
-                temp_total_price = 0
-                if rec.payment_type == 'amount':
-                    for psg in self.passenger_ids:
-                        desc_text = '%s, %s' % (' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '')
-                        price_unit = 0
-                        for cost_charge in psg.cost_service_charge_ids:
-                            if cost_charge.charge_type != 'RAC':
-                                price_unit += cost_charge.amount
-                        for channel_charge in psg.channel_service_charge_ids:
-                            price_unit += channel_charge.amount
-                        temp_total_price += price_unit
-
                 # untuk harga fare per passenger
                 for psg in self.passenger_ids:
                     desc_text = '%s, %s' % (' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '')
@@ -135,15 +183,10 @@ class ReservationTour(models.Model):
                     for channel_charge in psg.channel_service_charge_ids:
                         price_unit += channel_charge.amount
 
-                    if temp_total_price > 0:
-                        perc_multiplier = (rec.payment_amount / temp_total_price) * 100
-                    else:
-                        perc_multiplier = rec.payment_percentage
-
                     inv_line_obj.write({
                         'invoice_line_detail_ids': [(0, 0, {
                             'desc': desc_text,
-                            'price_unit': (perc_multiplier / 100) * price_unit,
+                            'price_unit': (rec.payment_percentage / 100) * price_unit,
                             'quantity': 1,
                             'invoice_line_id': invoice_line_id,
                         })]
@@ -167,9 +210,9 @@ class ReservationTour(models.Model):
                     'agent_invoice_id': invoice_id.id,
                     'booking_id': self.id,
                     'amount': inv_line_obj.total,
-                    'due_date': rec.is_dp and date.today() or rec.due_date,
+                    'due_date': rec.due_date,
                     'description': rec.description,
-                    'state_invoice': rec.is_dp and 'done' or 'open',
+                    'state_invoice': 'open',
                     'payment_rules_id': rec.id,
                 })
 

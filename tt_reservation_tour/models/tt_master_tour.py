@@ -1,5 +1,5 @@
 from odoo import api, fields, models, _
-from datetime import datetime
+from datetime import datetime, date
 from ...tools import util,variables,ERR
 from ...tools.ERR import RequestException
 from dateutil.relativedelta import relativedelta
@@ -121,6 +121,7 @@ class MasterTour(models.Model):
     discount_ids = fields.One2many('tt.master.tour.discount', 'tour_id')
     room_ids = fields.One2many('tt.master.tour.rooms', 'tour_pricelist_id', required=True)
 
+    down_payment = fields.Float('Down Payment (%)', default=100)
     payment_rules_ids = fields.One2many('tt.payment.rules', 'pricelist_id')
 
     ho_id = fields.Many2one('tt.agent',
@@ -743,15 +744,22 @@ class MasterTour(models.Model):
         try:
             search_tour_id = data.get('id')
             search_tour_obj = self.env['tt.master.tour'].sudo().browse(int(search_tour_id))
-            payment_rules = []
+            payment_rules = [
+                {
+                    'name': 'Down Payment',
+                    'description': 'Down Payment',
+                    'payment_percentage': search_tour_obj.down_payment,
+                    'due_date': date.today(),
+                    'is_dp': True
+                }
+            ]
             for payment in search_tour_obj.payment_rules_ids:
                 vals = {
                     'name': payment.name,
                     'description': payment.description,
-                    'payment_type': payment.payment_type,
                     'payment_percentage': payment.payment_percentage,
-                    'payment_amount': payment.payment_amount,
                     'due_date': payment.due_date,
+                    'is_dp': False
                 }
                 payment_rules.append(vals)
 
