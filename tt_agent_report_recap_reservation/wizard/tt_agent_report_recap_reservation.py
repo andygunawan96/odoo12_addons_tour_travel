@@ -22,9 +22,9 @@ class AgentReportRecapReservation(models.TransientModel):
         value = [('all', 'All')]
         provider_type = self.env['tt.provider.type'].search([])
         for rec in provider_type:
-            if rec.code == 'airline' or rec.code == 'train' or rec.code == 'hotel' or rec.code == 'tour' or rec.code == 'activity' or rec.code == 'visa' or rec.code == 'passport' or rec.code == 'offline':
-                value.append((rec.code, rec.name))
-        value.append(('offline', 'Offline'))
+            temp_dict = (rec.code, rec.name)
+            if not temp_dict in value:
+                value.append(temp_dict)
         return value
 
     def _print_report(self, data):
