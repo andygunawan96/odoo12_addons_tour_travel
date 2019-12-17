@@ -36,6 +36,7 @@ class TtActivityPassengerOption(models.Model):
 
     name = fields.Char('Information')
     value = fields.Char('Value')
+    description = fields.Text('Description')
     activity_passenger_id = fields.Many2one('tt.reservation.passenger.activity', 'Activity Passenger')
 
 
