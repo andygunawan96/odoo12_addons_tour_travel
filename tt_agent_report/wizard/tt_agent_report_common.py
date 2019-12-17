@@ -23,6 +23,7 @@ class AgentReportCommon(models.TransientModel):
     date_to = fields.Date(string='End Date')
 
     agent_id = fields.Many2one('tt.agent', string='Agent', default=lambda self: self.env.user.agent_id)
+    all_agent = fields.Boolean('All Agent', default=False)
     is_ho = fields.Boolean('Ho User', default=_check_ho_user)
 
     subtitle_report = fields.Char('Subtitle', help='This field use for report subtitle')
@@ -82,12 +83,16 @@ class AgentReportCommon(models.TransientModel):
         data['form']['subtitle'] = self.subtitle_report
 
         # ============= agent id and name ==========
-        agent_id = data['form']['agent_id'][0] if data['form']['agent_id'] else False
-        if agent_id != self.env.user.agent_id.id and self.env.user.agent_id.agent_type_id.id != self.env.ref('tt_base.agent_type_ho').id:
-            agent_id = self.env.user.agent_id.id
-        agent_name = self.env['tt.agent'].sudo().browse(agent_id).name if agent_id else 'All Agent'
-        data['form']['agent_id'] = agent_id
-        data['form']['agent_name'] = agent_name
+        if self.all_agent == True:
+            data['form']['agent_id'] = ''
+            data['form']['agent_name'] = ''
+        else:
+            agent_id = data['form']['agent_id'][0] if data['form']['agent_id'] else False
+            if agent_id != self.env.user.agent_id.id and self.env.user.agent_id.agent_type_id.id != self.env.ref('tt_base.agent_type_ho').id:
+                agent_id = self.env.user.agent_id.id
+            agent_name = self.env['tt.agent'].sudo().browse(agent_id).name if agent_id else 'All Agent'
+            data['form']['agent_id'] = agent_id
+            data['form']['agent_name'] = agent_name
 
         if 'agent_type_id' in data['form']:
             agent_type = data['form']['agent_type_id']
@@ -107,7 +112,7 @@ class AgentReportCommon(models.TransientModel):
         self.ensure_one()
         data = ({
             'model': self.env.context.get('active_model', 'ir.ui.menu'),
-            'form': self.read(['date_from', 'date_to', 'period', 'agent_id', 'state', 'provider_type', 'chart_frequency', 'agent_type_id'])[0]
+            'form': self.read(['date_from', 'date_to', 'period', 'all_agent', 'agent_id', 'state', 'provider_type', 'chart_frequency', 'agent_type_id'])[0]
         })
 
         self._prepare_form(data)

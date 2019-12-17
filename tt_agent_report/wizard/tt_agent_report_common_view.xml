@@ -14,7 +14,8 @@
                     </group>
                     <group>
                         <field name="is_ho" invisible="1"/>
-                        <field name="agent_id" attrs="{'invisible': [('is_ho', '=', False)]}"/>  <!--attrs="{'invisible': [('is_ho_user', '=', False)]}"-->
+                        <field name="all_agent" attrs="{'invisible': [('is_ho', '=', False)]}"/>
+                        <field name="agent_id" attrs="{'invisible': ['|', ('is_ho', '=', False), ('all_agent', '=', True)]}"/>  <!--attrs="{'invisible': [('is_ho_user', '=', False)]}"-->
                     </group>
                 </group>
                 <footer>
