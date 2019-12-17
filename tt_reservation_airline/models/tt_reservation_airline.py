@@ -1265,7 +1265,7 @@ class ReservationAirline(models.Model):
             })
 
     @api.multi
-    def print_eticket(self, data):
+    def print_eticket(self, data, ctx):
         # jika panggil dari backend
         if 'order_number' not in data:
             data['order_number'] = self.name
@@ -1306,10 +1306,10 @@ class ReservationAirline(models.Model):
             'target': 'new',
             'url': book_obj.printout_ticket_id.url,
         }
-        return url
+        return ERR.get_no_error(url)
 
     @api.multi
-    def print_eticket_with_price(self, data):
+    def print_eticket_with_price(self, data, ctx):
         # jika panggil dari backend
         if 'order_number' not in data:
             data['order_number'] = self.name
@@ -1350,7 +1350,7 @@ class ReservationAirline(models.Model):
             'target': 'new',
             'url': book_obj.printout_ticket_price_id.url,
         }
-        return url
+        return ERR.get_no_error(url)
 
     @api.multi
     def print_ho_invoice(self):

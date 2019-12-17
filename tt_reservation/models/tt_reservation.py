@@ -526,10 +526,10 @@ class TtReservation(models.Model):
                                 "currency": "IDR",
                                 "pax_type": "ADT",
                                 "pax_count": 1,
-                                "amount": rec['provider_total_discount'] / len(book_obj.passenger_ids),
+                                "amount": rec['provider_total_discount'] / len(book_obj.passenger_ids) * -1,
                                 "foreign_currency": "IDR",
-                                "foreign_amount": rec['provider_total_discount'] / len(book_obj.passenger_ids),
-                                "total": rec['provider_total_discount'] / len(book_obj.passenger_ids),
+                                "foreign_amount": rec['provider_total_discount'] / len(book_obj.passenger_ids) * -1,
+                                "total": rec['provider_total_discount'] / len(book_obj.passenger_ids) * -1,
                                 "sequence": idx
                             }]
                             book_obj.provider_booking_ids[idx].create_service_charge(service_charge)
