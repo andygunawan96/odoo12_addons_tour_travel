@@ -5,34 +5,28 @@ class TtPrintoutApiCon(models.Model):
     _name = 'tt.printout.api.con'
     _inherit = 'tt.api.con'
 
+    table_name = 'tt.reservation.airline'
+
     def action_call(self, table_obj, action, data, context):
 
         if action == 'get_printout_api':
-            if data['mode'] == 'invoice':
-                if data['provider_type'] == 'airline':
+            if data['provider_type'] == 'visa':
+                if data['mode'] == 'invoice':
                     pass
-                elif data['provider_type'] == 'airline':
+            elif data['provider_type'] == 'tour':
+                if data['mode'] == 'invoice':
                     pass
-                elif data['provider_type'] == 'train':
+            elif data['provider_type'] == 'hotel':
+                if data['mode'] == 'invoice':
                     pass
-                elif data['provider_type'] == 'activity':
+            else:
+                if data['mode'] == 'invoice':
                     pass
-                elif data['provider_type'] == 'tour':
-                    pass
-                elif data['provider_type'] == 'hotel':
-                    pass
-                elif data['provider_type'] == 'visa':
-                    pass
-                res = self.env['tt.reservation.visa.pricelist'].search_api(data)
-            elif data['mode'] == 'ticket':
-                pass
-                res = self.env['tt.reservation.visa.pricelist'].search_api(data)
-            elif data['mode'] == 'ticket_price':
-                pass
-                res = self.env['tt.reservation.visa.pricelist'].search_api(data)
-            elif data['mode'] == 'form':
-                pass
-                res = self.env['tt.reservation.visa.pricelist'].search_api(data)
+                elif data['mode'] == 'ticket':
+                    res = self.env['tt.reservation.airline'].print_eticket(data, context)
+                elif data['mode'] == 'ticket_price':
+                    res = self.env['tt.reservation.airline'].print_eticket_with_price(data, context)
+
         else:
             raise RequestException(999)
 
