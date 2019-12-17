@@ -169,7 +169,7 @@ class ReservationTour(models.Model):
                     'res_model_resv': self._name,
                     'res_id_resv': self.id,
                     'invoice_id': invoice_id.id,
-                    'desc': rec.description + '\n' + self.get_tour_description()
+                    'desc': (rec.name and rec.name + '\n' or '') + self.get_tour_description()
                 })
                 invoice_line_id = inv_line_obj.id
 
