@@ -508,7 +508,7 @@ class TtVisa(models.Model):
                     "total_price": 485000,
                     "currency": "IDR"
                 },
-                "id": 19,
+                "id": 23,
                 "notes": [],
                 "commission": [
                     {
@@ -679,7 +679,7 @@ class TtVisa(models.Model):
                     "total_price": 485000,
                     "currency": "IDR"
                 },
-                "id": 20,
+                "id": 24,
                 "notes": [],
                 "commission": [
                     {
@@ -856,7 +856,7 @@ class TtVisa(models.Model):
                     "total_price": 865000,
                     "currency": "IDR"
                 },
-                "id": 21,
+                "id": 25,
                 "notes": [],
                 "commission": [
                     {
@@ -1027,7 +1027,7 @@ class TtVisa(models.Model):
                     "total_price": 865000,
                     "currency": "IDR"
                 },
-                "id": 22,
+                "id": 26,
                 "notes": [],
                 "commission": [
                     {
@@ -1096,7 +1096,7 @@ class TtVisa(models.Model):
             "is_booker": False,
             "is_contact": False,
             "number": 1,
-            "master_visa_Id": "19",
+            "master_visa_Id": "23",
             "notes": "Pax Notes",
             "required": [
                 {
@@ -1124,7 +1124,7 @@ class TtVisa(models.Model):
             "is_booker": False,
             "is_contact": False,
             "number": 1,
-            "master_visa_Id": "19",
+            "master_visa_Id": "23",
             "notes": "Pax Notes2",
             "required": [
                 {
@@ -1152,7 +1152,7 @@ class TtVisa(models.Model):
             "is_booker": False,
             "is_contact": False,
             "number": 1,
-            "master_visa_Id": "20",
+            "master_visa_Id": "24",
             "notes": "Pax Notes3",
             "required": [
                 {
@@ -1165,7 +1165,7 @@ class TtVisa(models.Model):
     ]
 
     param_search = {
-        "destination": "Germany",
+        "destination": "Japan",
         "consulate": "Surabaya",
         "departure_date": "2019-10-04",
         "provider": "visa_rodextrip"
@@ -1751,6 +1751,7 @@ class TtVisa(models.Model):
                 'book_id': rec.id,
                 'order_number': rec.name,
                 'acquirer_seq_id': rec.acquirer_id.seq_id,
+                'voucher': '',
                 'member': False
             }
             if self.customer_parent_id.customer_parent_type_id.id != self.env.ref('tt_base.customer_type_fpo').id:
@@ -2179,7 +2180,14 @@ class TtVisa(models.Model):
 
             print('Total Fare : ' + str(rec.total_fare))
             rec.total = rec.total_fare + rec.total_tax + rec.total_discount
-            rec.total_nta = rec.total - rec.total_commission
+
+    @api.depends("passenger_ids")
+    def _compute_total_nta(self):
+        for rec in self:
+            nta_total = 0
+            for psg in self.passenger_ids:
+                nta_total += psg.pricelist_id.cost_price
+            rec.total_nta = nta_total
 
     def randomizer_rec(self):
         import random
