@@ -18,7 +18,7 @@ class SplitInvoice(models.TransientModel):
 
     def upload_from_button(self):
         # self.upload(self.filename,self.file_reference,base64.b64decode(self.file))
-        self.upload(self.filename,self.file_reference,self.file,{'co_agent_id': self.env.user.agent_id.id},self.delete_time)
+        self.upload(self.filename,self.file_reference,self.file,{'co_agent_id': self.env.user.agent_id.id, 'co_uid': self.env.user.id},self.delete_time)
 
     def upload_file_api(self,data,context):
         return self.upload(data['filename'],data['file_reference'],data['file'],context,data.get('delete_date'))
@@ -42,6 +42,7 @@ class SplitInvoice(models.TransientModel):
                 'path': path,
                 'url': url,
                 'agent_id': context['co_agent_id'],
+                'upload_uid': context['co_uid'],
                 'will_be_deleted_time': delete_time
             })
 

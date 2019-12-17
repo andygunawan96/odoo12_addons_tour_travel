@@ -68,6 +68,7 @@ class TtReservationActivityOption(models.Model):
 
     name = fields.Char('Information')
     value = fields.Char('Value')
+    description = fields.Text('Description')
     booking_id = fields.Many2one('tt.reservation.activity', 'Activity Booking')
 
 
@@ -490,9 +491,14 @@ class ReservationActivity(models.Model):
                     for temp_psg_opt in temp_pax['per_pax_data']:
                         temp_opt_obj = self.env['tt.activity.booking.option'].sudo().search([('uuid', '=', temp_psg_opt['uuid']), ('type', '=', 'perPax')], limit=1)
                         temp_opt_obj = temp_opt_obj[0]
+                        temp_desc = str(temp_psg_opt['value'])
+                        for it_obj in temp_opt_obj.items:
+                            if temp_psg_opt['value'] == it_obj.value:
+                                temp_desc = it_obj.label
                         pax_opt_vals = {
                             'name': temp_opt_obj.name,
-                            'value': temp_psg_opt['value'],
+                            'value': str(temp_psg_opt['value']),
+                            'description': temp_desc
                         }
                         pax_opt_obj = self.env['tt.reservation.passenger.activity.option'].sudo().create(pax_opt_vals)
                         pax_options.append(pax_opt_obj.id)
@@ -579,9 +585,14 @@ class ReservationActivity(models.Model):
                 for rec in option['perBooking']:
                     temp_opt_obj = self.env['tt.activity.booking.option'].sudo().search([('uuid', '=', rec['uuid']), ('type', '=', 'perBooking')], limit=1)
                     temp_opt_obj = temp_opt_obj[0]
+                    temp_desc = str(rec['value'])
+                    for it_obj in temp_opt_obj.items:
+                        if rec['value'] == it_obj.value:
+                            temp_desc = it_obj.label
                     self.env['tt.reservation.activity.option'].sudo().create({
                         'name': temp_opt_obj.name,
                         'value': str(rec['value']),
+                        'description': temp_desc,
                         'booking_id': book_obj.id
                     })
 
@@ -787,13 +798,17 @@ class ReservationActivity(models.Model):
             }
             temp = self.get_vouchers_button_api(self[0]['id'], ctx)
         if temp:
-            return {
-                'name': 'Activity Voucher',
-                'res_model': 'ir.actions.act_url',
-                'type': 'ir.actions.act_url',
-                'target': 'current',
-                'url': temp['response'][0]['name']
-            }
+            try:
+                return {
+                    'name': 'Activity Voucher',
+                    'res_model': 'ir.actions.act_url',
+                    'type': 'ir.actions.act_url',
+                    'target': 'current',
+                    'url': temp['response'][0]['name']
+                }
+            except Exception as e:
+                _logger.error(traceback.format_exc())
+                raise UserError(_('Voucher is not available. Please contact HO!'))
 
     def get_vouchers_by_api2(self, req, ctx):
         try:
@@ -849,6 +864,7 @@ class ReservationActivity(models.Model):
                 },
                 {
                     'co_agent_id': self.env.user.agent_id.id,
+                    'co_uid': self.env.user.id,
                 }
             )
             upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
@@ -918,6 +934,7 @@ class ReservationActivity(models.Model):
                 book_option_ids.append({
                     'name': rec.name,
                     'value': rec.value,
+                    'description': rec.description,
                 })
 
             # self.env.cr.execute("""SELECT * FROM tt_service_charge WHERE booking_activity_id=%s""", (activity_booking[0]['id'],))
