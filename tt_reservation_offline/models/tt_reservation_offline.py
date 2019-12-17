@@ -845,8 +845,8 @@ class IssuedOffline(models.Model):
     ]
 
     param_context = {
-        'co_uid': 308,
-        'co_agent_id': 80
+        'co_uid': 8,
+        'co_agent_id': 2
     }
 
     param_payment = {
@@ -887,12 +887,12 @@ class IssuedOffline(models.Model):
                 _logger.error('Agent Balance not enough')
                 raise RequestException(1007, additional_message="agent balance")
 
-            user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
+            # user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
             # remove sementara update_api_context
-            context.update({
-                'agent_id': user_obj.agent_id.id,
-                'user_id': user_obj.id
-            })
+            # context.update({
+            #     'agent_id': user_obj.agent_id.id,
+            #     'user_id': user_obj.id
+            # })
             booker_id = self.create_booker_api(booker, context)  # create booker
             # passenger_ids = self._create_passenger(context, passenger)  # create passenger
             # contact_ids = self._create_contact(context, contact)
