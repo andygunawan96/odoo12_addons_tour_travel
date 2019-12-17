@@ -1101,6 +1101,8 @@ class TtVoucherDetail(models.Model):
         }
 
     def use_voucher_new(self, data, context):
+        if data == None:
+            return ERR.get_error()
         # data = {
         #   voucher_reference
         #   order_code

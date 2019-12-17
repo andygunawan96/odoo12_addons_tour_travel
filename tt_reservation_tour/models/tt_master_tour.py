@@ -154,6 +154,16 @@ class MasterTour(models.Model):
     file_name = fields.Char("Filename",compute="_compute_filename",store=True)
     active = fields.Boolean('Active', default=True)
 
+    @api.multi
+    def write(self, vals):
+        if vals.get('down_payment'):
+            total_percent = 0
+            for rec in self.payment_rules_ids:
+                total_percent += rec.payment_percentage
+            if total_percent + vals['down_payment'] > 100.00:
+                raise UserError(_('Total Installments and Down Payment cannot be more than 100%. Please re-adjust your Installment Payment Rules!'))
+        return super(MasterTour, self).write(vals)
+
     @api.depends("name")
     def _compute_filename(self):
         for rec in self:

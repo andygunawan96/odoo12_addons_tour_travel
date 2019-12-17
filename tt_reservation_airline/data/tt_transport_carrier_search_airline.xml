@@ -60,9 +60,31 @@
             <field name="is_favorite" eval="False"/>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_airline.tt_provider_airline_amadeus')),
+                (4, ref('tt_reservation_airline.tt_provider_airline_garuda')),
+                (4, ref('tt_reservation_airline.tt_provider_airline_altea'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_ga_ags" model="tt.transport.carrier.search">
+            <field name="name">Garuda Indonesia AGS</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ga"/>
+            <field name="is_default" eval="False"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_airline.tt_provider_airline_garuda'))
             ]"/>
         </record>
+
+        <record id="tt_transport_carrier_search_ga_altea" model="tt.transport.carrier.search">
+            <field name="name">Garuda Indonesia Altea</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ga"/>
+            <field name="is_default" eval="False"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_altea'))
+            ]"/>
+        </record>
+
 
         <record id="tt_transport_carrier_search_tr_all" model="tt.transport.carrier.search">
             <field name="name">Scoot</field>
