@@ -489,7 +489,8 @@ class TtReservation(models.Model):
 
                 ### voucher agent here##
                 if req.get('voucher'):
-                    voucher = req['voucher'].update({
+                    voucher = req['voucher']
+                    voucher.update({
                         'order_number': book_obj.name
                     })
                     discount = self.env['tt.voucher.detail'].simulate_voucher(voucher, context)
@@ -515,16 +516,12 @@ class TtReservation(models.Model):
                             _logger.error('Cutomer Parent credit limit not enough')
                             raise RequestException(1007,additional_message="customer credit limit")
 
-                for provider in book_obj.provider_booking_ids:
-                    provider.action_create_ledger(context['co_uid'], payment_method)
-
-
                 if discount['error_code'] == 0:
                     discount = self.env['tt.voucher.detail'].use_voucher_new(voucher, context)
                     if discount['error_code'] == 0:
                         for idx, rec in enumerate(discount['response']):
                             service_charge = [{
-                                "charge_code": "disc %s" % rec['pnr'],
+                                "charge_code": "disc",
                                 "charge_type": "DISC",
                                 "currency": "IDR",
                                 "pax_type": "ADT",
@@ -537,6 +534,10 @@ class TtReservation(models.Model):
                             }]
                             book_obj.provider_booking_ids[idx].create_service_charge(service_charge)
                     book_obj.calculate_service_charge()
+
+                for provider in book_obj.provider_booking_ids:
+                    provider.action_create_ledger(context['co_uid'], payment_method)
+
                 return ERR.get_no_error()
             else:
                 raise RequestException(1001)
