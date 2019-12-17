@@ -470,7 +470,7 @@ class TtReservation(models.Model):
                 book_obj = self.env['tt.reservation.%s' % (table_name)].browse(req.get('book_id'))
             else:
                 book_obj = self.env['tt.reservation.%s' % (table_name)].search([('name','=',req.get('order_number'))],limit=1)
-            voucher = req['voucher']
+            voucher = None
             discount = {'error_code': -1}
             total_discount = 0
 
@@ -486,8 +486,8 @@ class TtReservation(models.Model):
                 payment_method = req.get('payment_method', 'full')
 
                 ### voucher agent here##
-                if req['voucher']:
-                    voucher.update({
+                if req.get('voucher'):
+                    voucher = req['voucher'].update({
                         'order_number': book_obj.name
                     })
                     discount = self.env['tt.voucher.detail'].simulate_voucher(voucher, context)
