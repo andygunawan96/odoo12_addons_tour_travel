@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="tt_fare_rules_form_view" model="ir.ui.view">
+            <field name="name">tt.fare.rules.form.view</field>
+            <field name="model">tt.fare.rules</field>
+            <field name="arch" type="xml">
+                <form string="Fare Rules">
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only" string="Name"/>
+                            <h1>
+                                <field name="name" required="True"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="provider_id"/>
+                            </group>
+                            <group>
+                                <field name="description"/>
+                            </group>
+                        </group>
+                        <separator string="Carriers"/>
+                        <field name="carrier_ids"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="tt_fare_rules_tree_view" model="ir.ui.view">
+            <field name="name">tt.fare.rules.tree.view</field>
+            <field name="model">tt.fare.rules</field>
+            <field name="arch" type="xml">
+                <tree string="Fare Rules">
+                    <field name="name"/>
+                    <field name="provider_type_id"/>
+                    <field name="provider_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="tt_fare_rules_action_view" model="ir.actions.act_window">
+            <field name="name">Fare Rules</field>
+            <field name="view_type">form</field>
+            <field name="res_model">tt.fare.rules</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    <!-- Add Text Here -->
+                </p><p>
+                <!-- More details about what a user can do with this object will be OK -->
+            </p>
+            </field>
+            <field name="context">
+                {
+                'form_view_ref': 'tt_base.tt_fare_rules_form_view',
+                'tree_view_ref': 'tt_base.tt_fare_rules_tree_view'
+                }
+            </field>
+        </record>
+
+        <menuitem id="sub_menu_tour_travel_fare_rules"
+                  parent="tt_base.menu_tour_travel_carrier"
+                  groups="base.group_user"
+                  name="Fare Rules"
+                  sequence="33"
+                  action="tt_fare_rules_action_view"/>
+    </data>
+</odoo>
