@@ -31,7 +31,8 @@ class ResBank(models.Model):
                         'file': rec.image,
                     },
                     {
-                        'co_agent_id': self.env.user.agent_id.id
+                        'co_agent_id': self.env.user.agent_id.id,
+                        'co_uid': self.env.user.id,
                     }
                 )
                 if res['error_code'] != 0:

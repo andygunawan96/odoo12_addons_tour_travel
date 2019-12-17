@@ -1265,7 +1265,7 @@ class ReservationAirline(models.Model):
             })
 
     @api.multi
-    def print_eticket(self, data):
+    def print_eticket(self, data, ctx):
         # jika panggil dari backend
         if 'order_number' not in data:
             data['order_number'] = self.name
@@ -1295,7 +1295,8 @@ class ReservationAirline(models.Model):
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },
                 {
-                    'co_agent_id': book_obj.env.user.agent_id.id,
+                    'co_agent_id': self.env.user.agent_id.id,
+                    'co_uid': self.env.user.id,
                 }
             )
             upc_id = book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
@@ -1306,10 +1307,10 @@ class ReservationAirline(models.Model):
             'target': 'new',
             'url': book_obj.printout_ticket_id.url,
         }
-        return url
+        return ERR.get_no_error(url)
 
     @api.multi
-    def print_eticket_with_price(self, data):
+    def print_eticket_with_price(self, data, ctx):
         # jika panggil dari backend
         if 'order_number' not in data:
             data['order_number'] = self.name
@@ -1339,7 +1340,8 @@ class ReservationAirline(models.Model):
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },
                 {
-                    'co_agent_id': book_obj.env.user.agent_id.id,
+                    'co_agent_id': self.env.user.agent_id.id,
+                    'co_uid': self.env.user.id,
                 }
             )
             upc_id = book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
@@ -1350,7 +1352,7 @@ class ReservationAirline(models.Model):
             'target': 'new',
             'url': book_obj.printout_ticket_price_id.url,
         }
-        return url
+        return ERR.get_no_error(url)
 
     @api.multi
     def print_ho_invoice(self):
@@ -1393,7 +1395,8 @@ class ReservationAirline(models.Model):
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },
                 {
-                    'co_agent_id': book_obj.env.user.agent_id.id,
+                    'co_agent_id': self.env.user.agent_id.id,
+                    'co_uid': self.env.user.id,
                 }
             )
             upc_id = book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)

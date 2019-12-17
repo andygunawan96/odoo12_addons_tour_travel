@@ -262,6 +262,7 @@ access_tt_frontend_security_for_public,tt.frontend.security.for.public,model_tt_
 
 access_tt_upload_center_for_agent_user_operator,tt.upload.center.for.agent.user.operator,model_tt_upload_center,,1,1,1,0
 access_tt_upload_center_for_tour_travel_operator,tt.upload.center.for.tour.travel.operator,model_tt_upload_center,,1,1,1,0
+access_tt_upload_center_for_tour_division_manager,tt.upload.center.for.tour.division.manager,model_tt_upload_center,group_tt_tour_division_manager,1,1,1,1
 access_tt_upload_center_for_admin,tt.upload.center.for.admin,model_tt_upload_center,base.user_admin,1,1,1,1
 
 access_payment_accquirer_for_tour_travel_supervisor,payment.acquirer.for.tour.travel.supervisor,model_payment_acquirer,tt_base.group_tt_tour_travel_supervisor,1,1,1,1
