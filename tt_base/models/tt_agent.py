@@ -296,7 +296,7 @@ class TtAgent(models.Model):
 
     def get_transaction_api(self,req,context):
         try:
-            _logger.info('Get Resv Req:\n'+json.dumps(req))
+            # _logger.info('Get Resv Req:\n'+json.dumps(req))
             agent_obj = self.browse(context['co_agent_id'])
             if not agent_obj:
                 return ERR.get_error(1008)
@@ -370,7 +370,7 @@ class TtAgent(models.Model):
             # _logger.info('Get Transaction Resp:\n'+json.dumps(res_list[req.get('minimum',0):req.get('maximum',20)]))
             # return ERR.get_no_error(res_list[req.get('minimum',0):req.get('maximum',20)])
 
-            _logger.info('Get Transaction Resp:\n' + json.dumps(res_dict))
+            # _logger.info('Get Transaction Resp:\n' + json.dumps(res_dict))
             return ERR.get_no_error(res_dict)
         except Exception as e:
             _logger.error(str(e)+traceback.format_exc())
