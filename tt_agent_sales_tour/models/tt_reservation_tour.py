@@ -211,7 +211,7 @@ class ReservationTour(models.Model):
                     'booking_id': self.id,
                     'amount': inv_line_obj.total,
                     'due_date': rec.due_date,
-                    'description': rec.description,
+                    'description': rec.name,
                     'state_invoice': 'open',
                     'payment_rules_id': rec.id,
                 })
