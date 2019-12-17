@@ -192,6 +192,7 @@
                                         </t>
                                         <t t-if="price.charge_code == 'roc'">
                                             <t t-set="admin_agent" t-value="admin_agent + price.total"/>
+                                            <t t-set="total_sale" t-value="total_sale - price.total"/>
                                         </t>
                                         <t t-if="price.charge_code == 'disc'">
                                             <t t-set="total_sale" t-value="total_sale - price.total"/>
