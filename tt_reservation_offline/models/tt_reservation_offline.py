@@ -219,7 +219,7 @@ class IssuedOffline(models.Model):
                 if self.total != 0:
                     self.state_offline = 'confirm'
                     self.confirm_date = fields.Datetime.now()
-                    self.confirm_uid = kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
+                    self.confirm_uid = kwargs.get('co_uid') and kwargs['co_uid'] or self.env.user.id
                     self.acquirer_id = self.agent_id.default_acquirer_id
                     # self.send_push_notif()
                 else:
@@ -845,8 +845,8 @@ class IssuedOffline(models.Model):
     ]
 
     param_context = {
-        'co_uid': 8,
-        'co_agent_id': 2
+        'co_uid': 6,
+        'co_agent_id': 3
     }
 
     param_payment = {
@@ -917,8 +917,8 @@ class IssuedOffline(models.Model):
                 "expired_date": data_reservation_offline.get('expired_date'),
                 'state': 'draft',
                 'state_offline': 'confirm',
-                # 'agent_id': context['co_agent_id'],
-                # 'user_id': context['co_uid'],
+                'agent_id': context['co_agent_id'],
+                'user_id': context['co_uid'],
             }
 
             if data_reservation_offline['type'] == 'airline':
