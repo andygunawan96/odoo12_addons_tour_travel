@@ -621,22 +621,6 @@ class MasterTour(models.Model):
             if tour_obj:
                 tour_obj = tour_obj[0]
 
-            user_agent_id = self.env.user.agent_id.agent_type_id.id
-            if user_agent_id == self.env.ref('tt_base.agent_type_citra').id:
-                commission_agent_type = 'citra'
-            elif user_agent_id == self.env.ref('tt_base.agent_type_japro').id:
-                commission_agent_type = 'japro'
-            elif user_agent_id == self.env.ref('tt_base.agent_type_btbr').id or user_agent_id == self.env.ref('tt_base.agent_type_btbo').id:
-                commission_agent_type = 'btb'
-            else:
-                commission_agent_type = 'other'
-
-            try:
-                self.env.cr.execute("""SELECT * FROM tt_master_tour_discount WHERE tour_id = %s;""", (tour_obj.id,))
-                discount = self.env.cr.dictfetchall()
-            except Exception:
-                discount = []
-
             self.env.cr.execute("""SELECT loc.* FROM tt_master_tour tp LEFT JOIN tt_tour_location_rel tcr ON tcr.product_id = tp.id LEFT JOIN tt_tour_master_locations loc ON loc.id = tcr.location_id WHERE tp.id=%s;""",(tour_obj.id,))
             location_ids = self.env.cr.dictfetchall()
             country_names = []
@@ -712,7 +696,6 @@ class MasterTour(models.Model):
                 'adult_sale_price': adult_sale_price <= 0 and '0' or adult_sale_price,
                 'child_sale_price': child_sale_price <= 0 and '0' or child_sale_price,
                 'infant_sale_price': infant_sale_price <= 0 and '0' or infant_sale_price,
-                'discount': json.dumps(discount),
                 'departure_date': tour_obj.departure_date and tour_obj.departure_date or '',
                 'return_date': tour_obj.return_date and tour_obj.return_date or '',
                 'start_period': tour_obj.start_period and tour_obj.start_period or '',
@@ -725,19 +708,13 @@ class MasterTour(models.Model):
                 'duration': tour_obj.duration and tour_obj.duration or 0,
                 'images_obj': images,
                 'document_url': tour_obj.document_url and tour_obj.document_url.url or '',
+                'provider': tour_obj.provider_id and tour_obj.provider_id.code or '',
             }
-
-            # is_agent = self.env.user.agent_id.agent_type_id.id not in [
-            #     self.env.ref('tt_base_rodex.agent_type_cor').id, self.env.ref('tt_base_rodex.agent_type_por').id]
 
             response = {
                 'search_request': search_request,
                 'selected_tour': selected_tour,
-                'commission_agent_type': commission_agent_type,
                 'currency_code': 'IDR',
-                # 'is_HO': self.env.user.agent_id.is_HO,
-                'agent_id': self.env.user.agent_id.id,
-                # 'is_agent': is_agent,
             }
 
             return ERR.get_no_error(response)
