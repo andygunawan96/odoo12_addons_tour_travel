@@ -123,9 +123,6 @@ class MasterTour(models.Model):
 
     down_payment = fields.Float('Down Payment (%)', default=100)
     payment_rules_ids = fields.One2many('tt.payment.rules', 'pricelist_id')
-
-    ho_id = fields.Many2one('tt.agent',
-                            default=lambda x: x.env['tt.agent'].search([('agent_type_id', '=', 2)], limit=1).id)
     tour_leader_ids = fields.Many2many('res.employee', string="Tour Leader")
     # tour_leader_ids = fields.Many2many('res.employee', 'tour_leader_rel', 'pricelist_id', 'partner_id',
     #                                    string="Tour Leader")
@@ -476,11 +473,11 @@ class MasterTour(models.Model):
                     else:
                         result.append(rec)
 
-                if rec.get('import_other_info'):
-                    rec.pop('import_other_info')
-
-                if rec.get('export_other_info'):
-                    rec.pop('export_other_info')
+            deleted_keys = ['import_other_info', 'export_other_info', 'adult_fare', 'adult_commission', 'child_fare',
+                            'child_commission', 'infant_fare', 'infant_commission', 'document_url', 'down_payment',
+                            'other_info_preview', 'create_date', 'create_uid', 'write_date', 'write_uid']
+            img_deleted_keys = ['will_be_deleted_time', 'will_be_deleted_date', 'filename', 'file_reference', 'name', 'upload_uid',
+                                'agent_id', 'create_date', 'create_uid', 'write_date', 'write_uid']
 
             for idx, rec in enumerate(result):
                 try:
@@ -500,6 +497,8 @@ class MasterTour(models.Model):
                             rec_img.update({
                                 img_key: ''
                             })
+                        if img_key in img_deleted_keys:
+                            rec_img.pop(img_key)
 
                 adult_sale_price = int(rec['adult_fare']) + int(rec['adult_commission'])
                 child_sale_price = int(rec['child_fare']) + int(rec['child_commission'])
@@ -533,6 +532,8 @@ class MasterTour(models.Model):
                         rec.update({
                             key: ''
                         })
+                    if key in deleted_keys:
+                        rec.pop(key)
 
             response = {
                 'country_id': search_request['country_id'],
@@ -540,10 +541,7 @@ class MasterTour(models.Model):
                 'city_id': search_request['city_id'],
                 'city': search_request.get('city_name', ''),
                 'search_request': search_request,
-                # 'search_request_json': json.dumps(search_request),
                 'result': result,
-                # 'result_json': json.dumps(result),
-                'search_value': 2,
             }
             return ERR.get_no_error(response)
         except RequestException as e:
@@ -623,22 +621,6 @@ class MasterTour(models.Model):
             if tour_obj:
                 tour_obj = tour_obj[0]
 
-            user_agent_id = self.env.user.agent_id.agent_type_id.id
-            if user_agent_id == self.env.ref('tt_base.agent_type_citra').id:
-                commission_agent_type = 'citra'
-            elif user_agent_id == self.env.ref('tt_base.agent_type_japro').id:
-                commission_agent_type = 'japro'
-            elif user_agent_id == self.env.ref('tt_base.agent_type_btbr').id or user_agent_id == self.env.ref('tt_base.agent_type_btbo').id:
-                commission_agent_type = 'btb'
-            else:
-                commission_agent_type = 'other'
-
-            try:
-                self.env.cr.execute("""SELECT * FROM tt_master_tour_discount WHERE tour_id = %s;""", (tour_obj.id,))
-                discount = self.env.cr.dictfetchall()
-            except Exception:
-                discount = []
-
             self.env.cr.execute("""SELECT loc.* FROM tt_master_tour tp LEFT JOIN tt_tour_location_rel tcr ON tcr.product_id = tp.id LEFT JOIN tt_tour_master_locations loc ON loc.id = tcr.location_id WHERE tp.id=%s;""",(tour_obj.id,))
             location_ids = self.env.cr.dictfetchall()
             country_names = []
@@ -714,7 +696,6 @@ class MasterTour(models.Model):
                 'adult_sale_price': adult_sale_price <= 0 and '0' or adult_sale_price,
                 'child_sale_price': child_sale_price <= 0 and '0' or child_sale_price,
                 'infant_sale_price': infant_sale_price <= 0 and '0' or infant_sale_price,
-                'discount': json.dumps(discount),
                 'departure_date': tour_obj.departure_date and tour_obj.departure_date or '',
                 'return_date': tour_obj.return_date and tour_obj.return_date or '',
                 'start_period': tour_obj.start_period and tour_obj.start_period or '',
@@ -727,19 +708,13 @@ class MasterTour(models.Model):
                 'duration': tour_obj.duration and tour_obj.duration or 0,
                 'images_obj': images,
                 'document_url': tour_obj.document_url and tour_obj.document_url.url or '',
+                'provider': tour_obj.provider_id and tour_obj.provider_id.code or '',
             }
-
-            # is_agent = self.env.user.agent_id.agent_type_id.id not in [
-            #     self.env.ref('tt_base_rodex.agent_type_cor').id, self.env.ref('tt_base_rodex.agent_type_por').id]
 
             response = {
                 'search_request': search_request,
                 'selected_tour': selected_tour,
-                'commission_agent_type': commission_agent_type,
                 'currency_code': 'IDR',
-                # 'is_HO': self.env.user.agent_id.is_HO,
-                'agent_id': self.env.user.agent_id.id,
-                # 'is_agent': is_agent,
             }
 
             return ERR.get_no_error(response)

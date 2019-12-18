@@ -272,7 +272,6 @@ class ReservationActivity(models.Model):
             'state': data['state'],
             'error_msg': data['error_msg']
         })
-        self.send_push_notif('failed')
         return {
             'error_code': 0,
             'error_msg': False,
@@ -283,13 +282,11 @@ class ReservationActivity(models.Model):
         self.write({
             'state': 'fail_issued',
         })
-        self.send_push_notif('Activity Booking Failed')
 
     def action_issued(self):
         self.write({
             'state': 'issued',
         })
-        self.send_push_notif('Activity Booking Issued')
 
     def call_create_invoice(self, acquirer_id,co_uid):
         _logger.info('Creating Invoice for ' + self.name)
@@ -362,27 +359,6 @@ class ReservationActivity(models.Model):
             })
             self.env.cr.commit()
         return True
-
-    def send_push_notif(self, type):
-        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
-        obj_id = str(self.id)
-        model = 'tt.reservation.activity'
-        url = base_url + '/web#id=' + obj_id + '&view_type=form&model=' + model
-        if type == 'paid':
-            desc = 'Activity Paid ' + self.name + ' From ' + self.agent_id.name
-        elif type == 'failed':
-            desc = 'FAILED Activity Issued ' + self.name + ' From ' + self.agent_id.name
-        elif type == 'issued':
-            desc = 'Activity CONFIRMED BY VENDOR ' + self.name + ' From ' + self.agent_id.name
-        else:
-            desc = 'Activity Booking ' + self.name + ' From ' + self.agent_id.name
-
-        data = {
-            'code': 9901,
-            'message': desc,
-            'provider': self.provider_name,
-        }
-        GatewayConnector().telegram_notif_api(data, {})
 
     # to generate sale service charge
     def calculate_service_charge(self):
@@ -1067,7 +1043,6 @@ class ReservationActivity(models.Model):
             self.sudo().write(vals)
             for rec in self.provider_booking_ids:
                 rec.action_issued_api_activity(api_context)
-            self.send_push_notif('Activity Paid')
 
     def get_id(self, booking_number):
         row = self.env['tt.reservation.activity'].search([('name', '=', booking_number)])
