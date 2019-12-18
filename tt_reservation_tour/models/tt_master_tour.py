@@ -54,7 +54,7 @@ class MasterTour(models.Model):
         domain_id = self.env.ref('tt_reservation_tour.tt_provider_type_tour').id
         return [('provider_type_id.id', '=', int(domain_id))]
 
-    name = fields.Char('Name', required=True, default='Tour', size=40)
+    name = fields.Text('Name', required=True, default='Tour', size=40)
     description = fields.Text('Description')
 
     tour_code = fields.Char('Tour Code', readonly=True, copy=False)
