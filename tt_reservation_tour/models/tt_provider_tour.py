@@ -193,6 +193,8 @@ class TtProviderTour(models.Model):
         service_charge_vals_dup1 = []
         service_charge_vals_dup2 = []
         for scs in service_charge_vals:
+            if scs.get('description'):
+                scs.pop('description')
             if scs.get('tour_room_id'):
                 service_charge_vals_dup1.append(scs)
             else:
