@@ -180,7 +180,7 @@ class TtReservationTrain(models.Model):
                     curr_hold_date = datetime.strptime(provider['hold_date'], '%Y-%m-%d %H:%M:%S')
                     if curr_hold_date < hold_date:
                         hold_date = curr_hold_date
-                    if provider_obj.state == 'booked':
+                    if provider_obj.state == 'booked' and hold_date == provider_obj.hold_date:
                         continue
                     self.update_pnr_booked(provider_obj,provider,context)
                     any_provider_changed = True
