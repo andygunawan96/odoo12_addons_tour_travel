@@ -980,6 +980,7 @@ class ReservationActivity(models.Model):
                     'name': master.name,
                     'type': master_line.name,
                 },
+                'provider': master.provider_id.code,
                 'adults': activity_booking.adult,
                 'children': activity_booking.child,
                 'seniors': activity_booking.senior,

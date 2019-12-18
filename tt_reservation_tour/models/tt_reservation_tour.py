@@ -509,7 +509,7 @@ class ReservationTour(models.Model):
             tour_package = {
                 'id': master.id,
                 'name': master.name,
-                'duration':master.duration,
+                'duration': master.duration,
                 'departure_date': master.departure_date,
                 'return_date': master.return_date,
                 'visa': master.visa,
@@ -588,6 +588,7 @@ class ReservationTour(models.Model):
                 'return_date': book_obj.return_date,
                 'order_number': book_obj.name,
                 'hold_date': book_obj.hold_date,
+                'provider': master.provider_id.code,
                 'tour_details': tour_package,
                 'rooms': rooms,
                 'payment_rules': payment_rules,
