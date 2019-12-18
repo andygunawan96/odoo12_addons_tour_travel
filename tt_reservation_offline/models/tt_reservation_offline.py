@@ -845,8 +845,8 @@ class IssuedOffline(models.Model):
     ]
 
     param_context = {
-        'co_uid': 6,
-        'co_agent_id': 3
+        'co_uid': 8,
+        'co_agent_id': 2
     }
 
     param_payment = {
@@ -909,8 +909,7 @@ class IssuedOffline(models.Model):
                 'contact_id': contact_id.id,
                 # 'customer_parent_id': customer_parent_id,
                 'line_ids': [(6, 0, booking_line_ids)],
-                'offline_provider_type': self.env['tt.provider.type'].sudo()
-                                             .search([('code', '=', data_reservation_offline.get('type'))], limit=1).code,
+                'offline_provider_type': data_reservation_offline.get('type'),
                 'description': data_reservation_offline.get('desc'),
                 'total': data_reservation_offline['total_sale_price'],
                 "social_media_type": self._get_social_media_id_by_name(data_reservation_offline.get('social_media_id')),
