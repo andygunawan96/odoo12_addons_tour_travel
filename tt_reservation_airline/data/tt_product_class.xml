@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="tt_product_class_1" model="tt.product.class">
+            <field name="name">Economy</field>
+            <field name="code">Y</field>
+            <field name="cabin_class_id" ref=""/>
+            <field name="provider_id" ref=""/>
+            <field name="provider_type_id" ref=""/>
+        </record>
+    </data>
+</odoo>

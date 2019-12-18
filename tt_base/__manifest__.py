@@ -67,6 +67,9 @@ Key Features
         'views/tt_routes_views.xml',
         'views/error_api_views.xml',
         'views/tt_ssr_views.xml',
+        # 'views/tt_cabin_class_views.xml',
+        # 'views/tt_product_class_views.xml',
+        # 'views/tt_fare_rules_views.xml',
         'views/tt_frontend_security.xml',
         'views/tt_virtual_account_views.xml',
 

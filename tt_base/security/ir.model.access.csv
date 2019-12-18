@@ -272,3 +272,18 @@ access_res_partner_for_agent_management_operator,res.partner.for.agent.managemen
 
 tt_transport_carrier_search_for_tour_travel_operator,tt.transport.carrier.search.for.tour.travel.operator,model_tt_transport_carrier_search,tt_base.group_tt_tour_travel_operator,1,0,0,0
 tt_transport_carrier_search_for_tour_travel_manager,tt.transport.carrier.search.for.tour.travel.manager,model_tt_transport_carrier_search,tt_base.group_tt_tour_travel_manager,1,1,1,1
+
+tt_cabin_class_for_public,tt.cabin.class.for.public,model_tt_cabin_class,,1,0,0,0
+tt_cabin_class_for_tour_travel_operator,tt.cabin.class.for.tour.travel.operator,model_tt_cabin_class,tt_base.group_tt_tour_travel_operator,1,0,0,0
+tt_cabin_class_for_tour_travel_supervisor,tt.cabin.class.for.tour.travel.supervisor,model_tt_cabin_class,tt_base.group_tt_tour_travel_supervisor,1,0,1,0
+tt_cabin_class_for_tour_travel_manager,tt.cabin.class.for.tour.travel.manager,model_tt_cabin_class,tt_base.group_tt_tour_travel_manager,1,1,1,1
+
+tt_product_class_for_public,tt.product.class.for.public,model_tt_product_class,,1,0,0,0
+tt_product_class_for_tour_travel_operator,tt.product.class.for.tour.travel.operator,model_tt_product_class,tt_base.group_tt_tour_travel_operator,1,0,0,0
+tt_product_class_for_tour_travel_supervisor,tt.product.class.for.tour.travel.supervisor,model_tt_product_class,tt_base.group_tt_tour_travel_supervisor,1,0,1,0
+tt_product_class_for_tour_travel_manager,tt.product.class.for.tour.travel.manager,model_tt_product_class,tt_base.group_tt_tour_travel_manager,1,1,1,1
+
+tt_fare_rules_for_public,tt.fare.rules.for.public,model_tt_fare_rules,,1,0,0,0
+tt_fare_rules_for_tour_travel_operator,tt.fare.rules.for.tour.travel.operator,model_tt_fare_rules,tt_base.group_tt_tour_travel_operator,1,0,0,0
+tt_fare_rules_for_tour_travel_supervisor,tt.fare.rules.for.tour.travel.supervisor,model_tt_fare_rules,tt_base.group_tt_tour_travel_supervisor,1,0,1,0
+tt_fare_rules_for_tour_travel_manager,tt.fare.rules.for.tour.travel.manager,model_tt_fare_rules,tt_base.group_tt_tour_travel_manager,1,1,1,1

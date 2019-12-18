@@ -30,6 +30,9 @@ from . import tt_customer_parent
 from . import tt_customer_parent_type
 from . import error_api
 from . import tt_ssr
+from . import tt_cabin_class
+from . import tt_product_class
+from . import tt_fare_rules
 from . import tt_cron_log
 from . import tt_upload_center
 from . import tt_virtual_account
