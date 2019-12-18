@@ -407,7 +407,6 @@
                     <separator string="Tour Leader and Checklist"/>
                     <group>
                         <group>
-                            <field name="ho_id" invisible="1"/>
                             <field name="tour_leader_ids">
                                 <tree edit="false">
                                     <field name="name"/>

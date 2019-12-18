@@ -123,9 +123,6 @@ class MasterTour(models.Model):
 
     down_payment = fields.Float('Down Payment (%)', default=100)
     payment_rules_ids = fields.One2many('tt.payment.rules', 'pricelist_id')
-
-    ho_id = fields.Many2one('tt.agent',
-                            default=lambda x: x.env['tt.agent'].search([('agent_type_id', '=', 2)], limit=1).id)
     tour_leader_ids = fields.Many2many('res.employee', string="Tour Leader")
     # tour_leader_ids = fields.Many2many('res.employee', 'tour_leader_rel', 'pricelist_id', 'partner_id',
     #                                    string="Tour Leader")
@@ -476,11 +473,11 @@ class MasterTour(models.Model):
                     else:
                         result.append(rec)
 
-                if rec.get('import_other_info'):
-                    rec.pop('import_other_info')
-
-                if rec.get('export_other_info'):
-                    rec.pop('export_other_info')
+            deleted_keys = ['import_other_info', 'export_other_info', 'adult_fare', 'adult_commission', 'child_fare',
+                            'child_commission', 'infant_fare', 'infant_commission', 'document_url', 'down_payment',
+                            'other_info_preview', 'create_date', 'create_uid', 'write_date', 'write_uid']
+            img_deleted_keys = ['will_be_deleted_time', 'will_be_deleted_date', 'filename', 'file_reference', 'name', 'upload_uid',
+                                'agent_id', 'create_date', 'create_uid', 'write_date', 'write_uid']
 
             for idx, rec in enumerate(result):
                 try:
@@ -500,6 +497,8 @@ class MasterTour(models.Model):
                             rec_img.update({
                                 img_key: ''
                             })
+                        if img_key in img_deleted_keys:
+                            rec_img.pop(img_key)
 
                 adult_sale_price = int(rec['adult_fare']) + int(rec['adult_commission'])
                 child_sale_price = int(rec['child_fare']) + int(rec['child_commission'])
@@ -533,6 +532,8 @@ class MasterTour(models.Model):
                         rec.update({
                             key: ''
                         })
+                    if key in deleted_keys:
+                        rec.pop(key)
 
             response = {
                 'country_id': search_request['country_id'],
@@ -540,10 +541,7 @@ class MasterTour(models.Model):
                 'city_id': search_request['city_id'],
                 'city': search_request.get('city_name', ''),
                 'search_request': search_request,
-                # 'search_request_json': json.dumps(search_request),
                 'result': result,
-                # 'result_json': json.dumps(result),
-                'search_value': 2,
             }
             return ERR.get_no_error(response)
         except RequestException as e:
