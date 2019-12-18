@@ -192,6 +192,25 @@ class TtProviderTour(models.Model):
 
         service_charge_vals_dup1 = []
         service_charge_vals_dup2 = []
+
+        if service_charge_vals[0]['charge_code'] == 'disc':
+            for scs in service_charge_vals:
+                scs['passenger_tour_ids'] = []
+                scs['pax_count'] = 0
+                scs['total'] = 0
+                for psg in self.ticket_ids:
+                    scs['currency_id'] = currency_obj.get_id('IDR')
+                    scs['foreign_currency_id'] = currency_obj.get_id('IDR')
+                    scs['provider_tour_booking_id'] = self.id
+                    scs['passenger_tour_ids'].append(psg.passenger_id.id)
+                    scs['pax_count'] += 1
+                    scs['total'] += scs['amount']
+                    scs['description'] = self.pnr and self.pnr or ''
+                if scs['total'] != 0:
+                    scs['passenger_tour_ids'] = [(6, 0, scs['passenger_tour_ids'])]
+                    service_chg_obj.create(scs)
+            return True
+
         for scs in service_charge_vals:
             if scs.get('description'):
                 scs.pop('description')
