@@ -845,8 +845,8 @@ class IssuedOffline(models.Model):
     ]
 
     param_context = {
-        'co_uid': 8,
-        'co_agent_id': 2
+        'co_uid': 6,
+        'co_agent_id': 3
     }
 
     param_payment = {
