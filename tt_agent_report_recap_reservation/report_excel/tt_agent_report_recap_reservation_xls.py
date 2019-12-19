@@ -71,89 +71,152 @@ class AgentReportRecapReservationXls(models.TransientModel):
         multi_pnr = False
         temp_pnr = ''
         for rec in values['lines']:
-            row_data += 1
-            sty_table_data_center = style.table_data_center
-            sty_table_data = style.table_data
-            sty_datetime = style.table_data_datetime
-            sty_date = style.table_data_date
-            sty_amount = style.table_data_amount
-
+            to_print = {}
             if first_data:
-                temp_dict = rec
-                selected_index = 0
-                pnr_list = rec['pnr'].split(", ")
-                temp_pnr = rec['ledger_pnr']
-                if len(pnr_list) > 1:
-                    sheet.write(row_data, 8, temp_pnr, sty_table_data)
-                    multi_pnr = True
-                else:
-                    sheet.write(row_data, 8, rec['pnr'], sty_table_data)
-
-                sheet.write(row_data, 0, counter, sty_table_data_center)
-                sheet.write(row_data, 1, rec['provider_type'], sty_table_data)
-                sheet.write(row_data, 2, rec['agent_type_name'], sty_table_data)
-                sheet.write(row_data, 3, rec['agent_name'], sty_table_data)
-                sheet.write(row_data, 4, rec['issued_date'], sty_table_data)
-                sheet.write(row_data, 5, rec['agent_email'], sty_table_data)
-                sheet.write(row_data, 6, rec['provider_name'], sty_table_data)
-                sheet.write(row_data, 7, rec['order_number'], sty_table_data)
-                sheet.write(row_data, 9, rec['adult'], sty_table_data)
-                sheet.write(row_data, 10, rec['child'], sty_table_data)
-                sheet.write(row_data, 11, rec['infant'], sty_table_data)
-                sheet.write(row_data, 12, rec['currency_name'], sty_table_data)
-                sheet.write(row_data, 13, rec['total_nta'], sty_table_data)
-                sheet.write(row_data, 14, rec['total_commission'], sty_table_data)
-                sheet.write(row_data, 15, rec['grand_total'], sty_table_data)
-                sheet.write(row_data, 16, rec['ledger_agent_name'], sty_table_data)
-                sheet.write(row_data, 17, rec['debit'], sty_table_data)
-
                 first_data = False
+                temp_dict = rec
+                try:
+                    pnr_list = rec['pnr'].split(", ")
+                    temp_pnr = rec['ledger_pnr']
+                    if len(pnr_list) > 1:
+                        multi_pnr = True
+                        to_print['pnr'] = rec['ledger_pnr']
+                    else:
+                        to_print['pnr'] = rec['pnr']
+                except:
+                    to_print['pnr'] = ''
+
+                to_print.update({
+                    'provider_type': rec['provider_type'],
+                    'agent_type_name': rec['agent_type_name'],
+                    'agent_name': rec['agent_name'],
+                    'issued_date': rec['issued_date'],
+                    'agent_email': rec['agent_email'],
+                    'provider_name': rec['provider_name'],
+                    'order_number': rec['order_number'],
+                    'adult': rec['adult'],
+                    'child': rec['child'],
+                    'infant': rec['infant'],
+                    'currency_name': rec['currency_name'],
+                    'total_nta': rec['total_nta'],
+                    'total_commission': rec['total_commission'],
+                    'grand_total': rec['grand_total']
+                })
+
+                if rec['ledger_transaction_type'] == 3:
+                    to_print.update({
+                        'ledger_agent_name': rec['ledger_agent_name'],
+                        'debit': rec['debit']
+                    })
+                else:
+                    to_print.update({
+                        'ledger_agent_name': '',
+                        'debit': ''
+                    })
             else:
                 if temp_dict['order_number'] != rec['order_number']:
-                    selected_index = 0
-                    pnr_list = rec['pnr'].split(", ")
-                    if len(pnr_list) > 1:
-                        sheet.write(row_data, 8, pnr_list[0], sty_table_data)
-                        multi_pnr = True
-                    else:
-                        sheet.write(row_data, 8, rec['pnr'], sty_table_data)
-                        multi_pnr = False
                     counter += 1
-                    sheet.write(row_data, 0, counter, sty_table_data_center)
-                    sheet.write(row_data, 1, rec['provider_type'], sty_table_data)
-                    sheet.write(row_data, 2, rec['agent_type_name'], sty_table_data)
-                    sheet.write(row_data, 3, rec['agent_name'], sty_table_data)
-                    sheet.write(row_data, 4, rec['issued_date'] , sty_table_data)
-                    sheet.write(row_data, 5, rec['agent_email'], sty_table_data)
-                    sheet.write(row_data, 6, rec['provider_name'], sty_table_data)
-                    sheet.write(row_data, 7, rec['order_number'], sty_table_data)
-                    sheet.write(row_data, 9, rec['adult'], sty_table_data)
-                    sheet.write(row_data, 10, rec['child'], sty_table_data)
-                    sheet.write(row_data, 11, rec['infant'], sty_table_data)
-                    sheet.write(row_data, 12, rec['currency_name'], sty_table_data)
-                    sheet.write(row_data, 13, rec['total_nta'], sty_table_data)
-                    sheet.write(row_data, 14, rec['total_commission'], sty_table_data)
-                    sheet.write(row_data, 15, rec['grand_total'], sty_table_data)
+                    try:
+                        pnr_list = rec['pnr'].split(", ")
+                        temp_pnr = rec['ledger_pnr']
+                        if len(pnr_list) > 1:
+                            to_print['pnr'] = rec['ledger_pnr']
+                            multi_pnr = True
+                        else:
+                            to_print['pnr'] = rec['pnr']
+                            multi_pnr = False
+                    except:
+                        multi_pnr = False
+                        to_print['pnr'] = ''
+
+                    to_print.update({
+                        'provider_type': rec['provider_type'],
+                        'agent_type_name': rec['agent_type_name'],
+                        'agent_name': rec['agent_name'],
+                        'issued_date': rec['issued_date'],
+                        'agent_email': rec['agent_email'],
+                        'provider_name': rec['provider_name'],
+                        'order_number': rec['order_number'],
+                        'adult': rec['adult'],
+                        'child': rec['child'],
+                        'infant': rec['infant'],
+                        'currency_name': rec['currency_name'],
+                        'total_nta': rec['total_nta'],
+                        'total_commission': rec['total_commission'],
+                        'grand_total': rec['grand_total'],
+                    })
                     temp_dict = rec
+                else:
+                    to_print.update({
+                        'provider_type': '',
+                        'agent_type_name': '',
+                        'agent_name': '',
+                        'issued_date': '',
+                        'agent_email': '',
+                        'provider_name': '',
+                        'order_number': '',
+                        'adult': '',
+                        'child': '',
+                        'infant': '',
+                        'currency_name': '',
+                        'total_nta': '',
+                        'total_commission': '',
+                        'grand_total': '',
+                    })
 
                 if rec['ledger_pnr'] != temp_pnr and rec['ledger_pnr'] in pnr_list and multi_pnr:
+                    to_print['pnr'] = rec['ledger_pnr']
+                    temp_pnr = rec['ledger_pnr']
+                else:
                     try:
-                        sheet.write(row_data, 8, rec['ledger_pnr'], sty_table_data)
-                        temp_pnr = rec['ledger_pnr']
+                        print(to_print['pnr'])
                     except:
-                        pass
+                        to_print['pnr'] = ''
 
-                sheet.write(row_data, 16, rec['ledger_agent_name'], sty_table_data)
-                sheet.write(row_data, 17, rec['debit'], sty_table_data)
 
-            # sheet.write(row_data, 1, datetime.strptime(rec['create_date'], "%Y-%m-%d %H:%M:%S") if rec['create_date'] else '', sty_date)
-            # sheet.write(row_data, 2, rec['order_number'], sty_table_data)
-            # sheet.write(row_data, 3, rec['agent_name'], sty_table_data)
-            # sheet.write(row_data, 4, rec['agent_type'], sty_table_data)
-            # sheet.write(row_data, 5, rec['provider'], sty_table_data)
-            # sheet.write(row_data, 6, rec['total'], sty_table_data)
-            # sheet.write(row_data, 7, rec['state'], sty_table_data)
-            # sheet.write(row_data, 8, rec['provider_type'], sty_table_data)
+
+                if rec['ledger_transaction_type'] == 3:
+                    to_print.update({
+                        'ledger_agent_name': rec['ledger_agent_name'],
+                        'debit': rec['debit']
+                    })
+                else:
+                    if to_print['order_number'] == '':
+                        to_print = {}
+                    else:
+                        to_print.update({
+                            'ledger_agent_name': '',
+                            'debit': ''
+                        })
+
+            #checker for data
+            if to_print:
+                row_data += 1
+                sty_table_data_center = style.table_data_center
+                sty_table_data = style.table_data
+                sty_datetime = style.table_data_datetime
+                sty_date = style.table_data_date
+                sty_amount = style.table_data_amount
+
+
+                sheet.write(row_data, 0, counter, sty_table_data_center)
+                sheet.write(row_data, 1, to_print['provider_type'], sty_table_data)
+                sheet.write(row_data, 2, to_print['agent_type_name'], sty_table_data)
+                sheet.write(row_data, 3, to_print['agent_name'], sty_table_data)
+                sheet.write(row_data, 4, to_print['issued_date'], sty_table_data)
+                sheet.write(row_data, 5, to_print['agent_email'], sty_table_data)
+                sheet.write(row_data, 6, to_print['provider_name'], sty_table_data)
+                sheet.write(row_data, 7, to_print['order_number'], sty_table_data)
+                sheet.write(row_data, 8, to_print['pnr'], sty_table_data)
+                sheet.write(row_data, 9, to_print['adult'], sty_table_data)
+                sheet.write(row_data, 10, to_print['child'], sty_table_data)
+                sheet.write(row_data, 11, to_print['infant'], sty_table_data)
+                sheet.write(row_data, 12, to_print['currency_name'], sty_table_data)
+                sheet.write(row_data, 13, to_print['total_nta'], sty_table_data)
+                sheet.write(row_data, 14, to_print['total_commission'], sty_table_data)
+                sheet.write(row_data, 15, to_print['grand_total'], sty_table_data)
+                sheet.write(row_data, 16, to_print['ledger_agent_name'], sty_table_data)
+                sheet.write(row_data, 17, to_print['debit'], sty_table_data)
 
         workbook.close()
 
