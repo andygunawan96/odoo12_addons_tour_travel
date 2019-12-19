@@ -195,8 +195,8 @@ class TtProviderActivity(models.Model):
                 for psg in self.ticket_ids:
                     if scs['pax_type'] == psg.pax_type and scs['sku_id'] == psg.ticket_number:
                         scs['passenger_activity_ids'].append(psg.passenger_id.id)
-                    scs['pax_count'] += 1
-                    scs['total'] += scs['amount']
+                        scs['pax_count'] += 1
+                        scs['total'] += scs['amount']
             # scs.pop('currency')
             # scs.pop('foreign_currency')
                 scs.pop('sku_id')
