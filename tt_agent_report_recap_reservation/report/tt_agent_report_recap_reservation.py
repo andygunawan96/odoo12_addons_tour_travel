@@ -19,7 +19,7 @@ class AgentReportRecapReservation(models.Model):
         provider_type.name as provider_type,
         agent_type.name as agent_type_name,
         currency.name as currency_name,
-        ledger.debit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr
+        ledger.debit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger.transaction_type as ledger_transaction_type
         """
 
     @staticmethod
@@ -70,7 +70,7 @@ class AgentReportRecapReservation(models.Model):
             where += """ AND rsv.agent_id = %s""" % agent_id
         if provider_type and provider_type != 'all':
             where += """ AND provider_type.code = '%s' """ % provider_type
-        where += """ AND ledger.transaction_type = 3"""
+        # where += """ AND ledger.transaction_type = 3"""
         return where
 
     @staticmethod
