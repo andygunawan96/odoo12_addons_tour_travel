@@ -9,10 +9,13 @@
                 <search string="Search Issued Offline Booking">
 <!--                   <field name="name" string="string" domain="[()]"/>-->
                     <field name="name"/>
-                    <field name="customer_parent_id"/>
+                    <field name="pnr"/>
+                    <field name="provider_name" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <field name="carrier_name" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <field name="customer_parent_id" groups="tt_base.group_tt_tour_travel_operator"/>
 <!--                    <field name="provider"/>-->
                     <field name="contact_id"/>
-                    <field name="pnr"/>
                     <group>
                         <filter string="All" name="all"/>
                         <filter string="Draft" name="draft" domain="[('state_offline','=','draft')]"/>

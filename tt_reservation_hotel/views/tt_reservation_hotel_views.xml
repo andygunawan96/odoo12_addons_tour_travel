@@ -6,6 +6,7 @@
         <field name="arch" type="xml">
             <search string="Search Hotel Reservation">
                 <field name="name" string="Hotel"/>
+                <field name="provider_name" groups="tt_base.group_tt_tour_travel_operator"/>
                 <field name="contact_name" string="Contact Name"/>
                 <field name="display_mobile" string="Contact Mobile"/>
                 <field name="agent_id" string="Agent"/>
