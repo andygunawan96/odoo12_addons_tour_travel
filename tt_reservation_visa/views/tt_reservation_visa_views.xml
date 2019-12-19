@@ -7,6 +7,8 @@
         <field name="arch" type="xml">
             <search string="Search Visa Booking">
                 <field name="name"/>
+                <field name="provider_name" groups="tt_base.group_tt_tour_travel_operator"/>
+                <field name="carrier_name" groups="tt_base.group_tt_tour_travel_operator"/>
                 <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>
                 <field name="contact_id"/>
                 <field name="country_id"/>
@@ -18,7 +20,7 @@
                     <filter string="In Process/Payment" name="in_process_payment" domain="['|', ('state_visa','=','in_process'),('state_visa','=','payment')]"/>
                     <filter string="Partial Proceed/Proceed" name="partial_proceed_proceed" domain="['|', ('state_visa','=','partial_proceed'),('state_visa','=','proceed')]"/>
                     <filter string="Delivered/Done" name="delivered_done" domain="['|', ('state_visa','=','delivered'),('state_visa','=','done')]"/>
-<!--                    <filter string="Ready" name="ready" domain="[('state_visa','=','ready')]"/>-->
+                    <!--                    <filter string="Ready" name="ready" domain="[('state_visa','=','ready')]"/>-->
                     <filter string="Canceled" name="cancel" domain="[('state_visa','=','cancel')]"/>
                 </group>
                 <separator/>
@@ -63,10 +65,10 @@
                     <button string="In Process" name="action_in_process_visa" type="object" attrs="{'invisible': [('state_visa', 'not in', ['validate','vendor_process'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
                     <button string="Process to Consulate" name="action_in_process_consulate_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'payment')]}" groups="tt_base.group_tt_tour_travel_operator"/>
                     <button string="Cancel All" name="action_cancel_visa" type="object" attrs="{'invisible': [('state_visa', 'in', ['cancel'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
-<!--                    <button string="Calc. Channel Prices" name="calc_channel_service_charge_visa" type="object"/>-->
-<!--                    <button string="Pay Now" name="action_pay_now_visa" type="object" attrs="{'invisible': [('state_visa', 'not in', ['draft','confirm', 'validate'])]}"/>-->
-<!--                    <button string="Proforma Invoice" name="action_proforma_invoice_visa" type="object"/>-->
-<!--                    <button string="Recalculate Price" name="recalculate_price" type="object"/>-->
+                    <!--                    <button string="Calc. Channel Prices" name="calc_channel_service_charge_visa" type="object"/>-->
+                    <!--                    <button string="Pay Now" name="action_pay_now_visa" type="object" attrs="{'invisible': [('state_visa', 'not in', ['draft','confirm', 'validate'])]}"/>-->
+                    <!--                    <button string="Proforma Invoice" name="action_proforma_invoice_visa" type="object"/>-->
+                    <!--                    <button string="Recalculate Price" name="recalculate_price" type="object"/>-->
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
@@ -94,24 +96,24 @@
                             <field name="agent_id" readonly="1"/>
                             <field name="customer_parent_id" readonly="1"/>
                             <field name="currency_id" invisible="1"/>
-<!--                            <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>-->
-<!--                            <field name="refund_id"/>-->
-<!--                            <field name="payment_date" attrs="{'readonly': [('state_visa', '!=', 'in_process')]}"/>-->
+                            <!--                            <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>-->
+                            <!--                            <field name="refund_id"/>-->
+                            <!--                            <field name="payment_date" attrs="{'readonly': [('state_visa', '!=', 'in_process')]}"/>-->
                             <field name="document_to_ho_date"/>
                             <field name="hold_date" widget="date"/>
                             <field name="use_vendor"/>
-<!--                            <field name="acquirer_id"/>-->
-<!--                            <field name="state" string="State (debug)"/>  &lt;!&ndash;Debug&ndash;&gt;-->
-<!--                            <field name="proof_of_consulate" widget="many2many_binary"/>-->
-<!--                            <field name="vendor_ids" attrs="{'required': [('use_vendor', '=', True)], 'readonly': [('state_visa', 'in', ['delivered','ready','done'])]}" groups="tt_base.group_tt_tour_travel_operator,account.group_account_user">-->
-<!--                                <tree editable="bottom">-->
-<!--                                    <field name="vendor_id"/>-->
-<!--                                    <field name="reference_number"/>-->
-<!--                                    <field name="amount"/>-->
-<!--                                    <field name="payment_date"/>-->
-<!--                                    <field name="currency_id" invisible="1"/>-->
-<!--                                </tree>-->
-<!--                            </field>-->
+                            <!--                            <field name="acquirer_id"/>-->
+                            <!--                            <field name="state" string="State (debug)"/>  &lt;!&ndash;Debug&ndash;&gt;-->
+                            <!--                            <field name="proof_of_consulate" widget="many2many_binary"/>-->
+                            <!--                            <field name="vendor_ids" attrs="{'required': [('use_vendor', '=', True)], 'readonly': [('state_visa', 'in', ['delivered','ready','done'])]}" groups="tt_base.group_tt_tour_travel_operator,account.group_account_user">-->
+                            <!--                                <tree editable="bottom">-->
+                            <!--                                    <field name="vendor_id"/>-->
+                            <!--                                    <field name="reference_number"/>-->
+                            <!--                                    <field name="amount"/>-->
+                            <!--                                    <field name="payment_date"/>-->
+                            <!--                                    <field name="currency_id" invisible="1"/>-->
+                            <!--                                </tree>-->
+                            <!--                            </field>-->
                         </group>
                         <group>
                             <field name="commercial_state"/>
@@ -143,7 +145,7 @@
                             </div>
 
                             <field name="in_process_date"/>
-<!--                            <field name="ready_date"/>-->
+                            <!--                            <field name="ready_date"/>-->
                             <field name="done_date"/>
                         </group>
                     </group>
@@ -178,7 +180,7 @@
                                     <field name="passenger_type"/>
                                     <field name="pricelist_id"/>
                                     <field name="in_process_date"/>
-<!--                                    <field name="call_date"/>-->
+                                    <!--                                    <field name="call_date"/>-->
                                     <field name="out_process_date"/>
                                     <field name="to_HO_date"/>
                                     <field name="ready_date"/>
@@ -212,7 +214,7 @@
                             </field>
                         </page>
                         <page string="Ledgers" name="ledger_page">
-<!--                            groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"-->
+                            <!--                            groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"-->
                             <field name="ledger_ids">
                                 <tree create="false">
                                     <field name="date"/>
@@ -241,8 +243,8 @@
                         </group>
                         <group string="Total Information" class="oe_subtotal_footer oe_right">
                             <!--<field name="total_insentif_amount" class="oe_subtotal_footer_separator"/>-->
-<!--                            <field name="total_fare" class="oe_subtotal_footer_separator"/>-->
-<!--                            <field name="total_tax" class="oe_subtotal_footer_separator"/>-->
+                            <!--                            <field name="total_fare" class="oe_subtotal_footer_separator"/>-->
+                            <!--                            <field name="total_tax" class="oe_subtotal_footer_separator"/>-->
                             <field name="total" class="oe_subtotal_footer_separator"/>
                             <field name="total_commission" class="oe_subtotal_footer_separator" groups="tt_base.group_tt_tour_travel_operator"/>  <!--,tt_base.group_tt_agent_user_operator-->
                             <field name="agent_commission" class="oe_subtotal_footer_separator" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator"/>
@@ -265,13 +267,13 @@
         <field name="model">tt.reservation.visa</field>
         <field name="arch" type="xml">
             <tree create="false">
-<!--                <button type="object" string="Create Booking Visa" name="create_booking_visa_api"/>-->
-<!--                <button type="object" string="Get Booking Visa" name="get_booking_visa_api"/>-->
+                <!--                <button type="object" string="Create Booking Visa" name="create_booking_visa_api"/>-->
+                <!--                <button type="object" string="Get Booking Visa" name="get_booking_visa_api"/>-->
                 <field name="name"/>
                 <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>
                 <field name="agent_type_id" groups="tt_base.group_tt_tour_travel_operator"/>
-<!--                <field name="sub_agent_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>-->
-<!--                <field name="sub_agent_type_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>-->
+                <!--                <field name="sub_agent_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>-->
+                <!--                <field name="sub_agent_type_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>-->
                 <field name="contact_id"/>
                 <field name="country_id"/>
                 <field name="issued_uid"/>
@@ -291,9 +293,9 @@
         <field name="search_view_id" ref="tt_reservation_visa_view_filter"/>
         <field name="context">
             {
-                'form_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_form',
-                'tree_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_tree',
-                'search_default_all': 1,
+            'form_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_form',
+            'tree_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_tree',
+            'search_default_all': 1,
             }
         </field>
     </record>
@@ -307,9 +309,9 @@
         <field name="search_view_id" ref="tt_reservation_visa_view_filter"/>
         <field name="context">
             {
-                'form_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_form',
-                'tree_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_tree',
-                'search_default_draft': 1,
+            'form_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_form',
+            'tree_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_tree',
+            'search_default_draft': 1,
             }
         </field>
     </record>
@@ -323,9 +325,9 @@
         <field name="search_view_id" ref="tt_reservation_visa_view_filter"/>
         <field name="context">
             {
-                'form_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_form',
-                'tree_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_tree',
-                'search_default_confirm_validate': 1,
+            'form_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_form',
+            'tree_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_tree',
+            'search_default_confirm_validate': 1,
             }
         </field>
     </record>
@@ -339,9 +341,9 @@
         <field name="search_view_id" ref="tt_reservation_visa_view_filter"/>
         <field name="context">
             {
-                'form_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_form',
-                'tree_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_tree',
-                'search_default_in_process_payment': 1,
+            'form_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_form',
+            'tree_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_tree',
+            'search_default_in_process_payment': 1,
             }
         </field>
     </record>
@@ -355,9 +357,9 @@
         <field name="search_view_id" ref="tt_reservation_visa_view_filter"/>
         <field name="context">
             {
-                'form_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_form',
-                'tree_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_tree',
-                'search_default_partial_proceed_proceed': 1,
+            'form_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_form',
+            'tree_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_tree',
+            'search_default_partial_proceed_proceed': 1,
             }
         </field>
     </record>
@@ -371,9 +373,9 @@
         <field name="search_view_id" ref="tt_reservation_visa_view_filter"/>
         <field name="context">
             {
-                'form_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_form',
-                'tree_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_tree',
-                'search_default_delivered_done': 1,
+            'form_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_form',
+            'tree_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_tree',
+            'search_default_delivered_done': 1,
             }
         </field>
     </record>
@@ -387,9 +389,9 @@
         <field name="search_view_id" ref="tt_reservation_visa_view_filter"/>
         <field name="context">
             {
-                'form_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_form',
-                'tree_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_tree',
-                'search_default_cancel': 1,
+            'form_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_form',
+            'tree_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_tree',
+            'search_default_cancel': 1,
             }
         </field>
     </record>
