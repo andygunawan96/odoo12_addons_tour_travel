@@ -123,45 +123,69 @@ class PrintoutInvoiceHO(models.AbstractModel):
 
     def get_invoice_data(self, rec, paxs, context, data):
         a = {}
-        if rec.provider_booking_ids:
-            if rec._name == 'tt.reservation.hotel':
-                if rec.room_detail_ids:
-                    for rec2 in rec.room_detail_ids:
-                        issued_name = rec2.issued_name if rec2.issued_name else '-'
-                        if not a.get(issued_name):
-                            a[issued_name] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [],
-                                              'provider_type': ''}
+        if rec._name == 'tt.reservation.hotel':
+            if rec.room_detail_ids:
+                for idx, rec2 in enumerate(rec.room_detail_ids):
+                    issued_name = rec2.issued_name if rec2.issued_name else '-'
+                    if not a.get(issued_name):
+                        a[issued_name] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [],
+                                          'provider_type': ''}
+                    meal = rec2.meal_type or 'Room Only'
+                    if idx == 0:
                         a[issued_name]['descs'].append(self.get_description(rec, data))
-                        a[issued_name]['provider_type'] = rec.provider_type_id.name
-                        for room in rec.room_detail_ids:
-                            meal = room.meal_type or 'Room Only'
-                            a[issued_name]['pax_data'].append({
-                                'name': room.room_name + ' (' + meal + ') ',
-                                'total': room.sale_price
-                            })
-            elif rec._name == 'tt.reservation.offline':
-                pass
-            else:
+                    a[issued_name]['provider_type'] = rec.provider_type_id.name
+                    a[issued_name]['pax_data'].append({
+                        'name': rec2.room_name + ' (' + meal + ') ',
+                        'total': rec2.sale_price
+                    })
+        elif rec._name == 'tt.reservation.offline':
+            pass
+        else:
+            if rec.provider_booking_ids:
                 for provider in rec.provider_booking_ids:
                     pnr = provider.pnr if provider.pnr else '-'
                     if not a.get(pnr):
                         a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'provider_type': ''}
-                    a[pnr]['descs'].append(self.get_description(rec, data))
+                    a[pnr]['descs'].append(self.get_description(provider, data))
                     a[pnr]['provider_type'] = rec.provider_type_id.name
                     # untuk harga fare per passenger
-                    for psg in rec.passenger_ids:
-                        desc_text = '%s, %s' % (' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '')
-                        price_unit = 0
-                        for cost_charge in psg.cost_service_charge_ids:
-                            if cost_charge.charge_type != 'RAC':
-                                price_unit += cost_charge.amount
-                        for channel_charge in psg.channel_service_charge_ids:
-                            price_unit += channel_charge.amount
-                        a[pnr]['pax_data'].append({
-                            'name': '%s, %s' % (' '.join((psg.first_name or '', psg.last_name or '')), psg.title or ''),
-                            'total': price_unit
-                        })
+                    pax_dict = self.get_pax_dict(rec, provider)
+                    for psg in pax_dict:
+                        a[pnr]['pax_data'].append(pax_dict[psg])
         return a
+
+    def get_pax_dict(self, rec, provider):
+        pax_dict = {}
+        for cost_charge in provider.cost_service_charge_ids:
+            if cost_charge.charge_type != 'RAC':
+                if rec.provider_type_id.id == self.env.ref('tt_reservation_airline.tt_provider_type_airline').id:
+                    for psg in cost_charge.passenger_airline_ids:
+                        if psg.name not in pax_dict:
+                            pax_dict[psg.name] = {}
+                            pax_dict[psg.name]['name'] = '%s, %s' % (
+                            ' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '')
+                            pax_dict[psg.name]['total'] = cost_charge.amount
+                        else:
+                            pax_dict[psg.name]['total'] += cost_charge.amount
+                elif rec.provider_type_id.id == self.env.ref('tt_reservation_train.tt_provider_type_train').id:
+                    for psg in cost_charge.passenger_train_ids:
+                        if psg.name not in pax_dict:
+                            pax_dict[psg.name] = {}
+                            pax_dict[psg.name]['name'] = '%s, %s' % (
+                            ' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '')
+                            pax_dict[psg.name]['total'] = cost_charge.amount
+                        else:
+                            pax_dict[psg.name]['total'] += cost_charge.amount
+                elif rec.provider_type_id.id == self.env.ref('tt_reservation_activity.tt_provider_type_activity').id:
+                    for psg in cost_charge.passenger_activity_ids:
+                        if psg.name not in pax_dict:
+                            pax_dict[psg.name] = {}
+                            pax_dict[psg.name]['name'] = '%s, %s' % (
+                            ' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '')
+                            pax_dict[psg.name]['total'] = cost_charge.amount
+                        else:
+                            pax_dict[psg.name]['total'] += cost_charge.amount
+        return pax_dict
 
     def get_pax_data(self):
         # untuk harga fare per passenger
@@ -185,7 +209,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
         desc = ''
         if data['context']['active_model'] == 'tt.reservation.airline':
             for journey in rec.journey_ids:
-                desc += '%s(%s) - %s(%s),' % (
+                desc += '%s(%s) - %s(%s), ' % (
                     journey.origin_id.city, journey.origin_id.code, journey.destination_id.city, journey.destination_id.code)
                 desc += '%s - %s\n ' % (journey.departure_date[:16], journey.arrival_date[:16])
         elif data['context']['active_model'] == 'tt.reservation.train':
@@ -195,33 +219,30 @@ class PrintoutInvoiceHO(models.AbstractModel):
                 desc += '%s - %s\n ' % (journey.departure_date[:16], journey.arrival_date[:16])
         elif data['context']['active_model'] == 'tt.reservation.activity':
             desc = ''
-            desc += '%s (%s), ' % (self.activity_id.name, self.activity_product,)
-            desc += '%s ' % (self.visit_date,)
-            if self.timeslot:
-                desc += '(%s) ' % (self.timeslot,)
+            desc += '%s (%s), ' % (rec.booking_id.activity_id.name, rec.booking_id.activity_product,)
+            desc += '%s ' % (rec.booking_id.visit_date,)
+            if rec.booking_id.timeslot:
+                desc += '(%s) ' % (rec.booking_id.timeslot,)
             desc += '\n '
             return desc
         elif data['context']['active_model'] == 'tt.reservation.tour':
             desc = ''
-            desc += '%s' % (self.tour_id.name,)
+            desc += '%s' % (rec.tour_id.name,)
             desc += '\n'
-            desc += '%s - %s ' % (self.departure_date, self.return_date,)
+            desc += '%s - %s ' % (rec.departure_date, rec.return_date,)
             desc += '\n'
         elif data['context']['active_model'] == 'tt.reservation.visa':
             desc = ''
-            for rec in self:
-                desc = 'Reservation Visa Country : ' + self.country_id.name + ' ' + 'Consulate : ' + \
-                            rec.immigration_consulate + ' ' + 'Journey Date : ' + str(rec.departure_date)
+            desc = 'Reservation Visa Country : ' + rec.country_id.name + ' ' + 'Consulate : ' + \
+                        rec.immigration_consulate + ' ' + 'Journey Date : ' + str(rec.departure_date)
         elif data['context']['active_model'] == 'tt.reservation.hotel':
-            for room in rec.room_detail_ids:
-                desc += 'Hotel : %s\nRoom : %s %s(%s),\n' % (
-                    rec.hotel_name, room.room_name, room.room_type, room.meal_type if room.meal_type else 'Room Only')
-                desc += 'Date  : %s - %s\n' % (str(rec.checkin_date)[:10], str(rec.checkout_date)[:10])
-                desc += 'Guest :\n'
-                for idx, guest in enumerate(rec.passenger_ids):
-                    desc += str(idx + 1) + '. ' + guest.name + '\n'
-                spc = room.special_request or '-'
-                desc += 'Special Request: ' + spc + '\n'
+            desc += 'Hotel : %s\n' % (rec.hotel_name)
+            desc += 'Date  : %s - %s\n' % (str(rec.checkin_date)[:10], str(rec.checkout_date)[:10])
+            desc += 'Guest :\n'
+            for idx, guest in enumerate(rec.passenger_ids):
+                desc += str(idx + 1) + '. ' + guest.name + '\n'
+            # spc = rec.special_request or '-'
+            # desc += 'Special Request: ' + spc + '\n'
         return desc
 
     def _get_report_values(self, docids, data=None):

@@ -52,7 +52,7 @@
                         </field>
                     </group>
                     <group string="Service Charges">
-                        <field name="cost_service_charge_ids" readonly="1">
+                        <field name="cost_service_charge_ids" readonly="1" context="{'form_view_ref':'tt_reservation_visa.tt_service_charge_visa_inherit_form_view'}">
                             <tree>
                                 <field name="charge_code"/>
                                 <field name="charge_type"/>

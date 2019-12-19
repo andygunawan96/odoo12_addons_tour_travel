@@ -178,7 +178,7 @@
                         <field name="handling_information"/>
                     </group>
                     <group string="Pricing">
-                        <field name="cost_service_charge_ids"/>
+                        <field name="cost_service_charge_ids" context="{'form_view_ref':'tt_reservation_visa.tt_service_charge_visa_inherit_form_view'}"/>
                         <field name="channel_service_charge_ids" attrs="{'readonly': [('state', 'not in', ['draft','confirm','validate'])]}"/>
                     </group>
                     <group>
