@@ -72,6 +72,7 @@ class ttCronTopUpValidator(models.Model):
                 }
                     #called function to proceed data and input in bank transaction
                 result = self.env['tt.bank.transaction'].get_data(data)
+                self.cron_auto_top_up_validator()
             except Exception as e:
                 self.create_cron_log_folder()
                 self.write_cron_log('auto get bank transaction')
