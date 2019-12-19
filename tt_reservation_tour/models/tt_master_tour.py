@@ -54,7 +54,7 @@ class MasterTour(models.Model):
         domain_id = self.env.ref('tt_reservation_tour.tt_provider_type_tour').id
         return [('provider_type_id.id', '=', int(domain_id))]
 
-    name = fields.Char('Name', required=True, default='Tour', size=40)
+    name = fields.Text('Name', required=True, default='Tour', size=40)
     description = fields.Text('Description')
 
     tour_code = fields.Char('Tour Code', readonly=True, copy=False)
@@ -66,6 +66,7 @@ class MasterTour(models.Model):
 
     departure_date = fields.Date('Departure Date')
     return_date = fields.Date('Arrival Date')
+    name_with_date = fields.Text('Display Name', readonly=True, compute='_compute_name_with_date', store=True)
     duration = fields.Integer('Duration (days)', help="in day(s)", readonly=True,
                               compute='_compute_duration', store=True)
 
@@ -160,6 +161,11 @@ class MasterTour(models.Model):
             if total_percent + vals['down_payment'] > 100.00:
                 raise UserError(_('Total Installments and Down Payment cannot be more than 100%. Please re-adjust your Installment Payment Rules!'))
         return super(MasterTour, self).write(vals)
+
+    @api.depends("name", "departure_date", "return_date")
+    def _compute_name_with_date(self):
+        for rec in self:
+            rec.name_with_date = "[" + rec.departure_date.strftime('%d %b %Y') + " - " + rec.return_date.strftime('%d %b %Y') + "] "+ rec.name
 
     @api.depends("name")
     def _compute_filename(self):
@@ -419,7 +425,7 @@ class MasterTour(models.Model):
             sql_query = "SELECT tp.* FROM tt_master_tour tp LEFT JOIN tt_tour_location_rel tcr ON tcr.product_id = tp.id left join tt_tour_master_locations loc on loc.id = tcr.location_id WHERE tp.state IN ('open', 'definite') AND tp.seat > 0 AND tp.active = True"
 
             if search_request.get('tour_query'):
-                sql_query += " AND tp.name ILIKE '" + search_request['tour_query'] + "'"
+                sql_query += " AND tp.name_with_date ILIKE '" + search_request['tour_query'] + "'"
 
             if search_request['country_id'] != 0:
                 self.env.cr.execute("""SELECT id, name FROM res_country WHERE id=%s""",
@@ -980,7 +986,7 @@ class MasterTour(models.Model):
             query = req.get('name') and '%' + req['name'] + '%' or False
             sql_query = "select * from tt_master_tour where state IN ('open', 'definite') AND seat > 0 AND active = True"
             if query:
-                sql_query += " and name ilike %"+query+"%"
+                sql_query += " and name_with_date ilike %"+query+"%"
             self.env.cr.execute(sql_query)
 
             result_id_list = self.env.cr.dictfetchall()
@@ -988,7 +994,7 @@ class MasterTour(models.Model):
 
             for result in result_id_list:
                 result = {
-                    'name': result.get('name') and result['name'] or '',
+                    'name': result.get('name_with_date') and result['name_with_date'] or '',
                 }
                 result_list.append(result)
 

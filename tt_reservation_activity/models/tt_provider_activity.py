@@ -191,14 +191,20 @@ class TtProviderActivity(models.Model):
             scs['currency_id'] = currency_obj.get_id('IDR')
             scs['foreign_currency_id'] = currency_obj.get_id('IDR')
             scs['provider_activity_booking_id'] = self.id
-            for psg in self.ticket_ids:
-                if scs['pax_type'] == psg.pax_type and scs['sku_id'] == psg.ticket_number:
-                    scs['passenger_activity_ids'].append(psg.passenger_id.id)
+            if scs['charge_code'] != 'disc':
+                for psg in self.ticket_ids:
+                    if scs['pax_type'] == psg.pax_type and scs['sku_id'] == psg.ticket_number:
+                        scs['passenger_activity_ids'].append(psg.passenger_id.id)
                     scs['pax_count'] += 1
                     scs['total'] += scs['amount']
             # scs.pop('currency')
             # scs.pop('foreign_currency')
-            scs.pop('sku_id')
+                scs.pop('sku_id')
+            else:
+                for psg in self.ticket_ids:
+                    scs['passenger_activity_ids'].append(psg.passenger_id.id)
+                    scs['pax_count'] += 1
+                    scs['total'] += scs['amount']
             scs['passenger_activity_ids'] = [(6,0,scs['passenger_activity_ids'])]
             scs['description'] = self.pnr and self.pnr or ''
             if scs['total'] != 0:

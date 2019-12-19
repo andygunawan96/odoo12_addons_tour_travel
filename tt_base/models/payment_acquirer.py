@@ -110,6 +110,14 @@ class PaymentAcquirer(models.Model):
                 if not values.get(acq.type):
                     values[acq.type] = []
                 values[acq.type].append(acq.acquirer_format(amount,unique))
+            if req['transaction_type'] == 'top_up':
+                dom = [('website_published', '=', True), ('company_id', '=', self.env.user.company_id.id)]
+                dom.append(('agent_id', '=', context['co_agent_id']))
+                for acq in self.sudo().search(dom):
+                    if not values.get(acq.type):
+                        values[acq.type] = []
+                    if acq.type == 'va':
+                        values[acq.type].append(acq.acquirer_format(amount, unique))
             res = {}
             res['non_member'] = values
             res['member'] = {}
