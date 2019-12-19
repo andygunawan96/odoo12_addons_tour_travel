@@ -68,7 +68,6 @@
         <record id="issued_offline_view_form" model="ir.ui.view">
             <field name="name">tt.reservation.offline.view.form</field>
             <field name="model">tt.reservation.offline</field>
-<!--            <field name="priority">1</field>-->
             <field name="arch" type="xml">
                 <form>
                     <header>
@@ -78,7 +77,7 @@
                         <button string="Validate" class="oe_highlight" name="action_issued_backend" attrs="{'invisible':[('state_offline','!=','sent')]}" type="object" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_ticketing_operator"/>  <!-- ,tt_base.group_tt_tour_travel_operator groups="tt_base.group_tt_ticketing_operator,account.group_account_user"-->
                         <button string="Quick Validate" class="oe_highlight" name="action_quick_issued" attrs="{'invisible':[('state_offline','!=','confirm')]}" type="object" groups="tt_base.group_tt_tour_travel_operator"/>
 <!--                        <button string="Post" name="action_done" states="draft,confirm,sent,paid,posted" type="object" groups="tt_base.group_tt_tour_travel_operator"/>-->
-                        <button string="Done" class="oe_highlight" name="action_done" attrs="{'invisible':[('state_offline','!=','validate')]}" type="object" groups="tt_base.group_tt_ticketing_manager,account.group_account_invoice"/>
+                        <button string="Done" class="oe_highlight" name="action_done" attrs="{'invisible':[('state_offline','!=','validate')]}" type="object" groups="tt_base.group_tt_ticketing_operator,account.group_account_invoice"/>
                         <button string="Cancel" name="action_cancel" type="object" attrs="{'invisible':[('state_offline','not in',['confirm','sent','validate'])]}" groups="tt_base.group_tt_ticketing_operator,account.group_account_invoice"/>
                         <button string="Cancel" name="action_cancel" type="object"  attrs="{'invisible':[('state_offline','!=','draft')]}"/>
 <!--                        <button string="Print Invoice" name="print_invoice" type="object" states="paid,posted"/>-->
@@ -99,7 +98,6 @@
                         </div>
                         <group>
                             <group>
-                                <field name="state" invisible="1"/>
                                 <field name="agent_id" readonly="1" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                                 <field name="booker_id" required="1"/>
                                 <field name="contact_id" required="1" context="{'default_commercial_agent_id': agent_id}" options="{'no_quick_create': True}"/>
@@ -126,10 +124,11 @@
                             <group>
 <!--                                <field name="carrier_id"/>-->
 <!--                                <field name="provider" required="1"/>-->
+                                <field name="state" string="Status" invisible="0" readonly="1"/>
                                 <field name="person" invisible="1"/>
                                 <field name="segment" invisible="1"/>
                                 <field name="social_media_type" attrs="{'required': [('state_offline', '=', 'confirm')], 'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
-                                <field name="hold_date" invisible="1"/>
+                                <field name="hold_date" invisible="0" readonly="1"/>
                                 <field name="expired_date" required="1"/>
                                 <field name="currency_id" invisible="1"/>
                                 <label for="create_uid" string="Created"/>
@@ -231,19 +230,6 @@
                 </form>
             </field>
         </record>
-
-<!--        <record id="issued_offline_view_form_agent_user" model="ir.ui.view">-->
-<!--            <field name="name">tt.reservation.offline.view.form.agent.user</field>-->
-<!--            <field name="model">tt.reservation.offline</field>-->
-<!--            <field name="inherit_id" ref="tt_reservation_offline.issued_offline_view_form"/>-->
-<!--            <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_user_operator') ])]" />-->
-<!--            <field name="priority">2</field>-->
-<!--            <field name="arch" type="xml">-->
-<!--                <field name="line_ids" position="replace">-->
-<!--                    <field name="line_ids" options=""/>-->
-<!--                </field>-->
-<!--            </field>-->
-<!--        </record>-->
 
         <record model="ir.ui.view" id="issued_offline_view_tree">
             <field name="name">tt.reservation.offline.view.tree</field>
