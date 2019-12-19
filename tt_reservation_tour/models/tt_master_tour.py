@@ -165,7 +165,13 @@ class MasterTour(models.Model):
     @api.depends("name", "departure_date", "return_date")
     def _compute_name_with_date(self):
         for rec in self:
-            rec.name_with_date = "[" + rec.departure_date.strftime('%d %b %Y') + " - " + rec.return_date.strftime('%d %b %Y') + "] "+ rec.name
+            if rec.tour_category == 'private':
+                start_date = rec.start_period and rec.start_period.strftime('%d %b %Y') or ''
+                end_date = rec.end_period and rec.end_period.strftime('%d %b %Y') or ''
+            else:
+                start_date = rec.departure_date and rec.departure_date.strftime('%d %b %Y') or ''
+                end_date = rec.return_date and rec.return_date.strftime('%d %b %Y') or ''
+            rec.name_with_date = "[" + start_date + " - " + end_date + "] " + rec.name
 
     @api.depends("name")
     def _compute_filename(self):
