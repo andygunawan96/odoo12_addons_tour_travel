@@ -24,28 +24,44 @@
                             <col width="150"/>
                             <thead>
                                 <tr>
-                                    <th rowspan="2" style="padding: 2px; font-size: 18px; text-align: center">Date</th>
-                                    <th style="padding: 2px; font-size: 18px; text-align: center">Order Number</th>
-                                    <th style="padding: 2px; font-size: 18px; text-align: center">Agent's Name</th>
-                                    <th style="padding: 2px; font-size: 18px; text-align: center">Agent's Type</th>
-                                    <th style="padding: 2px; font-size: 18px; text-align: center">Provider</th>
-                                    <th class="text-right" style="padding: 2px; font-size: 18px; text-align: center">Total</th>
-                                    <th style="padding: 2px; font-size: 18px; text-align: center">State</th>
+
                                     <th style="padding: 2px; font-size: 18px; text-align: center">Type</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Agent Type</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Agent Name</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Date</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Agent Email</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Provider</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Order Number</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">PNR</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Adult</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Child</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Infant</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Currency</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">NTA Amount</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Total Commission</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Grand Total</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <t t-set="index" t-value="0"/>
 <!--                                <t t-set="total" t-value="0"/>-->
                                 <tr t-foreach="docs['lines']" t-as="line">
-                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['create_date']"/></td>
-                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['order_number']"/></td>
-                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['agent_name']"/></td>
-                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['agent_type']"/></td>
-                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['provider']"/></td>
-                                    <td class="text-right" style="white-space: nowrap; padding: 6px 6px 6px 6px;"><span t-esc="line['total']"/></td>
-                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['state']"/></td>
+
                                     <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['provider_type']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['agent_type_name']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['agent_name']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['issued_date']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['agent_email']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['provider_name']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['order_number']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['pnr']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['adult']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['child']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['infant']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['currency_name']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['total_nta']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['total_commission']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['grand_total']"/></td>
                                 </tr>
                             </tbody>
                         </table>

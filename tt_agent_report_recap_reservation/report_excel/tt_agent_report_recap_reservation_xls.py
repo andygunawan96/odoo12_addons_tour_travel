@@ -32,14 +32,23 @@ class AgentReportRecapReservationXls(models.TransientModel):
 
         # ======= TABLE HEAD ==========
         sheet.write('A9', 'No.', style.table_head_center)
-        sheet.write('B9', 'Date', style.table_head_center)
-        sheet.write('C9', 'Order Number', style.table_head_center)
-        sheet.write('D9', 'Agent', style.table_head_center)
-        sheet.write('E9', 'Agent Type', style.table_head_center)
-        sheet.write('F9', 'Provider', style.table_head_center)
-        sheet.write('G9', 'Total', style.table_head_center)
-        sheet.write('H9', 'State', style.table_head_center)
-        sheet.write('I9', 'Provider Type', style.table_head_center)
+
+        sheet.write('B9', 'Booking Type', style.table_head_center)
+        sheet.write('C9', 'Agent Type', style.table_head_center)
+        sheet.write('D9', 'Agent Name', style.table_head_center)
+        sheet.write('E9', 'Issued Date', style.table_head_center)
+        sheet.write('F9', 'Agent Email', style.table_head_center)
+        sheet.write('G9', 'Provider', style.table_head_center)
+        sheet.write('H9', 'Order Number', style.table_head_center)
+        sheet.write('I9', 'PNR', style.table_head_center)
+        sheet.write('J9', 'Adult', style.table_head_center)
+        sheet.write('K9', 'Child', style.table_head_center)
+        sheet.write('L9', 'Infant', style.table_head_center)
+        sheet.write('M9', 'Currency', style.table_head_center)
+        sheet.write('N9', 'NTA Amount', style.table_head_center)
+        sheet.write('O9', 'Total Commission', style.table_head_center)
+        sheet.write('P9', 'Grand Total', style.table_head_center)
+        sheet.merge_range('Q9:R9', 'Keterangan', style.table_head_center)
 
         # ====== SET WIDTH AND HEIGHT ==========
         sheet.set_row(0, row_height)  # set_row(row, height) -> row 0-4 (1-5)
@@ -55,6 +64,12 @@ class AgentReportRecapReservationXls(models.TransientModel):
         sheet.set_column('H:I', 15)
 
         row_data = 8
+        temp_dict = ''
+        first_data = True
+        counter = 1
+        pnr_list = []
+        multi_pnr = False
+        temp_pnr = ''
         for rec in values['lines']:
             row_data += 1
             sty_table_data_center = style.table_data_center
@@ -62,24 +77,83 @@ class AgentReportRecapReservationXls(models.TransientModel):
             sty_datetime = style.table_data_datetime
             sty_date = style.table_data_date
             sty_amount = style.table_data_amount
-            if row_data % 2 == 0:
-                sty_table_data_center = style.table_data_center_even
-                sty_table_data = style.table_data_even
-                sty_datetime = style.table_data_datetime_even
-                sty_date = style.table_data_date_even
-                sty_amount = style.table_data_amount_even
 
-            sheet.write(row_data, 0, row_data - 8, sty_table_data_center)
-            sheet.write(row_data, 1,
-                        datetime.strptime(rec['create_date'], "%Y-%m-%d %H:%M:%S") if rec['create_date'] else '',
-                        sty_date)
-            sheet.write(row_data, 2, rec['order_number'], sty_table_data)
-            sheet.write(row_data, 3, rec['agent_name'], sty_table_data)
-            sheet.write(row_data, 4, rec['agent_type'], sty_table_data)
-            sheet.write(row_data, 5, rec['provider'], sty_table_data)
-            sheet.write(row_data, 6, rec['total'], sty_table_data)
-            sheet.write(row_data, 7, rec['state'], sty_table_data)
-            sheet.write(row_data, 8, rec['provider_type'], sty_table_data)
+            if first_data:
+                temp_dict = rec
+                selected_index = 0
+                pnr_list = rec['pnr'].split(", ")
+                temp_pnr = rec['ledger_pnr']
+                if len(pnr_list) > 1:
+                    sheet.write(row_data, 8, temp_pnr, sty_table_data)
+                    multi_pnr = True
+                else:
+                    sheet.write(row_data, 8, rec['pnr'], sty_table_data)
+
+                sheet.write(row_data, 0, counter, sty_table_data_center)
+                sheet.write(row_data, 1, rec['provider_type'], sty_table_data)
+                sheet.write(row_data, 2, rec['agent_type_name'], sty_table_data)
+                sheet.write(row_data, 3, rec['agent_name'], sty_table_data)
+                sheet.write(row_data, 4, rec['issued_date'], sty_table_data)
+                sheet.write(row_data, 5, rec['agent_email'], sty_table_data)
+                sheet.write(row_data, 6, rec['provider_name'], sty_table_data)
+                sheet.write(row_data, 7, rec['order_number'], sty_table_data)
+                sheet.write(row_data, 9, rec['adult'], sty_table_data)
+                sheet.write(row_data, 10, rec['child'], sty_table_data)
+                sheet.write(row_data, 11, rec['infant'], sty_table_data)
+                sheet.write(row_data, 12, rec['currency_name'], sty_table_data)
+                sheet.write(row_data, 13, rec['total_nta'], sty_table_data)
+                sheet.write(row_data, 14, rec['total_commission'], sty_table_data)
+                sheet.write(row_data, 15, rec['grand_total'], sty_table_data)
+                sheet.write(row_data, 16, rec['ledger_agent_name'], sty_table_data)
+                sheet.write(row_data, 17, rec['debit'], sty_table_data)
+
+                first_data = False
+            else:
+                if temp_dict['order_number'] != rec['order_number']:
+                    selected_index = 0
+                    pnr_list = rec['pnr'].split(", ")
+                    if len(pnr_list) > 1:
+                        sheet.write(row_data, 8, pnr_list[0], sty_table_data)
+                        multi_pnr = True
+                    else:
+                        sheet.write(row_data, 8, rec['pnr'], sty_table_data)
+                        multi_pnr = False
+                    counter += 1
+                    sheet.write(row_data, 0, counter, sty_table_data_center)
+                    sheet.write(row_data, 1, rec['provider_type'], sty_table_data)
+                    sheet.write(row_data, 2, rec['agent_type_name'], sty_table_data)
+                    sheet.write(row_data, 3, rec['agent_name'], sty_table_data)
+                    sheet.write(row_data, 4, rec['issued_date'] , sty_table_data)
+                    sheet.write(row_data, 5, rec['agent_email'], sty_table_data)
+                    sheet.write(row_data, 6, rec['provider_name'], sty_table_data)
+                    sheet.write(row_data, 7, rec['order_number'], sty_table_data)
+                    sheet.write(row_data, 9, rec['adult'], sty_table_data)
+                    sheet.write(row_data, 10, rec['child'], sty_table_data)
+                    sheet.write(row_data, 11, rec['infant'], sty_table_data)
+                    sheet.write(row_data, 12, rec['currency_name'], sty_table_data)
+                    sheet.write(row_data, 13, rec['total_nta'], sty_table_data)
+                    sheet.write(row_data, 14, rec['total_commission'], sty_table_data)
+                    sheet.write(row_data, 15, rec['grand_total'], sty_table_data)
+                    temp_dict = rec
+
+                if rec['ledger_pnr'] != temp_pnr and rec['ledger_pnr'] in pnr_list and multi_pnr:
+                    try:
+                        sheet.write(row_data, 8, rec['ledger_pnr'], sty_table_data)
+                        temp_pnr = rec['ledger_pnr']
+                    except:
+                        pass
+
+                sheet.write(row_data, 16, rec['ledger_agent_name'], sty_table_data)
+                sheet.write(row_data, 17, rec['debit'], sty_table_data)
+
+            # sheet.write(row_data, 1, datetime.strptime(rec['create_date'], "%Y-%m-%d %H:%M:%S") if rec['create_date'] else '', sty_date)
+            # sheet.write(row_data, 2, rec['order_number'], sty_table_data)
+            # sheet.write(row_data, 3, rec['agent_name'], sty_table_data)
+            # sheet.write(row_data, 4, rec['agent_type'], sty_table_data)
+            # sheet.write(row_data, 5, rec['provider'], sty_table_data)
+            # sheet.write(row_data, 6, rec['total'], sty_table_data)
+            # sheet.write(row_data, 7, rec['state'], sty_table_data)
+            # sheet.write(row_data, 8, rec['provider_type'], sty_table_data)
 
         workbook.close()
 

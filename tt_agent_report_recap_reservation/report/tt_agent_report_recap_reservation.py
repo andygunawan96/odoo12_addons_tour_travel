@@ -13,9 +13,13 @@ class AgentReportRecapReservation(models.Model):
 
     @staticmethod
     def _select():
-        return """rsv.name as order_number, rsv.create_date,
-        agent.name agent_name, tpt.name as provider_type, agent_type.name agent_type, 
-        SUM(ssc.total) total, rsv.provider_name provider, rsv.state
+        return """rsv.id, rsv.name as order_number, rsv.issued_date as issued_date, rsv.pnr, rsv.adult, rsv.child,
+        rsv.infant, rsv.total as grand_total, rsv.total_commission, rsv.total_nta, rsv.provider_name, rsv.create_date,
+        rsv.state, agent.name as agent_name, agent.email as agent_email,
+        provider_type.name as provider_type,
+        agent_type.name as agent_type_name,
+        currency.name as currency_name,
+        ledger.debit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr
         """
 
     @staticmethod
@@ -38,11 +42,15 @@ class AgentReportRecapReservation(models.Model):
             else:
                 return 'booking_offline_id'
 
-        query = """tt_reservation_""" + provider_type + """ rsv"""
-        query += """ LEFT JOIN tt_service_charge ssc ON rsv.id = ssc.%s
-        LEFT JOIN tt_agent agent ON agent.id = rsv.agent_id 
-        LEFT JOIN tt_agent_type agent_type ON agent_type.id = agent.agent_type_id 
-        LEFT JOIN tt_provider_type tpt ON tpt.id = rsv.provider_type_id """ % (selected_field(provider_type), )
+        # query = """tt_ledger """
+        query = """tt_reservation_""" + provider_type + """ rsv """
+        query += """LEFT JOIN tt_agent agent ON rsv.agent_id = agent.id
+        LEFT JOIN tt_provider_type provider_type ON provider_type.id = rsv.provider_type_id
+        LEFT JOIN tt_agent_type agent_type ON agent_type.id = rsv.agent_type_id
+        LEFT JOIN res_currency currency ON currency.id = rsv.currency_id
+        LEFT JOIN tt_ledger ledger ON ledger.res_model = rsv.res_model AND ledger.res_id = rsv.id
+        LEFT JOIN tt_agent ledger_agent ON ledger_agent.id = ledger.agent_id
+        """
         return query
 
     @staticmethod
@@ -59,9 +67,10 @@ class AgentReportRecapReservation(models.Model):
         elif state == 'others':
             where += """ AND rsv.state IN ('draft')"""
         if agent_id:
-            where += """ AND agent_id = %s""" % agent_id
+            where += """ AND rsv.agent_id = %s""" % agent_id
         if provider_type and provider_type != 'all':
-            where += """ AND tpt.code = '%s' """ % provider_type
+            where += """ AND provider_type.code = '%s' """ % provider_type
+        where += """ AND ledger.transaction_type = 3"""
         return where
 
     @staticmethod
@@ -77,14 +86,14 @@ class AgentReportRecapReservation(models.Model):
             elif state == 'others':
                 where += """ AND rsv.state IN ('cancel', 'refund', 'draft', 'confirm')"""
         if agent_id:
-            where += """ AND agent_id = %s""" % agent_id
+            where += """ AND rsv.agent_id = %s""" % agent_id
         if provider_type != 'offline':
             where += """ AND rsv.provider_type = '%s' """ % provider_type
         return where
 
     @staticmethod
     def _group_by():
-        return 'rsv.name, rsv.create_date, rsv.state, rsv.provider_name, agent.name, tpt.id, agent_type.id '
+        return """ """
 
     @staticmethod
     def _order_by():
@@ -106,10 +115,10 @@ class AgentReportRecapReservation(models.Model):
             query += 'WHERE ' + self._where(date_from, date_to, agent_id, provider_type, state)
 
         # GROUP BY & ORDER BY
-        query += 'GROUP BY ' + self._group_by()
+        # query += 'GROUP BY ' + self._group_by()
 
         # 'GROUP BY' + self._group_by() + \
-        query += 'ORDER BY ' + self._order_by()
+        # query += 'ORDER BY ' + self._order_by()
 
         self.env.cr.execute(query)
         _logger.info(query)
@@ -209,6 +218,10 @@ class AgentReportRecapReservation(models.Model):
     def _convert_data(self, lines, provider_type):
         for rec in lines:
             rec['create_date'] = self._datetime_user_context(rec['create_date'])
+            try:
+                rec['issued_date'] = self._datetime_user_context(rec['issued_date'])
+            except:
+                pass
             rec['state'] = variables.BOOKING_STATE_STR[rec['state']] if rec['state'] else ''  # STATE_OFFLINE_STR[rec['state']]
         return lines
 
