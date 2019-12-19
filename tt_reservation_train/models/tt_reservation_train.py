@@ -408,9 +408,13 @@ class TtReservationTrain(models.Model):
 
     def update_pnr_booked(self,provider_obj,provider,context):
 
+        old_state = provider_obj.state
+        provider_obj.action_booked_api_train(provider, context)
+        if old_state != 'draft':
+            return
+
         ##generate leg data
         provider_obj.create_ticket_api(provider['tickets'],provider['pnr'])
-        provider_obj.action_booked_api_train(provider, context)
 
         # August 16, 2019 - SAM
         # Mengubah mekanisme update booking backend
