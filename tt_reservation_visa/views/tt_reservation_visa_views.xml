@@ -96,26 +96,27 @@
                             <field name="agent_id" readonly="1"/>
                             <field name="customer_parent_id" readonly="1"/>
                             <field name="currency_id" invisible="1"/>
-                            <!--                            <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>-->
-                            <!--                            <field name="refund_id"/>-->
-                            <!--                            <field name="payment_date" attrs="{'readonly': [('state_visa', '!=', 'in_process')]}"/>-->
+<!--                            <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>-->
+<!--                            <field name="refund_id"/>-->
+<!--                            <field name="payment_date" attrs="{'readonly': [('state_visa', '!=', 'in_process')]}"/>-->
                             <field name="document_to_ho_date"/>
                             <field name="hold_date" widget="date"/>
                             <field name="use_vendor"/>
-                            <!--                            <field name="acquirer_id"/>-->
-                            <!--                            <field name="state" string="State (debug)"/>  &lt;!&ndash;Debug&ndash;&gt;-->
-                            <!--                            <field name="proof_of_consulate" widget="many2many_binary"/>-->
-                            <!--                            <field name="vendor_ids" attrs="{'required': [('use_vendor', '=', True)], 'readonly': [('state_visa', 'in', ['delivered','ready','done'])]}" groups="tt_base.group_tt_tour_travel_operator,account.group_account_user">-->
-                            <!--                                <tree editable="bottom">-->
-                            <!--                                    <field name="vendor_id"/>-->
-                            <!--                                    <field name="reference_number"/>-->
-                            <!--                                    <field name="amount"/>-->
-                            <!--                                    <field name="payment_date"/>-->
-                            <!--                                    <field name="currency_id" invisible="1"/>-->
-                            <!--                                </tree>-->
-                            <!--                            </field>-->
+<!--                            <field name="acquirer_id"/>-->
+<!--                            <field name="state" string="State (debug)"/>  &lt;!&ndash;Debug&ndash;&gt;-->
+<!--                            <field name="proof_of_consulate" widget="many2many_binary"/>-->
+<!--                            <field name="vendor_ids" attrs="{'required': [('use_vendor', '=', True)], 'readonly': [('state_visa', 'in', ['delivered','ready','done'])]}" groups="tt_base.group_tt_tour_travel_operator,account.group_account_user">-->
+<!--                                <tree editable="bottom">-->
+<!--                                    <field name="vendor_id"/>-->
+<!--                                    <field name="reference_number"/>-->
+<!--                                    <field name="amount"/>-->
+<!--                                    <field name="payment_date"/>-->
+<!--                                    <field name="currency_id" invisible="1"/>-->
+<!--                                </tree>-->
+<!--                            </field>-->
                         </group>
                         <group>
+                            <field name="state" string="Status" readonly="1"/>
                             <field name="commercial_state"/>
 
                             <label for="booked_uid" string="Booked"/>

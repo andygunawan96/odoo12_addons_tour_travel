@@ -198,6 +198,11 @@ class AgentReportRecapReservationXls(models.TransientModel):
                 sty_date = style.table_data_date
                 sty_amount = style.table_data_amount
 
+                sty_table_data_center_border = style.table_data_center_border
+                sty_table_data_border = style.table_data_border
+                sty_datetime_border = style.table_data_datetime_border
+                sty_date_border = style.table_data_date_border
+                sty_amount_border = style.table_data_amount_border
 
                 sheet.write(row_data, 0, counter, sty_table_data_center)
                 sheet.write(row_data, 1, to_print['provider_type'], sty_table_data)

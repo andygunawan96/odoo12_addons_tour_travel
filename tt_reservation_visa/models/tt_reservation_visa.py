@@ -189,7 +189,7 @@ class TtVisa(models.Model):
             'co_uid': self.env.user.id
         }
         # self.action_booked_visa(context)
-        self.action_issued_visa(context)
+        # self.action_issued_visa(context)
         self.message_post(body='Order IN PROCESS')
 
     # kirim data dan dokumen ke vendor
@@ -297,12 +297,19 @@ class TtVisa(models.Model):
         })
         self.message_post(body='Order DONE')
 
-    def action_expired_visa(self):
-        self.write({
-            'state_visa': 'expired',
-            'done_date': datetime.now()
-        })
-        self.message_post(body='Order EXPIRED')
+    def action_expired(self):
+        super(TtVisa, self).action_expired()
+        self.state_visa = 'expired'
+
+    def payment_visa_api(self, req, context):
+        return self.payment_reservation_api('visa', req, context)
+
+    # def action_expired_visa(self):
+    #     self.write({
+    #         'state_visa': 'expired',
+    #         'done_date': datetime.now()
+    #     })
+    #     self.message_post(body='Order EXPIRED')
 
     def calc_visa_vendor(self):
         """ Mencatat expenses ke dalam ledger visa """
@@ -1182,7 +1189,7 @@ class TtVisa(models.Model):
 
     param_payment = {
         "member": False,
-        "seq_id": "PQR.0429001"
+        "seq_id": "PQR.0429001",
         # "seq_id": "PQR.9999999"
     }
 
@@ -1364,6 +1371,10 @@ class TtVisa(models.Model):
 
             book_obj = self.sudo().create(header_val)
 
+            for psg in book_obj.passenger_ids:
+                for scs in psg.cost_service_charge_ids:
+                    scs['description'] = book_obj.name
+
             book_obj.document_to_ho_date = datetime.now() + timedelta(days=1)
             book_obj.hold_date = datetime.now() + timedelta(days=3)
 
@@ -1408,8 +1419,6 @@ class TtVisa(models.Model):
             }
             provider_visa_obj = book_obj.env['tt.provider.visa'].sudo().create(vals)
 
-            book_obj.action_booked_visa(context)
-
             for psg in book_obj.passenger_ids:
                 vals = {
                     'provider_id': provider_visa_obj.id,
@@ -1421,7 +1430,12 @@ class TtVisa(models.Model):
 
             provider_visa_obj.delete_service_charge()
             provider_visa_obj.create_service_charge(pricing)
+
             book_obj.calculate_service_charge()
+
+            book_obj.action_booked_visa(context)
+            # book_obj.action_issued_visa(context)
+
             response = {
                 'id': book_obj.name
             }
@@ -1731,12 +1745,11 @@ class TtVisa(models.Model):
     ######################################################################################################
 
     @api.one
-    def action_issued_visa(self, api_context=None):
+    def action_issued_visa(self, api_context):
         for rec in self:
             if not api_context:  # Jika dari call from backend
                 api_context = {
                     'co_uid': rec.env.user.id,
-
                 }
             if not api_context.get('co_uid'):
                 api_context.update({
@@ -1747,24 +1760,7 @@ class TtVisa(models.Model):
                 'co_agent_id': rec.agent_id.id
             })
 
-            req = {
-                'book_id': rec.id,
-                'order_number': rec.name,
-                'acquirer_seq_id': rec.acquirer_id.seq_id,
-                'voucher': '',
-                'member': False
-            }
-            if self.customer_parent_id.customer_parent_type_id.id != self.env.ref('tt_base.customer_type_fpo').id:
-                req.update({
-                    'member': True
-                })
-
             self._compute_commercial_state()
-
-            payment = self.payment_reservation_api('visa', req, api_context)
-            if payment['error_code'] != 0:
-                _logger.error(payment['error_msg'])
-                raise UserError(_(payment['error_msg']))
 
             vals = {}
 
@@ -1777,10 +1773,11 @@ class TtVisa(models.Model):
             })
 
             self.write(vals)
-            # for pvdr in rec.provider_booking_ids:
-            #     pvdr.action_issued_api_visa(api_context)
-            #     pvdr.action_create_ledger()
-            # self._create_ho_ledger_visa()  # sementara diaktifkan
+            for pvdr in rec.provider_booking_ids:
+                pvdr.action_issued_api_visa(api_context)
+        return self.name
+        #     pvdr.action_create_ledger()
+        # self._create_ho_ledger_visa()  # sementara diaktifkan
 
     def _create_ho_ledger_visa(self):
         ledger = self.env['tt.ledger']
