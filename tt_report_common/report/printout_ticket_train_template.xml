@@ -34,20 +34,26 @@
 
     <template id="printout_ticket_train_template">
         <div class="article" style="margin: 0px !important; padding: 0px !important; font-family: Times New Roman, Georgia, Serif;">
-            <t t-foreach="doc.provider_booking_ids" t-as="provider">
-                <t t-call="tt_report_common.report_rodex_e_tickettrain_logo"/>
-                <div class="oe_structure"/>
-                <div>
-                    <div class="row" style="border-top: 1px black solid; border-bottom: 1px black solid;">
-                        <div class="col-2">
-                            <img src="/tt_report_common/static/images/logo_tors_small.png" style="max-height: 110px; margin-top: 9px;"/>
-                            <!--<img t-if="doc.agent_id.image" t-att-src="'data:image/png;base64,%s' % doc.agent_id.image" style="max-height: 56px; margin-top: 9px;"/>-->
-                        </div>
-                        <div class="col-10" style="padding-left: 30px; font-size: 24px; font-weight: bold;">
-                            <span>BUKTI PEMBELIAN TIKET KERETA API</span><br/>
-                            <span>AGEN RESMI PT. KERETA API INDONESIA (PERSERO)</span>
-                        </div>
+            <t t-call="tt_report_common.report_rodex_e_tickettrain_logo"/>
+            <div class="oe_structure"/>
+            <div>
+                <div class="row" style="border-top: 1px black solid; border-bottom: 1px black solid;">
+                    <div class="col-2">
+                        <img src="/tt_report_common/static/images/logo_tors_small.png" style="max-height: 110px; margin-top: 9px;"/>
+                        <!--<img t-if="doc.agent_id.image" t-att-src="'data:image/png;base64,%s' % doc.agent_id.image" style="max-height: 56px; margin-top: 9px;"/>-->
                     </div>
+                    <div class="col-10" style="padding-left: 30px; font-size: 24px; font-weight: bold;">
+                        <span>BUKTI PEMBELIAN TIKET KERETA API</span><br/>
+                        <span>AGEN RESMI PT. KERETA API INDONESIA (PERSERO)</span>
+                    </div>
+                </div>
+                <t t-set="provider_total" t-value="0"/>
+                <t t-set="provider_count" t-value="0"/>
+                <t t-foreach="doc.provider_booking_ids" t-as="provider">
+                    <t t-set="provider_total" t-value="provider_total + 1"/>
+                </t>
+                <t t-foreach="doc.provider_booking_ids" t-as="provider">
+                    <t t-set="provider_count" t-value="provider_count + 1"/>
                     <div class="row">
                         <div class="col-9" style="font-size: 20px; padding-left: 0px;">
                             <div class="row" style="padding-top: 15px;">
@@ -234,16 +240,19 @@
                             <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('QR', provider.pnr, 180, 180)" style="width:200px;height:200px; margin-top: 20px;"/>
                         </div>
                     </div>
-                    <div class="row" style="font-size: 20px; border-top: 1px black solid; border-bottom: 1px black solid; margin-top: 40px; font-weight: 300">
-                        <div class="col-12">
-                            <ul>
-                                <li style=" margin-top: 5px;">Ini adalah bukan tiket resmi dari PT. KAI, Gunakan tiket ini untuk mencetak boarding pass di check in counter di stasiun keberangkatan mulai dari 7x24 jam sebelum keberangkatan.</li>
-                                <li style=" margin-top: 5px;">Untuk boarding, pastikan anda membawa tanda pengenal resmi (KTP, SIM, Passport) jika lebih dari 17 tahun. Apabila penumpang masih di bawah 17 tahun di sarankan untuk membawa Kartu Pelajar atau kartu keluarga.</li>
-                                <li style=" margin-top: 5px;">Mohon tiba di stasiun setidaknya 60 menit sebelum keberangkatan.</li>
-                                <li style=" margin-top: 5px;">Untuk informasi lebih lanjut silahkan mengacu pada situs PT Kereta Api Indonesia (KAI) di https://kai.id atau hubungi contact center PT. KAI di 021-121.</li>
-                            </ul>
-                        </div>
+
+                    <t t-if="provider_count != provider_total">
+                        <div style="width: 100%; border-bottom: 1px solid black; margin:20px 0px 0px 0px;"/>  <!---15px -15px-->
+                    </t>
+                </t>
+                <div class="row" style="font-size: 20px; border-top: 1px black solid; border-bottom: 1px black solid; margin-top: 40px; font-weight: 300">
+                    <div class="col-12">
+                        <ul>
+                            <li style=" margin-top: 5px;">Bukti pemesanan ini harus ditukarkan dengan Boarding Pass mulai 7x24 jam sebelum keberangkatan KA pada mesin check-in counter di stasiun keberangkatan.</li>
+                            <li style=" margin-top: 5px;">Untuk informasi terkait syarat dan ketentuan lain silahkan klik di www.kai.id atau hubungi Contact Center KAI (021) 121.</li>
+                        </ul>
                     </div>
+                </div>
 <!--                    <div class="row" style="font-size: 20px; margin-top: 30px; font-weight: 300">-->
 <!--                        <div class="col-12">-->
 <!--                            Syarat dan Ketentuan:-->
@@ -441,9 +450,8 @@
 <!--                            </table>-->
 <!--                        </div>-->
 <!--                    </div>-->
-                </div>
-                <t t-call="tt_report_common.train_footer"/>
-            </t>
+            </div>
+            <t t-call="tt_report_common.train_footer"/>
         </div>
     </template>
 </odoo>

@@ -854,6 +854,18 @@ class ReservationActivity(models.Model):
         return url
         # return self.env.ref('tt_report_common.action_printout_itinerary_activity').report_action(self, data=datas)
 
+    @api.multi
+    def print_ho_invoice(self):
+        datas = {
+            'ids': self.env.context.get('active_ids', []),
+            'model': self._name
+        }
+        res = self.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        activity_ho_invoice_id = self.env.ref('tt_report_common.action_report_printout_invoice_ho_activity')
+        return activity_ho_invoice_id.report_action(self, data=datas)
+
     def get_booking_for_vendor_by_api(self, data, context):
         try:
             order_number = data['order_number']

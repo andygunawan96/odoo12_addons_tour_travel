@@ -42,6 +42,16 @@
             print_report_name="'HO Invoice - %s' % (object.name)"
         />
         <report
+            string="HO Invoice Activity"
+            id="action_report_printout_invoice_ho_activity"
+            model="tt.reservation.activity"
+            report_type="qweb-html"
+            name="tt_report_common.printout_invoice_ho"
+            file="tt_report_common.printout_invoice_ho"
+            paperformat="tt_report_common.paperformat_A4_no_margin"
+            print_report_name="'HO Invoice - %s' % (object.name)"
+        />
+        <report
             string="Hotel Voucher"
             id="action_report_printout_reservation_hotel"
             model="tt.reservation.hotel"
