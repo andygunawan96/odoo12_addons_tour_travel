@@ -10,13 +10,14 @@ class TransportCarrier(models.Model):
     _name = 'tt.transport.carrier.search'
     _description = "List of Search Carrier Code"
     _rec_name = 'name'
-    _order = 'is_favorite desc,name'
+    _order = 'is_favorite desc,sequence,name'
 
     name = fields.Char("Search Display")
     carrier_id = fields.Many2one('tt.transport.carrier','Carrier',required=True)
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type',related="carrier_id.provider_type_id")
     is_default = fields.Boolean("Default Search", help="Usually on ALL")
     is_favorite = fields.Boolean("Favorite Search", help="Will make this search appear on top of the list")
+    sequence = fields.Integer("Sequence",default=200)
 
     def get_provider_type_domain(self):
         return [('provider_type_id','=',self.provider_type_id.id)]

@@ -35,6 +35,7 @@
                         <field name="carrier_id"/>
                         <field name="provider_type_id"/>
                         <field name="provider_ids"/>
+                        <field name="sequence"/>
                     </group>
                 </sheet>
             </form>
@@ -46,6 +47,7 @@
         <field name="model">tt.transport.carrier.search</field>
         <field name="arch" type="xml">
             <tree decoration-muted="active == False">
+                <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="carrier_id"/>
                 <field name="provider_type_id"/>
