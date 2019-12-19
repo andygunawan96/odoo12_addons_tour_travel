@@ -393,6 +393,10 @@ class IssuedOffline(models.Model):
     def action_refund(self):
         self.state = 'refund'
 
+    def action_expired(self):
+        super(IssuedOffline, self).action_expired()
+        self.state_offline = 'expired'
+
     @api.one
     def action_quick_issued(self):
         if self.total > 0 and self.nta_price > 0:
@@ -671,17 +675,6 @@ class IssuedOffline(models.Model):
                 empty = False
         return empty
 
-    ####################################################################################################
-    # CRON
-    ####################################################################################################
-
-    @api.multi
-    def cron_set_expired(self):
-        self.search([('expired_date', '>', fields.Datetime.now())])
-
-    ####################################################################################################
-    # CREATE
-    ####################################################################################################
 
     # param_issued_offline_data = {
     #     "type": "activity",

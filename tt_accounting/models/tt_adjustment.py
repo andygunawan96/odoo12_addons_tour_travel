@@ -78,12 +78,14 @@ class TtAdjustment(models.Model):
     reason_uid = fields.Many2one('res.users', 'Responsible User', readonly=True,
                                  states={'draft': [('readonly', False)]})
 
+    def get_form_id(self):
+        return self.env.ref("tt_accounting.tt_adjustment_form_view")
+
     @api.model
     def create(self, vals_list):
         vals_list['name'] = self.env['ir.sequence'].next_by_code('tt.adjustment')
         if 'adj_type' in vals_list:
             vals_list['adj_type'] = self.parse_adjustment_type(vals_list['adj_type'])
-            
         return super(TtAdjustment, self).create(vals_list)
         
     def parse_adjustment_type(self,type):

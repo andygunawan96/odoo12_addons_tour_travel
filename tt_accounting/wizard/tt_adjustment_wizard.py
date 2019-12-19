@@ -46,7 +46,7 @@ class TtAdjustmentWizard(models.TransientModel):
         if self.adj_reason == 'sys':
             self.reason_uid = False
 
-        self.env['tt.adjustment'].create({
+        adjustment_obj = self.env['tt.adjustment'].create({
             'agent_id': self.agent_id.id,
             'customer_parent_id': self.customer_parent_id.id,
             'currency_id': self.currency_id.id,
@@ -60,3 +60,18 @@ class TtAdjustmentWizard(models.TransientModel):
             'reason_uid': self.reason_uid.id,
             'description': self.description
         })
+        #
+        # form_id = self.env['tt.adjustment'].get_form_id()
+        #
+        # return {
+        #     'type': 'ir.actions.act_window',
+        #     'name': 'Split Wizard',
+        #     'res_model': 'tt.adjustment',
+        #     'res_id': adjustment_obj.id,
+        #     'view_type': 'form',
+        #     'view_mode': 'form',
+        #     'view_id': form_id.id,
+        #     'context': {},
+        #     'flags': {'form': {'action_buttons': True, 'options': {'mode': 'browse'}}},
+        #     'target': 'new',
+        # }
