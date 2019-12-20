@@ -41,14 +41,15 @@ class AgentReportRecapReservationXls(models.TransientModel):
         sheet.write('G9', 'Provider', style.table_head_center)
         sheet.write('H9', 'Order Number', style.table_head_center)
         sheet.write('I9', 'PNR', style.table_head_center)
-        sheet.write('J9', 'Adult', style.table_head_center)
-        sheet.write('K9', 'Child', style.table_head_center)
-        sheet.write('L9', 'Infant', style.table_head_center)
-        sheet.write('M9', 'Currency', style.table_head_center)
-        sheet.write('N9', 'NTA Amount', style.table_head_center)
-        sheet.write('O9', 'Total Commission', style.table_head_center)
-        sheet.write('P9', 'Grand Total', style.table_head_center)
-        sheet.merge_range('Q9:R9', 'Keterangan', style.table_head_center)
+        sheet.write('J9', 'State', style.table_head_center)
+        sheet.write('K9', 'Adult', style.table_head_center)
+        sheet.write('L9', 'Child', style.table_head_center)
+        sheet.write('M9', 'Infant', style.table_head_center)
+        sheet.write('N9', 'Currency', style.table_head_center)
+        sheet.write('O9', 'NTA Amount', style.table_head_center)
+        sheet.write('P9', 'Total Commission', style.table_head_center)
+        sheet.write('Q9', 'Grand Total', style.table_head_center)
+        sheet.merge_range('R9:S9', 'Keterangan', style.table_head_center)
 
         # ====== SET WIDTH AND HEIGHT ==========
         sheet.set_row(0, row_height)  # set_row(row, height) -> row 0-4 (1-5)
@@ -70,9 +71,11 @@ class AgentReportRecapReservationXls(models.TransientModel):
         pnr_list = []
         multi_pnr = False
         temp_pnr = ''
+        is_border = False
         for rec in values['lines']:
             to_print = {}
             if first_data:
+                counter_update = True
                 first_data = False
                 temp_dict = rec
                 try:
@@ -94,6 +97,7 @@ class AgentReportRecapReservationXls(models.TransientModel):
                     'agent_email': rec['agent_email'],
                     'provider_name': rec['provider_name'],
                     'order_number': rec['order_number'],
+                    'state': rec['state'],
                     'adult': rec['adult'],
                     'child': rec['child'],
                     'infant': rec['infant'],
@@ -115,6 +119,8 @@ class AgentReportRecapReservationXls(models.TransientModel):
                     })
             else:
                 if temp_dict['order_number'] != rec['order_number']:
+                    is_border = True
+                    counter_update = True
                     counter += 1
                     try:
                         pnr_list = rec['pnr'].split(", ")
@@ -137,6 +143,7 @@ class AgentReportRecapReservationXls(models.TransientModel):
                         'agent_email': rec['agent_email'],
                         'provider_name': rec['provider_name'],
                         'order_number': rec['order_number'],
+                        'state': rec['state'],
                         'adult': rec['adult'],
                         'child': rec['child'],
                         'infant': rec['infant'],
@@ -147,6 +154,7 @@ class AgentReportRecapReservationXls(models.TransientModel):
                     })
                     temp_dict = rec
                 else:
+                    is_border = False
                     to_print.update({
                         'provider_type': '',
                         'agent_type_name': '',
@@ -155,6 +163,7 @@ class AgentReportRecapReservationXls(models.TransientModel):
                         'agent_email': '',
                         'provider_name': '',
                         'order_number': '',
+                        'state': '',
                         'adult': '',
                         'child': '',
                         'infant': '',
@@ -192,37 +201,54 @@ class AgentReportRecapReservationXls(models.TransientModel):
             #checker for data
             if to_print:
                 row_data += 1
-                sty_table_data_center = style.table_data_center
-                sty_table_data = style.table_data
-                sty_datetime = style.table_data_datetime
-                sty_date = style.table_data_date
-                sty_amount = style.table_data_amount
+                if is_border:
+                    sty_table_data_center = style.table_data_center_border
+                    sty_table_data = style.table_data_border
+                    sty_datetime = style.table_data_datetime_border
+                    sty_date = style.table_data_date_border
+                    sty_amount = style.table_data_amount_border
+                    if row_data % 2 == 0:
+                        sty_table_data_center = style.table_data_center_even_border
+                        sty_table_data = style.table_data_even_border
+                        sty_datetime = style.table_data_datetime_even_border
+                        sty_date = style.table_data_date_even_border
+                        sty_amount = style.table_data_amount_even_border
+                else:
+                    sty_table_data_center = style.table_data_center
+                    sty_table_data = style.table_data
+                    sty_datetime = style.table_data_datetime
+                    sty_date = style.table_data_date
+                    sty_amount = style.table_data_amount
+                    if row_data % 2 == 0:
+                        sty_table_data_center = style.table_data_center_even
+                        sty_table_data = style.table_data_even
+                        sty_datetime = style.table_data_datetime_even
+                        sty_date = style.table_data_date_even
+                        sty_amount = style.table_data_amount_even
 
-                sty_table_data_center_border = style.table_data_center_border
-                sty_table_data_border = style.table_data_border
-                sty_datetime_border = style.table_data_datetime_border
-                sty_date_border = style.table_data_date_border
-                sty_amount_border = style.table_data_amount_border
-
-                sheet.write(row_data, 0, counter, sty_table_data_center)
+                if counter_update:
+                    sheet.write(row_data, 0, counter, sty_table_data_center)
+                else:
+                    sheet.write(row_data, 0, '', sty_table_data)
                 sheet.write(row_data, 1, to_print['provider_type'], sty_table_data)
                 sheet.write(row_data, 2, to_print['agent_type_name'], sty_table_data)
                 sheet.write(row_data, 3, to_print['agent_name'], sty_table_data)
-                sheet.write(row_data, 4, to_print['issued_date'], sty_table_data)
+                sheet.write(row_data, 4, to_print['issued_date'], sty_date)
                 sheet.write(row_data, 5, to_print['agent_email'], sty_table_data)
                 sheet.write(row_data, 6, to_print['provider_name'], sty_table_data)
-                sheet.write(row_data, 7, to_print['order_number'], sty_table_data)
+                sheet.write(row_data, 7, to_print['order_number'], sty_amount)
                 sheet.write(row_data, 8, to_print['pnr'], sty_table_data)
-                sheet.write(row_data, 9, to_print['adult'], sty_table_data)
-                sheet.write(row_data, 10, to_print['child'], sty_table_data)
-                sheet.write(row_data, 11, to_print['infant'], sty_table_data)
-                sheet.write(row_data, 12, to_print['currency_name'], sty_table_data)
-                sheet.write(row_data, 13, to_print['total_nta'], sty_table_data)
-                sheet.write(row_data, 14, to_print['total_commission'], sty_table_data)
-                sheet.write(row_data, 15, to_print['grand_total'], sty_table_data)
-                sheet.write(row_data, 16, to_print['ledger_agent_name'], sty_table_data)
-                sheet.write(row_data, 17, to_print['debit'], sty_table_data)
-
+                sheet.write(row_data, 9, to_print['state'], sty_table_data)
+                sheet.write(row_data, 10, to_print['adult'], sty_amount)
+                sheet.write(row_data, 11, to_print['child'], sty_amount)
+                sheet.write(row_data, 12, to_print['infant'], sty_amount)
+                sheet.write(row_data, 13, to_print['currency_name'], sty_table_data_center)
+                sheet.write(row_data, 14, to_print['total_nta'], sty_amount)
+                sheet.write(row_data, 15, to_print['total_commission'], sty_amount)
+                sheet.write(row_data, 16, to_print['grand_total'], sty_amount)
+                sheet.write(row_data, 17, to_print['ledger_agent_name'], sty_table_data)
+                sheet.write(row_data, 18, to_print['debit'], sty_amount)
+                counter_update = False
         workbook.close()
 
         attach_id = self.env['tt.agent.report.excel.output.wizard'].create(
