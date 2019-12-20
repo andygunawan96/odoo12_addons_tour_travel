@@ -428,7 +428,7 @@ class MasterTour(models.Model):
                 'departure_date': str(search_request['departure_year']) + '-' + str(search_request['departure_month'])
             })
 
-            sql_query = "SELECT tp.* FROM tt_master_tour tp LEFT JOIN tt_tour_location_rel tcr ON tcr.product_id = tp.id left join tt_tour_master_locations loc on loc.id = tcr.location_id WHERE tp.state IN ('open', 'definite') AND tp.seat > 0 AND tp.active = True"
+            sql_query = "SELECT tp.* FROM tt_master_tour tp LEFT JOIN tt_tour_location_rel tcr ON tcr.product_id = tp.id left join tt_tour_master_locations loc on loc.id = tcr.location_id WHERE tp.state IN ('open', 'definite', 'sold') AND tp.active = True"
 
             if search_request.get('tour_query'):
                 sql_query += " AND tp.name_with_date ILIKE '" + search_request['tour_query'] + "'"
