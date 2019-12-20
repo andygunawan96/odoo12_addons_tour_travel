@@ -78,4 +78,7 @@ class TtPaymentInh(models.Model):
         super(TtPaymentInh, self).invoice_approve_action()
         for rec in self.invoice_ids:
             rec.invoice_id.check_paid_status()
-
+            if rec.invoice_id.customer_parent_type_id.id == self.env.ref('tt_base.customer_type_cor').id:
+                if rec.invoice_id.billing_statement_id:
+                    rec.invoice_id.billing_statement_id.check_status()
+                rec.invoice_id.create_ledger(for_cor=1)
