@@ -150,9 +150,6 @@ class AgentInvoice(models.Model):
         self.state = 'bill'
 
     def print_invoice(self):
-        if not self.agent_id.logo:
-            raise UserError(_("Your agent have to set their logo."))
-
         datas = {'ids': self.env.context.get('active_ids', [])}
         # res = self.read(['price_list', 'qty1', 'qty2', 'qty3', 'qty4', 'qty5'])
         res = self.read()
