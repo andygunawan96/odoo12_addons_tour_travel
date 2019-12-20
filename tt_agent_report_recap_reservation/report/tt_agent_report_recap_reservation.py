@@ -64,6 +64,8 @@ class AgentReportRecapReservation(models.Model):
             where += """ AND rsv.state IN ('partial_booked', 'booked')"""
         elif state == 'expired':
             where += """ AND rsv.state IN ('cancel2')"""
+        elif state == 'issue-expired':
+            where += """ AND rsv.state IN ('partial_issued', 'issued') OR rsv.state IN ('cancel2')"""
         elif state == 'others':
             where += """ AND rsv.state IN ('draft')"""
         if agent_id:
