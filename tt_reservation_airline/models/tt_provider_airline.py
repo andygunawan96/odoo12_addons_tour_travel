@@ -63,6 +63,11 @@ class TtProviderAirline(models.Model):
         })
         self.booking_id.check_provider_state({'co_uid': self.env.user.id})
 
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
+
 
     def action_force_issued_from_button(self):
         if self.state == 'issued':

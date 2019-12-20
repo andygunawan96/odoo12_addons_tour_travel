@@ -26,7 +26,7 @@ class TtAirlineApiCon(models.Model):
     def send_approve_notification(self,document_number,approve_uid,amount):
         request = {
             'code': 9907,
-            'message': 'Top Up Approved by %s Rp %s' % (approve_uid,amount),
+            'message': 'Top Up Request From {} Rp {:,}'.format(approve_uid,amount),
             "title": 'APPROVED <b>%s</b>' % (document_number)
         }
         return self.send_request_to_gateway('%s/notification' % (self.url),

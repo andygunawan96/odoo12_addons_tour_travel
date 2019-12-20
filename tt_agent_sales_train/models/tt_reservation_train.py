@@ -1,5 +1,5 @@
 from odoo import models,api,fields
-
+from datetime import datetime
 
 class ReservationTrain(models.Model):
 
@@ -38,7 +38,7 @@ class ReservationTrain(models.Model):
             tmp += '%s - %s\n ' % (rec.departure_date[:16], rec.arrival_date[:16])
         return tmp
 
-    def action_create_invoice(self,acquirer_id,customer_parent_id):
+    def action_create_invoice(self,acquirer_id,co_uid,customer_parent_id):
         invoice_id = False
 
         if not invoice_id:
@@ -46,7 +46,10 @@ class ReservationTrain(models.Model):
                 'booker_id': self.booker_id.id,
                 'agent_id': self.agent_id.id,
                 'customer_parent_id': self.customer_parent_id.id,
-                'customer_parent_type_id': self.customer_parent_type_id.id
+                'customer_parent_type_id': self.customer_parent_type_id.id,
+                'state': 'confirm',
+                'confirmed_uid': co_uid,
+                'confirmed_date': datetime.now()
             })
 
         inv_line_obj = self.env['tt.agent.invoice.line'].create({
@@ -108,5 +111,5 @@ class ReservationTrain(models.Model):
 
     def action_issued_train(self,co_uid,customer_parent_id,acquirer_id):
         super(ReservationTrain, self).action_issued_train(co_uid,customer_parent_id)
-        self.action_create_invoice(acquirer_id,customer_parent_id)
+        self.action_create_invoice(acquirer_id,co_uid,customer_parent_id)
 
