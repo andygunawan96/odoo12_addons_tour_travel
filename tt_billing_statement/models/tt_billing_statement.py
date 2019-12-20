@@ -26,18 +26,18 @@ class TtBillingStatement(models.Model):
     # booker_type = fields.Selection(string='Booker Type', related='contact_id.booker_type')
 
     state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'), ('partial', 'Partial')
-                                 , ('paid', 'Paid'), ('cancel', 'Canceled')], 'Status', default='draft', readonly=True,
+                                 , ('paid', 'Paid'), ('cancel', 'Cancelled')], 'Status', default='draft', readonly=True,
                              states={'draft': [('readonly', False)]})
     notes = fields.Text('Notes', readonly=True, states={'draft': [('readonly', False)]})
     currency_id = fields.Many2one('res.currency', 'Currency', default=lambda self: self.env.user.company_id.currency_id)
-    amount_total = fields.Monetary('Total', compute='_compute_amount_total', store=True)
+    amount_total = fields.Monetary('Total', compute='_compute_amount_total', store=False)
 
     invoice_ids = fields.One2many('tt.agent.invoice', 'billing_statement_id', string='Agent Invoices')
 
     # payment_transaction_ids = fields.One2many('payment.transaction', 'billing_statement_id', string='Payments',
     #                                           required=True)
 
-    paid_amount = fields.Monetary('Paid Amount', store=True, compute='_compute_paid_amount')
+    paid_amount = fields.Monetary('Paid Amount', store=False, compute='_compute_amount_total')
 
     collectibility_status = fields.Selection([('current', 'Current'), ('special_mention', 'Special Mention'),
                                               ('substandard', 'Substandard'), ('doubtful', 'Doubtful'),
@@ -97,7 +97,7 @@ class TtBillingStatement(models.Model):
             raise UserError('You can not set to confirm this billing. Please cancel the "Payment" first')
 
     def check_status(self):
-        if all ([rec.state == 'paid' for rec in self.invoice_ids]):
+        if all([rec.state == 'paid' for rec in self.invoice_ids]):
             self.state = 'paid'
 
     def print_report_billing_statement(self):

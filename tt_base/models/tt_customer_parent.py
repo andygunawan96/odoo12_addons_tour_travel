@@ -43,7 +43,7 @@ class TtCustomerParent(models.Model):
 
     def _compute_actual_balance(self):
         for rec in self:
-            rec.actual_balance = rec.credit_limit + rec.balance + rec.unprocessed_amount
+            rec.actual_balance = rec.credit_limit + rec.balance - rec.unprocessed_amount
 
     @api.model
     def create(self,vals_list):

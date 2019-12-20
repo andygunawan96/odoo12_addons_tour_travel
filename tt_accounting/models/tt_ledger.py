@@ -43,7 +43,7 @@ class Ledger(models.Model):
                                     store=True)
 
     customer_parent_id = fields.Many2one('tt.customer.parent','Customer Parent')
-    customer_parent_type_id = fields.Many2one('tt.customer.parent.type','Customer Parent', related='customer_parent_id.customer_parent_type_id')
+    customer_parent_type_id = fields.Many2one('tt.customer.parent.type','Customer Parent Type', related='customer_parent_id.customer_parent_type_id')
 
     transaction_type = fields.Selection(LEDGER_TYPE, string='Type')
 

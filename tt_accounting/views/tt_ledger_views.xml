@@ -169,6 +169,29 @@
         </field>
     </record>
 
+    <record id="tt_ledger_cor_tree_view" model="ir.ui.view">
+        <field name="name">tt.ledger.cor.tree.view</field>
+        <field name="model">tt.ledger</field>
+        <field name="priority">10</field>
+        <field name="arch" type="xml">
+            <tree create="false">
+                <field name="date"/>
+                <field name="ref"/>
+                <field name="display_provider_name"/>
+                <field name="pnr"/>
+                <field name="customer_parent_id"/>
+                <field name="customer_parent_type_id"/>
+                <field name="description"/>
+                <field name="issued_uid"/>
+                <field name="transaction_type"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="debit" sum="Total Debit"/>
+                <field name="credit" sum="Total Credit"/>
+                <field name="balance" invisible="1" sum="Total Balance"/>
+            </tree>
+        </field>
+    </record>
+
     <record id="tt_ledger_action" model="ir.actions.act_window">
         <field name="name">Ledger</field>
         <field name="res_model">tt.ledger</field>

@@ -112,7 +112,7 @@ class AgentInvoice(models.Model):
                 'response': {}
             }
 
-    def create_ledger(self):
+    def create_ledger(self, for_cor=0):
         # create_ledger dilakukan saat state = bill atau bill2
         # JIKA FPO : TIDAK BOLEH CREATE LEDGER
         # if self.contact_id.booker_type == 'FPO':
@@ -128,11 +128,10 @@ class AgentInvoice(models.Model):
         for rec in self.invoice_line_ids:
             amount += rec.total
 
-        vals = ledger.prepare_vals('Agent Invoice : ' + self.name, self.name, datetime.now(), 2,
-                                   self.currency_id.id, 0, amount)
+        vals = ledger.prepare_vals(self._name, self.id, 'Agent Invoice : ' + self.name, self.name, datetime.now(), 2,
+                                   self.currency_id.id, self.env.user.id, for_cor == 1 and amount or 0, for_cor == 0 and amount or 0)
 
-        vals['agent_id'] = self.customer_parent_type_id.id
-        vals['agent_invoice_id'] = self.id
+        vals['customer_parent_id'] = self.customer_parent_id.id
 
         ledger.create(vals)
 
