@@ -917,7 +917,7 @@ class IssuedOffline(models.Model):
                 header_val.update({
                     'sector_type': data_reservation_offline.get('sector_type'),
                 })
-            book_obj = self.create(header_val)
+            book_obj = self.sudo().create(header_val)
             book_obj.update({
                 'total': data_reservation_offline['total_sale_price']
             })
@@ -1075,6 +1075,17 @@ class IssuedOffline(models.Model):
     def confirm_api(self, id):
         obj = self.sudo().browse(id)
         obj.action_confirm()
+
+    def print_ho_invoice(self):
+        datas = {
+            'ids': self.env.context.get('active_ids', []),
+            'model': self._name
+        }
+        res = self.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        offline_ho_invoice_id = self.env.ref('tt_report_common.action_report_printout_invoice_ho_offline')
+        return offline_ho_invoice_id.report_action(self, data=datas)
 
     def randomizer_rec(self):
         import random
