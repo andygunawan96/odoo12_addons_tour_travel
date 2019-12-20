@@ -53,7 +53,7 @@ class AgentInvoice(models.Model):
     customer_parent_type_id = fields.Many2one('tt.customer.parent.type', 'Customer Parent Type',
                                               related='customer_parent_id.customer_parent_type_id')
 
-    ledger_ids = fields.One2many('tt.ledger', 'agent_invoice_id', 'Ledger',
+    ledger_ids = fields.One2many('tt.ledger', 'res_id', 'Ledger',
                                               readonly=True, states={'draft': [('readonly', False)]})
 
     currency_id = fields.Many2one('res.currency', string='Currency',
