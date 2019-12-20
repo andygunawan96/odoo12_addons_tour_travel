@@ -128,11 +128,10 @@ class AgentInvoice(models.Model):
         for rec in self.invoice_line_ids:
             amount += rec.total
 
-        vals = ledger.prepare_vals('Agent Invoice : ' + self.name, self.name, datetime.now(), 2,
-                                   self.currency_id.id, 0, amount)
+        vals = ledger.prepare_vals(self._name, self.id, 'Agent Invoice : ' + self.name, self.name, datetime.now(), 2,
+                                   self.currency_id.id, self.env.user.id, 0, amount)
 
-        vals['agent_id'] = self.customer_parent_type_id.id
-        vals['agent_invoice_id'] = self.id
+        vals['customer_parent_id'] = self.customer_parent_id.id
 
         ledger.create(vals)
 
