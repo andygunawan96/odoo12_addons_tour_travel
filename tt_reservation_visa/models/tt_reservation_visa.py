@@ -1327,7 +1327,7 @@ class TtVisa(models.Model):
         contact = data['contact']  # self.param_contact
         passengers = copy.deepcopy(data['passenger'])  # self.param_passenger
         search = data['search']  # self.param_search
-        payment = data['payment']  # self.param_payment
+        # payment = data['payment']  # self.param_payment
         context = context  # self.param_context
         try:
             # cek saldo
@@ -1336,10 +1336,10 @@ class TtVisa(models.Model):
                 visa_pricelist_obj = self.env['tt.reservation.visa.pricelist'].search([('id', '=', psg['master_visa_Id'])])
                 if visa_pricelist_obj:
                     total_price += visa_pricelist_obj.sale_price
-            balance_res = self.env['tt.agent'].check_balance_limit_api(context['co_agent_id'], total_price)
-            if balance_res['error_code'] != 0:
-                _logger.error('Agent Balance not enough')
-                raise RequestException(1007, additional_message="agent balance")
+            # balance_res = self.env['tt.agent'].check_balance_limit_api(context['co_agent_id'], total_price)
+            # if balance_res['error_code'] != 0:
+            #     _logger.error('Agent Balance not enough')
+            #     raise RequestException(1007, additional_message="agent balance")
 
             user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
 
@@ -1387,20 +1387,20 @@ class TtVisa(models.Model):
             })
             book_obj.message_post(body='Order CONFIRMED')
 
-            if payment.get('member'):
-                customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', payment['seq_id'])])
-            else:
-                customer_parent_id = book_obj.agent_id.customer_parent_walkin_id.id
-            if payment.get('seq_id'):
-                acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', payment['seq_id'])], limit=1)
-                if not acquirer_id:
-                    raise RequestException(1017)
-                else:
-                    book_obj.acquirer_id = acquirer_id.id
-
-            book_obj.sudo().write({
-                'customer_parent_id': customer_parent_id,
-            })
+            # if payment.get('member'):
+            #     customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', payment['seq_id'])])
+            # else:
+            #     customer_parent_id = book_obj.agent_id.customer_parent_walkin_id.id
+            # if payment.get('seq_id'):
+            #     acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', payment['seq_id'])], limit=1)
+            #     if not acquirer_id:
+            #         raise RequestException(1017)
+            #     else:
+            #         book_obj.acquirer_id = acquirer_id.id
+            #
+            # book_obj.sudo().write({
+            #     'customer_parent_id': customer_parent_id,
+            # })
 
             self._calc_grand_total()
 
@@ -1430,16 +1430,15 @@ class TtVisa(models.Model):
 
             provider_visa_obj.delete_service_charge()
             provider_visa_obj.create_service_charge(pricing)
-
             book_obj.calculate_service_charge()
 
             book_obj.action_booked_visa(context)
             # book_obj.action_issued_visa(context)
 
             response = {
-                'id': book_obj.name
+                'order_number': book_obj.name
             }
-            res = Response().get_no_error(response)
+            res = self.get_booking_visa_api(response, context)
         except RequestException as e:
             _logger.error(traceback.format_exc())
             return e.error_dict()
@@ -1743,6 +1742,26 @@ class TtVisa(models.Model):
     ######################################################################################################
     # LEDGER
     ######################################################################################################
+
+    def action_issued_visa_api(self, data, context):
+        book_obj = self.env['tt.reservation.visa'].search([('name', '=', data['order_number'])])
+        book_obj._compute_commercial_state()
+
+        vals = {}
+
+        vals.update({
+            'state': 'issued',
+            'issued_uid': context['co_uid'],
+            'issued_date': datetime.now(),
+            # 'confirmed_uid': api_context['co_uid'],
+            # 'confirmed_date': datetime.now(),
+        })
+        book_obj.write(vals)
+        for rec in book_obj.provider_booking_ids:
+            rec.write(vals)
+        return self.get_booking_visa_api(data, context)
+        #     pvdr.action_create_ledger()
+        # self._create_ho_ledger_visa()  # sementara diaktifkan
 
     @api.one
     def action_issued_visa(self, api_context):

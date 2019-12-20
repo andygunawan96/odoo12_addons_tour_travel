@@ -17,6 +17,10 @@ class TtOfflineApiCon(models.Model):
             res = table_obj.create_booking_visa_api(data, context)
         elif action == 'get_booking_visa_api':
             res = table_obj.get_booking_visa_api(data, context)
+        elif action == 'payment':
+            res = self.env['tt.reservation.visa'].payment_visa_api(data,context)
+        elif action == 'issued_booking_visa_api':
+            res = self.env['tt.reservation.visa'].action_issued_visa_api(data,context)
         else:
             raise RequestException(999)
 
