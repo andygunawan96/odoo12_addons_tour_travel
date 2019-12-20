@@ -68,11 +68,24 @@ class TtProviderAirline(models.Model):
         if self.state == 'issued':
             raise UserError("Has been Issued.")
 
-        balance_res = self.env['tt.agent'].check_balance_limit_api(self.booking_id.agent_id.id,self.booking_id.agent_nta)
-        if balance_res['error_code'] != 0:
-            raise UserError("Balance not enough.")
+        req = {
+            'book_id': self.booking_id.id
+        }
+        context = {
+            'co_agent_id': self.booking_id.agent_id.id,
+            'co_agent_type_id': self.booking_id.agent_type_id.id,
+            'co_uid': self.env.user.id
+        }
+        payment_res = self.booking_id.payment_reservation_api('airline',req,context)
+        if payment_res['error_code'] != 0:
+            raise UserError(payment_res['error_msg'])
 
-        self.action_create_ledger(self.env.user.id)
+
+        # balance_res = self.env['tt.agent'].check_balance_limit_api(self.booking_id.agent_id.id,self.booking_id.agent_nta)
+        # if balance_res['error_code'] != 0:
+        #     raise UserError("Balance not enough.")
+        #
+        # self.action_create_ledger(self.env.user.id)
         self.action_set_to_issued_from_button()
 
         return {

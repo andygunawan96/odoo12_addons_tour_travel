@@ -10,7 +10,8 @@ TYPE = [
     ('cash', 'Cash'),
     ('transfer', 'Transfer'),
     ('installment', 'Installment'),
-    ('va', 'Virtual Account')
+    ('va', 'Virtual Account'),
+    ('edc', 'EDC')
 ]
 
 
