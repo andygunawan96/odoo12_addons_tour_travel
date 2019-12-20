@@ -65,8 +65,8 @@ class IssuedOfflineLines(models.Model):
     provider_id = fields.Many2one('tt.provider', 'Provider ID', readonly=False)
 
     # Airplane / Train
-    departure_date = fields.Datetime('Departure Date', readonly=False)
-    return_date = fields.Datetime('Return Date', readonly=False)
+    departure_date = fields.Char('Departure Date', readonly=False)
+    return_date = fields.Char('Return Date', readonly=False)
     origin_id = fields.Many2one('tt.destinations', 'Origin', readonly=False)
     destination_id = fields.Many2one('tt.destinations', 'Destination', readonly=False)
 
@@ -80,9 +80,9 @@ class IssuedOfflineLines(models.Model):
     subclass = fields.Char('SubClass', readonly=False)
 
     # Hotel / Activity / Cruise
-    visit_date = fields.Date('Visit Date', readonly=False)
-    check_in = fields.Date('Check In', readonly=False)
-    check_out = fields.Date('Check Out', readonly=False)
+    visit_date = fields.Char('Visit Date', readonly=False)
+    check_in = fields.Char('Check In', readonly=False)
+    check_out = fields.Char('Check Out', readonly=False)
     hotel_name = fields.Char('Name', readonly=False)
     room = fields.Char('Room Type', readonly=False)
     meal_type = fields.Char('Meal Type', readonly=False)
