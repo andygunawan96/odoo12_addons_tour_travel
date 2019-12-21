@@ -21,8 +21,22 @@
                             <field name="destination_id" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
                         </group>
                         <group>
-                            <field name="departure_date" string="Departure Datetime" placeholder="YYYY-MM-DD HH:MM:SS" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
-                            <field name="return_date" string="Arrival Datetime" placeholder="YYYY-MM-DD HH:MM:SS" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
+                            <field name="departure_date" placeholder="YYYY-MM-DD" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
+                            <field name="return_date" placeholder="YYYY-MM-DD" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
+<!--                            <label for="departure_date" string="Departure Date">-->
+<!--                                <div>-->
+<!--                                    <field name="departure_date" placeholder="YYYY-MM-DD" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>-->
+<!--                                    <field name="departure_hour" placeholder="HH" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>-->
+<!--                                    <field name="departure_minute" placeholder="MM" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>-->
+<!--                                </div>-->
+<!--                            </label>-->
+<!--                            <label for="return_date" string="Return Date">-->
+<!--                                <div>-->
+<!--                                    <field name="return_date" placeholder="YYYY-MM-DD" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>-->
+<!--                                    <field name="return_hour" placeholder="HH" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>-->
+<!--                                    <field name="return_minute" placeholder="MM" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>-->
+<!--                                </div>-->
+<!--                            </label>-->
                         </group>
                         <group>
                             <field name="carrier_id" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>

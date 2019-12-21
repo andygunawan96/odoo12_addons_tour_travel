@@ -1,4 +1,5 @@
 from odoo import models, fields, api, _
+from datetime import datetime
 
 
 class ReservationOffline(models.Model):
@@ -33,8 +34,11 @@ class ReservationOffline(models.Model):
             invoice_id = self.env['tt.agent.invoice'].create({
                 'booker_id': self.booker_id.id,
                 'agent_id': self.agent_id.id,
+                'state': 'confirm',
                 'customer_parent_id': self.customer_parent_id.id,
-                'customer_parent_type_id': self.customer_parent_type_id.id
+                'customer_parent_type_id': self.customer_parent_type_id.id,
+                'confirmed_uid': self.issued_uid.id,
+                'confirmed_date': datetime.now()
             })
 
         line_desc = ''
@@ -49,6 +53,11 @@ class ReservationOffline(models.Model):
             'res_id_resv': self.id,
             'invoice_id': invoice_id.id,
             'desc': line_desc
+        })
+
+        model_type_id = self.env['tt.provider.type'].search([('code', '=', self.offline_provider_type)], limit=1)
+        inv_line_obj.write({
+            'model_type_id': model_type_id.id
         })
 
         invoice_line_id = inv_line_obj.id

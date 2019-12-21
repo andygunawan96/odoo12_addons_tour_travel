@@ -1193,133 +1193,145 @@ class TtVisa(models.Model):
         # "seq_id": "PQR.9999999"
     }
 
-    def get_booking_visa_api(self, data, context):  #
-        res = {}
-        for rec in self.search([('name', '=', data['order_number'])]):  # self.name
-            res_dict = rec.sudo().to_dict()
-            print('Res Dict. : ' + str(res_dict))
-            passenger = []
-            type = []
-            for idx, pax in enumerate(rec.passenger_ids, 1):
-                requirement = []
-                interview = {
-                    'needs': pax.interview
-                }
-                biometrics = {
-                    'needs': pax.biometrics
-                }
-                # sale_obj = self.env['tt.service.charge'].sudo().search([('visa_id', '=', self.name)])  # data['order_number'] , ('passenger_visa_ids', 'in', pax.id)]
-                # print(sale_obj.read())
-                sale = {}
-                for ssc in pax.cost_service_charge_ids:
-                    if ssc.charge_code == 'rac':
-                        sale['RAC'] = {
-                            'charge_code': ssc.charge_code,
-                            'amount': abs(ssc.amount)
-                        }
-                        if ssc.currency_id:
-                            sale['RAC'].update({
-                                'currency': ssc.currency_id.name
-                            })
-                    elif ssc.charge_code == 'total':
-                        sale['TOTAL'] = {
-                            'charge_code': ssc.charge_code,
-                            'amount': ssc.amount
-                        }
-                        if ssc['currency_id']:
-                            sale['TOTAL'].update({
-                                'currency': ssc.currency_id.name
-                            })
-                for ssc in pax.channel_service_charge_ids:
-                    csc = {
-                        'amount': 0,
-                        'charge_code': ''
+    def get_booking_visa_api(self, data, context):
+        try:
+            _logger.info("Get req\n" + json.dumps(context))
+            book_obj = self.get_book_obj(data.get('book_id'), data.get('order_number'))
+            if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1):
+                res_dict = book_obj.sudo().to_dict()
+                passenger = []
+                type = []
+                for idx, pax in enumerate(book_obj.passenger_ids, 1):
+                    requirement = []
+                    interview = {
+                        'needs': pax.interview
                     }
-                    if ssc.charge_code == 'csc':
+                    biometrics = {
+                        'needs': pax.biometrics
+                    }
+                    sale = {}
+                    for ssc in pax.cost_service_charge_ids:
+                        if ssc.charge_code == 'rac':
+                            sale['RAC'] = {
+                                'charge_code': ssc.charge_code,
+                                'amount': abs(ssc.amount)
+                            }
+                            if ssc.currency_id:
+                                sale['RAC'].update({
+                                    'currency': ssc.currency_id.name
+                                })
+                        elif ssc.charge_code == 'total':
+                            sale['TOTAL'] = {
+                                'charge_code': ssc.charge_code,
+                                'amount': ssc.amount
+                            }
+                            if ssc['currency_id']:
+                                sale['TOTAL'].update({
+                                    'currency': ssc.currency_id.name
+                                })
+                    for ssc in pax.channel_service_charge_ids:
                         csc = {
-                            'charge_code': ssc.charge_code,
-                            'amount': csc['amount'] + abs(ssc.amount)
+                            'amount': 0,
+                            'charge_code': ''
                         }
-                    sale['CSC'] = csc
-                """ Requirements """
-                for require in pax.to_requirement_ids:
-                    requirement.append({
-                        'name': require.requirement_id.name,
-                        'is_copy': require.is_copy,
-                        'is_original': require.is_ori
+                        if ssc.charge_code == 'csc':
+                            csc = {
+                                'charge_code': ssc.charge_code,
+                                'amount': csc['amount'] + abs(ssc.amount)
+                            }
+                        sale['CSC'] = csc
+                    """ Requirements """
+                    for require in pax.to_requirement_ids:
+                        requirement.append({
+                            'name': require.requirement_id.name,
+                            'is_copy': require.is_copy,
+                            'is_original': require.is_ori
+                        })
+                    """ Interview """
+                    interview_list = []
+                    if pax.interview is True:
+                        for intvw in pax.interview_ids:
+                            interview_list.append({
+                                'datetime': str(intvw.datetime),
+                                'ho_employee': intvw.ho_employee.name,
+                                'meeting_point': intvw.meeting_point,
+                                'location': intvw.location_id.name
+                            })
+                    interview['interview_list'] = interview_list
+                    """ Biometrics """
+                    biometrics_list = []
+                    if pax.biometrics is True:
+                        for bio in pax.biometrics_ids:
+                            biometrics_list.append({
+                                'datetime': str(bio.datetime),
+                                'ho_employee': bio.ho_employee.name,
+                                'meeting_point': bio.meeting_point,
+                                'location': bio.location_id.name
+                            })
+                    biometrics['biometrics_list'] = biometrics_list
+                    passenger.append({
+                        'title': pax.title,
+                        'first_name': pax.first_name,
+                        'last_name': pax.last_name,
+                        'birth_date': str(pax.birth_date),
+                        'gender': pax.gender,
+                        # 'age': pax.passenger_id.age or '',
+                        'passport_number': pax.passport_number or '',
+                        'passport_expdate': str(pax.passport_expdate) or '',
+                        'visa': {
+                            'price': sale,
+                            'entry_type': dict(pax.pricelist_id._fields['entry_type'].selection).get(
+                                pax.pricelist_id.entry_type),
+                            'visa_type': dict(pax.pricelist_id._fields['visa_type'].selection).get(
+                                pax.pricelist_id.visa_type),
+                            'process': dict(pax.pricelist_id._fields['process_type'].selection).get(
+                                pax.pricelist_id.process_type),
+                            'pax_type': pax.pricelist_id.pax_type,
+                            'duration': pax.pricelist_id.duration,
+                            'immigration_consulate': pax.pricelist_id.immigration_consulate,
+                            'requirement': requirement,
+                            'interview': interview,
+                            'biometrics': biometrics
+                        },
+                        'sequence': idx
                     })
-                """ Interview """
-                interview_list = []
-                if pax.interview is True:
-                    for intvw in pax.interview_ids:
-                        interview_list.append({
-                            'datetime': str(intvw.datetime),
-                            'ho_employee': intvw.ho_employee.name,
-                            'meeting_point': intvw.meeting_point,
-                            'location': intvw.location_id.name
-                        })
-                interview['interview_list'] = interview_list
-                """ Biometrics """
-                biometrics_list = []
-                if pax.biometrics is True:
-                    for bio in pax.biometrics_ids:
-                        biometrics_list.append({
-                            'datetime': str(bio.datetime),
-                            'ho_employee': bio.ho_employee.name,
-                            'meeting_point': bio.meeting_point,
-                            'location': bio.location_id.name
-                        })
-                biometrics['biometrics_list'] = biometrics_list
-                passenger.append({
-                    'title': pax.title,
-                    'first_name': pax.first_name,
-                    'last_name': pax.last_name,
-                    'birth_date': str(pax.birth_date),
-                    'gender': pax.gender,
-                    # 'age': pax.passenger_id.age or '',
-                    'passport_number': pax.passport_number or '',
-                    'passport_expdate': str(pax.passport_expdate) or '',
-                    'visa': {
-                        'price': sale,
-                        'entry_type': dict(pax.pricelist_id._fields['entry_type'].selection).get(pax.pricelist_id.entry_type),
-                        'visa_type': dict(pax.pricelist_id._fields['visa_type'].selection).get(pax.pricelist_id.visa_type),
-                        'process': dict(pax.pricelist_id._fields['process_type'].selection).get(pax.pricelist_id.process_type),
-                        'pax_type': pax.pricelist_id.pax_type,
-                        'duration': pax.pricelist_id.duration,
-                        'immigration_consulate': pax.pricelist_id.immigration_consulate,
-                        'requirement': requirement,
-                        'interview': interview,
-                        'biometrics': biometrics
+                    type.append({
+                        'entry_type': dict(pax.pricelist_id._fields['entry_type'].selection).get(
+                            pax.pricelist_id.entry_type),
+                        'visa_type': dict(pax.pricelist_id._fields['visa_type'].selection).get(
+                            pax.pricelist_id.visa_type),
+                        'process': dict(pax.pricelist_id._fields['process_type'].selection).get(
+                            pax.pricelist_id.process_type)
+                    })
+                res = {
+                    'contact': {
+                        'title': res_dict['contact']['title'],
+                        'name': res_dict['contact']['name'],
+                        'email': res_dict['contact']['email'],
+                        'phone': res_dict['contact']['phone']
                     },
-                    'sequence': idx
-                })
-                type.append({
-                    'entry_type': dict(pax.pricelist_id._fields['entry_type'].selection).get(pax.pricelist_id.entry_type),
-                    'visa_type': dict(pax.pricelist_id._fields['visa_type'].selection).get(pax.pricelist_id.visa_type),
-                    'process': dict(pax.pricelist_id._fields['process_type'].selection).get(pax.pricelist_id.process_type)
-                })
-            res = {
-                'contact': {
-                    'title': res_dict['contact']['title'],
-                    'name': res_dict['contact']['name'],
-                    'email': res_dict['contact']['email'],
-                    'phone': res_dict['contact']['phone']
-                },
-                'journey': {
-                    'country': rec.country_id.name,
-                    'departure_date': str(res_dict['departure_date']),
-                    'in_process_date': str(rec['in_process_date'].strftime("%Y-%m-%d")) if rec['in_process_date'] else '',
-                    'name': res_dict['order_number'],
-                    'payment_status': rec.commercial_state,
-                    'state': res_dict['state'],
-                    'state_visa': dict(rec._fields['state_visa'].selection).get(rec.state_visa)
-                },
-                'passengers': passenger
-            }
-        if not res:
-            res = Response().get_error(str('Visa Booking not found'), 500)
-        print('Response : ' + str(json.dumps(res)))
-        return Response().get_no_error(res)
+                    'journey': {
+                        'country': book_obj.country_id.name,
+                        'departure_date': str(res_dict['departure_date']),
+                        'in_process_date': str(book_obj['in_process_date'].strftime("%Y-%m-%d")) if book_obj[
+                            'in_process_date'] else '',
+                        'name': res_dict['order_number'],
+                        'payment_status': book_obj.commercial_state,
+                        'state': res_dict['state'],
+                        'state_visa': dict(book_obj._fields['state_visa'].selection).get(book_obj.state_visa)
+                    },
+                    'passengers': passenger
+                }
+                _logger.info("Get resp\n" + json.dumps(res))
+                return Response().get_no_error(res)
+            else:
+                raise RequestException(1001)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1013)
 
     def create_booking_visa_api(self, data, context):  #
         sell_visa = data['sell_visa']  # self.param_sell_visa
@@ -2031,6 +2043,17 @@ class TtVisa(models.Model):
             'model': self._name,
         }
         return self.env.ref('tt_reservation_visa.action_report_printout_proforma_invoice_visa').report_action(self, data=data)
+
+    def print_ho_invoice(self):
+        datas = {
+            'ids': self.env.context.get('active_ids', []),
+            'model': self._name
+        }
+        res = self.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        visa_ho_invoice_id = self.env.ref('tt_report_common.action_report_printout_invoice_ho_visa')
+        return visa_ho_invoice_id.report_action(self, data=datas)
 
     ######################################################################################################
     # CRON

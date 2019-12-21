@@ -185,6 +185,24 @@ class PrintoutInvoiceHO(models.AbstractModel):
                             pax_dict[psg.name]['total'] = cost_charge.amount
                         else:
                             pax_dict[psg.name]['total'] += cost_charge.amount
+                elif rec.provider_type_id.id == self.env.ref('tt_reservation_tour.tt_provider_type_tour').id:
+                    for psg in cost_charge.passenger_tour_ids:
+                        if psg.name not in pax_dict:
+                            pax_dict[psg.name] = {}
+                            pax_dict[psg.name]['name'] = '%s, %s' % (
+                            ' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '')
+                            pax_dict[psg.name]['total'] = cost_charge.amount
+                        else:
+                            pax_dict[psg.name]['total'] += cost_charge.amount
+                elif rec.provider_type_id.id == self.env.ref('tt_reservation_visa.tt_provider_type_visa').id:
+                    for psg in cost_charge.passenger_visa_ids:
+                        if psg.name not in pax_dict:
+                            pax_dict[psg.name] = {}
+                            pax_dict[psg.name]['name'] = '%s, %s' % (
+                            ' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '')
+                            pax_dict[psg.name]['total'] = cost_charge.amount
+                        else:
+                            pax_dict[psg.name]['total'] += cost_charge.amount
         return pax_dict
 
     def get_pax_data(self):
@@ -219,7 +237,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
                 desc += '%s - %s\n ' % (journey.departure_date[:16], journey.arrival_date[:16])
         elif data['context']['active_model'] == 'tt.reservation.activity':
             desc = ''
-            desc += '%s (%s), ' % (rec.booking_id.activity_id.name, rec.booking_id.activity_product,)
+            desc += '%s (%s), ' % (rec.booking_id.activity_id.name, rec.booking_id.activity_product_id.name,)
             desc += '%s ' % (rec.booking_id.visit_date,)
             if rec.booking_id.timeslot:
                 desc += '(%s) ' % (rec.booking_id.timeslot,)
@@ -233,8 +251,8 @@ class PrintoutInvoiceHO(models.AbstractModel):
             desc += '\n'
         elif data['context']['active_model'] == 'tt.reservation.visa':
             desc = ''
-            desc = 'Reservation Visa Country : ' + rec.country_id.name + ' ' + 'Consulate : ' + \
-                        rec.immigration_consulate + ' ' + 'Journey Date : ' + str(rec.departure_date)
+            desc = 'Reservation Visa Country : ' + rec.booking_id.country_id.name + ' ' + 'Consulate : ' + \
+                        rec.booking_id.immigration_consulate + ' ' + 'Journey Date : ' + str(rec.booking_id.departure_date)
         elif data['context']['active_model'] == 'tt.reservation.hotel':
             desc += 'Hotel : %s\n' % (rec.hotel_name)
             desc += 'Date  : %s - %s\n' % (str(rec.checkin_date)[:10], str(rec.checkout_date)[:10])
