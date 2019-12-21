@@ -78,6 +78,10 @@
                             <button name="%(tt_base.tt_upload_center_wizard_action_view)d" string="Upload Document" type="action"
                                     class="oe_stat_button" icon="fa-upload" groups="tt_base.group_tt_tour_travel_operator"
                                     attrs="{'invisible': [('state_offline', 'not in', ['validate'])]}"/>
+                            <button name="print_ho_invoice"
+                                    class="oe_stat_button" states="issued,done"
+                                    string="Print Invoice (HO)" type="object" icon="fa-print"
+                                    groups="tt_base.group_tt_tour_travel_operator"/>
                         </div>
                         <div class="oe_title">
                             <h1>
@@ -95,6 +99,7 @@
                                 <field name="provider_type_id_name" invisible="1"/>
                                 <field name="provider_type_id" invisible="1"/>
                                 <field name="provider_name" groups="tt_base.group_tt_tour_travel_operator"/>
+                                <field name="pnr" string="List of PNR"/>
                                 <field name="sector_type" attrs="{'invisible': [('provider_type_id_name', 'not in', 'airline')]}"/>
                                 <field name="cancel_message" states="cancel"
                                        attrs="{'readonly':[('cancel_can_edit','=',False)]}"/>
