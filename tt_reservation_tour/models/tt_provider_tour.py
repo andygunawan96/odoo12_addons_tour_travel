@@ -330,7 +330,7 @@ class TtProviderTour(models.Model):
             currency_id = self.booking_id.currency_id.id
             ledger_issued_uid = issued_uid
             agent_id = self.booking_id.agent_id.id
-            customer_parent_id = self.booking_id.customer_parent_id.id
+            customer_parent_id = False
             description = 'Ledger for ' + str(self.booking_id.name)
             ledger_type = 2
             debit = 0
