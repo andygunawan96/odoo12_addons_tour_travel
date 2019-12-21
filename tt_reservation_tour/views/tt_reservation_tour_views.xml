@@ -51,6 +51,14 @@
         <field name="mode">primary</field>
         <field name="inherit_id" ref="tt_reservation.tt_reservation_form_views"/>
         <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                <div class="oe_button_box" name="button_box">
+                    <button name="print_ho_invoice"
+                            class="oe_stat_button" states="issued,done"
+                            string="Print Invoice (HO)" type="object" icon="fa-print"
+                            groups="tt_base.group_tt_tour_travel_operator"/>
+                </div>
+            </xpath>
             <xpath expr="//group[@name='paxgroup']" position="before">
                 <separator string="Tour Information"/>
                 <group>

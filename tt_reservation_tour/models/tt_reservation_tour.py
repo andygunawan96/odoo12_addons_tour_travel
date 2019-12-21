@@ -107,7 +107,7 @@ class ReservationTour(models.Model):
                 'issued_uid': api_context['co_uid'] or self.env.user.id,
             })
 
-    def call_create_invoice(self, acquirer_id, co_uid, payment_method):
+    def call_create_invoice(self, acquirer_id, co_uid, customer_parent_id, payment_method):
         _logger.info('Creating Invoice for ' + self.name)
 
     def action_reissued(self):
@@ -445,12 +445,21 @@ class ReservationTour(models.Model):
 
             payment_method = data.get('payment_method') and data['payment_method'] or 'full'
 
+            acquirer_id = False
             if data.get('member'):
-                customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', data['seq_id'])], limit=1)
-                if customer_parent_id:
-                    customer_parent_id = customer_parent_id[0].id
+                customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', data['acquirer_seq_id'])], limit=1).id
+            ##cash / transfer
             else:
-                customer_parent_id = book_obj.agent_id.customer_parent_walkin_id.id
+                ##get payment acquirer
+                if data.get('acquirer_seq_id'):
+                    acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', data['acquirer_seq_id'])], limit=1)
+                    if not acquirer_id:
+                        raise RequestException(1017)
+                # ini harusnya ada tetapi di comment karena rusak ketika force issued from button di tt.provider.airlines
+                else:
+                    # raise RequestException(1017)
+                    acquirer_id = book_obj.agent_id.default_acquirer_id
+                customer_parent_id = book_obj.agent_id.customer_parent_walkin_id.id  ##fpo
 
             vals = {
                 'customer_parent_id': customer_parent_id,
@@ -459,14 +468,9 @@ class ReservationTour(models.Model):
 
             book_obj.sudo().write(vals)
             book_obj.action_issued_tour(payment_method, context)
-            if data.get('seq_id'):
-                acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', data['seq_id'])])
-                if not acquirer_id:
-                    raise RequestException(1017)
-            else:
-                raise RequestException(1017)
+            self.env.cr.commit()
 
-            book_obj.call_create_invoice(acquirer_id, context['co_uid'], payment_method)
+            book_obj.call_create_invoice(acquirer_id and acquirer_id.id or False, context['co_uid'], customer_parent_id, payment_method)
 
             response = {
                 'order_id': book_obj.id,
@@ -653,4 +657,16 @@ class ReservationTour(models.Model):
             return (self.tour_id.down_payment / 100) * self.total
         else:
             return super(ReservationTour, self).get_total_amount()
+
+    @api.multi
+    def print_ho_invoice(self):
+        datas = {
+            'ids': self.env.context.get('active_ids', []),
+            'model': self._name
+        }
+        res = self.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        tour_ho_invoice_id = self.env.ref('tt_report_common.action_report_printout_invoice_ho_tour')
+        return tour_ho_invoice_id.report_action(self, data=datas)
 

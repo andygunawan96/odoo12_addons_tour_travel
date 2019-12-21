@@ -66,7 +66,11 @@ class IssuedOfflineLines(models.Model):
 
     # Airplane / Train
     departure_date = fields.Char('Departure Date', readonly=False)
+    departure_hour = fields.Char('Departure Hour', readonly=False)
+    departure_minute = fields.Char('Departure Minute', readonly=False)
     return_date = fields.Char('Return Date', readonly=False)
+    return_hour = fields.Char('Return Hour', readonly=False)
+    return_minute = fields.Char('Return Minute', readonly=False)
     origin_id = fields.Many2one('tt.destinations', 'Origin', readonly=False)
     destination_id = fields.Many2one('tt.destinations', 'Destination', readonly=False)
 

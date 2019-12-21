@@ -5,6 +5,7 @@ class TtBillingStatement(models.Model):
     _name = 'tt.billing.statement'
     _inherit = 'tt.history'
     _description = 'Rodex Model'
+    _order = 'id desc'
 
     name = fields.Char('Number', required=True, readonly=True, default='New')
     date = fields.Date('Date', index=True, default=fields.Date.context_today, required=True, readonly=True,
