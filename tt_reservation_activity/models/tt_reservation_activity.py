@@ -288,7 +288,7 @@ class ReservationActivity(models.Model):
             'state': 'issued',
         })
 
-    def call_create_invoice(self, acquirer_id,co_uid):
+    def call_create_invoice(self, acquirer_id,co_uid,customer_parent_id):
         _logger.info('Creating Invoice for ' + self.name)
 
     def update_pnr_data(self, book_id, pnr):
@@ -644,12 +644,21 @@ class ReservationActivity(models.Model):
                 book_objs = self.env['tt.reservation.activity'].sudo().search([('name', '=', req['order_number'])], limit=1)
                 book_obj = book_objs[0]
 
+            acquirer_id = False
             if req.get('member'):
-                customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', req['seq_id'])], limit=1)
-                if customer_parent_id:
-                    customer_parent_id = customer_parent_id[0].id
+                customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', req['acquirer_seq_id'])], limit=1).id
+            ##cash / transfer
             else:
-                customer_parent_id = book_obj.agent_id.customer_parent_walkin_id.id
+                ##get payment acquirer
+                if req.get('acquirer_seq_id'):
+                    acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', req['acquirer_seq_id'])], limit=1)
+                    if not acquirer_id:
+                        raise RequestException(1017)
+                # ini harusnya ada tetapi di comment karena rusak ketika force issued from button di tt.provider.airlines
+                else:
+                    # raise RequestException(1017)
+                    acquirer_id = book_obj.agent_id.default_acquirer_id
+                customer_parent_id = book_obj.agent_id.customer_parent_walkin_id.id  ##fpo
 
             vals = {
                 'customer_parent_id': customer_parent_id,
@@ -658,14 +667,7 @@ class ReservationActivity(models.Model):
             book_obj.action_paid_activity(context)
             self.env.cr.commit()
 
-            if req.get('seq_id'):
-                acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', req['seq_id'])])
-                if not acquirer_id:
-                    raise RequestException(1017)
-            else:
-                raise RequestException(1017)
-
-            book_obj.call_create_invoice(acquirer_id,context['co_uid'])
+            book_obj.call_create_invoice(acquirer_id and acquirer_id.id or False,context['co_uid'],customer_parent_id)
 
             response = {
                 'order_id': book_obj.id,

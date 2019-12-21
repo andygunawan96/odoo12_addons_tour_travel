@@ -40,7 +40,7 @@ class ReservationActivity(models.Model):
         tmp += '\n '
         return tmp
 
-    def action_create_invoice(self, acquirer_id,co_uid):
+    def action_create_invoice(self, acquirer_id,co_uid,customer_parent_id):
         invoice_id = False
 
         if not invoice_id:
@@ -85,9 +85,9 @@ class ReservationActivity(models.Model):
         ##membuat payment dalam draft
         payment_obj = self.env['tt.payment'].create({
             'agent_id': self.agent_id.id,
-            'acquirer_id': acquirer_id.id,
+            'acquirer_id': acquirer_id,
             'real_total_amount': inv_line_obj.total,
-            'customer_parent_id': self.customer_parent_id.id
+            'customer_parent_id': customer_parent_id
         })
 
         self.env['tt.payment.invoice.rel'].create({
@@ -96,6 +96,6 @@ class ReservationActivity(models.Model):
             'pay_amount': inv_line_obj.total,
         })
 
-    def call_create_invoice(self, acquirer_id,co_uid):
-        super(ReservationActivity, self).call_create_invoice(acquirer_id,co_uid)
-        self.action_create_invoice(acquirer_id,co_uid)
+    def call_create_invoice(self, acquirer_id,co_uid,customer_parent_id):
+        super(ReservationActivity, self).call_create_invoice(acquirer_id,co_uid,customer_parent_id)
+        self.action_create_invoice(acquirer_id,co_uid,customer_parent_id)

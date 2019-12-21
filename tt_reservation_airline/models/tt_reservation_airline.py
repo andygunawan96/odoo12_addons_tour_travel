@@ -547,7 +547,7 @@ class ReservationAirline(models.Model):
             else:
                 ##get payment acquirer
                 if req.get('acquirer_seq_id'):
-                    acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', req['acquirer_seq_id'])])
+                    acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', req['acquirer_seq_id'])],limit=1)
                     if not acquirer_id:
                         raise RequestException(1017)
                 # ini harusnya ada tetapi di comment karena rusak ketika force issued from button di tt.provider.airlines
