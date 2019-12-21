@@ -373,6 +373,12 @@ class TtReservation(models.Model):
             rec.agent_nta = agent_nta_total + rec.total
 
     def to_dict(self):
+        invoice_list = []
+        for rec in self.invoice_line_ids and self.invoice_line_ids or []:
+            invoice_list.append({
+                'name': rec.name,
+                'state': rec.state
+            })
         res = {
             'order_number': self.name,
             'book_id': self.id,
@@ -393,7 +399,8 @@ class TtReservation(models.Model):
             'booker': self.booker_id.to_dict(),
             'departure_date': self.departure_date and self.departure_date or '',
             'return_date': self.return_date and self.return_date or '',
-            'provider_type': self.provider_type_id.code
+            'provider_type': self.provider_type_id.code,
+            'invoice_ids': invoice_list
         }
 
         return res

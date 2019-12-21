@@ -43,9 +43,11 @@
                             </group>
                             <group name="acquirer_right">
                                 <field name="bank_id" attrs="{'invisible': [('type','=','cash')]}"/>
-                                <field name="provider_id" attrs="{'invisible': [('type','in',['cash','transfer'])]}"/>
-                                <field name="account_number" attrs="{'invisible': [('type','not in',['transfer','va'])]}"/>
-                                <field name="account_name" attrs="{'invisible': [('type','!=','transfer')]}"/>
+                                <field name="provider_id" attrs="{'invisible': [('type','not in',['va'])]}"/>
+                                <field name="account_number" attrs="{'invisible': [('type','not in',['transfer','debit','credit','va'])]}"/>
+                                <field name="account_name" attrs="{'invisible': [('type','not in',['transfer','debit','credit','va'])]}"/>
+                                <field name="cust_fee" attrs="{'invisible': [('type','not in',['debit','credit'])]}"/>
+                                <field name="bank_fee" attrs="{'invisible': [('type','not in',['debit','credit'])]}"/>
                             </group>
                         </group>
                         <notebook attrs="{'invisible': ['&amp;', ('module_id', '!=', False), ('module_state', '!=', 'installed')]}">

@@ -9,9 +9,9 @@ _logger = logging.getLogger(__name__)
 TYPE = [
     ('cash', 'Cash'),
     ('transfer', 'Transfer'),
-    ('installment', 'Installment'),
-    ('va', 'Virtual Account'),
-    ('edc', 'EDC')
+    ('debit', 'Debit Card'),
+    ('credit', 'Credit Card'),
+    ('va', 'Virtual Account')
 ]
 
 
@@ -25,7 +25,9 @@ class PaymentAcquirer(models.Model):
     bank_id = fields.Many2one('tt.bank', 'Bank')
     account_number = fields.Char('Account Number')
     account_name = fields.Char('Account Name')
-
+    cust_fee = fields.Float('Customer Fee')
+    bank_fee = fields.Float('Bank Fee')
+    
     @api.model
     def create(self, vals_list):
         vals_list['seq_id'] = self.env['ir.sequence'].next_by_code('pay.acq')

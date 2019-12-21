@@ -129,7 +129,7 @@ access_payment_acquirer_for_tour_travel_supervisor,payment.acquirer.for.tour.tra
 access_payment_acquirer_for_tour_travel_manager,payment.acquirer.for.tour.travel.manager,model_payment_acquirer,tt_base.group_tt_tour_travel_manager,1,0,0,0
 access_payment_acquirer_for_agent_user_operator,payment.acquirer.for.agent.user.operator,model_payment_acquirer,tt_base.group_tt_agent_user_operator,1,0,0,0
 access_payment_acquirer_for_agent_user_supervisor,payment.acquirer.for.agent.user.supervisor,model_payment_acquirer,tt_base.group_tt_agent_user_supervisor,1,0,0,0
-access_payment_acquirer_for_agent_user_manager,payment.acquirer.for.agent.user.manager,model_payment_acquirer,tt_base.group_tt_agent_user_manager,1,0,0,0
+access_payment_acquirer_for_agent_user_manager,payment.acquirer.for.agent.user.manager,model_payment_acquirer,tt_base.group_tt_agent_user_manager,1,1,1,1
 access_payment_acquirer_for_account_invoice,payment.acquirer.for.account.invoice,model_payment_acquirer,account.group_account_invoice,1,1,1,0
 access_payment_acquirer_for_account_manager,payment.acquirer.for.account.manager,model_payment_acquirer,account.group_account_manager,1,1,1,0
 
