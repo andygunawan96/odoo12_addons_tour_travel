@@ -324,7 +324,7 @@ class TtProviderTour(models.Model):
 
             res_model = self.booking_id._name
             res_id = self.booking_id.id
-            name = 'Order ' + payment_rules_obj.description + ': ' + self.booking_id.name
+            name = 'Order ' + payment_rules_obj.name + ': ' + self.booking_id.name
             ref = self.booking_id.name
             date = datetime.now()+relativedelta(hours=7)
             currency_id = self.booking_id.currency_id.id
