@@ -231,14 +231,8 @@ class IssuedOffline(models.Model):
 
     @api.one
     def action_cancel(self):
-        if self.state != 'done':
-            if self.state == 'validate':
-                # # buat refund ledger
-                # self.refund_ledger()
-                # # cancel setiap invoice
-                # for invoice in self.invoice_ids:
-                #     invoice.action_cancel()
-                # self.create_reverse_ledger_offline()
+        if self.state_offline != 'done':
+            if self.state_offline == 'validate':
                 for rec in self.ledger_ids:
                     rec.reverse_ledger()
                     # ledger_obj.update({
@@ -246,6 +240,7 @@ class IssuedOffline(models.Model):
                     #     'description': rec.description
                     # })
             self.state = 'cancel'
+            self.state_offline = 'cancel'
             self.cancel_date = fields.Datetime.now()
             self.cancel_uid = self.env.user.id
             return True
@@ -264,12 +259,6 @@ class IssuedOffline(models.Model):
         self.issued_uid = False
         self.cancel_date = False
         self.cancel_uid = False
-        self.ledger_id = False
-        self.sub_ledger_id = False
-        self.commission_ledger_id = False
-        self.cancel_ledger_id = False
-        self.cancel_sub_ledger_id = False
-        self.cancel_commission_ledger_id = False
         self.cancel_message = False
         self.resv_code = False
 
@@ -838,8 +827,8 @@ class IssuedOffline(models.Model):
     ]
 
     param_context = {
-        'co_uid': 6,
-        'co_agent_id': 3,
+        'co_uid': 8,
+        'co_agent_id': 2,
         'co_agent_type_id': 2
     }
 
@@ -895,7 +884,7 @@ class IssuedOffline(models.Model):
             passenger_ids = self.create_customer_api(passengers, context, booker_id, contact_id)  # create passenger
             # customer_parent_id = self._set_customer_parent(context, contact_id)
             booking_line_ids = self._create_line(lines, data_reservation_offline)  # create booking line
-            iss_off_psg_ids = self._create_reservation_offline_order(passengers, passenger_ids)
+            iss_off_psg_ids = self._create_reservation_offline_order(passengers, passenger_ids, context)
             header_val = {
                 'booker_id': booker_id.id,
                 'passenger_ids': [(6, 0, iss_off_psg_ids)],
@@ -1039,13 +1028,13 @@ class IssuedOffline(models.Model):
                 line_list.append(line_obj.id)
         return line_list
 
-    def _create_reservation_offline_order(self, passengers, passenger_ids):
+    def _create_reservation_offline_order(self, passengers, passenger_ids, context):
         iss_off_psg_env = self.env['tt.reservation.offline.passenger'].sudo()
         iss_off_pas_list = []
         for idx, psg in enumerate(passengers):
             psg_vals = {
                 'passenger_id': passenger_ids[idx][0].id,
-                'agent_id': self.env.user.agent_id.id,
+                'agent_id': context['co_agent_id'],
                 'pax_type': psg['pax_type']
             }
             iss_off_psg_obj = iss_off_psg_env.create(psg_vals)

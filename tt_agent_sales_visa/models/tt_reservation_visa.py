@@ -1,4 +1,5 @@
 from odoo import models, fields, api, _
+from datetime import datetime
 
 
 class ReservationVisa(models.Model):
@@ -42,7 +43,7 @@ class ReservationVisa(models.Model):
                         rec.immigration_consulate + ' ' + 'Journey Date : ' + str(rec.departure_date)
         return desc_text
 
-    def action_create_invoice(self):
+    def action_create_invoice(self, data, context):
         invoice_id = False
 
         if not invoice_id:
@@ -50,7 +51,10 @@ class ReservationVisa(models.Model):
                 'booker_id': self.booker_id.id,
                 'agent_id': self.agent_id.id,
                 'customer_parent_id': self.customer_parent_id.id,
-                'customer_parent_type_id': self.customer_parent_type_id.id
+                'customer_parent_type_id': self.customer_parent_type_id.id,
+                'state': 'confirm',
+                'confirmed_uid': context['co_uid'],
+                'confirmed_date': datetime.now()
             })
 
         inv_line_obj = self.env['tt.agent.invoice.line'].create({
@@ -67,10 +71,10 @@ class ReservationVisa(models.Model):
                         psg.pricelist_id.entry_type.capitalize() + ' ' + psg.pricelist_id.visa_type.capitalize() + ' ' \
                         + psg.pricelist_id.process_type.capitalize() + ' (' + str(psg.pricelist_id.duration) + ' days)'
             price = 0
-            for srvc in psg['cost_service_charge_ids']:
-                if srvc.charge_code != 'rac':
+            for srvc in psg.cost_service_charge_ids:
+                if srvc.charge_type != 'RAC':
                     price += srvc.amount
-            for srvc in psg['channel_service_charge_ids']:
+            for srvc in psg.channel_service_charge_ids:
                 price += srvc.amount
             inv_line_obj.write({
                 'invoice_line_detail_ids': [(0, 0, {
@@ -87,10 +91,11 @@ class ReservationVisa(models.Model):
             'real_total_amount': inv_line_obj.total,
             'customer_parent_id': self.customer_parent_id.id
         })
-        if self.acquirer_id:
-            payment_obj.update({
-                'acquirer_id': self.acquirer_id.id,
-            })
+        if 'seq_id' in data:
+            if data['seq_id']:
+                payment_obj.update({
+                    'acquirer_id': data['seq_id'],
+                })
 
         self.env['tt.payment.invoice.rel'].create({
             'invoice_id': invoice_id.id,
@@ -98,6 +103,10 @@ class ReservationVisa(models.Model):
             'pay_amount': inv_line_obj.total,
         })
 
-    def action_issued_visa(self, api_context=None):
-        super(ReservationVisa, self).action_issued_visa(api_context)
-        self.action_create_invoice()
+    # def action_issued_visa(self, api_context=None):
+    #     super(ReservationVisa, self).action_issued_visa(api_context)
+    #     self.action_create_invoice()
+
+    def action_issued_visa_api(self, data, context):
+        super(ReservationVisa, self).action_issued_visa_api(data, context)
+        self.action_create_invoice(data, context)
