@@ -83,6 +83,15 @@
                         <button string="Done" class="oe_highlight" name="action_done" attrs="{'invisible':[('state_offline','!=','validate')]}" type="object" groups="tt_base.group_tt_ticketing_operator,account.group_account_invoice"/>
                         <button string="Cancel" name="action_cancel" type="object" attrs="{'invisible':[('state_offline','not in',['confirm','sent','validate'])]}" groups="tt_base.group_tt_ticketing_operator,account.group_account_invoice"/>
                         <button string="Cancel" name="action_cancel" type="object"  attrs="{'invisible':[('state_offline','!=','draft')]}"/>
+                        <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action" groups="tt_base.group_tt_tour_travel_operator"
+                                       context="{
+                        'default_res_model': res_model,
+                        'default_res_id': id,
+                        'default_agent_id': agent_id,
+                        'default_referenced_document': name,
+                        'default_currency_id': currency_id,
+                        'default_adj_type': provider_type_id
+                   }"/>
 <!--                        <button string="Print Invoice" name="print_invoice" type="object" states="paid,posted"/>-->
 <!--                        <button string="Print Invoice Ticket" name="print_invoice_ticket" type="object" states="paid,posted"/>-->
 <!--                        <button string="Get Config API" name="get_config_api" type="object"/>-->
@@ -101,6 +110,8 @@
                         </div>
                         <group>
                             <group>
+<!--                                ### untuk default value adjustment &ndash;&gt;-->
+                                <field name="res_model" invisible="1"/>
                                 <field name="agent_id" readonly="1" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                                 <field name="booker_id" required="1"/>
                                 <field name="contact_id" required="1" context="{'default_commercial_agent_id': agent_id}" options="{'no_quick_create': True}"/>
@@ -223,6 +234,9 @@
                             </page>
                             <page name="attachment" string="Attachment">
                                 <field name="attachment_ids" attrs="{'readonly': [('state_offline', 'not in', ['validate'])]}"/>  <!-- string="Attach a File" widget="many2many_tags"-->
+                            </page>
+                            <page string="Adjustment">
+                                <field name="adjustment_ids"/>
                             </page>
                         </notebook>
                     </sheet>
