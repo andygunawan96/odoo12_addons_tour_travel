@@ -139,7 +139,32 @@ class PrintoutInvoiceHO(models.AbstractModel):
                         'total': rec2.sale_price
                     })
         elif rec._name == 'tt.reservation.offline':
-            pass
+            for rec2 in rec.line_ids:
+                pnr = rec2.pnr if rec2.pnr else '-'
+                if not a.get(pnr):
+                    a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'provider_type': ''}
+                a[pnr]['descs'].append(self.get_description(rec, data))
+                a[pnr]['provider_type'] = rec.provider_type_id.name
+                if rec.provider_type_id_name == 'hotel':
+                    qty = 0
+                    for line in rec.line_ids:
+                        qty += line.obj_qty
+                    a[pnr]['pax_data'].append({
+                        'name': rec2.get_line_hotel_description(),
+                        'total': rec.total / qty
+                    })
+                else:
+                    for psg in rec.passenger_ids:
+                        a[pnr]['pax_data'].append({
+                            'name': psg.passenger_id.name,
+                            'total': rec.total / len(rec.passenger_ids),
+                        })
+                # if rec.provider_type_id_name == 'hotel':
+                #     for line in self.line_ids:
+                #         desc_text = line.get_line_hotel_description()
+                # else:
+                #     for psg in self.passenger_ids:
+                #         desc_text = psg.passenger_id.name
         else:
             if rec.provider_booking_ids:
                 for provider in rec.provider_booking_ids:
@@ -203,6 +228,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
                             pax_dict[psg.name]['total'] = cost_charge.amount
                         else:
                             pax_dict[psg.name]['total'] += cost_charge.amount
+
         return pax_dict
 
     def get_pax_data(self):
@@ -253,6 +279,13 @@ class PrintoutInvoiceHO(models.AbstractModel):
             desc = ''
             desc = 'Reservation Visa Country : ' + rec.booking_id.country_id.name + ' ' + 'Consulate : ' + \
                         rec.booking_id.immigration_consulate + ' ' + 'Journey Date : ' + str(rec.booking_id.departure_date)
+        elif data['context']['active_model'] == 'tt.reservation.offline':
+            desc = ''
+            if rec.provider_type_id_name != 'hotel':
+                for line in rec.line_ids:
+                    desc += line.get_line_description()
+            else:
+                desc += 'Description : ' + (rec.description if rec.description else '')
         elif data['context']['active_model'] == 'tt.reservation.hotel':
             desc += 'Hotel : %s\n' % (rec.hotel_name)
             desc += 'Date  : %s - %s\n' % (str(rec.checkin_date)[:10], str(rec.checkout_date)[:10])

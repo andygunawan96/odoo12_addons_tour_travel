@@ -105,8 +105,12 @@ class ProviderOffline(models.Model):
                         provider_line_count += 1
             sale_price = self.booking_id.total / line_count * provider_line_count
         else:
-            sale_price = self.booking_id.total / len(self.booking_id.line_ids)
-            provider_line_count = 1
+            if self.booking_id.line_ids:
+                sale_price = self.booking_id.total / len(self.booking_id.line_ids)
+                provider_line_count = 1
+            else:
+                sale_price = self.booking_id.total
+                provider_line_count = 1
 
         # Get all pricing per pax
         for psg in self.booking_id.passenger_ids:

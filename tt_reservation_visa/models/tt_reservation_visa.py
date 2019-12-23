@@ -2346,7 +2346,7 @@ class TtVisa(models.Model):
                     rec.total_fare += line.total
                 if line.charge_type == 'tax':
                     rec.total_tax += line.total
-                if line.charge_type == 'disc':
+                if line.charge_type == 'DISC':
                     rec.total_disc += line.total
                 if line.charge_type == 'ROC':
                     rec.total_commission += line.total

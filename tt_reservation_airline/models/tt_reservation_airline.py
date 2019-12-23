@@ -849,7 +849,7 @@ class ReservationAirline(models.Model):
             'target': 'new',
             'url': book_obj.printout_ticket_id.url,
         }
-        return ERR.get_no_error(url)
+        return url
 
     @api.multi
     def print_eticket_with_price(self, data, ctx=None):
@@ -894,7 +894,7 @@ class ReservationAirline(models.Model):
             'target': 'new',
             'url': book_obj.printout_ticket_price_id.url,
         }
-        return ERR.get_no_error(url)
+        return url
 
     @api.multi
     def print_ho_invoice(self):
