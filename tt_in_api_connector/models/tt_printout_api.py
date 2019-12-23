@@ -13,7 +13,12 @@ class TtPrintoutApiCon(models.Model):
             if data['mode'] == 'invoice':
                 res = self.env['tt.agent.invoice'].print_invoice_api(data, context)
             elif data['provider_type'] == 'visa':
-                pass
+                if data['mode'] == 'visa_cust':
+                    pass
+                    # res = self.env['tt.agent.invoice'].print_invoice_api(data, context)
+                elif data['mode'] == 'visa_ho':
+                    pass
+                    # res = self.env['tt.agent.invoice'].print_invoice_api(data, context)
             elif data['provider_type'] == 'tour':
                 pass
             elif data['provider_type'] == 'hotel':
