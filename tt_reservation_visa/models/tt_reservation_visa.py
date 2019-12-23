@@ -1890,8 +1890,15 @@ class TtVisa(models.Model):
     ######################################################################################################
 
     def action_issued_visa_api(self, data, context):
+        payment = data['payment']
+
         book_obj = self.env['tt.reservation.visa'].search([('name', '=', data['order_number'])])
         book_obj._compute_commercial_state()
+
+        if payment.get('member'):
+            customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', payment['seq_id'])])
+        else:
+            customer_parent_id = book_obj.agent_id.customer_parent_walkin_id.id
 
         vals = {}
 
@@ -1899,6 +1906,7 @@ class TtVisa(models.Model):
             'state': 'issued',
             'issued_uid': context['co_uid'],
             'issued_date': datetime.now(),
+            'customer_parent_id': customer_parent_id
             # 'confirmed_uid': api_context['co_uid'],
             # 'confirmed_date': datetime.now(),
         })
