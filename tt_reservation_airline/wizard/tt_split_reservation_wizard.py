@@ -150,6 +150,9 @@ class TtSplitReservationWizard(models.TransientModel):
                         })
 
         elif len(provider_list) <= 0:
+            tot_adult = 0
+            tot_child = 0
+            tot_infant = 0
             for rec in self.passenger_ids:
                 for rec2 in book_obj.passenger_ids:
                     if rec2.id == rec.id:
@@ -224,10 +227,39 @@ class TtSplitReservationWizard(models.TransientModel):
                                         'arrival_date': rec5.arrival_date,
                                     }
                                     new_leg_obj = self.env['tt.leg.airline'].sudo().create(leg_val)
+                                for rec6 in rec4.seat_ids:
+                                    if rec6.passenger_id.id == rec.id:
+                                        rec6.segment_id = new_segment_obj.id
+                                for rec7 in rec4.segment_addons_ids:
+                                    addons_val = {
+                                        'segment_id': new_segment_obj.id,
+                                        'detail_code': rec7.detail_code,
+                                        'detail_type': rec7.detail_type,
+                                        'detail_name': rec7.detail_name,
+                                        'amount': rec7.amount,
+                                        'unit': rec7.unit,
+                                    }
+                                    new_addons_obj = self.env['tt.segment.addons.airline'].sudo().create(addons_val)
                         for rec3 in rec2.provider_airline_booking_id.ticket_ids:
                             if rec3.passenger_id.id == rec.id:
+                                if rec3.pax_type == 'ADT':
+                                    tot_adult += 1
+                                elif rec3.pax_type == 'CHD':
+                                    tot_child += 1
+                                elif rec3.pax_type == 'INF':
+                                    tot_infant += 1
                                 rec3.provider_id = new_prov_obj.id
                         rec2.provider_airline_booking_id = new_prov_obj.id
+            new_book_obj.sudo().write({
+                'adult': int(tot_adult),
+                'child': int(tot_child),
+                'infant': int(tot_infant)
+            })
+            book_obj.sudo().write({
+                'adult': int(book_obj.adult) - int(tot_adult),
+                'child': int(book_obj.child) - int(tot_child),
+                'infant': int(book_obj.infant) - int(tot_infant)
+            })
 
         book_obj.calculate_pnr_provider_carrier()
         new_book_obj.calculate_pnr_provider_carrier()

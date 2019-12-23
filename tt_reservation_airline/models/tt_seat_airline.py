@@ -7,4 +7,4 @@ class TtSeatAirline(models.Model):
 
     seat = fields.Char('Seat')
     segment_id = fields.Many2one('tt.segment.airline', 'Segment')
-    passenger_id = fields.Many2one('tt.customer', 'Passenger')
+    passenger_id = fields.Many2one('tt.reservation.passenger.airline', 'Passenger')
