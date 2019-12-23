@@ -331,7 +331,7 @@ class IssuedOffline(models.Model):
                 or self.provider_type_id_name == 'cruise':
             if self.check_provider_empty() is False:
                 self.get_provider_name()
-                # pnr = self.get_pnr_list()
+                self.get_pnr_list()
                 if self.provider_type_id_name == 'airline' or self.provider_type_id_name == 'train':
                     if self.check_pnr_empty():
                         raise UserError(_('PNR(s) can\'t be Empty'))
@@ -362,6 +362,8 @@ class IssuedOffline(models.Model):
             if self.provider_type_id_name is not 'airline' or self.provider_type_id_name is not 'train':
                 if self.check_pnr_empty():
                     raise UserError(_('PNR(s) can\'t be Empty'))
+                else:
+                    self.get_pnr_list()
             if self.attachment_ids:
                 # self.ho_final_ledger_id = self.final_ledger()
                 # if self.agent_id.agent_type_id.id in [self.env.ref('tt_base_rodex.agent_type_citra').id, self.env.ref('tt_base_rodex.agent_type_japro').id]:
@@ -545,12 +547,6 @@ class IssuedOffline(models.Model):
         return dest and dest[0].id or False
         # return dest or False
 
-    def get_pnr_list(self):
-        pnr = ''
-        for prov in self.line_ids:
-            pnr += prov.pnr + ' '
-        return pnr
-
     def get_display_provider_name(self):
         provider_list = []
         if self.provider_type_id_name == 'airline' or self.provider_type_id_name == 'train':
@@ -648,6 +644,13 @@ class IssuedOffline(models.Model):
                 provider_list.append(rec.provider_id.name)
         self.provider_name = ', '.join(provider_list)
 
+    def get_pnr_list(self):
+        pnr_list = []
+        for rec in self.line_ids:
+            if rec.pnr:
+                pnr_list.append(rec.pnr)
+        self.pnr = ', '.join(pnr_list)
+
     def check_line_empty(self):
         empty = True
         if self.provider_type_id_name != 'airline' and self.provider_type_id_name != 'train' and self.provider_type_id_name != 'hotel' and self.provider_type_id_name != 'activity':
@@ -663,7 +666,6 @@ class IssuedOffline(models.Model):
             if rec.passenger_id is not empty or rec.pax_type is not empty:
                 empty = False
         return empty
-
 
     # param_issued_offline_data = {
     #     "type": "activity",
