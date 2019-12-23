@@ -103,9 +103,12 @@ class ReservationAirline(models.Model):
             'pnr': ','.join(pnr_list)
         })
 
-    def action_partial_issued_api_airline(self):
+    def action_partial_issued_api_airline(self,co_uid,customer_parent_id):
         self.write({
-            'state': 'partial_issued'
+            'state': 'partial_issued',
+            'issued_date': datetime.now(),
+            'issued_uid': co_uid,
+            'customer_parent_id': customer_parent_id
         })
 
     def action_cancel(self):
@@ -123,36 +126,6 @@ class ReservationAirline(models.Model):
         res = self.action_issued_api(self.name, api_context)
         if res['error_code']:
             raise UserWarning(res['error_msg'])
-
-    @api.one
-    def action_force_issued(self):
-        #fixme menunggu create ledger
-        #
-        # This Function call for BUTTON issued on Backend
-        # api_context = {
-        #     'co_uid': self.env.user.id
-        # }
-        #
-        # user_obj = self.env['res.users'].browse(api_context['co_uid'])
-        # if user_obj.agent_id.agent_type_id.id != self.env.ref('tt_base_rodex.agent_type_ho').id:
-        #     raise UserError('Only User HO can Force Issued...')
-        #
-        # # ## UPDATE by Samvi 2018/07/23
-        # for rec in self.provider_booking_ids:
-        #     if rec.state == 'booked':
-        #         if rec.total <= self.agent_id.balance_actual:
-        #             rec.action_create_ledger()
-        #             rec.action_issued(api_context)
-        #         else:
-        #             _logger.info('Force Issued Skipped : Not Enough Balance, Total : {}, Agent Actual Balance : {}, Agent Name : {}'.format(rec.total, self.agent_id.balance_actual, self.agent_id.name))
-        #             raise UserError(_('Not Enough Balance.'))
-        #     else:
-        #         _logger.info('Force Issued Skipped : State not Booked, Provider : {}, State : {}'.format(rec.provider, rec.state))
-
-        self.issued_date = fields.Datetime.now()
-        self.issued_uid = self.env.user.id
-        self.state = 'issued'
-
 
     @api.one
     def action_reroute(self): ##nama nanti diganti reissue
@@ -420,7 +393,7 @@ class ReservationAirline(models.Model):
                     provider_obj.action_failed_booked_api_airline(provider.get('error_code'),provider.get('error_msg'))
                     any_provider_changed = True
                 elif provider['status'] == 'FAIL_ISSUED':
-                    provider_obj.action_failed_issued_api_airline(provider.get('error_msg'))
+                    provider_obj.action_failed_issued_api_airline(provider.get('error_code'),provider.get('error_msg'))
                     any_provider_changed = True
 
             for rec in book_obj.provider_booking_ids:
@@ -540,21 +513,7 @@ class ReservationAirline(models.Model):
         elif all(rec.state == 'issued' for rec in self.provider_booking_ids):
             # issued
             ##credit limit
-            acquirer_id = False
-            if req.get('member'):
-                customer_parent_id = self.env['tt.customer.parent'].search([('seq_id','=',req['acquirer_seq_id'])],limit=1).id
-            ##cash / transfer
-            else:
-                ##get payment acquirer
-                if req.get('acquirer_seq_id'):
-                    acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', req['acquirer_seq_id'])],limit=1)
-                    if not acquirer_id:
-                        raise RequestException(1017)
-                # ini harusnya ada tetapi di comment karena rusak ketika force issued from button di tt.provider.airlines
-                else:
-                    # raise RequestException(1017)
-                    acquirer_id = self.agent_id.default_acquirer_id
-                customer_parent_id = self.agent_id.customer_parent_walkin_id.id##fpo
+            acquirer_id,customer_parent_id = self.get_acquirer_n_c_parent_id(req)
 
             if req.get('force_issued'):
                 self.calculate_service_charge()
@@ -578,7 +537,8 @@ class ReservationAirline(models.Model):
             })
         elif any(rec.state == 'issued' for rec in self.provider_booking_ids):
             # partial issued
-            self.action_partial_issued_api_airline()
+            acquirer_id,customer_parent_id = self.get_acquirer_n_c_parent_id(req)
+            self.action_partial_issued_api_airline(context['co_uid'],customer_parent_id)
         elif any(rec.state == 'booked' for rec in self.provider_booking_ids):
             # partial booked
             self.calculate_service_charge()
@@ -594,6 +554,24 @@ class ReservationAirline(models.Model):
             _logger.error('Entah status apa')
             raise RequestException(1006)
 
+    def get_acquirer_n_c_parent_id(self,req):
+        acquirer_id = False
+        if req.get('member'):
+            customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', req['acquirer_seq_id'])],
+                                                                       limit=1).id
+        ##cash / transfer
+        else:
+            ##get payment acquirer
+            if req.get('acquirer_seq_id'):
+                acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', req['acquirer_seq_id'])], limit=1)
+                if not acquirer_id:
+                    raise RequestException(1017)
+            # ini harusnya ada tetapi di comment karena rusak ketika force issued from button di tt.provider.airlines
+            else:
+                # raise RequestException(1017)
+                acquirer_id = self.agent_id.default_acquirer_id
+            customer_parent_id = self.agent_id.customer_parent_walkin_id.id  ##fpo
+        return acquirer_id,customer_parent_id
 
     def _create_provider_api(self, schedules, api_context):
         dest_obj = self.env['tt.destinations']
