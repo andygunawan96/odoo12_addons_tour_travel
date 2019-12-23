@@ -612,7 +612,8 @@ class TtReservationTrain(models.Model):
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },
                 {
-                    'co_agent_id': book_obj.env.user.agent_id.id,
+                    'co_agent_id': self.env.user.agent_id.id,
+                    'co_uid': self.env.user.id,
                 }
             )
 
@@ -659,7 +660,8 @@ class TtReservationTrain(models.Model):
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },
                 {
-                    'co_agent_id': book_obj.env.user.agent_id.id,
+                    'co_agent_id': self.env.user.agent_id.id,
+                    'co_uid': self.env.user.id,
                 }
             )
             upc_id = book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
@@ -716,7 +718,8 @@ class TtReservationTrain(models.Model):
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },
                 {
-                    'co_agent_id': book_obj.env.user.agent_id.id,
+                    'co_agent_id': self.env.user.agent_id.id,
+                    'co_uid': self.env.user.id,
                 }
             )
             upc_id = book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
