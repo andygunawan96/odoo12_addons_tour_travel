@@ -71,7 +71,7 @@
             </div>
 
             <div>
-                <div>
+                <div style="width:380px;">
                     <span t-esc="doc.bill_address"/>
                 </div>
             </div>
