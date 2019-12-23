@@ -62,6 +62,8 @@ class TtSplitReservationWizard(models.TransientModel):
             raise UserError(_('You cannot split all Passenger(s) in this reservation without any PNR(s).'))
         if len(provider_list) <= 0 and len(pax_list) <= 0:
             raise UserError(_('You need to input at least 1 PNR or 1 Passenger to split this reservation.'))
+        if len(pax_list) > 0 and not self.new_pnr:
+            raise UserError(_('You need to input New PNR to split Passenger(s).'))
 
         new_vals = {
             'split_from_resv_id': book_obj.id,
@@ -157,9 +159,71 @@ class TtSplitReservationWizard(models.TransientModel):
                     if rec2.provider_airline_booking_id.id not in old_provider_list:
                         old_provider_list.append(rec2.provider_airline_booking_id.id)
                         prov_val = {
-
+                            'sequence': rec2.provider_airline_booking_id.sequence,
+                            'booking_id': new_book_obj.id,
+                            'pnr': self.new_pnr,
+                            'pnr2': self.new_pnr,
+                            'provider_id': rec2.provider_airline_booking_id.provider_id and rec2.provider_airline_booking_id.provider_id.id or False,
+                            'hold_date': rec2.provider_airline_booking_id.hold_date,
+                            'expired_date': rec2.provider_airline_booking_id.expired_date,
+                            'booked_uid': rec2.provider_airline_booking_id.booked_uid and rec2.provider_airline_booking_id.booked_uid.id or False,
+                            'booked_date': rec2.provider_airline_booking_id.booked_date,
+                            'issued_uid': rec2.provider_airline_booking_id.issued_uid and rec2.provider_airline_booking_id.issued_uid.id or False,
+                            'issued_date': rec2.provider_airline_booking_id.issued_date,
+                            'refund_uid': rec2.provider_airline_booking_id.refund_uid and rec2.provider_airline_booking_id.refund_uid.id or False,
+                            'refund_date': rec2.provider_airline_booking_id.refund_date,
+                            'origin_id': rec2.provider_airline_booking_id.origin_id and rec2.provider_airline_booking_id.origin_id.id or False,
+                            'destination_id': rec2.provider_airline_booking_id.destination_id and rec2.provider_airline_booking_id.destination_id.id or False,
+                            'departure_date': rec2.provider_airline_booking_id.departure_date,
+                            'return_date': rec2.provider_airline_booking_id.return_date,
+                            'sid_issued': rec2.provider_airline_booking_id.sid_issued,
+                            'promotion_code': rec2.provider_airline_booking_id.promotion_code,
+                            'currency_id': rec2.provider_airline_booking_id.currency_id and rec2.provider_airline_booking_id.currency_id.id or False,
                         }
                         new_prov_obj = self.env['tt.provider.airline'].sudo().create(prov_val)
+                        for rec3 in rec2.provider_airline_booking_id.journey_ids:
+                            journey_val = {
+                                'booking_id': new_book_obj.id,
+                                'provider_booking_id': new_prov_obj.id,
+                                'sequence': rec3.sequence,
+                                'provider_id': rec3.provider_id and rec3.provider_id.id or False,
+                                'origin_id': rec3.origin_id and rec3.origin_id.id or False,
+                                'destination_id': rec3.destination_id and rec3.destination_id.id or False,
+                                'departure_date': rec3.departure_date,
+                                'arrival_date': rec3.arrival_date,
+                            }
+                            new_journey_obj = self.env['tt.journey.airline'].sudo().create(journey_val)
+                            for rec4 in rec3.segment_ids:
+                                segment_val = {
+                                    'booking_id': new_book_obj.id,
+                                    'journey_id': new_journey_obj.id,
+                                    'segment_code': rec4.segment_code,
+                                    'fare_code': rec4.fare_code,
+                                    'sequence': rec4.sequence,
+                                    'name': rec4.name,
+                                    'carrier_id': rec4.carrier_id and rec4.carrier_id.id or False,
+                                    'carrier_code': rec4.carrier_code,
+                                    'carrier_number': rec4.carrier_number,
+                                    'provider_id': rec4.provider_id and rec4.provider_id.id or False,
+                                    'origin_id': rec4.origin_id and rec4.origin_id.id or False,
+                                    'destination_id': rec4.destination_id and rec4.destination_id.id or False,
+                                    'departure_date': rec4.departure_date,
+                                    'arrival_date': rec4.arrival_date,
+                                    'cabin_class': rec4.cabin_class,
+                                    'class_of_service': rec4.class_of_service,
+                                }
+                                new_segment_obj = self.env['tt.segment.airline'].sudo().create(segment_val)
+                                for rec5 in rec4.leg_ids:
+                                    leg_val = {
+                                        'segment_id': new_segment_obj.id,
+                                        'leg_code': rec5.leg_code,
+                                        'provider_id': rec5.provider_id and rec5.provider_id.id or False,
+                                        'origin_id': rec5.origin_id and rec5.origin_id.id or False,
+                                        'destination_id': rec5.destination_id and rec5.destination_id.id or False,
+                                        'departure_date': rec5.departure_date,
+                                        'arrival_date': rec5.arrival_date,
+                                    }
+                                    new_leg_obj = self.env['tt.leg.airline'].sudo().create(leg_val)
                         for rec3 in rec2.provider_airline_booking_id.ticket_ids:
                             if rec3.passenger_id.id == rec.id:
                                 rec3.provider_id = new_prov_obj.id
