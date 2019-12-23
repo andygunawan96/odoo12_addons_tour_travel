@@ -10,22 +10,24 @@ class TtPrintoutApiCon(models.Model):
     def action_call(self, table_obj, action, data, context):
 
         if action == 'get_printout_api':
-            if data['provider_type'] == 'visa':
-                if data['mode'] == 'invoice':
-                    pass
+            if data['mode'] == 'invoice':
+                res = self.env['tt.agent.invoice'].print_invoice_api(data, context)
+            elif data['provider_type'] == 'visa':
+                pass
             elif data['provider_type'] == 'tour':
-                if data['mode'] == 'invoice':
-                    pass
+                pass
             elif data['provider_type'] == 'hotel':
-                if data['mode'] == 'invoice':
-                    pass
+                if data['mode'] == 'ticket':
+                    res = self.env['tt.reservation.%s' % data['provider_type']].do_print_voucher(data, context)
+                elif data['mode'] == 'itinerary':
+                    res = self.env['tt.reservation.%s' % data['provider_type']].print_itinerary(data, context)
             else:
-                if data['mode'] == 'invoice':
-                    pass
-                elif data['mode'] == 'ticket':
-                    res = self.env['tt.reservation.airline'].print_eticket(data, context)
+                if data['mode'] == 'ticket':
+                    res = self.env['tt.reservation.%s' % data['provider_type']].print_eticket(data, context)
                 elif data['mode'] == 'ticket_price':
-                    res = self.env['tt.reservation.airline'].print_eticket_with_price(data, context)
+                    res = self.env['tt.reservation.%s' % data['provider_type']].print_eticket_with_price(data, context)
+                elif data['mode'] == 'itinerary':
+                    res = self.env['tt.reservation.%s' % data['provider_type']].print_itinerary(data, context)
 
         else:
             raise RequestException(999)
