@@ -29,7 +29,8 @@ TT_TRANSPORT
         'views/tt_master_activity_views.xml',
         'views/tt_reservation_activity_views.xml',
         'views/tt_provider_views.xml',
-        'views/tt_service_charge_views.xml'
+        'views/tt_service_charge_views.xml',
+        'views/tt_reservation_passenger_activity_form_views.xml'
         # 'views/tt_activity_printout_menu.xml',
     ],
     'demo': [],

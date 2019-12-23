@@ -54,10 +54,10 @@ class TtSplitReservationWizard(models.TransientModel):
                 is_pax_full = False
 
         if is_provider_full and is_pax_full:
-            raise UserError(_('You cannot split all PNR(s) and Passenger(s) in this reservation. Please leave at least 1 PNR or 1 Passenger!'))
+            raise UserWarning(_('You cannot split all PNR(s) and Passenger(s) in this reservation. Please leave at least 1 PNR or 1 Passenger!'))
         if is_provider_full and len(pax_list) <= 0:
-            raise UserError(_('You cannot split all PNR(s) in this reservation without any Passenger(s).'))
+            raise UserWarning(_('You cannot split all PNR(s) in this reservation without any Passenger(s).'))
         if len(provider_list) <= 0 and is_pax_full:
-            raise UserError(_('You cannot split all Passenger(s) in this reservation without any PNR(s).'))
+            raise UserWarning(_('You cannot split all Passenger(s) in this reservation without any PNR(s).'))
         if len(provider_list) <= 0 and len(pax_list) <= 0:
-            raise UserError(_('You need to input at least 1 PNR or 1 Passenger to split this reservation.'))
+            raise UserWarning(_('You need to input at least 1 PNR or 1 Passenger to split this reservation.'))
