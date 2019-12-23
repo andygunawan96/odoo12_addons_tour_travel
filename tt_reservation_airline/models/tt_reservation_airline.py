@@ -38,10 +38,11 @@ class ReservationAirline(models.Model):
 
     provider_type_id = fields.Many2one('tt.provider.type','Provider Type',
                                     default= lambda self: self.env.ref('tt_reservation_airline.tt_provider_type_airline'))
+    split_from_resv_id = fields.Many2one('tt.reservation.airline', 'Splitted From', readonly=1)
+    split_to_resv_ids = fields.One2many('tt.reservation.airline', 'split_from_resv_id', 'Splitted To', readonly=1)
 
     def get_form_id(self):
         return self.env.ref("tt_reservation_airline.tt_reservation_airline_form_views")
-
 
     @api.depends('segment_ids')
     def _compute_sector_type(self):
@@ -974,3 +975,17 @@ class ReservationAirline(models.Model):
                 count -=1
                 dest2 = data[count][2]['destination_id']
             return count
+
+    def calculate_pnr_provider_carrier(self):
+        pnr_name = ''
+        provider_name = ''
+        carrier_name = ''
+        for seg in self.segment_ids:
+            pnr_name += str(seg.pnr) + ', '
+            provider_name += str(seg.provider_id.code) + ', '
+            carrier_name += str(seg.carrier_id.name) + ', '
+        self.sudo().write({
+            'pnr': pnr_name[:-2] if pnr_name else '',
+            'provider_name': provider_name[:-2] if provider_name else '',
+            'carrier_name': carrier_name[:-2] if carrier_name else '',
+        })
