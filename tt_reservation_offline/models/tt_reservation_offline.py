@@ -221,6 +221,7 @@ class IssuedOffline(models.Model):
                     self.confirm_date = fields.Datetime.now()
                     self.confirm_uid = kwargs.get('co_uid') and kwargs['co_uid'] or self.env.user.id
                     self.acquirer_id = self.agent_id.default_acquirer_id
+                    self.get_pnr_list()
                     # self.send_push_notif()
                 else:
                     raise UserError(_('Sale Price can\'t be 0 (Zero)'))
@@ -375,6 +376,7 @@ class IssuedOffline(models.Model):
                 self.booked_date = fields.Datetime.now()
                 self.booked_uid = kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
                 self.create_final_ho_ledger(self)
+                self.get_pnr_list()
             else:
                 raise UserError('Attach Booking/Resv. Document')
         else:
@@ -667,27 +669,8 @@ class IssuedOffline(models.Model):
                 empty = False
         return empty
 
-    # param_issued_offline_data = {
-    #     "type": "activity",
-    #     "total_sale_price": 100000,
-    #     "desc": "amdaksd",
-    #     # "pnr": "10020120",
-    #     "social_media_id": "Facebook",
-    #     "expired_date": "2019-10-04 02:29",
-    #     "line_ids": [
-    #         {
-    #             "name": 1,
-    #             "activity_package": 1,
-    #             "qty": 1,
-    #             "description": 'Test Activity',
-    #             "visit_date": '2019-10-04',
-    #         }
-    #     ]
-    #     # "sector_type": "domestic"
-    # }
-
     param_issued_offline_data = {
-        "type": "hotel",
+        "type": "activity",
         "total_sale_price": 100000,
         "desc": "amdaksd",
         # "pnr": "10020120",
@@ -695,48 +678,67 @@ class IssuedOffline(models.Model):
         "expired_date": "2019-10-04 02:29",
         "line_ids": [
             {
-                "name": 'Jayakarta Hotel & Resort',
-                "room": 'Deluxe',
-                "meal_type": 'With Breakfast',
-                "pnr": 'OINMDF',
+                "name": 1,
+                "activity_package": 1,
                 "qty": 1,
-                "description": 'Jemput di bandara',
-                "check_in": '2019-10-04',
-                "check_out": '2019-10-07'
-            },
-            {
-                "name": 'Wina Holiday Villa',
-                "room": 'Superior',
-                "meal_type": 'Room Only',
-                "pnr": '',
-                "qty": 1,
-                "description": 'Jemput di bandara',
-                "check_in": '2019-10-04',
-                "check_out": '2019-10-07'
-            },
-            {
-                "name": 'Mercure Kuta Beach Bali',
-                "room": 'Deluxe',
-                "meal_type": 'Breakfast + Dinner',
-                "pnr": '',
-                "qty": 1,
-                "description": 'Jemput di bandara',
-                "check_in": '2019-10-04',
-                "check_out": '2019-10-07'
-            },
-            {
-                "name": 'Harris Resort Kuta Beach Bali',
-                "room": 'Presidential',
-                "meal_type": '',
-                "pnr": '',
-                "qty": 1,
-                "description": 'Jemput di bandara',
-                "check_in": '2019-10-04',
-                "check_out": '2019-10-07'
-            },
+                "description": 'Test Activity',
+                "visit_date": '2019-10-04',
+            }
         ]
         # "sector_type": "domestic"
     }
+
+    # param_issued_offline_data = {
+    #     "type": "hotel",
+    #     "total_sale_price": 100000,
+    #     "desc": "amdaksd",
+    #     # "pnr": "10020120",
+    #     "social_media_id": "Facebook",
+    #     "expired_date": "2019-10-04 02:29",
+    #     "line_ids": [
+    #         {
+    #             "name": 'Jayakarta Hotel & Resort',
+    #             "room": 'Deluxe',
+    #             "meal_type": 'With Breakfast',
+    #             "pnr": 'OINMDF',
+    #             "qty": 1,
+    #             "description": 'Jemput di bandara',
+    #             "check_in": '2019-10-04',
+    #             "check_out": '2019-10-07'
+    #         },
+    #         {
+    #             "name": 'Wina Holiday Villa',
+    #             "room": 'Superior',
+    #             "meal_type": 'Room Only',
+    #             "pnr": '',
+    #             "qty": 1,
+    #             "description": 'Jemput di bandara',
+    #             "check_in": '2019-10-04',
+    #             "check_out": '2019-10-07'
+    #         },
+    #         {
+    #             "name": 'Mercure Kuta Beach Bali',
+    #             "room": 'Deluxe',
+    #             "meal_type": 'Breakfast + Dinner',
+    #             "pnr": '',
+    #             "qty": 1,
+    #             "description": 'Jemput di bandara',
+    #             "check_in": '2019-10-04',
+    #             "check_out": '2019-10-07'
+    #         },
+    #         {
+    #             "name": 'Harris Resort Kuta Beach Bali',
+    #             "room": 'Presidential',
+    #             "meal_type": '',
+    #             "pnr": '',
+    #             "qty": 1,
+    #             "description": 'Jemput di bandara',
+    #             "check_in": '2019-10-04',
+    #             "check_out": '2019-10-07'
+    #         },
+    #     ]
+    #     "sector_type": "domestic"
+    # }
 
     # param_issued_offline_data = {
     #     "type": "airline",
@@ -984,16 +986,22 @@ class IssuedOffline(models.Model):
         print('Provider_type : ' + provider_type)
         if provider_type in ['airline', 'train']:
             for line in lines:
-                print('Origin: ' + str(destination_env.search([('code', '=', line.get('origin'))], limit=1).name))
-                print('Destination: ' + str(destination_env.search([('code', '=', line.get('destination'))], limit=1).name))
-                print('Carrier : ' + str(provider_env.search([('name', '=', line.get('provider'))], limit=1).name))
+                # print('Origin: ' + str(destination_env.search([('code', '=', line.get('origin'))], limit=1).name))
+                # print('Destination: ' + str(destination_env.search([('code', '=', line.get('destination'))], limit=1).name))
+                # print('Carrier : ' + str(provider_env.search([('name', '=', line.get('provider'))], limit=1).name))
+                departure_time = datetime.strptime(line.get('departure'), '%Y-%m-%d %H:%M')
+                arrival_time = datetime.strptime(line.get('arrival'), '%Y-%m-%d %H:%M')
                 line_tmp = {
                     "pnr": line.get('pnr'),
                     "origin_id": destination_env.search([('code', '=', line.get('origin'))], limit=1).id,
                     "destination_id": destination_env.search([('code', '=', line.get('destination'))], limit=1).id,
                     "provider": line.get('provider'),
-                    "departure_date": line.get('departure'),
-                    "return_date": line.get('arrival'),
+                    "departure_date": departure_time.strftime('%Y-%m-%d'),
+                    "departure_hour": str(departure_time.hour),
+                    "departure_minute": str(departure_time.minute),
+                    "arrival_date": arrival_time.strftime('%Y-%m-%d'),
+                    "arrival_hour": str(arrival_time.hour),
+                    "arrival_minute": str(arrival_time.minute),
                     "carrier_id": provider_env.search([('name', '=', line.get('provider'))], limit=1).id,
                     "carrier_code": line.get('carrier_code'),
                     "carrier_number": line.get('carrier_number'),
@@ -1004,6 +1012,8 @@ class IssuedOffline(models.Model):
                 line_list.append(line_obj.id)
         elif provider_type == 'hotel':
             for line in lines:
+                check_in_time = datetime.strptime(line.get('check_in'), '%Y-%m-%d')
+                check_out_time = datetime.strptime(line.get('check_out'), '%Y-%m-%d')
                 line_tmp = {
                     "pnr": line.get('pnr'),
                     "hotel_name": line.get('name'),
@@ -1011,20 +1021,21 @@ class IssuedOffline(models.Model):
                     "meal_type": line.get('meal_type'),
                     "qty": int(line.get('qty')),
                     "description": line.get('description'),
-                    "check_in": line.get('check_in'),
-                    "check_out": line.get('check_out'),
+                    "check_in": check_in_time.strftime('%Y-%m-%d'),
+                    "check_out": check_out_time.strftime('%Y-%m-%d'),
                 }
                 line_obj = line_env.create(line_tmp)
                 line_list.append(line_obj.id)
         elif provider_type == 'activity':
             for line in lines:
+                visit_time = datetime.strptime(line.get('visit_date'), '%Y-%m-%d')
                 line_tmp = {
                     "pnr": line.get('pnr'),
                     "activity_name": line.get('name'),
                     "activity_package": line.get('activity_package'),
                     "qty": int(line.get('qty')),
                     "description": line.get('description'),
-                    "visit_date": line.get('visit_date'),
+                    "visit_date": visit_time,
                 }
                 line_obj = line_env.create(line_tmp)
                 line_list.append(line_obj.id)
@@ -1063,6 +1074,11 @@ class IssuedOffline(models.Model):
             # entah status apa
             _logger.error('Entah status apa')
             raise RequestException(1006)
+
+    # @api.depends("sale_service_charge_ids")
+    # def _compute_total(self):
+    #     for rec in self:
+    #         pass
 
     def confirm_api(self, id):
         obj = self.sudo().browse(id)

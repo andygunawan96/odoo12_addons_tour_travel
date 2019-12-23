@@ -119,26 +119,6 @@ class IssuedOfflineLines(models.Model):
         for rec in self:
             rec.provider = rec.carrier_id.name
 
-    # @api.depends('activity_name')
-    # @api.onchange('activity_name')
-    # def get_activity_package(self):
-    #     for rec in self:
-    #         rec.activity_package = ''
-    #         if rec.activity_name:
-    #             return {'domain': {
-    #                 'activity_package': [('activity_id', '=', rec.activity_name.id)]
-    #             }}
-
-    # @api.depends('activity_package')
-    # @api.onchange('activity_package')
-    # def get_activity_timeslot(self):
-    #     for rec in self:
-    #         rec.activity_timeslot = ''
-    #         if rec.activity_package:
-    #             return {'domain': {
-    #                 'activity_timeslot': [('product_type_id', '=', rec.activity_package.id)]
-    #             }}
-
     def action_create_ledger(self):
         if not self.is_ledger_created:
             self.write({
