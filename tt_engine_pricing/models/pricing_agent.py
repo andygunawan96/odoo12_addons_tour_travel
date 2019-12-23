@@ -100,7 +100,7 @@ class PricingAgent(models.Model):
             'agent_type_id': agent_id.agent_type_id.id,
             'code': agent_id.agent_type_id.code,
         })
-        if agent_id.parent_agent_id:
+        if agent_id.parent_agent_id and agent_id.parent_agent_id.name != agent_id.name:
             return self.get_agent_hierarchy(agent_id.parent_agent_id, hierarchy)
         else:
             return hierarchy

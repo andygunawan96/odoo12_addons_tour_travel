@@ -52,216 +52,125 @@
     <record model="ir.ui.view" id="tt_reservation_visa_view_form">
         <field name="name">tt.reservation.visa.view.form</field>
         <field name="model">tt.reservation.visa</field>
+        <field name="mode">primary</field>
+        <field name="inherit_id" ref="tt_reservation.tt_reservation_form_views"/>
         <field name="arch" type="xml">
-            <form create="false">
+            <field name="state" position="replace">
                 <field name="state" invisible="1"/>
-                <header>
-                    <field name="state_visa" widget="statusbar" statusbar_visible="draft,confirm,validate,in_process,proceed,delivered,done"/> <!--statusbar_visible="" ,ready-->
-                    <button string="Set to Draft" name="action_draft_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'cancel')]}" groups="tt_base.group_tt_tour_travel_manager"/>
-                    <button string="Confirm to HO" name="action_confirm_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'draft')]}" groups="tt_base.group_tt_agent_user_operator"/>
-                    <button string="Validate" name="action_validate_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'confirm')]}" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <button string="To Vendor" name="action_to_vendor_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'validate')]}" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <button string="Vendor Process" name="action_vendor_process_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'to_vendor')]}" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <button string="In Process" name="action_in_process_visa" type="object" attrs="{'invisible': [('state_visa', 'not in', ['validate','vendor_process'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <button string="Process to Consulate" name="action_in_process_consulate_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'payment')]}" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <button string="Cancel All" name="action_cancel_visa" type="object" attrs="{'invisible': [('state_visa', 'in', ['cancel'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <!--                    <button string="Calc. Channel Prices" name="calc_channel_service_charge_visa" type="object"/>-->
-                    <!--                    <button string="Pay Now" name="action_pay_now_visa" type="object" attrs="{'invisible': [('state_visa', 'not in', ['draft','confirm', 'validate'])]}"/>-->
-                    <!--                    <button string="Proforma Invoice" name="action_proforma_invoice_visa" type="object"/>-->
-                    <!--                    <button string="Recalculate Price" name="recalculate_price" type="object"/>-->
-                </header>
-                <sheet>
-                    <div class="oe_button_box" name="button_box">
-                        <button name="do_print_out_visa_ho"
-                                string="HO"
-                                type="object"
-                                class="oe_stat_button"
-                                icon="fa-print"
-                                groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
-                        <button name="do_print_out_visa_cust"
-                                string="Customer"
-                                type="object"
-                                class="oe_stat_button"
-                                icon="fa-print"/>
-                        <button name="print_ho_invoice"
-                                class="oe_stat_button" states="issued,done"
-                                string="Print Invoice (HO)" type="object" icon="fa-print"
-                                groups="tt_base.group_tt_tour_travel_operator"/>
-                    </div>
-                    <div class="oe_title">
-                        <label for="name" class="oe_edit_only"/>
-                        <h1>
-                            <field name="name" readonly="1"/>  <!--attrs="{'readonly': [('state_visa', '!=', 'draft')]}"-->
-                        </h1>
-                    </div>
-                    <group>
-                        <group>
-                            <field name="agent_id" readonly="1"/>
-                            <field name="customer_parent_id" readonly="1"/>
-                            <field name="currency_id" invisible="1"/>
-<!--                            <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>-->
-<!--                            <field name="refund_id"/>-->
-<!--                            <field name="payment_date" attrs="{'readonly': [('state_visa', '!=', 'in_process')]}"/>-->
-                            <field name="document_to_ho_date"/>
-                            <field name="hold_date" widget="date"/>
-                            <field name="use_vendor"/>
-<!--                            <field name="acquirer_id"/>-->
-<!--                            <field name="state" string="State (debug)"/>  &lt;!&ndash;Debug&ndash;&gt;-->
-<!--                            <field name="proof_of_consulate" widget="many2many_binary"/>-->
-<!--                            <field name="vendor_ids" attrs="{'required': [('use_vendor', '=', True)], 'readonly': [('state_visa', 'in', ['delivered','ready','done'])]}" groups="tt_base.group_tt_tour_travel_operator,account.group_account_user">-->
-<!--                                <tree editable="bottom">-->
-<!--                                    <field name="vendor_id"/>-->
-<!--                                    <field name="reference_number"/>-->
-<!--                                    <field name="amount"/>-->
-<!--                                    <field name="payment_date"/>-->
-<!--                                    <field name="currency_id" invisible="1"/>-->
-<!--                                </tree>-->
-<!--                            </field>-->
-                        </group>
-                        <group>
-                            <field name="state" string="Status" readonly="1"/>
-                            <field name="commercial_state"/>
-
-                            <label for="booked_uid" string="Booked"/>
-                            <div>
-                                <field name="booked_uid" readonly="1" class="oe_inline"/> -
-                                <field name="booked_date" readonly="1" class="oe_inline"/>
-                            </div>
-
-                            <label for="confirmed_uid" string="Confirmed"/>
-                            <div>
-                                <field name="confirmed_uid" readonly="1" class="oe_inline"/> -
-                                <field name="confirmed_date" readonly="1" class="oe_inline"/>
-                            </div>
-
-                            <label for="validate_uid" string="Validated"/>
-                            <div>
-                                <field name="validate_uid" readonly="1" class="oe_inline"/> -
-                                <field name="validate_date" readonly="1" class="oe_inline"/>
-                            </div>
-                            <field name="to_vendor_date" readonly="1" attrs="{'invisible': [('use_vendor', '!=', True)]}"/>
-                            <field name="vendor_process_date" readonly="1" attrs="{'invisible': [('use_vendor', '!=', True)]}"/>
-
-                            <label for="issued_uid" string="Issued"/>
-                            <div>
-                                <field name="issued_uid" readonly="1" class="oe_inline"/> -
-                                <field name="issued_date" readonly="1" class="oe_inline"/>
-                            </div>
-
-                            <field name="in_process_date"/>
-                            <!--                            <field name="ready_date"/>-->
-                            <field name="done_date"/>
-                        </group>
-                    </group>
-                    <group>
-                        <group>
-                            <field name="country_id" readonly="1"/>
-                            <field name="immigration_consulate" string="Consulate"/>
-                        </group>
-                        <group>
-                            <field name="departure_date" readonly="1"/>
-                        </group>
-                    </group>
-                    <group>
-                        <group string="Paxs">
-                            <field name="adult" readonly="1"/>
-                            <field name="child" readonly="1"/>
-                            <field name="infant" readonly="1"/>
-                        </group>
-                        <group string="Booker Information">
-                            <field name="booker_id" readonly="1"/>
-                            <field name="contact_id" readonly="1"/>
-                            <field name="contact_name" readonly="1"/>  <!--readonly="1"-->
-                            <field name="contact_email" readonly="1"/>  <!--readonly="1"-->
-                            <field name="contact_phone" readonly="1"/>  <!--readonly="1"-->
-                        </group>
-                    </group>
-                    <notebook colspan="4">
-                        <page string="Passengers">
-                            <field name="passenger_ids">
-                                <tree create="false">
-                                    <field name="customer_id"/>
-                                    <field name="passenger_type"/>
-                                    <field name="pricelist_id"/>
-                                    <field name="in_process_date"/>
-                                    <!--                                    <field name="call_date"/>-->
-                                    <field name="out_process_date"/>
-                                    <field name="to_HO_date"/>
-                                    <field name="ready_date"/>
-                                    <field name="process_status"/>
-                                    <field name="state"/>
-                                </tree>
-                            </field>
-                        </page>
-                        <page string="Prices" name="prices" >
-                            <field name="sale_service_charge_ids" context="{'form_view_ref': 'tt_reservation_visa.tt_service_charge_visa_inherit_form_view'}" readonly="1">
-                                <tree>
-                                    <field name="charge_code"/>
-                                    <field name="charge_type"/>
-                                    <field name="pax_type"/>
-                                    <field name="pax_count"/>
-                                    <field name="amount"/>
-                                    <field name="total"/>
-                                    <field name="currency_id" invisible="1"/>
-                                    <field name="description"/>
-                                </tree>
-                            </field>
-                        </page>
-                        <page string="Vendor" name="Vendor" groups="tt_base.group_tt_tour_travel_operator">
-                            <field name="provider_booking_ids">
-                                <tree create="false">
-                                    <field name="provider_id"/>
-                                    <field name="pnr"/>
-                                    <field name="departure_date"/>
-                                    <field name="state"/>
-                                </tree>
-                            </field>
-                        </page>
-                        <page string="Ledgers" name="ledger_page">
-                            <!--                            groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"-->
-                            <field name="ledger_ids">
-                                <tree create="false">
-                                    <field name="date"/>
-                                    <field name="ref"/>
-                                    <field name="name"/>
-                                    <field name="agent_id"/>
-                                    <field name="description"/>
-                                    <field name="transaction_type"/>
-                                    <field name="currency_id" invisible="1"/>
-                                    <field name="debit" sum="Total Debit"/>
-                                    <field name="credit" sum="Total Credit"/>
-                                    <field name="balance" invisible="1" sum="Total Balance"/>
-                                </tree>
-                            </field>
-                        </page>
-                    </notebook>
-                    <group>
-                        <group>
-                            <field name="notes" string="Notes"/>
-                        </group>
-                        <group>
-                            <field name="error_msg"/>
-                        </group>
-                        <group>
-
-                        </group>
-                        <group string="Total Information" class="oe_subtotal_footer oe_right">
-                            <!--<field name="total_insentif_amount" class="oe_subtotal_footer_separator"/>-->
-                            <!--                            <field name="total_fare" class="oe_subtotal_footer_separator"/>-->
-                            <!--                            <field name="total_tax" class="oe_subtotal_footer_separator"/>-->
-                            <field name="total" class="oe_subtotal_footer_separator"/>
-                            <field name="total_commission" class="oe_subtotal_footer_separator" groups="tt_base.group_tt_tour_travel_operator"/>  <!--,tt_base.group_tt_agent_user_operator-->
-                            <field name="agent_commission" class="oe_subtotal_footer_separator" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator"/>
-                            <field name="total_nta" class="oe_subtotal_footer_separator" groups="tt_base.group_tt_tour_travel_operator"/>  <!--,tt_base.group_tt_agent_user_operator-->
-                            <!--<field name="total_sale_price" class="oe_subtotal_footer_separator"/>-->
-                        </group>
-                    </group>
-                </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids" widget="mail_followers"/>
-                    <field name="message_ids" widget="mail_thread"/>
+                <field name="state_visa" widget="statusbar" statusbar_visible="draft,confirm,validate,in_process,proceed,delivered,done"/> <!--statusbar_visible="" ,ready-->
+            </field>
+            <xpath expr="//button[@name='action_set_as_draft']" position="replace"/>
+            <xpath expr="//button[@name='action_set_as_booked']" position="replace"/>
+            <xpath expr="//button[@name='action_set_as_issued']" position="replace"/>
+            <xpath expr="//button[@name='action_check_provider_state']" position="replace"/>
+            <button name="action_cancel" position="replace">
+                <button string="Set to Draft" name="action_draft_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'cancel')]}" groups="tt_base.group_tt_tour_travel_manager"/>
+                <button string="Confirm to HO" name="action_confirm_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'draft')]}" groups="tt_base.group_tt_agent_user_operator"/>
+                <button string="Validate" name="action_validate_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'confirm')]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                <button string="To Vendor" name="action_to_vendor_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'validate')]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                <button string="Vendor Process" name="action_vendor_process_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'to_vendor')]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                <button string="In Process" name="action_in_process_visa" type="object" attrs="{'invisible': [('state_visa', 'not in', ['validate','vendor_process'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                <button string="Process to Consulate" name="action_in_process_consulate_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'payment')]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                <button string="Cancel All" name="action_cancel_visa" type="object" attrs="{'invisible': [('state_visa', 'in', ['cancel'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
+<!--                    <button string="Calc. Channel Prices" name="calc_channel_service_charge_visa" type="object"/>-->
+<!--                    <button string="Pay Now" name="action_pay_now_visa" type="object" attrs="{'invisible': [('state_visa', 'not in', ['draft','confirm', 'validate'])]}"/>-->
+<!--                    <button string="Proforma Invoice" name="action_proforma_invoice_visa" type="object"/>-->
+<!--                    <button string="Recalculate Price" name="recalculate_price" type="object"/>-->
+            </button>
+            <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                <div class="oe_button_box" name="button_box">
+                    <button name="do_print_out_visa_ho"
+                            string="HO"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-print"
+                            groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                    <button name="do_print_out_visa_cust"
+                            string="Customer"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-print"/>
+                    <button name="print_ho_invoice"
+                            class="oe_stat_button" states="issued,done"
+                            string="Print Invoice (HO)" type="object" icon="fa-print"
+                            groups="tt_base.group_tt_tour_travel_operator"/>
                 </div>
-            </form>
+            </xpath>
+            <field name="carrier_name" position="replace">
+                <field name="document_to_ho_date"/>
+                <field name="use_vendor"/>
+            </field>
+            <field name="date" position="before">
+                <field name="state" string="Status" readonly="1"/>
+                <field name="commercial_state"/>
+            </field>
+            <xpath expr="//label[@for='issued_uid']" position="before">
+                <label for="confirmed_uid" string="Confirmed"/>
+                <div>
+                    <field name="confirmed_uid" readonly="1" class="oe_inline"/> -
+                    <field name="confirmed_date" readonly="1" class="oe_inline"/>
+                </div>
+
+                <label for="validate_uid" string="Validated"/>
+                <div>
+                    <field name="validate_uid" readonly="1" class="oe_inline"/> -
+                    <field name="validate_date" readonly="1" class="oe_inline"/>
+                </div>
+            </xpath>
+            <xpath expr="//label[@for='issued_uid']" position="before">
+                <field name="to_vendor_date" readonly="1" attrs="{'invisible': [('use_vendor', '!=', True)]}"/>
+                <field name="vendor_process_date" readonly="1" attrs="{'invisible': [('use_vendor', '!=', True)]}"/>
+            </xpath>
+            <field name="sid_booked" position="replace">
+                <field name="in_process_date"/>
+                <field name="done_date"/>
+            </field>
+            <xpath expr="//group[@name='paxgroup']" position="before">
+                <group>
+                    <group>
+                        <field name="country_id" readonly="1"/>
+                        <field name="immigration_consulate" string="Consulate"/>
+                    </group>
+                    <group>
+                        <field name="departure_date" readonly="1"/>
+                    </group>
+                </group>
+            </xpath>
+            <xpath expr="//page[@name='anchor']" position="before">
+                <page string="Passengers">
+                    <field name="passenger_ids">
+                        <tree>
+                            <field name="title"/>
+                            <field name="first_name"/>
+                            <field name="last_name"/>
+                            <field name="gender"/>
+                            <field name="birth_date"/>
+                            <field name="nationality_id"/>
+                            <field name="process_status"/>
+                            <field name="state"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+            <xpath expr="//page[@name='anchor']" position="before">
+                <page string="Prices" name="prices" >
+                    <field name="sale_service_charge_ids" context="{'form_view_ref': 'tt_reservation_visa.tt_service_charge_visa_inherit_form_view'}" readonly="1">
+                        <tree>
+                            <field name="charge_code"/>
+                            <field name="charge_type"/>
+                            <field name="pax_type"/>
+                            <field name="pax_count"/>
+                            <field name="amount"/>
+                            <field name="total"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="description"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+            <field name="total_fare" position="replace"/>
+            <field name="total_tax" position="replace"/>
+            <field name="total_nta" position="replace"/>
         </field>
     </record>
 
