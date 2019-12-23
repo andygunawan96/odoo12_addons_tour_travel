@@ -55,6 +55,13 @@
             <xpath expr="//form" position="attributes">
                 <attribute name="edit">false</attribute>
             </xpath>
+            <xpath expr="//button[@name='action_cancel']" position="after">
+                <button string="Split Reservation" name="%(tt_reservation_airline.tt_split_reservation_wizard_action_view)d" type="action" groups="tt_base.group_tt_tour_travel_operator"
+                        context="{
+                        'default_res_id': id,
+                        'default_referenced_document': name,
+                   }"/>
+            </xpath>
             <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
                 <div class="oe_button_box" name="button_box">
                     <button name="print_eticket"
@@ -107,8 +114,8 @@
             </xpath>
             <xpath expr="//page[@name='anchor']" position="before">
                 <page string="Prices" name="prices">
-<!--                    <button name="calculate_service_charge" type="object" string="calc"/>-->
-<!--                    <button name="test_error" type="object" string="test_error"/>-->
+                    <!--                    <button name="calculate_service_charge" type="object" string="calc"/>-->
+                    <!--                    <button name="test_error" type="object" string="test_error"/>-->
                     <field name="sale_service_charge_ids" context="{'form_view_ref':'tt_reservation_train.tt_service_charge_train_inherit_form_view'}">
                         <tree>
                             <field name="charge_code"/>
@@ -127,34 +134,34 @@
             <xpath expr="//page[@name='anchor']" position="before">
                 <page string="Vendor" name="vendor" groups="tt_base.group_tt_tour_travel_operator">
                     <field name="provider_booking_ids"/>
-<!--                        &lt;!&ndash;<tree>&ndash;&gt;-->
-<!--                        &lt;!&ndash;<field name="pnr"/>&ndash;&gt;-->
-<!--                        &lt;!&ndash;<field name="direction"/>&ndash;&gt;-->
-<!--                        &lt;!&ndash;<field name="provider" groups="tt_base.group_tt_tour_travel_operator"/>&ndash;&gt;-->
-<!--                        &lt;!&ndash;<field name="origin"/>&ndash;&gt;-->
-<!--                        &lt;!&ndash;<field name="destination"/>&ndash;&gt;-->
-<!--                        &lt;!&ndash;<field name="departure_date"/>&ndash;&gt;-->
-<!--                        &lt;!&ndash;<field name="return_date"/>&ndash;&gt;-->
-<!--                        &lt;!&ndash;&lt;!&ndash;<field name="total"/>&ndash;&gt;&ndash;&gt;-->
-<!--                        &lt;!&ndash;<field name="state"/>&ndash;&gt;-->
-<!--                        &lt;!&ndash;</tree>&ndash;&gt;-->
-<!--                    </field>-->
+                    <!--                        &lt;!&ndash;<tree>&ndash;&gt;-->
+                    <!--                        &lt;!&ndash;<field name="pnr"/>&ndash;&gt;-->
+                    <!--                        &lt;!&ndash;<field name="direction"/>&ndash;&gt;-->
+                    <!--                        &lt;!&ndash;<field name="provider" groups="tt_base.group_tt_tour_travel_operator"/>&ndash;&gt;-->
+                    <!--                        &lt;!&ndash;<field name="origin"/>&ndash;&gt;-->
+                    <!--                        &lt;!&ndash;<field name="destination"/>&ndash;&gt;-->
+                    <!--                        &lt;!&ndash;<field name="departure_date"/>&ndash;&gt;-->
+                    <!--                        &lt;!&ndash;<field name="return_date"/>&ndash;&gt;-->
+                    <!--                        &lt;!&ndash;&lt;!&ndash;<field name="total"/>&ndash;&gt;&ndash;&gt;-->
+                    <!--                        &lt;!&ndash;<field name="state"/>&ndash;&gt;-->
+                    <!--                        &lt;!&ndash;</tree>&ndash;&gt;-->
+                    <!--                    </field>-->
                 </page>
             </xpath>
             <xpath expr="//group[@name='paxgroup']" position="after">
                 <separator string="Segment"/>
-                    <field name="segment_ids"/>
-<!--                <field name="segment_ids">-->
-<!--                    <tree>-->
-<!--                        <field name="pnr"/>-->
-<!--                        <field name="carrier_id"/>-->
-<!--                        <field name="carrier_name"/>-->
-<!--                        <field name="origin_id"/>-->
-<!--                        <field name="destination_id"/>-->
-<!--                        <field name="departure_date_fmt"/>-->
-<!--                        <field name="arrival_date_fmt"/>-->
-<!--                    </tree>-->
-<!--                </field>-->
+                <field name="segment_ids"/>
+                <!--                <field name="segment_ids">-->
+                <!--                    <tree>-->
+                <!--                        <field name="pnr"/>-->
+                <!--                        <field name="carrier_id"/>-->
+                <!--                        <field name="carrier_name"/>-->
+                <!--                        <field name="origin_id"/>-->
+                <!--                        <field name="destination_id"/>-->
+                <!--                        <field name="departure_date_fmt"/>-->
+                <!--                        <field name="arrival_date_fmt"/>-->
+                <!--                    </tree>-->
+                <!--                </field>-->
             </xpath>
         </field>
     </record>
