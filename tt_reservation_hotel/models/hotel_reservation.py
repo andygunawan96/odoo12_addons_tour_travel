@@ -132,7 +132,6 @@ class HotelReservation(models.Model):
                 total += line.sale_price * line.qty
             data.total = total
 
-    @api.multi
     def do_print_voucher(self, data, ctx=None):
         # jika panggil dari backend
         if 'order_number' not in data:
@@ -188,7 +187,6 @@ class HotelReservation(models.Model):
         hotel_ho_invoice_id = self.env.ref('tt_report_common.action_report_printout_invoice_ho_hotel')
         return hotel_ho_invoice_id.report_action(self, data=datas)
 
-    @api.multi
     def print_itinerary(self, data, ctx=None):
         # jika panggil dari backend
         if 'order_number' not in data:
