@@ -59,7 +59,9 @@ class VisaInterviewBiometrics(models.Model):
                                              related="passenger_interview_id.pricelist_id", readonly=1)
     pricelist_biometrics_id = fields.Many2one('tt.reservation.visa.pricelist', 'Pricelist',
                                               related="passenger_biometrics_id.pricelist_id", readonly=1)
-    location_id = fields.Many2one('tt.master.visa.locations')  # self.get_domain_location() [] , domain=lambda self: self.onchange_pricelist() , domain=lambda self: [('id', 'in', self.passenger_interview_id.pricelist_id.visa_location_ids.ids)]
+    # location_id = fields.Many2one('tt.master.visa.locations')  # self.get_domain_location() [] , domain=lambda self: self.onchange_pricelist() , domain=lambda self: [('id', 'in', self.passenger_interview_id.pricelist_id.visa_location_ids.ids)]
+    location_interview_id = fields.Char('Location', related="pricelist_interview_id.description")
+    location_biometrics_id = fields.Char('Location', related="pricelist_biometrics_id.description")
     datetime = fields.Datetime('Datetime')
     ho_employee = fields.Many2one('res.users', 'Employee', domain=lambda self: self.get_user_HO())
     meeting_point = fields.Char('Meeting Point')
@@ -187,14 +189,21 @@ class VisaOrderPassengers(models.Model):
 
     def action_validate(self):
         for rec in self:
-            rec.write({
-                'state': 'validate'
-            })
-            for req in self.to_requirement_ids:
+            for req in rec.to_requirement_ids:
                 if req.is_copy is True or req.is_ori is True:
                     if req.validate_HO is False:
                         raise UserError(_('You have to Validate All Passengers Documents.'))
-            rec.message_post(body='Passenger VALIDATED')
+            rec.write({
+                'state': 'validate'
+            })
+            all_validate = True
+            for psg in rec.visa_id.passenger_ids:
+                if psg.state != 'validate':
+                    all_validate = False
+            if all_validate:
+                rec.visa_id.action_validate_visa()
+            else:
+                rec.visa_id.action_partial_validate_visa()
 
     def action_re_validate(self):
         for rec in self:
@@ -212,9 +221,18 @@ class VisaOrderPassengers(models.Model):
 
     def action_cancel(self):
         for rec in self:
-            rec.write({
-                'state': 'cancel'
+            rec.visa_id.write({
+                'state': 'cancel',
+                'state_visa': 'cancel'
             })
+            for psg in rec.visa_id.passenger_ids:
+                psg.write({
+                    'state': 'cancel'
+                })
+            if rec.visa_id.state_visa in ['in_process','payment']:
+                rec.visa_id.write({
+                    'can_refund': True
+                })
             rec.message_post(body='Passenger CANCELED')
 
     def action_in_process(self):
@@ -298,7 +316,15 @@ class VisaOrderPassengers(models.Model):
                 'process_status': 'accepted',
                 'out_process_date': datetime.now()
             })
-            rec.message_post(body='Passenger REJECTED')
+            all_approve = True
+            for psg in rec.visa_id.passenger_ids:
+                if psg.state != 'accepted':
+                    all_approve = False
+            if all_approve:
+                rec.visa_id.action_approved_visa()
+            else:
+                rec.visa_id.action_partial_approved_visa()
+            rec.message_post(body='Passenger ACCEPTED')
 
     def action_to_HO(self):
         for rec in self:
