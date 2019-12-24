@@ -173,6 +173,7 @@ class TtVisa(models.Model):
         self.message_post(body='Order VALIDATED')
 
     def action_in_process_visa(self):
+        self.payment_reservation_api('visa', self.is_member, self.payment_method) #visa, member, payment_seq_id
         self.write({
             'state_visa': 'in_process',
             # 'in_process_date': datetime.now()
@@ -1497,10 +1498,18 @@ class TtVisa(models.Model):
             to_psg_ids = self._create_visa_order(passengers, passenger_ids)  # create visa order data['passenger']
             pricing = self.create_sale_service_charge_value(passengers, to_psg_ids, context, sell_visa)  # create pricing dict
 
+            voucher = ''
+            if data['voucher']:
+                voucher = data['voucher']['voucher_reference']
+
             header_val.update({
                 'country_id': self.env['res.country'].sudo().search([('name', '=', search['destination'])], limit=1).id,
                 'provider_name': self.env['tt.provider'].sudo().search([('code', '=', 'visa_rodextrip')], limit=1).name,
                 'booker_id': booker_id.id,
+                'voucher_code': voucher,
+                'is_member': data['member'],
+                'payment_method': data['seq_id'],
+                'payment_active': True,
                 'contact_title': contact[0]['title'],
                 'contact_id': contact_id.id,
                 'contact_name': contact[0]['first_name'] + ' ' + contact[0]['last_name'],
