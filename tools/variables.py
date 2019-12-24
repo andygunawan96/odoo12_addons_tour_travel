@@ -146,3 +146,11 @@ PAX_TYPE = [
 PROVIDER_TYPE = []##akan di isi saat run oleh tt_provider_type.py
 
 ADJUSTMENT_TYPE = []
+
+ACQUIRER_TYPE = [
+    ('cash', 'Cash'),
+    ('transfer', 'Transfer'),
+    ('debit', 'Debit Card'),
+    ('credit', 'Credit Card'),
+    ('va', 'Virtual Account')
+]

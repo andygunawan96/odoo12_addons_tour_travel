@@ -260,8 +260,19 @@ class TtTopUp(models.Model):
                 raise RequestException(1018,additional_message="State not confirm")
 
             top_up_obj.action_request_top_up(context) # ubah ke status cancel
+            next_cron = False
+            try:
+                d_time = self.env.ref("tt_bank_transaction.cron_auto_get_bank_transaction").nextcall - datetime.now()
+                list_d_time = str(d_time).split(':')
+                next_cron = "{} minutes {} seconds".format(int(list_d_time[1]),int(list_d_time[2]))
+            except:
+                pass
+            return ERR.get_no_error({
+                'amount':top_up_obj.total_with_fees,
+                'payment_acquirer':top_up_obj.payment_id.acquirer_id.name,
+                'next_cron': next_cron
+            })
 
-            return ERR.get_no_error({'amount':top_up_obj.total_with_fees})
         except RequestException as e:
             _logger.error(traceback.format_exc())
             return e.error_dict()
