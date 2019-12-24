@@ -1,0 +1,58 @@
+<odoo>
+    <data>
+        <record id="payment_acquirer_ho_bca" model="payment.acquirer">
+            <field name="name">Bank BCA</field>
+            <field name="provider">manual</field>
+            <field name="type">transfer</field>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="bank_id" ref="tt_base.tt_bank_id_1"/>
+            <field name="account_number">511.0150.000</field>
+            <field name="account_name">Roda Express Sukses Mandiri</field>
+            <field name="website_published" eval="True"/>
+        </record>
+
+        <record id="payment_acquirer_ho_mandiri" model="payment.acquirer">
+            <field name="name">Bank Mandiri</field>
+            <field name="provider">manual</field>
+            <field name="type">transfer</field>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="bank_id" ref="tt_base.tt_bank_id_2"/>
+            <field name="account_number">142.0015.5100.00</field>
+            <field name="account_name">Roda Express Sukses Mandiri</field>
+            <field name="website_published" eval="True"/>
+        </record>
+
+        <record id="payment_acquirer_ho_bni" model="payment.acquirer">
+            <field name="name">Bank BNI</field>
+            <field name="provider">manual</field>
+            <field name="type">transfer</field>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="bank_id" ref="tt_base.tt_bank_id_3"/>
+            <field name="account_number">021.8080.571</field>
+            <field name="account_name">Galuh Suryono Cipto Adi</field>
+            <field name="website_published" eval="True"/>
+        </record>
+
+        <record id="payment_acquirer_ho_va_bca" model="payment.acquirer">
+            <field name="name">Virtual Account BCA</field>
+            <field name="provider">manual</field>
+            <field name="type">va</field>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="bank_id" ref="tt_base.tt_bank_id_1"/>
+            <field name="account_number">511.0150.000</field>
+            <field name="account_name">Roda Express Sukses Mandiri</field>
+            <field name="website_published" eval="True"/>
+        </record>
+
+        <record id="payment_acquirer_ho_va mandiri" model="payment.acquirer">
+            <field name="name">Virtual Account Mandiri</field>
+            <field name="provider">manual</field>
+            <field name="type">va</field>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="bank_id" ref="tt_base.tt_bank_id_2"/>
+            <field name="account_number">142.0015.5100.00</field>
+            <field name="account_name">Roda Express Sukses Mandiri</field>
+            <field name="website_published" eval="True"/>
+        </record>
+    </data>
+</odoo>

@@ -29,6 +29,7 @@ Key Features
         'data/res.social.media.type.csv',
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
+        'data/payment_acquirer_ho_data.xml',
 
         'views/menu_item_base.xml',
         'views/res_country_views.xml',

@@ -119,7 +119,7 @@
                 <page string="Prices" name="prices">
                     <!--                    <button name="calculate_service_charge" type="object" string="calc"/>-->
                     <!--                    <button name="test_error" type="object" string="test_error"/>-->
-                    <field name="sale_service_charge_ids" context="{'form_view_ref':'tt_reservation_train.tt_service_charge_train_inherit_form_view'}">
+                    <field name="sale_service_charge_ids" context="{'form_view_ref':'tt_reservation_airline.tt_service_charge_airline_inherit_form_view'}">
                         <tree>
                             <field name="charge_code"/>
                             <field name="charge_type"/>

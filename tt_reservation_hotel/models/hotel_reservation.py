@@ -77,6 +77,9 @@ class HotelReservation(models.Model):
     sid_issued = fields.Char('SID Issued')
     sid_cancel = fields.Char('SID Cancel')
 
+    adjustment_ids = fields.One2many('tt.adjustment', 'res_id', 'Adjustment', readonly=True,
+                                     domain=[('res_model', '=', 'tt_reservation_hotel')])
+
     # Voucher
     # voucher_name = fields.Char('Voucher', store=True)
 

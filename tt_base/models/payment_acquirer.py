@@ -158,4 +158,5 @@ class PaymentAcquirerNumber(models.Model):
     @api.depends('number','payment_acquirer_id')
     def _compute_display_name_payment(self):
         for rec in self:
-            rec.display_name_payment = "{} - {}".format(rec.payment_acquirer_id.name,rec.number)
+            rec.display_name_payment = "{} - {}".format(rec.payment_acquirer_id and rec.payment_acquirer_id.name or '',
+                                                        rec.number and rec.number or '')

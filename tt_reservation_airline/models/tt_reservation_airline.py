@@ -41,6 +41,9 @@ class ReservationAirline(models.Model):
     split_from_resv_id = fields.Many2one('tt.reservation.airline', 'Splitted From', readonly=1)
     split_to_resv_ids = fields.One2many('tt.reservation.airline', 'split_from_resv_id', 'Splitted To', readonly=1)
 
+    adjustment_ids = fields.One2many('tt.adjustment', 'res_id', 'Adjustment', readonly=True,
+                                     domain=[('res_model', '=', 'tt_reservation_airline')])
+
     def get_form_id(self):
         return self.env.ref("tt_reservation_airline.tt_reservation_airline_form_views")
 

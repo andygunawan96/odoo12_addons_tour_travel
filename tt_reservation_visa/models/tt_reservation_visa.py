@@ -116,6 +116,9 @@ class TtVisa(models.Model):
     printout_handling_ho_id = fields.Many2one('tt.upload.center', readonly=True)
     printout_handling_customer_id = fields.Many2one('tt.upload.center', readonly=True)
 
+    adjustment_ids = fields.One2many('tt.adjustment', 'res_id', 'Adjustment', readonly=True,
+                                     domain=[('res_model', '=', 'tt_reservation_visa')])
+
     ######################################################################################################
     # STATE
     ######################################################################################################
