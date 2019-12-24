@@ -374,11 +374,13 @@ class TtReservation(models.Model):
 
     def to_dict(self):
         invoice_list = []
-        for rec in self.invoice_line_ids and self.invoice_line_ids or []:
-            invoice_list.append({
-                'name': rec.name,
-                'state': rec.state
-            })
+        if hasattr(self, 'invoice_line_ids'):
+            for rec in self.invoice_line_ids:
+                invoice_list.append({
+                    'name': rec.name,
+                    'state': rec.state
+                })
+
         res = {
             'order_number': self.name,
             'book_id': self.id,
