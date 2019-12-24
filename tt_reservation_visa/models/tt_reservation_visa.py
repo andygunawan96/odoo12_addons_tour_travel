@@ -1737,7 +1737,7 @@ class TtVisa(models.Model):
             passenger_obj = passenger_env.browse(passenger_ids[idx])
             vals = {
                 'amount': pricelist_obj.sale_price,
-                'charge_code': 'total',
+                'charge_code': 'fare',
                 'charge_type': 'TOTAL',
                 'passenger_visa_id': passenger_ids[idx],
                 'description': pricelist_obj.description,
