@@ -25,7 +25,8 @@ TT_TRANSPORT
         'views/tt_reservation_train.xml',
         'views/tt_provider_views.xml',
         'views/tt_journey_views.xml',
-        'views/tt_service_charge_views.xml'
+        'views/tt_service_charge_views.xml',
+        'views/tt_reservation_passenger_train_form_views.xml'
 
     ],
     'demo': [],

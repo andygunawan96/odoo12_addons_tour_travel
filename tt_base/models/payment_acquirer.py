@@ -1,25 +1,16 @@
 from odoo import api, fields, models, _
-from random import randint
 import json
 import traceback,logging
+from ...tools import variables
 from ...tools import ERR,util
 
 _logger = logging.getLogger(__name__)
-
-TYPE = [
-    ('cash', 'Cash'),
-    ('transfer', 'Transfer'),
-    ('debit', 'Debit Card'),
-    ('credit', 'Credit Card'),
-    ('va', 'Virtual Account')
-]
-
 
 class PaymentAcquirer(models.Model):
     _inherit = 'payment.acquirer'
 
     seq_id = fields.Char('Sequence ID', index=True, readonly=True)
-    type = fields.Selection(TYPE, 'Payment Type')
+    type = fields.Selection(variables.ACQUIRER_TYPE, 'Payment Type')
     provider_id = fields.Many2one('tt.provider', 'Provider')
     agent_id = fields.Many2one('tt.agent', 'Agent')
     bank_id = fields.Many2one('tt.bank', 'Bank')
@@ -153,3 +144,18 @@ class PaymentAcquirer(models.Model):
                     'total_amount': amount
                 })
         return values
+
+class PaymentAcquirerNumber(models.Model):
+    _name = 'payment.acquirer.number'
+    _rec_name = 'display_name_payment'
+
+    res_id = fields.Integer('Res ID')
+    res_model = fields.Char('Res Model')
+    payment_acquirer_id = fields.Many2one('payment.acquirer','Payment Acquirer')
+    number = fields.Char('Number')
+    display_name_payment = fields.Char('Display Name',compute="_compute_display_name_payment")
+
+    @api.depends('number','payment_acquirer_id')
+    def _compute_display_name_payment(self):
+        for rec in self:
+            rec.display_name_payment = "{} - {}".format(rec.payment_acquirer_id.name,rec.number)

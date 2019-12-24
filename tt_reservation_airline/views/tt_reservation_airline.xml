@@ -81,6 +81,9 @@
             </xpath>
 
             <xpath expr="//group[@name='paxgroup']" position="before">
+                <group attrs="{'invisible': [('split_from_resv_id', '=', False)]}">
+                    <field name="split_from_resv_id"/>
+                </group>
                 <separator string="Trip Information"/>
                 <group>
                     <group>
@@ -146,6 +149,9 @@
                     <!--                        &lt;!&ndash;<field name="state"/>&ndash;&gt;-->
                     <!--                        &lt;!&ndash;</tree>&ndash;&gt;-->
                     <!--                    </field>-->
+                </page>
+                <page string="Splits" name="reservation_splits" groups="tt_base.group_tt_agent_user_operator, tt_base.group_tt_tour_travel_operator" attrs="{'invisible': [('split_to_resv_ids', '=', [])]}">
+                    <field name="split_to_resv_ids"/>
                 </page>
             </xpath>
             <xpath expr="//group[@name='paxgroup']" position="after">

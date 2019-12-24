@@ -344,6 +344,39 @@ class Routes(models.Model):
             _logger.error('Error Get Schedule Update Permission API, %s' % traceback.format_exc())
             return ERR.get_error(500, additional_message='Error Get Schedule Update Permission API')
 
+    def get_fare_detail_api(self, req_data, provider_type):
+        try:
+            param = [
+                ('origin', '=', req_data['origin']),
+                ('destination', '=', req_data['destination']),
+                ('carrier_code', '=', req_data['carrier_code']),
+                ('carrier_number', '=', req_data['carrier_number']),
+                ('departure_date', '=', req_data['departure_date']),
+                ('arrival_date', '=', req_data['arrival_date']),
+                ('provider', '=', req_data['provider']),
+            ]
+            class_of_service = req_data['class_of_service']
+            segment_obj = None
+            segment_env = self.env['tt.routes.segment'].sudo()
+            for i in range(2):
+                segment_obj = segment_env.search(param, limit=1)
+                if segment_obj:
+                    break
+                param.pop()
+            if not segment_obj:
+                raise Exception('Segment Route Not Found')
+            legs = [leg.get_data() for leg in segment_obj.leg_ids]
+            fares = [fare.get_data() for fare in segment_obj.fare_ids if fare.class_of_service == class_of_service]
+            segment = segment_obj.get_data(False)
+            segment.update({
+                'legs': legs,
+                'fares': fares,
+            })
+            return ERR.get_no_error(segment)
+        except Exception as e:
+            _logger.error('Error Get Fare Detail Route API, %s' % traceback.format_exc())
+            return ERR.get_error(500, additional_message='Error Get Fare Detail Route API')
+
 
 class RoutesLeg(models.Model):
     _name = 'tt.routes.leg'

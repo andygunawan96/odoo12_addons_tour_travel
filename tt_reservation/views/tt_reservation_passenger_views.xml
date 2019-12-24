@@ -1,23 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-<!--    <record id="tt_reservation_passenger_form_view" model="ir.ui.view">-->
-<!--        <field name="name">tt.reservation.passenger.form.view</field>-->
-<!--        <field name="model">tt.reservation.passenger</field>-->
-<!--        <field name="arch" type="xml">-->
-<!--            <form>-->
-<!--                <sheet>-->
-<!--                    <group>-->
-<!--                        <field name="name"/>-->
-<!--                        <field name="title"/>-->
-<!--                        <field name="first_name"/>-->
-<!--                        <field name="last_name"/>-->
-<!--                        <field name="birth_date"/>-->
-<!--                        <field name="nationality_id"/>-->
-<!--                    </group>-->
-<!--                </sheet>-->
-<!--            </form>-->
-<!--        </field>-->
-<!--    </record>-->
+    <record id="tt_reservation_passenger_form_view" model="ir.ui.view">
+        <field name="name">tt.reservation.passenger.form.view</field>
+        <field name="model">tt.reservation.passenger</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div>
+                        <h1>
+                            <field name="title" class="oe_inline"/>
+                            <field name="name" class="oe_inline"/>
+                        </h1>
+                    </div>
+                    <group name="basic_info">
+                        <group>
+                            <field name="gender"/>
+                            <field name="birth_date"/>
+                            <field name="nationality_id"/>
+                            <field name="customer_id"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <field name="identity_type"/>
+                            <field name="identity_number"/>
+                            <field name="identity_expdate"/>
+                            <field name="identity_country_of_issued_id"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
 
     <record id="tt_reservation_passenger_tree_view" model="ir.ui.view">
         <field name="name">tt.reservation.passenger.tree.view</field>

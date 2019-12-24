@@ -96,7 +96,7 @@
                                 <field name="refund_uid" readonly="1" class="oe_inline"/> -
                                 <field name="refund_date" readonly="1" class="oe_inline"/>
                             </div>
-                            <field name="sid_booked" groups="tt_base_group.tt_tour_and_travel_operator"/>
+                            <field name="sid_booked" groups="tt_base.group_tt_tour_travel_operator"/>
                         </group>
                     </group>
 

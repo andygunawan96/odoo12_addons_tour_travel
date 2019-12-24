@@ -4,7 +4,6 @@
         <record id="payment_acquirer_form_view" model="ir.ui.view">
             <field name="name">payment.acquirer.form.view</field>
             <field name="model">payment.acquirer</field>
-
             <field name="arch" type="xml">
                 <form string="Provider">
                     <sheet>
@@ -14,7 +13,7 @@
                                     class="oe_stat_button"
                                     type="object" icon="fa-globe">
                                 <field name="website_published" widget="boolean_button"
-                                    options='{"terminology": {"string_true": "Published", "hover_false": "Publish"}}'/>
+                                       options='{"terminology": {"string_true": "Published", "hover_false": "Publish"}}'/>
                             </button>
                             <button class="oe_stat_button" name="237" type="action" icon="fa-money" string="Payments">
                             </button>
@@ -86,6 +85,35 @@
             </field>
         </record>
 
+        <record id="payment_acquirer_number_form_views" model="ir.ui.view">
+            <field name="name">payment.acquirer.number.form.views</field>
+            <field name="model">payment.acquirer.number</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <h1>
+                            <field name="display_name_payment"/>
+                        </h1>
+                        <group>
+                            <field name="number"/>
+                            <field name="payment_acquirer_id"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="payment_acquirer_number_tree_views" model="ir.ui.view">
+            <field name="name">payment.acquirer.number.tree.views</field>
+            <field name="model">payment.acquirer.number</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="number"/>
+                    <field name="payment_acquirer_id"/>
+                </tree>
+            </field>
+        </record>
+
         <record id="payment_acquirer_action_view" model="ir.actions.act_window">
             <field name="name">Payment Acquirer</field>
             <field name="view_type">form</field>
@@ -106,6 +134,19 @@
             </field>
         </record>
 
+        <record id="payment_acquirer_number_action_view" model="ir.actions.act_window">
+            <field name="name">Payment Acquirer Number</field>
+            <field name="view_type">form</field>
+            <field name="res_model">payment.acquirer.number</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">
+                {
+                'form_view_ref': 'tt_base.payment_acquirer_number_form_views',
+                'tree_view_ref': 'tt_base.payment_acquirer_number_tree_views'
+                }
+            </field>
+        </record>
+
         <menuitem id="top_menu_accounting"
                   parent="tt_base.main_transaction"
                   groups="tt_base.group_tt_tour_travel_operator,account.group_account_user,tt_base.group_tt_agent_user_operator"
@@ -118,6 +159,13 @@
                   name="Payment Acquirer"
                   sequence="10"
                   action="payment_acquirer_action_view"/>
+
+        <menuitem id="sub_menu_tour_travel_payment_acquirer_number_action_view"
+                  parent="tt_base.top_menu_accounting"
+                  groups="tt_base.group_tt_tour_travel_operator"
+                  name="Payment Acquirer Number"
+                  sequence="10"
+                  action="payment_acquirer_number_action_view"/>
 
     </data>
 </odoo>
