@@ -14,7 +14,7 @@
                     <button string="Re Validate Document" name="action_re_validate" type="object" attrs="{'invisible': [('state', 'not in', ['in_process','re_confirm','confirm_payment'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
                     <button string="Re Confirm Document" name="action_re_confirm" type="object" attrs="{'invisible': [('state', '!=', 're_validate')]}" groups="tt_base.group_tt_agent_user_operator"/>
                     <button string="Payment" name="action_add_payment" type="object" attrs="{'invisible': [('state', 'not in', ['in_process','re_confirm','confirm_payment'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <button string="Confirm Payment" name="action_confirm_payment" type="object" attrs="{'invisible': [('state', 'not in', ['add_payment',])]}" groups="account.group_account_invoice"/>
+                    <button string="Confirm Payment" name="action_confirm_payment" type="object" attrs="{'invisible': [('state', 'not in', ['add_payment',])]}" groups="account.group_account_invoice, tt_base.group_tt_accounting_operator, tt_base.group_tt_ticketing_operator"/>
                     <button string="Waiting Call" name="action_waiting" type="object" attrs="{'invisible': [('state', 'not in', ['in_process2','proceed'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
                     <button string="Proceed" name="action_proceed" type="object" attrs="{'invisible': [('state', '!=', 'waiting')]}" groups="tt_base.group_tt_tour_travel_operator"/>
                     <button string="Reject" name="action_reject" type="object" attrs="{'invisible': [('state', '!=', 'proceed')]}" groups="tt_base.group_tt_tour_travel_operator"/>
@@ -23,10 +23,10 @@
                     <button string="Send to Agent" name="action_to_agent" type="object" attrs="{'invisible': ['|',('state', 'not in', ['rejected','accepted']), ('use_vendor', '!=', False)]}" groups="tt_base.group_tt_tour_travel_operator"/>  <!---->
                     <button string="Send to Agent" name="action_to_agent" type="object" attrs="{'invisible': ['|',('state', '!=', 'to_HO'), ('use_vendor', '!=', True)]}" groups="tt_base.group_tt_tour_travel_operator"/>  <!---->
 <!--                    <button string="Ready" name="action_ready" type="object" attrs="{'invisible': [('state', 'not in', ['to_agent'])]}" groups="tt_base.group_tt_agent_user_operator"/>-->
-                    <button string="Done" name="action_done" type="object" attrs="{'invisible': [('state', 'not in', ['to_agent'])]}" groups="tt_base.group_tt_agent_user_operator"/>
+                    <button string="Done" name="action_done" type="object" attrs="{'invisible': [('state', 'not in', ['to_agent'])]}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                     <button string="Sync Requirements" name="action_sync_requirements" type="object" groups="tt_base.group_tt_tour_travel_operator"/>
                     <button string="Sync Handling" name="action_sync_handling" type="object" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <button string="Cancel" name="action_cancel" type="object" attrs="{'invisible': [('state', 'not in', ['draft','confirm','validate','re_validate','re_confirm'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <button string="Cancel" name="action_cancel" type="object" attrs="{'invisible': [('state', 'not in', ['draft','confirm','validate','re_validate','re_confirm','in_process','add_payment','confirm_payment'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
                 </header>
                 <sheet>
                     <group string="Passenger Info">
@@ -76,14 +76,15 @@
                                 <field name="datetime"/>
                                 <field name="ho_employee"/>
                                 <field name="meeting_point"/>
-                                <field name="location_id" domain="[('pricelist_ids', 'in', pricelist_interview_id), ('location_type', '=', 'interview')]"/>
+<!--                                <field name="location_id" domain="[('pricelist_ids', 'in', pricelist_interview_id), ('location_type', '=', 'interview')]"/>-->
+                                <field name="location_interview_id"/>
                                 <field name="description"/>
                             </tree>
                             <form>
                                 <group>
                                     <group>
                                         <field name="passenger_interview_id"/>
-                                        <field name="location_id"/>
+                                        <field name="location_interview_id"/>
                                         <field name="ho_employee"/>
                                     </group>
                                     <group>
@@ -106,14 +107,15 @@
                                 <field name="datetime"/>
                                 <field name="ho_employee"/>
                                 <field name="meeting_point"/>
-                                <field name="location_id" domain="[('pricelist_ids', 'in', pricelist_biometrics_id), ('location_type', '=', 'biometrics')]"/>
+<!--                                <field name="location_id" domain="[('pricelist_ids', 'in', pricelist_biometrics_id), ('location_type', '=', 'biometrics')]"/>-->
+                                <field name="location_biometrics_id"/>
                                 <field name="description"/>
                             </tree>
                             <form>
                                 <group>
                                     <group>
                                         <field name="passenger_biometrics_id"/>
-                                        <field name="location_id"/>
+                                        <field name="location_biometrics_id"/>
                                         <field name="ho_employee"/>
                                     </group>
                                     <group>
