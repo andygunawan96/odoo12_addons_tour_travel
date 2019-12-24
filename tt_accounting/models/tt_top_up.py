@@ -267,6 +267,7 @@ class TtTopUp(models.Model):
                 next_cron = "{} minutes {} seconds".format(int(list_d_time[1]),int(list_d_time[2][:2]))
             except Exception as e :
                 _logger.error("{}\n{}".format("Top Up Request Next Cron Call Error",traceback.format_exc()))
+
             return ERR.get_no_error({
                 'amount':top_up_obj.total_with_fees,
                 'payment_acquirer':top_up_obj.payment_id.acquirer_id.name,
