@@ -97,6 +97,7 @@
                         <group>
                             <field name="number"/>
                             <field name="payment_acquirer_id"/>
+                            <field name="state"/>
                         </group>
                     </sheet>
                 </form>
@@ -110,6 +111,7 @@
                 <tree>
                     <field name="number"/>
                     <field name="payment_acquirer_id"/>
+                    <field name="state"/>
                 </tree>
             </field>
         </record>

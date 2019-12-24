@@ -1,5 +1,5 @@
 from odoo import api, fields, models, _
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from odoo.exceptions import UserError
 import logging
 import traceback
@@ -16,14 +16,19 @@ _logger = logging.getLogger(__name__)
 STATE_VISA = [
     ('draft', 'Request'),
     ('confirm', 'Confirm to HO'),
+    ('partial_validate', 'Partial Validate'),
     ('validate', 'Validated by HO'),
     ('to_vendor', 'Send to Vendor'),
     ('vendor_process', 'Proceed by Vendor'),
     ('cancel', 'Canceled'),
-    ('payment', 'Payment'),
     ('in_process', 'In Process'),
+    ('payment', 'Payment'),
+    ('refund', 'Refund'),
+    ('process_by_consulate', 'Process by Consulate'),
     ('partial_proceed', 'Partial Proceed'),
     ('proceed', 'Proceed'),
+    ('partial_approve', 'Partial Approve'),
+    ('approve', 'Approve'),
     ('delivered', 'Delivered'),
     ('ready', 'Sent'),
     ('done', 'Done'),
@@ -53,8 +58,9 @@ class TtVisa(models.Model):
                                         cancel = request cancelled
                                         to_vendor = Documents sent to Vendor
                                         vendor_process = Documents proceed by Vendor
-                                        in_process = process to consulate/immigration
+                                        in_process = in process by HO
                                         payment = payment to embassy
+                                        process_by_consulate = process to consulate/immigration
                                         partial proceed = partial proceed by consulate/immigration
                                         proceed = proceed by consulate/immigration
                                         delivered = Documents sent to agent
@@ -119,6 +125,7 @@ class TtVisa(models.Model):
     adjustment_ids = fields.One2many('tt.adjustment', 'res_id', 'Adjustment', readonly=True,
                                      domain=[('res_model', '=', 'tt_reservation_visa')])
 
+    can_refund = fields.Boolean('Can Refund', default=False, readonly=True)
     ######################################################################################################
     # STATE
     ######################################################################################################
@@ -158,6 +165,12 @@ class TtVisa(models.Model):
         })
         self.message_post(body='Order CONFIRMED')
 
+    def action_partial_validate_visa(self):
+        self.write({
+            'state_visa': 'proceed'
+        })
+        self.message_post(body='Order PROCEED')
+
     def action_validate_visa(self):
         is_validated = True
         for rec in self.passenger_ids:
@@ -176,6 +189,7 @@ class TtVisa(models.Model):
         self.message_post(body='Order VALIDATED')
 
     def action_in_process_visa(self):
+        self.payment_reservation_api('visa', self.is_member, self.payment_method) #visa, member, payment_seq_id
         self.write({
             'state_visa': 'in_process',
             # 'in_process_date': datetime.now()
@@ -229,19 +243,43 @@ class TtVisa(models.Model):
             raise UserError(
                 _('You have to pay all the passengers first.'))
 
+        estimate_days = 0
+        for psg in self.passenger_ids:
+            if estimate_days < psg.pricelist_id.duration:
+                estimate_days = psg.pricelist_id.duration
+
         self.write({
-            'state_visa': 'in_process',
-            'in_process_date': datetime.now()
+            'state_visa': 'process_by_consulate',
+            'in_process_date': datetime.now(),
+            'estimate_date': date.today() + timedelta(days=estimate_days)
         })
         self.message_post(body='Order IN PROCESS TO CONSULATE')
         for rec in self.passenger_ids:
             rec.action_in_process2()
+
+    def action_proceed_visa(self):
+        self.write({
+            'state_visa': 'proceed'
+        })
+        self.message_post(body='Order PROCEED')
 
     def action_partial_proceed_visa(self):
         self.write({
             'state_visa': 'partial_proceed'
         })
         self.message_post(body='Order PARTIAL PROCEED')
+
+    def action_approved_visa(self):
+        self.write({
+            'state_visa': 'approved'
+        })
+        self.message_post(body='Order APPROVED')
+
+    def action_partial_approved_visa(self):
+        self.write({
+            'state_visa': 'partial_approved'
+        })
+        self.message_post(body='Order PARTIAL APPROVED')
 
     def action_delivered_visa(self):
         """ Expenses wajib di isi untuk mencatat pengeluaran HO """
@@ -258,16 +296,10 @@ class TtVisa(models.Model):
         })
         self.message_post(body='Order DELIVERED')
 
-    def action_proceed_visa(self):
-        self.write({
-            'state_visa': 'proceed'
-        })
-        self.message_post(body='Order PROCEED')
-
     def action_cancel_visa(self):
         # cek state visa.
         # jika state : in_process, partial_proceed, proceed, delivered, ready, done, create reverse ledger
-        if self.state_visa not in ['in_process', 'partial_proceed', 'proceed', 'delivered', 'ready', 'done']:
+        if self.state_visa not in ['process_by_consulate', 'partial_proceed', 'proceed', 'delivered', 'ready', 'done']:
             for rec in self.ledger_ids:
                 rec.reverse_ledger()
                 # self._create_anti_ho_ledger_visa()
@@ -282,6 +314,8 @@ class TtVisa(models.Model):
         # unlink semua vendor
         for rec3 in self.vendor_ids:
             rec3.sudo().unlink()
+        if self.state_visa in ['in_process', 'payment']:
+            self.can_refund = True
         self.write({
             'state_visa': 'cancel',
         })
@@ -303,6 +337,9 @@ class TtVisa(models.Model):
     def action_expired(self):
         super(TtVisa, self).action_expired()
         self.state_visa = 'expired'
+
+    def action_refund_visa(self):
+        raise UserError(_('Not implemented.'))
 
     def payment_visa_api(self, req, context):
         return self.payment_reservation_api('visa', req, context)
@@ -1177,7 +1214,7 @@ class TtVisa(models.Model):
     param_search = {
         "destination": "Japan",
         "consulate": "Surabaya",
-        "departure_date": "2019-10-04",
+        "departure_date": "2019-04-10",
         "provider": "visa_rodextrip"
     }
 
@@ -1492,7 +1529,8 @@ class TtVisa(models.Model):
 
             user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
 
-            header_val = self._visa_header_normalization(search, sell_visa)
+            # header_val = self._visa_header_normalization(search, sell_visa)
+            header_val = {}
 
             booker_id = self.create_booker_api(booker, context)
             contact_id = self.create_contact_api(contact[0], booker_id, context)
@@ -1500,10 +1538,19 @@ class TtVisa(models.Model):
             to_psg_ids = self._create_visa_order(passengers, passenger_ids)  # create visa order data['passenger']
             pricing = self.create_sale_service_charge_value(passengers, to_psg_ids, context, sell_visa)  # create pricing dict
 
+            voucher = ''
+            if data['voucher']:
+                voucher = data['voucher']['voucher_reference']
+
             header_val.update({
+                'departure_date': datetime.strptime(search['departure_date'], '%Y-%m-%d').strftime('%d/%m/%Y'),
                 'country_id': self.env['res.country'].sudo().search([('name', '=', search['destination'])], limit=1).id,
                 'provider_name': self.env['tt.provider'].sudo().search([('code', '=', 'visa_rodextrip')], limit=1).name,
                 'booker_id': booker_id.id,
+                'voucher_code': voucher,
+                'is_member': data['member'],
+                'payment_method': data['seq_id'],
+                'payment_active': True,
                 'contact_title': contact[0]['title'],
                 'contact_id': contact_id.id,
                 'contact_name': contact[0]['first_name'] + ' ' + contact[0]['last_name'],
@@ -1564,7 +1611,7 @@ class TtVisa(models.Model):
                 'pnr': book_obj.name,
                 'provider_id': provider.id,
                 'country_id': country.id,
-                'departure_date': search['departure_date']
+                'departure_date': datetime.strptime(search['departure_date'], '%Y-%m-%d').strftime('%d/%m/%Y')
             }
             provider_visa_obj = book_obj.env['tt.provider.visa'].sudo().create(vals)
 
@@ -1701,7 +1748,7 @@ class TtVisa(models.Model):
             passenger_obj = passenger_env.browse(passenger_ids[idx])
             vals = {
                 'amount': pricelist_obj.sale_price,
-                'charge_code': 'total',
+                'charge_code': 'fare',
                 'charge_type': 'TOTAL',
                 'passenger_visa_id': passenger_ids[idx],
                 'description': pricelist_obj.description,
@@ -1747,7 +1794,7 @@ class TtVisa(models.Model):
             })
             vals_fixed = {
                 'commission_agent_id': self.env.ref('tt_base.rodex_ho').id,
-                'amount': pricelist_obj.cost_price - pricelist_obj.nta_price,
+                'amount': -(pricelist_obj.cost_price - pricelist_obj.nta_price),
                 'charge_code': 'fixed',
                 'charge_type': 'RAC',
                 'passenger_visa_id': passenger_ids[idx],
@@ -1755,7 +1802,7 @@ class TtVisa(models.Model):
                 'pax_type': pricelist_obj.pax_type,
                 'currency_id': pricelist_obj.currency_id.id,
                 'pax_count': 1,
-                'total': pricelist_obj.sale_price,
+                'total': -(pricelist_obj.cost_price - pricelist_obj.nta_price),
                 'pricelist_id': pricelist_id,
                 'sequence': passenger_obj.sequence,
                 # 'passenger_visa_ids': []

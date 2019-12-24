@@ -121,8 +121,8 @@
                         <page string="Social Media">
                             <field name="social_media_ids"/>
                         </page>
-                        <page string="Virtual Account">
-                            <field name="virtual_ids"/>
+                        <page string="Payment Acquirer Number">
+                            <field name="payment_acq_ids"/>
                         </page>
                     </notebook>
                 </sheet>

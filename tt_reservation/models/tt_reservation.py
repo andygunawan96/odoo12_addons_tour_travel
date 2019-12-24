@@ -3,6 +3,7 @@ from ...tools import variables, util, ERR
 import json
 from ...tools.ERR import RequestException
 import logging, traceback
+from datetime import datetime
 
 _logger = logging.getLogger(__name__)
 
@@ -16,6 +17,10 @@ class TtReservation(models.Model):
     pnr = fields.Char('PNR', readonly=True, states={'draft': [('readonly', False)]})
     provider_name = fields.Char('List of Provider', readonly=True)
     carrier_name = fields.Char('List of Carriers', readonly=True)
+    voucher_code = fields.Char('Voucher', readonly=True)
+    payment_method = fields.Char('Payment Method', readonly=True)
+    is_member = fields.Boolean('Payment member', readonly=True)
+    va_number = fields.Char('VA Number', readonly=True)
 
     date = fields.Datetime('Booking Date', default=lambda self: fields.Datetime.now(), readonly=True, states={'draft': [('readonly', False)]})
     expired_date = fields.Datetime('Expired Date', readonly=True)  # fixme terpakai?
@@ -374,11 +379,13 @@ class TtReservation(models.Model):
 
     def to_dict(self):
         invoice_list = []
-        for rec in self.invoice_line_ids and self.invoice_line_ids or []:
-            invoice_list.append({
-                'name': rec.name,
-                'state': rec.state
-            })
+        if hasattr(self, 'invoice_line_ids'):
+            for rec in self.invoice_line_ids:
+                invoice_list.append({
+                    'name': rec.name,
+                    'state': rec.state
+                })
+
         res = {
             'order_number': self.name,
             'book_id': self.id,
@@ -493,10 +500,19 @@ class TtReservation(models.Model):
                 payment_method = req.get('payment_method', 'full')
 
                 agent_check_amount = book_obj.get_nta_amount(payment_method)
-
+                voucher = ''
                 ### voucher agent here##
                 if req.get('voucher'):
                     voucher = req['voucher']
+                if voucher == '' and book_obj.voucher_code:
+                    voucher = {
+                        'voucher_reference': book_obj.voucher_code,
+                        'date': datetime.now().strftime('%Y-%m-%d'),
+                        'provider_type': book_obj._name.split('.')[len(book_obj._name.split('.'))-1],
+                        'provider': book_obj.provider_name.split(','),
+                    }
+
+                if voucher:
                     voucher.update({
                         'order_number': book_obj.name
                     })
