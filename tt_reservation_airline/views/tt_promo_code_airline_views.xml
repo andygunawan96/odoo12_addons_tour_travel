@@ -1,0 +1,67 @@
+<odoo>
+    <record id="tt_promo_code_airline_form_view" model="ir.ui.view">
+        <field name="name">tt.promo.code.airline.form.view</field>
+        <field name="model">tt.promo.code.airline</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="carrier_code"/>
+                            <field name="promo_code"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_promo_code_airline_tree_view" model="ir.ui.view">
+        <field name="name">tt.promo.code.airline.tree.view</field>
+        <field name="model">tt.promo.code.airline</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="carrier_code"/>
+                <field name="promo_code"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_promo_code_airline_action" model="ir.actions.act_window">
+        <field name="name">Promo Code Airline</field>
+        <field name="res_model">tt.promo.code.airline</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="tt_reservation_airline_inherit_form_views" model="ir.ui.view">
+        <field name="name">tt.reservation.airline.inherit.form.view</field>
+        <field name="model">tt.reservation.airline</field>
+        <field name="inherit_id" ref="tt_reservation_airline.tt_reservation_airline_form_views"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='anchor']" position="before">
+                <page string="Promo Codes">
+                    <field name="promo_code_ids">
+                        <tree>
+                            <field name="carrier_code"/>
+                            <field name="promo_code"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="tt_provider_airline_inherit_form_views" model="ir.ui.view">
+        <field name="name">tt.provider.airline.inherit.form.view</field>
+        <field name="model">tt.provider.airline</field>
+        <field name="inherit_id" ref="tt_reservation_airline.tt_reservation_airline_provider_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group" position="after">
+                <separator string="Promotion Codes"/>
+                <field name="promo_code_ids"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
