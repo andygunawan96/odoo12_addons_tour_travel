@@ -189,7 +189,25 @@ class TtVisa(models.Model):
         self.message_post(body='Order VALIDATED')
 
     def action_in_process_visa(self):
-        self.payment_reservation_api('visa', self.is_member, self.payment_method) #visa, member, payment_seq_id
+        data = {
+            'order_number': self.name,
+            'voucher': {
+                'voucher_reference': self.voucher_code,
+                'date': datetime.now().strftime('%Y-%m-%d'),
+                'provider_type': 'visa',
+                'provider': self.provider_name,
+
+            },
+            'member': self.is_member,
+            'acquirer_seq_id': self.payment_method
+        }
+        ctx = {
+            'co_agent_type_id': self.agent_type_id.id,
+            'co_agent_id': self.agent_id.id,
+            'co_uid': self.booked_uid.id
+        }
+
+        self.payment_reservation_api('visa', data, ctx) #visa, member, payment_seq_id
         self.write({
             'state_visa': 'in_process',
             # 'in_process_date': datetime.now()
@@ -1261,9 +1279,9 @@ class TtVisa(models.Model):
                             sale['RAC'].update({
                                 'currency': ssc.currency_id.name
                             })
-                    elif ssc.charge_code == 'total':
+                    elif ssc.charge_code == 'fare':
                         sale['TOTAL'] = {
-                            'charge_code': ssc.charge_code,
+                            'charge_code': 'total',
                             'amount': ssc.amount
                         }
                         if ssc['currency_id']:

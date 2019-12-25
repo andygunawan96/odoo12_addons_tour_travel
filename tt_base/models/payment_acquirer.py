@@ -18,7 +18,7 @@ class PaymentAcquirer(models.Model):
     account_name = fields.Char('Account Name')
     cust_fee = fields.Float('Customer Fee')
     bank_fee = fields.Float('Bank Fee')
-    
+
     @api.model
     def create(self, vals_list):
         vals_list['seq_id'] = self.env['ir.sequence'].next_by_code('pay.acq')
@@ -64,6 +64,35 @@ class PaymentAcquirer(models.Model):
             'return_url': '/payment/' + str(self.type) + '/feedback?acq_id=' + str(self.id)
         }
 
+    def acquirer_format_VA(self, acq, amount,unique):
+        # NB:  CASH /payment/cash/feedback?acq_id=41
+        # NB:  BNI /payment/tt_transfer/feedback?acq_id=68
+        # NB:  BCA /payment/tt_transfer/feedback?acq_id=27
+        # NB:  MANDIRI /payment/tt_transfer/feedback?acq_id=28
+        payment_acq = self.env['payment.acquirer'].browse(acq.payment_acquirer_id)
+        fee, uniq = self.compute_fee(unique)
+        return {
+            'seq_id': payment_acq.id.seq_id,
+            'name': payment_acq.id.name,
+            'account_name': acq.payment_acquirer_id.name or '-',
+            'account_number': acq.number or '',
+            'bank': {
+                'name': payment_acq.id.bank_id.name or '',
+                'code': payment_acq.id.bank_id.code or '',
+            },
+            'type': payment_acq.id.type,
+            'provider_id': payment_acq.id.provider_id.id or '',
+            'currency': 'IDR',
+            'price_component': {
+                'amount': amount,
+                'fee': fee,
+                'unique_amount': uniq,
+            },
+            'total_amount': float(amount) + fee + uniq,
+            'image': payment_acq.id.bank_id.image_id and payment_acq.id.bank_id.image_id.url or '',
+            'return_url': '/payment/' + str(payment_acq.id.type) + '/feedback?acq_id=' + str(payment_acq.id.id)
+        }
+
     def button_test_acquirer(self):
         print(self.env['ir.sequence'].next_by_code('tt.payment.unique.amount'))
         # self.env['tt.cron.log'].create_cron_log_folder()
@@ -105,13 +134,11 @@ class PaymentAcquirer(models.Model):
                     values[acq.type] = []
                 values[acq.type].append(acq.acquirer_format(amount,unique))
             if req['transaction_type'] == 'top_up':
-                dom = [('website_published', '=', True), ('company_id', '=', self.env.user.company_id.id)]
-                dom.append(('agent_id', '=', context['co_agent_id']))
-                for acq in self.sudo().search(dom):
-                    if not values.get(acq.type):
-                        values[acq.type] = []
-                    if acq.type == 'va':
-                        values[acq.type].append(acq.acquirer_format(amount, unique))
+                for acq in agent_obj.payment_acq_ids:
+                    if not values.get('va'):
+                        values['va'] = []
+                    if agent_obj.payment_acq_ids[0].state == 'open':
+                        values['va'].append(self.acquirer_format_VA(acq, amount, unique))
             res = {}
             res['non_member'] = values
             res['member'] = {}
@@ -151,12 +178,13 @@ class PaymentAcquirerNumber(models.Model):
 
     res_id = fields.Integer('Res ID')
     res_model = fields.Char('Res Model')
+    agent_id = fields.Many2one('tt.agent', 'Agent', readonly=True)
     payment_acquirer_id = fields.Many2one('payment.acquirer','Payment Acquirer')
     number = fields.Char('Number')
+    state = fields.Selection([('open', 'Open'), ('close', 'Closed')], 'Payment Type')
     display_name_payment = fields.Char('Display Name',compute="_compute_display_name_payment")
 
     @api.depends('number','payment_acquirer_id')
     def _compute_display_name_payment(self):
         for rec in self:
-            rec.display_name_payment = "{} - {}".format(rec.payment_acquirer_id and rec.payment_acquirer_id.name or '',
-                                                        rec.number and rec.number or '')
+            rec.display_name_payment = "{} - {}".format(rec.payment_acquirer_id.name,rec.number)
