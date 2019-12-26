@@ -34,7 +34,7 @@
         </record>
 
         <record id="payment_acquirer_ho_va_bca" model="payment.acquirer">
-            <field name="name">Virtual Account BCA</field>
+            <field name="name">Virtual Account BANK BCA</field>
             <field name="provider">manual</field>
             <field name="type">va</field>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
@@ -44,8 +44,8 @@
             <field name="website_published" eval="True"/>
         </record>
 
-        <record id="payment_acquirer_ho_va mandiri" model="payment.acquirer">
-            <field name="name">Virtual Account Mandiri</field>
+        <record id="payment_acquirer_ho_va_mandiri" model="payment.acquirer">
+            <field name="name">Virtual Account BANK MANDIRI</field>
             <field name="provider">manual</field>
             <field name="type">va</field>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
