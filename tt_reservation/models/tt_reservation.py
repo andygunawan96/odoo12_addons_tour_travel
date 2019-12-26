@@ -64,7 +64,11 @@ class TtReservation(models.Model):
 
     provider_type_id = fields.Many2one('tt.provider.type','Provider Type',readonly=True)
 
-    adjustment_ids = fields.One2many('tt.adjustment','res_id','Adjustment',readonly=True)  # domain=[('res_model','=',lambda self: self._name)]
+    def _get_adjustment_domain(self):
+        return [('res_model', '=', self._name)]
+    #
+    adjustment_ids = fields.One2many('tt.adjustment','res_id','Adjustment',readonly=True,domain=_get_adjustment_domain)  # domain=[('res_model','=',lambda self: self._name)]
+    # adjustment_ids = fields.One2many('tt.adjustment','res_id','Adjustment',readonly=True)  # domain=[('res_model','=',lambda self: self._name)]
     refund_ids = fields.One2many('tt.refund','res_id','Refund',readonly=True)  # domain=[('res_model','=',lambda self: self._name)]
     error_msg = fields.Char('Error Message')
     notes = fields.Text('Notes for IT',default='')

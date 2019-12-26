@@ -150,6 +150,7 @@
                 <field name="name"/>
                 <field name="used_amount"/>
                 <field name="total_amount"/>
+                <field name="acquirer_id"/>
                 <field name="agent_id"/>
                 <field name="state"/>
                 <field name="currency_id" invisible="1"/>

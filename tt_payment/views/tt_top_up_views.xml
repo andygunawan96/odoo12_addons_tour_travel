@@ -8,9 +8,22 @@
             <xpath expr="//group[@name='payment']" position="after">
                 <group>
                     <field name="payment_id"/>
+                    <field name="acquirer_id"/>
                     <field name="validated_amount"/>
                 </group>
             </xpath>
         </field>
     </record>
+
+    <record id="tt_top_up_tree_inh_view" model="ir.ui.view">
+        <field name="name">tt.top.up.tree.inh.view</field>
+        <field name="model">tt.top.up</field>
+        <field name="inherit_id" ref="tt_accounting.tt_top_up_tree_view_page"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='total']" position="after">
+                    <field name="acquirer_id"/>
+            </xpath>
+        </field>
+    </record>
+
 </odoo>

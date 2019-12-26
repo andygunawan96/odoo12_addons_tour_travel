@@ -162,9 +162,6 @@ class IssuedOffline(models.Model):
 
     acquirer_id = fields.Many2one('payment.acquirer', 'Payment Acquirer', readonly=True)
 
-    adjustment_ids = fields.One2many('tt.adjustment', 'res_id', 'Adjustment', readonly=True,
-                                     domain=[('res_model', '=', 'tt_reservation_offline')])
-
     # display_mobile = fields.Char('Contact Person for Urgent Situation',
     #                              readonly=True, states={'draft': [('readonly', False)]})
     # refund_id = fields.Many2one('tt.refund', 'Refund')

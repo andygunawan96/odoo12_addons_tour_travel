@@ -34,9 +34,6 @@ class TtReservationTrain(models.Model):
     provider_type_id = fields.Many2one('tt.provider.type','Provider Type',
                                     default= lambda self: self.env.ref('tt_reservation_train.tt_provider_type_train'))
 
-    adjustment_ids = fields.One2many('tt.adjustment', 'res_id', 'Adjustment', readonly=True,
-                                     domain=[('res_model', '=', 'tt_reservation_train')])
-
     @api.multi
     def action_set_as_draft(self):
         for rec in self:
@@ -79,6 +76,14 @@ class TtReservationTrain(models.Model):
     def action_issued_train(self,co_uid,customer_parent_id,acquirer_id = False):
         self.write({
             'state': 'issued',
+            'issued_date': datetime.now(),
+            'issued_uid': co_uid,
+            'customer_parent_id': customer_parent_id
+        })
+
+    def action_partial_issued_api_train(self,co_uid,customer_parent_id):
+        self.write({
+            'state': 'partial_issued',
             'issued_date': datetime.now(),
             'issued_uid': co_uid,
             'customer_parent_id': customer_parent_id
@@ -218,7 +223,8 @@ class TtReservationTrain(models.Model):
                     any_provider_changed = True
 
             for rec in book_obj.provider_booking_ids:
-                pnr_list.append(rec.pnr)
+                if rec.pnr:
+                    pnr_list.append(rec.pnr)
 
             if any_provider_changed:
                 book_obj.check_provider_state(context,pnr_list,hold_date,req)
@@ -280,20 +286,7 @@ class TtReservationTrain(models.Model):
             self.action_booked_api_train(context, pnr_list, hold_date)
         elif all(rec.state == 'issued' for rec in self.provider_booking_ids):
             # issued
-            ##get payment acquirer
-            if req.get('acquirer_seq_id'):
-                acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', req['seq_id'])])
-                if not acquirer_id:
-                    raise RequestException(1017)
-            # ini harusnya ada tetapi di comment karena rusak ketika force issued from button di tt.provider.airlines
-            else:
-                # raise RequestException(1017)
-                acquirer_id = self.agent_id.default_acquirer_id
-
-            if req.get('member'):
-                customer_parent_id = acquirer_id.agent_id.id
-            else:
-                customer_parent_id = self.agent_id.customer_parent_walkin_id.id
+            acquirer_id,customer_parent_id = self.get_acquirer_n_c_parent_id(req)
 
             if req.get('force_issued'):
                 self.calculate_service_charge()
@@ -317,7 +310,8 @@ class TtReservationTrain(models.Model):
             })
         elif any(rec.state == 'issued' for rec in self.provider_booking_ids):
             # partial issued
-            self.action_partial_issued_api_train()
+            acquirer_id, customer_parent_id = self.get_acquirer_n_c_parent_id(req)
+            self.action_partial_issued_api_train(context['co_uid'],customer_parent_id)
         elif any(rec.state == 'booked' for rec in self.provider_booking_ids):
             # partial booked
             self.calculate_service_charge()
@@ -408,6 +402,25 @@ class TtReservationTrain(models.Model):
         name['provider'] = list(set(name['provider']))
         name['carrier'] = list(set(name['carrier']))
         return res,name
+
+    def get_acquirer_n_c_parent_id(self,req):
+        acquirer_id = False
+        if req.get('member'):
+            customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', req['acquirer_seq_id'])],
+                                                                       limit=1).id
+        ##cash / transfer
+        else:
+            ##get payment acquirer
+            if req.get('acquirer_seq_id'):
+                acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', req['acquirer_seq_id'])], limit=1)
+                if not acquirer_id:
+                    raise RequestException(1017)
+            # ini harusnya ada tetapi di comment karena rusak ketika force issued from button di tt.provider.airlines
+            else:
+                # raise RequestException(1017)
+                acquirer_id = self.agent_id.default_acquirer_id
+            customer_parent_id = self.agent_id.customer_parent_walkin_id.id  ##fpo
+        return acquirer_id,customer_parent_id
 
     def update_pnr_booked(self,provider_obj,provider,context):
 

@@ -48,9 +48,6 @@ class ReservationTour(models.Model):
     payment_method = fields.Selection(PAYMENT_METHOD, 'Payment Method')
     installment_invoice_ids = fields.One2many('tt.installment.invoice', 'booking_id', 'Installments')
 
-    adjustment_ids = fields.One2many('tt.adjustment', 'res_id', 'Adjustment', readonly=True,
-                                     domain=[('res_model', '=', 'tt_reservation_tour')])
-
     def check_provider_state(self,context,pnr_list=[],hold_date=False,req={}):
         if all(rec.state == 'booked' for rec in self.provider_booking_ids):
             # booked
