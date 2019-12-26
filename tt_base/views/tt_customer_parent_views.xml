@@ -20,6 +20,7 @@
                         <group name="ctp_info">
                             <field name="customer_parent_type_id"/>
                             <field name="parent_agent_id"/>
+                            <field name="tax_percentage"/>
                             <field name="actual_balance"/>
                             <field name="balance"/>
                             <field name="credit_limit"/>
