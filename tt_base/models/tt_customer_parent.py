@@ -30,6 +30,7 @@ class TtCustomerParent(models.Model):
     payment_acquirer_ids = fields.Char(string="Payment Acquirer", required=False, )  # payment_acquirer
     agent_bank_detail_ids = fields.One2many('agent.bank.detail', 'agent_id', 'Agent Bank')  # agent_bank_detail
     tac = fields.Text('Terms and Conditions', readonly=True)
+    tax_percentage = fields.Float('Tax (%)', default=1)
     active = fields.Boolean('Active', default='True')
 
     def _compute_unprocessed_amount(self):

@@ -28,7 +28,11 @@ class TtCustomerParentInh(models.Model):
     billing_cycle_ids = fields.Many2many('tt.billing.cycle', 'customer_parent_billing_cycle_rel', 'customer_parent_id', 'billing_cycle_id',
                                          string='Billing Cycle', help='Days of week to billing process')
 
-    billing_due_date = fields.Integer('Billing due date (days)', help='0 = immediate payment, 1 = 1 day after billing creation')
+    billing_due_date = fields.Integer('Billing Due Date (days)', help='0 = immediate payment, 1 = 1 day after billing creation')
+
+    billing_due_date_ids = fields.Many2many('tt.billing.cycle', 'customer_parent_billing_due_date_rel', 'customer_parent_id',
+                                         'billing_cycle_id', domain=[('day', '<', 0)],
+                                         string='Billing Due Date', help='Days of week to billing due date')
 
     @api.model
     def create(self, vals_list):
@@ -67,6 +71,12 @@ class TtCustomerParentInh(models.Model):
         date_param = date.today()
         print(self._check_billing_cycle(date_param))
 
+    def get_billing_due_date(self, bill_due_date, bill_day_list):
+        final_due_date = date.today() + timedelta(days=bill_due_date)
+        while final_due_date.strftime('%A') not in bill_day_list:
+            final_due_date += timedelta(days=1)
+        return final_due_date
+
     def cron_create_billing_statement(self):
         try:
             ##search for COR billed today
@@ -95,11 +105,15 @@ class TtCustomerParentInh(models.Model):
                     invoice_list.append([4,inv.id])
                     ##inv.bill
 
+                bill_day_list = []
+                for rec in cor.billing_due_date_ids:
+                    bill_day_list.append(str(rec.name))
+
                 # create BS
                 if invoice_list:
                     new_bs_obj = self.env['tt.billing.statement'].create({
                         'date': datetime.now(),
-                        'due_date': date.today() + timedelta(days=cor.billing_due_date),
+                        'due_date': self.get_billing_due_date(cor.billing_due_date, bill_day_list),
                         'agent_id': cor.parent_agent_id.id,
                         'customer_parent_id': cor.id,
                         'invoice_ids': invoice_list
