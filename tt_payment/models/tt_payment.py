@@ -1,6 +1,6 @@
 from odoo import fields, api, models
 from odoo import exceptions
-import datetime
+from datetime import datetime
 
 
 class PaymentTransaction(models.Model):
@@ -145,7 +145,7 @@ class PaymentTransaction(models.Model):
     def action_validate_from_button(self):
         if self.state != 'confirm':
            raise exceptions.UserError('Can only validate [Confirmed] state Payment.')
-        if self.reference and self.payment_date:
+        if self.reference:
             if self.top_up_id:
                 if ({self.env.ref('tt_base.group_tt_tour_travel_operator').id,
                       self.env.ref('tt_base.group_tt_accounting_operator').id}.intersection(set(self.env.user.groups_id.ids))):
@@ -153,14 +153,14 @@ class PaymentTransaction(models.Model):
                     self.write({
                         'state': 'validated',
                         'validate_uid': self.env.user.id,
-                        'validate_date': datetime.datetime.now()
+                        'validate_date': datetime.now()
                     })
                 else:
                     raise exceptions.UserError('No permission to validate Top Up.')
             else:
                 self.state = 'validated'
         else:
-            raise exceptions.UserError('Please write down the payment reference and payment date.')
+            raise exceptions.UserError('Please write down the payment reference.')
 
     def action_approve_from_button(self):
         if self.state != 'validated':
@@ -169,14 +169,19 @@ class PaymentTransaction(models.Model):
             if ({self.env.ref('tt_base.group_tt_tour_travel_operator').id,
                  self.env.ref('tt_base.group_tt_accounting_operator').id}.intersection(
                 set(self.env.user.groups_id.ids))):
-                if self.top_up_id.total_amout != self.real_total_amount and datetime.datetime.now().day == self.create_date.day:
+                if self.top_up_id.total != self.real_total_amount and datetime.now().day == self.create_date.day:
                     raise exceptions.UserError('Cannot change, have to wait 1 day.')
                 self.top_up_id.action_approve_top_up()
-                self.write({
+                approve_values = {
                     'state': 'approved',
                     'validate_uid': self.env.user.id,
-                    'validate_date': datetime.datetime.now()
-                })
+                    'validate_date': datetime.now()
+                }
+                if not self.payment_date:
+                    approve_values.update({
+                        'payment_date': datetime.now()
+                    })
+                self.write(approve_values)
             else:
                 raise exceptions.UserError('No permission to approve Top Up.')
         else:
@@ -192,7 +197,7 @@ class PaymentTransaction(models.Model):
         self.write({
             'state': 'cancel',
             'cancel_uid': context.get('co_uid'),
-            'cancel_date': datetime.datetime.now()
+            'cancel_date': datetime.now()
         })
 
     def action_reject_from_button(self):
