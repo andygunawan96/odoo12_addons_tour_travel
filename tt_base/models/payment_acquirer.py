@@ -27,10 +27,10 @@ class PaymentAcquirer(models.Model):
     def generate_unique_amount(self):
         return int(self.env['ir.sequence'].next_by_code('tt.payment.unique.amount'))
 
-    def compute_fee(self,amount):
+    def compute_fee(self,amount,unique):
         fee = uniq = 0
-        # if self.type == 'transfer':
-        #     uniq = unique
+        if self.type == 'transfer':
+            uniq = unique
         # elif self.type != 'cash':
         #     # TODO perhitungan per acquirer (Charge dari agent brapa, charge dari rodex brpa)
         #     fee = 5000
@@ -51,7 +51,7 @@ class PaymentAcquirer(models.Model):
         # NB:  BNI /payment/tt_transfer/feedback?acq_id=68
         # NB:  BCA /payment/tt_transfer/feedback?acq_id=27
         # NB:  MANDIRI /payment/tt_transfer/feedback?acq_id=28
-        loss_or_profit,fee, uniq = self.compute_fee(amount)
+        loss_or_profit,fee, uniq = self.compute_fee(amount,unique)
         return {
             'seq_id': self.seq_id,
             'name': self.name,
@@ -80,7 +80,7 @@ class PaymentAcquirer(models.Model):
         # NB:  BCA /payment/tt_transfer/feedback?acq_id=27
         # NB:  MANDIRI /payment/tt_transfer/feedback?acq_id=28
         payment_acq = self.env['payment.acquirer'].browse(acq.payment_acquirer_id)
-        loss_or_profit,fee, uniq = self.compute_fee(amount)
+        loss_or_profit,fee, uniq = self.compute_fee(amount,unique)
         return {
             'seq_id': payment_acq.id.seq_id,
             'name': payment_acq.id.name,
