@@ -13,13 +13,22 @@ class AgentReportRecapReservation(models.Model):
 
     @staticmethod
     def _select():
-        return """rsv.id, rsv.name as order_number, rsv.issued_date as issued_date, rsv.pnr, rsv.adult, rsv.child,
-        rsv.infant, rsv.total as grand_total, rsv.total_commission, rsv.total_nta, rsv.provider_name, rsv.create_date,
-        rsv.state, agent.name as agent_name, agent.email as agent_email,
-        provider_type.name as provider_type,
+        return """
+        rsv.id, rsv.name as order_number, rsv.issued_date as issued_date, rsv.adult, rsv.child, rsv.infant, rsv.pnr,
+        rsv.total as grand_total, rsv.total_commission, rsv.total_nta, rsv.provider_name, rsv.create_date, rsv.state,  
+        provider_type.name as provider_type, agent.name as agent_name, agent.email as agent_email,
+        currency.name as currency_name, 
         agent_type.name as agent_type_name,
-        currency.name as currency_name,
-        ledger.debit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger.transaction_type as ledger_transaction_type
+        ledger.debit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, 
+        ledger.transaction_type as ledger_transaction_type
+        """
+
+    @staticmethod
+    def _select_join_service_charge():
+        return """
+        rsv.id, rsv.name as order_number, rsv.pnr, rsv.total as grand_total, rsv.total_commission, rsv.total_nta, rsv.state,
+        booking_ids.id as booking_id, booking_ids.pnr as booking_pnr, booking_ids.state as booking_state,
+        booking_service_charge.total as booking_charge_total, booking_service_charge.charge_type as booking_charge_type
         """
 
     @staticmethod
@@ -54,7 +63,40 @@ class AgentReportRecapReservation(models.Model):
         return query
 
     @staticmethod
+    def _from_join_service_charge(provider_type):
+        query = """tt_reservation_""" + provider_type + """ rsv """
+        # query += """LEFT JOIN tt_provider_""" + provider_type + """ booking_ids """
+        query += """
+        LEFT JOIN tt_provider_type provider_type ON provider_type.id = rsv.provider_type_id
+        LEFT JOIN tt_provider_""" + provider_type + """ booking_ids ON booking_ids.booking_id = rsv.id
+        LEFT JOIN tt_service_charge booking_service_charge ON booking_service_charge.provider_""" + provider_type + """_booking_id = booking_ids.id
+        """
+        return query
+
+    @staticmethod
     def _where(date_from, date_to, agent_id, provider_type, state):
+        where = """rsv.create_date >= '%s' and rsv.create_date <= '%s'""" % (date_from, date_to)
+        # if state == 'failed':
+        #     where += """ AND rsv.state IN ('fail_booking', 'fail_issue')"""
+        if state == 'issued':
+            where += """ AND rsv.state IN ('partial_issued', 'issued')"""
+        elif state == 'booked':
+            where += """ AND rsv.state IN ('partial_booked', 'booked')"""
+        elif state == 'expired':
+            where += """ AND rsv.state IN ('cancel2')"""
+        elif state == 'issue-expired':
+            where += """ AND rsv.state IN ('partial_issued', 'issued') OR rsv.state IN ('cancel2')"""
+        elif state == 'others':
+            where += """ AND rsv.state IN ('draft')"""
+        if agent_id:
+            where += """ AND rsv.agent_id = %s""" % agent_id
+        if provider_type and provider_type != 'all':
+            where += """ AND provider_type.code = '%s' """ % provider_type
+        # where += """ AND ledger.transaction_type = 3"""
+        return where
+
+    @staticmethod
+    def _where_join_service_charge(date_from, date_to, agent_id, provider_type, state):
         where = """rsv.create_date >= '%s' and rsv.create_date <= '%s'""" % (date_from, date_to)
         # if state == 'failed':
         #     where += """ AND rsv.state IN ('fail_booking', 'fail_issue')"""
@@ -95,12 +137,19 @@ class AgentReportRecapReservation(models.Model):
 
     @staticmethod
     def _group_by():
-        return """ """
+        # return 'rsv.name, rsv.create_date, rsv.state, rsv.provider_name, agent.name, tpt.id, agent_type.id , rsv.pnr , rsv.id , ssc.id , agent.id '
+        # return 'rsv.id , ssc.id, agent.id, agent_type.id , tpt.id '
+        return """booking_ids.id """
 
     @staticmethod
     def _order_by():
         return """
         rsv.create_date, rsv.name 
+        """
+    @staticmethod
+    def _order_by_join_service_charge():
+        return """
+        rsv.create_date, rsv.name
         """
 
     def _lines(self, date_from, date_to, agent_id, provider_type, state):
@@ -111,16 +160,30 @@ class AgentReportRecapReservation(models.Model):
         query += 'FROM ' + self._from(provider_type)
 
         # WHERE
-        if provider_type == 'offline':
-            query += 'WHERE ' + self._where_offline(date_from, date_to, agent_id, provider_type, state)
-        else:
-            query += 'WHERE ' + self._where(date_from, date_to, agent_id, provider_type, state)
+        query += 'WHERE ' + self._where(date_from, date_to, agent_id, provider_type, state)
 
         # GROUP BY & ORDER BY
         # query += 'GROUP BY ' + self._group_by()
 
         # 'GROUP BY' + self._group_by() + \
-        # query += 'ORDER BY ' + self._order_by()
+        query += 'ORDER BY ' + self._order_by()
+
+        self.env.cr.execute(query)
+        _logger.info(query)
+        return self.env.cr.dictfetchall()
+
+    def _lines_join_service_charge(self, date_from, date_to, agent_id, provider_type, state):
+        # SELECT
+        query = 'SELECT ' + self._select_join_service_charge()
+
+        # FROM
+        query += 'FROM ' + self._from_join_service_charge(provider_type)
+
+        # WHERE
+        query += 'WHERE ' + self._where_join_service_charge(date_from, date_to, agent_id, provider_type, state)
+
+        # ORDER BY
+        query += 'ORDER BY ' + self._order_by_join_service_charge()
 
         self.env.cr.execute(query)
         _logger.info(query)
@@ -194,6 +257,18 @@ class AgentReportRecapReservation(models.Model):
                 lines.append(line)
         return lines
 
+    def _get_lines_data_join_service_charge(self, date_from, date_to, agent_id, provider_type, state):
+        lines = []
+        if provider_type != 'all':
+            lines = self._lines_join_service_charge(date_from, date_to, agent_id, provider_type, state)
+        else:
+            provider_types = variables.PROVIDER_TYPE
+            for provider_type in provider_types:
+                report_lines = self._lines_join_service_charge(date_from, date_to, agent_id, provider_type, state)
+                for j in report_lines:
+                    lines.append(j)
+        return lines
+
     def _get_lines_data_search(self, date_from, date_to, agent_id, provider_type, state):
         lines = []
         if provider_type != 'all':
@@ -241,10 +316,12 @@ class AgentReportRecapReservation(models.Model):
         provider_type = data_form['provider_type']
         # lines = self._get_lines_data_search(date_from, date_to, agent_id, provider_type, state)
         lines = self._get_lines_data(date_from, date_to, agent_id, provider_type, state)
+        second_lines = self._get_lines_data_join_service_charge(date_from, date_to, agent_id, provider_type, state)
         self._report_title(data_form)
 
         return {
             'lines': lines,
+            'second_lines': second_lines,
             'data_form': data_form
         }
 
