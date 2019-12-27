@@ -5,8 +5,8 @@ STATE_OFFLINE = [
     ('draft', 'Draft'),
     ('confirm', 'Confirm'),
     ('sent', 'Sent'),
-    ('paid', 'Validate'),
-    ('posted', 'Done'),
+    ('validate', 'Validate'),
+    ('done', 'Done'),
     ('refund', 'Refund'),
     ('expired', 'Expired'),
     ('cancel', 'Canceled')

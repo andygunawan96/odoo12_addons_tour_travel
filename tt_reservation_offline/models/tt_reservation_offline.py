@@ -473,9 +473,10 @@ class IssuedOffline(models.Model):
                                                           rec.ho_final_amount, 0)
                 vals = self.env['tt.ledger'].prepare_vals_for_resv(self, pnr, vals)
                 vals.update({
-                    'pnr': pnr,
+                    'pnr': self.pnr,
                     'provider_type_id': self.offline_provider_type,
                     'display_provider_name': self.provider_name,
+                    'agent_id': self.env.ref('tt_base.rodex_ho').id
                 })
                 new_aml = rec.env['tt.ledger'].create(vals)
             else:
@@ -488,9 +489,10 @@ class IssuedOffline(models.Model):
                                                           0, abs(rec.ho_final_amount))
                 vals = self.env['tt.ledger'].prepare_vals_for_resv(self, pnr, vals)
                 vals.update({
-                    'pnr': pnr,
+                    'pnr': self.pnr,
                     'provider_type_id': self.offline_provider_type,
                     'display_provider_name': self.provider_name,
+                    'agent_id': self.env.ref('tt_base.rodex_ho').id
                 })
                 new_aml = rec.env['tt.ledger'].create(vals)
 

@@ -26,7 +26,7 @@
                     <button string="Done" name="action_done" type="object" attrs="{'invisible': [('state', 'not in', ['to_agent'])]}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                     <button string="Sync Requirements" name="action_sync_requirements" type="object" groups="tt_base.group_tt_tour_travel_operator"/>
                     <button string="Sync Handling" name="action_sync_handling" type="object" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <button string="Cancel" name="action_cancel" type="object" attrs="{'invisible': [('state', 'not in', ['draft','confirm','validate','re_validate','re_confirm','in_process','add_payment','confirm_payment'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <button string="Cancel" name="action_cancel_button" type="object" attrs="{'invisible': [('state', 'not in', ['draft','confirm','validate','re_validate','re_confirm','in_process','add_payment','confirm_payment'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
                 </header>
                 <sheet>
                     <group string="Passenger Info">
@@ -73,7 +73,7 @@
                         <field name="interview_ids" attrs="{'invisible': [('interview', '=', False)], 'readonly': [('state', 'not in', ['in_process', 'waiting'])]}">
                             <tree editable="bottom">
                                 <field name="pricelist_interview_id" invisible="1"/>
-                                <field name="datetime"/>
+                                <field name="datetime" required="1"/>
                                 <field name="ho_employee"/>
                                 <field name="meeting_point"/>
 <!--                                <field name="location_id" domain="[('pricelist_ids', 'in', pricelist_interview_id), ('location_type', '=', 'interview')]"/>-->
@@ -89,7 +89,7 @@
                                     </group>
                                     <group>
                                         <field name="pricelist_interview_id"/>
-                                        <field name="datetime"/>
+                                        <field name="datetime" required="1"/>
                                         <field name="meeting_point"/>
                                     </group>
                                 </group>
@@ -104,7 +104,7 @@
                         <field name="biometrics_ids" attrs="{'invisible': [('biometrics', '=', False)], 'readonly': [('state', 'not in', ['in_process', 'waiting'])]}">
                             <tree editable="bottom">
                                 <field name="pricelist_biometrics_id" invisible="1"/>
-                                <field name="datetime"/>
+                                <field name="datetime" required="1"/>
                                 <field name="ho_employee"/>
                                 <field name="meeting_point"/>
 <!--                                <field name="location_id" domain="[('pricelist_ids', 'in', pricelist_biometrics_id), ('location_type', '=', 'biometrics')]"/>-->
@@ -120,7 +120,7 @@
                                     </group>
                                     <group>
                                         <field name="pricelist_biometrics_id"/>
-                                        <field name="datetime"/>
+                                        <field name="datetime" required="1"/>
                                         <field name="meeting_point"/>
                                     </group>
                                 </group>

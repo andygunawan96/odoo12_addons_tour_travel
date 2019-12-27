@@ -38,7 +38,7 @@ class PaymentTransaction(models.Model):
 
     payment_image_ids = fields.Many2many('tt.upload.center','rel_test_image','payment_id','image_id','Image IDs')
 
-    adjustment_ids = fields.One2many('tt.adjustment','res_id','Adjustment',domain=['res_model','=','tt.payment'])
+    adjustment_ids = fields.One2many('tt.adjustment','res_id','Adjustment',domain=[('res_model','=','tt.payment')])
 
     def unlink_image(self):
         self.payment_image_id.unlink()
@@ -67,11 +67,11 @@ class PaymentTransaction(models.Model):
             ho_id = self.env.ref('tt_base.rodex_ho').id
             return [('agent_id','=', ho_id )]
 
-    # @api.onchange('customer_parent_id')
-    # def _onchange_domain_customer_parent_id(self):
-    #     return {'domain': {
-    #         'acquirer_id': self._get_acquirer_domain()
-    #     }}
+    @api.onchange('customer_parent_id')
+    def _onchange_domain_customer_parent_id(self):
+        return {'domain': {
+            'acquirer_id': self._get_acquirer_domain()
+        }}
 
 
     # Tambahan
@@ -97,7 +97,7 @@ class PaymentTransaction(models.Model):
     # # 6. Tambahkan Payment Acquirer metode pembayaran e
 
     def _compute_fee_payment(self):
-        pass
+        self.fee = 0
 
     def test_set_as_draft(self):
         self.write({

@@ -34,6 +34,7 @@ class PaymentAcquirer(models.Model):
         # elif self.type != 'cash':
         #     # TODO perhitungan per acquirer (Charge dari agent brapa, charge dari rodex brpa)
         #     fee = 5000
+        amount = int(amount)
         cust_fee = 0
         bank_fee = 0
         if self.cust_fee:
