@@ -54,14 +54,6 @@ class AgentReportRecapReservationXls(models.TransientModel):
         sheet.write('R9', 'Grand Total', style.table_head_center)
         sheet.merge_range('S9:T9', 'Keterangan', style.table_head_center)
 
-        # sheet.write('B9', 'Date', style.table_head_center)
-        # sheet.write('C9', 'Order Number', style.table_head_center)
-        # sheet.write('D9', 'Agent', style.table_head_center)
-        # sheet.write('E9', 'Agent Type', style.table_head_center)
-        # sheet.write('F9', 'Provider', style.table_head_center)
-        # sheet.write('G9', 'Total', style.table_head_center)
-        # sheet.write('H9', 'State', style.table_head_center)
-        # sheet.write('I9', 'Provider Type', style.table_head_center)
 
         # ====== SET WIDTH AND HEIGHT ==========
         sheet.set_row(0, row_height)  # set_row(row, height) -> row 0-4 (1-5)

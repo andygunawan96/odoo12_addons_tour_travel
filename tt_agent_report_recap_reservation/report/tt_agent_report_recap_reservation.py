@@ -31,21 +31,6 @@ class AgentReportRecapReservation(models.Model):
         booking_service_charge.total as booking_charge_total, booking_service_charge.charge_type as booking_charge_type
         """
 
-        # return """rsv.id, rsv.name as order_number, rsv.issued_date as issued_date, rsv.pnr, rsv.adult, rsv.child,
-        # rsv.infant, rsv.total as grand_total, rsv.total_commission, rsv.total_nta, rsv.provider_name, rsv.create_date,
-        # rsv.state, agent.name as agent_name, agent.email as agent_email,
-        # provider_type.name as provider_type,
-        # agent_type.name as agent_type_name,
-        # currency.name as currency_name,
-        # ledger.debit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger.transaction_type as ledger_transaction_type
-        # """
-
-        # return """rsv.name as order_number, rsv.create_date,
-        # agent.name agent_name, tpt.name as provider_type, agent_type.name agent_type, rsv.pnr,
-        # SUM(ssc.total) total, rsv.provider_name provider, rsv.state
-        # """
-        # return """* """
-
     @staticmethod
     def _from(provider_type):
         def selected_field(provider_type):
@@ -75,10 +60,6 @@ class AgentReportRecapReservation(models.Model):
         LEFT JOIN tt_ledger ledger ON ledger.res_model = rsv.res_model AND ledger.res_id = rsv.id
         LEFT JOIN tt_agent ledger_agent ON ledger_agent.id = ledger.agent_id
         """
-        # query += """ LEFT JOIN tt_service_charge ssc ON rsv.id = ssc.%s
-        # LEFT JOIN tt_agent agent ON agent.id = rsv.agent_id
-        # LEFT JOIN tt_agent_type agent_type ON agent_type.id = agent.agent_type_id
-        # LEFT JOIN tt_provider_type tpt ON tpt.id = rsv.provider_type_id """ % (selected_field(provider_type), )
         return query
 
     @staticmethod
