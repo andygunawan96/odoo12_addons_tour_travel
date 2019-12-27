@@ -119,6 +119,7 @@ class PricingAgent(models.Model):
         """ kurangi input amount dengan fee amount. masukkan fee amount ke dalam service charge HOC """
         if price_obj.fee_amount != 0:
             vals = {
+                'commission_agent_id': ho_agent.id,
                 'agent_id': ho_agent.id,
                 'agent_name': ho_agent.name,
                 'agent_type_id': ho_agent.agent_type_id.id,
