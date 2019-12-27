@@ -98,6 +98,12 @@ class TtProviderVisa(models.Model):
     def action_expired(self):
         self.state = 'cancel2'
 
+    def action_cancel(self):
+        self.state = 'cancel'
+
+    def action_booked(self):
+        self.state = 'booked'
+
     def action_refund(self):
         self.state = 'refund'
         self.booking_id.check_provider_state({'co_uid': self.env.user.id})

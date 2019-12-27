@@ -16,7 +16,7 @@
                 <t t-foreach="price_lines[doc.id]" t-as="price">
                     <t t-if="price">
                         <tr style="border-bottom: 1px solid lightgray">
-                            <td style="border-right: 1px solid lightgray"><t t-esc="price['pax_type']"/></td>
+                            <td style="text-align:center; border-right: 1px solid lightgray"><t t-esc="price['pax_type']"/></td>
                             <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['fare']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
                             <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['tax']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
                             <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['qty']"/></td>

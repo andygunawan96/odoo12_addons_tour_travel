@@ -219,6 +219,9 @@ class VisaOrderPassengers(models.Model):
             })
             rec.message_post(body='Passenger RE CONFIRM')
 
+    def action_cancel_button(self):
+        self.visa_id.action_cancel_visa()
+
     def action_cancel(self):
         for rec in self:
             rec.visa_id.write({
@@ -272,6 +275,12 @@ class VisaOrderPassengers(models.Model):
             rec.write({
                 'state': 'waiting',
             })
+            is_proceed = False
+            for psg in rec.visa_id.passenger_ids:
+                if psg.state == 'proceed':
+                    is_proceed = True
+            if is_proceed:
+                rec.visa_id.action_partial_proceed_visa()
             rec.message_post(body='Passenger WAITING')
 
     def action_proceed(self):

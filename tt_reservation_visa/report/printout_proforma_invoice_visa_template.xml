@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="external_layout">
+    <template id="external_layout_visa">
         <div class="container">
             <div class="article" style="font-family: Times New Roman, Georgia, Serif; font-size: 16px;">
                 <t t-call="tt_reservation_visa.external_layout_header"/>
@@ -48,7 +48,7 @@
                 <div class="row">
                     <div class="col-6">
                         <div style="margin-top: 5px;">
-                            <span style="color: white"><img t-att-src="'/tt_report_common/static/images/24-hours-phone-service.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
+                            <span style="color: white"><img t-att-src="'/tt_report_common/static/images/call-answer.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
                                 <t t-if="doc.agent_id.phone_ids">
                                     <span style="color: white; font-size: 14px" t-field="doc.agent_id.phone_ids[0].calling_code"/> <span style="color: white; font-size: 14px" t-field="doc.agent_id.phone_ids[0].calling_number"/>
                                 </t>
@@ -141,7 +141,7 @@
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
                 <div class="page">
-                    <t t-call="tt_reservation_visa.external_layout">
+                    <t t-call="tt_reservation_visa.external_layout_visa">
                         <br/>
                         <div style="margin: 0 20px">
                             <t t-call="tt_reservation_visa.agent_invoice_content_view"/>

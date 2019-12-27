@@ -29,7 +29,7 @@
                         <div class="row">
                             <div class="col-6">
                                 <div style="margin-top: 5px;">
-                                    <span style="color: white"><img t-att-src="'/tt_reservation_offline/static/images/24-hours-phone-service.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/> <span style="color: white; font-size: 14px">031 - 5662000</span></span>
+                                    <span style="color: white"><img t-att-src="'/tt_reservation_offline/static/images/call_answer.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/> <span style="color: white; font-size: 14px">031 - 5662000</span></span>
                                 </div>
                                 <div style="margin-top: 5px;">
                                     <span style="font-size: 10px; color: white"><img t-att-src="'/tt_reservation_offline/static/images/mail.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/> <span style="color: white; font-size: 9px">reservasi@rodextravel.tours</span></span>

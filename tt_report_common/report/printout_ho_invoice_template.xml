@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="external_layout">
+    <template id="external_layout_ho">
         <div class="container">
             <div class="article" style="margin: 0px !important; padding: 0px !important">
                 <t t-call="tt_report_common.external_layout_header_ho"/>
@@ -18,7 +18,12 @@
     <template id="external_layout_header_ho">
         <div class="row" style="height:100px;">
             <div class="col-4" style="margin-left: 30px">
-                <img t-if="doc.agent_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(doc.agent_id.logo)" height="200" border="1" width="300" style="max-height:100px; max-width:165px; margin-bottom: 20px"/><br/>
+                <img t-if="doc.agent_id.logo">
+                    <t t-att-src="'data:image/png;base64,%s' % to_text(doc.agent_id.logo)" height="200" border="1" width="300" style="max-height:100px; max-width:165px; margin-bottom: 20px"/><br/>
+                </img>
+                <img t-else="">
+                    <t t-att-src="'/tt_report_common/static/images/tors_logo.png'" height="200" border="1" width="300" style="max-height:100px; max-width:165px; margin-bottom: 20px"/><br/>
+                </img>
             </div>
             <div class="col-2">
 
@@ -300,7 +305,7 @@
                             <div class="row">
                                 <div class="col-6">
                                     <div style="margin-top: 5px;">
-                                        <span style="color: white"><img t-att-src="'/tt_report_common/static/images/24-hours-phone-service.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
+                                        <span style="color: white"><img t-att-src="'/tt_report_common/static/images/call-answer.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
                                             <t t-if="doc['agent_id'].phone_ids">
                                                 <span style="color: white; font-size: 14px" t-field="doc['agent_id'].phone_ids[0].calling_code"/> <span style="color: white; font-size: 14px" t-field="doc['agent_id'].phone_ids[0].calling_number"/>
                                             </t>
@@ -309,7 +314,7 @@
                                     </div>
                                     <div style="margin-top: 5px;">
                                         <span style="color: white"><img t-att-src="'/tt_report_common/static/images/whatsapp.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
-                                            <t t-if="doc['agent_id'].social_media_ids.filtered(lambda x: x.type_id.name == 'Whatsapp')">
+                                            <t t-if="doc['agent_id'].social_media_ids.filtered(lambda x: x.type_id.name == 'WhatsApps')">
                                                 <span style="color: white; font-size: 14px" t-field="doc['agent_id'].social_media_ids.filtered(lambda x: x.type_id.name == 'Whatsapp')[0].name"/>
                                             </t>
                                             <t t-else=""><span style="color: white; font-size: 14px">-</span></t>
@@ -360,7 +365,7 @@
                             <div class="row">
                                 <div class="col-6">
                                     <div style="margin-top: 5px;">
-                                        <span style="color: white"><img t-att-src="'/tt_report_common/static/images/24-hours-phone-service.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
+                                        <span style="color: white"><img t-att-src="'/tt_report_common/static/images/call-answer.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
                                             <t t-if="doc.agent_id.phone_ids">
                                                 <span style="color: white; font-size: 14px" t-field="doc.agent_id.phone_ids[0].calling_code"/> <span style="color: white; font-size: 14px" t-field="doc.agent_id.phone_ids[0].calling_number"/>
                                             </t>
@@ -369,7 +374,7 @@
                                     </div>
                                     <div style="margin-top: 5px;">
                                         <span style="color: white"><img t-att-src="'/tt_report_common/static/images/whatsapp.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
-                                            <t t-if="doc.agent_id.social_media_ids.filtered(lambda x: x.type_id.name == 'Whatsapp')">
+                                        <t t-if="doc.agent_id.social_media_ids.filtered(lambda x: x.type_id.name == 'WhatsApps')">
                                                 <span style="color: white; font-size: 14px" t-field="doc.agent_id.social_media_ids.filtered(lambda x: x.type_id.name == 'Whatsapp')[0].name"/>
                                             </t>
                                             <t t-else=""><span style="color: white; font-size: 14px">-</span></t>
@@ -411,7 +416,7 @@
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
                 <div class="page">
-                    <t t-call="tt_report_common.external_layout">
+                    <t t-call="tt_report_common.external_layout_ho">
                         <br/>
                         <div style="margin: 0 20px">
                             <t t-call="tt_report_common.ho_invoice_content_view"/>

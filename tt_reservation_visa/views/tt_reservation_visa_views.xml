@@ -57,6 +57,7 @@
         <field name="arch" type="xml">
             <field name="state" position="replace">
                 <field name="state" invisible="1"/>
+                <field name="commercial_state" invisible="1"/>
                 <field name="can_refund" invisible="1"/>
                 <field name="state_visa" widget="statusbar" statusbar_visible="draft,confirm,validate,in_process,process_by_consulate,proceed,delivered,done"/> <!--statusbar_visible="" ,ready-->
             </field>
@@ -66,9 +67,9 @@
             <xpath expr="//button[@name='action_check_provider_state']" position="replace"/>
             <xpath expr="//button[@name='%(tt_accounting.tt_adjustment_wizard_action_view)d']" position="replace"/>
             <button name="action_cancel" position="replace">
-                <button string="Set to Draft" name="action_draft_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'cancel')]}" groups="tt_base.group_tt_tour_travel_manager"/>
+                <button string="Set to Draft" name="action_draft_visa" type="object" attrs="{'invisible': ['|',('state_visa', '!=', 'cancel'), ('commercial_state', '=', 'Paid')]}" groups="tt_base.group_tt_tour_travel_manager"/>
                 <button string="Confirm to HO" name="action_confirm_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'draft')]}" groups="tt_base.group_tt_agent_user_operator"/>
-                <button string="Validate" name="action_validate_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'confirm')]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                <button string="Validate" name="action_validate_visa" type="object" attrs="{'invisible': [('state_visa', 'not in', ['confirm','partial_validate'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
                 <button string="To Vendor" name="action_to_vendor_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'validate')]}" groups="tt_base.group_tt_tour_travel_operator"/>
                 <button string="Vendor Process" name="action_vendor_process_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'to_vendor')]}" groups="tt_base.group_tt_tour_travel_operator"/>
                 <button string="In Process" name="action_in_process_visa" type="object" attrs="{'invisible': [('state_visa', 'not in', ['validate','vendor_process'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
@@ -144,7 +145,7 @@
             <xpath expr="//page[@name='anchor']" position="before">
                 <page string="Passengers">
                     <field name="passenger_ids">
-                        <tree>
+                        <tree create="false">
                             <field name="title"/>
                             <field name="first_name"/>
                             <field name="last_name"/>
@@ -175,12 +176,19 @@
             </xpath>
             <xpath expr="//page[@name='anchor']" position="before">
                 <page string="Vendor" name="vendor" groups="tt_base.group_tt_tour_travel_operator">
-                    <field name="provider_booking_ids"/>
+                    <field name="provider_booking_ids">
+                        <tree create="false">
+                            <field name="provider_id"/>
+                            <field name="pnr"/>
+                            <field name="departure_date"/>
+                            <field name="state"/>
+                        </tree>
+                    </field>
                 </page>
             </xpath>
             <field name="total_fare" position="replace"/>
             <field name="total_tax" position="replace"/>
-            <field name="total_nta" position="replace"/>
+<!--            <field name="total_nta" position="replace"/>-->
         </field>
     </record>
 

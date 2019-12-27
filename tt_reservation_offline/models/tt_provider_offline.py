@@ -5,8 +5,8 @@ STATE_OFFLINE = [
     ('draft', 'Draft'),
     ('confirm', 'Confirm'),
     ('sent', 'Sent'),
-    ('paid', 'Validate'),
-    ('posted', 'Done'),
+    ('validate', 'Validate'),
+    ('done', 'Done'),
     ('refund', 'Refund'),
     ('expired', 'Expired'),
     ('cancel', 'Canceled')
@@ -25,7 +25,7 @@ class ProviderOffline(models.Model):
     provider_id = fields.Many2one('tt.provider', 'Provider')
     booking_id = fields.Many2one('tt.reservation.offline', 'Order Number', ondelete='cascade')
     sequence = fields.Integer('Sequence')
-    state = fields.Selection(variables.BOOKING_STATE, 'Status', default='draft', related="booking_id.state")
+    state = fields.Selection(variables.BOOKING_STATE, 'Status', default='draft', related="booking_id.state", store=True)
     cost_service_charge_ids = fields.One2many('tt.service.charge', 'provider_offline_booking_id', 'Cost Service Charges')
 
     currency_id = fields.Many2one('res.currency', 'Currency', readonly=True, states={'draft': [('readonly', False)]},

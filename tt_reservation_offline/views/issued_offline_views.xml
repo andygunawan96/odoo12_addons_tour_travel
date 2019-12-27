@@ -76,7 +76,7 @@
                         'default_referenced_document': name,
                         'default_currency_id': currency_id,
                         'default_adj_type': provider_type_id
-                   }"/>
+                    }"/>
 <!--                        <button string="Print Invoice" name="print_invoice" type="object" states="paid,posted"/>-->
 <!--                        <button string="Print Invoice Ticket" name="print_invoice_ticket" type="object" states="paid,posted"/>-->
 <!--                        <button string="Get Config API" name="get_config_api" type="object"/>-->
@@ -200,7 +200,7 @@
                                 </field>
                             </page>
                             <page string="Prices" name="prices" groups="tt_base.group_tt_tour_travel_operator">  <!--attrs="{'invisible': [('state', '=', 'draft')]}"-->
-                                <field name="sale_service_charge_ids">
+                                <field name="sale_service_charge_ids" readonly="1">
                                     <tree>
                                         <field name="charge_code"/>
                                         <field name="pax_type"/>
