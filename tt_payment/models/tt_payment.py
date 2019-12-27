@@ -11,7 +11,7 @@ class PaymentTransaction(models.Model):
     _order = 'id desc'
 
     name = fields.Char('Name', default='New', help='Sequence number set on Confirm state example:PAY.XXX',readonly=True)
-    fee = fields.Monetary('Fee', help='Third party fee',readonly=True, states={'draft': [('readonly', False)]}) # g dihitung sebagai uang yg bisa digunakan
+    fee = fields.Monetary('Fee', help='Third party fee',readonly=True, compute="_compute_fee_payment", states={'draft': [('readonly', False)]}) # g dihitung sebagai uang yg bisa digunakan
 
     used_amount = fields.Monetary('Used Amount',readonly=True)#yang sudah dipakai membayar
     available_amount = fields.Monetary('Available Amount', compute="compute_available_amount",
@@ -96,6 +96,9 @@ class PaymentTransaction(models.Model):
     # # 5. Ganti payment_uid dengan agent_id
     # # 6. Tambahkan Payment Acquirer metode pembayaran e
 
+    def _compute_fee_payment(self):
+        pass
+
     def test_set_as_draft(self):
         self.write({
             'state': 'draft'
@@ -116,7 +119,7 @@ class PaymentTransaction(models.Model):
     @api.multi
     def compute_available_amount(self):
         for rec in self:
-            available_amount = rec.total_amount - rec.fee
+            available_amount = rec.total_amount
             rec.used_amount = 0
             if rec.top_up_id:
                 rec.used_amount = self.top_up_id.total
@@ -166,7 +169,7 @@ class PaymentTransaction(models.Model):
             if ({self.env.ref('tt_base.group_tt_tour_travel_operator').id,
                  self.env.ref('tt_base.group_tt_accounting_operator').id}.intersection(
                 set(self.env.user.groups_id.ids))):
-                if self.top_up_id.total_with_fees != self.real_total_amount and datetime.datetime.now().day == self.create_date.day:
+                if self.top_up_id.total_amout != self.real_total_amount and datetime.datetime.now().day == self.create_date.day:
                     raise exceptions.UserError('Cannot change, have to wait 1 day.')
                 self.top_up_id.action_approve_top_up()
                 self.write({

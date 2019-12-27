@@ -27,21 +27,30 @@ class PaymentAcquirer(models.Model):
     def generate_unique_amount(self):
         return int(self.env['ir.sequence'].next_by_code('tt.payment.unique.amount'))
 
-    def compute_fee(self, unique):
+    def compute_fee(self,amount):
         fee = uniq = 0
-        if self.type == 'transfer':
-            uniq = unique
-        elif self.type != 'cash':
-            # TODO perhitungan per acquirer (Charge dari agent brapa, charge dari rodex brpa)
-            fee = 5000
-        return fee, uniq
+        # if self.type == 'transfer':
+        #     uniq = unique
+        # elif self.type != 'cash':
+        #     # TODO perhitungan per acquirer (Charge dari agent brapa, charge dari rodex brpa)
+        #     fee = 5000
+        cust_fee = 0
+        bank_fee = 0
+        if self.cust_fee:
+            cust_fee = amount * self.cust_fee / 100
+        if self.bank_fee:
+            bank_fee = (amount+cust_fee) * self.bank_fee / 100
+
+        lost_or_profit = amount+cust_fee-bank_fee
+
+        return lost_or_profit,cust_fee, uniq
 
     def acquirer_format(self, amount,unique):
         # NB:  CASH /payment/cash/feedback?acq_id=41
         # NB:  BNI /payment/tt_transfer/feedback?acq_id=68
         # NB:  BCA /payment/tt_transfer/feedback?acq_id=27
         # NB:  MANDIRI /payment/tt_transfer/feedback?acq_id=28
-        fee, uniq = self.compute_fee(unique)
+        loss_or_profit,fee, uniq = self.compute_fee(amount)
         return {
             'seq_id': self.seq_id,
             'name': self.name,
@@ -70,7 +79,7 @@ class PaymentAcquirer(models.Model):
         # NB:  BCA /payment/tt_transfer/feedback?acq_id=27
         # NB:  MANDIRI /payment/tt_transfer/feedback?acq_id=28
         payment_acq = self.env['payment.acquirer'].browse(acq.payment_acquirer_id)
-        fee, uniq = self.compute_fee(unique)
+        loss_or_profit,fee, uniq = self.compute_fee(amount)
         return {
             'seq_id': payment_acq.id.seq_id,
             'name': payment_acq.id.name,

@@ -581,42 +581,33 @@
 
 
         <record id="tt_transport_carrier_airline_a3" model="tt.transport.carrier">
-                <field name="name">Aegean Airlines</field>
-                <field name="code">A3</field>
-                <field name="icao">AEE</field>
-                <field name="call_sign">AEGEAN</field>
-                <field name="active">1</field>
-                <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
-            </record>
+            <field name="name">Aegean Airlines</field>
+            <field name="code">A3</field>
+            <field name="icao">AEE</field>
+            <field name="call_sign">AEGEAN</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
 
 
-            <record id="tt_transport_carrier_airline_jq" model="tt.transport.carrier">
-                <field name="name">Jet Star</field>
-                <field name="code">JQ</field>
-                <field name="icao">JST</field>
-                <field name="call_sign">JETSTAR</field>
-                <field name="active">1</field>
-                <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
-            </record>
+        <record id="tt_transport_carrier_airline_jq" model="tt.transport.carrier">
+            <field name="name">Jet Star</field>
+            <field name="code">JQ</field>
+            <field name="icao">JST</field>
+            <field name="call_sign">JETSTAR</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
 
 
-            <record id="tt_transport_carrier_airline_z2" model="tt.transport.carrier">
-                <field name="name">AirAsia Zest</field>
-                <field name="code">Z2</field>
-                <field name="icao">EZD</field>
-                <field name="call_sign">COOL RED</field>
-                <field name="active">1</field>
-                <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
-            </record>
-            
-            <record id="tt_transport_carrier_airline_sl" model="tt.transport.carrier">
-                <field name="name">Thai Lion Air</field>
-                <field name="code">SL</field>
-                <field name="icao">TLM</field>
-                <field name="call_sign">MENTARI</field>
-                <field name="active">1</field>
-                <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
-            </record>
+        <record id="tt_transport_carrier_airline_z2" model="tt.transport.carrier">
+            <field name="name">AirAsia Zest</field>
+            <field name="code">Z2</field>
+            <field name="icao">EZD</field>
+            <field name="call_sign">COOL RED</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
 
     </data>
 </odoo>
