@@ -48,6 +48,7 @@ class TtSSRList(models.Model):
     category_id = fields.Many2one('tt.ssr.category', 'Category')
     provider_id = fields.Many2one('tt.provider', required=True)
     provider_type_id = fields.Many2one('tt.provider.type', required=True)
+    image_url = fields.Char('Image Url', default='')
     line_ids = fields.One2many('tt.ssr.list.line', 'ssr_id', 'Lines')
     active = fields.Boolean('Active', default=True)
 
@@ -62,7 +63,8 @@ class TtSSRList(models.Model):
             'category_id': self.category_id and self.category_id.to_dict() or {},
             'provider_id': self.provider_id and self.provider_id.to_dict() or {},
             'provider_type_id': self.provider_type_id and self.provider_type_id.to_dict() or {},
-            'line_ids': line_ids
+            'line_ids': line_ids,
+            'image_url': self.image_url and self.image_url or '',
         }
         return res
 
@@ -112,6 +114,7 @@ class TtSSRList(models.Model):
             'category_id': self.category_id and self.category_id.get_data() or '',
             'provider_id': self.provider_id and self.provider_id.get_data() or '',
             'lines': lines,
+            'image_url': self.image_url and self.image_url or '',
         }
         return res
 
