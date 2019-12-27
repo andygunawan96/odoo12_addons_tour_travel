@@ -46,29 +46,11 @@ class TtRefundWizard(models.TransientModel):
             'res_id': self.res_id,
             'notes': self.notes
         })
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        return {
+            'type': 'ir.actions.act_url',
+            'name': refund_obj.name,
+            'target': 'new',
+            'url': base_url + "/web#id=" + str(refund_obj.id) + "&action=507&model=tt.refund&view_type=form&menu_id=151",
+        }
 
-        has_provider = False
-        resv_obj = self.env[self.res_model].sudo().browse(int(self.res_id))
-        ref_id_list = []
-        for rec in resv_obj.refund_ids:
-            for rec2 in rec.provider_booking_ids:
-                ref_id_list.append({
-                    'res_model': str(rec2.res_model),
-                    'res_id': int(rec2.res_id)
-                })
-        for rec in resv_obj.provider_booking_ids:
-            check_exist = {
-                'res_model': str(rec._name),
-                'res_id': int(rec.id)
-            }
-            if rec.state == 'issued' and check_exist not in ref_id_list:
-                self.env['tt.provider.refund'].sudo().create({
-                    'name': rec.pnr,
-                    'res_id': rec.id,
-                    'res_model': rec._name,
-                    'refund_id': refund_obj.id,
-                })
-                has_provider = True
-
-        if not has_provider:
-            raise UserError("There is no 'Issued' provider available for refund in this reservation!")
