@@ -670,7 +670,21 @@ class ReservationAirline(models.Model):
                 'journey_ids': this_pnr_journey
             }
 
-            res.append(provider_airline_obj.create(values))
+            vendor_obj = provider_airline_obj.create(values)
+            res.append(vendor_obj)
+
+            if not hasattr(vendor_obj, 'promo_code_ids'):
+                continue
+
+            promo_codes = schedule['promo_codes'] if schedule.get('promo_codes') else []
+            for code in promo_codes:
+                values = {
+                    'promo_code': code['promo_code'],
+                    'carrier_code': code['carrier_code'],
+                    'booking_airline_id': vendor_obj.booking_id.id,
+                    'provider_airline_booking_id': vendor_obj.id,
+                }
+                vendor_obj.promo_code_ids.create(values)
         name['provider'] = list(set(name['provider']))
         name['carrier'] = list(set(name['carrier']))
         return res,name

@@ -33,3 +33,9 @@ class TtProviderAirlineInherit(models.Model):
     _description = 'Rodex Model'
 
     promo_code_ids = fields.One2many('tt.promo.code.airline', 'provider_airline_booking_id', 'Promo Codes')
+
+    def to_dict(self):
+        res = super(TtProviderAirlineInherit, self).to_dict()
+        promo_codes = [rec.to_dict() for rec in self.promo_code_ids]
+        res.update({'promo_codes': promo_codes})
+        return res

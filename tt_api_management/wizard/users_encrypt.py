@@ -38,6 +38,7 @@ class UserEncryptWizard(models.TransientModel):
 
     def compute_authorization(self):
         _db_con = BackendConnector()
+        _db_con._validate()
         is_authenticate = _db_con.authenticate(self.username, self.password)
         if not is_authenticate:
             raise UserError(_('Username and Password are not match'))

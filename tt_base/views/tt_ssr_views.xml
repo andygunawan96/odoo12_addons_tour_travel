@@ -112,6 +112,7 @@
                                 <field name="provider_type_id"/>
                             </group>
                             <group>
+                                <field name="image_url"/>
                                 <field name="description"/>
                                 <field name="rules"/>
                                 <field name="notes"/>
