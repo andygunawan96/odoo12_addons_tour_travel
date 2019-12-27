@@ -345,6 +345,7 @@
                     <div class="oe_button_box" name="button_box">
                         <button name="get_record_homas" class="oe_stat_button" string="1. Merge" type="object" icon="fa-plus"/>
                         <button name="prepare_gateway_cache" class="oe_stat_button" string="2. Send to GW" type="object" icon="fa-plus"/>
+                        <button name="prepare_gateway_destination" class="oe_stat_button" string="3. Render AutoComplete" type="object" icon="fa-plus"/>
                     </div>
                     <div class="oe_title">
                         <label for="name">Name</label>

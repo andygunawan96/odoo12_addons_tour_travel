@@ -6,7 +6,7 @@ from odoo.http import request
 # Opsi ini dibuat untuk by pass login e odoo (kurang secure)
 class Main(http.Controller):
     @http.route(['/rodextrip/report/<string:print_type>/<string:model_name>/<string:order_number>',
-        '/rodextrip/report/<string:print_type>/<string:model_name>/<string:order_number>/<int:report_mode>'], methods=['GET'], csrf=False, type='http', auth="public", website=True)
+        '/rodextrip/report/<string:print_type>/<string:model_name>/<string:order_number>/<int:report_mode>'], methods=['GET'], csrf=False, type='http', auth="none", website=True)
     def print_id(self, print_type, model_name, order_number, report_mode=False):
         if model_name == 'form.itinerary':
             pdf = request.env.ref('tt_report_common.action_printout_itinerary_from_json')
