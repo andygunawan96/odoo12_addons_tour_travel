@@ -40,16 +40,28 @@ class AgentReportRecapReservationXls(models.TransientModel):
         sheet.write('F9', 'Agent Email', style.table_head_center)
         sheet.write('G9', 'Provider', style.table_head_center)
         sheet.write('H9', 'Order Number', style.table_head_center)
-        sheet.write('I9', 'PNR', style.table_head_center)
-        sheet.write('J9', 'State', style.table_head_center)
-        sheet.write('K9', 'Adult', style.table_head_center)
-        sheet.write('L9', 'Child', style.table_head_center)
-        sheet.write('M9', 'Infant', style.table_head_center)
-        sheet.write('N9', 'Currency', style.table_head_center)
-        sheet.write('O9', 'NTA Amount', style.table_head_center)
-        sheet.write('P9', 'Total Commission', style.table_head_center)
-        sheet.write('Q9', 'Grand Total', style.table_head_center)
-        sheet.merge_range('R9:S9', 'Keterangan', style.table_head_center)
+        # sheet.write('I9', 'Origin', style.table_head_center)
+        # sheet.write('J9', 'Sector', style.table_head_center)
+        sheet.write('I9', 'Adult', style.table_head_center)
+        sheet.write('J9', 'Child', style.table_head_center)
+        sheet.write('K9', 'Infant', style.table_head_center)
+        sheet.write('L9', 'State', style.table_head_center)
+        sheet.write('M9', 'PNR', style.table_head_center)
+        sheet.write('N9', 'Charge State', style.table_head_center)
+        sheet.write('O9', 'Currency', style.table_head_center)
+        sheet.write('P9', 'NTA Amount', style.table_head_center)
+        sheet.write('Q9', 'Total Commission', style.table_head_center)
+        sheet.write('R9', 'Grand Total', style.table_head_center)
+        sheet.merge_range('S9:T9', 'Keterangan', style.table_head_center)
+
+        # sheet.write('B9', 'Date', style.table_head_center)
+        # sheet.write('C9', 'Order Number', style.table_head_center)
+        # sheet.write('D9', 'Agent', style.table_head_center)
+        # sheet.write('E9', 'Agent Type', style.table_head_center)
+        # sheet.write('F9', 'Provider', style.table_head_center)
+        # sheet.write('G9', 'Total', style.table_head_center)
+        # sheet.write('H9', 'State', style.table_head_center)
+        # sheet.write('I9', 'Provider Type', style.table_head_center)
 
         # ====== SET WIDTH AND HEIGHT ==========
         sheet.set_row(0, row_height)  # set_row(row, height) -> row 0-4 (1-5)
@@ -62,158 +74,94 @@ class AgentReportRecapReservationXls(models.TransientModel):
         sheet.set_column('B:B', 10)
         sheet.set_column('C:F', 15)
         sheet.set_column('G:G', 12)
-        sheet.set_column('H:I', 15)
+        sheet.set_column('H:V', 15)
 
+        # ============ void start() ======================
         row_data = 8
-        temp_dict = ''
         first_data = True
         counter = 1
-        pnr_list = []
         multi_pnr = False
         temp_pnr = ''
         is_border = False
-        for rec in values['lines']:
-            to_print = {}
-            if first_data:
-                counter_update = True
-                first_data = False
-                temp_dict = rec
+        last_data = ''
+        pnr_list = []
+        pnr = ''
+        order_number = ''
+        datas = values['lines']
+        service_charge = values['second_lines']
+        #proceed the data
+        filtered_data = []
+        temp_order_number = ''
+        counter = 0
+        for i in datas:
+            if temp_order_number != i['order_number']:
+                #set checker for order number
+                temp_order_number = i['order_number']
+
+                #get pnr list
                 try:
-                    pnr_list = rec['pnr'].split(", ")
-                    temp_pnr = rec['ledger_pnr']
-                    if len(pnr_list) > 1:
-                        multi_pnr = True
-                        to_print['pnr'] = rec['ledger_pnr']
-                    else:
-                        to_print['pnr'] = rec['pnr']
+                    pnr_list = i['pnr'].split(", ")
                 except:
-                    to_print['pnr'] = ''
-
-                to_print.update({
-                    'provider_type': rec['provider_type'],
-                    'agent_type_name': rec['agent_type_name'],
-                    'agent_name': rec['agent_name'],
-                    'issued_date': rec['issued_date'],
-                    'agent_email': rec['agent_email'],
-                    'provider_name': rec['provider_name'],
-                    'order_number': rec['order_number'],
-                    'state': rec['state'],
-                    'adult': rec['adult'],
-                    'child': rec['child'],
-                    'infant': rec['infant'],
-                    'currency_name': rec['currency_name'],
-                    'total_nta': rec['total_nta'],
-                    'total_commission': rec['total_commission'],
-                    'grand_total': rec['grand_total']
-                })
-
-                if rec['ledger_transaction_type'] == 3:
-                    to_print.update({
-                        'ledger_agent_name': rec['ledger_agent_name'],
-                        'debit': rec['debit']
-                    })
-                else:
-                    to_print.update({
-                        'ledger_agent_name': '',
-                        'debit': ''
-                    })
-            else:
-                if temp_dict['order_number'] != rec['order_number']:
-                    is_border = True
-                    counter_update = True
-                    counter += 1
-                    try:
-                        pnr_list = rec['pnr'].split(", ")
-                        temp_pnr = rec['ledger_pnr']
-                        if len(pnr_list) > 1:
-                            to_print['pnr'] = rec['ledger_pnr']
-                            multi_pnr = True
-                        else:
-                            to_print['pnr'] = rec['pnr']
-                            multi_pnr = False
-                    except:
-                        multi_pnr = False
-                        to_print['pnr'] = ''
-
-                    to_print.update({
-                        'provider_type': rec['provider_type'],
-                        'agent_type_name': rec['agent_type_name'],
-                        'agent_name': rec['agent_name'],
-                        'issued_date': rec['issued_date'],
-                        'agent_email': rec['agent_email'],
-                        'provider_name': rec['provider_name'],
-                        'order_number': rec['order_number'],
-                        'state': rec['state'],
-                        'adult': rec['adult'],
-                        'child': rec['child'],
-                        'infant': rec['infant'],
-                        'currency_name': rec['currency_name'],
-                        'total_nta': rec['total_nta'],
-                        'total_commission': rec['total_commission'],
-                        'grand_total': rec['grand_total'],
-                    })
-                    temp_dict = rec
-                else:
-                    is_border = False
-                    to_print.update({
-                        'provider_type': '',
-                        'agent_type_name': '',
-                        'agent_name': '',
-                        'issued_date': '',
-                        'agent_email': '',
-                        'provider_name': '',
-                        'order_number': '',
-                        'state': '',
-                        'adult': '',
-                        'child': '',
-                        'infant': '',
-                        'currency_name': '',
-                        'total_nta': '',
-                        'total_commission': '',
-                        'grand_total': '',
-                    })
-
-                if rec['ledger_pnr'] != temp_pnr and rec['ledger_pnr'] in pnr_list and multi_pnr:
-                    to_print['pnr'] = rec['ledger_pnr']
-                    temp_pnr = rec['ledger_pnr']
-                else:
-                    try:
-                        print(to_print['pnr'])
-                    except:
-                        to_print['pnr'] = ''
-
-
-
-                if rec['ledger_transaction_type'] == 3:
-                    to_print.update({
-                        'ledger_agent_name': rec['ledger_agent_name'],
-                        'debit': rec['debit']
-                    })
-                else:
-                    if to_print['order_number'] == '':
-                        to_print = {}
+                    if i['provider_type'].lower() == "offline":
+                        pass
                     else:
-                        to_print.update({
-                            'ledger_agent_name': '',
-                            'debit': ''
-                        })
+                        continue
 
-            #checker for data
-            if to_print:
+                counter += 1
                 row_data += 1
-                if is_border:
-                    sty_table_data_center = style.table_data_center_border
-                    sty_table_data = style.table_data_border
-                    sty_datetime = style.table_data_datetime_border
-                    sty_date = style.table_data_date_border
-                    sty_amount = style.table_data_amount_border
-                    if row_data % 2 == 0:
-                        sty_table_data_center = style.table_data_center_even_border
-                        sty_table_data = style.table_data_even_border
-                        sty_datetime = style.table_data_datetime_even_border
-                        sty_date = style.table_data_date_even_border
-                        sty_amount = style.table_data_amount_even_border
-                else:
+                sty_table_data_center = style.table_data_center_border
+                sty_table_data = style.table_data_border
+                sty_datetime = style.table_data_datetime_border
+                sty_date = style.table_data_date_border
+                sty_amount = style.table_data_amount_border
+                if row_data % 2 == 0:
+                    sty_table_data_center = style.table_data_center_even_border
+                    sty_table_data = style.table_data_even_border
+                    sty_datetime = style.table_data_datetime_even_border
+                    sty_date = style.table_data_date_even_border
+                    sty_amount = style.table_data_amount_even_border
+                # print first data
+                sheet.write(row_data, 0, counter, sty_table_data_center)
+                sheet.write(row_data, 1, i['provider_type'], sty_table_data)
+                sheet.write(row_data, 2, i['agent_type_name'], sty_table_data)
+                sheet.write(row_data, 3, i['agent_name'], sty_table_data)
+                sheet.write(row_data, 4, i['issued_date'], sty_date)
+                sheet.write(row_data, 5, i['agent_email'], sty_table_data)
+                sheet.write(row_data, 6, i['provider_name'], sty_table_data)
+                sheet.write(row_data, 7, i['order_number'], sty_amount)
+                sheet.write(row_data, 8, i['adult'], sty_amount)
+                sheet.write(row_data, 9, i['child'], sty_amount)
+                sheet.write(row_data, 10, i['infant'], sty_amount)
+                sheet.write(row_data, 11, i['state'], sty_table_data)
+                sheet.write(row_data, 12, '', sty_table_data)
+                sheet.write(row_data, 13, '', sty_table_data)
+                sheet.write(row_data, 14, i['currency_name'], sty_table_data_center)
+                sheet.write(row_data, 15, i['total_nta'], sty_amount)
+                sheet.write(row_data, 16, i['total_commission'], sty_amount)
+                sheet.write(row_data, 17, i['grand_total'], sty_amount)
+                sheet.write(row_data, 18, '', sty_table_data)
+                sheet.write(row_data, 19, '', sty_amount)
+
+                # filtered data
+                filtered_data = []
+                for j in pnr_list:
+                    temp_charge = filter(lambda x: x['order_number'] == i['order_number'] and x['booking_pnr'] == j, service_charge)
+                    temp_book = filter(lambda x: x['order_number'] == i['order_number'] and x['ledger_pnr'] == j, datas)
+                    grand_total = 0
+                    nta_total = 0
+                    commission = 0
+                    if temp_charge not in filtered_data:
+                        filtered_data.append(temp_charge)
+                        for k in temp_charge:
+                            if k['booking_charge_type'] == 'RAC':
+                                commission -= k['booking_charge_total']
+                                nta_total += k['booking_charge_total']
+                            else:
+                                if k['booking_charge_type'] != '' and k['booking_charge_total']:
+                                    nta_total += k['booking_charge_total']
+                        grand_total = nta_total + commission
+
+                    row_data += 1
                     sty_table_data_center = style.table_data_center
                     sty_table_data = style.table_data
                     sty_datetime = style.table_data_datetime
@@ -226,29 +174,90 @@ class AgentReportRecapReservationXls(models.TransientModel):
                         sty_date = style.table_data_date_even
                         sty_amount = style.table_data_amount_even
 
-                if counter_update:
-                    sheet.write(row_data, 0, counter, sty_table_data_center)
-                else:
-                    sheet.write(row_data, 0, '', sty_table_data)
-                sheet.write(row_data, 1, to_print['provider_type'], sty_table_data)
-                sheet.write(row_data, 2, to_print['agent_type_name'], sty_table_data)
-                sheet.write(row_data, 3, to_print['agent_name'], sty_table_data)
-                sheet.write(row_data, 4, to_print['issued_date'], sty_date)
-                sheet.write(row_data, 5, to_print['agent_email'], sty_table_data)
-                sheet.write(row_data, 6, to_print['provider_name'], sty_table_data)
-                sheet.write(row_data, 7, to_print['order_number'], sty_amount)
-                sheet.write(row_data, 8, to_print['pnr'], sty_table_data)
-                sheet.write(row_data, 9, to_print['state'], sty_table_data)
-                sheet.write(row_data, 10, to_print['adult'], sty_amount)
-                sheet.write(row_data, 11, to_print['child'], sty_amount)
-                sheet.write(row_data, 12, to_print['infant'], sty_amount)
-                sheet.write(row_data, 13, to_print['currency_name'], sty_table_data_center)
-                sheet.write(row_data, 14, to_print['total_nta'], sty_amount)
-                sheet.write(row_data, 15, to_print['total_commission'], sty_amount)
-                sheet.write(row_data, 16, to_print['grand_total'], sty_amount)
-                sheet.write(row_data, 17, to_print['ledger_agent_name'], sty_table_data)
-                sheet.write(row_data, 18, to_print['debit'], sty_amount)
-                counter_update = False
+                    sheet.write(row_data, 0, '', sty_table_data_center)
+                    sheet.write(row_data, 1, '', sty_table_data)
+                    sheet.write(row_data, 2, '', sty_table_data)
+                    sheet.write(row_data, 3, '', sty_table_data)
+                    sheet.write(row_data, 4, '', sty_date)
+                    sheet.write(row_data, 5, '', sty_table_data)
+                    sheet.write(row_data, 6, '', sty_table_data)
+                    sheet.write(row_data, 7, '', sty_amount)
+                    sheet.write(row_data, 8, '', sty_amount)
+                    sheet.write(row_data, 9, '', sty_amount)
+                    sheet.write(row_data, 10, '', sty_amount)
+                    sheet.write(row_data, 11, '', sty_table_data)
+                    sheet.write(row_data, 12, j, sty_table_data)
+                    sheet.write(row_data, 13, '', sty_table_data)
+                    sheet.write(row_data, 14, '', sty_table_data_center)
+                    sheet.write(row_data, 15, nta_total, sty_amount)
+                    sheet.write(row_data, 16, commission, sty_amount)
+                    sheet.write(row_data, 17, grand_total, sty_amount)
+                    sheet.write(row_data, 18, '', sty_table_data)
+                    sheet.write(row_data, 19, '', sty_amount)
+
+                    for k in temp_book:
+                        if k['ledger_transaction_type'] == 3:
+                            row_data += 1
+                            sty_table_data_center = style.table_data_center
+                            sty_table_data = style.table_data
+                            sty_datetime = style.table_data_datetime
+                            sty_date = style.table_data_date
+                            sty_amount = style.table_data_amount
+                            if row_data % 2 == 0:
+                                sty_table_data_center = style.table_data_center_even
+                                sty_table_data = style.table_data_even
+                                sty_datetime = style.table_data_datetime_even
+                                sty_date = style.table_data_date_even
+                                sty_amount = style.table_data_amount_even
+
+                            sheet.write(row_data, 0, '', sty_table_data_center)
+                            sheet.write(row_data, 1, '', sty_table_data)
+                            sheet.write(row_data, 2, '', sty_table_data)
+                            sheet.write(row_data, 3, '', sty_table_data)
+                            sheet.write(row_data, 4, '', sty_date)
+                            sheet.write(row_data, 5, '', sty_table_data)
+                            sheet.write(row_data, 6, '', sty_table_data)
+                            sheet.write(row_data, 7, '', sty_amount)
+                            sheet.write(row_data, 8, '', sty_amount)
+                            sheet.write(row_data, 9, '', sty_amount)
+                            sheet.write(row_data, 10, '', sty_amount)
+                            sheet.write(row_data, 11, '', sty_table_data)
+                            sheet.write(row_data, 12, '', sty_table_data)
+                            sheet.write(row_data, 13, '', sty_table_data)
+                            sheet.write(row_data, 14, '', sty_table_data_center)
+                            sheet.write(row_data, 15, '', sty_amount)
+                            sheet.write(row_data, 16, '', sty_amount)
+                            sheet.write(row_data, 17, '', sty_amount)
+                            sheet.write(row_data, 18, k['ledger_agent_name'], sty_table_data)
+                            sheet.write(row_data, 19, k['debit'], sty_amount)
+
+        row_data += 1
+        sty_table_data_center = style.table_data_center_border
+        sty_table_data = style.table_data_border
+        sty_datetime = style.table_data_datetime_border
+        sty_date = style.table_data_date_border
+        sty_amount = style.table_data_amount_border
+        sheet.write(row_data, 0, '', sty_table_data_center)
+        sheet.write(row_data, 1, '', sty_table_data)
+        sheet.write(row_data, 2, '', sty_table_data)
+        sheet.write(row_data, 3, '', sty_table_data)
+        sheet.write(row_data, 4, '', sty_date)
+        sheet.write(row_data, 5, '', sty_table_data)
+        sheet.write(row_data, 6, '', sty_table_data)
+        sheet.write(row_data, 7, '', sty_amount)
+        sheet.write(row_data, 8, '', sty_amount)
+        sheet.write(row_data, 9, '', sty_amount)
+        sheet.write(row_data, 10, '', sty_amount)
+        sheet.write(row_data, 11, '', sty_table_data)
+        sheet.write(row_data, 12, '', sty_table_data)
+        sheet.write(row_data, 13, '', sty_table_data)
+        sheet.write(row_data, 14, '', sty_table_data_center)
+        sheet.write(row_data, 15, '', sty_amount)
+        sheet.write(row_data, 16, '', sty_amount)
+        sheet.write(row_data, 17, '', sty_amount)
+        sheet.write(row_data, 18, '', sty_table_data)
+        sheet.write(row_data, 19, '', sty_amount)
+            #proceed
         workbook.close()
 
         attach_id = self.env['tt.agent.report.excel.output.wizard'].create(
