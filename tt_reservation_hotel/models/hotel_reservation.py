@@ -318,7 +318,7 @@ class HotelReservation(models.Model):
 
     @api.one
     def action_booked(self):
-        self.state = 'approved'
+        self.state = 'booked'
         self.book_date = fields.Date.today()
         self.env['test.search'].validation_booking(self.id)
         return True
@@ -333,7 +333,7 @@ class HotelReservation(models.Model):
     def action_draft(self):
         self.state = 'draft'
 
-    def create_agent_invoice(self, acquirer_id, customer_parent_id):
+    def action_create_invoice(self, acquirer_id, customer_parent_id):
         return True
 
     def action_issued_backend(self):
@@ -357,26 +357,18 @@ class HotelReservation(models.Model):
         self.state = 'fail_issued'
 
     @api.one
-    def action_issued(self, acquirer_id, customer_parent_id, kwargs=False):
+    def action_issued(self, acquirer_id, co_uid, kwargs=False):
         if not self.ensure_one():
             return False
-        # 1. Ledger
-        is_enough = self.agent_id.check_balance_limit(self.agent_nta)
-        if is_enough:
-            # Jika cukup Potong Saldo
-            self.pnr = self.get_pnr_list()
-            self.issued_date = fields.Datetime.now()
-            self.issued_uid = kwargs and kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
-            # 1. Create Ledger, Commission Ledger
-            self.sudo().create_ledger(self.issued_uid.id)
-            # self.sudo().create_vendor_ledger()
-            # 2. Jika Hotel CMS apakah kamar yg dipesan auto validation / perlu operator
-            # self.check_auto_approved()
-            # TODO 3. Kirim E-Ticket
-            self.create_agent_invoice(acquirer_id, customer_parent_id)
-            self.state = 'issued'
-            self.calc_voucher_name()
-        return is_enough
+        # Jika cukup Potong Saldo
+        self.pnr = self.get_pnr_list()
+        self.issued_date = fields.Datetime.now()
+        self.issued_uid = co_uid
+
+        self.action_create_invoice(acquirer_id, co_uid)
+        self.state = 'issued'
+        self.calc_voucher_name()
+        return True
 
     def action_issued_backend(self, kwargs=False):
         a = self.action_issued()

@@ -1,4 +1,5 @@
 from odoo import models,api,fields
+from datetime import datetime
 
 
 class ReservationHotel(models.Model):
@@ -36,21 +37,25 @@ class ReservationHotel(models.Model):
             tmp += 'Special Request: ' + spc + '\n'
         return tmp
 
-    def create_agent_invoice(self, acquirer_id, customer_parent_id):
-        super(ReservationHotel, self).create_agent_invoice(acquirer_id, customer_parent_id)
+    def action_create_invoice(self, acquirer_id, co_uid):
         invoice_id = False
+
         if not invoice_id:
             invoice_id = self.env['tt.agent.invoice'].create({
+                'booker_id': self.booker_id.id,
                 'agent_id': self.agent_id.id,
-                'booker_id': self.contact_id.id,
                 'customer_parent_id': self.customer_parent_id.id,
+                'customer_parent_type_id': self.customer_parent_type_id.id,
+                'state': 'confirm',
+                'confirmed_uid': co_uid,
+                'confirmed_date': datetime.now()
             })
 
         inv_line_obj = self.env['tt.agent.invoice.line'].create({
             'res_model_resv': self._name,
             'res_id_resv': self.id,
             'invoice_id': invoice_id.id,
-            'desc': self.get_segment_description(),
+            'desc': self.get_segment_description()
         })
 
         for room_obj in self.room_detail_ids:
@@ -66,9 +71,9 @@ class ReservationHotel(models.Model):
         ##membuat payment dalam draft
         payment_obj = self.env['tt.payment'].create({
             'agent_id': self.agent_id.id,
-            'acquirer_id': self.env['payment.acquirer'].search([('seq_id','=', acquirer_id['seq_id'])]).id,
+            'acquirer_id': self.env['payment.acquirer'].search([('seq_id', '=', acquirer_id['seq_id'])], limit=1).id,
             'real_total_amount': inv_line_obj.total,
-            'customer_parent_id': customer_parent_id
+            'customer_parent_id': self.customer_parent_id.id
         })
 
         self.env['tt.payment.invoice.rel'].create({

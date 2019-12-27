@@ -1936,7 +1936,7 @@ class HotelInformation(models.Model):
         # provider_list = ['hotelspro', 'hotelspro_file', 'fitruums', 'webbeds_pool', 'webbeds_excel_pool',
         #                  'itank', 'quantum', 'quantum_pool', 'mgholiday', 'mg_pool', 'miki_api', 'miki_scrap', 'miki_pool',
         #                  'dida_pool', 'tbo', 'oyo']
-        provider_list = ['dida_pool']
+        provider_list = ['dida_pool', 'fitruums', 'webbeds_pool', 'webbeds_excel_pool']
 
         need_to_add_list = [['No', 'CityName', 'RodexTrip City_id'] + provider_list + ['Total']]
         new_to_add_list2 = [['Type', 'Name', 'Similar Name']]
@@ -2021,6 +2021,18 @@ class HotelInformation(models.Model):
                     target_city_index += 1
                 new_to_add_list.append(len(cache_content) if cache_content else 0)
                 need_to_add_list.append(new_to_add_list)
+
+                if target_city_index % 50 == 0:
+                    # Simpan record tiap 50 city
+                    with open('/var/log/cache_hotel/result log/merger_process_result.csv', 'w') as csvFile:
+                        writer = csv.writer(csvFile)
+                        writer.writerows(need_to_add_list)
+                    csvFile.close()
+
+                    with open('/var/log/cache_hotel/result log/merger_history.csv', 'w') as csvFile:
+                        writer = csv.writer(csvFile)
+                        writer.writerows(new_to_add_list2)
+                    csvFile.close()
 
         with open('/var/log/cache_hotel/result log/merger_process_result.csv', 'w') as csvFile:
             writer = csv.writer(csvFile)
@@ -2192,3 +2204,12 @@ class HotelInformation(models.Model):
                 })
                 break
             file_number += 1
+
+    @api.multi
+    def prepare_gateway_destination(self):
+        API_CN_HOTEL.send_request('prepare_gateway_cache', {
+            'hotel_ids': [],
+            'city_ids': self.env['test.search'].render_cache_city(),
+            'country_ids': self.env['test.search'].prepare_countries(self.env['res.country'].sudo().search([])),
+            'landmark_ids': []
+        })
