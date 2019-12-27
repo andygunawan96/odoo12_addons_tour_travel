@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <record id="admin_fee_refund_regular" model="tt.master.admin.fee">
+            <field name="name">Regular Refund</field>
+            <field name="type">amount</field>
+            <field name="amount">20000</field>
+        </record>
+        <record id="admin_fee_refund_quick" model="tt.master.admin.fee">
+            <field name="name">Quick Refund</field>
+            <field name="type">percentage</field>
+            <field name="amount">8</field>
+        </record>
+        <record id="admin_fee_reschedule" model="tt.master.admin.fee">
+            <field name="name">Reschedule</field>
+            <field name="type">amount</field>
+            <field name="amount">25000</field>
+        </record>
+    </data>
+</odoo>

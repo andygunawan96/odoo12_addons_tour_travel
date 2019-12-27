@@ -130,27 +130,6 @@
                             <field name="cancel_message"/>
                         </group>
                     </group>
-                    <separator string="Provider Bookings"/>
-                    <label for="provider_booking_ids" string="(Only PNRs listed below will be refunded)"/>
-                    <button name="reset_provider_booking" string="Reset" type="object" groups="tt_base.group_tt_agent_user_operator" attrs="{'invisible':[('state','!=', 'draft')]}"/>
-                    <field name="provider_booking_ids">
-                        <tree>
-                            <field name="name"/>
-                            <field name="res_model"/>
-                            <field name="res_id"/>
-                        </tree>
-                        <form>
-                            <group>
-                                <group>
-                                    <field name="name"/>
-                                </group>
-                                <group>
-                                    <field name="res_model"/>
-                                    <field name="res_id"/>
-                                </group>
-                            </group>
-                        </form>
-                    </field>
                     <separator string="Ledger"/>
                     <field name="ledger_ids"
                            context="{'tree_view_ref': 'tt_accounting.tt_ledger_adj_tree_view'}"/>

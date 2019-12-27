@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="tt_master_admin_fee_filter_view" model="ir.ui.view">
+        <field name="name">tt.master.admin.fee.filter.view</field>
+        <field name="model">tt.master.admin.fee</field>
+        <field name="arch" type="xml">
+            <search string="Search Admin Fee">
+                <field name="display_name"/>
+                <field name="name"/>
+                <field name="type"/>
+                <field name="amount"/>
+
+                <group expand="0" string="Group By">
+                    <filter name="group_by_type" string="Type" domain="[]" context="{'group_by':'type'}" groups="tt_base.group_tt_tour_travel_operator"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="tt_master_admin_fee_form_view" model="ir.ui.view">
+        <field name="name">tt.master.admin.fee.form.view</field>
+        <field name="model">tt.master.admin.fee</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="Name" class="oe_edit_only" string="Name"/>
+                        <h1>
+                            <field name="display_name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="type"/>
+                        </group>
+                        <group>
+                            <field name="amount"/>
+                            <field name="min_amount" attrs="{'invisible':[('type','!=', 'percentage')]}"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_master_admin_fee_tree_view" model="ir.ui.view">
+        <field name="name">tt.master.admin.fee.tree.view</field>
+        <field name="model">tt.master.admin.fee</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="type"/>
+                <field name="amount"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_master_admin_fee_action_views" model="ir.actions.act_window">
+        <field name="name">Master Admin Fee</field>
+        <field name="res_model">tt.master.admin.fee</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_accounting.tt_master_admin_fee_form_view',
+            'tree_view_ref': 'tt_accounting.tt_master_admin_fee_tree_view'
+            }
+        </field>
+    </record>
+
+    <menuitem id="sub_menu_tour_travel_master_admin_fee"
+              parent="tt_base.top_tour_travel_configuration"
+              action="tt_accounting.tt_master_admin_fee_action_views"
+              name="Master Admin Fee"
+              sequence="1"
+              groups="tt_base.group_tt_tour_travel_manager,tt_base.group_tt_accounting_operator"/>
+
+</odoo>

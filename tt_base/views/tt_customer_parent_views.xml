@@ -1,6 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <record id="tt_customer_parent_search_view" model="ir.ui.view">
+        <field name="name">tt.customer.parent.search.view</field>
+        <field name="model">tt.customer.parent</field>
+        <field name="arch" type="xml">
+            <search string="Search Customer Parent">
+                <field name="name"/>
+                <field name="customer_parent_type_id"/>
+                <field name="parent_agent_id"/>
+                <group>
+                    <filter string="All" name="all"/>
+                    <filter string="COR" name="cor" domain="[('customer_parent_type_id','=',[%(tt_base.customer_type_cor)d,])]"/>
+                    <filter string="POR" name="por" domain="[('customer_parent_type_id','=',[%(tt_base.customer_type_por)d,])]"/>
+                    <filter string="FPO" name="fpo" domain="[('customer_parent_type_id','=',[%(tt_base.customer_type_fpo)d,])]"/>
+                </group>
+
+                <group expand="0" string="Group By">
+                    <filter string="Customer Parent Type" name="customer_parent_type_id" domain="[]" context="{'group_by':'customer_parent_type_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <filter string="Parent Agent" name="parent_agent_id" domain="[]" context="{'group_by':'parent_agent_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
     <record id="tt_customer_parent_form_view" model="ir.ui.view">
         <field name="name">tt.customer.parent.form.view</field>
         <field name="model">tt.customer.parent</field>

@@ -5,18 +5,6 @@ from datetime import datetime, date
 from ...tools import variables
 
 
-class TtProviderRefund(models.Model):
-    _name = "tt.provider.refund"
-    _description = "Provider Refund Model"
-
-    name = fields.Char('PNR', readonly=True)
-    refund_id = fields.Many2one('tt.refund', 'Refund', ondelete='cascade')
-    res_model = fields.Char(
-        'Related Provider Name', index=True, readonly=True)
-    res_id = fields.Integer(
-        'Related Provider ID', index=True, readonly=True, help='Id of the followed resource')
-
-
 class TtRefund(models.Model):
     _name = "tt.refund"
     _inherit = 'tt.history'
@@ -66,15 +54,11 @@ class TtRefund(models.Model):
     total_amount = fields.Integer('Total Amount', default=0, readonly=True, compute="_compute_total_amount")
     notes = fields.Text('Notes', readonly=True, states={'draft': [('readonly', False)]})
 
-    provider_booking_ids = fields.One2many('tt.provider.refund', 'refund_id', 'Provider Booking', readonly=True, states={'draft': [('readonly', False)]})
-
     referenced_document = fields.Char('Ref. Document', readonly=True)
 
-    res_model = fields.Char(
-        'Related Reservation Name', index=True, readonly=True)
+    res_model = fields.Char('Related Reservation Name', index=True, readonly=True)
 
-    res_id = fields.Integer(
-        'Related Reservation ID', index=True, help='Id of the followed resource', readonly=True)
+    res_id = fields.Integer('Related Reservation ID', index=True, help='Id of the followed resource', readonly=True)
 
     ledger_ids = fields.One2many('tt.ledger','refund_id')
 
@@ -141,8 +125,6 @@ class TtRefund(models.Model):
     def confirm_refund_from_button(self):
         if self.state != 'draft':
             raise UserError("Cannot Confirm because state is not 'draft'.")
-        if not self.provider_booking_ids:
-            raise UserError("There is no Provider to refund.")
 
         if self.refund_type == 'quick':
             estimate_refund_date = date.today() + relativedelta(days=3)
@@ -206,7 +188,7 @@ class TtRefund(models.Model):
         self.env['tt.ledger'].create_ledger_vanilla(
             self.res_model,
             self.res_id,
-            'Refund : for %s' % (self.name),
+            'Refund : %s' % (self.name),
             self.referenced_document,
             datetime.now() + relativedelta(hours=7),
             ledger_type,
@@ -220,9 +202,9 @@ class TtRefund(models.Model):
             **{'refund_id': self.id}
         )
 
-        for rec in self.provider_booking_ids:
-            prov_obj = self.env[rec.res_model].browse(int(rec.res_id))
-            prov_obj.action_refund()
+        book_obj = self.env[self.res_model].browse(int(self.res_id))
+        for rec in book_obj.provider_booking_ids:
+            rec.action_refund()
 
         self.write({
             'state': 'done',
@@ -239,26 +221,4 @@ class TtRefund(models.Model):
             'cancel_uid': self.env.user.id,
             'cancel_date': datetime.now()
         })
-
-    def reset_provider_booking(self):
-        resv_obj = self.env[self.res_model].sudo().browse(int(self.res_id))
-        ref_id_list = []
-        for rec in resv_obj.refund_ids:
-            for rec2 in rec.provider_booking_ids:
-                ref_id_list.append({
-                    'res_model': str(rec2.res_model),
-                    'res_id': int(rec2.res_id)
-                })
-        for rec in resv_obj.provider_booking_ids:
-            check_exist = {
-                'res_model': str(rec._name),
-                'res_id': int(rec.id)
-            }
-            if rec.state == 'issued' and check_exist not in ref_id_list:
-                self.env['tt.provider.refund'].sudo().create({
-                    'name': rec.pnr,
-                    'res_id': rec.id,
-                    'res_model': rec._name,
-                    'refund_id': self.id,
-                })
 

@@ -5,6 +5,7 @@ class ResRate(models.Model):
     _name = 'tt.provider.rate'
     _rec_name = 'currency_id'
     _description = 'Tour & Travel - Rate'
+    _order = 'date DESC'
 
     name = fields.Char()
     provider_id = fields.Many2one('tt.provider', 'Provider')
