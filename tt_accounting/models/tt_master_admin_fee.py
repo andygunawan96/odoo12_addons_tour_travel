@@ -13,12 +13,12 @@ class TtMasterAdminFee(models.TransientModel):
 
     name = fields.Char('Name')
     display_name = fields.Char('Display Name', compute='_compute_display_name', store=True, index=True)
-    type = fields.Selection([('amount', 'Amount'), ('percentage', 'Percentage')], 'Type')
+    type = fields.Selection([('amount', 'Amount'), ('percentage', 'Percentage')], 'Type', default='amount')
     amount = fields.Float('Amount')
     min_amount = fields.Float('Minimum Amount', default=0)
 
     def _compute_display_name(self):
-        self.display_name = self.name + ': ' + self.type == 'amount' and 'IDR ' or '' + self.amount + self.type == 'percentage' and '%' or ''
+        self.display_name = str(self.name) + ': ' + str(self.type) == 'amount' and 'IDR ' or '' + str(self.amount) + str(self.type) == 'percentage' and '%' or ''
 
     def get_final_adm_fee(self, total=0, multiplier=1):
         if self.type == 'amount':
