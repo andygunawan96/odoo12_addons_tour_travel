@@ -677,12 +677,8 @@ class TestSearch(models.Model):
 
         vend_hotel.create_service_charge()
 
-        # resv_id.action_confirm()
-        if resv_id.action_issued(acquirer_id, booker_obj.customer_parent_ids.ids[0]):
-            # resv_id.action_done()
-            return self.get_booking_result(resv_id.id)
-        else:
-            return {'error_msg': 'Not enough Balance'}
+        resv_id.action_booked()
+        return self.get_booking_result(resv_id.id)
 
     def create_reservation_old(self, provider_name, hotel_id, cust_names, check_in, check_out, room_rates, cancellation_str, booker_detail, guest_count=0, os_res_no='', provider_data='', email='', mobile='', special_req=''):
     # def create_reservation(self, provider_name, hotel_id, hotel_name, hotel_city_id, room_count, cust_name, check_in, check_out, room_rates, guest_count=0, os_res_no='', provider_data='', email='', mobile='', special_req=''):
@@ -744,6 +740,9 @@ class TestSearch(models.Model):
         resv_id.total_commission_amount = total_commision
 
         return (str(resv_id.id), resv_id.name)
+
+    def payment_hotel(self, req, context):
+        return self.env['tt.reservation'].payment_reservation_api('hotel', req, context)
 
     # Update Reservation
     def update_from_provider(self, resv_id, prov_code, state='request'):
@@ -943,8 +942,9 @@ class TestSearch(models.Model):
         resv_obj = self.env['tt.reservation.hotel'].browse(book_id)
         return resv_obj.sudo().action_failed(msg)
 
-    def action_done_hotel_api(self, book_id, issued_res):
+    def action_done_hotel_api(self, book_id, issued_res, acq_id, co_uid):
         resv_obj = self.env['tt.reservation.hotel'].browse(book_id)
+        resv_obj.sudo().action_issued(acq_id, co_uid)
         return resv_obj.sudo().action_done(issued_res)
 
     # Asumsi Destinasi sdah berupa kode negara
