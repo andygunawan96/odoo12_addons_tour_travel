@@ -12,6 +12,7 @@ class PaymentTransaction(models.Model):
 
     name = fields.Char('Name', default='New', help='Sequence number set on Confirm state example:PAY.XXX',readonly=True)
     fee = fields.Monetary('Fee', help='Third party fee',readonly=True, compute="_compute_fee_payment", states={'draft': [('readonly', False)]}) # g dihitung sebagai uang yg bisa digunakan
+    loss_or_profit = fields.Monetary('Loss or Profit', readonly=True, compute="_compute_fee_payment", states={'draft': [('readonly', False)]})
 
     used_amount = fields.Monetary('Used Amount',readonly=True)#yang sudah dipakai membayar
     available_amount = fields.Monetary('Available Amount', compute="compute_available_amount",
@@ -97,7 +98,11 @@ class PaymentTransaction(models.Model):
     # # 6. Tambahkan Payment Acquirer metode pembayaran e
 
     def _compute_fee_payment(self):
-        self.fee = 0
+        for rec in self:
+            if rec.acquirer_id:
+                loss_or_profit,fee,unique = rec.acquirer_id.compute_fee(rec.real_total_amount)
+                rec.fee = fee
+                rec.loss_or_profit = loss_or_profit
 
     def test_set_as_draft(self):
         self.write({

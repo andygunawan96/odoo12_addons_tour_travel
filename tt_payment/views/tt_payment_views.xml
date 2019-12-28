@@ -111,6 +111,7 @@
                             <field name="total_amount"/>
                             <field name="real_total_amount" groups="tt_base.group_tt_accounting_operator,tt_base.group_tt_tour_travel_operator"/>
                             <field name="fee"/>
+                            <field name="loss_or_profit"/>
                             <field name="used_amount"/>
                             <field name="available_amount"/>
                             <field name="currency_id" invisible="1"/>

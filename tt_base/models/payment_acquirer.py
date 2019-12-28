@@ -27,8 +27,8 @@ class PaymentAcquirer(models.Model):
     def generate_unique_amount(self):
         return int(self.env['ir.sequence'].next_by_code('tt.payment.unique.amount'))
 
-    def compute_fee(self,amount,unique):
-        fee = uniq = 0
+    def compute_fee(self,amount,unique = 0):
+        uniq = 0
         if self.type == 'transfer':
             uniq = unique
         # elif self.type != 'cash':
@@ -42,7 +42,7 @@ class PaymentAcquirer(models.Model):
         if self.bank_fee:
             bank_fee = (amount+cust_fee) * self.bank_fee / 100
 
-        lost_or_profit = amount+cust_fee-bank_fee
+        lost_or_profit = cust_fee-bank_fee
 
         return lost_or_profit,cust_fee, uniq
 

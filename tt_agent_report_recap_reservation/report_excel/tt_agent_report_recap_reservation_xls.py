@@ -3,6 +3,7 @@ from ...tools import tools_excel
 from io import BytesIO
 import xlsxwriter
 import base64
+import json
 from datetime import datetime
 
 
@@ -144,7 +145,11 @@ class AgentReportRecapReservationXls(models.TransientModel):
                     commission = 0
                     if temp_charge not in filtered_data:
                         filtered_data.append(temp_charge)
-                        booking_state = temp_charge[0]['booking_state']
+                        booking_state = ""
+                        try:
+                            booking_state = temp_charge[0]['booking_state']
+                        except:
+                            pass
                         for k in temp_charge:
                             if k['booking_charge_type'] == 'RAC':
                                 commission -= k['booking_charge_total']
