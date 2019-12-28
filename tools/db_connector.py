@@ -15,6 +15,14 @@ class DbConnector(object):
         self.uid = ''
         self.password = ''
 
+    def _validate(self):
+        if not self.url:
+            raise Exception('Url is not defined in config')
+        if not self.db_name:
+            raise Exception('Database name is not defined in config')
+        # if not self.uid or not self.password:
+        #     raise Exception('Failed to get User Credential')
+
     def models(self):
         return xmlrpclib.ServerProxy('{}/xmlrpc/2/object'.format(self.url), allow_none=True)
 
@@ -50,8 +58,9 @@ class BackendConnector(DbConnector):
             credential = util.decode_authorization(authorization)
             self.url = tools.config.get('backend_url', '')
             self.db_name = tools.config.get('backend_db', '')
-            self.uid = credential.get('uid', -1)
+            self.uid = credential.get('uid', 0)
             self.password = credential.get('password', '')
+            self._validate()
         except Exception as e:
             _logger.error('Backend Connector Config Error, %s' % str(e))
 
@@ -71,8 +80,9 @@ class GatewayConnector(DbConnector):
             credential = util.decode_authorization(authorization)
             self.url = tools.config.get('gateway_url', '')
             self.db_name = tools.config.get('gateway_db', '')
-            self.uid = credential.get('uid', -1)
+            self.uid = credential.get('uid', 0)
             self.password = credential.get('password', '')
+            self._validate()
         except Exception as e:
             _logger.error('Gateway Connector Error, %s' % str(e))
 

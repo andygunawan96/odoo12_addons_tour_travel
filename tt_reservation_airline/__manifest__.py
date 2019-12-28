@@ -36,7 +36,7 @@ TT_TRANSPORT
         'views/tt_segment_addons_views.xml',
         'views/tt_fee_airline.xml',
         'views/tt_reservation_passenger_airline_form_views.xml',
-        # 'views/tt_promo_code_airline_views.xml',
+        'views/tt_promo_code_airline_views.xml',
     ],
     'demo': [],
     'qweb': [],

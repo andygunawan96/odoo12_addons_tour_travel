@@ -26,8 +26,10 @@
     'data': [
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
+        'data/admin_fee_data.xml',
         'data/ir_sequence_data.xml',
         'data/ir_cron_data.xml',
+        'views/tt_master_admin_fee_views.xml',
         'views/tt_ledger_views.xml',
         'views/tt_adjustment_views.xml',
         'views/tt_refund_views.xml',
