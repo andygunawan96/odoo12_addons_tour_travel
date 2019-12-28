@@ -6,7 +6,7 @@ class AgentReportOfflineHO(models.TransientModel):
     _name = 'tt.agent.report.ho.offline.wizard'
 
     state = fields.Selection([('all', 'All'), ('draft', 'Draft'), ('confirm', 'Confirm'),
-                              ('on_progress', 'On Progress'), ('paid', 'Paid'), ('posted', 'Done'),
+                              ('sent', 'Sent'), ('validate', 'Validate'), ('done', 'Done'),
                               ('refund', 'Refund'), ('expired', 'Expired'), ('cancel', 'Canceled')], 'State',
                              default='all')
 

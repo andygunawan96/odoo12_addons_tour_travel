@@ -205,7 +205,9 @@ class TtVisa(models.Model):
             'co_uid': self.booked_uid.id
         }
 
-        self.payment_reservation_api('visa', data, ctx) #visa, member, payment_seq_id
+        payment_res = self.payment_reservation_api('visa', data, ctx) #visa, member, payment_seq_id
+        if payment_res['error_code'] != 0:
+            raise UserError(payment_res['error_msg'])
         self.write({
             'state_visa': 'in_process',
             # 'in_process_date': datetime.now()
@@ -2031,43 +2033,54 @@ class TtVisa(models.Model):
         return url
         # return self.env.ref('tt_reservation_visa.action_report_printout_tt_visa_ho').report_action(self, data=data)
 
-    def do_print_out_visa_cust(self):
+    def do_print_out_visa_cust(self, data, ctx=None):
         self.ensure_one()
-        data = {
-            'ids': self.ids,
-            'model': self._name,
-        }
-        visa_handling_customer_id = self.env.ref('tt_reservation_visa.action_report_printout_tt_visa_cust')
-        if not self.printout_handling_customer_id:
-            pdf_report = visa_handling_customer_id.report_action(self, data=data)
+        # jika panggil dari backend
+        if 'order_number' not in data:
+            data['order_number'] = self.name
+        if 'provider_type' not in data:
+            data['provider_type'] = self.provider_type_id.name
+
+        book_obj = self.env['tt.reservation.visa'].search([('name', '=', data['order_number'])], limit=1)
+        datas = {'ids': book_obj.env.context.get('active_ids', [])}
+        res = book_obj.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        # data = {
+        #     'ids': self.ids,
+        #     'model': self._name,
+        # }
+        visa_handling_customer_id = book_obj.env.ref('tt_reservation_visa.action_report_printout_tt_visa_cust')
+        if not book_obj.printout_handling_customer_id:
+            pdf_report = visa_handling_customer_id.report_action(book_obj, data=data)
             pdf_report['context'].update({
-                'active_model': self._name,
-                'active_id': self.id
+                'active_model': book_obj._name,
+                'active_id': book_obj.id
             })
             pdf_report.update({
-                'ids': self.ids,
-                'model': self._name,
+                'ids': book_obj.ids,
+                'model': book_obj._name,
             })
             pdf_report_bytes = visa_handling_customer_id.render_qweb_pdf(data=pdf_report)
-            res = self.env['tt.upload.center.wizard'].upload_file_api(
+            res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
                 {
-                    'filename': 'Visa Customer %s.pdf' % self.name,
+                    'filename': 'Visa Customer %s.pdf' % book_obj.name,
                     'file_reference': 'Visa Customer Handling',
                     'file': base64.b64encode(pdf_report_bytes[0]),
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },
                 {
-                    'co_agent_id': self.env.user.agent_id.id,
-                    'co_uid': self.env.user.id,
+                    'co_agent_id': book_obj.env.user.agent_id.id,
+                    'co_uid': book_obj.env.user.id,
                 }
             )
-            upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
-            self.printout_handling_ho_id = upc_id.id
+            upc_id = book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+            book_obj.printout_handling_ho_id = upc_id.id
         url = {
             'type': 'ir.actions.act_url',
             'name': "ZZZ",
             'target': 'new',
-            'url': self.printout_handling_ho_id.url,
+            'url': book_obj.printout_handling_ho_id.url,
         }
         return url
         # return self.env.ref('tt_reservation_visa.action_report_printout_tt_visa_cust').report_action(self, data=data)

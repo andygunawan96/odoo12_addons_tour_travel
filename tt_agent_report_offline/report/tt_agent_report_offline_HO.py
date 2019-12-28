@@ -40,7 +40,7 @@ class AgentReportOffline(models.AbstractModel):
         where = """ro.create_date >= '%s' and ro.create_date <= '%s'
          """ % (date_from, date_to)
         if state and state != 'all':
-            where += """ AND ro.state = '%s'""" % state
+            where += """ AND ro.state_offline = '%s'""" % state
         if provider_type and provider_type != 'all':
             where += """ AND tpt.code = '%s'""" % provider_type
         if agent_id:

@@ -98,11 +98,11 @@ class AgentReportOfflineXls(models.TransientModel):
             sheet.write(row_data, 7, rec['pnr'], sty_table_data)
             sheet.write(row_data, 8, rec['description'], sty_table_data)
             sheet.write(row_data, 9,
-                        rec['confirm_date'].strftime("%d-%b-%Y %H:%m") if rec['confirm_date'] else '',
+                        rec['confirm_date'] if rec['confirm_date'] else '',
                         sty_datetime)
             sheet.write(row_data, 10, rec['confirm_by'], sty_table_data)
             sheet.write(row_data, 11,
-                        rec['issued_date'].strftime("%d-%b-%Y %H:%m") if rec['issued_date'] else '',
+                        rec['issued_date'] if rec['issued_date'] else '',
                         sty_datetime)
             sheet.write(row_data, 12, rec['issued_by'], sty_table_data)
             sheet.write(row_data, 13, rec['total'], sty_amount)

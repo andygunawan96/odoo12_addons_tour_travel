@@ -65,7 +65,7 @@ class IssuedOffline(models.Model):
     provider_type_id = fields.Many2one('tt.provider.type', string='Provider Type',
                                        default=lambda self: self.env.ref('tt_reservation_offline.tt_provider_type_offline'))
     offline_provider_type = fields.Selection(lambda self: self.get_offline_type(), 'Offline Provider Type')
-    offline_provider_type_name = fields.Char('Offline Provider Type Name', compute='offline_type_to_char2', readonly=False)
+    offline_provider_type_name = fields.Char('Additional Notes', readonly=False)
     provider_type_id_name = fields.Char('Transaction Name', readonly=True, compute='offline_type_to_char')
     provider_booking_ids = fields.One2many('tt.provider.offline', 'booking_id', string='Provider Booking')
 
@@ -117,10 +117,6 @@ class IssuedOffline(models.Model):
 
     invoice_ids = fields.Many2many('tt.agent.invoice', 'issued_invoice_rel', 'issued_id', 'invoice_id', 'Invoice(s)')
 
-    # Attachment
-    # attachment_ids = fields.Many2many('ir.attachment', 'tt_reservation_offline_rel',
-    #                                   'tt_issued_id', 'attachment_id', domain=[('res_model', '=', 'tt.reservation.offline')]
-    #                                   , string='Attachments', readonly=True, states={'paid': [('readonly', False)]})
     attachment_ids = fields.Many2many('tt.upload.center', 'offline_ir_attachments_rel', 'tt_issued_id',
                                       'attachment_id', string='Attachments')
     guest_ids = fields.Many2many('tt.customer', 'tt_issued_guest_rel', 'resv_issued_id', 'tt_product_id',
@@ -176,18 +172,18 @@ class IssuedOffline(models.Model):
         else:
             self.provider_type_id_name = ''
 
-    @api.depends('offline_provider_type')
-    def offline_type_to_char2(self):
-        if self.offline_provider_type:
-            if self.offline_provider_type != 'other':
-                self.offline_provider_type_name = self.offline_provider_type
-            else:
-                self.offline_provider_type_name = ''
-        else:
-            self.offline_provider_type_name = ''
+    # @api.depends('offline_provider_type')
+    # def offline_type_to_char2(self):
+    #     if self.offline_provider_type != 'other':
+    #         self.offline_provider_type_name = self.offline_provider_type
 
     def get_offline_type(self):
-        return [(rec, rec.capitalize()) for rec in self.env['tt.provider.type'].get_provider_type()]+[('other', 'Other')]
+        provider_type_list = []
+        for rec in self.env['tt.provider.type'].get_provider_type():
+            if rec != 'offline':
+                provider_type_list.append((rec, rec.capitalize()))
+        provider_type_list.append(('other', 'Other'))
+        return provider_type_list
 
     def print_invoice(self):
         data = {
@@ -221,6 +217,8 @@ class IssuedOffline(models.Model):
                     self.confirm_uid = kwargs.get('co_uid') and kwargs['co_uid'] or self.env.user.id
                     self.acquirer_id = self.agent_id.default_acquirer_id
                     self.get_pnr_list()
+                    if self.offline_provider_type != 'other':
+                        self.offline_provider_type_name = self.offline_provider_type
                     # self.send_push_notif()
                 else:
                     raise UserError(_('Sale Price can\'t be 0 (Zero)'))
@@ -268,15 +266,15 @@ class IssuedOffline(models.Model):
         is_enough = self.agent_id.check_balance_limit_api(self.agent_id.id, self.agent_nta)
         # jika saldo mencukupi
         if is_enough['error_code'] == 0:
-            # self.validate_date = fields.Datetime.now()
-            # self.validate_uid = kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
             # create prices
             for provider in self.provider_booking_ids:
                 # create pricing list
-                if self.provider_type_id_name != 'hotel':
+                if self.provider_type_id_name in ['airline', 'train', 'activity']:
                     provider.create_service_charge()
-                else:
+                elif self.provider_type_id_name in ['hotel']:
                     provider.create_service_charge_hotel()
+                else:
+                    provider.create_service_charge_no_line()
                 # provider.action_create_ledger()
 
             req = {
@@ -330,8 +328,6 @@ class IssuedOffline(models.Model):
                 self.provider_type_id_name == 'hotel' or self.provider_type_id_name == 'activity'\
                 or self.provider_type_id_name == 'cruise':
             if self.check_provider_empty() is False:
-                self.get_provider_name()
-                self.get_pnr_list()
                 if self.provider_type_id_name == 'airline' or self.provider_type_id_name == 'train':
                     if self.check_pnr_empty():
                         raise UserError(_('PNR(s) can\'t be Empty'))
@@ -349,6 +345,8 @@ class IssuedOffline(models.Model):
             provider.confirm_uid = self.confirm_uid
             provider.sent_date = self.sent_date
             provider.sent_uid = self.sent_uid
+        self.get_pnr_list_from_provider()
+        self.get_provider_name_from_provider()
 
     @api.one
     def action_issued_backend(self):
@@ -363,7 +361,7 @@ class IssuedOffline(models.Model):
                 if self.check_pnr_empty():
                     raise UserError(_('PNR(s) can\'t be Empty'))
                 else:
-                    self.get_pnr_list()
+                    self.get_pnr_list_from_provider()
             if self.attachment_ids:
                 # self.ho_final_ledger_id = self.final_ledger()
                 # if self.agent_id.agent_type_id.id in [self.env.ref('tt_base_rodex.agent_type_citra').id, self.env.ref('tt_base_rodex.agent_type_japro').id]:
@@ -375,7 +373,7 @@ class IssuedOffline(models.Model):
                 self.booked_date = fields.Datetime.now()
                 self.booked_uid = kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
                 self.create_final_ho_ledger(self)
-                self.get_pnr_list()
+                self.get_pnr_list_from_provider()
             else:
                 raise UserError('Attach Booking/Resv. Document')
         else:
@@ -396,10 +394,6 @@ class IssuedOffline(models.Model):
             self.action_issued_backend()
         else:
             raise UserError(_('Sale Price or NTA Price can\'t be 0 (Zero)'))
-
-    #################################################################################################
-    # LEDGER & PRICES
-    ####################################################################################################
 
     # to generate sale service charge
     def calculate_service_charge(self):
@@ -465,7 +459,7 @@ class IssuedOffline(models.Model):
         for rec in self:
             if rec.nta_price > rec.vendor_amount:
                 # Agent Ledger
-                pnr = self.get_pnr_list()
+                pnr = self.get_pnr_list_from_provider()
 
                 vals = self.env['tt.ledger'].prepare_vals(self._name, self.id, 'Resv : ' + rec.name, 'Profit&Loss: ' + rec.name,
                                                           rec.validate_date, 3, rec.currency_id.id, self.env.user.id,
@@ -480,7 +474,7 @@ class IssuedOffline(models.Model):
                 new_aml = rec.env['tt.ledger'].create(vals)
             else:
                 # Agent Ledger
-                pnr = self.get_pnr_list()
+                pnr = self.get_pnr_list_from_provider()
 
                 vals = self.env['tt.ledger'].prepare_vals(self._name, self.id, 'Resv : ' + rec.name,
                                                           'Profit&Loss: ' + rec.name,
@@ -499,17 +493,37 @@ class IssuedOffline(models.Model):
         for provider in self.provider_booking_ids:
             provider.unlink()
         pnr_found = []
-        for line in self.line_ids:
-            if line.pnr not in pnr_found or self.provider_type_id_name in ['hotel', 'activity']:
-                vals = {
-                    'booking_id': self.id,
-                    'provider_id': line.provider_id.id,
-                    'pnr': line.pnr,
-                    'confirm_uid': self.env.user.id,
-                    'confirm_date': datetime.now()
-                }
-                self.env['tt.provider.offline'].create(vals)
-                pnr_found.append(line.pnr)
+        if self.offline_provider_type in ['airline', 'train', 'hotel', 'activity']:
+            for line in self.line_ids:
+                if line.pnr not in pnr_found or self.provider_type_id_name in ['hotel', 'activity']:
+                    vals = {
+                        'booking_id': self.id,
+                        'provider_id': line.provider_id.id,
+                        'pnr': line.pnr,
+                        'confirm_uid': self.env.user.id,
+                        'confirm_date': datetime.now()
+                    }
+                    self.env['tt.provider.offline'].create(vals)
+                    pnr_found.append(line.pnr)
+        else:
+            pnr = self.name
+            if self.offline_provider_type == 'tour':
+                provider = self.env.ref('tt_reservation_tour.tt_provider_tour_rodextrip')
+            elif self.offline_provider_type == 'visa':
+                provider = self.env.ref('tt_reservation_visa.tt_provider_visa_rodextrip')
+            elif self.offline_provider_type == 'other':
+                provider = self.env.ref('tt_reservation_offline.tt_provider_rodextrip_other')
+            else:
+                provider = self.env.ref('tt_reservation_offline.tt_provider_rodextrip_other')
+            vals = {
+                'booking_id': self.id,
+                'provider_id': provider.id,
+                'pnr': pnr,
+                'confirm_uid': self.env.user.id,
+                'confirm_date': datetime.now()
+            }
+            self.env['tt.provider.offline'].create(vals)
+            pnr_found.append(pnr)
 
     ####################################################################################################
     # Set, Get & Compute
@@ -647,9 +661,23 @@ class IssuedOffline(models.Model):
                 provider_list.append(rec.provider_id.name)
         self.provider_name = ', '.join(provider_list)
 
+    def get_provider_name_from_provider(self):
+        provider_list = []
+        for rec in self.provider_booking_ids:
+            if rec.provider_id:
+                provider_list.append(rec.provider_id.name)
+        self.provider_name = ', '.join(provider_list)
+
     def get_pnr_list(self):
         pnr_list = []
         for rec in self.line_ids:
+            if rec.pnr:
+                pnr_list.append(rec.pnr)
+        self.pnr = ', '.join(pnr_list)
+
+    def get_pnr_list_from_provider(self):
+        pnr_list = []
+        for rec in self.provider_booking_ids:
             if rec.pnr:
                 pnr_list.append(rec.pnr)
         self.pnr = ', '.join(pnr_list)

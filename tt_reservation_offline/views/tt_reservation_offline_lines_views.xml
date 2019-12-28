@@ -29,7 +29,7 @@
                                 <field name="departure_hour" class="oe_inline" style="width: 20%" placeholder="HH" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/> :
                                 <field name="departure_minute" class="oe_inline" style="width: 20%" placeholder="MM" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
                             </div>
-                            <label for="return_date" string="Return Date"/>
+                            <label for="return_date" string="Arrival Date"/>
                             <div>
                                 <field name="return_date" class="oe_inline" style="width: 20%" placeholder="YYYY-MM-DD" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>&#x2063;
                                 <field name="return_hour" class="oe_inline" style="width: 20%" placeholder="HH" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/> :
@@ -95,7 +95,7 @@
                     <field name="origin_id"/>
 <!--                        <field name="departure_date"/>-->
                     <field name="destination_id"/>
-                    <field name="return_date"/>
+                    <field name="return_date" string="Arrival Date"/>
                     <field name="state" invisible="1"/>
                 </tree>
             </field>
