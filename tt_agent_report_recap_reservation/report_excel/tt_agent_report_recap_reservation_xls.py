@@ -47,7 +47,7 @@ class AgentReportRecapReservationXls(models.TransientModel):
         sheet.write('K9', 'Infant', style.table_head_center)
         sheet.write('L9', 'State', style.table_head_center)
         sheet.write('M9', 'PNR', style.table_head_center)
-        sheet.write('N9', 'Charge State', style.table_head_center)
+        sheet.write('N9', 'Booking State', style.table_head_center)
         sheet.write('O9', 'Currency', style.table_head_center)
         sheet.write('P9', 'NTA Amount', style.table_head_center)
         sheet.write('Q9', 'Total Commission', style.table_head_center)
@@ -137,13 +137,14 @@ class AgentReportRecapReservationXls(models.TransientModel):
                 # filtered data
                 filtered_data = []
                 for j in pnr_list:
-                    temp_charge = filter(lambda x: x['order_number'] == i['order_number'] and x['booking_pnr'] == j, service_charge)
+                    temp_charge = list(filter(lambda x: x['order_number'] == i['order_number'] and x['booking_pnr'] == j, service_charge))
                     temp_book = filter(lambda x: x['order_number'] == i['order_number'] and x['ledger_pnr'] == j, datas)
                     grand_total = 0
                     nta_total = 0
                     commission = 0
                     if temp_charge not in filtered_data:
                         filtered_data.append(temp_charge)
+                        booking_state = temp_charge[0]['booking_state']
                         for k in temp_charge:
                             if k['booking_charge_type'] == 'RAC':
                                 commission -= k['booking_charge_total']
@@ -177,9 +178,9 @@ class AgentReportRecapReservationXls(models.TransientModel):
                     sheet.write(row_data, 8, '', sty_amount)
                     sheet.write(row_data, 9, '', sty_amount)
                     sheet.write(row_data, 10, '', sty_amount)
-                    sheet.write(row_data, 11, '', sty_table_data)
+                    sheet.write(row_data, 11, i['state'], sty_table_data)
                     sheet.write(row_data, 12, j, sty_table_data)
-                    sheet.write(row_data, 13, '', sty_table_data)
+                    sheet.write(row_data, 13, booking_state, sty_table_data)
                     sheet.write(row_data, 14, '', sty_table_data_center)
                     sheet.write(row_data, 15, nta_total, sty_amount)
                     sheet.write(row_data, 16, commission, sty_amount)
@@ -213,7 +214,7 @@ class AgentReportRecapReservationXls(models.TransientModel):
                             sheet.write(row_data, 8, '', sty_amount)
                             sheet.write(row_data, 9, '', sty_amount)
                             sheet.write(row_data, 10, '', sty_amount)
-                            sheet.write(row_data, 11, '', sty_table_data)
+                            sheet.write(row_data, 11, i['state'], sty_table_data)
                             sheet.write(row_data, 12, '', sty_table_data)
                             sheet.write(row_data, 13, '', sty_table_data)
                             sheet.write(row_data, 14, '', sty_table_data_center)
