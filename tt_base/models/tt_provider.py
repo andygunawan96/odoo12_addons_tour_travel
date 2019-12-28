@@ -51,7 +51,7 @@ class TtProvider(models.Model):
 
     ### code = string , provider_type = object
     def get_provider_id(self,code,provider_type):
-        provider_obj = self.search([('code','=',code),('provider_type_id','=',provider_type.id)])
+        provider_obj = self.search([('code','=',code),('provider_type_id','=',provider_type.id)], limit=1)
         return provider_obj.id
 
 
