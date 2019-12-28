@@ -19,6 +19,28 @@
                     <field name="res_id"/>
                     <field name="notes"/>
                 </group>
+                <separator string="Old Segments"/>
+                <field name="old_segment_ids">
+                    <tree create="false">
+                        <field name="name"/>
+                        <field name="pnr"/>
+                        <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                        <field name="origin_id"/>
+                        <field name="destination_id"/>
+                        <field name="departure_date"/>
+                    </tree>
+                </field>
+                <separator string="New Segments"/>
+                <field name="new_segment_ids">
+                    <tree create="false">
+                        <field name="name"/>
+                        <field name="pnr"/>
+                        <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                        <field name="origin_id"/>
+                        <field name="destination_id"/>
+                        <field name="departure_date"/>
+                    </tree>
+                </field>
                 <footer>
                     <button name="submit_reschedule" string="Create" type="object" default_focus="1" class="oe_highlight"/>
                     or
