@@ -19,6 +19,7 @@
         'security/tt_reservation_offline_security.xml',
         'data/ir_sequence_data.xml',
         'data/tt_provider_type_data.xml',
+        'data/tt_provider_other.xml',
         'views/tt_reservation_offline_menuheader.xml',
         'views/issued_offline_views.xml',
         'views/tt_reservation_offline_lines_views.xml',
