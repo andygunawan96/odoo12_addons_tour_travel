@@ -57,17 +57,16 @@ class TtReservation(models.Model):
     child = fields.Integer('Child', default=0, readonly=True, states={'draft': [('readonly', False)]})
     infant = fields.Integer('Infant', default=0, readonly=True, states={'draft': [('readonly', False)]})
 
-    ledger_ids = fields.One2many('tt.ledger', 'res_id', 'Ledger', readonly=True)
-
     departure_date = fields.Char('Journey Date', readonly=True, states={'draft': [('readonly', False)]})  # , required=True
     return_date = fields.Char('Return Date', readonly=True, states={'draft': [('readonly', False)]})
 
     provider_type_id = fields.Many2one('tt.provider.type','Provider Type',readonly=True)
 
-    def _get_adjustment_domain(self):
+    def _get_res_model_domain(self):
         return [('res_model', '=', self._name)]
-    #
-    adjustment_ids = fields.One2many('tt.adjustment','res_id','Adjustment',readonly=True,domain=_get_adjustment_domain)  # domain=[('res_model','=',lambda self: self._name)]
+
+    ledger_ids = fields.One2many('tt.ledger', 'res_id', 'Ledger', readonly=True,domain=_get_res_model_domain)
+    adjustment_ids = fields.One2many('tt.adjustment','res_id','Adjustment',readonly=True,domain=_get_res_model_domain)  # domain=[('res_model','=',lambda self: self._name)]
     # adjustment_ids = fields.One2many('tt.adjustment','res_id','Adjustment',readonly=True)  # domain=[('res_model','=',lambda self: self._name)]
     refund_ids = fields.One2many('tt.refund','res_id','Refund',readonly=True)  # domain=[('res_model','=',lambda self: self._name)]
     error_msg = fields.Char('Error Message')

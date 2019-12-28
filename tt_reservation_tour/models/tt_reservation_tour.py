@@ -39,8 +39,6 @@ class ReservationTour(models.Model):
 
     sale_service_charge_ids = fields.One2many('tt.service.charge', 'booking_tour_id', 'Service Charge',
                                               readonly=True, states={'draft': [('readonly', False)]})
-    ledger_ids = fields.One2many('tt.ledger', 'res_id', 'Ledger',
-                                 domain=[('res_model', '=', 'tt.reservation.tour')])
     provider_booking_ids = fields.One2many('tt.provider.tour', 'booking_id', string='Provider Booking',
                                            readonly=True, states={'draft': [('readonly', False)]})
     passenger_ids = fields.One2many('tt.reservation.passenger.tour', 'booking_id', string='Passengers')

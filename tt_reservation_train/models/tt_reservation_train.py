@@ -25,8 +25,6 @@ class TtReservationTrain(models.Model):
     passenger_ids = fields.One2many('tt.reservation.passenger.train', 'booking_id',
                                     readonly=True, states={'draft': [('readonly', False)]})
 
-    ledger_ids = fields.One2many('tt.ledger', 'res_id', 'Ledger', domain=[('res_model','=','tt.reservation.train')])
-
     provider_booking_ids = fields.One2many('tt.provider.train', 'booking_id', string='Provider Booking', readonly=True, states={'draft': [('readonly', False)]})
 
     journey_ids = fields.One2many('tt.journey.train', 'booking_id', 'Journeys', readonly=True, states={'draft': [('readonly', False)]})

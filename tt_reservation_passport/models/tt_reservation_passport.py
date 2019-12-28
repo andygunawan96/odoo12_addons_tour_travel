@@ -75,9 +75,6 @@ class TtPassport(models.Model):
     validate_uid = fields.Many2one('res.users', 'Validate By', readonly=1)
     payment_uid = fields.Many2one('res.users', 'Payment By', readonly=1)
 
-    ledger_ids = fields.One2many('tt.ledger', 'res_id', 'Ledger', readonly=True,
-                                 domain=[('res_model', '=', 'tt.reservation.passport')])
-
     sale_service_charge_ids = fields.One2many('tt.service.charge', 'passport_id', 'Service Charge',
                                               readonly=True, states={'draft': [('readonly', False)]})
 

@@ -28,7 +28,6 @@ class ReservationAirline(models.Model):
 
     passenger_ids = fields.One2many('tt.reservation.passenger.airline', 'booking_id',
                                     readonly=True, states={'draft': [('readonly', False)]})
-    ledger_ids = fields.One2many('tt.ledger', 'res_id', 'Ledger', domain=[('res_model','=','tt.reservation.airline')])
 
     provider_booking_ids = fields.One2many('tt.provider.airline', 'booking_id', string='Provider Booking', readonly=True, states={'draft': [('readonly', False)]})
 

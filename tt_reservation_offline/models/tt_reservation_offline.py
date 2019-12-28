@@ -116,7 +116,6 @@ class IssuedOffline(models.Model):
     contact_id_backup = fields.Integer('Backup ID')
 
     invoice_ids = fields.Many2many('tt.agent.invoice', 'issued_invoice_rel', 'issued_id', 'invoice_id', 'Invoice(s)')
-    ledger_ids = fields.One2many('tt.ledger', 'res_id', 'Ledger(s)', domain=[('res_model', '=', 'tt.reservation.offline')])
 
     # Attachment
     # attachment_ids = fields.Many2many('ir.attachment', 'tt_reservation_offline_rel',
