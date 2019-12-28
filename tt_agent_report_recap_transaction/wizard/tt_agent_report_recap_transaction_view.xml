@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="detail_recap_transaction_form">
+            <field name="name">Detail Recap Transaction Form</field>
+            <field name="model">tt.agent.report.recap.transaction.wizard</field>
+            <field name="inherit_id" ref="tt_agent_report.agent_common_report_view"/>
+            <field name="arch" type="xml">
+                <field name="all_agent" position="before">
+                    <field name="provider_type"/>
+                    <field name="state" required="1"/>
+                </field>
+            </field>
+        </record>
+
+        <record id="action_agent_report_recap_transaction_wz" model="ir.actions.act_window">
+            <field name="name">Recap Transaction Report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">tt.agent.report.recap.transaction.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="detail_recap_transaction_form"/>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem
+            id="menu_agent_report_recap_transaction"
+            name="Recap Transaction Report"
+            parent="tt_agent_report_recap_reservation.top_reservations_reports"
+            action="action_agent_report_recap_transaction_wz"
+            sequence="1"
+            groups="tt_base.group_tt_agent_user_supervisor,tt_base.group_tt_tour_travel_operator"
+        />
+    </data>
+</odoo>

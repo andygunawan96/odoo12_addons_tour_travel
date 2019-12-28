@@ -3,20 +3,19 @@ from ...tools import tools_excel
 from io import BytesIO
 import xlsxwriter
 import base64
-import json
 from datetime import datetime
 
-
-class AgentReportRecapReservationXls(models.TransientModel):
-    _inherit = 'tt.agent.report.recap.reservation.wizard'
+class AgentReportRecapTransactionXls(models.TransientModel):
+    _inherit = 'tt.agent.report.recap.transaction.wizard'
 
     def _print_report_excel(self, data):
         stream = BytesIO()
-        workbook = xlsxwriter.Workbook(stream)  # create a new workbook constructor
+        workbook = xlsxwriter.Workbook(stream)
         style = tools_excel.XlsxwriterStyle(workbook)  # set excel style
         row_height = 13
 
-        values = self.env['report.tt_agent_report_recap_reservation.agent_report_recap']._prepare_values(data['form'])  # get values
+        values = self.env['report.tt_agent_report_recap_transaction.agent_report_recap']._prepare_values(
+            data['form'])  # get values
 
         sheet_name = values['data_form']['subtitle']  # get subtitle
         sheet = workbook.add_worksheet(sheet_name)  # add a new worksheet to workbook
@@ -55,6 +54,14 @@ class AgentReportRecapReservationXls(models.TransientModel):
         sheet.write('R9', 'Grand Total', style.table_head_center)
         sheet.merge_range('S9:T9', 'Keterangan', style.table_head_center)
 
+        # sheet.write('B9', 'Date', style.table_head_center)
+        # sheet.write('C9', 'Order Number', style.table_head_center)
+        # sheet.write('D9', 'Agent', style.table_head_center)
+        # sheet.write('E9', 'Agent Type', style.table_head_center)
+        # sheet.write('F9', 'Provider', style.table_head_center)
+        # sheet.write('G9', 'Total', style.table_head_center)
+        # sheet.write('H9', 'State', style.table_head_center)
+        # sheet.write('I9', 'Provider Type', style.table_head_center)
 
         # ====== SET WIDTH AND HEIGHT ==========
         sheet.set_row(0, row_height)  # set_row(row, height) -> row 0-4 (1-5)
@@ -137,19 +144,23 @@ class AgentReportRecapReservationXls(models.TransientModel):
 
                 # filtered data
                 filtered_data = []
+
                 for j in pnr_list:
                     temp_charge = list(filter(lambda x: x['order_number'] == i['order_number'] and x['booking_pnr'] == j, service_charge))
-                    temp_book = filter(lambda x: x['order_number'] == i['order_number'] and x['ledger_pnr'] == j, datas)
+                    temp_book = list(filter(lambda x: x['order_number'] == i['order_number'] and x['ledger_pnr'] == j, datas))
+                    temp_dict = {
+                        'order_number': i['order_number'],
+                        'pnr': j
+                    }
                     grand_total = 0
                     nta_total = 0
                     commission = 0
-                    if temp_charge not in filtered_data:
-                        filtered_data.append(temp_charge)
-                        booking_state = ""
+                    if temp_dict not in filtered_data:
+                        filtered_data.append(temp_dict)
                         try:
                             booking_state = temp_charge[0]['booking_state']
                         except:
-                            pass
+                            booking_state = ''
                         for k in temp_charge:
                             if k['booking_charge_type'] == 'RAC':
                                 commission -= k['booking_charge_total']
@@ -259,7 +270,7 @@ class AgentReportRecapReservationXls(models.TransientModel):
         workbook.close()
 
         attach_id = self.env['tt.agent.report.excel.output.wizard'].create(
-            {'name': 'Agent Report Recap.xlsx', 'file_output': base64.encodebytes(stream.getvalue())})
+            {'name': 'Agent Report Transaction Recap.xlsx', 'file_output': base64.encodebytes(stream.getvalue())})
         return {
             'context': self.env.context,
             'view_type': 'form',
