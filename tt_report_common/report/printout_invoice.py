@@ -183,7 +183,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
         pax_dict = {}
         for cost_charge in provider.cost_service_charge_ids:
             if cost_charge.charge_type != 'RAC':
-                if rec.provider_type_id.id == self.env.ref('tt_reservation_airline.tt_provider_type_airline').id:
+                if rec._name == 'tt.reservation.airline':
                     for psg in cost_charge.passenger_airline_ids:
                         if psg.name not in pax_dict:
                             pax_dict[psg.name] = {}
@@ -192,7 +192,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
                             pax_dict[psg.name]['total'] = cost_charge.amount
                         else:
                             pax_dict[psg.name]['total'] += cost_charge.amount
-                elif rec.provider_type_id.id == self.env.ref('tt_reservation_train.tt_provider_type_train').id:
+                elif rec._name == 'tt.reservation.train':
                     for psg in cost_charge.passenger_train_ids:
                         if psg.name not in pax_dict:
                             pax_dict[psg.name] = {}
@@ -201,7 +201,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
                             pax_dict[psg.name]['total'] = cost_charge.amount
                         else:
                             pax_dict[psg.name]['total'] += cost_charge.amount
-                elif rec.provider_type_id.id == self.env.ref('tt_reservation_activity.tt_provider_type_activity').id:
+                elif rec._name == 'tt.reservation.activity':
                     for psg in cost_charge.passenger_activity_ids:
                         if psg.name not in pax_dict:
                             pax_dict[psg.name] = {}
@@ -210,7 +210,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
                             pax_dict[psg.name]['total'] = cost_charge.amount
                         else:
                             pax_dict[psg.name]['total'] += cost_charge.amount
-                elif rec.provider_type_id.id == self.env.ref('tt_reservation_tour.tt_provider_type_tour').id:
+                elif rec._name == 'tt.reservation.tour':
                     for psg in cost_charge.passenger_tour_ids:
                         if psg.name not in pax_dict:
                             pax_dict[psg.name] = {}
@@ -219,7 +219,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
                             pax_dict[psg.name]['total'] = cost_charge.amount
                         else:
                             pax_dict[psg.name]['total'] += cost_charge.amount
-                elif rec.provider_type_id.id == self.env.ref('tt_reservation_visa.tt_provider_type_visa').id:
+                elif rec._name == 'tt.reservation.visa':
                     for psg in cost_charge.passenger_visa_ids:
                         if psg.name not in pax_dict:
                             pax_dict[psg.name] = {}
