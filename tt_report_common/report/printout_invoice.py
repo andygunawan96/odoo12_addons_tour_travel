@@ -39,7 +39,7 @@ class PrintoutTicketForm(models.AbstractModel):
 
                 if rec2.charge_type.lower() == 'fare':
                     a[rec2.pax_type]['fare'] += rec2.amount
-                    a[rec2.pax_type]['qty'] += 1
+                    a[rec2.pax_type]['qty'] = rec2.pax_count
                 elif rec2.charge_type.lower() in ['roc', 'tax']:
                     a[rec2.pax_type]['tax'] += rec2.amount
             values[rec.id] = [a[new_a] for new_a in a]
