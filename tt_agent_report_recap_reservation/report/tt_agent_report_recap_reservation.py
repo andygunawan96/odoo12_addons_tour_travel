@@ -251,10 +251,6 @@ class AgentReportRecapReservation(models.Model):
                 report_lines = self._convert_data(report_lines, provider_type)
                 for line in report_lines:
                     lines.append(line)
-            lines_offline = self._lines(date_from, date_to, agent_id, 'offline', state)
-            lines_offline = self._convert_data(lines_offline, 'offline')
-            for line in lines_offline:
-                lines.append(line)
         return lines
 
     def _get_lines_data_join_service_charge(self, date_from, date_to, agent_id, provider_type, state):
@@ -282,10 +278,6 @@ class AgentReportRecapReservation(models.Model):
                 report_lines = self._convert_data(report_lines, provider_type)
                 for line in report_lines:
                     lines.append(line)
-            lines_offline = self._lines_search(date_from, date_to, agent_id, 'offline', state)
-            lines_offline = self._convert_data(lines_offline, 'offline')
-            for line in lines_offline:
-                lines.append(line)
         return lines
 
     def _datetime_user_context(self, utc_datetime_string):

@@ -104,7 +104,27 @@ class AgentReportLedgerXls(models.TransientModel):
             sheet.set_column('M:M', 18)
 
         row_data = 8
+        starting_balance = 0
+        end_balance = 0
+        total_debit = 0
+        total_credit = 0
+
+        #initiate start balance
+        if values['lines'][0]['debit'] > 0:
+            starting_balance = values['lines'][0]['balance'] - values['lines'][0]['debit']
+            end_balance = starting_balance
+        else :
+            starting_balance = values['lines'][0]['balance'] + values['lines'][0]['credit']
+            end_balance = starting_balance
+
         for rec in values['lines']:
+            if rec['debit'] > 0:
+                total_debit += rec['debit']
+                end_balance += rec['debit']
+            if rec['credit'] > 0:
+                total_credit += rec['credit']
+                end_balance -= rec['credit']
+
             row_data += 1
             sty_table_data_center = style.table_data_center
             sty_table_data = style.table_data
@@ -132,9 +152,9 @@ class AgentReportLedgerXls(models.TransientModel):
                 sheet.write(row_data, 8, rec['description'], sty_table_data)
                 sheet.write(row_data, 9, rec['issued_by'], sty_table_data)
                 sheet.write(row_data, 10, rec['transaction_type'], sty_table_data)
-                sheet.write(row_data, 11, rec['debit'], sty_table_data)
-                sheet.write(row_data, 12, rec['credit'], sty_table_data)
-                sheet.write(row_data, 13, rec['balance'], sty_table_data)
+                sheet.write(row_data, 11, rec['debit'], sty_amount)
+                sheet.write(row_data, 12, rec['credit'], sty_amount)
+                sheet.write(row_data, 13, rec['balance'], sty_amount)
                 sheet.set_row(row_data, row_height)
             else:
                 sheet.write(row_data, 0, row_data - 8, sty_table_data_center)
@@ -149,10 +169,27 @@ class AgentReportLedgerXls(models.TransientModel):
                 sheet.write(row_data, 7, rec['description'], sty_table_data)
                 sheet.write(row_data, 8, rec['issued_by'], sty_table_data)
                 sheet.write(row_data, 9, rec['transaction_type'], sty_table_data)
-                sheet.write(row_data, 10, rec['debit'], sty_table_data)
-                sheet.write(row_data, 11, rec['credit'], sty_table_data)
-                sheet.write(row_data, 12, rec['balance'], sty_table_data)
+                sheet.write(row_data, 10, rec['debit'], sty_amount)
+                sheet.write(row_data, 11, rec['credit'], sty_amount)
+                sheet.write(row_data, 12, rec['balance'], sty_amount)
                 sheet.set_row(row_data, row_height)
+
+        if values['data_form']['agent_id'] != '':
+            sty_table_data = style.table_data
+            sty_amount = style.table_data_amount
+            sty_table_data_even = style.table_data_even
+            sty_amount_even = style.table_data_amount_even
+
+            row_data += 3
+            sheet.write(row_data, 12, 'Starting Balance', sty_table_data)
+            sheet.write(row_data, 13, starting_balance, sty_amount)
+            sheet.write(row_data+1, 12, 'Total Debit', sty_table_data_even)
+            sheet.write(row_data+1, 13, total_debit, sty_amount_even)
+            sheet.write(row_data+2, 12, 'Total Credit', sty_table_data)
+            sheet.write(row_data+2, 13, total_credit, sty_amount)
+            sheet.write(row_data+3, 12, "End Balance", sty_table_data_even)
+            sheet.write(row_data+3, 13, end_balance, sty_amount_even)
+
 
         workbook.close()
 
@@ -259,9 +296,9 @@ class AgentReportLedgerXls(models.TransientModel):
             sheet.write(row_data, 8, rec['description'], sty_table_data)
             sheet.write(row_data, 9, rec['issued_by'], sty_table_data)
             sheet.write(row_data, 10, rec['transaction_type'], sty_table_data)
-            sheet.write(row_data, 11, rec['debit'], sty_table_data)
-            sheet.write(row_data, 12, rec['credit'], sty_table_data)
-            sheet.write(row_data, 13, rec['balance'], sty_table_data)
+            sheet.write(row_data, 11, rec['debit'], sty_amount)
+            sheet.write(row_data, 12, rec['credit'], sty_amount)
+            sheet.write(row_data, 13, rec['balance'], sty_amount)
             sheet.set_row(row_data, row_height)
 
         workbook.close()

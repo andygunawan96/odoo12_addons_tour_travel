@@ -3,7 +3,6 @@ from ...tools import tools_excel
 from io import BytesIO
 import xlsxwriter
 import base64
-import json
 from datetime import datetime
 
 
@@ -98,7 +97,8 @@ class AgentReportRecapReservationXls(models.TransientModel):
                     if i['provider_type'].lower() == "offline":
                         pnr_list = []
                     else:
-                        continue
+                        pnr_list = []
+                        pass
 
                 counter += 1
                 row_data += 1
@@ -137,19 +137,23 @@ class AgentReportRecapReservationXls(models.TransientModel):
 
                 # filtered data
                 filtered_data = []
+
                 for j in pnr_list:
                     temp_charge = list(filter(lambda x: x['order_number'] == i['order_number'] and x['booking_pnr'] == j, service_charge))
-                    temp_book = filter(lambda x: x['order_number'] == i['order_number'] and x['ledger_pnr'] == j, datas)
+                    temp_book = list(filter(lambda x: x['order_number'] == i['order_number'] and x['ledger_pnr'] == j, datas))
+                    temp_dict = {
+                        'order_number': i['order_number'],
+                        'pnr': j
+                    }
                     grand_total = 0
                     nta_total = 0
                     commission = 0
-                    if temp_charge not in filtered_data:
-                        filtered_data.append(temp_charge)
-                        booking_state = ""
+                    if temp_dict not in filtered_data:
+                        filtered_data.append(temp_dict)
                         try:
                             booking_state = temp_charge[0]['booking_state']
                         except:
-                            pass
+                            booking_state = ''
                         for k in temp_charge:
                             if k['booking_charge_type'] == 'RAC':
                                 commission -= k['booking_charge_total']
