@@ -78,7 +78,7 @@ class TtRefund(models.Model):
 
     @api.model
     def create(self, vals_list):
-        vals_list['name'] = self.env['ir.sequence'].next_by_code('tt.refund')
+        vals_list['name'] = self.env['ir.sequence'].next_by_code(self._name)
         if 'service_type' in vals_list:
             vals_list['service_type'] = self.parse_service_type(vals_list['service_type'])
 
@@ -93,8 +93,8 @@ class TtRefund(models.Model):
             else:
                 rec.admin_fee_id = self.env.ref('tt_accounting.admin_fee_refund_regular').id
 
-    @api.depends('admin_fee_id', 'refund_amount')
-    @api.onchange('admin_fee_id', 'refund_amount')
+    @api.depends('admin_fee_id', 'refund_amount', 'res_model', 'res_id')
+    @api.onchange('admin_fee_id', 'refund_amount', 'res_model', 'res_id')
     def _compute_admin_fee(self):
         for rec in self:
             if rec.admin_fee_id:
@@ -237,4 +237,23 @@ class TtRefund(models.Model):
             'cancel_uid': self.env.user.id,
             'cancel_date': datetime.now()
         })
+
+    def open_reference(self):
+        try:
+            form_id = self.env[self.res_model].get_form_id()
+        except:
+            form_id = self.env['ir.ui.view'].search([('type', '=', 'form'), ('model', '=', self.res_model)], limit=1)
+            form_id = form_id[0] if form_id else False
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Reservation',
+            'res_model': self.res_model,
+            'res_id': self.res_id,
+            'view_type': 'form',
+            'view_mode': 'form',
+            'view_id': form_id.id,
+            'context': {},
+            'target': 'current',
+        }
 
