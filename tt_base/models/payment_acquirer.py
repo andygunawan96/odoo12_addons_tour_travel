@@ -80,7 +80,7 @@ class PaymentAcquirer(models.Model):
         # NB:  BCA /payment/tt_transfer/feedback?acq_id=27
         # NB:  MANDIRI /payment/tt_transfer/feedback?acq_id=28
         payment_acq = self.env['payment.acquirer'].browse(acq.payment_acquirer_id)
-        loss_or_profit,fee, uniq = self.compute_fee(amount,unique)
+        loss_or_profit, fee, uniq = self.compute_fee(unique)
         return {
             'seq_id': payment_acq.id.seq_id,
             'name': payment_acq.id.name,

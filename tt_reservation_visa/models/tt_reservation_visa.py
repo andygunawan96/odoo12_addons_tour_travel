@@ -1290,7 +1290,7 @@ class TtVisa(models.Model):
                             })
                     elif ssc.charge_code == 'fare':
                         sale['TOTAL'] = {
-                            'charge_code': ssc.charge_code,
+                            'charge_code': 'total',
                             'amount': ssc.amount
                         }
                         if ssc['currency_id']:
