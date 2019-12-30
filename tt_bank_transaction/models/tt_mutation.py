@@ -1,6 +1,6 @@
 from odoo import api, models, fields
 from ...tools import variables
-from datetime import datetime
+from datetime import datetime, timedelta
 import pytz
 import json
 from ...tools.ERR import RequestException
@@ -124,12 +124,26 @@ class TtBankTransaction(models.Model):
 
         #get bank code
         bank_code = self.env['tt.bank'].sudo().browse(int(bank_owner[0]['bank_id'][0]))
-        date = bank_owner.bank_transaction_date_ids.filtered(lambda x: x.date == data['startdate'])
+
+        #for debugging purpose
+        # temp_dates = datetime.today() - timedelta(days=1)
+
+        if datetime.today().strftime('%a') == 'sat':
+        # if temp_dates.strftime('%a') == 'Sat':
+            temp_day = datetime.today() + timedelta(days=2)
+            date = bank_owner.bank_transaction_date_ids.filtered(lambda x: x.date == temp_day.strftime("%Y-%m-%d"))
+        elif datetime.today().strftime('%a') == 'sun':
+        # elif temp_dates.strftime('%a') == 'Sun':
+            temp_day = datetime.today() + timedelta(days=1)
+            date = bank_owner.bank_transaction_date_ids.filtered(lambda x: x.date == temp_day.strftime("%Y-%m-%d"))
+        else:
+            temp_day = datetime.today()
+            date = bank_owner.bank_transaction_date_ids.filtered(lambda x: x.date == temp_day.strftime("%Y-%m-%d"))
 
         if not date:
             new_day = {
                 'bank_id': bank_owner.id,
-                'date': data['startdate']
+                'date': temp_day.strftime("%Y-%m-%d")
             }
             date = self.env['tt.bank.transaction.date'].create_new_day(new_day)
 
@@ -177,7 +191,7 @@ class TtBankTransaction(models.Model):
             is_exist = date.transaction_ids.filtered(lambda x: x.transaction_original == str(i['TransactionAmount']) and x.transaction_type == i['TransactionType'] and x.transaction_name == i['TransactionName'])
             if not is_exist:
 
-                logs['process'] += 1;
+                logs['process'] += 1
 
                 temp_date = i['TransactionDate'].split("-")
 
