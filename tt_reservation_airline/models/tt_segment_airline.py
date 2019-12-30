@@ -17,7 +17,7 @@ class TtSegmentAirline(models.Model):
 
     pnr = fields.Char('PNR', related='journey_id.pnr', store=True)
 
-    carrier_id  = fields.Many2one('tt.transport.carrier','Plane')
+    carrier_id = fields.Many2one('tt.transport.carrier','Plane')
     carrier_code = fields.Char('Flight Code')
     carrier_number = fields.Char('Flight Number')
     provider_id = fields.Many2one('tt.provider','Provider')

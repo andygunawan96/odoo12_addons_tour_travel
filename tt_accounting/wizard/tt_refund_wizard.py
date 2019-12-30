@@ -42,6 +42,7 @@ class TtRefundWizard(models.TransientModel):
             'currency_id': self.currency_id.id,
             'service_type': self.service_type,
             'refund_type': self.refund_type,
+            'admin_fee_id': self.refund_type == 'quick' and self.env.ref('tt_accounting.admin_fee_refund_quick').id or self.env.ref('tt_accounting.admin_fee_refund_regular').id,
             'res_model': self.res_model,
             'res_id': self.res_id,
             'notes': self.notes

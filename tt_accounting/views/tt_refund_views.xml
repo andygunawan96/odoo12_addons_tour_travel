@@ -83,9 +83,7 @@
                             <field name="refund_amount_ho" groups="tt_base.group_tt_tour_travel_operator"/>
                             <field name="estimate_ho_refund_amount" groups="tt_base.group_tt_tour_travel_operator"/>
                             <field name="real_refund_amount" groups="tt_base.group_tt_tour_travel_operator"/>
-                            <field name="apply_adm_fee" groups="tt_base.group_tt_tour_travel_operator"/>
-                            <field name="admin_fee_type" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible':[('apply_adm_fee','=', False)]}"/>
-                            <field name="admin_fee_num" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible':[('apply_adm_fee','=', False)]}"/>
+                            <field name="admin_fee_id" groups="tt_base.group_tt_tour_travel_operator" attrs="{'readonly':[('state','!=','confirm')]}"/>
                             <field name="admin_fee"/>
                             <field name="total_amount"/>
                             <field name="service_type"/>

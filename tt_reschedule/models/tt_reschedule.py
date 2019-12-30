@@ -24,11 +24,14 @@ class TtReschedule(models.Model):
                                   " * The 'Canceled' status is used for Agent or HO to cancel the request.\n"
                                   " * The 'Expired' status means the request has been expired.\n")
     reschedule_amount = fields.Integer('Estimated Amount', default=0, required=True, readonly=True)
-    new_pnr = fields.Char('New PNR')
-    reschedule_type = fields.Selection([('reschedule', 'Reschedule'), ('upgrade', 'Upgrade Service'),
-                                        ('reroute', 'Reroute'), ('seat', 'Request Seat'),
-                                        ('corename', 'Core Name'), ('ssr', 'SSR')
-                                        ], 'Reissue Type', default='reschedule',
+    new_pnr = fields.Char('New PNR', readonly=True, compute="_compute_new_pnr")
+    invoice_line_ids = fields.One2many('tt.agent.invoice.line', 'res_id_resv', 'Invoice', domain=[('res_model_resv','=', 'tt.reschedule')])
+    old_segment_ids = fields.Many2many('tt.segment.airline', 'tt_reschedule_old_segment_rel', 'reschedule_id', 'segment_id', string='Old Segments',
+                                      readonly=True)
+    new_segment_ids = fields.Many2many('tt.segment.airline', 'tt_reschedule_new_segment_rel', 'reschedule_id', 'segment_id', string='New Segments',
+                                  readonly=True, states={'draft': [('readonly', False)]})
+    reschedule_type = fields.Selection([('reschedule', 'Reschedule'), ('revalidate', 'Upgrade Service'),
+                                        ('reissued', 'Reroute'), ('upgrade', 'Upgrade')], 'Reschedule Type', default='reschedule',
                                        states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]},
                                        readonly=True)
 
@@ -39,6 +42,43 @@ class TtReschedule(models.Model):
             vals_list['service_type'] = self.parse_service_type(vals_list['service_type'])
 
         return super(TtReschedule, self).create(vals_list)
+
+    @api.depends('new_segment_ids')
+    @api.onchange('new_segment_ids')
+    def _compute_admin_fee_id(self):
+        for rec in self:
+            new_pnr = ''
+            for rec2 in rec.new_segment_ids:
+                new_pnr += rec2.pnr + ','
+            rec.new_pnr = new_pnr and new_pnr[:-1] or ''
+
+    @api.depends('reschedule_type')
+    @api.onchange('reschedule_type')
+    def _compute_admin_fee_id(self):
+        for rec in self:
+            rec.admin_fee_id = self.env.ref('tt_accounting.admin_fee_reschedule').id
+
+    @api.depends('admin_fee_id', 'reschedule_amount')
+    @api.onchange('admin_fee_id', 'reschedule_amount')
+    def _compute_admin_fee(self):
+        for rec in self:
+            if rec.admin_fee_id:
+                if rec.admin_fee_id.type == 'amount':
+                    pnr_amount = 0
+                    book_obj = self.env[rec.res_model].browse(int(rec.res_id))
+                    for rec2 in book_obj.provider_booking_ids:
+                        pnr_amount += 1
+                else:
+                    pnr_amount = 1
+                rec.admin_fee = rec.admin_fee_id.get_final_adm_fee(rec.reschedule_amount, pnr_amount)
+            else:
+                rec.admin_fee = 0
+
+    @api.depends('admin_fee', 'reschedule_amount')
+    @api.onchange('admin_fee', 'reschedule_amount')
+    def _compute_total_amount(self):
+        for rec in self:
+            rec.total_amount = rec.reschedule_amount - rec.admin_fee
 
     def confirm_reschedule_from_button(self):
         if self.state != 'draft':
@@ -68,6 +108,7 @@ class TtReschedule(models.Model):
             'state': 'validate',
             'validate_uid': self.env.user.id,
             'validate_date': datetime.now(),
+            'final_admin_fee': self.admin_fee,
         })
 
     def approve_reschedule_from_button(self):
