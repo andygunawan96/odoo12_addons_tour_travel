@@ -1,0 +1,21 @@
+<odoo>
+    <record id="tt_reschedule_segment_addons_form_view" model="ir.ui.view">
+        <field name="name">tt.reschedule.segment.addons.form.view</field>
+        <field name="model">tt.segment.addons.reschedule</field>
+        <field name="inherit_id" ref="tt_reservation_airline.tt_reservation_airline_segment_addons_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="." position="inside">
+            </xpath>
+        </field>
+    </record>
+
+    <record id="tt_reschedule_segment_addons_tree_view" model="ir.ui.view">
+        <field name="name">tt.reschedule.segment.addons.tree.view</field>
+        <field name="model">tt.segment.addons.reschedule</field>
+        <field name="inherit_id" ref="tt_reservation_airline.tt_reservation_airline_segment_addons_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="." position="inside">
+            </xpath>
+        </field>
+    </record>
+</odoo>

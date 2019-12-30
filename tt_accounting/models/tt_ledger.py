@@ -14,6 +14,8 @@ LEDGER_TYPE = [
     (4, 'Refund'),
     (5, 'Adjustment'),
     (6, 'Admin fee'),
+    (7, 'Reschedule'),
+    (8, 'Addons'),
     (99, 'Others')
 ]
 

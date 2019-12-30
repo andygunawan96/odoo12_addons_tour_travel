@@ -1,0 +1,74 @@
+<odoo>
+    <record id="tt_reschedule_segment_form_view" model="ir.ui.view">
+        <field name="name">tt.reschedule.segment.form.view</field>
+        <field name="model">tt.segment.reschedule</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="pnr"/>
+                            <!--<field name="booking_id" invisible="1"/>-->
+                            <field name="segment_code"/>
+                            <field name="fare_code"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <field name="carrier_id"/>
+                            <field name="carrier_code"/>
+                            <field name="carrier_number"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <!--<field name="agent_id"/>-->
+                            <field name="name"/>
+                            <field name="provider_id"/>
+                        </group>
+                        <group>
+
+                        </group>
+                    </group>
+                    <group>
+                        <separator colspan="6" string="Booking"/>
+                        <group>
+                            <field name="origin_id"/>
+                            <field name="departure_date"/>
+                        </group>
+                        <group>
+                            <field name="destination_id"/>
+                            <field name="arrival_date"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                        </group>
+                        <group>
+                            <field name="cabin_class"/>
+                            <field name="class_of_service"/>
+                        </group>
+                    </group>
+                    <separator colspan="6" string="Seats"/>
+                    <field name="seat_ids">
+                        <tree>
+                            <field name="passenger_id"/>
+                            <field name="seat"/>
+                        </tree>
+                    </field>
+                    <separator string="Addons"/>
+                    <field name="segment_addons_ids"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_reschedule_segment_tree_view" model="ir.ui.view">
+        <field name="name">tt.reschedule.segment.tree.view</field>
+        <field name="model">tt.segment.reschedule</field>
+        <field name="inherit_id" ref="tt_reservation_airline.tt_reservation_airline_segment_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="." position="inside">
+            </xpath>
+        </field>
+    </record>
+</odoo>

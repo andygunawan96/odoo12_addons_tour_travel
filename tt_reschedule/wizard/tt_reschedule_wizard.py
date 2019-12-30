@@ -18,19 +18,20 @@ class TtRescheduleWizard(models.TransientModel):
     customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer Parent', readonly=True)
 
     customer_parent_type_id = fields.Many2one('tt.customer.parent.type', 'Customer Parent Type', related='customer_parent_id.customer_parent_type_id',
-                                    readonly=True)
+                                              readonly=True)
 
     currency_id = fields.Many2one('res.currency', readonly=True)
     service_type = fields.Char('Service Type', required=True, readonly=True)
     old_segment_ids = fields.Many2many('tt.segment.airline', 'tt_reschedule_wizard_old_segment_rel', 'reschedule_id',
                                        'segment_id', string='Old Segments',
                                        readonly=True, compute="_compute_old_segments")
-    new_segment_ids = fields.Many2many('tt.segment.airline', 'tt_reschedule_wizard_new_segment_rel', 'reschedule_id',
+    new_segment_ids = fields.Many2many('tt.segment.reschedule', 'tt_reschedule_wizard_new_segment_rel', 'reschedule_id',
                                        'segment_id', string='New Segments', ondelete="cascade", compute="_compute_new_segments", readonly=False)
-    reschedule_type = fields.Selection([('reschedule', 'Reschedule'), ('revalidate', 'Upgrade Service'),
-                                        ('reissued', 'Reroute'), ('upgrade', 'Upgrade')], 'Reschedule Type', default='reschedule', required=True)
+    reschedule_type = fields.Selection([('reschedule', 'Reschedule'), ('revalidate', 'Revalidate'),
+                                        ('reissued', 'Reissued'), ('upgrade', 'Upgrade Service'), ('addons', 'Addons (Meals, Baggage, Seat, etc)')], 'Reschedule Type', default='reschedule', required=True)
 
     referenced_document = fields.Char('Ref. Document',required=True,readonly=True)
+    booker_id = fields.Many2one('tt.customer', 'Booker', ondelete='restrict', readonly=True)
 
     res_model = fields.Char(
         'Related Reservation Name', index=True, readonly=True)
@@ -54,7 +55,7 @@ class TtRescheduleWizard(models.TransientModel):
         new_segment_list = []
         book_obj = self.env[self.res_model].sudo().browse(int(self.res_id))
         for rec in book_obj.segment_ids:
-            new_seg_obj = self.env['tt.segment.airline'].sudo().create({
+            new_seg_obj = self.env['tt.segment.reschedule'].sudo().create({
                 'segment_code': rec.segment_code,
                 'fare_code': rec.fare_code,
                 'carrier_id': rec.carrier_id.id,
@@ -71,6 +72,23 @@ class TtRescheduleWizard(models.TransientModel):
                 'cabin_class': rec.cabin_class,
                 'sequence': rec.sequence,
             })
+            for rec2 in rec.seat_ids:
+                self.env['tt.seat.reschedule'].sudo().create({
+                    'segment_id': new_seg_obj.id,
+                    'seat': rec2.seat,
+                    'passenger_id': rec2.passenger_id.id
+                })
+            for rec2 in rec.segment_addons_ids:
+                self.env['tt.segment.addons.reschedule'].sudo().create({
+                    'segment_id': new_seg_obj.id,
+                    'detail_code': rec2.detail_code,
+                    'detail_type': rec2.detail_type,
+                    'detail_name': rec2.detail_name,
+                    'unit': rec2.unit,
+                    'amount': rec2.amount,
+                    'sequence': rec2.sequence,
+                    'description': rec2.description,
+                })
             new_segment_list.append(new_seg_obj.id)
         self.new_segment_ids = [(6, 0, new_segment_list)]
 
@@ -84,9 +102,10 @@ class TtRescheduleWizard(models.TransientModel):
             self.sudo().write({
                 'new_segment_ids': [(3, rec.id)]
             })
-        self.env['tt.reschedule'].create({
+        reschedule_obj = self.env['tt.reschedule'].create({
             'agent_id': self.agent_id.id,
             'customer_parent_id': self.customer_parent_id.id,
+            'booker_id': self.booker_id.id,
             'currency_id': self.currency_id.id,
             'service_type': self.service_type,
             'reschedule_type': self.reschedule_type,
@@ -96,4 +115,13 @@ class TtRescheduleWizard(models.TransientModel):
             'res_id': self.res_id,
             'notes': self.notes
         })
+
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        return {
+            'type': 'ir.actions.act_url',
+            'name': reschedule_obj.name,
+            'target': 'new',
+            'url': base_url + "/web#id=" + str(
+                reschedule_obj.id) + "&action=547&model=tt.reschedule&view_type=form&menu_id=151",
+        }
 
