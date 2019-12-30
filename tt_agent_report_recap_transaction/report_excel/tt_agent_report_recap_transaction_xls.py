@@ -105,7 +105,8 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     if i['provider_type'].lower() == "offline":
                         pnr_list = []
                     else:
-                        continue
+                        pnr_list = []
+                        pass
 
                 counter += 1
                 row_data += 1
