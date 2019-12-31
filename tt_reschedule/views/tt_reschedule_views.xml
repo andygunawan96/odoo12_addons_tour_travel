@@ -53,9 +53,9 @@
         <field name="arch" type="xml">
             <form create="false">
                 <header>
-                    <button name="confirm_reschedule_from_button" string="Confirm" type="object" attrs="{'invisible':[('state','!=', 'draft')]}"/>
+                    <button name="confirm_reschedule_from_button" string="Confirm" type="object" groups="tt_base.group_tt_agent_user_operator" attrs="{'invisible':[('state','!=', 'draft')]}"/>
                     <button name="send_reschedule_from_button" string="Send to Agent" type="object" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible':[('state','!=', 'confirm')]}"/>
-                    <button name="validate_reschedule_from_button" string="Validate" type="object" attrs="{'invisible':[('state','!=', 'sent')]}"/>
+                    <button name="validate_reschedule_from_button" string="Validate" type="object" groups="tt_base.group_tt_agent_user_operator" attrs="{'invisible':[('state','!=', 'sent')]}"/>
                     <button name="approve_reschedule_from_button" string="Approve" type="object" groups="tt_base.group_tt_accounting_manager" attrs="{'invisible':[('state','!=', 'validate')]}"/>
                     <button name="action_done" string="Done" type="object" groups="tt_base.group_tt_accounting_manager" attrs="{'invisible':[('state','!=', 'approve')]}"/>
                     <button name="set_to_confirm" string="Set to Confirm" type="object" groups="tt_base.group_tt_accounting_manager" attrs="{'invisible':[('state','not in', ['sent', 'validate'])]}"/>
@@ -91,8 +91,8 @@
                             <field name="referenced_document"/>
                             <field name="payment_acquirer_id" attrs="{'invisible':['|', ('state','not in', ['validate', 'approve', 'done', 'cancel', 'expired']), ('customer_parent_type_id', '=', %(tt_base.customer_type_cor)d)], 'required':[('state','in', ['validate', 'approve', 'done']), ('customer_parent_type_id', '!=', %(tt_base.customer_type_cor)d)]}"/>
                             <field name="payment_cust_parent_id" attrs="{'invisible':['|', ('state','not in', ['validate', 'approve', 'done', 'cancel', 'expired']), ('customer_parent_type_id', '!=', %(tt_base.customer_type_cor)d)], 'required':[('state','in', ['validate', 'approve', 'done']), ('customer_parent_type_id', '=', %(tt_base.customer_type_cor)d)]}"/>
-                            <field name="res_model"/>
-                            <field name="res_id"/>
+                            <field name="res_model" groups="base.user_admin"/>
+                            <field name="res_id" groups="base.user_admin"/>
                             <button name="open_reference" string="Go to reference" type="object"
                                     attrs="{'invisible':['|',('res_model','=',False),('res_id','=',0)]}"/>
                         </group>
