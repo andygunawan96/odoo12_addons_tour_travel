@@ -15,8 +15,8 @@
                     <field name="service_type"/>
                     <field name="reschedule_type"/>
                     <field name="referenced_document"/>
-                    <field name="res_model"/>
-                    <field name="res_id"/>
+                    <field name="res_model" groups="base.user_admin"/>
+                    <field name="res_id" groups="base.user_admin"/>
                     <field name="notes"/>
                 </group>
                 <separator string="Old Segments"/>
