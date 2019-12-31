@@ -51,6 +51,8 @@ class TtReschedule(models.Model):
     payment_acquirer_id = fields.Many2one('payment.acquirer', 'Payment Acquirer', domain="[('agent_id', '=', agent_id)]")
     booker_id = fields.Many2one('tt.customer', 'Booker', ondelete='restrict', readonly=True)
 
+    payment_cust_parent_id = fields.Many2one('tt.customer.parent', 'Payment Customer Parent', domain=[])
+
     @api.depends('invoice_line_ids')
     def set_agent_invoice_state(self):
 
@@ -222,7 +224,7 @@ class TtReschedule(models.Model):
         ##membuat payment dalam draft
         payment_obj = self.env['tt.payment'].create({
             'agent_id': self.agent_id.id,
-            'acquirer_id': self.payment_acquirer_id.id,
+            'acquirer_id': self.payment_acquirer_id and self.payment_acquirer_id.id or False,
             'real_total_amount': inv_line_obj.total,
             'customer_parent_id': self.customer_parent_id.id
         })
