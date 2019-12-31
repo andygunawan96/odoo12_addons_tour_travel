@@ -89,7 +89,8 @@
                             <field name="reschedule_type"/>
                             <field name="notes"/>
                             <field name="referenced_document"/>
-                            <field name="payment_acquirer_id" attrs="{'invisible':[('state','not in', ['validate', 'approve', 'done', 'cancel', 'expired'])], 'required':[('state','in', ['validate', 'approve', 'done'])]}"/>
+                            <field name="payment_acquirer_id" attrs="{'invisible':['|', ('state','not in', ['validate', 'approve', 'done', 'cancel', 'expired']), ('customer_parent_type_id', '=', %(tt_base.customer_type_cor)d)], 'required':[('state','in', ['validate', 'approve', 'done']), ('customer_parent_type_id', '!=', %(tt_base.customer_type_cor)d)]}"/>
+                            <field name="payment_cust_parent_id" attrs="{'invisible':['|', ('state','not in', ['validate', 'approve', 'done', 'cancel', 'expired']), ('customer_parent_type_id', '!=', %(tt_base.customer_type_cor)d)], 'required':[('state','in', ['validate', 'approve', 'done']), ('customer_parent_type_id', '=', %(tt_base.customer_type_cor)d)]}"/>
                             <field name="res_model"/>
                             <field name="res_id"/>
                             <button name="open_reference" string="Go to reference" type="object"
