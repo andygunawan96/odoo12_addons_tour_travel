@@ -13,7 +13,7 @@
     """,
     'author': 'PT Roda Express Sukses Mandiri',
     'website': 'rodextravel.tours',
-    'depends': ['base', 'tt_base', 'tt_accounting', 'tt_in_api_connector'],
+    'depends': ['base', 'tt_base', 'tt_accounting', 'tt_in_api_connector', 'tt_vouchers'],
     'data': [
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
