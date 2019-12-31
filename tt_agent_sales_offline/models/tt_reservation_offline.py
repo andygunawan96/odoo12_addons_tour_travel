@@ -100,7 +100,7 @@ class ReservationOffline(models.Model):
         ##membuat payment dalam draft
         payment_obj = self.env['tt.payment'].create({
             'agent_id': self.agent_id.id,
-            'real_total_amount': inv_line_obj.total,
+            'real_total_amount': inv_line_obj.total_after_tax,
             'customer_parent_id': self.customer_parent_id.id
         })
         if self.acquirer_id:
@@ -111,7 +111,7 @@ class ReservationOffline(models.Model):
         self.env['tt.payment.invoice.rel'].create({
             'invoice_id': invoice_id.id,
             'payment_id': payment_obj.id,
-            'pay_amount': inv_line_obj.total,
+            'pay_amount': inv_line_obj.total_after_tax,
         })
 
     def action_issued_backend(self):

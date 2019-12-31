@@ -114,6 +114,7 @@
                                     <field name="name"/>
                                     <field name="date_invoice"/>
                                     <field name="total"/>
+                                    <field name="total_after_tax"/>
                                     <field name="state"/>
                                 </tree>
                             </field>

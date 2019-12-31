@@ -84,14 +84,14 @@ class ReservationTrain(models.Model):
         payment_obj = self.env['tt.payment'].create({
             'agent_id': self.agent_id.id,
             'acquirer_id': acquirer_id,
-            'real_total_amount': inv_line_obj.total,
+            'real_total_amount': inv_line_obj.total_after_tax,
             'customer_parent_id': customer_parent_id
         })
 
         self.env['tt.payment.invoice.rel'].create({
             'invoice_id': invoice_id.id,
             'payment_id': payment_obj.id,
-            'pay_amount': inv_line_obj.total,
+            'pay_amount': inv_line_obj.total_after_tax,
         })
 
 
