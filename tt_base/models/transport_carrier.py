@@ -17,12 +17,17 @@ class TransportCarrier(models.Model):
     icao = fields.Char('ICAO Code', help="ICAO code for airline")
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
     call_sign = fields.Char('Call Sign')
+
     # cancellation_policy = fields.Html('Cancellation Policy')
     # general_policy = fields.Html('General Policy')
 
     # logo = fields.Binary('Logo', attachment=True,
     #     help='This field holds the image used as avatar for this contact, limited to 1024x1024px')
 
+    is_duplicate_single_name = fields.Boolean('Duplicate Single Name', default=True, help='Duplicate Single Name (first name and last name has same value)')
+    adult_length_name = fields.Integer('Adult Length Name', default=24, help='Adult length name')
+    child_length_name = fields.Integer('Child Length Name', default=24, help='Child length name')
+    infant_length_name = fields.Integer('Infant Length Name', default=16, help='Infant length name')
     active = fields.Boolean('Active', default=True)
     # country_id = fields.Many2one('res.country', 'Country') masihbutuh?
 
@@ -46,6 +51,10 @@ class TransportCarrier(models.Model):
             'icao': self.icao,
             # 'provider_type_id': self.provider_type_id.to_dict(),
             'call_sign': self.call_sign,
+            'is_duplicate_single_name': self.is_duplicate_single_name,
+            'adult_length_name': self.adult_length_name,
+            'child_length_name': self.child_length_name,
+            'infant_length_name': self.infant_length_name,
             'active': self.active,
         }
 
@@ -56,6 +65,10 @@ class TransportCarrier(models.Model):
             'icao': self.icao and self.icao or '',
             'call_sign': self.call_sign and self.call_sign or '',
             'provider_type': self.provider_type_id and self.provider_type_id.code or '',
+            'is_duplicate_single_name': self.is_duplicate_single_name,
+            'adult_length_name': self.adult_length_name,
+            'child_length_name': self.child_length_name,
+            'infant_length_name': self.infant_length_name,
             'active': self.active,
         }
         return res
