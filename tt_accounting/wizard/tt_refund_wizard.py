@@ -48,10 +48,12 @@ class TtRefundWizard(models.TransientModel):
             'notes': self.notes
         })
         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        action_num = self.env.ref('tt_accounting.tt_refund_action').id
+        menu_num = self.env.ref('tt_accounting.menu_transaction_refund').id
         return {
             'type': 'ir.actions.act_url',
             'name': refund_obj.name,
             'target': 'new',
-            'url': base_url + "/web#id=" + str(refund_obj.id) + "&action=507&model=tt.refund&view_type=form&menu_id=151",
+            'url': base_url + "/web#id=" + str(refund_obj.id) + "&action=" + str(action_num) + "&model=tt.refund&view_type=form&menu_id=" + str(menu_num),
         }
 

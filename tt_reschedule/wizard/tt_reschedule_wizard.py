@@ -117,11 +117,13 @@ class TtRescheduleWizard(models.TransientModel):
         })
 
         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        action_num = self.env.ref('tt_reschedule.tt_reschedule_action').id
+        menu_num = self.env.ref('tt_reschedule.menu_transaction_reschedule').id
         return {
             'type': 'ir.actions.act_url',
             'name': reschedule_obj.name,
             'target': 'new',
             'url': base_url + "/web#id=" + str(
-                reschedule_obj.id) + "&action=547&model=tt.reschedule&view_type=form&menu_id=151",
+                reschedule_obj.id) + "&action=" + str(action_num) + "&model=tt.reschedule&view_type=form&menu_id=" + str(menu_num),
         }
 
