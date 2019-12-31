@@ -199,6 +199,15 @@ class TtVisa(models.Model):
             'member': self.is_member,
             'acquirer_seq_id': self.payment_method
         }
+        if self.voucher_code:
+            data.update({
+                'voucher': {
+                    'voucher_reference': self.voucher_code,
+                    'date': datetime.now().strftime('%Y-%m-%d'),
+                    'provider_type': 'visa',
+                    'provider': self.provider_name,
+                },
+            })
         ctx = {
             'co_agent_type_id': self.agent_type_id.id,
             'co_agent_id': self.agent_id.id,
