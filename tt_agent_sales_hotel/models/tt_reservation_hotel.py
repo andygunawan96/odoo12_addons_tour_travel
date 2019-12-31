@@ -72,12 +72,12 @@ class ReservationHotel(models.Model):
         payment_obj = self.env['tt.payment'].create({
             'agent_id': self.agent_id.id,
             'acquirer_id': self.env['payment.acquirer'].search([('seq_id', '=', acquirer_id['seq_id'])], limit=1).id,
-            'real_total_amount': inv_line_obj.total,
+            'real_total_amount': inv_line_obj.total_after_tax,
             'customer_parent_id': self.customer_parent_id.id
         })
 
         self.env['tt.payment.invoice.rel'].create({
             'invoice_id': invoice_id.id,
             'payment_id': payment_obj.id,
-            'pay_amount': inv_line_obj.total,
+            'pay_amount': inv_line_obj.total_after_tax,
         })

@@ -88,7 +88,7 @@ class ReservationVisa(models.Model):
         ##membuat payment dalam draft
         payment_obj = self.env['tt.payment'].create({
             'agent_id': book_obj.agent_id.id,
-            'real_total_amount': inv_line_obj.total,
+            'real_total_amount': inv_line_obj.total_after_tax,
             'customer_parent_id': book_obj.customer_parent_id.id
         })
         if 'seq_id' in data:
@@ -100,7 +100,7 @@ class ReservationVisa(models.Model):
         self.env['tt.payment.invoice.rel'].create({
             'invoice_id': invoice_id.id,
             'payment_id': payment_obj.id,
-            'pay_amount': inv_line_obj.total,
+            'pay_amount': inv_line_obj.total_after_tax,
         })
 
     # def action_issued_visa(self, api_context=None):

@@ -37,6 +37,7 @@
                             <label for="total" string="Grand Total"/>
                         </div>
                         <field name="total" nolabel="1" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                        <field name="total_after_tax" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}"/>
                     </group>
                 </sheet>
             </form>

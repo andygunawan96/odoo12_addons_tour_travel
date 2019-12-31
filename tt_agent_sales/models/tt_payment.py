@@ -21,7 +21,7 @@ class TtPaymentInvoiceRel(models.Model):
         invoice_obj = self.env['tt.agent.invoice'].sudo().browse(vals_list.get('invoice_id'))
 
         #pengecekan overpaid
-        missing_ammount = invoice_obj.total - invoice_obj.paid_amount
+        missing_ammount = invoice_obj.total_after_tax - invoice_obj.paid_amount
         if payment_obj.available_amount >= missing_ammount and vals_list['pay_amount'] > missing_ammount:
             vals_list['pay_amount'] = missing_ammount
 

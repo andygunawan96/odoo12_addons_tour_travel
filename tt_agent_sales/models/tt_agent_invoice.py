@@ -20,6 +20,7 @@ class AgentInvoice(models.Model):
 
     name = fields.Char('Name', default='New', readonly=True)
     total = fields.Monetary('Total', compute="_compute_total",store=True)
+    total_after_tax = fields.Monetary('Total (After Tax)', compute="_compute_total_tax",store=True)
     paid_amount = fields.Monetary('Paid Amount', compute="_compute_paid_amount")
     invoice_line_ids = fields.One2many('tt.agent.invoice.line','invoice_id','Invoice Line', readonly=True,
                                        states={'draft': [('readonly', False)]})
@@ -124,6 +125,15 @@ class AgentInvoice(models.Model):
             for rec in inv.invoice_line_ids:
                 total += rec.total
             inv.total = total
+
+    @api.multi
+    @api.depends('invoice_line_ids.total_after_tax', 'invoice_line_ids')
+    def _compute_total_tax(self):
+        for inv in self:
+            total = 0
+            for rec in inv.invoice_line_ids:
+                total += rec.total_after_tax
+            inv.total_after_tax = total
 
     @api.multi
     def _compute_paid_amount(self):

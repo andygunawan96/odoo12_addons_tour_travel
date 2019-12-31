@@ -79,7 +79,7 @@ class TtBillingStatement(models.Model):
             amount_total = 0
             paid_amount = 0
             for inv in rec.invoice_ids:
-                amount_total += inv.total
+                amount_total += inv.total_after_tax
                 paid_amount += inv.paid_amount
             rec.amount_total = amount_total
             rec.paid_amount = paid_amount
