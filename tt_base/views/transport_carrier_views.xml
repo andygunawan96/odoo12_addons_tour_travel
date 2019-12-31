@@ -22,6 +22,10 @@
                         </group>
                         <group string="Additional Information">
                             <field name="provider_type_id"/>
+                            <field name="is_duplicate_single_name"/>
+                            <field name="adult_length_name"/>
+                            <field name="child_length_name"/>
+                            <field name="infant_length_name"/>
                         </group>
                     </group>
                 </sheet>
@@ -36,6 +40,10 @@
             <tree decoration-muted="active == False">
                 <field name="name"/>
                 <field name="code"/>
+                <field name="is_duplicate_single_name"/>
+                <field name="adult_length_name"/>
+                <field name="child_length_name"/>
+                <field name="infant_length_name"/>
                 <field name="provider_type_id"/>
                 <field name="active"/>
             </tree>
