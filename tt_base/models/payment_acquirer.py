@@ -38,9 +38,9 @@ class PaymentAcquirer(models.Model):
         cust_fee = 0
         bank_fee = 0
         if self.cust_fee:
-            cust_fee = amount * self.cust_fee / 100
+            cust_fee = round(amount * self.cust_fee / 100)
         if self.bank_fee:
-            bank_fee = (amount+cust_fee) * self.bank_fee / 100
+            bank_fee = round((amount+cust_fee) * self.bank_fee / 100)
 
         lost_or_profit = cust_fee-bank_fee
 
