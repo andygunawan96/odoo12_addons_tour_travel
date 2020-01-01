@@ -364,7 +364,7 @@ class ReservationAirline(models.Model):
                 book_status.append(provider['status'])
 
                 if provider['status'] == 'BOOKED' and not provider.get('error_code'):
-                    curr_hold_date = datetime.strptime(provider['hold_date'], '%Y-%m-%d %H:%M:%S')
+                    curr_hold_date = datetime.strptime(provider.get('hold_date',str(datetime.max)), '%Y-%m-%d %H:%M:%S')
                     if curr_hold_date < hold_date:
                         hold_date = curr_hold_date
                     if provider_obj.state == 'booked' and hold_date == provider_obj.hold_date:
