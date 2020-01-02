@@ -346,15 +346,31 @@ class PrintoutInvoice(models.AbstractModel):
         a = {}
         if rec._name == 'tt.reservation.offline':
             for rec2 in rec.line_ids:
-                pnr = rec2.pnr if rec2.pnr else '-'
-                if not a.get(pnr):
-                    a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [],'provider_type': ''}
-                a[pnr]['descs'].append(line.desc if line.desc else '')
-                a[pnr]['provider_type'] = rec.provider_type_id.name
-                for line_detail in line.invoice_line_detail_ids:
+                if rec.offline_provider_type != 'hotel':
+                    pnr_same = True
+                    pnr = rec2.pnr if rec2.pnr else '-'
+                    if not a.get(pnr):
+                        pnr_same = False
+                        a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [],'provider_type': ''}
+                    if not pnr_same:
+                        a[pnr]['descs'].append(line.desc if line.desc else '')
+                        a[pnr]['provider_type'] = rec.provider_type_id.name
+                        for line_detail in line.invoice_line_detail_ids:
+                            a[pnr]['pax_data'].append({
+                                'name': (line_detail.desc if line_detail.desc else ''),
+                                'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
+                            })
+                else:
+                    pnr_same = True
+                    pnr = rec2.pnr if rec2.pnr else '-'
+                    if not a.get(pnr):
+                        pnr_same = False
+                        a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'provider_type': ''}
+                    a[pnr]['descs'].append(line.desc if line.desc else '')
+                    a[pnr]['provider_type'] = rec.provider_type_id.name
                     a[pnr]['pax_data'].append({
-                        'name': (line_detail.desc if line_detail.desc else ''),
-                        'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
+                        'name': (rec2.get_line_hotel_description() if rec2.get_line_hotel_description() else ''),
+                        'total': rec.total / len(rec.line_ids)
                     })
         elif rec._name == 'tt.reservation.hotel':
             if rec.room_detail_ids:
@@ -747,6 +763,58 @@ class PrintoutTourIteneraryForm(models.AbstractModel):
                 if rec2.charge_type.lower() == 'fare':
                     a[rec2.pax_type]['fare'] += rec2.amount
                     a[rec2.pax_type]['qty'] += 1
+                elif rec2.charge_type.lower() in ['roc', 'tax']:
+                    a[rec2.pax_type]['tax'] += rec2.amount
+            values[rec.id] = [a[new_a] for new_a in a]
+        return {
+            'doc_ids': data['context']['active_ids'],
+            'doc_model': data['context']['active_model'],
+            'doc_type': 'itin',
+            'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
+            'price_lines': values,
+            'date_now': fields.Date.today().strftime('%d %b %Y')
+        }
+
+
+class PrintoutVisaItineraryForm(models.AbstractModel):
+    _name = 'report.tt_report_common.printout_visa_itinerary'
+    _description = 'Rodex Model'
+
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        if not data.get('context'):
+            internal_model_id = docids.pop(0)
+            data['context'] = {}
+            if internal_model_id == 1:
+                data['context']['active_model'] = 'tt.reservation.airline'
+            elif internal_model_id == 2:
+                data['context']['active_model'] = 'tt.reservation.train'
+            elif internal_model_id == 3:
+                data['context']['active_model'] = 'tt.reservation.hotel'
+            elif internal_model_id == 4:
+                data['context']['active_model'] = 'tt.reservation.activity'
+            elif internal_model_id == 5:
+                data['context']['active_model'] = 'tt.reservation.tour'
+            else:
+                data['context']['active_model'] = 'tt.agent.invoice'
+
+            data['context']['active_ids'] = docids
+        values = {}
+        for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            values[rec.id] = []
+            a = {}
+            for rec2 in rec.sale_service_charge_ids:
+                if rec2.pax_type not in a.keys():
+                    a[rec2.pax_type] = {
+                        'pax_type': rec2.pax_type,
+                        'fare': 0,
+                        'tax': 0,
+                        'qty': 0,
+                    }
+
+                if rec2.charge_type.lower() == 'total':
+                    a[rec2.pax_type]['fare'] += rec2.amount
+                    a[rec2.pax_type]['qty'] += rec2.pax_count
                 elif rec2.charge_type.lower() in ['roc', 'tax']:
                     a[rec2.pax_type]['tax'] += rec2.amount
             values[rec.id] = [a[new_a] for new_a in a]
