@@ -67,6 +67,7 @@ class AgentInvoice(models.Model):
                                  required=True, readonly=True, states={'draft': [('readonly', False)]},
                                  default=lambda self: self.env['res.company']._company_default_get('account.invoice'))
 
+    # payment_ids = fields.One2many('tt.payment.invoice.rel', 'invoice_id', 'Payments',states={'paid': [('readonly', True)]})
     payment_ids = fields.One2many('tt.payment.invoice.rel', 'invoice_id', 'Payments',states={'paid': [('readonly', True)]})
 
     confirmed_uid = fields.Many2one('res.users', 'Confirmed by', readonly=True)
@@ -116,6 +117,7 @@ class AgentInvoice(models.Model):
         if self.state != 'paid' and (self.paid_amount >= self.total and self.total != 0):
             self.state = 'paid'
         # return
+
 
     @api.multi
     @api.depends('invoice_line_ids.total', 'invoice_line_ids')

@@ -81,7 +81,8 @@
                             <field name="agent_id"/>
                             <field name="customer_parent_id"/>
                             <field name="create_date"/>
-                            <field name="acquirer_id"/>
+                            <field name="acquirer_domain"/>
+                            <field name="acquirer_id" domain="acquirer_domain"/>
                         </group>
                         <group string="User">
                             <label for="confirm_uid" string="Confirm By"/>
