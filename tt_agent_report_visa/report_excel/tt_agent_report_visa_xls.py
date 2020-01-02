@@ -99,7 +99,7 @@ class AgentReportVisa(models.TransientModel):
             sheet.write(row_data, 3, rec['country_name'], sty_table_data_center)  # Country
             sheet.write(row_data, 4, rec['visa_type'], sty_table_data_center)  # Visa Type
             sheet.write(row_data, 5,
-                        datetime.strptime(rec['departure_date'][:10], "%Y-%m-%d") if rec['departure_date'] else '',
+                        datetime.strptime(rec['departure_date'][:10], "%d/%m/%Y") if rec['departure_date'] else '',
                         sty_date)  # Departure Date
             sheet.write(row_data, 6, rec['immigration_consulate'], sty_table_data)  # Immigration Consulate
             sheet.write(row_data, 7, rec['pass_name'], sty_table_data)  # Passenger Name

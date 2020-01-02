@@ -277,6 +277,7 @@ class TtVisa(models.Model):
 
         self.write({
             'state_visa': 'process_by_consulate',
+            'can_refund': False,
             'in_process_date': datetime.now(),
             'estimate_date': date.today() + timedelta(days=estimate_days)
         })
@@ -328,12 +329,12 @@ class TtVisa(models.Model):
         # jika state : in_process, partial_proceed, proceed, delivered, ready, done, create reverse ledger
         if self.state_visa in ['in_process', 'payment']:
             self.can_refund = True
-        if self.state_visa not in ['process_by_consulate', 'partial_proceed', 'proceed', 'delivered', 'ready', 'done']:
-            for rec in self.ledger_ids:
-                rec.reverse_ledger()
-                # self._create_anti_ho_ledger_visa()
-                # self._create_anti_ledger_visa()
-                # self._create_anti_commission_ledger_visa()
+        # if self.state_visa not in ['process_by_consulate', 'partial_proceed', 'proceed', 'delivered', 'ready', 'done']:
+        #     for rec in self.ledger_ids:
+        #         rec.reverse_ledger()
+        #         self._create_anti_ho_ledger_visa()
+        #         self._create_anti_ledger_visa()
+        #         self._create_anti_commission_ledger_visa()
         # set semua state passenger ke cancel
         for rec in self.passenger_ids:
             rec.action_cancel()
@@ -1120,7 +1121,7 @@ class TtVisa(models.Model):
             }
         ],
         "total_cost": 25,
-        "provider": "visa_rodextrip",
+        "provider": "rodextrip_visa",
         "pax": {
             "adult": 2,
             "child": 1,
@@ -1183,6 +1184,48 @@ class TtVisa(models.Model):
                     "is_copy": False,
                     "id": 2
                 }
+            ],
+            "handling": [
+                {
+                    "answer": False,
+                    "id": 21
+                },
+                {
+                    "answer": False,
+                    "id": 22
+                },
+                {
+                    "answer": True,
+                    "id": 23
+                },
+                {
+                    "answer": True,
+                    "id": 24
+                },
+                {
+                    "answer": True,
+                    "id": 25
+                },
+                {
+                    "answer": False,
+                    "id": 26
+                },
+                {
+                    "answer": True,
+                    "id": 27
+                },
+                {
+                    "answer": False,
+                    "id": 28
+                },
+                {
+                    "answer": True,
+                    "id": 29
+                },
+                {
+                    "answer": False,
+                    "id": 30
+                },
             ]
         },
         {
@@ -1211,6 +1254,48 @@ class TtVisa(models.Model):
                     "is_copy": False,
                     "id": 2
                 }
+            ],
+            "handling": [
+                {
+                    "answer": False,
+                    "id": 21
+                },
+                {
+                    "answer": False,
+                    "id": 22
+                },
+                {
+                    "answer": True,
+                    "id": 23
+                },
+                {
+                    "answer": True,
+                    "id": 24
+                },
+                {
+                    "answer": True,
+                    "id": 25
+                },
+                {
+                    "answer": False,
+                    "id": 26
+                },
+                {
+                    "answer": True,
+                    "id": 27
+                },
+                {
+                    "answer": False,
+                    "id": 28
+                },
+                {
+                    "answer": True,
+                    "id": 29
+                },
+                {
+                    "answer": False,
+                    "id": 30
+                },
             ]
         },
         {
@@ -1239,6 +1324,48 @@ class TtVisa(models.Model):
                     "is_copy": False,
                     "id": 2
                 }
+            ],
+            "handling": [
+                {
+                    "answer": False,
+                    "id": 21
+                },
+                {
+                    "answer": False,
+                    "id": 22
+                },
+                {
+                    "answer": True,
+                    "id": 23
+                },
+                {
+                    "answer": True,
+                    "id": 24
+                },
+                {
+                    "answer": True,
+                    "id": 25
+                },
+                {
+                    "answer": False,
+                    "id": 26
+                },
+                {
+                    "answer": True,
+                    "id": 27
+                },
+                {
+                    "answer": False,
+                    "id": 28
+                },
+                {
+                    "answer": True,
+                    "id": 29
+                },
+                {
+                    "answer": False,
+                    "id": 30
+                },
             ]
         }
     ]
@@ -1942,6 +2069,14 @@ class TtVisa(models.Model):
                     to_req_obj = to_req_env.create(req_vals)
                     to_req_list.append(to_req_obj.id)  # akan dipindah ke edit requirements
 
+            if 'handling' in psg:
+                for req in psg['handling']:
+                    for handling in to_psg_obj.handling_ids:
+                        if handling.handling_id.id == req['id']:
+                            handling.write({
+                                'answer': req['answer']
+                            })
+
             to_psg_obj.write({
                 'to_requirement_ids': [(6, 0, to_req_list)]
             })
@@ -2221,6 +2356,19 @@ class TtVisa(models.Model):
                 customer_parent_id = acquirer_id.agent_id.id
             else:
                 customer_parent_id = self.agent_id.customer_parent_walkin_id.id
+        elif all(rec.state == 'refund' for rec in self.provider_booking_ids):
+            self.write({
+                'state': 'refund',
+                'state_visa': 'refund',
+                'refund_uid': context['co_uid'],
+                'refund_date': datetime.now()
+            })
+        elif all(rec.state == 'fail_refunded' for rec in self.provider_booking_ids):
+            self.write({
+                'state':  'fail_refunded',
+                'refund_uid': context['co_uid'],
+                'refund_date': datetime.now()
+            })
         else:
             # entah status apa
             _logger.error('Entah status apa')

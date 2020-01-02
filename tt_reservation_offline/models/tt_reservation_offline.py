@@ -302,9 +302,6 @@ class IssuedOffline(models.Model):
             self.compute_final_ho()
             self.issued_date = fields.Datetime.now()
             self.issued_uid = kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
-            for provider in self.provider_booking_ids:
-                provider.issued_date = self.issued_date
-                provider.issued_uid = self.issued_uid
 
         return is_enough
 
@@ -341,6 +338,7 @@ class IssuedOffline(models.Model):
         self.create_provider_offline()
         # self.update_provider_offline()
         for provider in self.provider_booking_ids:
+            provider.state = 'booked'
             provider.confirm_date = self.confirm_date
             provider.confirm_uid = self.confirm_uid
             provider.sent_date = self.sent_date
@@ -374,6 +372,10 @@ class IssuedOffline(models.Model):
                 self.booked_uid = kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
                 self.create_final_ho_ledger(self)
                 self.get_pnr_list_from_provider()
+                for provider in self.provider_booking_ids:
+                    provider.state = 'issued'
+                    provider.issued_date = self.issued_date
+                    provider.issued_uid = self.issued_uid
             else:
                 raise UserError('Attach Booking/Resv. Document')
         else:
@@ -876,7 +878,7 @@ class IssuedOffline(models.Model):
             res = {
                 'sector_type': self._fields['sector_type'].selection,
                 'transaction_type': [{'code': rec.code, 'name': rec.name} for rec in
-                                     self.env['tt.provider.type'].search([('code', 'in', ['airline', 'activity', 'hotel', 'train'])])],
+                                     self.env['tt.provider.type'].search([('code', 'in', ['airline', 'activity', 'hotel', 'train', 'visa'])])],
                 'carrier_id': [{'code': rec.code, 'name': rec.name, 'icao': rec.icao} for rec in
                                self.env['tt.transport.carrier'].search([])],
                 'social_media_id': [{'name': rec.name} for rec in self.env['res.social.media.type'].search([])],
@@ -1089,15 +1091,15 @@ class IssuedOffline(models.Model):
         return social_media_id
 
     def check_provider_state(self, context, pnr_list=[], hold_date=False, req={}):
-        if all(rec.state == 'draft' for rec in self.provider_booking_ids):
+        if all(rec.state_offline == 'draft' for rec in self.provider_booking_ids):
             pass
-        elif all(rec.state == 'confirm' for rec in self.provider_booking_ids):
+        elif all(rec.state_offline == 'confirm' for rec in self.provider_booking_ids):
             pass
-        elif all(rec.state == 'sent' for rec in self.provider_booking_ids):
+        elif all(rec.state_offline == 'sent' for rec in self.provider_booking_ids):
             pass
-        elif all(rec.state == 'validate' for rec in self.provider_booking_ids):
+        elif all(rec.state_offline == 'validate' for rec in self.provider_booking_ids):
             pass
-        elif all(rec.state == 'done' for rec in self.provider_booking_ids):
+        elif all(rec.state_offline == 'done' for rec in self.provider_booking_ids):
             pass
         else:
             # entah status apa

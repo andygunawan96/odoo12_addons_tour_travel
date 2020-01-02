@@ -40,16 +40,27 @@ class TtRescheduleWizard(models.TransientModel):
 
     notes = fields.Text('Notes')
 
+    # @api.depends('res_model', 'res_id')
+    # @api.onchange('res_model', 'res_id')
+    # def _compute_old_segments(self):
+    #     old_segment_list = []
+    #     book_obj = self.env[self.res_model].sudo().browse(int(self.res_id))
+    #     for rec in book_obj.segment_ids:
+    #         old_segment_list.append(rec.id)
+    #     self.old_segment_ids = [(6, 0, old_segment_list)]
+
     @api.depends('res_model', 'res_id')
     @api.onchange('res_model', 'res_id')
     def _compute_old_segments(self):
         old_segment_list = []
-        book_obj = self.env[self.res_model].sudo().browse(int(self.res_id))
+        try:
+            book_obj = self.env[self.res_model].sudo().browse(int(self.res_id))
+        except:
+            _logger.info('Self.res_model e Error')
+            book_obj = self.env[self.env.context['active_model']].sudo().browse(int(self.env.context['active_id']))
         for rec in book_obj.segment_ids:
             old_segment_list.append(rec.id)
-        self.sudo().write({
-            'old_segment_ids': [(6, 0, old_segment_list)]
-        })
+        self.old_segment_ids = [(6, 0, old_segment_list)]
 
     @api.depends('res_model', 'res_id')
     @api.onchange('res_model', 'res_id')
@@ -92,9 +103,7 @@ class TtRescheduleWizard(models.TransientModel):
                     'description': rec2.description,
                 })
             new_segment_list.append(new_seg_obj.id)
-        self.sudo().write({
-            'new_segment_ids': [(6, 0, new_segment_list)]
-        })
+        self.new_segment_ids = [(6, 0, new_segment_list)]
 
     def submit_reschedule(self):
         old_segment_list = []
