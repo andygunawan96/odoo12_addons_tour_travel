@@ -614,7 +614,7 @@ class ReservationAirline(models.Model):
                         'provider_id': provider_id,
                         'origin_id': org_id and org_id or False,
                         # 'origin_terminal': segment['origin_terminal'],
-                        'destination_id': dest_id and org_id or False,
+                        'destination_id': dest_id and dest_id or False,
                         # 'destination_terminal': segment['destination_terminal'],
                         'departure_date': segment['departure_date'],
                         'arrival_date': segment['arrival_date'],
