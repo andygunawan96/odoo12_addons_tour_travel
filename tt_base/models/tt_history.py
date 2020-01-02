@@ -1,6 +1,8 @@
 from odoo import models, api, fields, _
 import html
+import logging,traceback
 
+_logger = logging.getLogger(__name__)
 
 class SkippedKeys(models.Model):
     _name = 'tt.skipped.keys'
@@ -60,61 +62,64 @@ class TtHistory(models.Model):
 
     @api.multi
     def write(self, value):
-        key_list = value.keys()
-        # tempat hardcode skip key
-        skipped_keys = self.env['tt.skipped.keys'].SKIPPED_KEYS
+        try:
+            key_list = value.keys()
+            # tempat hardcode skip key
+            skipped_keys = self.env['tt.skipped.keys'].SKIPPED_KEYS
 
-        for rec in self:
-            old_self = self.update_ids_only(rec.read(), key_list)
-            super(TtHistory, rec).write(value)
-            new_self = self.update_ids_only(rec.read(), key_list)
-            # rec_dict = rec.read()
+            for rec in self:
+                old_self = self.update_ids_only(rec.read(), key_list)
+                super(TtHistory, rec).write(value)
+                new_self = self.update_ids_only(rec.read(), key_list)
+                # rec_dict = rec.read()
 
-            for key in key_list:
-                # skipped key
-                if rec._name in skipped_keys:
-                    if key in skipped_keys[rec._name]:
+                for key in key_list:
+                    # skipped key
+                    if rec._name in skipped_keys:
+                        if key in skipped_keys[rec._name]:
+                            continue
+
+                    # Todo: Selection
+                    # One2Many Relation Field
+                    # Many2one, Non-Relation Field
+                    old_value = old_self[0].get(key) and (isinstance(old_self[0].get(key), tuple) and old_self[0].get(key)[1] or old_self[0].get(key)) or 'None'
+                    new_value = new_self[0].get(key) and (isinstance(new_self[0].get(key), tuple) and new_self[0].get(key)[1] or new_self[0].get(key)) or 'None'
+                    # print(key + ' : ' + str(new_value))
+
+                    #kalau value sama skip tidak usah di print
+                    if old_value == new_value:
                         continue
 
-                # Todo: Selection
-                # One2Many Relation Field
-                # Many2one, Non-Relation Field
-                old_value = old_self[0].get(key) and (isinstance(old_self[0].get(key), tuple) and old_self[0].get(key)[1] or old_self[0].get(key)) or 'None'
-                new_value = new_self[0].get(key) and (isinstance(new_self[0].get(key), tuple) and new_self[0].get(key)[1] or new_self[0].get(key)) or 'None'
-                # print(key + ' : ' + str(new_value))
+                    # Print History
+                    if rec.fields_get().get(key)['type'] == 'binary':
+                        rec.message_post(body=_("%s has been changed.") %
+                                               (rec.fields_get().get(key)['string']))  # Model String / Label
+                    elif rec.fields_get().get(key)['type'] == 'html':
+                        # Un-escape HTML
+                        old_value = html.unescape(old_value)
+                        new_value = html.unescape(new_value)
 
-                #kalau value sama skip tidak usah di print
-                if old_value == new_value:
-                    continue
+                        # " to '
+                        old_value = old_value.replace('"', '\'')
+                        new_value = new_value.replace('"', '\'')
 
-                # Print History
-                if rec.fields_get().get(key)['type'] == 'binary':
-                    rec.message_post(body=_("%s has been changed.") %
-                                           (rec.fields_get().get(key)['string']))  # Model String / Label
-                elif rec.fields_get().get(key)['type'] == 'html':
-                    # Un-escape HTML
-                    old_value = html.unescape(old_value)
-                    new_value = html.unescape(new_value)
-
-                    # " to '
-                    old_value = old_value.replace('"', '\'')
-                    new_value = new_value.replace('"', '\'')
-
-                    if old_value != new_value:
-                        # print('test')
-                        rec.message_post(body=_("%s has been changed from %s to %s by %s.") %
-                                                (rec.fields_get().get(key)['string'],  # Model String / Label
-                                                 old_value,  # Old Value
-                                                 # value[key],  # New Value
-                                                 new_value,  # new value
-                                                 rec.env.user.name))  # User that Changed the Value
-                else:
-                    rec.message_post(body=_("{ %s } changed from [ %s ] to [ %s ] by < %s >.") %
-                                           (rec.fields_get().get(key)['string'],  # Model String / Label
-                                            old_value,  # Old Value
-                                            # value[key],  # New Value
-                                            new_value,  # new value
-                                            rec.env.user.name))  # User that Changed the Value
+                        if old_value != new_value:
+                            # print('test')
+                            rec.message_post(body=_("%s has been changed from %s to %s by %s.") %
+                                                    (rec.fields_get().get(key)['string'],  # Model String / Label
+                                                     old_value,  # Old Value
+                                                     # value[key],  # New Value
+                                                     new_value,  # new value
+                                                     rec.env.user.name))  # User that Changed the Value
+                    else:
+                        rec.message_post(body=_("{ %s } changed from [ %s ] to [ %s ] by < %s >.") %
+                                               (rec.fields_get().get(key)['string'],  # Model String / Label
+                                                old_value,  # Old Value
+                                                # value[key],  # New Value
+                                                new_value,  # new value
+                                                rec.env.user.name))  # User that Changed the Value
+        except Exception as e:
+            _logger.error("Write History Error\n"+traceback.format_exc())
 
 # For Debug Purposes
 # print(key)

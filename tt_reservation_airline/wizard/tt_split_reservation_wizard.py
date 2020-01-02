@@ -180,12 +180,23 @@ class TtSplitReservationWizard(models.TransientModel):
                     rec2.sudo().write({
                         'passenger_airline_ids': [(6,0,new_pax_id_list)]
                     })
-                for rec2 in book_obj.ledger_ids:
-                    if rec2.pnr == rec.pnr:
-                        rec2.sudo().write({
-                            'res_id': new_book_obj.id,
-                            'ref': new_book_obj.name
-                        })
+
+            for rec in book_obj.provider_booking_ids:
+                for rec2 in rec.cost_service_charge_ids:
+                    rec2.is_ledger_created = False
+
+            for rec in new_book_obj.provider_booking_ids:
+                for rec2 in rec.cost_service_charge_ids:
+                    rec2.is_ledger_created = False
+
+            if book_obj.ledger_ids:
+                for led in book_obj.ledger_ids:
+                    if not led.is_reversed:
+                        led.reverse_ledger()
+                for prov in book_obj.provider_booking_ids:
+                    prov.action_create_ledger(book_obj.issued_uid.id)
+                for prov in new_book_obj.provider_booking_ids:
+                    prov.action_create_ledger(new_book_obj.issued_uid.id)
 
         elif len(provider_list) <= 0:
             tot_adult = 0

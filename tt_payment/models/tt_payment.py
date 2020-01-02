@@ -59,21 +59,29 @@ class PaymentTransaction(models.Model):
             'customer_parent_id': self._get_c_parent_domain()
         }}
 
-    def _get_acquirer_domain(self):
-        if self.customer_parent_id:
-            return "[('agent_id', '=', agent_id)]"
-        # if self.customer_parent_id:
-        #     return [('agent_id','=',self.agent_id.id)]
-        else:
-            ho_id = self.env.ref('tt_base.rodex_ho').id
-            return [('agent_id','=', ho_id )]
+    # def _get_acquirer_domain(self):
+    #     if self.customer_parent_id:
+    #         return "[('agent_id', '=', agent_id)]"
+    #     # if self.customer_parent_id:
+    #     #     return [('agent_id','=',self.agent_id.id)]
+    #     else:
+    #         ho_id = self.env.ref('tt_base.rodex_ho').id
+    #         return [('agent_id','=', ho_id )]
 
     @api.onchange('customer_parent_id')
     def _onchange_domain_customer_parent_id(self):
-        return {'domain': {
-            'acquirer_id': self._get_acquirer_domain()
-        }}
-
+        print("onchange cpid")
+        if self.customer_parent_id:
+            dom = [('agent_id', '=', self.agent_id.id)]
+        else:
+            ho_id = self.env.ref('tt_base.rodex_ho').id
+            dom = [('agent_id','=', ho_id )]
+        print(dom)
+        return {
+            'domain':{
+                'acquirer_id': dom
+            }
+        }
 
     # Tambahan
     confirm_uid = fields.Many2one('res.users', 'Confirm by',readonly=True)
@@ -87,7 +95,9 @@ class PaymentTransaction(models.Model):
     reference = fields.Char('Validate Ref.', help='Transaction Reference / Approval number',states={'validated': [('readonly', True)]})
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True,readonly=True,states={'draft': [('readonly', False)]})
     customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer',readonly=True,states={'draft': [('readonly', False)]}, domain=_get_c_parent_domain)
-    acquirer_id = fields.Many2one('payment.acquirer', 'Acquirer', domain=_get_acquirer_domain,states={'validated': [('readonly', True)]})
+    # acquirer_id = fields.Many2one('payment.acquirer', 'Acquirer', domain=_get_acquirer_domain,states={'validated': [('readonly', True)]})
+    acquirer_domain = fields.Char('acquirer_domain',compute="_compute_acquirer_domain")
+    acquirer_id = fields.Many2one('payment.acquirer', 'Acquirer',states={'validated': [('readonly', True)]})
 
     # #Todo:
     # # 1. Pertimbangkan penggunaan monetary field untuk integer field (pertimbangkan multi currency juga)
@@ -96,6 +106,16 @@ class PaymentTransaction(models.Model):
     # # 4. Nama diberikan waktu state draft (karena?) usul klo isa waktu state confirm
     # # 5. Ganti payment_uid dengan agent_id
     # # 6. Tambahkan Payment Acquirer metode pembayaran e
+
+    def _compute_acquirer_domain(self):
+        if self.customer_parent_id:
+            dom = self.env['payment.acquirer'].search([('agent_id','=',self.agent_id.id )]).ids
+        else:
+            ho_id = self.env.ref('tt_base.rodex_ho').id
+            dom = self.env['payment.acquirer'].search([('agent_id','=', ho_id )]).ids
+        domain = "[('id','in',[%s])]" % (",".join(list(map(str,dom))))
+        print(domain)
+        self.acquirer_domain = domain
 
     def _compute_fee_payment(self):
         for rec in self:
@@ -149,11 +169,11 @@ class PaymentTransaction(models.Model):
 
     def action_validate_from_button(self):
         if self.state != 'confirm':
-           raise exceptions.UserError('Can only validate [Confirmed] state Payment.')
+            raise exceptions.UserError('Can only validate [Confirmed] state Payment.')
         if self.reference:
             if self.top_up_id:
                 if ({self.env.ref('tt_base.group_tt_tour_travel_operator').id,
-                      self.env.ref('tt_base.group_tt_accounting_operator').id}.intersection(set(self.env.user.groups_id.ids))):
+                     self.env.ref('tt_base.group_tt_accounting_operator').id}.intersection(set(self.env.user.groups_id.ids))):
                     self.top_up_id.action_validate_top_up(self.total_amount)
                     self.write({
                         'state': 'validated',

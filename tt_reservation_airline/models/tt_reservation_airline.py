@@ -364,7 +364,7 @@ class ReservationAirline(models.Model):
                 book_status.append(provider['status'])
 
                 if provider['status'] == 'BOOKED' and not provider.get('error_code'):
-                    curr_hold_date = datetime.strptime(provider.get('hold_date',str(datetime.max.replace(microsecond=0))), '%Y-%m-%d %H:%M:%S')
+                    curr_hold_date = datetime.strptime(util.get_without_empty(provider,'hold_date',str(datetime.max.replace(microsecond=0))), '%Y-%m-%d %H:%M:%S')
                     if curr_hold_date < hold_date:
                         hold_date = curr_hold_date
                     if provider_obj.state == 'booked' and hold_date == provider_obj.hold_date:
@@ -602,19 +602,19 @@ class ReservationAirline(models.Model):
                     org_id = dest_obj.get_id(segment['origin'],_destination_type)
                     dest_id = dest_obj.get_id(segment['destination'],_destination_type)
 
-                    name['carrier'].append(carrier_id.name)
+                    name['carrier'].append(carrier_id and carrier_id.name or '{} Not Found'.format(segment['carrier_code']))
 
                     this_journey_seg_sequence += 1
                     this_journey_seg.append((0,0,{
                         'segment_code': segment['segment_code'],
                         'fare_code': segment.get('fare_code', ''),
-                        'carrier_id': carrier_id.id,
+                        'carrier_id': carrier_id and carrier_id.id or False,
                         'carrier_code': segment['carrier_code'],
                         'carrier_number': segment['carrier_number'],
                         'provider_id': provider_id,
-                        'origin_id': org_id,
+                        'origin_id': org_id and org_id or False,
                         # 'origin_terminal': segment['origin_terminal'],
-                        'destination_id': dest_id,
+                        'destination_id': dest_id and dest_id or False,
                         # 'destination_terminal': segment['destination_terminal'],
                         'departure_date': segment['departure_date'],
                         'arrival_date': segment['arrival_date'],
