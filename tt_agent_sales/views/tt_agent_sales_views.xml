@@ -102,7 +102,8 @@
                                 </field>
                             </page>
                             <page string="Payments">
-                                <field name="payment_ids" context="{'tree_view_ref':'tt_agent_sales.tt_payment_invoice_rel_invoice_tree_view'}"/>
+                                <field name="payment_ids"
+                                       context="{'tree_view_ref':'tt_agent_sales.tt_payment_invoice_rel_invoice_tree_view'}"/>
                             </page>
                             <page string="Ledgers">
                                 <field name="ledger_ids" context="{'tree_view_ref': 'tt_accounting.tt_ledger_cor_tree_view'}"/>
