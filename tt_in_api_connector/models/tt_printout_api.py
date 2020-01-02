@@ -12,10 +12,6 @@ class TtPrintoutApiCon(models.Model):
         if action == 'get_printout_api':
             if data['mode'] == 'invoice':
                 res = self.env['tt.agent.invoice'].print_invoice_api(data, context)
-            elif data['provider_type'] == 'visa':
-                if data['mode'] == 'visa_cust':
-                    res = self.env['tt.reservation.%s' % data['provider_type']].do_print_out_visa_cust(data, context)
-                    # res = self.env['tt.agent.invoice'].print_invoice_api(data, context)
             elif data['provider_type'] == 'tour':
                 pass
             elif data['provider_type'] == 'hotel':
@@ -30,6 +26,8 @@ class TtPrintoutApiCon(models.Model):
                     res = self.env['tt.reservation.%s' % data['provider_type']].print_eticket_with_price(data, context)
                 elif data['mode'] == 'itinerary':
                     res = self.env['tt.reservation.%s' % data['provider_type']].print_itinerary(data, context)
+                elif data['mode'] == 'visa_cust':
+                    res = self.env['tt.reservation.%s' % data['provider_type']].do_print_out_visa_cust(data, context)
 
         else:
             raise RequestException(999)
