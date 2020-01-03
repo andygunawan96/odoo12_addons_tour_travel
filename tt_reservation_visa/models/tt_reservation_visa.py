@@ -78,6 +78,7 @@ class TtVisa(models.Model):
     vendor_ids = fields.One2many('tt.reservation.visa.vendor.lines', 'visa_id', 'Expenses')
 
     document_to_ho_date = fields.Datetime('Document to HO Date', readonly=1)
+    ho_validate_date = fields.Datetime('HO Validate Date', readonly=1)
 
     passenger_ids = fields.One2many('tt.reservation.visa.order.passengers', 'visa_id', 'Visa Order Passengers')
     commercial_state = fields.Char('Payment Status', readonly=1)  # , compute='_compute_commercial_state'
@@ -118,6 +119,7 @@ class TtVisa(models.Model):
 
     printout_handling_ho_id = fields.Many2one('tt.upload.center', readonly=True)
     printout_handling_customer_id = fields.Many2one('tt.upload.center', readonly=True)
+    printout_itinerary_visa = fields.Many2one('tt.upload.center', 'Printout Itinerary', readonly=True)
 
     adjustment_ids = fields.One2many('tt.adjustment', 'res_id', 'Adjustment', readonly=True,
                                      domain=[('res_model', '=', 'tt_reservation_visa')])
@@ -1735,7 +1737,8 @@ class TtVisa(models.Model):
                     scs['description'] = book_obj.name
 
             book_obj.document_to_ho_date = datetime.now() + timedelta(days=1)
-            book_obj.hold_date = datetime.now() + timedelta(days=3)
+            book_obj.ho_validate_date = datetime.now() + timedelta(days=3)
+            book_obj.hold_date = datetime.now() + timedelta(days=4)
 
             book_obj.pnr = book_obj.name
 
@@ -1777,6 +1780,8 @@ class TtVisa(models.Model):
                 'departure_date': datetime.strptime(search['departure_date'], '%Y-%m-%d').strftime('%d/%m/%Y')
             }
             provider_visa_obj = book_obj.env['tt.provider.visa'].sudo().create(vals)
+
+            book_obj.get_list_of_provider_visa()
 
             for psg in book_obj.passenger_ids:
                 vals = {
@@ -1842,7 +1847,7 @@ class TtVisa(models.Model):
                     c_code = p_charge_code
                 sc_value[p_pricelist_id][c_type].update({
                     'charge_type': p_charge_type,
-                    'charge_code': c_code,
+                    'charge_code': p_charge_code,
                     'pax_type': p_pax_type,
                     'pax_count': p_sc.pax_count,
                     'currency_id': p_sc.currency_id.id,
@@ -2084,6 +2089,13 @@ class TtVisa(models.Model):
             to_psg_list.append(to_psg_obj.id)
         return to_psg_list
 
+    def get_list_of_provider_visa(self):
+        provider_list = []
+        for rec in self.provider_booking_ids:
+            if rec.provider_id:
+                provider_list.append(rec.provider_id.name)
+        self.provider_name = ', '.join(provider_list)
+
     def action_booked_visa(self, api_context=None):
         if not api_context:  # Jika dari call from backend
             api_context = {
@@ -2178,7 +2190,6 @@ class TtVisa(models.Model):
         # return self.env.ref('tt_reservation_visa.action_report_printout_tt_visa_ho').report_action(self, data=data)
 
     def do_print_out_visa_cust(self, data, ctx=None):
-        self.ensure_one()
         # jika panggil dari backend
         if 'order_number' not in data:
             data['order_number'] = self.name
@@ -2219,15 +2230,14 @@ class TtVisa(models.Model):
                 }
             )
             upc_id = book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
-            book_obj.printout_handling_ho_id = upc_id.id
+            book_obj.printout_handling_customer_id = upc_id.id
         url = {
             'type': 'ir.actions.act_url',
             'name': "ZZZ",
             'target': 'new',
-            'url': book_obj.printout_handling_ho_id.url,
+            'url': book_obj.printout_handling_customer_id.url,
         }
         return url
-        # return self.env.ref('tt_reservation_visa.action_report_printout_tt_visa_cust').report_action(self, data=data)
 
     def action_proforma_invoice_visa(self):
         self.ensure_one()
@@ -2236,6 +2246,53 @@ class TtVisa(models.Model):
             'model': self._name,
         }
         return self.env.ref('tt_reservation_visa.action_report_printout_proforma_invoice_visa').report_action(self, data=data)
+
+    def print_itinerary(self, data):
+        # jika panggil dari backend
+        if 'order_number' not in data:
+            data['order_number'] = self.name
+        if 'provider_type' not in data:
+            data['provider_type'] = self.provider_type_id.name
+
+        book_obj = self.env['tt.reservation.visa'].search([('name', '=', data['order_number'])], limit=1)
+        datas = {'ids': book_obj.env.context.get('active_ids', [])}
+        res = book_obj.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        visa_itinerary_id = book_obj.env.ref('tt_report_common.action_printout_itinerary_visa')
+
+        if not book_obj.printout_itinerary_visa:
+            pdf_report = visa_itinerary_id.report_action(book_obj, data=data)
+            pdf_report['context'].update({
+                'active_model': book_obj._name,
+                'active_id': book_obj.id
+            })
+            pdf_report.update({
+                'ids': book_obj.ids,
+                'model': book_obj._name,
+            })
+            pdf_report_bytes = visa_itinerary_id.render_qweb_pdf(data=pdf_report)
+            res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
+                {
+                    'filename': 'Itinerary Visa %s.pdf' % book_obj.name,
+                    'file_reference': 'Itinerary Visa',
+                    'file': base64.b64encode(pdf_report_bytes[0]),
+                    'delete_date': datetime.today() + timedelta(minutes=10)
+                },
+                {
+                    'co_agent_id': book_obj.env.user.agent_id.id,
+                    'co_uid': book_obj.env.user.id,
+                }
+            )
+            upc_id = book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+            book_obj.printout_itinerary_visa = upc_id.id
+        url = {
+            'type': 'ir.actions.act_url',
+            'name': "ZZZ",
+            'target': 'new',
+            'url': book_obj.printout_itinerary_visa.url,
+        }
+        return url
 
     def print_ho_invoice(self):
         datas = {
