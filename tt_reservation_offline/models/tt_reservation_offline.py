@@ -302,7 +302,14 @@ class IssuedOffline(models.Model):
             self.compute_final_ho()
             self.issued_date = fields.Datetime.now()
             self.issued_uid = kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
-
+            for provider in self.provider_booking_ids:
+                provider.issued_date = self.issued_date
+                provider.issued_uid = self.issued_uid
+            try:
+                self.env['tt.offline.api.con'].send_approve_notification(self.name, self.env.user.name,
+                                                                        self.get_total_amount())
+            except Exception as e:
+                _logger.error("Send ISSUED OFFLINE Approve Notification Telegram Error")
         return is_enough
 
     def check_pnr_empty(self):

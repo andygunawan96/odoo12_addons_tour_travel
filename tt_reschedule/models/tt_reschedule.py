@@ -51,8 +51,6 @@ class TtReschedule(models.Model):
     payment_acquirer_id = fields.Many2one('payment.acquirer', 'Payment Acquirer', domain="[('agent_id', '=', agent_id)]")
     booker_id = fields.Many2one('tt.customer', 'Booker', ondelete='restrict', readonly=True)
 
-    payment_cust_parent_id = fields.Many2one('tt.customer.parent', 'Payment Customer Parent', domain=[])
-
     @api.depends('invoice_line_ids')
     def set_agent_invoice_state(self):
 
