@@ -72,5 +72,54 @@
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
         </record>
+        <record id="tt_hotel_provider_hmbed" model="tt.provider">
+            <field name="name">HMBeds</field>
+            <field name="alias">A10</field>
+            <field name="code">hmbed</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
+        <record id="tt_hotel_provider_oyo" model="tt.provider">
+            <field name="name">OYO Rooms</field>
+            <field name="alias">A11</field>
+            <field name="code">oyo</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
+        <record id="tt_hotel_provider_knb" model="tt.provider">
+            <field name="name">Klik and Books</field>
+            <field name="alias">A12</field>
+            <field name="code">knb</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
+        <record id="tt_hotel_provider_mandira" model="tt.provider">
+            <field name="name">Mandira</field>
+            <field name="alias">A13</field>
+            <field name="code">mandira</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
+        <record id="tt_hotel_provider_hanatours" model="tt.provider">
+            <field name="name">Hanatours</field>
+            <field name="alias">A13</field>
+            <field name="code">hanatours</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
+        <record id="tt_hotel_provider_welcomebeds" model="tt.provider">
+            <field name="name">WelcomeBeds</field>
+            <field name="alias">A14</field>
+            <field name="code">welcomebeds</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
+        <record id="tt_hotel_provider_rts" model="tt.provider">
+            <field name="name">RTS</field>
+            <field name="alias">A15</field>
+            <field name="code">rts</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
     </data>
 </odoo>
