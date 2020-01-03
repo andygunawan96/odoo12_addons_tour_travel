@@ -37,9 +37,16 @@ class ReservationOffline(models.Model):
                 'state': 'confirm',
                 'customer_parent_id': self.customer_parent_id.id,
                 'customer_parent_type_id': self.customer_parent_type_id.id,
-                'confirmed_uid': self.issued_uid.id,
                 'confirmed_date': datetime.now()
             })
+            if self.issued_uid.agent_id.id == self.agent_id.id:
+                invoice_id.write({
+                    'confirmed_uid': self.issued_uid.id
+                })
+            else:
+                invoice_id.write({
+                    'confirmed_uid': self.confirm_uid.id
+                })
 
         line_desc = ''
         if self.provider_type_id_name != 'hotel':
