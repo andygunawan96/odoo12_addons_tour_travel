@@ -267,6 +267,7 @@ class IssuedOffline(models.Model):
         # jika saldo mencukupi
         if is_enough['error_code'] == 0:
             # create prices
+            self.state = 'booked'
             for provider in self.provider_booking_ids:
                 # create pricing list
                 if self.provider_type_id_name in ['airline', 'train', 'activity']:
@@ -295,7 +296,6 @@ class IssuedOffline(models.Model):
             if payment['error_code'] != 0:
                 _logger.error(payment['error_msg'])
                 raise UserError(_(payment['error_msg']))
-            self.state = 'booked'
             self.calculate_service_charge()
             self.state_offline = 'validate'
             self.vendor_amount = self.nta_price
@@ -707,23 +707,43 @@ class IssuedOffline(models.Model):
         return empty
 
     param_issued_offline_data = {
-        "type": "activity",
+        "type": "tour",
         "total_sale_price": 100000,
         "desc": "amdaksd",
         # "pnr": "10020120",
         "social_media_id": "Facebook",
         "expired_date": "2019-10-04 02:29",
-        "line_ids": [
-            {
-                "name": 1,
-                "activity_package": 1,
-                "qty": 1,
-                "description": 'Test Activity',
-                "visit_date": '2019-10-04',
-            }
-        ]
+        "line_ids": []
+        # "line_ids": [
+        #     {
+        #         "name": 1,
+        #         "activity_package": 1,
+        #         "qty": 1,
+        #         "description": 'Test Activity',
+        #         "visit_date": '2019-10-04',
+        #     }
+        # ]
         # "sector_type": "domestic"
     }
+
+    # param_issued_offline_data = {
+    #     "type": "activity",
+    #     "total_sale_price": 100000,
+    #     "desc": "amdaksd",
+    #     # "pnr": "10020120",
+    #     "social_media_id": "Facebook",
+    #     "expired_date": "2019-10-04 02:29",
+    #     "line_ids": [
+    #         {
+    #             "name": 1,
+    #             "activity_package": 1,
+    #             "qty": 1,
+    #             "description": 'Test Activity',
+    #             "visit_date": '2019-10-04',
+    #         }
+    #     ]
+    #     # "sector_type": "domestic"
+    # }
 
     # param_issued_offline_data = {
     #     "type": "hotel",
@@ -884,7 +904,7 @@ class IssuedOffline(models.Model):
             res = {
                 'sector_type': self._fields['sector_type'].selection,
                 'transaction_type': [{'code': rec.code, 'name': rec.name} for rec in
-                                     self.env['tt.provider.type'].search([('code', 'in', ['airline', 'activity', 'hotel', 'train', 'visa'])])],
+                                     self.env['tt.provider.type'].search([('code', 'in', ['airline', 'activity', 'hotel', 'train', 'visa', 'tour'])])],
                 'carrier_id': [{'code': rec.code, 'name': rec.name, 'icao': rec.icao} for rec in
                                self.env['tt.transport.carrier'].search([])],
                 'social_media_id': [{'name': rec.name} for rec in self.env['res.social.media.type'].search([])],
