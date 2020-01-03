@@ -56,7 +56,7 @@ class AgentInvoice(models.Model):
                                               related='customer_parent_id.customer_parent_type_id')
 
     ledger_ids = fields.One2many('tt.ledger', 'res_id', 'Ledger',
-                                              readonly=True, states={'draft': [('readonly', False)]})
+                                              readonly=True, states={'draft': [('readonly', False)]}, domain=[('res_model', '=', 'tt.agent.invoice')])
 
     currency_id = fields.Many2one('res.currency', string='Currency',
                                   required=True, readonly=True, states={'draft': [('readonly', False)]},
