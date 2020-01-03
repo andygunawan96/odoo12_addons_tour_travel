@@ -27,10 +27,10 @@ class TtCronLogInhResv(models.Model):
 
     def cron_check_visa_document_date(self):
         try:
-            doc_to_ho_date = self.env['tt.reservation.visa'].search([('state_visa', 'not in', ['expired', 'issued']), ('document_to_ho_date', '<', datetime.now())])
-            validate_ho_date = self.env['tt.reservation.visa'].search([('state_visa', 'not in', ['expired', 'issued']), ('ho_validate_date', '<', datetime.now())])
-            for rec in doc_to_ho_date:
-                rec.action_expired()
+            # doc_to_ho_date = self.env['tt.reservation.visa'].search([('state_visa', 'not in', ['expired', 'draft', 'confirm', 'partial_validate']), ('document_to_ho_date', '<', datetime.now())])
+            validate_ho_date = self.env['tt.reservation.visa'].search([('state_visa', 'in', ['draft', 'confirm', 'partial_validate']), ('ho_validate_date', '<', datetime.now())])
+            # for rec in doc_to_ho_date:
+            #     rec.action_expired()
             for rec in validate_ho_date:
                 rec.action_expired()
         except Exception as e:
