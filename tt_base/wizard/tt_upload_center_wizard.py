@@ -12,7 +12,6 @@ class SplitInvoice(models.TransientModel):
 
     filename = fields.Char('Filename',required=True, default='filename')
     file_reference = fields.Text('File Description',required=True)
-    delete_date = fields.Date('Delete Date')
     delete_time = fields.Datetime('Deleted Time')
     file = fields.Binary('File',required=True)
 
