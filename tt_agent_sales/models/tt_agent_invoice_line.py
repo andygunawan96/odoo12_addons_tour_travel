@@ -62,10 +62,6 @@ class AgentInvoice(models.Model):
                 total += detail.price_subtotal
             rec.total = total
 
-    def fixing_compute_tax(self):
-        for rec in self.search([]):
-            rec._compute_total_tax()
-
     @api.multi
     @api.depends('total')
     def _compute_total_tax(self):

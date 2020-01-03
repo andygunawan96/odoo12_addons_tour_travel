@@ -159,6 +159,16 @@ class TtAdjustment(models.Model):
             'approve_date': datetime.now()
         })
 
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        action_num = self.env.ref('tt_accounting.tt_adjustment_action').id
+        menu_num = self.env.ref('tt_accounting.menu_transaction_adjustment').id
+        return {
+            'type': 'ir.actions.act_url',
+            'name': self.name,
+            'target': 'new',
+            'url': base_url + "/web#id=" + str(self.id) + "&action=" + str(action_num) + "&model=tt.refund&view_type=form&menu_id=" + str(menu_num),
+        }
+
     def cancel_adj_from_button(self):
         for rec in self.ledger_ids:
             rec.reverse_ledger()
