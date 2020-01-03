@@ -48,7 +48,6 @@
                 <header>
                     <button name="action_confirm_agent_invoice" string="Confirm" type="object" states="draft" class="btn-primary"/>
                     <button name="set_to_bill" string="Bill" type="object"/>
-
                     <button name="create_ledger" string="Create Ledger" type="object" groups="base.group_no_one"/>
                     <button name="%(tt_agent_invoice_wizard_action_view)d" string="Move" type="action" context = "{'default_invoice_id1': id}"/>
                     <button name="set_as_confirm" string="Confirm" type="object" groups="tt_base.group_tt_tour_travel_operator"/>
@@ -85,6 +84,9 @@
                         <group>
                             <field name="bill_name"/>
                             <field name="bill_address"/>
+                        </group>
+                        <group>
+                            <field name="payment_acquirers"/>
                         </group>
                     </group>
                     <group>
@@ -137,7 +139,7 @@
                 <field name="state"/>
                 <field name="agent_id"/>
                 <field name="customer_parent_id"/>
-                <field name="total"/>
+                <field name="payment_acquirers"/>
                 <field name="total_after_tax"/>
                 <field name="paid_amount"/>
             </tree>
