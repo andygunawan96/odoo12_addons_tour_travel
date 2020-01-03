@@ -54,6 +54,7 @@ class TtAdjustmentWizard(models.TransientModel):
             'res_model': self.res_model,
             'res_id': self.res_id,
             'component_type': self.component_type,
+            'referenced_document': self.referenced_document,
             'adjust_side': self.adjust_side,
             'adjust_amount': self.adjust_amount,
             'ajd_reason': self.adj_type,
