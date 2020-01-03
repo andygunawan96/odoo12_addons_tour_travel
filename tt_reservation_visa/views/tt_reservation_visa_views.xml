@@ -101,10 +101,14 @@
                             class="oe_stat_button" states="issued,done"
                             string="Print Invoice (HO)" type="object" icon="fa-print"
                             groups="tt_base.group_tt_tour_travel_operator"/>
+                    <button name="print_itinerary"
+                            class="oe_stat_button" states="booked,issued,done"
+                            string="Print Itinerary" type="object" icon="fa-print"/>
                 </div>
             </xpath>
             <field name="carrier_name" position="replace">
                 <field name="document_to_ho_date"/>
+                <field name="ho_validate_date"/>
                 <field name="use_vendor"/>
                 <field name="can_refund"/>
             </field>
