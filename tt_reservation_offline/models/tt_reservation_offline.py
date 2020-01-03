@@ -295,7 +295,7 @@ class IssuedOffline(models.Model):
             if payment['error_code'] != 0:
                 _logger.error(payment['error_msg'])
                 raise UserError(_(payment['error_msg']))
-
+            self.state = 'booked'
             self.calculate_service_charge()
             self.state_offline = 'validate'
             self.vendor_amount = self.nta_price
@@ -337,7 +337,6 @@ class IssuedOffline(models.Model):
                         raise UserError(_('PNR(s) can\'t be Empty'))
             else:
                 raise UserError(_('Provider(s) can\'t be Empty'))
-        self.state = 'booked'
         self.state_offline = 'sent'
         self.hold_date = datetime.now() + timedelta(days=1)
         self.sent_date = fields.Datetime.now()
