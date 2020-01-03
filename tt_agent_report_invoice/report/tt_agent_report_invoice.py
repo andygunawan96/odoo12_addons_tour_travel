@@ -14,8 +14,8 @@ class AgentReportInvoice(models.Model):
     def _select():
         # return """* """
         return """
-        invoice.date_invoice, invoice.name as invoice_number, invoice.total as invoice_total, invoice.paid_amount, 
-        invoice.state, billing.name as billing_statement,
+        invoice.date_invoice, invoice.name as invoice_number, invoice.total as invoice_total, invoice.paid_amount,
+        invoice.state, invoice.payment_acquirers as payment_acquirers, billing.name as billing_statement,
         agent.name as agent_name, agent_type.name as agent_type,
         customer.name as customer_name,
         invoice_detail.name as invoice_line, invoice_detail.total as invoice_line_total,
@@ -59,13 +59,13 @@ class AgentReportInvoice(models.Model):
             where += """ AND invoice.state IN ('bill2')"""
         if state == 'cancel':
             where += """ AND invoice.state IN ('cancel')"""
-        # if agent_id:
-        #     where += """ AND invoice.agent_id = %s""" % agent_id
+        if agent_id:
+            where += """ AND invoice.agent_id = %s """ % agent_id
         return where
 
     @staticmethod
     def _order_by():
-        return """ invoice.date """
+        return """ invoice.create_date """
 
     def _lines(self, date_from, date_to, agent_id, state):
         # SELECT
@@ -78,7 +78,7 @@ class AgentReportInvoice(models.Model):
         query += 'WHERE ' + self._where(date_from, date_to, agent_id, state)
 
         #ORDER BY
-        # query += 'ORDER BY ' + self._order_by()
+        query += 'ORDER BY ' + self._order_by()
 
         self.env.cr.execute(query)
         _logger.info(query)
