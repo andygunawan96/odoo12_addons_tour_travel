@@ -79,7 +79,7 @@
                         <group>
                             <field name="adj_reason"/>
                             <field name="reason_uid"/>
-                            <label for="confirm_uid" string="Confrim by"/>
+                            <label for="confirm_uid" string="Confirm by"/>
                             <div>
                                 <field name="confirm_uid" readonly="1" class="oe_inline"/> -
                                 <field name="confirm_date" readonly="1" class="oe_inline"/>
