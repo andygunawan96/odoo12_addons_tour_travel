@@ -666,28 +666,32 @@ class IssuedOffline(models.Model):
         provider_list = []
         for rec in self.line_ids:
             if rec.provider_id:
-                provider_list.append(rec.provider_id.name)
+                if rec.provider_id.name not in provider_list:
+                    provider_list.append(rec.provider_id.name)
         self.provider_name = ', '.join(provider_list)
 
     def get_provider_name_from_provider(self):
         provider_list = []
         for rec in self.provider_booking_ids:
             if rec.provider_id:
-                provider_list.append(rec.provider_id.name)
+                if rec.provider_id.name not in provider_list:
+                    provider_list.append(rec.provider_id.name)
         self.provider_name = ', '.join(provider_list)
 
     def get_pnr_list(self):
         pnr_list = []
         for rec in self.line_ids:
             if rec.pnr:
-                pnr_list.append(rec.pnr)
+                if rec.pnr not in pnr_list:
+                    pnr_list.append(rec.pnr)
         self.pnr = ', '.join(pnr_list)
 
     def get_pnr_list_from_provider(self):
         pnr_list = []
         for rec in self.provider_booking_ids:
             if rec.pnr:
-                pnr_list.append(rec.pnr)
+                if rec.pnr not in pnr_list:
+                    pnr_list.append(rec.pnr)
         self.pnr = ', '.join(pnr_list)
 
     def check_line_empty(self):
