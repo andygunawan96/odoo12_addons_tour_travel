@@ -38,9 +38,10 @@ class AgentReportInvoiceXls(models.TransientModel):
         sheet.write('G9', 'Billing Statement', style.table_head_center)
         sheet.merge_range('H9:I9', 'Invoice Detail', style.table_head_center)
         sheet.write('J9', 'Payment acquirer', style.table_head_center)
-        sheet.write('K9', 'Payment Ref', style.table_head_center)
-        sheet.write('L9', 'Total', style.table_head_center)
-        sheet.write('M9', 'State', style.table_head_center)
+        sheet.write('K9', 'Payment Acquirers', style.table_head_center)
+        sheet.write('L9', 'Payment Ref', style.table_head_center)
+        sheet.write('M9', 'Total', style.table_head_center)
+        sheet.write('N9', 'State', style.table_head_center)
 
         # ====== SET WIDTH AND HEIGHT ==========
         sheet.set_row(0, row_height)  # set_row(row, height) -> row 0-4 (1-5)
@@ -86,9 +87,10 @@ class AgentReportInvoiceXls(models.TransientModel):
                 sheet.write(row_data, 7, i['invoice_line'], sty_table_data)
                 sheet.write(row_data, 8, i['invoice_line_total'], sty_amount)
                 sheet.write(row_data, 9, i['payment_acquirer'], sty_table_data)
-                sheet.write(row_data, 10, i['payment_ref'], sty_table_data)
-                sheet.write(row_data, 11, i['invoice_total'], sty_amount)
-                sheet.write(row_data, 12, i['state'], sty_table_data)
+                sheet.write(row_data, 10, i['payment_acquirers'], sty_table_data)
+                sheet.write(row_data, 11, i['payment_ref'], sty_table_data)
+                sheet.write(row_data, 12, i['invoice_total'], sty_amount)
+                sheet.write(row_data, 13, i['state'], sty_table_data)
             else:
                 if invoice_line_number != i['invoice_line']:
                     invoice_line_number = i['invoice_line']
@@ -102,9 +104,10 @@ class AgentReportInvoiceXls(models.TransientModel):
                     sheet.write(row_data, 7, i['invoice_line'], sty_table_data)
                     sheet.write(row_data, 8, i['invoice_line_total'], sty_amount)
                     sheet.write(row_data, 9, i['payment_acquirer'], sty_table_data)
-                    sheet.write(row_data, 10, i['payment_ref'], sty_table_data)
-                    sheet.write(row_data, 11, '', sty_amount)
-                    sheet.write(row_data, 12, i['state'], sty_table_data)
+                    sheet.write(row_data, 10, '', sty_table_data)
+                    sheet.write(row_data, 11, i['payment_ref'], sty_table_data)
+                    sheet.write(row_data, 12, '', sty_amount)
+                    sheet.write(row_data, 13, i['state'], sty_table_data)
                 else:
                     row_data -= 1
 
