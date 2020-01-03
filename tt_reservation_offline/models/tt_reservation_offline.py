@@ -925,11 +925,12 @@ class IssuedOffline(models.Model):
         payment = data['payment']  # self.param_payment
 
         try:
+            ## hapus 3 jan 2020 krn chandra travel mau book tdk bs
             # cek saldo
-            balance_res = self.env['tt.agent'].check_balance_limit_api(context['co_agent_id'], data_reservation_offline['total_sale_price'])
-            if balance_res['error_code'] != 0:
-                _logger.error('Agent Balance not enough')
-                raise RequestException(1007, additional_message="agent balance")
+            # balance_res = self.env['tt.agent'].check_balance_limit_api(context['co_agent_id'], data_reservation_offline['total_sale_price'])
+            # if balance_res['error_code'] != 0:
+            #     _logger.error('Agent Balance not enough')
+            #     raise RequestException(1007, additional_message="agent balance")
 
             # user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
             # remove sementara update_api_context
