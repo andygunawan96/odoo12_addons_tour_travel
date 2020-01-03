@@ -46,13 +46,12 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_confirm_agent_invoice" string="Confirm" type="object" states="draft" class="btn-primary"/>
-                    <button name="set_to_bill" string="Bill" type="object"/>
+                    <button name="set_to_bill" string="Set as Bill" type="object" groups="base.user_admin"/>
 
                     <button name="create_ledger" string="Create Ledger" type="object" groups="base.group_no_one"/>
                     <button name="%(tt_agent_invoice_wizard_action_view)d" string="Move" type="action" context = "{'default_invoice_id1': id}"/>
-                    <button name="set_as_confirm" string="Confirm" type="object" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <button name="set_as_paid" string="Paid" type="object" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <button name="set_as_confirm" string="Set as Confirm" type="object" groups="base.user_admin"/>
+                    <button name="set_as_paid" string="Set as Paid" type="object" groups="base.user_admin"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,issued"/>
                 </header>
                 <sheet>
