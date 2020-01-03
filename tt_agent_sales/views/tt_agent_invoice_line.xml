@@ -7,6 +7,7 @@
             <form>
                 <header>
                     <button string="Go to Reservation" name="open_reservation" type="object"/>
+                    <button string="Compute all Tax" name="fixing_compute_tax" type="object"/>
                     <button name="open_split_wizard" string="Split" type="object"
                             context = "{'default_reservation_model': res_model_resv,'default_reservation_id': res_id_resv }"/>
                 </header>

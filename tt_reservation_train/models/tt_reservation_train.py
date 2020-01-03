@@ -60,6 +60,8 @@ class TtReservationTrain(models.Model):
                 rec.sector_type = "Not Defined"
 
     def action_booked_api_train(self,context,pnr_list,hold_date):
+        if type(hold_date) != datetime:
+            hold_date = False
         self.write({
             'state': 'booked',
             'pnr': ', '.join(pnr_list),

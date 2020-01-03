@@ -295,14 +295,21 @@ class IssuedOffline(models.Model):
             if payment['error_code'] != 0:
                 _logger.error(payment['error_msg'])
                 raise UserError(_(payment['error_msg']))
-
+            self.state = 'booked'
             self.calculate_service_charge()
             self.state_offline = 'validate'
             self.vendor_amount = self.nta_price
             self.compute_final_ho()
             self.issued_date = fields.Datetime.now()
             self.issued_uid = kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
-
+            for provider in self.provider_booking_ids:
+                provider.issued_date = self.issued_date
+                provider.issued_uid = self.issued_uid
+            try:
+                self.env['tt.offline.api.con'].send_approve_notification(self.name, self.env.user.name,
+                                                                        self.get_total_amount())
+            except Exception as e:
+                _logger.error("Send ISSUED OFFLINE Approve Notification Telegram Error")
         return is_enough
 
     def check_pnr_empty(self):
@@ -330,7 +337,6 @@ class IssuedOffline(models.Model):
                         raise UserError(_('PNR(s) can\'t be Empty'))
             else:
                 raise UserError(_('Provider(s) can\'t be Empty'))
-        self.state = 'booked'
         self.state_offline = 'sent'
         self.hold_date = datetime.now() + timedelta(days=1)
         self.sent_date = fields.Datetime.now()

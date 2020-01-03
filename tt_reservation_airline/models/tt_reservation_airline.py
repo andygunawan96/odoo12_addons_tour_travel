@@ -75,6 +75,8 @@ class ReservationAirline(models.Model):
             rec.state = 'issued'
 
     def action_booked_api_airline(self,context,pnr_list,hold_date):
+        if type(hold_date) != datetime:
+            hold_date = False
         self.write({
             'state': 'booked',
             'pnr': ', '.join(pnr_list),
@@ -95,6 +97,8 @@ class ReservationAirline(models.Model):
         })
 
     def action_partial_booked_api_airline(self,context,pnr_list,hold_date):
+        if type(hold_date) != datetime:
+            hold_date = False
         self.write({
             'state': 'partial_booked',
             'booked_uid': context['co_uid'],

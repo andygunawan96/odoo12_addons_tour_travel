@@ -241,6 +241,8 @@ class ReservationActivity(models.Model):
         # self._create_refund_ledger_activity()
 
     def action_partial_booked_api_activity(self,context,pnr_list,hold_date):
+        if type(hold_date) != datetime:
+            hold_date = False
         self.write({
             'state': 'partial_booked',
             'booked_uid': context['co_uid'],

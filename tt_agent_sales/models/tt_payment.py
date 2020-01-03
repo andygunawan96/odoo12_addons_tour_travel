@@ -11,6 +11,7 @@ class TtPaymentInvoiceRel(models.Model):
     available_amount = fields.Monetary('Available Ammount', related="payment_id.available_amount")
     currency_id = fields.Many2one('res.currency', 'currency', related="payment_id.currency_id")
     state = fields.Selection('State',related='payment_id.state')
+    payment_acquirer = fields.Char("Payment Acquirer", compute="_compute_payment_acquirer",store=True)
 
     @api.model
     def create(self, vals_list):
@@ -36,6 +37,12 @@ class TtPaymentInvoiceRel(models.Model):
             return new_rel
         else:
             raise exceptions.UserError('Payment not enough to pay nominal amount. Please choose another payment or reduce tha pay amount')
+
+    @api.depends('payment_id.acquirer_id.name')
+    def _compute_payment_acquirer(self):
+        for rec in self:
+            if rec.payment_id:
+                rec.payment_acquirer = rec.payment_id.acquirer_id.name
 
     @api.onchange('pay_amount')
     def pay_amount_validator(self):

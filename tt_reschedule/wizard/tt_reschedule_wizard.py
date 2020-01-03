@@ -44,7 +44,11 @@ class TtRescheduleWizard(models.TransientModel):
     @api.onchange('res_model', 'res_id')
     def _compute_old_segments(self):
         old_segment_list = []
-        book_obj = self.env[self.res_model].sudo().browse(int(self.res_id))
+        try:
+            book_obj = self.env[self.res_model].sudo().browse(int(self.res_id))
+        except:
+            _logger.info('Warning: Error res_model di production')
+            book_obj = self.env[self.env.context['active_model']].sudo().browse(int(self.env.context['active_id']))
         for rec in book_obj.segment_ids:
             old_segment_list.append(rec.id)
         self.old_segment_ids = [(6, 0, old_segment_list)]
@@ -53,7 +57,11 @@ class TtRescheduleWizard(models.TransientModel):
     @api.onchange('res_model', 'res_id')
     def _compute_new_segments(self):
         new_segment_list = []
-        book_obj = self.env[self.res_model].sudo().browse(int(self.res_id))
+        try:
+            book_obj = self.env[self.res_model].sudo().browse(int(self.res_id))
+        except:
+            _logger.info('Warning: Error res_model di production')
+            book_obj = self.env[self.env.context['active_model']].sudo().browse(int(self.env.context['active_id']))
         for rec in book_obj.segment_ids:
             new_seg_obj = self.env['tt.segment.reschedule'].sudo().create({
                 'segment_code': rec.segment_code,

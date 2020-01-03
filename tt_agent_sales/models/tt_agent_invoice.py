@@ -56,7 +56,7 @@ class AgentInvoice(models.Model):
                                               related='customer_parent_id.customer_parent_type_id')
 
     ledger_ids = fields.One2many('tt.ledger', 'res_id', 'Ledger',
-                                              readonly=True, states={'draft': [('readonly', False)]})
+                                              readonly=True, states={'draft': [('readonly', False)]}, domain=[('res_model', '=', 'tt.agent.invoice')])
 
     currency_id = fields.Many2one('res.currency', string='Currency',
                                   required=True, readonly=True, states={'draft': [('readonly', False)]},
@@ -69,7 +69,7 @@ class AgentInvoice(models.Model):
 
     # payment_ids = fields.One2many('tt.payment.invoice.rel', 'invoice_id', 'Payments',states={'paid': [('readonly', True)]})
     payment_ids = fields.One2many('tt.payment.invoice.rel', 'invoice_id', 'Payments',states={'paid': [('readonly', True)]})
-
+    payment_acquirers = fields.Char('List of Acquirers',compute="_compute_acquirers",store=True)
     confirmed_uid = fields.Many2one('res.users', 'Confirmed by', readonly=True)
     confirmed_date = fields.Datetime('Confirmed Date', readonly=True)
 
@@ -96,6 +96,13 @@ class AgentInvoice(models.Model):
         # if 'payment_ids' in vals:
         self.check_paid_status()
 
+    @api.depends("payment_ids.payment_acquirer")
+    def _compute_acquirers(self):
+        for rec in self:
+            aqc_list = []
+            for payment in rec.payment_ids:
+                aqc_list.append(payment.payment_acquirer and payment.payment_acquirer or "")
+            rec.payment_acquirers = ",".join(aqc_list)
 
     def set_as_confirm(self):
         self.write({
