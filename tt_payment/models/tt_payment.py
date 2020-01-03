@@ -148,7 +148,9 @@ class PaymentTransaction(models.Model):
             rec.used_amount = 0
             if rec.top_up_id:
                 rec.used_amount = self.top_up_id.total
-            available_amount -= rec.used_amount
+                available_amount = 0
+            else:
+                available_amount -= rec.used_amount
             rec.available_amount = available_amount
             print("Supered Used Amount %d" % (rec.used_amount))
             print("Supered Availale Amount %d" % (rec.available_amount))
@@ -194,8 +196,9 @@ class PaymentTransaction(models.Model):
             if ({self.env.ref('tt_base.group_tt_tour_travel_operator').id,
                  self.env.ref('tt_base.group_tt_accounting_operator').id}.intersection(
                 set(self.env.user.groups_id.ids))):
-                if self.top_up_id.total != self.real_total_amount and datetime.now().day == self.create_date.day:
-                    raise exceptions.UserError('Cannot change, have to wait 1 day.')
+                ## 3 Januari 2020 di minta hapuskan by desy
+                # if self.top_up_id.total != self.real_total_amount and datetime.now().day == self.create_date.day:
+                #     raise exceptions.UserError('Cannot change, have to wait 1 day.')
                 self.top_up_id.action_approve_top_up()
                 approve_values = {
                     'state': 'approved',
