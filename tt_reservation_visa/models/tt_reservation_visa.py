@@ -2247,7 +2247,7 @@ class TtVisa(models.Model):
         }
         return self.env.ref('tt_reservation_visa.action_report_printout_proforma_invoice_visa').report_action(self, data=data)
 
-    def print_itinerary(self, data):
+    def print_itinerary(self, data, ctx=None):
         # jika panggil dari backend
         if 'order_number' not in data:
             data['order_number'] = self.name
