@@ -345,33 +345,48 @@ class PrintoutInvoice(models.AbstractModel):
     def get_invoice_data(self, line, rec, paxs):
         a = {}
         if rec._name == 'tt.reservation.offline':
-            for rec2 in rec.line_ids:
-                if rec.offline_provider_type != 'hotel':
-                    pnr_same = True
-                    pnr = rec2.pnr if rec2.pnr else '-'
-                    if not a.get(pnr):
-                        pnr_same = False
-                        a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [],'provider_type': ''}
-                    if not pnr_same:
+            if rec.line_ids:
+                for rec2 in rec.line_ids:
+                    if rec.offline_provider_type != 'hotel':
+                        pnr_same = True
+                        pnr = rec2.pnr if rec2.pnr else '-'
+                        if not a.get(pnr):
+                            pnr_same = False
+                            a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [],
+                                      'provider_type': ''}
+                        if not pnr_same:
+                            a[pnr]['descs'].append(line.desc if line.desc else '')
+                            a[pnr]['provider_type'] = rec.provider_type_id.name
+                            for line_detail in line.invoice_line_detail_ids:
+                                a[pnr]['pax_data'].append({
+                                    'name': (line_detail.desc if line_detail.desc else ''),
+                                    'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
+                                })
+                    else:
+                        pnr_same = True
+                        pnr = rec2.pnr if rec2.pnr else '-'
+                        if not a.get(pnr):
+                            pnr_same = False
+                            a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [],
+                                      'provider_type': ''}
                         a[pnr]['descs'].append(line.desc if line.desc else '')
                         a[pnr]['provider_type'] = rec.provider_type_id.name
-                        for line_detail in line.invoice_line_detail_ids:
-                            a[pnr]['pax_data'].append({
-                                'name': (line_detail.desc if line_detail.desc else ''),
-                                'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
-                            })
-                else:
-                    pnr_same = True
+                        a[pnr]['pax_data'].append({
+                            'name': (rec2.get_line_hotel_description() if rec2.get_line_hotel_description() else ''),
+                            'total': rec.total / len(rec.line_ids)
+                        })
+            else:
+                for rec2 in rec.provider_booking_ids:
                     pnr = rec2.pnr if rec2.pnr else '-'
                     if not a.get(pnr):
-                        pnr_same = False
                         a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'provider_type': ''}
                     a[pnr]['descs'].append(line.desc if line.desc else '')
                     a[pnr]['provider_type'] = rec.provider_type_id.name
-                    a[pnr]['pax_data'].append({
-                        'name': (rec2.get_line_hotel_description() if rec2.get_line_hotel_description() else ''),
-                        'total': rec.total / len(rec.line_ids)
-                    })
+                    for line_detail in line.invoice_line_detail_ids:
+                        a[pnr]['pax_data'].append({
+                            'name': (line_detail.desc if line_detail.desc else ''),
+                            'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
+                        })
         elif rec._name == 'tt.reservation.hotel':
             if rec.room_detail_ids:
                 for rec2 in rec.room_detail_ids:
