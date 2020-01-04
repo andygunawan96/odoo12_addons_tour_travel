@@ -144,7 +144,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
                     pnr = rec2.pnr if rec2.pnr else '-'
                     if not a.get(pnr):
                         a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'provider_type': ''}
-                    a[pnr]['descs'].append(self.get_description(rec, data))
+                    a[pnr]['descs'].append(self.get_description(rec, data, rec2))
                     a[pnr]['provider_type'] = rec.provider_type_id.name
                     if rec.provider_type_id_name == 'hotel':
                         qty = 0
@@ -253,7 +253,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
             a.update({rec2.name: num2words(rec2.total) + ' Rupiah'})
         return a
 
-    def get_description(self, rec, data):
+    def get_description(self, rec, data, line=None):
         desc = ''
         if data['context']['active_model'] == 'tt.reservation.airline':
             for journey in rec.journey_ids:
@@ -286,8 +286,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
         elif data['context']['active_model'] == 'tt.reservation.offline':
             desc = ''
             if rec.provider_type_id_name != 'hotel':
-                for line in rec.line_ids:
-                    desc += line.get_line_description()
+                desc += line.get_line_description()
             else:
                 desc += 'Description : ' + (rec.description if rec.description else '')
         elif data['context']['active_model'] == 'tt.reservation.hotel':
@@ -355,12 +354,12 @@ class PrintoutInvoice(models.AbstractModel):
                             a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [],
                                       'provider_type': ''}
                         if not pnr_same:
-                            a[pnr]['descs'].append(line.desc if line.desc else '')
+                            a[pnr]['descs'].append(rec2.get_line_description())
                             a[pnr]['provider_type'] = rec.provider_type_id.name
                             for line_detail in line.invoice_line_detail_ids:
                                 a[pnr]['pax_data'].append({
                                     'name': (line_detail.desc if line_detail.desc else ''),
-                                    'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
+                                    'total': (line_detail.price_subtotal/len(rec.line_ids) if line_detail.price_subtotal else '')
                                 })
                     else:
                         pnr_same = True

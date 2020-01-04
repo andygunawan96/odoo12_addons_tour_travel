@@ -140,7 +140,7 @@ class TtVisa(models.Model):
     def action_draft_visa(self):
         self.write({
             'state_visa': 'draft',
-            'state': 'booked'
+            'state': 'draft'
         })
         # saat mengubah state ke draft, akan mengubah semua state passenger ke draft
         for rec in self.passenger_ids:
@@ -161,6 +161,7 @@ class TtVisa(models.Model):
 
         self.write({
             'state_visa': 'confirm',
+            'state': 'booked',
             'confirmed_date': datetime.now(),
             'confirmed_uid': self.env.user.id
         })
