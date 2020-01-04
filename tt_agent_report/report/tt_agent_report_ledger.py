@@ -44,15 +44,14 @@ class AgentReportLedger(models.AbstractModel):
     @staticmethod
     def _order_by():
         return """
-        lg.date, lg.id
+        lg.id
         """
 
     def _lines(self, date_from, date_to, agent_id):
         query = 'SELECT ' + self._select() + \
                 'FROM ' + self._from() + \
-                'WHERE ' + self._where(date_from, date_to, agent_id)
-                # ' GROUP BY ' + self._group_by() + \
-                # ' ORDER BY ' + self._order_by()
+                'WHERE ' + self._where(date_from, date_to, agent_id) + \
+                'ORDER BY ' + self._order_by()
         self.env.cr.execute(query)
         _logger.info(query)
         return self.env.cr.dictfetchall()

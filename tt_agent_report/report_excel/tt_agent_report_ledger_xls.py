@@ -110,12 +110,13 @@ class AgentReportLedgerXls(models.TransientModel):
         total_credit = 0
 
         #initiate start balance
-        if values['lines'][0]['debit'] > 0:
-            starting_balance = values['lines'][0]['balance'] - values['lines'][0]['debit']
-            end_balance = starting_balance
-        else :
-            starting_balance = values['lines'][0]['balance'] + values['lines'][0]['credit']
-            end_balance = starting_balance
+        if len(values['lines']) > 0:
+            if values['lines'][0]['debit'] > 0:
+                starting_balance = values['lines'][0]['balance'] - values['lines'][0]['debit']
+                end_balance = starting_balance
+            else:
+                starting_balance = values['lines'][0]['balance'] + values['lines'][0]['credit']
+                end_balance = starting_balance
 
         for rec in values['lines']:
             if rec['debit'] > 0:
