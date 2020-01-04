@@ -191,7 +191,7 @@ class PaymentAcquirerNumber(models.Model):
     agent_id = fields.Many2one('tt.agent', 'Agent', readonly=True)
     payment_acquirer_id = fields.Many2one('payment.acquirer','Payment Acquirer')
     number = fields.Char('Number')
-    state = fields.Selection([('open', 'Open'), ('close', 'Closed')], 'Payment Type')
+    state = fields.Selection([('open', 'Open'), ('close', 'Closed'), ('done','Done')], 'Payment Type')
     display_name_payment = fields.Char('Display Name',compute="_compute_display_name_payment")
 
     @api.depends('number','payment_acquirer_id')

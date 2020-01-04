@@ -157,7 +157,32 @@ class TtTopUp(models.Model):
         except Exception as e:
             _logger.error("Send TOP UP Approve Notification Telegram Error")
 
+    def action_va_top_up(self, data, context):
+        #update pay
+        top_up = self.search([('name', '=', data['name'])])
+        top_up.payment_id.reference = data['virtual_account'] + str(datetime.now())
+        top_up.payment_id.payment_date = str(datetime.now())
+        top_up.validated_amount = top_up.payment_id.total_amount
+        top_up.state = 'validated'
+        #validate
+        ledger_obj = self.env['tt.ledger']
+        vals = ledger_obj.prepare_vals(top_up._name, top_up.id, 'Top Up : %s' % (top_up.name), top_up.name, datetime.now(), 1,
+                                       top_up.currency_id.id, top_up.env.user.id, top_up.get_total_amount(),
+                                       description='Top Up Ledger for %s' % top_up.name)
+        vals['agent_id'] = top_up.agent_id.id
+        new_aml = ledger_obj.create(vals)
+        top_up.write({
+            'state': 'approved',
+            'ledger_id': new_aml.id,
+            'approve_uid': top_up.env.user.id,
+            'approve_date': datetime.now()
+        })
 
+        try:
+            self.env['tt.top.up.api.con'].send_approve_notification(top_up.name, top_up.env.user.name,
+                                                                    top_up.get_total_amount())
+        except Exception as e:
+            _logger.error("Send TOP UP Approve Notification Telegram Error")
 
     def get_total_amount(self):
         return self.total
@@ -176,7 +201,7 @@ class TtTopUp(models.Model):
         }
         return res
 
-    def create_top_up_api(self,data,context):
+    def create_top_up_api(self,data,context, admin=False):
         try:
             agent_obj = self.browse(context['co_agent_id'])
             if not agent_obj:
@@ -186,7 +211,7 @@ class TtTopUp(models.Model):
             ##check apakah ada 3 active request
 
             top_up_objs = self.search([('agent_id','=',context['co_agent_id']),('state','in',['request','confirm'])])
-            if len(top_up_objs.ids) >= 3:
+            if len(top_up_objs.ids) >= 3 and admin == False:
                 raise RequestException(1019)
 
             data.update({
