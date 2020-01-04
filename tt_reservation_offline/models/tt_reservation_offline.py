@@ -354,6 +354,8 @@ class IssuedOffline(models.Model):
             self.get_provider_name()
         else:
             self.get_provider_name_from_provider()
+        if not self.provider_name:
+            raise UserError(_('List of Provider can\'t be Empty'))
 
     @api.one
     def action_issued_backend(self):
@@ -686,10 +688,11 @@ class IssuedOffline(models.Model):
     def get_provider_name(self):
         provider_list = []
         for rec in self.line_ids:
-            if rec.provider_id:
+            if rec.provider_id and rec.provider_name:
                 if rec.provider_name not in provider_list:
                     provider_list.append(rec.provider_name)
-        self.provider_name = ', '.join(provider_list)
+        if len(provider_list) != 0:
+            self.provider_name = ', '.join(provider_list)
 
     def get_provider_name_from_provider(self):
         provider_list = []
