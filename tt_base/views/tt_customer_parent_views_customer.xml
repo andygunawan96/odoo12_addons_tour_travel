@@ -28,13 +28,10 @@
                     </group>
                     <notebook>
                         <page string="Customer">
-                            <field name="customer_ids" domain="[('agent_id', '=', parent_agent_id)]">
-                                <tree limit="10">
-                                    <field name="first_name"/>
-                                    <field name="last_name"/>
-                                    <field name="birth_date"/>
-                                </tree>
-                            </field>
+                            <field name="customer_ids"
+                                   domain="[('agent_id', '=', parent_agent_id)]"
+                                   context="{'tree_view_ref': 'tt_base.tt_customer_customer_tree_view',
+                                             'default_agent_id': }"/>
                         </page>
                     </notebook>
                 </sheet>

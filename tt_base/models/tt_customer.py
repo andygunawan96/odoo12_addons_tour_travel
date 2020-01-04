@@ -21,7 +21,6 @@ class TtCustomer(models.Model):
     face_image_id = fields.Many2one('tt.upload.center','Face Image')
     first_name = fields.Char('First Name')
     last_name = fields.Char('Last Name')
-    nickname = fields.Char('Nickname')
     gender = fields.Selection(variables.GENDER, string='Gender')
     marital_status = fields.Selection(variables.MARITAL_STATUS, 'Marital Status')
     religion = fields.Selection(variables.RELIGION, 'Religion')

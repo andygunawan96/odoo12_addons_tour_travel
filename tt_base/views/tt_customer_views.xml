@@ -9,7 +9,6 @@
                 <field name="name"/>
                 <field name="email"/>
                 <field name="agent_id"/>
-
                 <group expand="0" string="Group By">
                     <filter string="Agent" name="agent_id" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
                     <filter string="Gender" name="gender" domain="[]" context="{'group_by':'gender'}" groups="tt_base.group_tt_tour_travel_operator"/>
@@ -26,13 +25,13 @@
         <field name="model">tt.customer</field>
         <field name="arch" type="xml">
             <form>
-                <header>
-                        <button string="Add Identity" name="add_identity_button" type="object"
-                                groups="base.group_user"/>
+<!--                <header>-->
+<!--                        <button string="Add Identity" name="add_identity_button" type="object"-->
+<!--                                groups="base.group_user"/>-->
 
-                        <button string="Update Identity" name="test_vals_cleaner" type="object"
-                                groups="base.group_user"/>
-                </header>
+<!--                        <button string="Update Identity" name="test_vals_cleaner" type="object"-->
+<!--                                groups="base.group_user"/>-->
+<!--                </header>-->
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="toggle_active" type="object" groups="base.group_user"
@@ -55,7 +54,6 @@
                         <group>
                             <field name="agent_id" readonly="False"/>
                             <field name="name" readonly="True"/>
-                            <field name="nickname"/>
                             <field name="email"/>
                             <field name="gender"/>
                             <field name="marital_status"/>
@@ -108,6 +106,18 @@
 
     <record id="tt_customer_tree_view" model="ir.ui.view">
         <field name="name">tt.customer.tree.view</field>
+        <field name="model">tt.customer</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="first_name"/>
+                <field name="last_name"/>
+                <field name="agent_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_customer_customer_tree_view" model="ir.ui.view">
+        <field name="name">tt.customer.customer.tree.view</field>
         <field name="model">tt.customer</field>
         <field name="arch" type="xml">
             <tree>

@@ -19,7 +19,7 @@ class TtAgent(models.Model):
     seq_id = fields.Char('Sequence ID', index=True, readonly=True)
     reference = fields.Many2one('tt.agent', 'Reference', help="Agent who Refers This Agent")
     # balance = fields.Monetary(string="Balance",  compute="_compute_balance_agent" )
-    balance = fields.Monetary(string="Balance", related="" )
+    balance = fields.Monetary(string="Balance")
     annual_revenue_target = fields.Monetary(string="Annual Revenue Target", default=0)
     annual_profit_target = fields.Monetary(string="Annual Profit Target", default=0)
     # target_ids = fields.One2many('tt.agent.target', 'agent_id', string='Target(s)')

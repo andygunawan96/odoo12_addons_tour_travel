@@ -1,5 +1,6 @@
 from odoo import models,api,fields
 from datetime import date,datetime,timedelta
+from odoo.exceptions import UserError
 import os, traceback
 
 
@@ -46,6 +47,12 @@ class TtCustomerParentInh(models.Model):
         self.ensure_one_no_billing(vals)
         super(TtCustomerParentInh, self).write(vals)
 
+    @api.onchange('billing_due_date')
+    def _onchange_billing_due_date(self):
+        for rec in self:
+            if rec.billing_due_date < 0 :
+                raise UserError("Cannot go below 0.")
+
     def ensure_one_no_billing(self,vals):
         if 'billing_cycle_ids' in vals:
             no_billing_id = self.env.ref('tt_billing_statement.billing_cycle_no').id
@@ -55,21 +62,21 @@ class TtCustomerParentInh(models.Model):
     def default_cycle(self):
         return [(6,0,[self.env.ref('tt_billing_statement.billing_cycle_daily').id])]
 
-    #might be deprecated
-    def _check_billing_cycle(self,date_param):
-        ##get COR billing_cyce
-        cycle_list = []
-        for cycle in self.billing_cycle_ids:
-            if cycle.day == 0:
-                return False
-            elif cycle.day == 32:
-                return True
-            cycle_list.append(cycle.day)
-        return (DAY_TO_INT[date_param.strftime('%a')] in cycle_list or int(date_param.strftime('%d')) in cycle_list)
-
-    def test_check_billing_cycle(self):
-        date_param = date.today()
-        print(self._check_billing_cycle(date_param))
+    # #might be deprecated
+    # def _check_billing_cycle(self,date_param):
+    #     ##get COR billing_cyce
+    #     cycle_list = []
+    #     for cycle in self.billing_cycle_ids:
+    #         if cycle.day == 0:
+    #             return False
+    #         elif cycle.day == 32:
+    #             return True
+    #         cycle_list.append(cycle.day)
+    #     return (DAY_TO_INT[date_param.strftime('%a')] in cycle_list or int(date_param.strftime('%d')) in cycle_list)
+    #
+    # def test_check_billing_cycle(self):
+    #     date_param = date.today()
+    #     print(self._check_billing_cycle(date_param))
 
     def get_billing_due_date(self, bill_due_date, bill_day_list):
         final_due_date = date.today() + timedelta(days=bill_due_date)

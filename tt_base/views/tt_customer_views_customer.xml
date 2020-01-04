@@ -5,13 +5,6 @@
         <field name="model">tt.customer</field>
         <field name="arch" type="xml">
             <form>
-                <header>
-                    <button string="Add Identity" name="add_identity_button" type="object"
-                            groups="base.group_user"/>
-
-                    <button string="Update Identity" name="test_vals_cleaner" type="object"
-                            groups="base.group_user"/>
-                </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="toggle_active" type="object" groups="base.group_user"
@@ -36,7 +29,6 @@
 <!--                                <field name="user_agent_id" readonly="True" invisible="0"/>-->
                                 <field name="agent_id" readonly="True"/>
                                 <field name="name" readonly="True"/>
-                                <field name="nickname"/>
                                 <field name="email"/>
                                 <field name="gender"/>
                                 <field name="marital_status"/>

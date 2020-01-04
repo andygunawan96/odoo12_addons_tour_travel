@@ -61,6 +61,7 @@
                             type="object" groups="tt_base.group_tt_tour_travel_operator"
                             attrs="{'invisible':[('state','!=','confirm')]}"/>
                     <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action"
+                            groups="tt_base.group_tt_accounting_operator"
                             context="{
                         'default_res_model': 'tt.payment',
                         'default_res_id': id,

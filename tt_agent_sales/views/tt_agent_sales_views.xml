@@ -135,6 +135,7 @@
         <field name="model">tt.agent.invoice</field>
         <field name="arch" type="xml">
             <tree create="false" edit="false">
+                <field name="date_invoice"/>
                 <field name="name"/>
                 <field name="state"/>
                 <field name="agent_id"/>

@@ -8,7 +8,7 @@ class TtCustomerParent(models.Model):
     _rec_name = 'name'
     _description = 'Tour & Travel - Customer Parent'
 
-    name = fields.Char('Name', required=True,default="CusPar")
+    name = fields.Char('Name', required=True,default="PT.")
     logo_thumb = fields.Binary('Agent Logo Thumb', compute="_get_logo_image", store=True, attachment=True) #fixme later
 
     customer_parent_type_id = fields.Many2one('tt.customer.parent.type', 'Customer Parent Type', required=True)
