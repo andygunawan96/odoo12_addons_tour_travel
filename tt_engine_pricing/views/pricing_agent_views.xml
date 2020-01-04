@@ -32,6 +32,8 @@
                     </group>
                     <separator string="Providers"/>
                     <field name="provider_ids"/>
+                    <separator string="Carriers"/>
+                    <field name="carrier_ids"/>
                     <separator string="Uplines"/>
                     <field name="line_ids"/>
                 </sheet>
@@ -44,6 +46,9 @@
         <field name="model">tt.pricing.agent</field>
         <field name="arch" type="xml">
         <tree>
+            <field name="name"/>
+            <field name="display_providers"/>
+            <field name="display_carriers"/>
             <field name="name"/>
             <field name="agent_type_id"/>
             <field name="provider_type_id"/>
@@ -60,6 +65,8 @@
         <field name="arch" type="xml">
         <search>
             <field name="name"/>
+            <field name="display_providers"/>
+            <field name="display_carriers"/>
             <field name="agent_type_id"/>
             <filter name="inactive" string="Archived" domain="[('active','=',False)]"/>
         </search>
