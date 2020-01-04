@@ -44,8 +44,8 @@
         <tree>
             <field name="name"/>
             <field name="provider_type_id"/>
-            <field name="display_providers"/>
-            <field name="display_carriers"/>
+            <field name="display_providers" invisible="1"/>
+            <field name="display_carriers" invisible="1"/>
             <field name="is_sale"/>
             <field name="is_commission"/>
             <field name="is_provider_commission"/>
@@ -59,7 +59,7 @@
         <field name="model">tt.pricing.provider</field>
         <field name="arch" type="xml">
         <search>
-            <field name="name"/>
+            <!--<field name="name"/>-->
             <field name="provider_type_id"/>
             <field name="display_providers"/>
             <field name="display_carriers"/>

@@ -27,6 +27,20 @@ class PricingProvider(models.Model):
             res = '%s - %s' % (','.join([provider.code.title() for provider in rec.provider_ids]), ','.join([carrier.code for carrier in rec.carrier_ids]))
             rec.name = res
 
+    @api.multi
+    @api.depends('provider_ids')
+    def _compute_display_providers(self):
+        for rec in self:
+            res = '%s' % ','.join([provider.code.title() for provider in rec.provider_ids])
+            rec.display_providers = res
+
+    @api.multi
+    @api.depends('carrier_ids')
+    def _compute_display_carriers(self):
+        for rec in self:
+            res = '%s' % ','.join([carrier.code for carrier in rec.carrier_ids])
+            rec.display_carriers = res
+
     # @api.model
     # def create(self, values):
     #     res = super(PricingProvider, self).create(values)

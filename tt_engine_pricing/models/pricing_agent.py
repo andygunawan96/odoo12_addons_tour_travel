@@ -16,6 +16,10 @@ class PricingAgent(models.Model):
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', required=True)
     provider_ids = fields.Many2many('tt.provider', 'tt_pricing_agent_provider_rel', 'pricing_id', 'provider_id',
                                     string='Providers')
+    carrier_ids = fields.Many2many('tt.transport.carrier', 'tt_pricing_agent_carrier_rel', 'pricing_id', 'carrier_id',
+                                   string='Carriers')
+    display_providers = fields.Char('Display Providers', compute='_compute_display_providers', store=True, readonly=1)
+    display_carriers = fields.Char('Display Carriers', compute='_compute_display_carriers', store=True, readonly=1)
     basic_amount_type = fields.Selection(variables.AMOUNT_TYPE, 'Basic Amount Type', default='percentage')
     basic_amount = fields.Float('Basic Amount', default=0)
     currency_id = fields.Many2one('res.currency', 'Currency', required=True)
@@ -31,6 +35,20 @@ class PricingAgent(models.Model):
         # Perlu diupdate lagi, sementara menggunakan ini
         res = '%s - %s' % (self.agent_type_id.code.title(), self.provider_type_id.code.title())
         return res
+
+    @api.multi
+    @api.depends('provider_ids')
+    def _compute_display_providers(self):
+        for rec in self:
+            res = '%s' % ','.join([provider.code.title() for provider in rec.provider_ids])
+            rec.display_providers = res
+
+    @api.multi
+    @api.depends('carrier_ids')
+    def _compute_display_carriers(self):
+        for rec in self:
+            res = '%s' % ','.join([carrier.code for carrier in rec.carrier_ids])
+            rec.display_carriers = res
 
     @api.model
     def create(self, values):
@@ -74,11 +92,13 @@ class PricingAgent(models.Model):
         line_dict = {}
         line_ids = []
         [line_dict.update({rec.agent_type_id.code: rec.get_data()}) for rec in self.line_ids if rec.active]
-        provider_ids = [rec.code for rec in self.provider_ids]
+        carrier_codes = [rec.code for rec in self.carrier_ids]
+        providers = [rec.code for rec in self.provider_ids]
         res = {
             'agent_type_id': self.agent_type_id.get_data(),
             'provider_type': self.provider_type_id and self.provider_type_id.code or '',
-            'provider_ids': provider_ids,
+            'carrier_codes': carrier_codes,
+            'providers': providers,
             'basic_amount_type': self.basic_amount_type,
             'basic_amount': self.basic_amount,
             'currency': self.currency_id and self.currency_id.name,
