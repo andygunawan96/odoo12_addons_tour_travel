@@ -350,7 +350,12 @@ class IssuedOffline(models.Model):
             provider.sent_date = self.sent_date
             provider.sent_uid = self.sent_uid
         self.get_pnr_list_from_provider()
-        self.get_provider_name_from_provider()
+        if self.line_ids:
+            self.get_provider_name()
+        else:
+            self.get_provider_name_from_provider()
+        if not self.provider_name:
+            raise UserError(_('List of Provider can\'t be Empty'))
 
     @api.one
     def action_issued_backend(self):
@@ -683,10 +688,11 @@ class IssuedOffline(models.Model):
     def get_provider_name(self):
         provider_list = []
         for rec in self.line_ids:
-            if rec.provider_id:
-                if rec.provider_id.name not in provider_list:
-                    provider_list.append(rec.provider_id.name)
-        self.provider_name = ', '.join(provider_list)
+            if rec.provider_id and rec.provider_name:
+                if rec.provider_name not in provider_list:
+                    provider_list.append(rec.provider_name)
+        if len(provider_list) != 0:
+            self.provider_name = ', '.join(provider_list)
 
     def get_provider_name_from_provider(self):
         provider_list = []
@@ -926,11 +932,16 @@ class IssuedOffline(models.Model):
             res = {
                 'sector_type': self._fields['sector_type'].selection,
                 'transaction_type': [{'code': rec.code, 'name': rec.name} for rec in
-                                     self.env['tt.provider.type'].search([('code', 'in', ['airline', 'activity', 'hotel', 'train', 'visa', 'tour', 'other'])])],
+                                     self.env['tt.provider.type']
+                                         .search([('code', '!=', self.env.ref('tt_reservation_offline.tt_provider_type_offline').code)])],
                 'carrier_id': [{'code': rec.code, 'name': rec.name, 'icao': rec.icao} for rec in
                                self.env['tt.transport.carrier'].search([])],
                 'social_media_id': [{'name': rec.name} for rec in self.env['res.social.media.type'].search([])],
             }
+            res['transaction_type'].append({
+                'code': 'other',
+                'name': 'Other'
+            })
             res = Response().get_no_error(res)
         except Exception as e:
             res = Response().get_error(str(e), 500)
