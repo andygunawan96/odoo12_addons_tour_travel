@@ -263,7 +263,7 @@ class IssuedOffline(models.Model):
     @api.one
     def action_validate(self, kwargs={}):
         # cek saldo agent
-        is_enough = self.agent_id.check_balance_limit_api(self.agent_id.id, self.agent_nta)
+        is_enough = self.agent_id.check_balance_limit_api(self.agent_id.id, self.agent_nta_price)
         # jika saldo mencukupi
         if is_enough['error_code'] == 0:
             # create prices
@@ -632,6 +632,24 @@ class IssuedOffline(models.Model):
                         rec.ho_commission += comm.get('amount')
                     else:
                         rec.parent_agent_commission += comm.get('amount')
+            elif rec.offline_provider_type and rec.offline_provider_type == 'other':
+                pricing_obj = rec.env['tt.pricing.agent'].sudo()
+                provider_type_id = self.env['tt.provider.type'].search([('code', '=', 'offline')],
+                                                                       limit=1)
+                commission_list = pricing_obj.get_commission(rec.total_commission_amount, rec.agent_id,
+                                                             provider_type_id)
+                print(commission_list)
+                rec.agent_commission = 0
+                rec.parent_agent_commission = 0
+                rec.ho_commission = 0
+
+                for comm in commission_list:
+                    if comm.get('code') == 'rac':
+                        rec.agent_commission += comm.get('amount')
+                    elif comm.get('agent_type_id') == rec.env.ref('tt_base.rodex_ho').agent_type_id.id:
+                        rec.ho_commission += comm.get('amount')
+                    else:
+                        rec.parent_agent_commission += comm.get('amount')
 
     # @api.onchange('agent_commission', 'ho_commission')
     # @api.depends('agent_commission', 'ho_commission')
@@ -711,7 +729,7 @@ class IssuedOffline(models.Model):
         return empty
 
     param_issued_offline_data = {
-        "type": "tour",
+        "type": "other",
         "total_sale_price": 100000,
         "desc": "amdaksd",
         # "pnr": "10020120",
@@ -908,7 +926,7 @@ class IssuedOffline(models.Model):
             res = {
                 'sector_type': self._fields['sector_type'].selection,
                 'transaction_type': [{'code': rec.code, 'name': rec.name} for rec in
-                                     self.env['tt.provider.type'].search([('code', 'in', ['airline', 'activity', 'hotel', 'train', 'visa', 'tour'])])],
+                                     self.env['tt.provider.type'].search([('code', 'in', ['airline', 'activity', 'hotel', 'train', 'visa', 'tour', 'other'])])],
                 'carrier_id': [{'code': rec.code, 'name': rec.name, 'icao': rec.icao} for rec in
                                self.env['tt.transport.carrier'].search([])],
                 'social_media_id': [{'name': rec.name} for rec in self.env['res.social.media.type'].search([])],
