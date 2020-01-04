@@ -31,7 +31,7 @@
                             <field name="customer_ids"
                                    domain="[('agent_id', '=', parent_agent_id)]"
                                    context="{'tree_view_ref': 'tt_base.tt_customer_customer_tree_view',
-                                             'default_agent_id': }"/>
+                                             }"/>
                         </page>
                     </notebook>
                 </sheet>
