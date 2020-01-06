@@ -12,6 +12,7 @@
                     <filter name="group_by_tour_category" string="Tour Category" domain="[]" context="{'group_by':'tour_category'}"/>
                     <filter name="group_by_tour_type" string="Tour Type" domain="[]" context="{'group_by':'tour_type'}"/>
                     <filter name="group_by_tour_route" string="Tour Route" domain="[]" context="{'group_by':'tour_route'}"/>
+                    <filter name="group_by_country_str" string="Countries" domain="[]" context="{'group_by':'country_str'}"/>
                     <filter name="group_by_provider_id" string="Provider" domain="[]" context="{'group_by':'provider_id'}"/>
                     <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}"/>
                 </group>
@@ -467,6 +468,7 @@
                 <field name="tour_route"/>
                 <field name="departure_date"/>
                 <field name="return_date"/>
+                <field name="country_str"/>
                 <field name="duration"/>
                 <field name="seat" string="Seat Available"/>
                 <field name="state"/>

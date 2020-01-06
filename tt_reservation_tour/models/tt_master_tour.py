@@ -93,6 +93,7 @@ class MasterTour(models.Model):
 
     location_ids = fields.Many2many('tt.tour.master.locations', 'tt_tour_location_rel', 'product_id',
                                     'location_id', string='Location')
+    country_str = fields.Char('Countries', compute='_compute_country_str', store=True)
     visa = fields.Selection([('include', 'Include'), ('exclude', 'Exclude')],
                             'Visa', required=True, default='include')
     flight = fields.Selection([('include', 'Include'), ('exclude', 'Exclude')],
@@ -177,6 +178,15 @@ class MasterTour(models.Model):
     def _compute_filename(self):
         for rec in self:
             rec.file_name = rec.name+".json"
+
+    @api.depends("location_ids")
+    @api.onchange("location_ids")
+    def _compute_country_str(self):
+        for rec in self:
+            temp_loc = ''
+            for rec2 in rec.location_ids:
+                temp_loc += rec2.country_id.name + ', '
+            rec.country_str = temp_loc and temp_loc[:-2] or ''
 
     @api.onchange('payment_rules_ids')
     def _calc_dp(self):
