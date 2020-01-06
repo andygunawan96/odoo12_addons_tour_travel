@@ -361,7 +361,7 @@ class TtRefund(models.Model):
 
     def create_profit_loss_ledger(self):
         value = self.real_refund_amount - self.refund_amount
-        if value and not self.profit_loss_created:
+        if value != 0 and not self.profit_loss_created:
             debit = value >= 0 and value or 0
             credit = value < 0 and value * -1 or 0
 
@@ -389,7 +389,7 @@ class TtRefund(models.Model):
                 'profit_loss_created': True
             })
         else:
-            raise UserError(_('Profit & Loss Ledger has already been created.'))
+            raise UserError(_('Profit & Loss Ledger has already been created, or HO has no Profit/Loss.'))
 
     def set_to_approve(self):
         for rec in self.refund_line_cust_ids:
