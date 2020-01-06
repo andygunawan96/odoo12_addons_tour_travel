@@ -28,6 +28,8 @@
                         'default_agent_id': agent_id,
                         'default_customer_parent_id': customer_parent_id,
                         'default_referenced_document': name,
+                        'default_referenced_pnr': pnr,
+                        'default_booker_id': booker_id,
                         'default_currency_id': currency_id,
                         'default_service_type': provider_type_id
                    }" attrs="{'invisible':[('state','!=','issued')]}"/>

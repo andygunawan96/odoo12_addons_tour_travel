@@ -426,6 +426,9 @@ class TtReservation(models.Model):
         else:
             return False
 
+    def get_aftersales_desc(self):
+        return ''
+
     ##butuh field passenger_ids
     def channel_pricing_api(self,req,context):
         try:

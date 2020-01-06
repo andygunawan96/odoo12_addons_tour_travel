@@ -93,12 +93,14 @@ class TtAdjustment(models.Model):
             return 'balance'
         elif type == '1':
             return 'payment_transaction'
+        elif type == '2':
+            return 'refund'
         else:
             return self.env['tt.provider.type'].browse(int(type)).code
         
     def get_adjustment_type(self):
         return [(rec,rec.capitalize()) for rec in self.env['tt.provider.type'].get_provider_type()]+[('payment_transaction', 'Payment Transaction'),
-                 ('balance', 'Balance')]
+                 ('refund', 'Refund'), ('balance', 'Balance')]
 
     def confirm_adj_from_button(self):
         if self.state != 'draft':
