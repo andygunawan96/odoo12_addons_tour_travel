@@ -69,7 +69,7 @@
         <!--After Sales-->
         <menuitem id="top_transaction_aftersales"
                   parent="tt_base.main_transaction"
-                  name="After Sales"
+                  name="Refund and After Sales"
                   sequence="25"
                   groups="base.group_user"/>
 
