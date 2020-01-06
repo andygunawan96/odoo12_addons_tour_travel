@@ -38,6 +38,7 @@ class IssuedOfflinePassenger(models.Model):
     state_offline = fields.Selection(STATE, string='State', default='draft', related='booking_id.state_offline')
     first_name = fields.Char('First Name', related='passenger_id.first_name')
     last_name = fields.Char('Last Name', related='passenger_id.last_name')
+    title = fields.Selection(variables.TITLE, 'Title')
 
     # def compute_agent_id(self):
     #     self.agent_id = self.booking_id.sub_agent_id
