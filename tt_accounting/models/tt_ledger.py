@@ -166,7 +166,7 @@ class Ledger(models.Model):
         for check_key, restriction in self.get_allowed_list().items():
             if getattr(self, check_key):
                 for item in restriction:
-                    if item not in vals.keys():
+                    if item in vals.keys():
                         raise UserError('Error not allowed to edit ledger')
         return super(Ledger, self).write(vals)
 
