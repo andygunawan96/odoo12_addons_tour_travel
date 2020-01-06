@@ -33,15 +33,15 @@ class TtCronLogInhResv(models.Model):
             self.create_cron_log_folder()
             self.write_cron_log('auto-expired refund')
 
-    def cron_action_done_refund(self):
+    def cron_action_approve_refund(self):
         try:
-            approved_refunds = self.env['tt.refund'].search([('state', '=', 'approve')])
-            for rec in approved_refunds:
+            finalized_refunds = self.env['tt.refund'].search([('state', '=', 'final')])
+            for rec in finalized_refunds:
                 try:
                     if date.today() >= rec.refund_date:
-                        rec.action_done()
+                        rec.action_approve()
                 except Exception as e:
-                    _logger.error('%s something failed during refund action done cron.\n' % (rec.name) + traceback.format_exc())
+                    _logger.error('%s something failed during refund action approve cron.\n' % (rec.name) + traceback.format_exc())
         except Exception as e:
             self.create_cron_log_folder()
-            self.write_cron_log('auto-action-done refund.')
+            self.write_cron_log('auto-action-approve refund.')
