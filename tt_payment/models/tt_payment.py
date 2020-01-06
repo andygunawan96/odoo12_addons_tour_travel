@@ -202,8 +202,8 @@ class PaymentTransaction(models.Model):
                 self.top_up_id.action_approve_top_up()
                 approve_values = {
                     'state': 'approved',
-                    'validate_uid': self.env.user.id,
-                    'validate_date': datetime.now()
+                    'approve_uid': self.env.user.id,
+                    'approve_date': datetime.now()
                 }
                 if not self.payment_date:
                     approve_values.update({

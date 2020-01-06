@@ -49,7 +49,7 @@ class TtProviderAirline(models.Model):
 
     # is_ledger_created = fields.Boolean('Ledger Created', default=False, readonly=True, states={'draft': [('readonly', False)]})
 
-    error_history_ids = fields.One2many('tt.reservation.err.history','res_id','Error History')
+    error_history_ids = fields.One2many('tt.reservation.err.history','res_id','Error History', domain=[('res_model','=','tt.provider.airline')])
     # , domain = [('res_model', '=', 'tt.provider.airline')]
 
     ##button function

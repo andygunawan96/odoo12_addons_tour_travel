@@ -170,14 +170,8 @@ class AgentInvoice(models.Model):
         self.state = 'bill'
 
     def print_invoice_api(self, data, context):
-        try:
-            bill_name = data['bill_to_name']
-        except:
-            pass
-        try:
-            bill_address = data['bill_address']
-        except:
-            pass
+        bill_name = data.get('bill_to_name')
+        bill_address = data.get('bill_address')
         for rec in self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number'])]):
             if not bill_name == '' and not bill_address == '':
                 for invoice in rec['invoice_line_ids']:

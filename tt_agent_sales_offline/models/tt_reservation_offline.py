@@ -108,7 +108,7 @@ class ReservationOffline(models.Model):
         payment_obj = self.env['tt.payment'].create({
             'agent_id': self.agent_id.id,
             'real_total_amount': inv_line_obj.total_after_tax,
-            'customer_parent_id': self.customer_parent_id.id
+            'customer_parent_id': self.customer_parent_id.id,
         })
         if self.acquirer_id:
             payment_obj.update({

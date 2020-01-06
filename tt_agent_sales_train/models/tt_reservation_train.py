@@ -85,7 +85,9 @@ class ReservationTrain(models.Model):
             'agent_id': self.agent_id.id,
             'acquirer_id': acquirer_id,
             'real_total_amount': inv_line_obj.total_after_tax,
-            'customer_parent_id': customer_parent_id
+            'customer_parent_id': customer_parent_id,
+            'confirm_uid': co_uid,
+            'confirm_date': datetime.now()
         })
 
         self.env['tt.payment.invoice.rel'].create({
