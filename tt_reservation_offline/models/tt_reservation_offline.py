@@ -625,7 +625,6 @@ class IssuedOffline(models.Model):
                 provider_type_id = self.env['tt.provider.type'].search([('code', '=', rec.offline_provider_type)], limit=1)
                 commission_list = pricing_obj.get_commission(rec.total_commission_amount, rec.agent_id,
                                                              provider_type_id)
-                print(commission_list)
                 rec.agent_commission = 0
                 rec.parent_agent_commission = 0
                 rec.ho_commission = 0
@@ -643,7 +642,6 @@ class IssuedOffline(models.Model):
                                                                        limit=1)
                 commission_list = pricing_obj.get_commission(rec.total_commission_amount, rec.agent_id,
                                                              provider_type_id)
-                print(commission_list)
                 rec.agent_commission = 0
                 rec.parent_agent_commission = 0
                 rec.ho_commission = 0
@@ -1139,7 +1137,8 @@ class IssuedOffline(models.Model):
             psg_vals = {
                 'passenger_id': passenger_ids[idx][0].id,
                 'agent_id': context['co_agent_id'],
-                'pax_type': psg['pax_type']
+                'pax_type': psg['pax_type'],
+                'title': psg['title']
             }
             iss_off_psg_obj = iss_off_psg_env.create(psg_vals)
             iss_off_pas_list.append(iss_off_psg_obj.id)
