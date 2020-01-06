@@ -3,7 +3,7 @@
     <data noupdate="0">
 
         <record id="ho_template_user_accounting_operator" model="res.users">
-            <field name="name">HO Template Accounting Operator</field>
+            <field name="name">HO Agent Template Accounting Operator</field>
 <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
             <field name="login">ho_template_accounting_operator</field>
             <field name="password">mC/JdmC@D>sE`r2tbb*c</field>
@@ -18,7 +18,7 @@
         </record>
 
         <record id="ho_template_user_accounting_supervisor" model="res.users">
-            <field name="name">HO Template Accounting Supervisor</field>
+            <field name="name">HO Agent Template Accounting Supervisor</field>
 <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
             <field name="login">ho_template_accounting_supervisor</field>
             <field name="password">Gx3`>J2Q!gUh3MXnQbEh</field>
@@ -33,7 +33,7 @@
         </record>
 
         <record id="ho_template_user_accounting_manager" model="res.users">
-            <field name="name">HO Template Accounting Manager</field>
+            <field name="name">HO Agent Template Accounting Manager</field>
 <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
             <field name="login">ho_template_accounting_manager</field>
             <field name="password">g3ND*Gw;S/3J}=}Bt3Dr</field>
@@ -48,7 +48,7 @@
         </record>
 
         <record id="ho_template_user_btb_operator" model="res.users">
-            <field name="name">HO Template BTB Operator</field>
+            <field name="name">HO Agent Template BTB Operator</field>
 <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
             <field name="login">ho_template_btb_operator</field>
             <field name="password">x4L"36v,2?qsh$G?q6#+</field>
@@ -67,7 +67,7 @@
         </record>
 
         <record id="ho_template_user_btb_supervisor" model="res.users">
-            <field name="name">HO Template BTB Supervisor</field>
+            <field name="name">HO Agent Template BTB Supervisor</field>
 <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
             <field name="login">ho_template_btb_supervisor</field>
             <field name="password">rr5KxjM4)P7;^%dMvaz5</field>
@@ -86,7 +86,7 @@
         </record>
 
         <record id="ho_template_user_btb_manager" model="res.users">
-            <field name="name">HO Template BTB Manager</field>
+            <field name="name">HO Agent Template BTB Manager</field>
 <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
             <field name="login">ho_template_btb_manager</field>
             <field name="password">\E\a/46}(bj~QbEwZg8~</field>
@@ -109,7 +109,10 @@
 <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
             <field name="login">citra_template_operator</field>
             <field name="password">R$^}j>UG4Ye{rzvb"/3_</field>
-            <field name="groups_id" eval="[(4,ref('tt_base.group_tt_billing_statement_operator')), (4,ref('tt_base.group_tt_agent_invoice_operator')), (4,ref('tt_base.group_tt_agent_user_operator'))]"/>
+            <field name="groups_id"
+                   eval="[(4,ref('tt_base.group_tt_billing_statement_operator')),
+                          (4,ref('tt_base.group_tt_agent_invoice_operator')),
+                          (4,ref('tt_base.group_tt_agent_user_operator'))]"/>
             <field name="frontend_security_ids"
                     eval="[(4,ref('tt_base.able_to_ticketing')),
                     (4,ref('tt_base.able_to_book')),
