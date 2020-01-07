@@ -8,28 +8,28 @@ from ...tools import variables
 class Ledger(models.Model):
     _inherit = 'tt.ledger'
 
-    reschedule_id = fields.Many2one('tt.reschedule', 'Reschedule')
+    reschedule_id = fields.Many2one('tt.reschedule', 'After Sales')
 
 
 class TtReschedule(models.Model):
     _name = "tt.reschedule"
     _inherit = "tt.refund"
-    _description = "Reschedule Model"
+    _description = "After Sales Model"
     _order = 'id DESC'
 
     state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'),
                               ('sent', 'Sent'), ('validate', 'Validated'), ('approve', 'Approved'),
                               ('done', 'Done'), ('cancel', 'Canceled'), ('expired', 'Expired')], 'Status',
                              default='draft',
-                             help=" * The 'Draft' status is used for Agent to make reschedule request.\n"
+                             help=" * The 'Draft' status is used for Agent to make after sales request.\n"
                                   " * The 'Confirmed' status is used for HO to confirm and process the request.\n"
                                   " * The 'Sent' status is used for HO to send the request back to Agent with a set price.\n"
                                   " * The 'Validated' status is used for Agent to final check and validate the request.\n"
                                   " * The 'Approved' status is used for HO to approve and process the request.\n"
-                                  " * The 'Done' status means the agent's request has been rescheduled.\n"
+                                  " * The 'Done' status means the agent's request has been done.\n"
                                   " * The 'Canceled' status is used for Agent or HO to cancel the request.\n"
                                   " * The 'Expired' status means the request has been expired.\n")
-    ledger_ids = fields.One2many('tt.ledger', 'reschedule_id')
+    ledger_ids = fields.One2many('tt.ledger', 'reschedule_id', 'Ledger(s)')
     reschedule_amount = fields.Integer('Expected After Sales Amount', default=0, required=True, readonly=True, related='reschedule_amount_ho')
     real_reschedule_amount = fields.Integer('Real After Sales Amount from Vendor', default=0, required=True, readonly=False, states={'done': [('readonly', True)], 'approve': [('readonly', True)], 'draft': [('readonly', True)]})
     reschedule_amount_ho = fields.Integer('Expected After Sales Amount', default=0, required=True, readonly=True, states={'confirm': [('readonly', False)]})

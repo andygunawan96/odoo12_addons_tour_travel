@@ -241,20 +241,21 @@ class TtProviderTour(models.Model):
                             unused_psg.append(psg)
             scs['description'] = self.pnr and self.pnr or ''
 
+        for pax in self.ticket_ids:
+            if not pax.passenger_id.cost_service_charge_ids and pax not in unused_psg:
+                unused_psg.append(pax)
+
         for scs in service_charge_vals_dup:
-            while len(scs['passenger_tour_ids']) < int(scs['pax_count']):
-                unused_psg_dup = unused_psg
-                for idx, psg in enumerate(unused_psg_dup):
+            if len(scs['passenger_tour_ids']) < int(scs['pax_count']):
+                for psg in unused_psg:
                     if scs.get('tour_room_id'):
                         if scs['tour_room_id'] == psg.tour_room_id.id and psg.passenger_id.id not in scs['passenger_tour_ids']:
                             scs['passenger_tour_ids'].append(psg.passenger_id.id)
-                            unused_psg.pop(idx)
                             if len(scs['passenger_tour_ids']) >= int(scs['pax_count']):
                                 break
                     else:
                         if psg.passenger_id.id not in scs['passenger_tour_ids']:
                             scs['passenger_tour_ids'].append(psg.passenger_id.id)
-                            unused_psg.pop(idx)
                             if len(scs['passenger_tour_ids']) >= int(scs['pax_count']):
                                 break
 
