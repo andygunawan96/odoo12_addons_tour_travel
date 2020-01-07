@@ -5,6 +5,7 @@ from ...tools import ERR
 from ...tools.ERR import RequestException
 import logging,traceback
 import json,os
+import base64
 
 _logger = logging.getLogger(__name__)
 
@@ -66,6 +67,8 @@ class TtTopUp(models.Model):
     approve_date = fields.Datetime('Approve Date')
     cancel_uid = fields.Many2one('res.users', 'Cancel By')
     cancel_date = fields.Datetime('Cancel Date')
+
+    printout_top_up_id = fields.Many2one('tt.upload.center', 'Printout Top Up', readonly=True)
 
     @api.model
     def create(self, vals_list):
@@ -336,10 +339,44 @@ class TtTopUp(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1016)
 
-    def print_topup(self):
-        datas = {'ids': self.env.context.get('active_ids', [])}
+    def print_topup(self, data, ctx=None):
+        # jika panggil dari backend
+        if 'order_number' not in data:
+            data['order_number'] = self.name
+
+        book_obj = self.env['tt.top.up'].search([('name', '=', data['order_number'])], limit=1)
+        datas = {'ids': book_obj.env.context.get('active_ids', [])}
         # res = self.read(['price_list', 'qty1', 'qty2', 'qty3', 'qty4', 'qty5'])
-        res = self.read()
+        res = book_obj.read()
         res = res and res[0] or {}
         datas['form'] = res
-        return self.env.ref('tt_report_common.action_report_printout_topup').report_action(self, data=datas)
+        top_up_id = book_obj.env.ref('tt_report_common.action_report_printout_topup')
+
+        if not book_obj.printout_top_up_id:
+            pdf_report = top_up_id.report_action(book_obj, data=datas)
+            pdf_report['context'].update({
+                'active_model': book_obj._name,
+                'active_id': book_obj.id
+            })
+            pdf_report_bytes = top_up_id.render_qweb_pdf(data=pdf_report)
+            res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
+                {
+                    'filename': 'Top Up %s.pdf' % book_obj.name,
+                    'file_reference': 'Printout Top Up',
+                    'file': base64.b64encode(pdf_report_bytes[0]),
+                    'delete_date': datetime.today() + timedelta(minutes=10)
+                },
+                {
+                    'co_agent_id': self.env.user.agent_id.id,
+                    'co_uid': self.env.user.id,
+                }
+            )
+            upc_id = book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+            book_obj.printout_top_up_id = upc_id.id
+        url = {
+            'type': 'ir.actions.act_url',
+            'name': "ZZZ",
+            'target': 'new',
+            'url': book_obj.printout_top_up_id.url,
+        }
+        return url
