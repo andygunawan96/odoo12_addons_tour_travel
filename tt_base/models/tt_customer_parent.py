@@ -53,19 +53,27 @@ class TtCustomerParent(models.Model):
 
     @api.model
     def customer_parent_action_view_customer(self):
-        return {
-            'name': 'Customer Parent',
-            'type': 'ir.actions.act_window',
-            'view_type': 'form',
-            'view_mode': 'tree,form',
-            'res_model': 'tt.customer.parent',
-            'views': [(self.env.ref('tt_base.tt_customer_parent_tree_view_customer').id, 'tree'),
-                      (self.env.ref('tt_base.tt_customer_parent_form_view_customer').id, 'form')],
-            'context': {
-                'default_parent_agent_id': self.env.user.agent_id.id
-            },
-            'domain': [('parent_agent_id', '=', self.env.user.agent_id.id)]
+        action = self.env.ref('tt_base.tt_customer_parent_action_view').read()[0]
+        action['context'] = {
+            'form_view_ref': 'tt_base.tt_customer_parent_form_view_customer',
+            'tree_view_ref': 'tt_base.tt_customer_parent_tree_view_customer',
+            'default_parent_agent_id': self.env.user.agent_id.id
         }
+        action['domain'] = [('parent_agent_id', '=', self.env.user.agent_id.id)]
+        return action
+        # return {
+        #     'name': 'Customer Parent',
+        #     'type': 'ir.actions.act_window',
+        #     'view_type': 'form',
+        #     'view_mode': 'tree,form',
+        #     'res_model': 'tt.customer.parent',
+        #     'views': [(self.env.ref('tt_base.tt_customer_parent_tree_view_customer').id, 'tree'),
+        #               (self.env.ref('tt_base.tt_customer_parent_form_view_customer').id, 'form')],
+        #     'context': {
+        #         'default_parent_agent_id': self.env.user.agent_id.id
+        #     },
+        #     'domain': [('parent_agent_id', '=', self.env.user.agent_id.id)]
+        # }
 
     def check_balance_limit_api(self, customer_parent_id, amount):
         partner_obj = self.env['tt.customer.parent']

@@ -29,8 +29,8 @@ class PaymentAcquirer(models.Model):
 
     def compute_fee(self,amount,unique = 0):
         uniq = 0
-        if self.type == 'transfer':
-            uniq = unique
+        # if self.type == 'transfer':
+        uniq = unique
         # elif self.type != 'cash':
         #     # TODO perhitungan per acquirer (Charge dari agent brapa, charge dari rodex brpa)
         #     fee = 5000
@@ -134,10 +134,12 @@ class PaymentAcquirer(models.Model):
             if req['transaction_type'] == 'top_up':
                 # Kalau top up Ambil agent_id HO
                 dom.append(('agent_id', '=', self.env.ref('tt_base.rodex_ho').id))
+                unique = self.generate_unique_amount()
             elif req['transaction_type'] == 'billing':
                 dom.append(('agent_id', '=', context['co_agent_id']))
+                unique = 0
 
-            unique = self.generate_unique_amount()
+
             values = {}
             for acq in self.sudo().search(dom):
                 if not values.get(acq.type):

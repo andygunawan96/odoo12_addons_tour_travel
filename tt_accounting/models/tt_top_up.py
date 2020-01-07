@@ -233,7 +233,9 @@ class TtTopUp(models.Model):
                 'currency_id': new_top_up.currency_id.id,
                 'agent_id': new_top_up.agent_id.id,
                 'acquirer_id': acquirer_obj.id,
-                'top_up_id': new_top_up.id
+                'top_up_id': new_top_up.id,
+                'confirm_uid': context['co_uid'],
+                'confirm_date': datetime.now()
             })
 
             new_top_up.payment_id = new_payment.id

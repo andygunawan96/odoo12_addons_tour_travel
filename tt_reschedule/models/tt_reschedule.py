@@ -30,10 +30,9 @@ class TtReschedule(models.Model):
                                   " * The 'Canceled' status is used for Agent or HO to cancel the request.\n"
                                   " * The 'Expired' status means the request has been expired.\n")
     ledger_ids = fields.One2many('tt.ledger', 'reschedule_id')
-    reschedule_amount = fields.Integer('Expected Reschedule Amount', default=0, required=True, readonly=True, related='reschedule_amount_ho')
-    estimate_ho_reschedule_amount = fields.Integer('Expected Reschedule Amount from Vendor', default=0, required=True, readonly=True, states={'confirm': [('readonly', False)]})
-    real_reschedule_amount = fields.Integer('Real Reschedule Amount from Vendor', default=0, required=True, readonly=False, states={'done': [('readonly', True)], 'approve': [('readonly', True)], 'draft': [('readonly', True)]})
-    reschedule_amount_ho = fields.Integer('Expected Reschedule Amount', default=0, required=True, readonly=True, states={'confirm': [('readonly', False)]})
+    reschedule_amount = fields.Integer('Expected After Sales Amount', default=0, required=True, readonly=True, related='reschedule_amount_ho')
+    real_reschedule_amount = fields.Integer('Real After Sales Amount from Vendor', default=0, required=True, readonly=False, states={'done': [('readonly', True)], 'approve': [('readonly', True)], 'draft': [('readonly', True)]})
+    reschedule_amount_ho = fields.Integer('Expected After Sales Amount', default=0, required=True, readonly=True, states={'confirm': [('readonly', False)]})
     new_pnr = fields.Char('New PNR', readonly=True, compute="_compute_new_pnr")
     invoice_line_ids = fields.One2many('tt.agent.invoice.line', 'res_id_resv', 'Invoice', domain=[('res_model_resv','=','tt.reschedule')])
     state_invoice = fields.Selection([('wait', 'Waiting'), ('partial', 'Partial'), ('full', 'Full')],
@@ -44,12 +43,11 @@ class TtReschedule(models.Model):
     new_segment_ids = fields.Many2many('tt.segment.reschedule', 'tt_reschedule_new_segment_rel', 'reschedule_id', 'segment_id', string='New Segments',
                                   readonly=True, states={'draft': [('readonly', False)]})
     reschedule_type = fields.Selection([('reschedule', 'Reschedule'), ('revalidate', 'Revalidate'),
-                                        ('reissued', 'Reissued'), ('upgrade', 'Upgrade Service'), ('addons', 'Addons (Meals, Baggage, Seat, etc)')], 'Reschedule Type', default='reschedule',
+                                        ('reissued', 'Reissued'), ('upgrade', 'Upgrade Service'), ('addons', 'Addons (Meals, Baggage, Seat, etc)')], 'After Sales Type', default='reschedule',
                                        states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]},
                                        readonly=True)
     admin_fee_id = fields.Many2one('tt.master.admin.fee', 'Admin Fee Type', compute="")
     payment_acquirer_id = fields.Many2one('payment.acquirer', 'Payment Acquirer', domain="[('agent_id', '=', agent_id)]")
-    booker_id = fields.Many2one('tt.customer', 'Booker', ondelete='restrict', readonly=True)
 
     @api.depends('invoice_line_ids')
     def set_agent_invoice_state(self):

@@ -97,7 +97,7 @@
                                 <field name="validate_uid" readonly="1" class="oe_inline"/> -
                                 <field name="validate_date" readonly="1" class="oe_inline"/>
                             </div>
-                            <label for="approve_uid" string="Validate By"/>
+                            <label for="approve_uid" string="Approve By"/>
                             <div>
                                 <field name="approve_uid" readonly="1" class="oe_inline"/> -
                                 <field name="approve_date" readonly="1" class="oe_inline"/>

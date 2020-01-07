@@ -295,19 +295,28 @@ class TtCustomer(models.Model):
 
     @api.model
     def customer_action_view_customer(self):
-        return {
-            'name': 'Customer',
-            'type': 'ir.actions.act_window',
-            'view_type': 'form',
-            'view_mode': 'tree,form',
-            'res_model': 'tt.customer',
-            'views': [(self.env.ref('tt_base.tt_customer_tree_view_customer').id, 'tree'),
-                      (self.env.ref('tt_base.tt_customer_form_view_customer').id, 'form')],
-            'context': {
-                'default_agent_id': self.env.user.agent_id.id
-            },
-            'domain': [('agent_id', '=', self.env.user.agent_id.id)]
+        action = self.env.ref('tt_base.tt_customer_action_view').read()[0]
+        action['context'] = {
+            'form_view_ref': 'tt_base.tt_customer_form_view_customer',
+            'tree_view_ref': 'tt_base.tt_customer_tree_view_customer',
+            'default_agent_id': self.env.user.agent_id.id
         }
+        action['domain'] = [('agent_id', '=', self.env.user.agent_id.id)]
+        return action
+        # return {
+        #     'name': 'Customer',
+        #     'type': 'ir.actions.act_window',
+        #     'view_type': 'form',
+        #     'view_mode': 'tree,form',
+        #     'res_model': 'tt.customer',
+        #     'views': [(self.env.ref('tt_base.tt_customer_tree_view_customer').id, 'tree'),
+        #               (self.env.ref('tt_base.tt_customer_form_view_customer').id, 'form')],
+        #     'context': {
+        #         'default_agent_id': self.env.user.agent_id.id
+        #     },
+        #     'domain': [('agent_id', '=', self.env.user.agent_id.id)]
+        # }
+
 
 
 class TtCustomerIdentityNumber(models.Model):
