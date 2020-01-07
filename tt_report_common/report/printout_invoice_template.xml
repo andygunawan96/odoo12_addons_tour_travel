@@ -261,10 +261,12 @@
                     <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
                 </t><t t-elif="doc_model == 'tt.top.up'">
                     <t t-if="doc.state in ['draft','request']">
-                        <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Proforma HO Invoice</span><br/>
+                        <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Proforma Top Up</span><br/>  <!--Proforma HO Invoice-->
+                        <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
                     </t>
-                    <t t-if="doc.state in ['valid','done']">
-                        <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">HO Invoice</span><br/>
+                    <t t-if="doc.state in ['validated','approved']">  <!--['valid','done']-->
+                        <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Top Up</span><br/>  <!--HO Invoice-->
+                        <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
                     </t>
                 </t><t t-elif="doc_type == 'itin'">
                     <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Itinerary</span><br/>

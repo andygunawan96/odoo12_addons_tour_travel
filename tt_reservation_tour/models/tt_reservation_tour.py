@@ -3,6 +3,7 @@ from datetime import datetime, date, timedelta
 import logging
 import traceback
 import copy
+import base64
 from dateutil.relativedelta import relativedelta
 from odoo.exceptions import UserError
 from ...tools import util,variables,ERR
@@ -668,3 +669,45 @@ class ReservationTour(models.Model):
         tour_ho_invoice_id = self.env.ref('tt_report_common.action_report_printout_invoice_ho_tour')
         return tour_ho_invoice_id.report_action(self, data=datas)
 
+    def print_itinerary(self, data, ctx=None):
+        # jika panggil dari backend
+        if 'order_number' not in data:
+            data['order_number'] = self.name
+        if 'provider_type' not in data:
+            data['provider_type'] = self.provider_type_id.name
+
+        book_obj = self.env['tt.reservation.tour'].search([('name', '=', data['order_number'])], limit=1)
+        datas = {'ids': book_obj.env.context.get('active_ids', [])}
+        res = book_obj.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        tour_itinerary_id = book_obj.env.ref('tt_report_common.action_printout_itinerary_tour')
+
+        if not book_obj.printout_itinerary_id:
+            pdf_report = tour_itinerary_id.report_action(book_obj, data=datas)
+            pdf_report['context'].update({
+                'active_model': book_obj._name,
+                'active_id': book_obj.id
+            })
+            pdf_report_bytes = tour_itinerary_id.render_qweb_pdf(data=pdf_report)
+            res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
+                {
+                    'filename': 'Tour Itinerary %s.pdf' % book_obj.name,
+                    'file_reference': 'Tour Itinerary',
+                    'file': base64.b64encode(pdf_report_bytes[0]),
+                    'delete_date': datetime.today() + timedelta(minutes=10)
+                },
+                {
+                    'co_agent_id': self.env.user.agent_id.id,
+                    'co_uid': self.env.user.id,
+                }
+            )
+            upc_id = book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+            book_obj.printout_itinerary_id = upc_id.id
+        url = {
+            'type': 'ir.actions.act_url',
+            'name': "ZZZ",
+            'target': 'new',
+            'url': book_obj.printout_itinerary_id.url,
+        }
+        return url
