@@ -356,11 +356,19 @@ class PrintoutInvoice(models.AbstractModel):
                         if not pnr_same:
                             a[pnr]['descs'].append(rec2.get_line_description())
                             a[pnr]['provider_type'] = rec.provider_type_id.name
-                            for line_detail in line.invoice_line_detail_ids:
-                                a[pnr]['pax_data'].append({
-                                    'name': (line_detail.desc if line_detail.desc else ''),
-                                    'total': (line_detail.price_subtotal/len(rec.line_ids) if line_detail.price_subtotal else '')
-                                })
+
+                            for provider in rec.provider_booking_ids:
+                                if provider.pnr == pnr:
+                                    div_amount = 0
+                                    for line2 in rec.line_ids:
+                                        if line2.pnr == pnr:
+                                            div_amount += 1
+                                    for line_detail in line.invoice_line_detail_ids:
+                                        a[pnr]['pax_data'].append({
+                                            'name': (line_detail.desc if line_detail.desc else ''),
+                                            'total': (line_detail.price_subtotal/len(rec.line_ids)*div_amount if line_detail.price_subtotal else 0)
+                                        })
+                                    break
                     else:
                         pnr_same = True
                         pnr = rec2.pnr if rec2.pnr else '-'

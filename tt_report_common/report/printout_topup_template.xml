@@ -48,16 +48,16 @@
             <div class="title" style="background-color: #DC5413; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px">
                 <div class="row" style="padding-left: 20px; color: white; font-weight: 600; font-size: 18px">
                     <div class="col-3">Amount</div>
-                    <div class="col-2">Count</div>
                     <div class="col-2">Code</div>
+                    <div class="col-2">Total</div>
                     <div class="col-2">Fee(s)</div>
                     <div class="col-3">Total Payment</div>
                 </div>
             </div>
             <div class="row" style="margin-left: 0px; margin-right: 0px; border: 1px solid #BBB; border-radius: 0 0 20px 20px;">
-                <div class="col-3 text-right" style="padding: 10px 25px;"   ><span t-field="doc.amount_id.amount" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></div>
-                <div class="col-2 text-right" style="padding: 10px 25px;"><span t-field="doc.amount_count"/></div>
+                <div class="col-3 text-right" style="padding: 10px 25px;"><span t-field="doc.amount" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></div>
                 <div class="col-2 text-right" style="padding: 10px 25px;"><span t-field="doc.unique_amount" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></div>
+                <div class="col-2 text-right" style="padding: 10px 25px;"><span t-field="doc.total" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></div>
                 <div class="col-2 text-right" style="padding: 10px 25px;"><span t-field="doc.fees" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></div>
                 <div class="col-3 text-right" style="padding: 10px 25px;">
                     <span t-field="doc.total_with_fees" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
