@@ -1936,10 +1936,10 @@ class HotelInformation(models.Model):
         # provider_list = ['hotelspro', 'hotelspro_file', 'fitruums', 'webbeds_pool', 'webbeds_excel_pool',
         #                  'itank', 'quantum', 'quantum_pool', 'mgholiday', 'mg_pool', 'miki_api', 'miki_scrap', 'miki_pool',
         #                  'dida_pool', 'tbo', 'oyo']
-        provider_list = ['dida_pool', 'fitruums', 'webbeds_pool', 'webbeds_excel_pool']
+        provider_list = ['dida_pool', 'webbeds_pool', 'webbeds_excel_pool']
 
         need_to_add_list = [['No', 'CityName', 'RodexTrip City_id'] + provider_list + ['Total']]
-        new_to_add_list2 = [['Type', 'Name', 'Similar Name']]
+        new_to_add_list2 = [['Type', '#1:Name', '#1:address', '#1:provider', '#2:Similar Name', '#2:address', '#2:provider']]
 
         import glob
         for master_provider in provider_list:
@@ -1988,14 +1988,15 @@ class HotelInformation(models.Model):
                                             same_name[0]['facilities'] = hotel_fmt['facilities']
                                         self.file_log_write('Sync: ' + hotel_fmt['name'] + '->' + same_name[0]['name'])
                                         new_to_add_list2.append([
-                                            'sync', hotel_fmt['name'].encode("utf-8"),
-                                            same_name[0]['name'].encode("utf-8")
+                                            'sync', hotel_fmt['name'].encode("utf-8"), hotel_fmt['location']['address'].encode("utf-8"), ','.join(hotel_fmt['external_code'].keys()).encode("utf-8"),
+                                            same_name[0]['name'].encode("utf-8"), same_name[0]['location']['address'].encode("utf-8"), ','.join(same_name[0]['external_code'].keys()).encode("utf-8")
                                         ])
                                     else:
                                         # create baru di memory
                                         cache_content.append(hotel_fmt)
                                         self.file_log_write('New : ' + hotel_fmt['name'])
-                                        new_to_add_list2.append(['new', hotel_fmt['name'].encode("utf-8"),''])
+                                        new_to_add_list2.append(['new', hotel_fmt['name'].encode("utf-8"), hotel_fmt['location']['address'].encode("utf-8"), ','.join(hotel_fmt['external_code'].keys()).encode("utf-8"),
+                                                                 ''])
                             f2.close()
                         except Exception as e:
                             self.file_log_write('Error:' + provider + ' in id ' + str(hotel_id) + '; MSG:' + str(e))
