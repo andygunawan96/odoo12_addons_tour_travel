@@ -13,7 +13,8 @@ class AgentReportBilling(models.Model):
     @staticmethod
     def _select():
         return """billing.name as billing_number, billing.date as billing_date, billing.due_date as billing_due_date,
-        billing.state as billing_state, billing.paid_amount as paid_amount, 
+        billing.state as billing_state, billing.paid_amount as paid_amount,
+        agent.name as agent_name,
         invoice.total as invoice_amount, invoice.name as invoice_number, invoice.paid_amount as invoice_paid,
         payment.name as payment_number,
         customer.name as customer_name, customer_type.name as customer_type_name
@@ -28,6 +29,7 @@ class AgentReportBilling(models.Model):
     @staticmethod
     def _from():
         return """tt_billing_statement billing 
+        LEFT JOIN tt_agent agent ON billing.agent_id = agent.id
         LEFT JOIN tt_agent_invoice invoice ON billing.id = invoice.billing_statement_id
         LEFT JOIN tt_customer_parent customer ON billing.customer_parent_id = customer.id
         LEFT JOIN tt_customer_parent_type customer_type ON billing.customer_parent_type_id = customer_type.id
@@ -57,7 +59,7 @@ class AgentReportBilling(models.Model):
         if state == 'cancel':
             where += """ AND billing.state IN ('cancel')"""
         if agent_id:
-            where += """ AND invoice.agent_id = %s""" % agent_id
+            where += """ AND billing.agent_id = %s""" % agent_id
         return where
 
     @staticmethod
@@ -97,12 +99,30 @@ class AgentReportBilling(models.Model):
         return fields.Datetime.context_timestamp(self,value).strftime('%Y-%b-%d')
 
     def _get_lines_data(self, date_from, date_to, agent_id, state):
-        lines = self._lines(date_from, date_to, agent_id, state)
-        lines = self._convert_data(lines)
+        lines = []
+        if state != 'all':
+            lines = self._lines(date_from, date_to, agent_id, state)
+            lines = self._convert_data(lines)
+        else:
+            states = ['all', 'draft', 'confirm', 'partial', 'paid', 'cancel']
+            for i in states:
+                line = self._lines(date_from, date_to, agent_id, i)
+                line = self._convert_data(line)
+                for j in line:
+                    lines.append(j)
         return lines
 
     def _get_lines_data_more(self, date_from, date_to, agent_id, state):
-        lines = self._lines(date_from, date_to, agent_id, state)
+        lines = []
+        if state != 'all':
+            lines = self._lines(date_from, date_to, agent_id, state)
+        else:
+            states = ['all', 'draft', 'confirm', 'partial', 'paid', 'cancel']
+            for i in states:
+                line = self._lines(date_from, date_to, agent_id, i)
+                line = self._convert_data(line)
+                for j in line:
+                    lines.append(j)
         return lines
 
     def _prepare_valued(self, data_form):
