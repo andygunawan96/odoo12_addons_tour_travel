@@ -7,6 +7,8 @@
         <field name="arch" type="xml">
             <search string="Search After Sales">
                 <field name="name"/>
+                <field name="reschedule_type_str"/>
+                <field name="referenced_pnr"/>
                 <field name="referenced_document"/>
                 <field name="notes"/>
                 <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>
@@ -40,7 +42,7 @@
                     <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
                     <filter name="group_by_agent_type_id" string="Agent Type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                     <filter name="group_by_service_type" string="Service Type" domain="[]" context="{'group_by':'service_type'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
-                    <filter name="group_by_reschedule_type" string="Reschedule Type" domain="[]" context="{'group_by':'reschedule_type'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                    <filter name="group_by_reschedule_type" string="Reschedule Type" domain="[]" context="{'group_by':'reschedule_type_str'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                     <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                 </group>
             </search>
@@ -77,8 +79,9 @@
                             <field name="customer_parent_type_id" attrs="{'invisible':[('customer_parent_id','=', False)]}"/>
                             <field name="booker_id"/>
                             <field name="currency_id"/>
-                            <field name="new_pnr"/>
                             <field name="service_type"/>
+                            <field name="new_pnr"/>
+                            <field name="referenced_pnr"/>
                             <field name="referenced_document"/>
                             <field name="res_model" groups="base.user_admin"/>
                             <field name="res_id" groups="base.user_admin"/>
@@ -123,21 +126,17 @@
                     <separator string="After Sales"/>
                     <group>
                         <group>
-                            <field name="reschedule_amount" groups="tt_base.group_tt_agent_user_operator"/>
-                            <field name="reschedule_amount_ho" groups="tt_base.group_tt_tour_travel_operator"/>
-                            <field name="real_reschedule_amount" groups="tt_base.group_tt_tour_travel_operator"/>
-                            <field name="admin_fee_id" groups="tt_base.group_tt_tour_travel_operator" attrs="{'readonly':[('state','!=','confirm')], 'required':[('state','=','confirm')]}"/>
+                            <field name="reschedule_type_str"/>
+                            <field name="reschedule_amount"/>
                             <field name="admin_fee"/>
                             <field name="total_amount"/>
-                            <field name="payment_acquirer_id" attrs="{'invisible':['|', ('state','not in', ['validate', 'approve', 'done', 'cancel', 'expired']), ('customer_parent_type_id', '=', %(tt_base.customer_type_cor)d)], 'required':[('state','in', ['validate', 'approve', 'done']), ('customer_parent_type_id', '!=', %(tt_base.customer_type_cor)d)]}"/>
-                            <field name="reschedule_type"/>
-                            <field name="notes"/>
                         </group>
                         <group>
-
+                            <field name="payment_acquirer_id" attrs="{'invisible':['|', ('state','not in', ['validate', 'approve', 'done', 'cancel', 'expired']), ('customer_parent_type_id', '=', %(tt_base.customer_type_cor)d)], 'required':[('state','in', ['validate', 'approve', 'done']), ('customer_parent_type_id', '!=', %(tt_base.customer_type_cor)d)]}"/>
+                            <field name="notes"/>
                         </group>
                     </group>
-                    <notebook colspan="4" name="notebooks">
+                    <notebook colspan="4" name="notebooks_segment">
                         <page string="Segments" name="segment_page">
                             <separator string="Old Segments"/>
                             <field name="old_segment_ids">
@@ -162,12 +161,67 @@
                                 </tree>
                             </field>
                         </page>
+                        <page string="Passenger(s)" name="passenger_page">
+                            <field name="passenger_ids"/>
+                        </page>
+                    </notebook>
+                    <notebook colspan="4" name="notebooks">
+                        <page string="After Sales Line(s)" name="reschedule_line_page">
+                            <field name="reschedule_line_ids">
+                                <tree>
+                                    <field name="reschedule_type"/>
+                                    <field name="reschedule_amount" groups="tt_base.group_tt_agent_user_operator"/>
+                                    <field name="reschedule_amount_ho" groups="tt_base.group_tt_tour_travel_operator"/>
+                                    <field name="real_reschedule_amount" groups="tt_base.group_tt_tour_travel_operator"/>
+                                    <field name="admin_fee_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                                    <field name="admin_fee"/>
+                                    <field name="total_amount"/>
+                                    <field name="state" invisible="1"/>
+                                </tree>
+                                <form>
+                                    <header>
+                                        <button name="set_to_draft" string="Set to Draft" type="object" groups="base.user_admin" attrs="{'invisible':[('state','=', 'draft')]}"/>
+                                        <button name="set_to_confirm" string="Set to Confirm" type="object" groups="base.user_admin" attrs="{'invisible':[('state','=', 'confirm')]}"/>
+                                        <button name="set_to_done" string="Set to Done" type="object" groups="base.user_admin" attrs="{'invisible':[('state','=', 'done')]}"/>
+                                        <field name="state" invisible="1"/>
+                                    </header>
+                                    <sheet>
+                                        <group>
+                                            <group>
+                                                <field name="reschedule_type"/>
+                                                <field name="reschedule_amount" groups="tt_base.group_tt_agent_user_operator"/>
+                                                <field name="reschedule_amount_ho" groups="tt_base.group_tt_tour_travel_operator"/>
+                                                <field name="real_reschedule_amount" groups="tt_base.group_tt_tour_travel_operator"/>
+                                            </group>
+                                            <group>
+                                                <field name="admin_fee_id" groups="tt_base.group_tt_tour_travel_operator" attrs="{'readonly':[('state','!=','confirm')], 'required':[('state','=','confirm')]}"/>
+                                                <field name="admin_fee"/>
+                                                <field name="total_amount"/>
+                                            </group>
+                                        </group>
+                                    </sheet>
+                                </form>
+                            </field>
+                            <footer>
+                                <group string="Total Information" class="oe_subtotal_footer oe_right">
+                                    <field name="reschedule_amount" class="oe_subtotal_footer_separator"/>
+                                    <field name="admin_fee" class="oe_subtotal_footer_separator"/>
+                                    <field name="total_amount" class="oe_subtotal_footer_separator"/>
+                                </group>
+                                <group>
+
+                                </group>
+                            </footer>
+                        </page>
                         <page string="Ledger" name="ledger_page">
                             <field name="ledger_ids"
                                    context="{'tree_view_ref': 'tt_accounting.tt_ledger_adj_tree_view'}"/>
                         </page>
                         <page string="Invoice" name="invoice_page">
                             <field name="invoice_line_ids"/>
+                        </page>
+                        <page string="Adjustment">
+                            <field name="adjustment_ids"/>
                         </page>
                     </notebook>
                 </sheet>
@@ -188,10 +242,11 @@
                 <field name="name"/>
                 <field name="agent_id"/>
                 <field name="customer_parent_id"/>
+                <field name="service_type"/>
+                <field name="reschedule_type_str"/>
+                <field name="reschedule_amount"/>
                 <field name="admin_fee"/>
                 <field name="total_amount"/>
-                <field name="service_type"/>
-                <field name="reschedule_type"/>
                 <field name="hold_date"/>
                 <field name="done_uid"/>
                 <field name="done_date"/>
