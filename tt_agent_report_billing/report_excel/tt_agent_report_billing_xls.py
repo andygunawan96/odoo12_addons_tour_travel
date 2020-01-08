@@ -33,14 +33,15 @@ class AgentReportBillingXls(models.TransientModel):
         sheet.write('B9', 'Billing Date', style.table_head_center)
         sheet.write('C9', 'Due Date', style.table_head_center)
         sheet.write('D9', 'Customer Type', style.table_head_center)
-        sheet.write('E9', 'Customer', style.table_head_center)
-        sheet.write('F9', 'Invoice Document', style.table_head_center)
-        sheet.write('G9', 'Invoice Amount', style.table_head_center)
-        sheet.write('H9', 'Billing Number', style.table_head_center)
-        sheet.write('I9', 'Payment', style.table_head_center)
+        sheet.write('E9', 'Agent', style.table_head_center)
+        sheet.write('F9', 'Customer', style.table_head_center)
+        sheet.write('G9', 'Invoice Document', style.table_head_center)
+        sheet.write('H9', 'Invoice Amount', style.table_head_center)
+        sheet.write('I9', 'Billing Number', style.table_head_center)
+        sheet.write('J9', 'Payment', style.table_head_center)
         # sheet.write('J9', 'Acquirer', style.table_head_center)
-        sheet.write('J9', 'Payment Amount', style.table_head_center)
-        sheet.write('K9', 'State', style.table_head_center)
+        sheet.write('K9', 'Payment Amount', style.table_head_center)
+        sheet.write('L9', 'State', style.table_head_center)
 
         # ====== SET WIDTH AND HEIGHT ==========
         sheet.set_row(0, row_height)  # set_row(row, height) -> row 0-4 (1-5)
@@ -78,31 +79,32 @@ class AgentReportBillingXls(models.TransientModel):
                         pass
 
                 row_data += 1
-                sty_table_data_center = style.table_data_center
-                sty_table_data = style.table_data
-                sty_datetime = style.table_data_datetime
-                sty_date = style.table_data_date
-                sty_amount = style.table_data_amount
+                sty_table_data_center = style.table_data_center_border
+                sty_table_data = style.table_data_border
+                sty_datetime = style.table_data_datetime_border
+                sty_date = style.table_data_date_border
+                sty_amount = style.table_data_amount_border
                 if row_data % 2 == 0:
-                    sty_table_data_center = style.table_data_center_even
-                    sty_table_data = style.table_data_even
-                    sty_datetime = style.table_data_datetime_even
-                    sty_date = style.table_data_date_even
-                    sty_amount = style.table_data_amount_even
+                    sty_table_data_center = style.table_data_center_even_border
+                    sty_table_data = style.table_data_even_border
+                    sty_datetime = style.table_data_datetime_even_border
+                    sty_date = style.table_data_date_even_border
+                    sty_amount = style.table_data_amount_even_border
 
                 sheet.write(row_data, 0, counter, sty_table_data)
                 sheet.write(row_data, 1, i['billing_date'], sty_date)
                 sheet.write(row_data, 2, i['billing_due_date'], sty_date)
                 sheet.write(row_data, 3, i['customer_type_name'], sty_table_data)
-                sheet.write(row_data, 4, i['customer_name'], sty_table_data)
+                sheet.write(row_data, 4, i['agent_name'], sty_table_data)
+                sheet.write(row_data, 5, i['customer_name'], sty_table_data)
                 # sheet.write(row_data, 5, i['booker_type'], sty_table_data)
                 # sheet.write(row_data, 6, i['booker'], sty_table_data)
-                sheet.write(row_data, 5, '', sty_table_data)
-                sheet.write(row_data, 6, invoice_total, sty_amount)
-                sheet.write(row_data, 7, i['billing_number'], sty_table_data)
-                sheet.write(row_data, 8, '', sty_table_data)
-                sheet.write(row_data, 9, invoice_paid , sty_amount)
-                sheet.write(row_data, 10, i['billing_state'], sty_table_data)
+                sheet.write(row_data, 6, '', sty_table_data)
+                sheet.write(row_data, 7, invoice_total, sty_amount)
+                sheet.write(row_data, 8, i['billing_number'], sty_table_data)
+                sheet.write(row_data, 9, '', sty_table_data)
+                sheet.write(row_data, 10, invoice_paid , sty_amount)
+                sheet.write(row_data, 11, i['billing_state'], sty_table_data)
 
             #     to print per item
                 main_data = filter(lambda x: x['billing_number'] == i['billing_number'], values['lines'])
@@ -120,17 +122,18 @@ class AgentReportBillingXls(models.TransientModel):
                         sty_date = style.table_data_date_even
                         sty_amount = style.table_data_amount_even
 
-                    sheet.write(row_data, 0, 'Invoice Detail', sty_table_data)
+                    sheet.write(row_data, 0, '', sty_table_data)
                     sheet.write(row_data, 1, '', sty_table_data)
                     sheet.write(row_data, 2, '', sty_table_data)
                     sheet.write(row_data, 3, '', sty_table_data)
                     sheet.write(row_data, 4, '', sty_table_data)
-                    sheet.write(row_data, 5, j['invoice_number'], sty_table_data)
-                    sheet.write(row_data, 6, j['invoice_amount'], sty_amount)
-                    sheet.write(row_data, 7, '', sty_table_data)
-                    sheet.write(row_data, 8, j['payment_number'], sty_table_data)
-                    sheet.write(row_data, 9, j['invoice_paid'], sty_amount)
-                    sheet.write(row_data, 10, j['billing_state'], sty_table_data)
+                    sheet.write(row_data, 5, '', sty_table_data)
+                    sheet.write(row_data, 6, j['invoice_number'], sty_table_data)
+                    sheet.write(row_data, 7, j['invoice_amount'], sty_amount)
+                    sheet.write(row_data, 8, '*Invoice Detail', sty_table_data)
+                    sheet.write(row_data, 9, j['payment_number'], sty_table_data)
+                    sheet.write(row_data, 10, j['invoice_paid'], sty_amount)
+                    sheet.write(row_data, 11, j['billing_state'], sty_table_data)
             else:
                 continue
 

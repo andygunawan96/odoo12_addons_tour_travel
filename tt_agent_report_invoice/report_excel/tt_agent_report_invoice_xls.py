@@ -60,21 +60,21 @@ class AgentReportInvoiceXls(models.TransientModel):
         invoice_line_number = ''
         counter = 0
         for i in values['lines']:
-            row_data += 1
-            sty_table_data_center = style.table_data_center
-            sty_table_data = style.table_data
-            sty_datetime = style.table_data_datetime
-            sty_date = style.table_data_date
-            sty_amount = style.table_data_amount
-            if row_data % 2 == 0:
-                sty_table_data_center = style.table_data_center_even
-                sty_table_data = style.table_data_even
-                sty_datetime = style.table_data_datetime_even
-                sty_date = style.table_data_date_even
-                sty_amount = style.table_data_amount_even
-
             if invoice_number != i['invoice_number']:
                 counter += 1
+                row_data += 1
+                sty_table_data_center = style.table_data_center_border
+                sty_table_data = style.table_data_border
+                sty_datetime = style.table_data_datetime_border
+                sty_date = style.table_data_date_border
+                sty_amount = style.table_data_amount_border
+                if row_data % 2 == 0:
+                    sty_table_data_center = style.table_data_center_even_border
+                    sty_table_data = style.table_data_even_border
+                    sty_datetime = style.table_data_datetime_even_border
+                    sty_date = style.table_data_date_even_border
+                    sty_amount = style.table_data_amount_even_border
+
                 invoice_number = i['invoice_number']
                 sheet.write(row_data, 0, counter, sty_table_data_center)
                 sheet.write(row_data, 1, i['date_invoice'], sty_date)
