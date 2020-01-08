@@ -821,22 +821,29 @@ class ReservationActivity(models.Model):
             return ERR.get_error(1013)
 
     @api.multi
-    def print_itinerary(self):
-        datas = {'ids': self.env.context.get('active_ids', [])}
-        res = self.read()
+    def print_itinerary(self, data, ctx=None):
+        # jika panggil dari backend
+        if 'order_number' not in data:
+            data['order_number'] = self.name
+        if 'provider_type' not in data:
+            data['provider_type'] = self.provider_type_id.name
+
+        book_obj = self.env['tt.reservation.activity'].search([('name', '=', data['order_number'])], limit=1)
+        datas = {'ids': book_obj.env.context.get('active_ids', [])}
+        res = book_obj.read()
         res = res and res[0] or {}
         datas['form'] = res
-        activity_itinerary_id = self.env.ref('tt_report_common.action_printout_itinerary_activity')
-        if not self.printout_itinerary_id:
-            pdf_report = activity_itinerary_id.report_action(self, data=datas)
+        activity_itinerary_id = book_obj.env.ref('tt_report_common.action_printout_itinerary_activity')
+        if not book_obj.printout_itinerary_id:
+            pdf_report = activity_itinerary_id.report_action(book_obj, data=datas)
             pdf_report['context'].update({
-                'active_model': self._name,
-                'active_id': self.id
+                'active_model': book_obj._name,
+                'active_id': book_obj.id
             })
             pdf_report_bytes = activity_itinerary_id.render_qweb_pdf(data=pdf_report)
-            res = self.env['tt.upload.center.wizard'].upload_file_api(
+            res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
                 {
-                    'filename': 'Activity Itinerary %s.pdf' % self.name,
+                    'filename': 'Activity Itinerary %s.pdf' % book_obj.name,
                     'file_reference': 'Activity Itinerary',
                     'file': base64.b64encode(pdf_report_bytes[0]),
                     'delete_date': datetime.today() + timedelta(minutes=10)
@@ -846,13 +853,13 @@ class ReservationActivity(models.Model):
                     'co_uid': self.env.user.id,
                 }
             )
-            upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
-            self.printout_itinerary_id = upc_id.id
+            upc_id = book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+            book_obj.printout_itinerary_id = upc_id.id
         url = {
             'type': 'ir.actions.act_url',
             'name': "ZZZ",
             'target': 'new',
-            'url': self.printout_itinerary_id.url,
+            'url': book_obj.printout_itinerary_id.url,
         }
         return url
         # return self.env.ref('tt_report_common.action_printout_itinerary_activity').report_action(self, data=datas)
