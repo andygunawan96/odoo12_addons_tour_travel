@@ -285,15 +285,21 @@ class TtVoucher(models.Model):
     def is_agent_eligible(self, data):
         voucher = self.env['tt.voucher'].search([('voucher_reference_code', "=", data['voucher_reference'])])
         is_eligible = False
-        agent_type = voucher.voucher_agent_type_eligibility_ids.filtered(lambda x: x['id'] == data['agent_type_id'])
-        if agent_type.id != False:
+        is_empty = False
+        if len(voucher.voucher_agent_type_eligibility_ids) < 1 and len(voucher.voucher_agent_eligibility_ids) < 1:
+            is_empty = True
             is_eligible = True
 
-        agent = voucher.voucher_agent_eligibility_ids.filtered(lambda x: x['id'] == data['agent_id'])
-        if agent.id != False:
-            is_eligible = True
-        else:
-            is_eligible = False
+        if not is_empty:
+            agent_type = voucher.voucher_agent_type_eligibility_ids.filtered(lambda x: x['id'] == data['agent_type_id'])
+            if agent_type.id != False:
+                is_eligible = True
+
+            agent = voucher.voucher_agent_eligibility_ids.filtered(lambda x: x['id'] == data['agent_id'])
+            if agent.id != False:
+                is_eligible = True
+            else:
+                is_eligible = False
 
         return is_eligible
 
@@ -422,7 +428,7 @@ class TtVoucherDetail(models.Model):
             _logger.error("%s, voucher is expired" % data['voucher_reference'])
             return ERR.get_error(additional_message="Voucher is Expired")
 
-        if voucher_detail.voucher_used >= voucher_detail.voucher_quota:
+        if voucher_detail.voucher_used >= voucher_detail.voucher_quota and voucher_detail.voucher_quota != -1:
             _logger.error("%s, voucher Sold Out" % data['voucher_reference'])
             return ERR.get_error(additional_message="Voucher sold out")
 
@@ -500,7 +506,6 @@ class TtVoucherDetail(models.Model):
                         result_dict = {
                             'provider_type_code': i.provider_id.provider_type_id.code,
                             'provider_code': i.provider_id.code,
-                            'pnr': i.pnr,
                             'provider_total_price': provider_total_price,
                             'provider_total_discount': provider_total_discount,
                             'provider_final_price': provider_final_total_price,
@@ -551,7 +556,6 @@ class TtVoucherDetail(models.Model):
                         result_dict = {
                             'provider_type_code': i.provider_id.provider_type_id.code,
                             'provider_code': i.provider_id.code,
-                            'pnr': i.pnr,
                             'provider_total_price': provider_total_price,
                             'provider_total_discount': provider_total_discount,
                             'provider_final_price': provider_final_total_price,
@@ -619,7 +623,6 @@ class TtVoucherDetail(models.Model):
                             result_dict = {
                                 'provider_type_code': i.provider_id.provider_type_id.code,
                                 'provider_code': i.provider_id.code,
-                                'pnr': i.pnr,
                                 'provider_total_price': provider_total_price,
                                 'provider_total_discount': provider_total_discount,
                                 'provider_final_price': provider_final_total_price,
@@ -666,7 +669,6 @@ class TtVoucherDetail(models.Model):
                             result_dict = {
                                 'provider_type_code': i.provider_id.provider_type_id.code,
                                 'provider_code': i.provider_id.code,
-                                'pnr': i.pnr,
                                 'provider_total_price': provider_total_price,
                                 'provider_total_discount': provider_total_discount,
                                 'provider_final_price': provider_final_total_price,

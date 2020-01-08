@@ -57,6 +57,14 @@
                   sequence="70"
                   groups="base.group_user"/>
 
+        <!-- Report -->
+        <menuitem id="top_tour_travel_report"
+                  parent="tt_base.main_tour_travel"
+                  name="Report"
+                  sequence="80"
+                  groups="base.group_user"
+        />
+
         <!--Configurations-->
         <menuitem id="top_tour_travel_configuration"
                   parent="tt_base.main_tour_travel"
