@@ -166,6 +166,12 @@ class TestSearch(models.Model):
             return 'A8'
         elif provider == 'tbo':
             return 'A9'
+        elif provider == 'welcomebeds':
+            return 'A10'
+        elif provider == 'oyo':
+            return 'A11'
+        elif provider == 'knb':
+            return 'A12'
         else:
             return provider
 
@@ -192,6 +198,8 @@ class TestSearch(models.Model):
             return 'welcomebeds'
         elif provider == 'A11':
             return 'oyo'
+        elif provider == 'A12':
+            return 'knb'
         else:
             return provider
 
@@ -622,7 +630,7 @@ class TestSearch(models.Model):
 
         for room_rate in room_rates[0]['rooms']:
             vendor_currency_id = self.env['res.currency'].sudo().search([('name', '=', room_rate['currency'])], limit=1).id
-            provider_id = self.env['tt.provider'].search([('code','=', self.unmasking_provider(provider_name))]).id
+            provider_id = self.env['tt.provider'].search([('code','=', self.unmasking_provider(provider_name))], limit=1).id
             detail = self.env['tt.hotel.reservation.details'].sudo().create({
                 'provider_id': provider_id,
                 'reservation_id': resv_id.id,
