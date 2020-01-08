@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="detail_report_airline_form">
+            <field name="name">Detail Report Airline Form</field>
+            <field name="model">tt.reservation.report.airline.wizard</field>
+            <field name="inherit_id" ref="tt_agent_report.agent_common_report_view"/>
+            <field name="arch" type="xml">
+                <field name="all_agent" position="before">
+                    <field name="state" required="1"/>
+                </field>
+            </field>
+        </record>
+
+        <record id="action_reservation_report_airline_wz" model="ir.actions.act_window">
+            <field name="name">Airline Report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">tt.reservation.report.airline.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_form">form</field>
+            <field name="view_id" ref="detail_report_airline_form"/>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem
+            id="menu_reservation_report_airline"
+            name="Airline Report"
+            parent="tt_reservation_airline.top_reservations_airline"
+            action="action_reservation_report_airline_wz"
+            sequence="100"
+        />
+
+    </data>
+</odoo>
