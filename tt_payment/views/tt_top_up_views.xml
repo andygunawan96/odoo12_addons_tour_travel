@@ -21,7 +21,8 @@
         <field name="inherit_id" ref="tt_accounting.tt_top_up_tree_view_page"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='total']" position="after">
-                    <field name="acquirer_id"/>
+                <field name="validated_amount"/>
+                <field name="acquirer_id"/>
             </xpath>
         </field>
     </record>
