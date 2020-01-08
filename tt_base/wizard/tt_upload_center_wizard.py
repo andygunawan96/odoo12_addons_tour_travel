@@ -14,6 +14,7 @@ class SplitInvoice(models.TransientModel):
     file_reference = fields.Text('File Description',required=True)
     delete_time = fields.Datetime('Deleted Time')
     file = fields.Binary('File',required=True)
+    target_field_name = fields.Char("Target Field")
 
     def upload_from_button(self):
         # self.upload(self.filename,self.file_reference,base64.b64decode(self.file))

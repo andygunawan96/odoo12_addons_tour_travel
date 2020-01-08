@@ -197,20 +197,19 @@ class Ledger(models.Model):
         booking_obj = provider_obj.booking_id
 
         agent_commission = {}
-        amount = 0
         for sc in provider_obj.cost_service_charge_ids:
+            amount = 0
             # Pada lionair ada r.ac positif
             if 'RAC' in sc.charge_type and not sc.is_ledger_created:
                 amount = abs(sc.get_total_for_payment())
+                if amount == 0:
+                    continue
                 agent_id = sc.commission_agent_id.id if sc.commission_agent_id else booking_obj.agent_id.id
                 if sc.charge_code == 'hoc':
                     agent_id *= -1
                 if not agent_commission.get(agent_id, False):
                     agent_commission[agent_id] = 0
                 agent_commission[agent_id] += amount
-
-        if amount == 0:
-            return
 
         for agent_id, amount in agent_commission.items():
             ledger_values = self.prepare_vals(booking_obj._name,booking_obj.id,'Commission : ' + booking_obj.name, booking_obj.name, datetime.now()+relativedelta(hours=7),
@@ -219,7 +218,7 @@ class Ledger(models.Model):
                 'agent_id': abs(agent_id),
             })
             values = self.prepare_vals_for_resv(booking_obj,provider_obj.pnr,ledger_values)
-            _logger.info('Create Ledger Comission\n')
+            _logger.info('Create Ledger Commission\n')
             self.sudo().create(values)
 
     def action_create_ledger(self, provider_obj,issued_uid):
