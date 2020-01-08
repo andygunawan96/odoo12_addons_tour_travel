@@ -45,6 +45,12 @@
                         <page string="Provider">
                             <field name="voucher_provider_eligibility_ids"/>
                         </page>
+                        <page string="Affecting">
+                            <group>
+                                <field name="voucher_effect_all"/>
+                                <field name="voucher_effect_base_fare"/>
+                            </group>
+                        </page>
                     </notebook>
                 </sheet>
             </form>
