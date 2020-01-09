@@ -31,6 +31,8 @@ Key Features
         'security/ir_rule_data.xml',
         'data/payment_acquirer_ho_data.xml',
 
+        'wizard/tt_upload_center_wizard_view.xml',
+
         'views/menu_item_base.xml',
         'views/res_country_views.xml',
         'views/res_country_state_views.xml',
