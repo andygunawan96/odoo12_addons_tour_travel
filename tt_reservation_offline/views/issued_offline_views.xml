@@ -7,14 +7,16 @@
             <field name="model">tt.reservation.offline</field>
             <field name="arch" type="xml">
                 <search string="Search Issued Offline Booking">
-<!--                   <field name="name" string="string" domain="[()]"/>-->
+                    <!--                   <field name="name" string="string" domain="[()]"/>-->
                     <field name="name"/>
                     <field name="pnr"/>
                     <field name="provider_name" groups="tt_base.group_tt_tour_travel_operator"/>
                     <field name="carrier_name" groups="tt_base.group_tt_tour_travel_operator"/>
                     <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <field name="customer_parent_id" groups="tt_base.group_tt_tour_travel_operator"/>
-<!--                    <field name="provider"/>-->
+                    <field name="agent_type_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <field name="customer_parent_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                    <field name="customer_parent_type_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                    <!--                    <field name="provider"/>-->
                     <field name="contact_id"/>
                     <group>
                         <filter string="All" name="all"/>
@@ -33,7 +35,7 @@
                                 ('date', '&gt;=', (context_today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d'))
                             ]"/>
                     <filter name="week" string="This Week"
-                        domain="[
+                            domain="[
                                 '&amp;',
                                 ('date', '>=', (context_today() + relativedelta(weeks=-1,days=1,weekday=0)).strftime('%Y-%m-%d')),
                                 ('date', '&lt;=', (context_today() + relativedelta(weekday=6)).strftime('%Y-%m-%d')),
@@ -49,9 +51,9 @@
                         <filter string="Sector" name="sector" domain="[]" context="{'group_by':'sector_type'}"/>
                         <filter string="State Offline" name="state_offline" domain="[]" context="{'group_by':'state_offline'}"/>
                     </group>
-               </search>
-           </field>
-       </record>
+                </search>
+            </field>
+        </record>
 
         <record id="issued_offline_view_form" model="ir.ui.view">
             <field name="name">tt.reservation.offline.view.form</field>
@@ -64,12 +66,12 @@
                         <button string="Sent" name="action_sent" type="object" attrs="{'invisible':[('state_offline','!=','confirm')]}" groups="tt_base.group_tt_tour_travel_operator"/>  <!--states="confirm"-->
                         <button string="Validate" class="oe_highlight" name="action_issued_backend" attrs="{'invisible':[('state_offline','!=','sent')]}" type="object" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_ticketing_operator"/>  <!-- ,tt_base.group_tt_tour_travel_operator groups="tt_base.group_tt_ticketing_operator,account.group_account_user"-->
                         <button string="Quick Validate" class="oe_highlight" name="action_quick_issued" attrs="{'invisible':[('state_offline','!=','confirm')]}" type="object" groups="tt_base.group_tt_tour_travel_operator"/>
-<!--                        <button string="Post" name="action_done" states="draft,confirm,sent,paid,posted" type="object" groups="tt_base.group_tt_tour_travel_operator"/>-->
+                        <!--                        <button string="Post" name="action_done" states="draft,confirm,sent,paid,posted" type="object" groups="tt_base.group_tt_tour_travel_operator"/>-->
                         <button string="Done" class="oe_highlight" name="action_done" attrs="{'invisible':[('state_offline','!=','validate')]}" type="object" groups="tt_base.group_tt_ticketing_operator,account.group_account_invoice"/>
                         <button string="Cancel" name="action_cancel" type="object" attrs="{'invisible':[('state_offline','not in',['confirm','sent','validate'])]}" groups="tt_base.group_tt_ticketing_operator,account.group_account_invoice"/>
                         <button string="Cancel" name="action_cancel" type="object"  attrs="{'invisible':[('state_offline','!=','draft')]}"/>
                         <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action" groups="tt_base.group_tt_accounting_operator"
-                                       context="{
+                                context="{
                         'default_res_model': res_model,
                         'default_res_id': id,
                         'default_agent_id': agent_id,
@@ -77,9 +79,9 @@
                         'default_currency_id': currency_id,
                         'default_adj_type': provider_type_id
                     }"/>
-<!--                        <button string="Print Invoice" name="print_invoice" type="object" states="paid,posted"/>-->
-<!--                        <button string="Print Invoice Ticket" name="print_invoice_ticket" type="object" states="paid,posted"/>-->
-<!--                        <button string="Get Config API" name="get_config_api" type="object"/>-->
+                        <!--                        <button string="Print Invoice" name="print_invoice" type="object" states="paid,posted"/>-->
+                        <!--                        <button string="Print Invoice Ticket" name="print_invoice_ticket" type="object" states="paid,posted"/>-->
+                        <!--                        <button string="Get Config API" name="get_config_api" type="object"/>-->
                         <field name="state_offline" widget="statusbar" statusbar_visible="draft,confirm,sent,validate,done"/>
                     </header>
                     <sheet>
@@ -99,7 +101,7 @@
                         </div>
                         <group>
                             <group>
-<!--                                ### untuk default value adjustment &ndash;&gt;-->
+                                <!--                                ### untuk default value adjustment &ndash;&gt;-->
                                 <field name="res_model" invisible="1"/>
                                 <field name="agent_id" readonly="1" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                                 <field name="booker_id" required="1"/>
@@ -242,7 +244,7 @@
             <field name="model">tt.reservation.offline</field>
             <field name="arch" type="xml">
                 <tree>
-<!--                    <button type="object" string="Create Issued Offline" name="create_booking_reservation_offline_api"/>-->
+                    <!--                    <button type="object" string="Create Issued Offline" name="create_booking_reservation_offline_api"/>-->
                     <field name="name"/>
                     <field name="offline_provider_type"/>
                     <field name="agent_id"/>
@@ -265,9 +267,9 @@
             <field name="search_view_id" ref="issued_offline_view_search"/>
             <field name="context">
                 {
-                    'form_view_ref': 'tt_reservation_offline.issued_offline_view_form',
-                    'tree_view_ref': 'tt_reservation_offline.issued_offline_view_tree',
-                    'search_default_all':1
+                'form_view_ref': 'tt_reservation_offline.issued_offline_view_form',
+                'tree_view_ref': 'tt_reservation_offline.issued_offline_view_tree',
+                'search_default_all':1
                 }
             </field>
         </record>
@@ -280,9 +282,9 @@
             <field name="search_view_id" ref="issued_offline_view_search"/>
             <field name="context">
                 {
-                    'form_view_ref': 'tt_reservation_offline.issued_offline_view_form',
-                    'tree_view_ref': 'tt_reservation_offline.issued_offline_view_tree',
-                    'search_default_draft':1
+                'form_view_ref': 'tt_reservation_offline.issued_offline_view_form',
+                'tree_view_ref': 'tt_reservation_offline.issued_offline_view_tree',
+                'search_default_draft':1
                 }
             </field>
         </record>
@@ -295,9 +297,9 @@
             <field name="search_view_id" ref="issued_offline_view_search"/>
             <field name="context">
                 {
-                    'form_view_ref': 'tt_reservation_offline.issued_offline_view_form',
-                    'tree_view_ref': 'tt_reservation_offline.issued_offline_view_tree',
-                    'search_default_confirm':1
+                'form_view_ref': 'tt_reservation_offline.issued_offline_view_form',
+                'tree_view_ref': 'tt_reservation_offline.issued_offline_view_tree',
+                'search_default_confirm':1
                 }
             </field>
         </record>
@@ -310,9 +312,9 @@
             <field name="search_view_id" ref="issued_offline_view_search"/>
             <field name="context">
                 {
-                    'form_view_ref': 'tt_reservation_offline.issued_offline_view_form',
-                    'tree_view_ref': 'tt_reservation_offline.issued_offline_view_tree',
-                    'search_default_sent':1
+                'form_view_ref': 'tt_reservation_offline.issued_offline_view_form',
+                'tree_view_ref': 'tt_reservation_offline.issued_offline_view_tree',
+                'search_default_sent':1
                 }
             </field>
         </record>
@@ -325,9 +327,9 @@
             <field name="search_view_id" ref="issued_offline_view_search"/>
             <field name="context">
                 {
-                    'form_view_ref': 'tt_reservation_offline.issued_offline_view_form',
-                    'tree_view_ref': 'tt_reservation_offline.issued_offline_view_tree',
-                    'search_default_validate':1
+                'form_view_ref': 'tt_reservation_offline.issued_offline_view_form',
+                'tree_view_ref': 'tt_reservation_offline.issued_offline_view_tree',
+                'search_default_validate':1
                 }
             </field>
         </record>
@@ -340,9 +342,9 @@
             <field name="search_view_id" ref="issued_offline_view_search"/>
             <field name="context">
                 {
-                    'form_view_ref': 'tt_reservation_offline.issued_offline_view_form',
-                    'tree_view_ref': 'tt_reservation_offline.issued_offline_view_tree',
-                    'search_default_done':1
+                'form_view_ref': 'tt_reservation_offline.issued_offline_view_form',
+                'tree_view_ref': 'tt_reservation_offline.issued_offline_view_tree',
+                'search_default_done':1
                 }
             </field>
         </record>
@@ -355,9 +357,9 @@
             <field name="search_view_id" ref="issued_offline_view_search"/>
             <field name="context">
                 {
-                    'form_view_ref': 'tt_reservation_offline.issued_offline_view_form',
-                    'tree_view_ref': 'tt_reservation_offline.issued_offline_view_tree',
-                    'search_default_canceled_expired_refund':1
+                'form_view_ref': 'tt_reservation_offline.issued_offline_view_form',
+                'tree_view_ref': 'tt_reservation_offline.issued_offline_view_tree',
+                'search_default_canceled_expired_refund':1
                 }
             </field>
         </record>

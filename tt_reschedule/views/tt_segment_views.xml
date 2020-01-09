@@ -49,14 +49,48 @@
                         </group>
                     </group>
                     <separator colspan="6" string="Seats"/>
-                    <field name="seat_ids">
+                    <field name="seat_ids" context="{'default_segment_id': id}">
                         <tree>
                             <field name="passenger_id"/>
                             <field name="seat"/>
                         </tree>
+                        <form>
+                            <group>
+                                <group>
+<!--                                    <field name="segment_id"/>-->
+                                    <field name="passenger_id"/>
+                                </group>
+                                <group>
+                                    <field name="seat"/>
+                                </group>
+                            </group>
+                        </form>
                     </field>
                     <separator string="Addons"/>
-                    <field name="segment_addons_ids"/>
+                    <field name="segment_addons_ids">
+                        <tree>
+                            <field name="sequence" widget="handle"/>
+                            <field name="detail_code"/>
+                            <field name="detail_name"/>
+                            <field name="detail_type"/>
+                            <field name="amount"/>
+                            <field name="unit"/>
+                        </tree>
+                        <form>
+                            <group>
+                                <group>
+                                    <field name="detail_code"/>
+                                    <field name="detail_name"/>
+                                    <field name="description"/>
+                                </group>
+                                <group>
+                                    <field name="detail_type"/>
+                                    <field name="amount"/>
+                                    <field name="unit"/>
+                                </group>
+                            </group>
+                        </form>
+                    </field>
                 </sheet>
             </form>
         </field>

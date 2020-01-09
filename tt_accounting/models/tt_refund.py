@@ -98,12 +98,12 @@ class TtRefund(models.Model):
 
     refund_type = fields.Selection([('quick', 'Quick Refund'), ('regular', 'Regular Refund')], 'Refund Type', required=True, default='regular', readonly=True,
                                    states={'draft': [('readonly', False)]})
-    admin_fee_id = fields.Many2one('tt.master.admin.fee', 'Admin Fee Type', compute="_compute_admin_fee_id")
+    admin_fee_id = fields.Many2one('tt.master.admin.fee', 'Admin Fee Type', domain=[('after_sales_type', '=', 'refund')], compute="_compute_admin_fee_id")
     refund_amount = fields.Integer('Expected Refund Amount', default=0, required=True, readonly=True, compute='_compute_refund_amount', related='')
     real_refund_amount = fields.Integer('Real Refund Amount', default=0, readonly=True, compute='_compute_real_refund_amount')
-    admin_fee = fields.Float('Admin Fee Amount', default=0, readonly=True, compute="_compute_admin_fee")
+    admin_fee = fields.Integer('Admin Fee Amount', default=0, readonly=True, compute="_compute_admin_fee")
     total_amount = fields.Integer('Total Amount', default=0, readonly=True, compute="_compute_total_amount")
-    final_admin_fee = fields.Float('Admin Fee Amount', default=0, readonly=True)
+    final_admin_fee = fields.Integer('Admin Fee Amount', default=0, readonly=True)
     booking_desc = fields.Text('Booking Description', readonly=True)
     notes = fields.Text('Notes', readonly=True, states={'draft': [('readonly', False)]})
     refund_line_ids = fields.One2many('tt.refund.line', 'refund_id', 'Refund Line(s)', readonly=False)
