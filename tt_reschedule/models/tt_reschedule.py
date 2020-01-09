@@ -11,6 +11,67 @@ class Ledger(models.Model):
     reschedule_id = fields.Many2one('tt.reschedule', 'After Sales')
 
 
+class TtRescheduleLine(models.Model):
+    _name = "tt.reschedule.line"
+    _description = "After Sales Model"
+    _order = 'id DESC'
+
+    reschedule_type = fields.Selection([('reschedule', 'Reschedule'), ('revalidate', 'Revalidate'),
+                                        ('reissued', 'Reissued'), ('upgrade', 'Upgrade Service'),
+                                        ('addons', 'Addons (Meals, Baggage, Seat, etc)')], 'After Sales Type',
+                                       default='reschedule',
+                                       states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]},
+                                       readonly=True)
+    reschedule_amount = fields.Integer('Expected After Sales Amount', default=0, required=True, readonly=True,
+                                       related='reschedule_amount_ho')
+    reschedule_amount_ho = fields.Integer('Expected After Sales Amount', default=0, required=True, readonly=True,
+                                          states={'confirm': [('readonly', False)]})
+    real_reschedule_amount = fields.Integer('Real After Sales Amount from Vendor', default=0, required=True,
+                                            readonly=False, states={'draft': [('readonly', True)]})
+    reschedule_id = fields.Many2one('tt.reschedule', 'After Sales', readonly=True)
+    admin_fee_id = fields.Many2one('tt.master.admin.fee', 'Admin Fee Type', domain=[('after_sales_type', '=', 'after_sales')], readonly=True, states={'confirm': [('readonly', False)]})
+    admin_fee = fields.Integer('Admin Fee Amount', default=0, readonly=True, compute="_compute_admin_fee")
+    total_amount = fields.Integer('Total Amount', default=0, readonly=True, compute="_compute_total_amount")
+    state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'), ('done', 'Done')], 'State', default='draft')
+
+    @api.depends('admin_fee_id', 'reschedule_amount', 'reschedule_id')
+    @api.onchange('admin_fee_id', 'reschedule_amount', 'reschedule_id')
+    def _compute_admin_fee(self):
+        for rec in self:
+            if rec.admin_fee_id:
+                if rec.admin_fee_id.type == 'amount':
+                    pnr_amount = 0
+                    book_obj = self.env[rec.reschedule_id.res_model].browse(int(rec.reschedule_id.res_id))
+                    for rec2 in book_obj.provider_booking_ids:
+                        pnr_amount += 1
+                else:
+                    pnr_amount = 1
+                rec.admin_fee = rec.admin_fee_id.get_final_adm_fee(rec.reschedule_amount, pnr_amount)
+            else:
+                rec.admin_fee = 0
+
+    @api.depends('admin_fee', 'reschedule_amount')
+    @api.onchange('admin_fee', 'reschedule_amount')
+    def _compute_total_amount(self):
+        for rec in self:
+            rec.total_amount = rec.reschedule_amount + rec.admin_fee
+
+    def set_to_draft(self):
+        self.write({
+            'state': 'draft',
+        })
+
+    def set_to_confirm(self):
+        self.write({
+            'state': 'confirm',
+        })
+
+    def set_to_done(self):
+        self.write({
+            'state': 'done',
+        })
+
+
 class TtReschedule(models.Model):
     _name = "tt.reschedule"
     _inherit = "tt.refund"
@@ -29,10 +90,12 @@ class TtReschedule(models.Model):
                                   " * The 'Done' status means the agent's request has been done.\n"
                                   " * The 'Canceled' status is used for Agent or HO to cancel the request.\n"
                                   " * The 'Expired' status means the request has been expired.\n")
+
+    def _get_res_model_domain(self):
+        return [('res_model', '=', self._name)]
+
     ledger_ids = fields.One2many('tt.ledger', 'reschedule_id', 'Ledger(s)')
-    reschedule_amount = fields.Integer('Expected After Sales Amount', default=0, required=True, readonly=True, related='reschedule_amount_ho')
-    real_reschedule_amount = fields.Integer('Real After Sales Amount from Vendor', default=0, required=True, readonly=False, states={'done': [('readonly', True)], 'approve': [('readonly', True)], 'draft': [('readonly', True)]})
-    reschedule_amount_ho = fields.Integer('Expected After Sales Amount', default=0, required=True, readonly=True, states={'confirm': [('readonly', False)]})
+    adjustment_ids = fields.One2many('tt.adjustment', 'res_id', 'Adjustment', readonly=True, domain=_get_res_model_domain)
     new_pnr = fields.Char('New PNR', readonly=True, compute="_compute_new_pnr")
     invoice_line_ids = fields.One2many('tt.agent.invoice.line', 'res_id_resv', 'Invoice', domain=[('res_model_resv','=','tt.reschedule')])
     state_invoice = fields.Selection([('wait', 'Waiting'), ('partial', 'Partial'), ('full', 'Full')],
@@ -42,12 +105,12 @@ class TtReschedule(models.Model):
                                       readonly=True)
     new_segment_ids = fields.Many2many('tt.segment.reschedule', 'tt_reschedule_new_segment_rel', 'reschedule_id', 'segment_id', string='New Segments',
                                   readonly=True, states={'draft': [('readonly', False)]})
-    reschedule_type = fields.Selection([('reschedule', 'Reschedule'), ('revalidate', 'Revalidate'),
-                                        ('reissued', 'Reissued'), ('upgrade', 'Upgrade Service'), ('addons', 'Addons (Meals, Baggage, Seat, etc)')], 'After Sales Type', default='reschedule',
-                                       states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]},
-                                       readonly=True)
-    admin_fee_id = fields.Many2one('tt.master.admin.fee', 'Admin Fee Type', compute="")
+    passenger_ids = fields.Many2many('tt.reservation.passenger.airline', 'tt_reschedule_passenger_rel', 'reschedule_id', 'passenger_id',
+                                    readonly=True)
     payment_acquirer_id = fields.Many2one('payment.acquirer', 'Payment Acquirer', domain="[('agent_id', '=', agent_id)]")
+    reschedule_amount = fields.Integer('Expected Reschedule Amount', default=0, required=True, readonly=True, compute='_compute_reschedule_amount')
+    reschedule_line_ids = fields.One2many('tt.reschedule.line', 'reschedule_id', 'After Sales Line(s)', readonly=True, states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
+    reschedule_type_str = fields.Char('Reschedule Type', readonly=True, compute='_compute_reschedule_type_str', store=True)
 
     @api.depends('invoice_line_ids')
     def set_agent_invoice_state(self):
@@ -73,27 +136,48 @@ class TtReschedule(models.Model):
                 new_pnr += rec2.pnr and rec2.pnr + ',' or ''
             rec.new_pnr = new_pnr and new_pnr[:-1] or ''
 
-    @api.depends('admin_fee_id', 'reschedule_amount', 'res_model', 'res_id')
-    @api.onchange('admin_fee_id', 'reschedule_amount', 'res_model', 'res_id')
+    @api.depends('reschedule_line_ids')
+    @api.onchange('reschedule_line_ids')
     def _compute_admin_fee(self):
         for rec in self:
-            if rec.admin_fee_id:
-                if rec.admin_fee_id.type == 'amount':
-                    pnr_amount = 0
-                    book_obj = self.env[rec.res_model].browse(int(rec.res_id))
-                    for rec2 in book_obj.provider_booking_ids:
-                        pnr_amount += 1
-                else:
-                    pnr_amount = 1
-                rec.admin_fee = rec.admin_fee_id.get_final_adm_fee(rec.reschedule_amount, pnr_amount)
-            else:
-                rec.admin_fee = 0
+            adm_fee = 0
+            for rec2 in rec.reschedule_line_ids:
+                adm_fee += rec2.admin_fee
+            rec.admin_fee = adm_fee
+
+    @api.depends('reschedule_line_ids')
+    @api.onchange('reschedule_line_ids')
+    def _compute_reschedule_amount(self):
+        for rec in self:
+            resch_amount = 0
+            for rec2 in rec.reschedule_line_ids:
+                resch_amount += rec2.reschedule_amount
+            rec.reschedule_amount = resch_amount
 
     @api.depends('admin_fee', 'reschedule_amount')
     @api.onchange('admin_fee', 'reschedule_amount')
     def _compute_total_amount(self):
         for rec in self:
             rec.total_amount = rec.reschedule_amount + rec.admin_fee
+
+    @api.depends('reschedule_line_ids')
+    @api.onchange('reschedule_line_ids')
+    def _compute_reschedule_type_str(self):
+        for rec in self:
+            temp_str = ''
+            for rec2 in rec.reschedule_line_ids:
+                temp_str += str(dict(rec2._fields['reschedule_type'].selection).get(rec2.reschedule_type)) + ', '
+            rec.reschedule_type_str = temp_str and temp_str[:-2] or ''
+
+    def set_to_confirm(self):
+        self.write({
+            'state': 'confirm',
+            'confirm_uid': self.env.user.id,
+            'confirm_date': datetime.now(),
+            'hold_date': False
+        })
+        for rec in self.reschedule_line_ids:
+            rec.set_to_confirm()
 
     def confirm_reschedule_from_button(self):
         if self.state != 'draft':
@@ -104,6 +188,8 @@ class TtReschedule(models.Model):
             'confirm_uid': self.env.user.id,
             'confirm_date': datetime.now(),
         })
+        for rec in self.reschedule_line_ids:
+            rec.set_to_confirm()
 
     def send_reschedule_from_button(self):
         if self.state != 'confirm':
@@ -114,6 +200,8 @@ class TtReschedule(models.Model):
             'sent_uid': self.env.user.id,
             'sent_date': datetime.now(),
         })
+        for rec in self.reschedule_line_ids:
+            rec.set_to_done()
 
     def validate_reschedule_from_button(self):
         if self.state != 'sent':
@@ -137,31 +225,53 @@ class TtReschedule(models.Model):
         })
 
     def action_done(self):
-        credit = self.reschedule_amount
-        debit = 0
-        if self.final_admin_fee:
-            credit += self.final_admin_fee
+        for rec in self.reschedule_line_ids:
+            credit = rec.reschedule_amount
+            debit = 0
 
-        ledger_type = self.reschedule_type == 'addons' and 8 or 7
+            ledger_type = rec.reschedule_type == 'addons' and 8 or 7
+            temp_desc = str(dict(rec._fields['reschedule_type'].selection).get(rec.reschedule_type)) + '\n'
+            self.env['tt.ledger'].create_ledger_vanilla(
+                self.res_model,
+                self.res_id,
+                'After Sales : %s' % (self.name),
+                self.referenced_document,
+                datetime.now() + relativedelta(hours=7),
+                ledger_type,
+                self.currency_id.id,
+                self.env.user.id,
+                self.agent_id.id,
+                self.customer_parent_id.id,
+                debit,
+                credit,
+                temp_desc + ' for %s' % (self.referenced_document),
+                **{'reschedule_id': self.id}
+            )
 
-        self.env['tt.ledger'].create_ledger_vanilla(
-            self.res_model,
-            self.res_id,
-            'Reschedule : %s' % (self.name),
-            self.referenced_document,
-            datetime.now() + relativedelta(hours=7),
-            ledger_type,
-            self.currency_id.id,
-            self.env.user.id,
-            self.agent_id.id,
-            self.customer_parent_id.id,
-            debit,
-            credit,
-            'Reschedule for %s' % (self.referenced_document),
-            **{'reschedule_id': self.id}
-        )
+            if rec.admin_fee:
+                credit = rec.admin_fee
+                debit = 0
 
-        self.action_create_invoice(credit)
+                ledger_type = 6
+
+                self.env['tt.ledger'].create_ledger_vanilla(
+                    self.res_model,
+                    self.res_id,
+                    'After Sales Admin Fee: %s' % (self.name),
+                    self.referenced_document,
+                    datetime.now() + relativedelta(hours=7),
+                    ledger_type,
+                    self.currency_id.id,
+                    self.env.user.id,
+                    self.agent_id.id,
+                    self.customer_parent_id.id,
+                    debit,
+                    credit,
+                    temp_desc + ' Admin Fee for %s' % (self.referenced_document),
+                    **{'reschedule_id': self.id}
+                )
+
+        self.action_create_invoice(self.total_amount)
 
         self.write({
             'state': 'done',
@@ -195,9 +305,12 @@ class TtReschedule(models.Model):
 
         desc_str = self.name + ' ('
         if self.referenced_document:
-            desc_str += 'Reschedule for ' + self.referenced_document + ')'
+            desc_str += 'After Sales for ' + self.referenced_document + ')\n'
         else:
-            desc_str += ')'
+            desc_str += ')\n'
+
+        for rec in self.reschedule_line_ids:
+            desc_str += str(dict(rec._fields['reschedule_type'].selection).get(rec.reschedule_type)) + '\n'
 
         inv_line_obj = self.env['tt.agent.invoice.line'].create({
             'res_model_resv': self._name,

@@ -88,7 +88,9 @@ class AgentInvoice(models.Model):
     @api.model
     def create(self, vals_list):
         vals_list['name'] = self.env['ir.sequence'].next_by_code('agent.invoice')
-        return super(AgentInvoice, self).create(vals_list)
+        new_invoice = super(AgentInvoice, self).create(vals_list)
+        new_invoice.set_default_billing_to()
+        return new_invoice
     
     def write(self, vals):
         #pengecekan paid di sini dan tidak di compute paid supaya status berubah ketika tekan tombol save

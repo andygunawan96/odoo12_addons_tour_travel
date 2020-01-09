@@ -56,7 +56,7 @@ class AgentReportRecapTransacion(models.Model):
 
     @staticmethod
     def _where(date_from, date_to, agent_id, provider_type, state):
-        where = """rsv.create_date >= '%s' and rsv.create_date <= '%s'""" % (date_from, date_to)
+        where = """rsv.issued_date >= '%s' and rsv.issued_date <= '%s'""" % (date_from, date_to)
         # if state == 'failed':
         #     where += """ AND rsv.state IN ('fail_booking', 'fail_issue')"""
         if state == 'issued':
@@ -70,7 +70,7 @@ class AgentReportRecapTransacion(models.Model):
 
     @staticmethod
     def _where_join_service_charge(date_from, date_to, agent_id, provider_type, state):
-        where = """rsv.create_date >= '%s' and rsv.create_date <= '%s'""" % (date_from, date_to)
+        where = """rsv.issued_date >= '%s' and rsv.issued_date <= '%s'""" % (date_from, date_to)
         # if state == 'failed':
         #     where += """ AND rsv.state IN ('fail_booking', 'fail_issue')"""
         if state == 'issued':

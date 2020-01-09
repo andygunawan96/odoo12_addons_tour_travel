@@ -14,7 +14,7 @@ class AgentReportInvoice(models.Model):
     def _select():
         # return """* """
         return """
-        invoice.date_invoice, invoice.name as invoice_number, invoice.total as invoice_total, invoice.paid_amount,
+        invoice.date_invoice, invoice.name as invoice_number, invoice.total as invoice_total,
         invoice.state, invoice.payment_acquirers as payment_acquirers, billing.name as billing_statement,
         agent.name as agent_name, agent_type.name as agent_type,
         customer.name as customer_name,
@@ -100,27 +100,18 @@ class AgentReportInvoice(models.Model):
         return fields.Datetime.context_timestamp(self, value).strftime('%Y-%m-%d %H:%M:%S')
 
     def _get_lines_data(self, date_from, date_to, agent_id, state):
-        lines = self._lines(date_from, date_to, agent_id, state)
-        lines = self._convert_data(lines)
+        lines = []
+        if state != 'all':
+            lines = self._lines(date_from, date_to, agent_id, state)
+            lines = self._convert_data(lines)
+        else:
+            states = ['all', 'draft', 'paid', 'bill', 'bill2', 'cancel']
+            for i in states:
+                line = self._lines(date_from, date_to, agent_id, i)
+                line = self._convert_data(line)
+                for j in line:
+                    lines.append(j)
         return lines
-
-    # def _get_lines_data(self, date_from, date_to, agent_id, provider_type, state):
-    #     lines = []
-    #     if provider_type != 'all':
-    #         lines = self._lines(date_from, date_to, agent_id, provider_type, state)
-    #         lines = self._convert_data(lines, provider_type)
-    #     else:
-    #         provider_types = variables.PROVIDER_TYPE
-    #         for provider_type in provider_types:
-    #             report_lines = self._lines(date_from, date_to, agent_id, provider_type, state)
-    #             report_lines = self._convert_data(report_lines, provider_type)
-    #             for j in report_lines:
-    #                 lines.append(j)
-    #         lines_offline = self._lines(date_from, date_to, agent_id, 'offline', state)
-    #         lines_offline = self._convert_data(lines_offline, 'offline')
-    #         for i in lines_offline:
-    #             lines.append(i)
-    #     return lines
 
     @staticmethod
     def _report_title(data_form):

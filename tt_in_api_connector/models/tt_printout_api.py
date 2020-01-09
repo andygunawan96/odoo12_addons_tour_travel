@@ -10,7 +10,9 @@ class TtPrintoutApiCon(models.Model):
     def action_call(self, table_obj, action, data, context):
 
         if action == 'get_printout_api':
-            if data['mode'] == 'invoice':
+            if data['provider_type'] == 'top_up':
+                res = self.env['tt.top.up'].print_topup(data, context)
+            elif data['mode'] == 'invoice':
                 res = self.env['tt.agent.invoice'].print_invoice_api(data, context)
             elif data['provider_type'] == 'tour':
                 pass

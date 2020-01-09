@@ -248,7 +248,7 @@ class ReservationAirline(models.Model):
                 'contact_id': contact_obj.id,
                 'contact_name': contact_obj.name,
                 'contact_email': contact_obj.email,
-                'contact_phone': contact_obj.phone_ids[0].phone_number,
+                'contact_phone': "%s - %s" % (contact_obj.phone_ids[0].calling_code,contact_obj.phone_ids[0].calling_number),
                 'passenger_ids': list_passenger_value
             })
 
@@ -368,7 +368,10 @@ class ReservationAirline(models.Model):
                 book_status.append(provider['status'])
 
                 if provider['status'] == 'BOOKED' and not provider.get('error_code'):
-                    curr_hold_date = datetime.strptime(util.get_without_empty(provider,'hold_date',str(datetime.max.replace(microsecond=0))), '%Y-%m-%d %H:%M:%S')
+                    default_hold_date = datetime.now().replace(microsecond=0) + timedelta(minutes=30)
+                    curr_hold_date = datetime.strptime(util.get_without_empty(provider,'hold_date',str(default_hold_date)), '%Y-%m-%d %H:%M:%S')
+                    if curr_hold_date == default_hold_date:
+                        provider['hold_date'] = str(curr_hold_date)
                     if curr_hold_date < hold_date:
                         hold_date = curr_hold_date
                     if provider_obj.state == 'booked' and hold_date == provider_obj.hold_date:

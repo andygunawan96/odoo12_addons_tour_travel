@@ -55,9 +55,14 @@ tt_error_api_4020,4020,No Schedules,,,1,1
 tt_error_api_4021,4021,No Price Itinerary,,,1,1
 tt_error_api_4022,4022,Cancel booking failed,,,1,1
 tt_error_api_4023,4023,Reservation not found,,,1,1
+tt_error_api_4024,4024,Vendor Session Expired,,,1,1
+tt_error_api_4025,4025,Flight is not available,,,1,1
+tt_error_api_4026,4026,"Hold booking restricted, You have to Direct Issued this reservation",,,1,1
+tt_error_api_4027,4027,"Not enough vendor balance",,,1,1
 tt_error_api_9001,9901,Notification,For Notif,,1,1
 tt_error_api_9002,9902,Warning,For Warning,,1,1
 tt_error_api_9003,9903,Error,For Error,,1,1
 tt_error_api_9004,9904,Balance,For Balance,,1,1
 tt_error_api_9005,9905,Booking,For Booking,,1,1
 tt_error_api_9006,9906,Issued,For Issued,,1,1
+tt_error_api_9007,9907,Top Up,For Top Up,,1,1
