@@ -19,10 +19,10 @@
         <div class="row" style="height:100px;">
             <div class="col-4" style="margin-left: 30px">
                 <img t-if="doc.agent_id.logo">
-                    <t t-att-src="'data:image/png;base64,%s' % to_text(doc.agent_id.logo)" height="200" border="1" width="300" style="max-height:100px; max-width:165px; margin-bottom: 20px"/><br/>
+                    <img t-att-src="'data:image/png;base64,%s' % to_text(doc.agent_id.logo)" height="200" border="1" width="300" style="max-height:100px; max-width:165px; margin-bottom: 20px"/><br/>
                 </img>
                 <img t-else="">
-                    <t t-att-src="'/tt_report_common/static/images/tors_logo.png'" height="200" border="1" width="300" style="max-height:100px; max-width:165px; margin-bottom: 20px"/><br/>
+                    <img t-att-src="'/tt_report_common/static/images/tors_logo.png'" height="200" border="1" width="300" style="max-height:100px; max-width:165px; margin-bottom: 20px"/><br/>
                 </img>
             </div>
             <div class="col-2">

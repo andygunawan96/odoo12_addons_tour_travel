@@ -141,25 +141,42 @@ class PrintoutInvoiceHO(models.AbstractModel):
         elif rec._name == 'tt.reservation.offline':
             if rec.line_ids:
                 for rec2 in rec.line_ids:
-                    pnr = rec2.pnr if rec2.pnr else '-'
-                    if not a.get(pnr):
-                        a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'provider_type': ''}
-                    a[pnr]['descs'].append(self.get_description(rec, data, rec2))
-                    a[pnr]['provider_type'] = rec.provider_type_id.name
-                    if rec.provider_type_id_name == 'hotel':
+                    if rec.offline_provider_type != 'hotel':
+                        pnr_same = True
+                        pnr = rec2.pnr if rec2.pnr else '-'
+                        if not a.get(pnr):
+                            pnr_same = False
+                            a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [],
+                                      'provider_type': ''}
+                        a[pnr]['descs'].append(self.get_description(rec, data, rec2))
+                        a[pnr]['provider_type'] = rec.provider_type_id.name
+                        if not pnr_same:
+                            for provider in rec.provider_booking_ids:
+                                if provider.pnr == pnr:
+                                    div_amount = 0
+                                    for line2 in rec.line_ids:
+                                        if line2.pnr == pnr:
+                                            div_amount += 1
+                                    for psg in rec.passenger_ids:
+                                        a[pnr]['pax_data'].append({
+                                            'name': psg.passenger_id.name,
+                                            'total': rec.total / len(rec.passenger_ids) / len(rec.line_ids) * div_amount,
+                                        })
+                    else:
+                        pnr = rec2.pnr if rec2.pnr else '-'
                         qty = 0
                         for line in rec.line_ids:
                             qty += line.obj_qty
+
+                        if not a.get(pnr):
+                            a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [],
+                                      'provider_type': ''}
+                        a[pnr]['descs'].append(self.get_description(rec, data, rec2))
+                        a[pnr]['provider_type'] = rec.provider_type_id.name
                         a[pnr]['pax_data'].append({
-                            'name': rec2.get_line_hotel_description(),
+                            'name': (rec2.get_line_hotel_description() if rec2.get_line_hotel_description() else ''),
                             'total': rec.total / qty
                         })
-                    else:
-                        for psg in rec.passenger_ids:
-                            a[pnr]['pax_data'].append({
-                                'name': psg.passenger_id.name,
-                                'total': rec.total / len(rec.passenger_ids),
-                            })
             else:
                 pnr = rec.pnr
                 a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'provider_type': ''}
@@ -182,7 +199,33 @@ class PrintoutInvoiceHO(models.AbstractModel):
                     pax_dict = self.get_pax_dict(rec, provider)
                     for psg in pax_dict:
                         a[pnr]['pax_data'].append(pax_dict[psg])
+                if rec._name == 'tt.reservation.visa':
+                    # add expenses
+                    for provider in rec.provider_booking_ids:
+                        pnr = provider.pnr + ' - expenses'
+                        for vendor in provider.vendor_ids:
+                            if vendor.is_invoice_created:
+                                a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [],
+                                          'provider_type': ''}
+                                a[pnr]['descs'].append(self.get_description(provider, data))
+                                a[pnr]['provider_type'] = rec.provider_type_id.name
+                        add_dict = self.get_additional_dict(rec, provider)
+                        for add in add_dict:
+                            a[pnr]['pax_data'].append(add_dict[add])
         return a
+
+    def get_additional_dict(self, rec, provider):
+        add_dict = {}
+        if rec._name == 'tt.reservation.visa':
+            for vendor in provider.vendor_ids:
+                if vendor.is_invoice_created:
+                    add_dict[vendor.id] = {}
+                    add_dict[vendor.id]['name'] = ''
+                    add_dict[vendor.id]['name'] += vendor.vendor_id.name if vendor.vendor_id else ''
+                    add_dict[vendor.id]['name'] += ' - '
+                    add_dict[vendor.id]['name'] += vendor.reference_number if vendor.reference_number else ''
+                    add_dict[vendor.id]['total'] = vendor.amount if vendor.amount else 0
+        return add_dict
 
     def get_pax_dict(self, rec, provider):
         pax_dict = {}
