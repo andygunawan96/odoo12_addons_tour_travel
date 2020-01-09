@@ -31,7 +31,6 @@ access_tt_customer_for_tour_travel_supervisor,tt_customer.for.tour.travel.superv
 access_tt_customer_for_tour_travel_manager,tt_customer.for.tour.travel.manager,model_tt_customer,tt_base.group_tt_tour_travel_manager,1,1,1,1
 
 access_tt_customer_identity_for_public,tt.customer.identity.for.public,model_tt_customer_identity,,1,1,1,1
-access_tt_virtual_account_for_public,tt.virtual.account.for.public,model_tt_virtual_account,,1,1,1,1
 
 access_res_employee_for_public,res_employee_for_public,model_res_employee,,1,0,0,0
 access_res_employee_for_agent_management_operator,res_employee_for_agent_management_operator,model_res_employee,group_tt_agent_management_operator,1,1,1,0
