@@ -70,7 +70,7 @@
                     <button name="create_profit_loss_ledger" string="Create Profit Loss" type="object" groups="tt_base.group_tt_accounting_operator" attrs="{'invisible':[('state','not in', ['approve', 'done', 'payment', 'approve_cust'])]}"/>
                     <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action"
                             groups="tt_base.group_tt_accounting_operator"
-                                       context="{
+                            context="{
                         'default_res_model': 'tt.refund',
                         'default_res_id': id,
                         'default_agent_id': agent_id,
@@ -82,6 +82,20 @@
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,sent,validate,final,approve,done"/>
                 </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="print_refund_to_agent"
+                                class="oe_stat_button" states="done"
+                                string="Refund to Agent" type="object" icon="fa-print"
+                                groups="tt_base.group_tt_tour_travel_operator"/>
+                        <button name="print_refund_to_cust"
+                                class="oe_stat_button" states="done"
+                                string="Refund to Customer" type="object" icon="fa-print"
+                                groups="tt_base.group_tt_agent_user_operator"/>
+                        <button name="print_refund_to_cust_est"
+                                class="oe_stat_button"
+                                string="To Customer Est." type="object" icon="fa-print"
+                                groups="tt_base.group_tt_agent_user_operator"/>
+                    </div>
                     <div class="oe_title">
                         <label for="Name" class="oe_edit_only" string="Name"/>
                         <h1>
@@ -159,6 +173,7 @@
                         <group>
                             <field name="refund_amount"/>
                             <field name="real_refund_amount" groups="tt_base.group_tt_tour_travel_operator"/>
+                            <field name="cust_refund_amount"/>
                             <field name="admin_fee_id" groups="tt_base.group_tt_tour_travel_operator" attrs="{'readonly':[('state','!=','confirm')]}"/>
                             <field name="admin_fee"/>
                             <field name="total_amount"/>
@@ -183,6 +198,7 @@
                                     <field name="pax_price"/>
                                     <field name="charge_fee"/>
                                     <field name="refund_amount"/>
+                                    <field name="cust_refund_amount"/>
                                     <field name="real_refund_amount" groups="tt_base.group_tt_tour_travel_operator"/>
                                     <field name="state" invisible="1"/>
                                 </tree>
@@ -200,6 +216,7 @@
                                                 <field name="pax_price"/>
                                                 <field name="charge_fee"/>
                                                 <field name="refund_amount"/>
+                                                <field name="cust_refund_amount"/>
                                                 <field name="real_refund_amount" groups="tt_base.group_tt_tour_travel_operator"/>
                                             </group>
                                             <group>

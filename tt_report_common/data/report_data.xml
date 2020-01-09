@@ -209,5 +209,25 @@
             paperformat="tt_report_common.paperformat_A4_no_margin"
             print_report_name="'Top UP - %s' % (object.name)"
         />
+        <report
+            string="Refund"
+            id="action_report_printout_refund_ho"
+            model="tt.refund"
+            report_type="qweb-html"
+            name="tt_report_common.printout_refund"
+            file="tt_report_common.printout_refund"
+            paperformat="tt_report_common.paperformat_A4_no_margin"
+            print_report_name="'Refund - %s' % (object.name)"
+        />
+        <report
+            string="Refund to Customer"
+            id="action_report_printout_refund"
+            model="tt.refund"
+            report_type="qweb-html"
+            name="tt_report_common.printout_refund"
+            file="tt_report_common.printout_refund"
+            paperformat="tt_report_common.paperformat_A4_no_margin"
+            print_report_name="'Customer Refund - %s' % (object.name)"
+        />
     </data>
 </odoo>
