@@ -134,7 +134,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                 sheet.write(row_data, 9, i['child'], sty_amount)
                 sheet.write(row_data, 10, i['infant'], sty_amount)
                 sheet.write(row_data, 11, i['state'], sty_table_data)
-                sheet.write(row_data, 12, '', sty_table_data)
+                sheet.write(row_data, 12, i['pnr'], sty_table_data)
                 sheet.write(row_data, 13, '', sty_table_data)
                 sheet.write(row_data, 14, i['currency_name'], sty_table_data_center)
                 sheet.write(row_data, 15, i['total_nta'], sty_amount)
