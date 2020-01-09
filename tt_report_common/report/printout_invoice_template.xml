@@ -260,7 +260,7 @@
                     <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Billing</span><br/>
                     <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
                 </t><t t-elif="doc_model == 'tt.top.up'">
-                    <t t-if="doc.state in ['draft','request']">
+                    <t t-if="doc.state in ['draft','request','confirm']">
                         <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Proforma Top Up</span><br/>  <!--Proforma HO Invoice-->
                         <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
                     </t>
