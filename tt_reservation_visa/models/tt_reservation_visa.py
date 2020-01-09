@@ -1721,7 +1721,7 @@ class TtVisa(models.Model):
                 'contact_id': contact_id.id,
                 'contact_name': contact[0]['first_name'] + ' ' + contact[0]['last_name'],
                 'contact_email': contact_id.email,
-                'contact_phone': contact_id.phone_ids[0].phone_number,
+                'contact_phone': "%s - %s" % (contact_id.phone_ids[0].calling_code,contact_id.phone_ids[0].calling_number),
                 'passenger_ids': [(6, 0, to_psg_ids)],
                 'adult': sell_visa['pax']['adult'],
                 'child': sell_visa['pax']['child'],

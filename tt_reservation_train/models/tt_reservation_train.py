@@ -123,7 +123,7 @@ class TtReservationTrain(models.Model):
                 'contact_title': contacts['title'],
                 'contact_name': contact_obj.name,
                 'contact_email': contact_obj.email,
-                'contact_phone': contact_obj.phone_ids[0].phone_number,
+                'contact_phone': "%s - %s" % (contact_obj.phone_ids[0].calling_code,contact_obj.phone_ids[0].calling_number),
                 'passenger_ids': list_passenger_value
             })
 
