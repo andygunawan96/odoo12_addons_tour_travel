@@ -8,7 +8,7 @@ _logger = logging.getLogger(__name__)
 
 class TtRescheduleWizard(models.TransientModel):
     _name = "tt.reschedule.wizard"
-    _description = 'Reschedule Wizard'
+    _description = 'After Sales Wizard'
 
     agent_id = fields.Many2one('tt.agent', 'Agent', readonly=True)
 
@@ -26,9 +26,9 @@ class TtRescheduleWizard(models.TransientModel):
                                        'segment_id', string='Old Segments',
                                        readonly=True, compute="_compute_old_segments")
     new_segment_ids = fields.Many2many('tt.segment.reschedule', 'tt_reschedule_wizard_new_segment_rel', 'reschedule_id',
-                                       'segment_id', string='New Segments', ondelete="cascade", compute="_compute_new_segments", readonly=False)
-    reschedule_type = fields.Selection([('reschedule', 'Reschedule'), ('revalidate', 'Revalidate'),
-                                        ('reissued', 'Reissued'), ('upgrade', 'Upgrade Service'), ('addons', 'Addons (Meals, Baggage, Seat, etc)')], 'Reschedule Type', default='reschedule', required=True)
+                                       'segment_id', string='New Segments', ondelete="cascade", compute="_compute_new_segments", readonly=True)
+    passenger_ids = fields.Many2many('tt.reservation.passenger.airline', 'tt_reschedule_wizard_passenger_rel', 'reschedule_id',
+                                     'passenger_id', compute='_compute_passengers', readonly=True)
 
     referenced_document = fields.Char('Ref. Document',required=True,readonly=True)
     booker_id = fields.Many2one('tt.customer', 'Booker', ondelete='restrict', readonly=True)
@@ -100,25 +100,44 @@ class TtRescheduleWizard(models.TransientModel):
             new_segment_list.append(new_seg_obj.id)
         self.new_segment_ids = [(6, 0, new_segment_list)]
 
+    @api.depends('res_model', 'res_id')
+    @api.onchange('res_model', 'res_id')
+    def _compute_passengers(self):
+        passenger_list = []
+        try:
+            book_obj = self.env[self.res_model].sudo().browse(int(self.res_id))
+        except:
+            _logger.info('Warning: Error res_model di production')
+            book_obj = self.env[self.env.context['active_model']].sudo().browse(int(self.env.context['active_id']))
+        for rec in book_obj.passenger_ids:
+            passenger_list.append(rec.id)
+        self.passenger_ids = [(6, 0, passenger_list)]
+
     def submit_reschedule(self):
         old_segment_list = []
         new_segment_list = []
+        passenger_list = []
         for rec in self.old_segment_ids:
             old_segment_list.append(rec.id)
+        for rec in self.passenger_ids:
+            passenger_list.append(rec.id)
         for rec in self.new_segment_ids:
+            rec.sudo().write({
+                'passenger_ids': [(6, 0, passenger_list)],
+            })
             new_segment_list.append(rec.id)
             self.sudo().write({
                 'new_segment_ids': [(3, rec.id)]
             })
-        reschedule_obj = self.env['tt.reschedule'].create({
+        reschedule_obj = self.env['tt.reschedule'].sudo().create({
             'agent_id': self.agent_id.id,
             'customer_parent_id': self.customer_parent_id.id,
             'booker_id': self.booker_id.id,
             'currency_id': self.currency_id.id,
             'service_type': self.service_type,
-            'reschedule_type': self.reschedule_type,
             'old_segment_ids': [(6, 0, old_segment_list)],
             'new_segment_ids': [(6, 0, new_segment_list)],
+            'passenger_ids': [(6, 0, passenger_list)],
             'res_model': self.res_model,
             'res_id': self.res_id,
             'notes': self.notes

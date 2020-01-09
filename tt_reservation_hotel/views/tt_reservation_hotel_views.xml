@@ -9,7 +9,10 @@
                 <field name="provider_name" groups="tt_base.group_tt_tour_travel_operator"/>
                 <field name="contact_name" string="Contact Name"/>
                 <field name="display_mobile" string="Contact Mobile"/>
-                <field name="agent_id" string="Agent"/>
+                <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                <field name="agent_type_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                <field name="customer_parent_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                <field name="customer_parent_type_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                 <newline/>
                 <group>
                     <filter string="All" name="all"/>

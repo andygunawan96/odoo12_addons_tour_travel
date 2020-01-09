@@ -141,10 +141,10 @@
                             <field name="ledger_ids"
                                    context="{'tree_view_ref': 'tt_accounting.tt_ledger_tree_view'}"/>
                         </page>
-                        <page string="Adjustment">
+                        <page string="Adjustment" name="adjustment_page">
                             <field name="adjustment_ids"/>
                         </page>
-                        <page string="Refund" attrs="{'invisible':[('refund_ids','=', [])]}">
+                        <page string="Refund" name="refund_page" attrs="{'invisible':[('refund_ids','=', [])]}">
                             <field name="refund_ids"/>
                         </page>
                     </notebook>
