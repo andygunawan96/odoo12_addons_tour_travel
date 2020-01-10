@@ -18,8 +18,16 @@ class VisaVendorLines(models.Model):
     vendor_id = fields.Many2one('tt.reservation.visa.vendor', 'Vendor')
     reference_number = fields.Char('Reference Number')
     currency_id = fields.Many2one('res.currency', 'Currency', default=lambda self: self.env.user.company_id.currency_id)
-    amount = fields.Monetary('Amount')
+    amount = fields.Monetary('HO Amount')
+    nta_amount = fields.Monetary('NTA Amount')
+    passenger_ids = fields.Many2one('tt.reservation.visa.order.passengers', 'Passenger',
+                                    domain=lambda self: self.domain_passenger())  # "[('visa_id.provider_booking_ids', 'in', provider_id)]"
     payment_date = fields.Date('Payment Date', help='Date when accounting must pay the vendor')
+    is_upsell_ledger_created = fields.Boolean('Is Upsell Ledger Created')
+    is_invoice_created = fields.Boolean('Is Invoice Created')
+
+    def domain_passenger(self):
+        return [('visa_id', '=', self.visa_id)]
 
     def to_dict(self):
         res = {

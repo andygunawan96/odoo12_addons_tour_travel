@@ -47,12 +47,13 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         sheet.write('K9', 'Infant', style.table_head_center)
         sheet.write('L9', 'State', style.table_head_center)
         sheet.write('M9', 'PNR', style.table_head_center)
-        sheet.write('N9', 'Booking State', style.table_head_center)
-        sheet.write('O9', 'Currency', style.table_head_center)
-        sheet.write('P9', 'NTA Amount', style.table_head_center)
-        sheet.write('Q9', 'Total Commission', style.table_head_center)
-        sheet.write('R9', 'Grand Total', style.table_head_center)
-        sheet.merge_range('S9:T9', 'Keterangan', style.table_head_center)
+        sheet.write('N9', 'Ledger Reference', style.table_head_center)
+        sheet.write('O9', 'Booking State', style.table_head_center)
+        sheet.write('P9', 'Currency', style.table_head_center)
+        sheet.write('Q9', 'NTA Amount', style.table_head_center)
+        sheet.write('R9', 'Total Commission', style.table_head_center)
+        sheet.write('S9', 'Grand Total', style.table_head_center)
+        sheet.merge_range('T9:U9', 'Keterangan', style.table_head_center)
 
         # sheet.write('B9', 'Date', style.table_head_center)
         # sheet.write('C9', 'Order Number', style.table_head_center)
@@ -74,7 +75,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         sheet.set_column('B:B', 10)
         sheet.set_column('C:F', 15)
         sheet.set_column('G:G', 12)
-        sheet.set_column('H:V', 15)
+        sheet.set_column('H:S', 15)
 
         # ============ void start() ======================
         row_data = 8
@@ -135,13 +136,14 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                 sheet.write(row_data, 10, i['infant'], sty_amount)
                 sheet.write(row_data, 11, i['state'], sty_table_data)
                 sheet.write(row_data, 12, i['pnr'], sty_table_data)
-                sheet.write(row_data, 13, '', sty_table_data)
-                sheet.write(row_data, 14, i['currency_name'], sty_table_data_center)
-                sheet.write(row_data, 15, i['total_nta'], sty_amount)
-                sheet.write(row_data, 16, i['total_commission'], sty_amount)
-                sheet.write(row_data, 17, i['grand_total'], sty_amount)
-                sheet.write(row_data, 18, '', sty_table_data)
-                sheet.write(row_data, 19, '', sty_amount)
+                sheet.write(row_data, 13, i['ledger_name'], sty_table_data)
+                sheet.write(row_data, 14, '', sty_table_data)
+                sheet.write(row_data, 15, i['currency_name'], sty_table_data_center)
+                sheet.write(row_data, 16, i['total_nta'], sty_amount)
+                sheet.write(row_data, 17, i['total_commission'], sty_amount)
+                sheet.write(row_data, 18, i['grand_total'], sty_amount)
+                sheet.write(row_data, 19, '', sty_table_data)
+                sheet.write(row_data, 20, '', sty_amount)
 
                 # filtered data
                 filtered_data = []
@@ -197,13 +199,14 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     sheet.write(row_data, 10, '', sty_amount)
                     sheet.write(row_data, 11, i['state'], sty_table_data)
                     sheet.write(row_data, 12, j, sty_table_data)
-                    sheet.write(row_data, 13, booking_state, sty_table_data)
-                    sheet.write(row_data, 14, '', sty_table_data_center)
-                    sheet.write(row_data, 15, nta_total, sty_amount)
-                    sheet.write(row_data, 16, commission, sty_amount)
-                    sheet.write(row_data, 17, grand_total, sty_amount)
-                    sheet.write(row_data, 18, '', sty_table_data)
-                    sheet.write(row_data, 19, '', sty_amount)
+                    sheet.write(row_data, 13, '', sty_table_data_center)
+                    sheet.write(row_data, 14, booking_state, sty_table_data)
+                    sheet.write(row_data, 15, '', sty_table_data_center)
+                    sheet.write(row_data, 16, nta_total, sty_amount)
+                    sheet.write(row_data, 17, commission, sty_amount)
+                    sheet.write(row_data, 18, grand_total, sty_amount)
+                    sheet.write(row_data, 19, '', sty_table_data)
+                    sheet.write(row_data, 20, '', sty_amount)
 
                     for k in temp_book:
                         if k['ledger_transaction_type'] == 3:
@@ -235,11 +238,12 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                             sheet.write(row_data, 12, '', sty_table_data)
                             sheet.write(row_data, 13, '', sty_table_data)
                             sheet.write(row_data, 14, '', sty_table_data_center)
-                            sheet.write(row_data, 15, '', sty_amount)
+                            sheet.write(row_data, 15, '', sty_table_data_center)
                             sheet.write(row_data, 16, '', sty_amount)
                             sheet.write(row_data, 17, '', sty_amount)
-                            sheet.write(row_data, 18, k['ledger_agent_name'], sty_table_data)
-                            sheet.write(row_data, 19, k['debit'], sty_amount)
+                            sheet.write(row_data, 18, '', sty_amount)
+                            sheet.write(row_data, 19, k['ledger_agent_name'], sty_table_data)
+                            sheet.write(row_data, 20, k['debit'], sty_amount)
 
         row_data += 1
         sty_table_data_center = style.table_data_center_border
