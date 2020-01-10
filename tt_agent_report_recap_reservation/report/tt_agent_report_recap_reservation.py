@@ -15,9 +15,9 @@ class AgentReportRecapReservation(models.Model):
     def _select():
         return """
         rsv.id, rsv.name as order_number, rsv.issued_date as issued_date, rsv.adult, rsv.child, rsv.infant, rsv.pnr,
-        rsv.total as grand_total, rsv.total_commission, rsv.total_nta, rsv.provider_name, rsv.create_date, rsv.state,  
+        rsv.total as grand_total, rsv.total_commission, rsv.total_nta, rsv.provider_name, rsv.create_date, rsv.state,
         provider_type.name as provider_type, agent.name as agent_name, agent.email as agent_email,
-        currency.name as currency_name, 
+        currency.name as currency_name,
         agent_type.name as agent_type_name,
         ledger.debit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, 
         ledger.transaction_type as ledger_transaction_type

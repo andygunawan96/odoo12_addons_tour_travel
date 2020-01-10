@@ -11,4 +11,3 @@ access_tt_adjustment,access_tt_accounting.tt_adjustment,model_tt_adjustment,,1,1
 access_tt_refund,access_tt_accounting.tt_refund,model_tt_refund,,1,1,1,0
 access_tt_refund_line,access_tt_accounting.tt_refund_line,model_tt_refund_line,,1,1,1,0
 access_tt_refund_line_customer,access_tt_accounting.tt_refund_line_customer,model_tt_refund_line_customer,,1,1,1,0
-access_tt_provider_refund,access_tt_accounting.tt_provider_refund,model_tt_provider_refund,,1,1,1,1

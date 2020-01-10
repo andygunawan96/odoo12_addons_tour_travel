@@ -62,6 +62,17 @@
                     <button name="action_done" string="Done" type="object" groups="tt_base.group_tt_accounting_manager" attrs="{'invisible':[('state','!=', 'approve')]}"/>
                     <button name="set_to_confirm" string="Set to Confirm" type="object" groups="tt_base.group_tt_accounting_manager" attrs="{'invisible':[('state','not in', ['sent', 'validate'])]}"/>
                     <button name="cancel_reschedule_from_button" string="Cancel" type="object" attrs="{'invisible':[('state','in', ['done', 'cancel'])]}"/>
+                    <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action"
+                            groups="tt_base.group_tt_accounting_operator"
+                                       context="{
+                        'default_res_model': 'tt.reschedule',
+                        'default_res_id': id,
+                        'default_agent_id': agent_id,
+                        'default_referenced_document': name,
+                        'default_currency_id': currency_id,
+                        'default_adj_type': 3,
+                        'hide_component_type': True
+                   }"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
@@ -168,7 +179,8 @@
                     <notebook colspan="4" name="notebooks">
                         <page string="After Sales Line(s)" name="reschedule_line_page">
                             <field name="reschedule_line_ids">
-                                <tree>
+                                <tree editable="bottom">
+                                    <field name="sequence" widget="handle"/>
                                     <field name="reschedule_type"/>
                                     <field name="reschedule_amount" groups="tt_base.group_tt_agent_user_operator"/>
                                     <field name="reschedule_amount_ho" groups="tt_base.group_tt_tour_travel_operator"/>

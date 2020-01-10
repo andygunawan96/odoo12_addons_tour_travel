@@ -14,6 +14,7 @@ class TtRefundLine(models.Model):
     charge_fee = fields.Integer('Charge Fee', default=0, readonly=True, states={'confirm': [('readonly', False)]})
     refund_amount = fields.Integer('Expected Refund Amount', default=0, required=True, readonly=True, compute='_compute_refund_amount')
     real_refund_amount = fields.Integer('Real Refund Amount', default=0, readonly=False, states={'draft': [('readonly', True)]})
+    cust_refund_amount = fields.Integer('Expected Cust. Refund Amount', default=0, readonly=False, states={'done': [('readonly', True)]})
     refund_id = fields.Many2one('tt.refund', 'Refund', readonly=True)
     state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'), ('done', 'Done')], 'State', default='draft', related='')
 
@@ -92,7 +93,7 @@ class TtRefund(models.Model):
     refund_date = fields.Date('Expected Refund Date', default=date.today(), required=True, readonly=True, related='refund_date_ho')
     refund_date_ho = fields.Date('Expected Refund Date', default=date.today(), required=False, readonly=True, states={'confirm': [('readonly', False), ('required', True)]})
     real_refund_date = fields.Date('Real Refund Date from Vendor', default=date.today(), required=True, readonly=False, states={'done': [('readonly', True)], 'approve': [('readonly', True)], 'draft': [('readonly', True)]})
-    cust_refund_date = fields.Datetime('Expected Cust. Refund Date', readonly=True, states={'payment': [('readonly', False)], 'draft': [('readonly', False)]})
+    cust_refund_date = fields.Datetime('Expected Cust. Refund Date', readonly=False, states={'done': [('readonly', True)]})
 
     service_type = fields.Selection(lambda self: self.get_service_type(), 'Service Type', required=True, readonly=True)
 
@@ -100,7 +101,8 @@ class TtRefund(models.Model):
                                    states={'draft': [('readonly', False)]})
     admin_fee_id = fields.Many2one('tt.master.admin.fee', 'Admin Fee Type', domain=[('after_sales_type', '=', 'refund')], compute="_compute_admin_fee_id")
     refund_amount = fields.Integer('Expected Refund Amount', default=0, required=True, readonly=True, compute='_compute_refund_amount', related='')
-    real_refund_amount = fields.Integer('Real Refund Amount', default=0, readonly=True, compute='_compute_real_refund_amount')
+    real_refund_amount = fields.Integer('Real Refund Amount from Vendor', default=0, readonly=True, compute='_compute_real_refund_amount')
+    cust_refund_amount = fields.Integer('Expected Cust. Refund Amount', default=0, readonly=True, compute='_compute_cust_refund_amount')
     admin_fee = fields.Integer('Admin Fee Amount', default=0, readonly=True, compute="_compute_admin_fee")
     total_amount = fields.Integer('Total Amount', default=0, readonly=True, compute="_compute_total_amount")
     final_admin_fee = fields.Integer('Admin Fee Amount', default=0, readonly=True)
@@ -178,6 +180,15 @@ class TtRefund(models.Model):
             for rec2 in rec.refund_line_ids:
                 temp_total += rec2.real_refund_amount
             rec.real_refund_amount = temp_total
+
+    @api.depends('refund_line_ids')
+    @api.onchange('refund_line_ids')
+    def _compute_cust_refund_amount(self):
+        for rec in self:
+            temp_total = 0
+            for rec2 in rec.refund_line_ids:
+                temp_total += rec2.cust_refund_amount
+            rec.cust_refund_amount = temp_total
 
     @api.depends('admin_fee_id', 'refund_amount', 'res_model', 'res_id')
     @api.onchange('admin_fee_id', 'refund_amount', 'res_model', 'res_id')
@@ -508,4 +519,39 @@ class TtRefund(models.Model):
             'context': {},
             'target': 'current',
         }
+
+    def print_refund_to_agent(self):
+        datas = {
+            'ids': self.env.context.get('active_ids', []),
+            'model': self._name,
+            'is_ho': True
+        }
+        res = self.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        refund_ho_printout_id = self.env.ref('tt_report_common.action_report_printout_refund_ho')
+        return refund_ho_printout_id.report_action(self, data=datas)
+
+    def print_refund_to_cust(self):
+        datas = {
+            'ids': self.env.context.get('active_ids', []),
+            'model': self._name,
+        }
+        res = self.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        refund_printout_id = self.env.ref('tt_report_common.action_report_printout_refund')
+        return refund_printout_id.report_action(self, data=datas)
+
+    def print_refund_to_cust_est(self):
+        datas = {
+            'ids': self.env.context.get('active_ids', []),
+            'model': self._name,
+            'is_est': True
+        }
+        res = self.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        refund_printout_id = self.env.ref('tt_report_common.action_report_printout_refund')
+        return refund_printout_id.report_action(self, data=datas)
 
