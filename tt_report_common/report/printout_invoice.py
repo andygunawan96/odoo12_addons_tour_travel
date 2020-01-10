@@ -1073,6 +1073,12 @@ class PrintoutRefund(models.AbstractModel):
     _name = 'report.tt_report_common.printout_refund'
     _description = 'Rodex Model'
 
+    def compute_terbilang_from_objs(self, recs, currency_str='rupiah'):
+        a = {}
+        for rec2 in recs:
+            a.update({rec2.name: num2words(rec2.total_amount) + ' Rupiah'})
+        return a
+
     @api.model
     def _get_report_values(self, docids, data=None):
         if not data.get('context'):
@@ -1086,5 +1092,7 @@ class PrintoutRefund(models.AbstractModel):
             'doc_model': data['context']['active_model'],
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
             'is_ho': data.get('is_ho') and data['is_ho'] or False,
-            'is_est': data.get('is_est') and data['is_est'] or False
+            'is_est': data.get('is_est') and data['is_est'] or False,
+            'terbilang': self.compute_terbilang_from_objs(
+                self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
         }
