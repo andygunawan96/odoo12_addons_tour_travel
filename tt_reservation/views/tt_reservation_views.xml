@@ -6,6 +6,7 @@
         <field name="arch" type="xml">
             <form create="false">
                 <header>
+                    <field name="refundable" invisible="1"/>
                     <button string="Set to Draft" name="action_set_as_draft" groups="base.user_admin" type="object"/>
                     <button string="Set to Booked" name="action_set_as_booked" groups="base.user_admin" type="object"/>
                     <button string="Set to Issued" name="action_set_as_issued" groups="base.user_admin" type="object"/>
@@ -32,7 +33,7 @@
                         'default_booker_id': booker_id,
                         'default_currency_id': currency_id,
                         'default_service_type': provider_type_id
-                   }" attrs="{'invisible':[('state','!=','issued')]}"/>
+                   }" attrs="{'invisible':[('refundable','=',False)]}"/>
 
 
 <!--                    <button string="Issued" name="action_issued_from_button" type="object"-->

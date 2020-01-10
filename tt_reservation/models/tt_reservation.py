@@ -32,7 +32,7 @@ class TtReservation(models.Model):
     booked_date = fields.Datetime('Booked Date', readonly=True)
     issued_uid = fields.Many2one('res.users', 'Issued by', readonly=True)
     issued_date = fields.Datetime('Issued Date', readonly=True)
-    refund_uid = fields.Many2one('res.users', 'Refund by', readonly=True)
+    refund_uid = fields.Many2one('res.users', 'Refund by', readonly=False)
     refund_date = fields.Datetime('Refund Date', readonly=True)
     user_id = fields.Many2one('res.users', 'Create by', readonly=True)  # create_uid
 
@@ -71,6 +71,7 @@ class TtReservation(models.Model):
     refund_ids = fields.One2many('tt.refund','res_id','Refund',readonly=True)  # domain=[('res_model','=',lambda self: self._name)]
     error_msg = fields.Char('Error Message')
     notes = fields.Text('Notes for IT',default='')
+    refundable = fields.Boolean('Refundable', default=True, readonly=True, compute='_compute_refundable')
 
     ##fixme tambahkan compute field nanti
     # display_provider_name = fields.Char(string='Provider', compute='_action_display_provider', store=True)
@@ -316,6 +317,24 @@ class TtReservation(models.Model):
             }))
 
         return list_passenger_value
+
+    @api.depends("refund_ids", "state")
+    @api.onchange("refund_ids", "state")
+    def _compute_refundable(self):
+        for rec in self:
+            if rec.state == 'issued':
+                state_list = []
+                for rec2 in rec.refund_ids:
+                    state_list.append(rec2.state)
+                if len(state_list) > 0:
+                    if all(temp_state in ['cancel', 'expired'] for temp_state in state_list):
+                        rec.refundable = True
+                    else:
+                        rec.refundable = False
+                else:
+                    rec.refundable = True
+            else:
+                rec.refundable = False
 
     def compute_all(self):
         for rec in self.search([]):

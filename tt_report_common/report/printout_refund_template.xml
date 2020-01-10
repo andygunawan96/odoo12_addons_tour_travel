@@ -11,7 +11,7 @@
                         <t t-call="tt_report_common.external_layout_ho">
                             <br/>
                             <div style="margin: 0 20px">
-<!--                                <t t-call="tt_report_common.refund_ho_content_view"/>-->
+                                <!--                                <t t-call="tt_report_common.refund_ho_content_view"/>-->
                             </div>
                         </t>
                     </t>
@@ -19,7 +19,7 @@
                         <t t-call="tt_report_common.external_layout">
                             <br/>
                             <div style="margin: 0 20px">
-<!--                                <t t-call="tt_report_common.refund_est_content_view"/>-->
+                                <!--                                <t t-call="tt_report_common.refund_est_content_view"/>-->
                             </div>
                         </t>
                     </t>
@@ -27,12 +27,152 @@
                         <t t-call="tt_report_common.external_layout">
                             <br/>
                             <div style="margin: 0 20px">
-<!--                                <t t-call="tt_report_common.refund_content_view"/>-->
+                                <t t-call="tt_report_common.refund_content_view"/>
                             </div>
                         </t>
                     </t>
                 </div>
             </t>
         </t>
+    </template>
+
+    <template id="refund_content_view">
+        <!-- Base Info Booker dkk -->
+        <table style="margin: 1px; 1px; 15px;">
+            <tr>
+                <td style="width:50px;">To</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px; vertical-align: top;" rowspan="5">
+                    <strong><span t-field="doc.booker_id.name"/></strong>
+                </td>
+                <td style="width:100px;"/>
+                <td style="width:150px;">Operator</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px;text-align: right;">
+                    <i t-field="doc.confirm_uid.name"/>
+                </td>
+            </tr>
+
+            <tr>
+                <td style="width:50px;"/>
+                <td style="width:10px;"/>
+                <td style="width:100px;"/>
+                <td style="width:150px;">Refund Type</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px;text-align: right;">
+                    <t t-if="doc.refund_type == 'quick'">
+                        <i>Quick Refund</i>
+                    </t>
+                    <t t-if="doc.refund_type == 'regular'">
+                        <i>Regular Refund</i>
+                    </t>
+                </td>
+            </tr>
+
+            <tr>
+                <td style="width:50px;"/>
+                <td style="width:10px;"/>
+                <td style="width:100px;"/>
+                <td style="width:150px;">Date</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px;text-align: right;">
+                    <i t-field="doc.confirm_date" t-options ='{"format": "dd MMMM yyyy"}'/>
+                </td>
+            </tr>
+
+            <tr>
+                <td style="width:50px;"/>
+                <td style="width:10px;"/>
+                <td style="width:100px;"/>
+                <td style="width:150px;">Est. Date</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px;text-align: right;">
+                    <i t-field="doc.refund_date" t-options ='{"format": "dd MMMM yyyy"}'/>
+                </td>
+            </tr>
+
+            <tr>
+                <td style="width:50px;"/>
+                <td style="width:10px;"/>
+                <td style="width:100px;"/>
+                <td style="width:150px;">Notes</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px;text-align: right;">
+                    <t t-if="doc.notes">
+                        <span t-esc="doc.notes"/>
+                    </t>
+                    <t t-if="not doc.notes">
+                        -
+                    </t>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Issued Code + Line Info -->
+        <div style="margin-bottom: 10px; margin-top: 20px;">
+            <span style="font-size: 28px; font-weight: 730">REFUND DETAILS</span><br/>
+        </div>
+        <table style="width: 100%; line-height: normal; border-collapse: separate; border-spacing: 0;">  <!--border-radius: 20px; border: 1px solid #CCC; border-spacing: 0; margin-bottom: 30px; padding: 5px 0px 5px 0px;-->
+            <tr style="background-color: #DC5413; padding-top: 5px; padding-bottom: 5px">
+                <th style="width: 40%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
+                    <span>Description</span>
+                </th>
+                <th style="width: 20%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
+                    <span>Amount</span>
+                </th>
+                <th style="width: 20%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
+                    <span>Admin Fee</span>
+                </th>
+                <th style="width: 20%; padding: 7px 7px 7px 20px; border-right: 1px solid #CCC; border-top-right-radius: 20px; color: white; font-weight: 800; font-size: 18px">
+                    <span>Sub Total</span>
+                </th>
+            </tr>
+
+            <t t-foreach="doc.refund_line_cust_ids" t-as="pax">
+                <tr valign="top" style="padding-top: 5px; padding-bottom: 5px;">
+                    <td style="background: #F0F0F0; width: 40%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 20px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                        <span t-esc="pax.name"/>
+                    </td>
+                    <td class="text-right" style="background: #F0F0F0; width: 20%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 20px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                        <span t-esc="pax.refund_amount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                    </td>
+                    <td class="text-right" style="background: #F0F0F0; width: 20%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 20px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                        <span t-esc="pax.citra_fee" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                    </td>
+                    <td class="text-right" style="background: #F0F0F0; width: 20%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 20px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                        <span t-esc="pax.total_amount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                    </td>
+                </tr>
+            </t>
+        </table>
+
+        <!-- SubTotal -->
+        <div class="row mt4 mb2" style="padding-top: 20px; page-break-inside: avoid">
+            <div class="col-8">
+                <br/>
+                <table style="width:80%;">
+                    <tr valign="top">
+                        <td style="width:100px;">In Words</td>
+                        <td style="width:20px;">:</td>
+                        <td style=""><t t-esc="terbilang[doc.name]"/></td>
+                    </tr>
+                    <tr>
+                        <td>Remarks</td>
+                        <td>:</td>
+                        <td>-</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-4">
+                <table style="width:100%">
+                    <tr class="border-black">
+                        <td><strong>Grand Total</strong></td>
+                        <td class="text-right">
+                            <span style="padding: 10px 25px;" t-field="doc.total_amount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
     </template>
 </odoo>
