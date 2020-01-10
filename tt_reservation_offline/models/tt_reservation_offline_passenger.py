@@ -40,5 +40,8 @@ class IssuedOfflinePassenger(models.Model):
     last_name = fields.Char('Last Name', related='passenger_id.last_name')
     title = fields.Selection(variables.TITLE, 'Title')
 
+    channel_service_charge_ids = fields.Many2many('tt.service.charge', 'tt_reservation_visa_channel_charge_rel',
+                                                  'passenger_id', 'service_charge_id', 'Channel Service Charges')
+
     # def compute_agent_id(self):
     #     self.agent_id = self.booking_id.sub_agent_id

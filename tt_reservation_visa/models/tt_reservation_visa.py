@@ -377,6 +377,71 @@ class TtVisa(models.Model):
     def payment_visa_api(self, req, context):
         return self.payment_reservation_api('visa', req, context)
 
+    def action_calc_expenses_visa(self):
+        # Calc visa vendor
+        # self.calc_visa_expenses()
+        self.calc_visa_upsell_vendor()
+        # Create new agent invoice (panggil di agent sales visa)
+
+    def calc_visa_upsell_vendor(self):
+        diff_nta_upsell = 0
+        for provider in self.provider_booking_ids:
+            for rec in provider.vendor_ids:
+                if not rec.is_upsell_ledger_created:
+                    diff_nta_upsell += (rec.amount - rec.nta_amount)
+                    rec.is_upsell_ledger_created = True
+
+        """ Jika diff nta upsell > 0 """
+        if diff_nta_upsell > 0:
+            ledger = self.env['tt.ledger']
+            for rec in self:
+                doc_type = []
+                for sc in rec.sale_service_charge_ids:
+                    if not sc.pricelist_id.visa_type in doc_type:
+                        doc_type.append(sc.pricelist_id.visa_type)
+
+                doc_type = ','.join(str(e) for e in doc_type)
+
+                vals = ledger.prepare_vals(self._name, self.id, 'NTA Upsell Visa : ' + rec.name, rec.name,
+                                           datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 3,
+                                           rec.currency_id.id, self.env.user.id, diff_nta_upsell, 0,
+                                           'NTA Upsell Visa : ' + rec.name)
+                vals.update({
+                    'pnr': self.pnr,
+                    'display_provider_name': self.provider_name,
+                    'provider_type_id': self.provider_type_id.id
+                })
+                vals['agent_id'] = rec.env.ref('tt_base.rodex_ho').id
+
+                new_aml = ledger.create(vals)
+                # new_aml.action_done()
+                rec.ledger_id = new_aml
+        elif diff_nta_upsell < 0:
+            """ Jika diff nta upsell < 0 """
+            ledger = self.env['tt.ledger']
+            for rec in self:
+                doc_type = []
+                for sc in rec.sale_service_charge_ids:
+                    if not sc.pricelist_id.visa_type in doc_type:
+                        doc_type.append(sc.pricelist_id.visa_type)
+
+                doc_type = ','.join(str(e) for e in doc_type)
+
+                vals = ledger.prepare_vals(self._name, self.id, 'NTA Upsell Visa : ' + rec.name, rec.name,
+                                           datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 3,
+                                           rec.currency_id.id, self.env.user.id, 0, abs(diff_nta_upsell),
+                                           'NTA Upsell Visa : ' + rec.name)
+                vals.update({
+                    'pnr': self.pnr,
+                    'display_provider_name': self.provider_name,
+                    'provider_type_id': self.provider_type_id.id
+                })
+                vals['agent_id'] = rec.env.ref('tt_base.rodex_ho').id
+
+                new_aml = ledger.create(vals)
+                # new_aml.action_done()
+                rec.ledger_id = new_aml
+
     def calc_visa_vendor(self):
         """ Mencatat expenses ke dalam ledger visa """
 
@@ -384,7 +449,7 @@ class TtVisa(models.Model):
         total_expenses = 0
         for provider in self.provider_booking_ids:
             for rec in provider.vendor_ids:
-                total_expenses += rec.amount
+                total_expenses += rec.nta_amount
 
         """ Hitung total nta per pax """
         nta_price = 0
@@ -408,7 +473,8 @@ class TtVisa(models.Model):
 
                 vals = ledger.prepare_vals(self._name, self.id, 'Profit ' + doc_type + ' : ' + rec.name, rec.name,
                                            datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 3,
-                                           rec.currency_id.id, self.env.user.id, ho_profit, 0)
+                                           rec.currency_id.id, self.env.user.id, ho_profit, 0,
+                                           'Profit HO Visa : ' + rec.name)
                 vals.update({
                     'pnr': self.pnr,
                     'display_provider_name': self.provider_name,
@@ -432,7 +498,8 @@ class TtVisa(models.Model):
 
                 vals = ledger.prepare_vals(self._name, self.id, 'Additional Charge ' + doc_type + ' : ' + rec.name,
                                            rec.name, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 3,
-                                           rec.currency_id.id, self.env.user.id, 0, ho_profit)
+                                           rec.currency_id.id, self.env.user.id, 0, ho_profit,
+                                           'Additional Charge Visa : ' + rec.name)
                 vals.update({
                     'pnr': self.pnr,
                     'display_provider_name': self.provider_name,
@@ -1530,7 +1597,6 @@ class TtVisa(models.Model):
             }
         if not res:
             res = Response().get_error(str('Visa Booking not found'), 500)
-        print('Response : ' + str(json.dumps(res)))
         return Response().get_no_error(res)
 
     # def get_booking_visa_api(self, data, context):
@@ -1739,7 +1805,7 @@ class TtVisa(models.Model):
 
             book_obj.document_to_ho_date = datetime.now() + timedelta(days=1)
             book_obj.ho_validate_date = datetime.now() + timedelta(days=3)
-            book_obj.hold_date = datetime.now() + timedelta(days=4)
+            book_obj.hold_date = datetime.now() + timedelta(days=7)
 
             book_obj.pnr = book_obj.name
 

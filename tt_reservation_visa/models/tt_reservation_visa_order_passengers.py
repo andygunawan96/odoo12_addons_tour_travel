@@ -63,7 +63,8 @@ class VisaInterviewBiometrics(models.Model):
     location_interview_id = fields.Char('Location', related="pricelist_interview_id.description")
     location_biometrics_id = fields.Char('Location', related="pricelist_biometrics_id.description")
     datetime = fields.Datetime('Datetime')
-    ho_employee = fields.Many2one('res.users', 'Employee', domain=lambda self: self.get_user_HO())
+    # ho_employee = fields.Many2one('res.users', 'Employee', domain=lambda self: self.get_user_HO())
+    ho_employee = fields.Char('Employee')
     meeting_point = fields.Char('Meeting Point')
     description = fields.Char('Description')
 

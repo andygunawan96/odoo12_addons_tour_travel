@@ -36,9 +36,13 @@
                         <field name="use_vendor"/>
                         <field name="vendor_ids" attrs="{'required': [('use_vendor', '=', True)], 'readonly': [('state_visa', 'in', ['delivered','ready','done'])]}" groups="tt_base.group_tt_tour_travel_operator,account.group_account_user">
                             <tree editable="bottom">
+                                <field name="visa_id" invisible="1"/>
+                                <field name="provider_id" invisible="1"/>
                                 <field name="vendor_id"/>
                                 <field name="reference_number"/>
+                                <field name="nta_amount"/>
                                 <field name="amount"/>
+                                <field name="passenger_ids" domain="[('visa_id.provider_booking_ids', 'in', provider_id)]" options="{'no_create': True, 'no_create_edit':True}"/>
                                 <field name="payment_date"/>
                             </tree>
                         </field>

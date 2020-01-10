@@ -81,7 +81,7 @@
                 <button string="In Process" name="action_in_process_visa" type="object" attrs="{'invisible': [('state_visa', 'not in', ['validate','vendor_process'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
                 <button string="Process to Consulate" name="action_in_process_consulate_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'payment')]}" groups="tt_base.group_tt_tour_travel_operator"/>
                 <button string="Cancel All" name="action_cancel_visa" type="object" attrs="{'invisible': [('state_visa', 'in', ['cancel','process_by_consulate','partial_proceed','proceed','delivered','ready','done'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
-                <button string="Refund" name="action_refund_visa" type="object" attrs="{'invisible': [('can_refund', '!=', True)]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                <button string="Calc. Expenses" name="action_calc_expenses_visa" type="object" groups="tt_base.group_tt_tour_travel_operator" state="issued" attrs="{'invisible': [('state_visa', 'in', ['delivered','ready','done'])]}"/>
 <!--                    <button string="Calc. Channel Prices" name="calc_channel_service_charge_visa" type="object"/>-->
 <!--                    <button string="Pay Now" name="action_pay_now_visa" type="object" attrs="{'invisible': [('state_visa', 'not in', ['draft','confirm', 'validate'])]}"/>-->
 <!--                    <button string="Proforma Invoice" name="action_proforma_invoice_visa" type="object"/>-->
