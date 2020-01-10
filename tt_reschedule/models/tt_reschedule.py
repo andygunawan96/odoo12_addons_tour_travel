@@ -32,6 +32,7 @@ class TtRescheduleLine(models.Model):
     admin_fee_id = fields.Many2one('tt.master.admin.fee', 'Admin Fee Type', domain=[('after_sales_type', '=', 'after_sales')], readonly=True, states={'confirm': [('readonly', False)]})
     admin_fee = fields.Integer('Admin Fee Amount', default=0, readonly=True, compute="_compute_admin_fee")
     total_amount = fields.Integer('Total Amount', default=0, readonly=True, compute="_compute_total_amount")
+    sequence = fields.Integer('Sequence', default=50, states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]}, readonly=True)
     state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'), ('done', 'Done')], 'State', default='draft')
 
     @api.depends('admin_fee_id', 'reschedule_amount', 'reschedule_id')
@@ -97,7 +98,7 @@ class TtReschedule(models.Model):
     ledger_ids = fields.One2many('tt.ledger', 'reschedule_id', 'Ledger(s)')
     adjustment_ids = fields.One2many('tt.adjustment', 'res_id', 'Adjustment', readonly=True, domain=_get_res_model_domain)
     new_pnr = fields.Char('New PNR', readonly=True, compute="_compute_new_pnr")
-    invoice_line_ids = fields.One2many('tt.agent.invoice.line', 'res_id_resv', 'Invoice', domain=[('res_model_resv','=','tt.reschedule')])
+    invoice_line_ids = fields.One2many('tt.agent.invoice.line', 'res_id_resv', 'Invoice', domain=[('res_model_resv','=','tt.reschedule')], readonly=True)
     state_invoice = fields.Selection([('wait', 'Waiting'), ('partial', 'Partial'), ('full', 'Full')],
                                      'Invoice Status', help="Agent Invoice status", default='wait',
                                      readonly=True, compute='set_agent_invoice_state')

@@ -34,6 +34,7 @@
         'report/printout_itinerary_template.xml',
         'report/printout_topup_template.xml',
         'report/printout_hotel_voucher_template.xml',
+        'report/printout_refund_template.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

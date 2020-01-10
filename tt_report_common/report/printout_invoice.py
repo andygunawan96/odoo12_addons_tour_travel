@@ -463,6 +463,18 @@ class PrintoutInvoice(models.AbstractModel):
                         'name': (line_detail.desc if line_detail.desc else ''),
                         'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
                     })
+        elif rec._name == 'tt.reschedule':
+            pnr = rec.new_pnr and rec.new_pnr or '-'
+            re_book_obj = self.env[rec.res_model].sudo().browse(int(rec.res_id))
+            if not a.get(pnr):
+                a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'provider_type': ''}
+            a[pnr]['descs'].append(line.desc if line.desc else '')
+            a[pnr]['provider_type'] = re_book_obj and re_book_obj.provider_type_id.name or 'Reschedule'
+            for line_detail in line.invoice_line_detail_ids:
+                a[pnr]['pax_data'].append({
+                    'name': (line_detail.desc if line_detail.desc else ''),
+                    'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
+                })
         else:
             if rec.provider_booking_ids:
                 for provider in rec.provider_booking_ids:
@@ -1054,4 +1066,25 @@ class PrintoutTopUp(models.AbstractModel):
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
             'terbilang': self.compute_terbilang_from_objs(
                 self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
+        }
+
+
+class PrintoutRefund(models.AbstractModel):
+    _name = 'report.tt_report_common.printout_refund'
+    _description = 'Rodex Model'
+
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        if not data.get('context'):
+            internal_model_id = docids.pop(0)
+            data['context'] = {
+                'active_model': 'tt.refund',
+                'active_ids': docids
+            }
+        return {
+            'doc_ids': data['context']['active_ids'],
+            'doc_model': data['context']['active_model'],
+            'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
+            'is_ho': data.get('is_ho') and data['is_ho'] or False,
+            'is_est': data.get('is_est') and data['is_est'] or False
         }
