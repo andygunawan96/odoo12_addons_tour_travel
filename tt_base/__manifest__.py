@@ -14,6 +14,7 @@ Key Features
     'website': 'rodextravel.tours',
     'depends': ['base', 'hr', 'base_setup', 'base_address_city', 'mail', 'payment'],
     'data': [
+        'data/ir_sequence_data.xml',
         'data/ir_module_category_data.xml',
         'data/frontend_security.xml',
         'data/res_groups_data.xml',
@@ -23,7 +24,6 @@ Key Features
         'data/skipped_history_data.xml',
         'data/tt.bank.csv',
         'data/tt.error.api.csv',
-        'data/ir_sequence_data.xml',
         'data/ir_cron_data.xml',
         'data/user_template.xml',
         'data/res.social.media.type.csv',

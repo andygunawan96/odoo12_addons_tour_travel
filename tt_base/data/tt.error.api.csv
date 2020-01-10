@@ -32,6 +32,7 @@ tt_error_api_1023,1023,Customer identity validation failed,,,1,1
 tt_error_api_1024,1024,Customer not found,,,1,1
 tt_error_api_1025,1025,Update seat failed,,,1,1
 tt_error_api_1026,1026,Booking passenger validator,,,1,1
+tt_error_api_1027,1027,"Update service charge failed, reservation has been issued.",,1,1
 tt_error_api_4001,4001,Invalid action type,,,1,1
 tt_error_api_4002,4002,Error while validating your credential,,,1,1
 tt_error_api_4003,4003,Your session has been expired,,,1,1
