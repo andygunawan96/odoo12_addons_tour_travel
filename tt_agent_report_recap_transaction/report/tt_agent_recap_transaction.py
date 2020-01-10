@@ -14,11 +14,11 @@ class AgentReportRecapTransacion(models.Model):
     def _select():
         return """
             rsv.id, rsv.name as order_number, rsv.issued_date as issued_date, rsv.adult, rsv.child, rsv.infant, rsv.pnr,
-            rsv.total as grand_total, rsv.total_commission, rsv.total_nta, rsv.provider_name, rsv.create_date, rsv.state,  
+            rsv.total as grand_total, rsv.total_commission, rsv.total_nta, rsv.provider_name, rsv.create_date, rsv.state,
             provider_type.name as provider_type, agent.name as agent_name, agent.email as agent_email,
-            currency.name as currency_name, 
-            agent_type.name as agent_type_name,
-            ledger.debit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, 
+            currency.name as currency_name,
+            agent_type.name as agent_type_name, ledger.id as ledger_id, ledger.ref as ledger_name,
+            ledger.debit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr,
             ledger.transaction_type as ledger_transaction_type
             """
 
@@ -38,7 +38,7 @@ class AgentReportRecapTransacion(models.Model):
         LEFT JOIN tt_provider_type provider_type ON provider_type.id = rsv.provider_type_id
         LEFT JOIN tt_agent_type agent_type ON agent_type.id = rsv.agent_type_id
         LEFT JOIN res_currency currency ON currency.id = rsv.currency_id
-        LEFT JOIN tt_ledger ledger ON ledger.res_model = rsv.res_model AND ledger.res_id = rsv.id
+        RIGHT JOIN tt_ledger ledger ON ledger.res_model = rsv.res_model AND ledger.res_id = rsv.id
         LEFT JOIN tt_agent ledger_agent ON ledger_agent.id = ledger.agent_id
         """
         return query
@@ -59,8 +59,7 @@ class AgentReportRecapTransacion(models.Model):
         where = """rsv.issued_date >= '%s' and rsv.issued_date <= '%s'""" % (date_from, date_to)
         # if state == 'failed':
         #     where += """ AND rsv.state IN ('fail_booking', 'fail_issue')"""
-        if state == 'issued':
-            where += """ AND rsv.state IN ('partial_issued', 'issued')"""
+        # where += """ AND rsv.state IN ('partial_issued', 'issued')"""
         if agent_id:
             where += """ AND rsv.agent_id = %s""" % agent_id
         if provider_type and provider_type != 'all':
@@ -73,8 +72,7 @@ class AgentReportRecapTransacion(models.Model):
         where = """rsv.issued_date >= '%s' and rsv.issued_date <= '%s'""" % (date_from, date_to)
         # if state == 'failed':
         #     where += """ AND rsv.state IN ('fail_booking', 'fail_issue')"""
-        if state == 'issued':
-            where += """ AND rsv.state IN ('partial_issued', 'issued')"""
+        # where += """ AND rsv.state IN ('partial_issued', 'issued')"""
         if agent_id:
             where += """ AND rsv.agent_id = %s""" % agent_id
         if provider_type and provider_type != 'all':
@@ -164,7 +162,7 @@ class AgentReportRecapTransacion(models.Model):
                 rec['issued_date'] = self._datetime_user_context(rec['issued_date'])
             except:
                 pass
-            rec['state'] = variables.BOOKING_STATE_STR[rec['state']] if rec['state'] else ''  # STATE_OFFLINE_STR[rec['state']]
+            # rec['state'] = variables.BOOKING_STATE_STR[rec['state']] if rec['state'] else ''  # STATE_OFFLINE_STR[rec['state']]
         return lines
 
 
@@ -173,16 +171,18 @@ class AgentReportRecapTransacion(models.Model):
         data_form['title'] = 'Recap Transaction Report: ' + data_form['subtitle']
 
     def _prepare_values(self, data_form):
+        data_form['state'] = 'issued'
         date_from = data_form['date_from']
         date_to = data_form['date_to']
-        if not data_form['state']:
-            data_form['state'] = 'all'
+        # if not data_form['state']:
+        #     data_form['state'] = 'all'
         agent_id = data_form['agent_id']
         state = data_form['state']
         provider_type = data_form['provider_type']
         # lines = self._get_lines_data_search(date_from, date_to, agent_id, provider_type, state)
         lines = self._get_lines_data(date_from, date_to, agent_id, provider_type, state)
         second_lines = self._get_lines_data_join_service_charge(date_from, date_to, agent_id, provider_type, state)
+        # second_lines = []
         self._report_title(data_form)
 
         return {
