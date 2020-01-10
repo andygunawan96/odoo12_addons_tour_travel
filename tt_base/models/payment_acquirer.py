@@ -30,10 +30,9 @@ class PaymentAcquirer(models.Model):
     def compute_fee(self,amount,unique = 0):
         uniq = 0
         # if self.type == 'transfer':
-        uniq = unique
-        # elif self.type != 'cash':
-        #     # TODO perhitungan per acquirer (Charge dari agent brapa, charge dari rodex brpa)
-        #     fee = 5000
+        if self.type != 'cash':
+            uniq = unique
+
         amount = int(amount)
         cust_fee = 0
         bank_fee = 0
