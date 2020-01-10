@@ -455,24 +455,4 @@
             }
         </field>
     </record>
-
-    <menuitem id="sub_menu_reservations_hotel_all"
-              parent="tt_reservation_hotel.menu_reservations_hotel"
-              action="tt_reservation_hotel.tt_hotel_reservation_action"
-              name="All"
-              sequence="1"
-              groups="base.group_user"/>
-
-    <menuitem id="submenu_reservations_hotel_new" parent="tt_reservation_hotel.menu_reservations_hotel"
-              name="Draft" action="tt_reservation_hotel.tt_hotel_reservation_action_new" sequence="3"/>
-
-    <menuitem id="submenu_reservations_hotel_book" parent="tt_reservation_hotel.menu_reservations_hotel"
-              name="Booked" action="tt_reservation_hotel.tt_hotel_reservation_action_book" sequence="3"/>
-
-    <menuitem id="submenu_reservations_hotel_issued" parent="tt_reservation_hotel.menu_reservations_hotel"
-              name="Issued" action="tt_reservation_hotel.tt_hotel_reservation_action_issued" sequence="4"/>
-
-    <menuitem id="submenu_reservations_hotel_cancel" parent="tt_reservation_hotel.menu_reservations_hotel"
-              name="Cancelled/Refunded" action="tt_reservation_hotel.tt_hotel_reservation_action_cancel" sequence="5"/>
-
 </odoo>
