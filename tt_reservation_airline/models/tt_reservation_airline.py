@@ -467,23 +467,35 @@ class ReservationAirline(models.Model):
         return self.payment_reservation_api('airline',req,context)
 
     def update_cost_service_charge_airline_api(self,req,context):
-        _logger.info('update cost\n' + json.dumps(req))
-        for provider in req['provider_bookings']:
-            provider_obj = self.env['tt.provider.airline'].browse(provider['provider_id'])
-            if not provider_obj:
-                raise RequestException(1002)
-            provider_obj.delete_service_charge()
-            provider_obj.write({
-                'balance_due': provider['balance_due']
-            })
-            for journey in provider['journeys']:
-                for segment in journey['segments']:
-                    for fare in segment['fares']:
-                        provider_obj.create_service_charge(fare['service_charges'])
+        try:
+            _logger.info('update cost\n' + json.dumps(req))
+            for provider in req['provider_bookings']:
+                provider_obj = self.env['tt.provider.airline'].browse(provider['provider_id'])
+                if not provider_obj:
+                    raise RequestException(1002)
+                ledger_created = provider_obj.delete_service_charge()
+                if ledger_created:
+                    raise RequestException(1027)
+                provider_obj.write({
+                    'balance_due': provider['balance_due']
+                })
+                for journey in provider['journeys']:
+                    for segment in journey['segments']:
+                        for fare in segment['fares']:
+                            provider_obj.create_service_charge(fare['service_charges'])
 
-        book_obj = self.get_book_obj(req.get('book_id'),req.get('order_number'))
-        book_obj.calculate_service_charge()
-        return ERR.get_no_error()
+            book_obj = self.get_book_obj(req.get('book_id'),req.get('order_number'))
+            book_obj.calculate_service_charge()
+            return ERR.get_no_error()
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error("Update Cost Service Charge Error")
+
+
+
 
     def _prepare_booking_api(self, searchRQ, context_gateway):
         dest_obj = self.env['tt.destinations']

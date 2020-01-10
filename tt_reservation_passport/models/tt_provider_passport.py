@@ -95,8 +95,13 @@ class TtProviderPassport(models.Model):
                 service_chg_obj.create(scs)
 
     def delete_service_charge(self):
-        for rec in self.cost_service_charge_ids:
-            rec.unlink()
+        ledger_created = False
+        for rec in self.cost_service_charge_ids.filtered(lambda x: x.is_extra_fees == False):
+            if rec.is_ledger_created:
+                ledger_created = True
+            else:
+                rec.unlink()
+        return ledger_created
 
     def action_create_ledger(self):
         if not self.is_ledger_created:

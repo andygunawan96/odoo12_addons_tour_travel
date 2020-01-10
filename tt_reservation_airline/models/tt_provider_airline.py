@@ -311,8 +311,13 @@ class TtProviderAirline(models.Model):
         # "total": 14400000
 
     def delete_service_charge(self):
-        for rec in self.cost_service_charge_ids.filtered(lambda x: x.is_ledger_created == False and x.is_extra_fees ==  False):
-            rec.unlink()
+        ledger_created = False
+        for rec in self.cost_service_charge_ids.filtered(lambda x: x.is_extra_fees == False):
+            if rec.is_ledger_created:
+                ledger_created = True
+            else:
+                rec.unlink()
+        return ledger_created
     # @api.depends('cost_service_charge_ids')
     # def _compute_total(self):
     #     for rec in self:
