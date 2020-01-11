@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data noupdate="1">
+        <record id="agent_b2c" model="tt.agent">
+            <field name="name">Agent B2C</field>
+            <field name="agent_type_id" ref="agent_type_citra"/>
+        </record>
+    </data>
+</odoo>
