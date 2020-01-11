@@ -79,7 +79,7 @@
                         'default_currency_id': currency_id,
                         'default_adj_type': provider_type_id
                     }"/>
-                        <!--                        <button string="Print Invoice" name="print_invoice" type="object" states="paid,posted"/>-->
+<!--                        <button string="Get Booking Offline" name="get_booking_offline" type="object"/>-->
                         <!--                        <button string="Print Invoice Ticket" name="print_invoice_ticket" type="object" states="paid,posted"/>-->
                         <!--                        <button string="Get Config API" name="get_config_api" type="object"/>-->
                         <field name="state_offline" widget="statusbar" statusbar_visible="draft,confirm,sent,validate,done"/>
@@ -101,7 +101,7 @@
                         </div>
                         <group>
                             <group>
-                                <!--                                ### untuk default value adjustment &ndash;&gt;-->
+<!--                                ### untuk default value adjustment &ndash;&gt;-->
                                 <field name="res_model" invisible="1"/>
                                 <field name="agent_id" readonly="1" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                                 <field name="booker_id" required="1"/>
@@ -183,7 +183,7 @@
                             </group>
                         </group>
                         <notebook>
-                            <page string="Line(s)" attrs="{'invisible': [('provider_type_id_name', 'not in', ['airline','train','hotel','activity','cruise'])]}">  <!--Airlines, Train, Hotel, Activity-->
+                            <page string="Line(s)">  <!--Airlines, Train, Hotel, Activity-->
                                 <field name="line_ids" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm', 'validate'])]}"/>
                             </page>
                             <page string="Passenger(s)">
@@ -244,7 +244,7 @@
             <field name="model">tt.reservation.offline</field>
             <field name="arch" type="xml">
                 <tree>
-                    <!--                    <button type="object" string="Create Issued Offline" name="create_booking_reservation_offline_api"/>-->
+<!--                    <button type="object" string="Create Issued Offline" name="create_booking_reservation_offline_api"/>-->
                     <field name="name"/>
                     <field name="offline_provider_type"/>
                     <field name="agent_id"/>

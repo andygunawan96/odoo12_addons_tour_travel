@@ -4,9 +4,10 @@ from datetime import datetime, timedelta
 import logging
 import traceback
 import copy
+import json
 from ...tools.api import Response
 from ...tools.ERR import RequestException
-from ...tools import variables
+from ...tools import variables, ERR
 
 _logger = logging.getLogger(__name__)
 
@@ -216,7 +217,8 @@ class IssuedOffline(models.Model):
                     self.confirm_date = fields.Datetime.now()
                     self.confirm_uid = kwargs.get('co_uid') and kwargs['co_uid'] or self.env.user.id
                     self.acquirer_id = self.agent_id.default_acquirer_id
-                    self.get_pnr_list()
+                    if self.line_ids:
+                        self.get_pnr_list()
                     if self.offline_provider_type != 'other':
                         self.offline_provider_type_name = self.offline_provider_type
                     # self.send_push_notif()
@@ -270,12 +272,10 @@ class IssuedOffline(models.Model):
             self.state = 'booked'
             for provider in self.provider_booking_ids:
                 # create pricing list
-                if self.provider_type_id_name in ['airline', 'train', 'activity']:
-                    provider.create_service_charge()
-                elif self.provider_type_id_name in ['hotel']:
+                if self.provider_type_id_name in ['hotel']:
                     provider.create_service_charge_hotel()
                 else:
-                    provider.create_service_charge_no_line()
+                    provider.create_service_charge()
                 # provider.action_create_ledger()
 
             req = {
@@ -328,15 +328,12 @@ class IssuedOffline(models.Model):
 
     @api.one
     def action_sent(self):
-        if self.provider_type_id_name == 'airline' or self.provider_type_id_name == 'train' or \
-                self.provider_type_id_name == 'hotel' or self.provider_type_id_name == 'activity'\
-                or self.provider_type_id_name == 'cruise':
-            if self.check_provider_empty() is False:
-                if self.provider_type_id_name == 'airline' or self.provider_type_id_name == 'train':
-                    if self.check_pnr_empty():
-                        raise UserError(_('PNR(s) can\'t be Empty'))
-            else:
-                raise UserError(_('Provider(s) can\'t be Empty'))
+        if self.check_provider_empty() is False:
+            if self.provider_type_id_name == 'airline' or self.provider_type_id_name == 'train':
+                if self.check_pnr_empty():
+                    raise UserError(_('PNR(s) can\'t be Empty'))
+        else:
+            raise UserError(_('Provider(s) can\'t be Empty'))
         self.state_offline = 'sent'
         self.hold_date = datetime.now() + timedelta(days=1)
         self.sent_date = fields.Datetime.now()
@@ -350,10 +347,7 @@ class IssuedOffline(models.Model):
             provider.sent_date = self.sent_date
             provider.sent_uid = self.sent_uid
         self.get_pnr_list_from_provider()
-        if self.line_ids:
-            self.get_provider_name()
-        else:
-            self.get_provider_name_from_provider()
+        self.get_provider_name()
         if not self.provider_name:
             raise UserError(_('List of Provider can\'t be Empty'))
 
@@ -366,23 +360,18 @@ class IssuedOffline(models.Model):
     @api.one
     def action_done(self,  kwargs={}):
         if self.resv_code:
-            if self.provider_type_id_name is not 'airline' or self.provider_type_id_name is not 'train':
+            if self.provider_type_id_name in ['activity', 'hotel']:
                 if self.check_pnr_empty():
                     raise UserError(_('PNR(s) can\'t be Empty'))
-                else:
-                    self.get_pnr_list_from_provider()
             if self.attachment_ids:
-                # self.ho_final_ledger_id = self.final_ledger()
-                # if self.agent_id.agent_type_id.id in [self.env.ref('tt_base_rodex.agent_type_citra').id, self.env.ref('tt_base_rodex.agent_type_japro').id]:
-                #     self.create_agent_invoice()
                 self.state = 'issued'
                 self.state_offline = 'done'
                 self.done_date = fields.Datetime.now()
                 self.done_uid = kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
                 self.booked_date = fields.Datetime.now()
                 self.booked_uid = kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
-                self.create_final_ho_ledger(self)
                 self.get_pnr_list_from_provider()
+                self.create_final_ho_ledger(self)
                 for provider in self.provider_booking_ids:
                     provider.state = 'issued'
                     provider.issued_date = self.issued_date
@@ -506,37 +495,17 @@ class IssuedOffline(models.Model):
         for provider in self.provider_booking_ids:
             provider.unlink()
         pnr_found = []
-        if self.offline_provider_type in ['airline', 'train', 'hotel', 'activity']:
-            for line in self.line_ids:
-                if line.pnr not in pnr_found or self.provider_type_id_name in ['hotel', 'activity']:
-                    vals = {
-                        'booking_id': self.id,
-                        'provider_id': line.provider_id.id,
-                        'pnr': line.pnr,
-                        'confirm_uid': self.env.user.id,
-                        'confirm_date': datetime.now()
-                    }
-                    self.env['tt.provider.offline'].create(vals)
-                    pnr_found.append(line.pnr)
-        else:
-            pnr = self.name
-            if self.offline_provider_type == 'tour':
-                provider = self.env.ref('tt_reservation_tour.tt_provider_tour_rodextrip')
-            elif self.offline_provider_type == 'visa':
-                provider = self.env.ref('tt_reservation_visa.tt_provider_visa_rodextrip')
-            elif self.offline_provider_type == 'other':
-                provider = self.env.ref('tt_reservation_offline.tt_provider_rodextrip_other')
-            else:
-                provider = self.env.ref('tt_reservation_offline.tt_provider_rodextrip_other')
-            vals = {
-                'booking_id': self.id,
-                'provider_id': provider.id,
-                'pnr': pnr,
-                'confirm_uid': self.env.user.id,
-                'confirm_date': datetime.now()
-            }
-            self.env['tt.provider.offline'].create(vals)
-            pnr_found.append(pnr)
+        for line in self.line_ids:
+            if line.pnr not in pnr_found or self.provider_type_id_name in ['hotel', 'activity']:
+                vals = {
+                    'booking_id': self.id,
+                    'provider_id': line.provider_id.id,
+                    'pnr': line.pnr,
+                    'confirm_uid': self.env.user.id,
+                    'confirm_date': datetime.now()
+                }
+                self.env['tt.provider.offline'].create(vals)
+                pnr_found.append(line.pnr)
 
     ####################################################################################################
     # Set, Get & Compute
@@ -718,11 +687,8 @@ class IssuedOffline(models.Model):
 
     def check_line_empty(self):
         empty = True
-        if self.provider_type_id_name != 'airline' and self.provider_type_id_name != 'train' and self.provider_type_id_name != 'hotel' and self.provider_type_id_name != 'activity':
+        if len(self.line_ids) > 0:
             empty = False
-        else:
-            if len(self.line_ids) > 0:
-                empty = False
         return empty
 
     def check_passenger_empty(self):
@@ -735,11 +701,20 @@ class IssuedOffline(models.Model):
     param_issued_offline_data = {
         "type": "other",
         "total_sale_price": 100000,
-        "desc": "amdaksd",
+        "desc": "Translate Dokumen Visa Jerman",
         # "pnr": "10020120",
         "social_media_id": "Facebook",
         "expired_date": "2019-10-04 02:29",
-        "line_ids": []
+        "line_ids": [
+            {
+                'pnr': 'NVIDIA',
+                'description': ''
+            },
+            {
+                'pnr': 'NVIDIA',
+                'description': ''
+            },
+        ]
         # "line_ids": [
         #     {
         #         "name": 1,
@@ -946,6 +921,96 @@ class IssuedOffline(models.Model):
             _logger.error(msg=str(e) + '\n' + traceback.format_exc())
         return res
 
+    def get_booking_offline(self, data, context):  #
+        try:
+            _logger.info("Get req\n" + json.dumps(context))
+            book_obj = self.get_book_obj(data.get('book_id'), data.get('order_number'))
+            if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1):
+                res_dict = book_obj.sudo().to_dict()
+                lines = []
+                passengers = []
+                attachments = []
+
+                # lines
+                for line in book_obj.line_ids:
+                    if book_obj.offline_provider_type in ['airline', 'train']:
+                        lines.append({
+                            'pnr': line.pnr,
+                            'origin': line.origin_id.name,
+                            'destination': line.destination_id.name,
+                            'departure_date': (line.departure_date if line.departure_date else '') + ' ' + (line.departure_hour if line.departure_hour else '') + ':' + (line.departure_minute if line.departure_minute else ''),
+                            'arrival_date': (line.return_date if line.return_date else '') + ' ' + (line.return_hour if line.return_hour else '') + ':' + (line.return_minute if line.return_minute else ''),
+                            'carrier': line.carrier_id.name,
+                            'carrier_code': line.carrier_code,
+                            'carrier_number': line.carrier_number,
+                            'class_of_service': line.class_of_service,
+                            'subclass': line.subclass
+                        })
+                    elif book_obj.offline_provider_type in ['hotel']:
+                        lines.append({
+                            'pnr': line.pnr,
+                            'hotel_name': line.hotel_name,
+                            'room': line.room,
+                            'check_in': line.check_in,
+                            'check_out': line.check_out,
+                            'description': line.description,
+                        })
+                    elif book_obj.offline_provider_type in ['activity']:
+                        lines.append({
+                            'pnr': line.pnr,
+                            'activity_name': line.activity_name,
+                            'activity_package': line.activity_package,
+                            'visit_date': line.visit_date,
+                            'description': line.description
+                        })
+                    # elif rec.offline_provider_type in ['tour', 'visa', 'other']:
+                    #     lines.append({
+                    #         'pnr': line.pnr
+                    #     })
+
+                # passengers
+                for psg in book_obj.passenger_ids:
+                    passengers.append({
+                        'title': psg.title,
+                        'first_name': psg.first_name,
+                        'last_name': psg.last_name,
+                        'pax_type': psg.pax_type,
+                        'ticket_number': psg.ticket_number
+                    })
+
+                # attachments
+                for attachment in book_obj.attachment_ids:
+                    attachments.append({
+                        'name': attachment.name,
+                        'filename': attachment.filename,
+                        'url': attachment.url,
+                        'owner': attachment.agent_id.name,
+                    })
+
+                res = {
+                    'order_number': book_obj.name,
+                    'hold_date': book_obj.hold_date.strftime('%d-%m-%Y %H:%M'),
+                    'pnr': book_obj.pnr,
+                    'state': book_obj.state,
+                    'state_offline': book_obj.state_offline,
+                    'offline_provider_type': book_obj.offline_provider_type,
+                    'lines': lines,
+                    'passengers': passengers,
+                    'total': book_obj.total,
+                    'agent_commission': book_obj.agent_commission
+                }
+                print(res)
+                _logger.info("Get resp\n" + json.dumps(res))
+                return Response().get_no_error(res)
+            else:
+                raise RequestException(1001)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1013)
+
     def create_booking_reservation_offline_api(self, data, context):  #
         booker = data['booker']  # self.param_booker
         data_reservation_offline = data['issued_offline_data']  # self.param_issued_offline_data
@@ -1125,6 +1190,14 @@ class IssuedOffline(models.Model):
                     "qty": int(line.get('qty')),
                     "description": line.get('description'),
                     "visit_date": visit_time,
+                }
+                line_obj = line_env.create(line_tmp)
+                line_list.append(line_obj.id)
+        else:
+            for line in lines:
+                line_tmp = {
+                    "pnr": line.get('pnr'),
+                    "description": line.get('description')
                 }
                 line_obj = line_env.create(line_tmp)
                 line_list.append(line_obj.id)

@@ -13,6 +13,12 @@
             <field name="type">percentage</field>
             <field name="amount">8</field>
         </record>
+        <record id="admin_fee_free_refund" model="tt.master.admin.fee">
+            <field name="name">No Admin Fee</field>
+            <field name="after_sales_type">refund</field>
+            <field name="type">amount</field>
+            <field name="amount">0</field>
+        </record>
         <record id="admin_fee_reschedule" model="tt.master.admin.fee">
             <field name="name">Reschedule</field>
             <field name="after_sales_type">after_sales</field>
