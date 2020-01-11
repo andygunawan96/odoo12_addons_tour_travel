@@ -63,7 +63,7 @@
                     <button name="action_approve" string="Force Approve" type="object" groups="tt_base.group_tt_accounting_manager" attrs="{'invisible':[('state','!=', 'final')]}"/>
                     <button name="action_payment" string="Customer Payment" type="object" groups="tt_base.group_tt_agent_user_operator" attrs="{'invisible':[('state','!=', 'approve')]}"/>
                     <button name="action_approve_cust" string="Approve Cust Payment" type="object" groups="tt_base.group_tt_agent_user_manager" attrs="{'invisible':[('state','!=', 'payment')]}"/>
-                    <button name="action_done" string="Done" type="object" groups="tt_base.group_tt_agent_user_manager,tt_base.group_tt_tour_travel_operator" attrs="{'invisible':[('state','not in', ['final', 'approve_cust'])]}"/>
+                    <button name="action_done" string="Done" type="object" groups="tt_base.group_tt_agent_user_manager,tt_base.group_tt_tour_travel_operator" attrs="{'invisible':[('state','not in', ['approve', 'approve_cust'])]}"/>
                     <button name="set_to_confirm" string="Set to Confirm" type="object" groups="tt_base.group_tt_accounting_manager" attrs="{'invisible':[('state','not in', ['sent', 'validate', 'final'])]}"/>
                     <button name="set_to_approve" string="Set to Approved" type="object" groups="tt_base.group_tt_agent_user_operator" attrs="{'invisible':[('state','!=', 'payment')]}"/>
                     <button name="cancel_refund_from_button" string="Cancel" type="object" attrs="{'invisible':[('state','in', ['approve', 'done', 'cancel', 'payment', 'approve_cust'])]}"/>
@@ -90,7 +90,8 @@
                         <button name="print_refund_to_cust"
                                 class="oe_stat_button" states="approve_cust,done"
                                 string="Refund to Customer" type="object" icon="fa-print"
-                                groups="tt_base.group_tt_agent_user_operator"/>
+                                groups="tt_base.group_tt_agent_user_operator"
+                                attrs="{'invisible':[('refund_line_cust_ids','=', [])]}"/>
                         <button name="print_refund_to_cust_est"
                                 class="oe_stat_button"
                                 string="To Customer Est." type="object" icon="fa-print"
@@ -176,6 +177,7 @@
                             <field name="admin_fee_id" groups="tt_base.group_tt_tour_travel_operator" attrs="{'readonly':[('state','!=','confirm')]}"/>
                             <field name="admin_fee"/>
                             <field name="total_amount"/>
+                            <field name="total_amount_cust" attrs="{'invisible':[('refund_line_cust_ids','=', [])]}"/>
                             <field name="refund_type"/>
                             <field name="notes"/>
                         </group>
@@ -194,6 +196,7 @@
                             <field name="refund_line_ids">
                                 <tree create="false">
                                     <field name="name"/>
+                                    <field name="birth_date"/>
                                     <field name="currency_id"/>
                                     <field name="pax_price"/>
                                     <field name="charge_fee"/>
@@ -212,6 +215,7 @@
                                         <group>
                                             <group>
                                                 <field name="name"/>
+                                                <field name="birth_date"/>
                                                 <field name="currency_id"/>
                                             </group>
                                             <group>
@@ -224,11 +228,22 @@
                                     </sheet>
                                 </form>
                             </field>
+                            <footer>
+                                <group string="Total Information" class="oe_subtotal_footer oe_right">
+                                    <field name="refund_amount" class="oe_subtotal_footer_separator"/>
+                                    <field name="admin_fee" class="oe_subtotal_footer_separator"/>
+                                    <field name="total_amount" class="oe_subtotal_footer_separator"/>
+                                </group>
+                                <group>
+
+                                </group>
+                            </footer>
                         </page>
                         <page string="Payment to Customer(s)" name="payment_cust_page">
                             <field name="refund_line_cust_ids">
                                 <tree create="false">
                                     <field name="name"/>
+                                    <field name="birth_date"/>
                                     <field name="currency_id"/>
                                     <field name="method"/>
                                     <field name="acquirer_id"/>
@@ -242,6 +257,7 @@
                                             <field name="refund_id" invisible="1"/>
                                             <field name="agent_id" invisible="1"/>
                                             <field name="name"/>
+                                            <field name="birth_date"/>
                                             <field name="currency_id"/>
                                             <field name="method"/>
                                             <field name="acquirer_id"/>
@@ -255,6 +271,14 @@
                                     </group>
                                 </form>
                             </field>
+                            <footer>
+                                <group string="Total Information" class="oe_subtotal_footer oe_right">
+                                    <field name="total_amount_cust" class="oe_subtotal_footer_separator"/>
+                                </group>
+                                <group>
+
+                                </group>
+                            </footer>
                         </page>
                         <page string="Ledger" name="ledger_page">
                             <field name="ledger_ids"
