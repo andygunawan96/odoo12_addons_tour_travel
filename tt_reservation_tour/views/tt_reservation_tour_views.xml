@@ -89,6 +89,7 @@
                             <field name="birth_date"/>
                             <field name="nationality_id"/>
                             <field name="tour_room_id"/>
+                            <field name="tour_room_seq"/>
                         </tree>
                     </field>
                 </page>
@@ -98,12 +99,14 @@
                     <field name="room_ids" readonly="1">
                         <tree>
                             <field name="room_id"/>
+                            <field name="room_seq"/>
                             <field name="notes"/>
                         </tree>
                         <form>
                             <group>
                                 <group>
                                     <field name="room_id"/>
+                                    <field name="room_seq"/>
                                 </group>
                                 <group>
                                     <field name="notes"/>

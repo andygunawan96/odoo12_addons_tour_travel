@@ -25,6 +25,7 @@ class ReservationTourRoom(models.Model):
 
     booking_id = fields.Many2one('tt.reservation.tour', 'Reservation Tour')
     room_id = fields.Many2one('tt.master.tour.rooms', 'Room')
+    room_seq = fields.Char('Room Sequence')
     notes = fields.Text('Notes')
 
 
@@ -350,6 +351,7 @@ class ReservationTour(models.Model):
                     'title': temp_pax['title'],
                     'pax_type': temp_pax['pax_type'],
                     'tour_room_id': temp_pax.get('tour_room_id', 0),
+                    'tour_room_seq': temp_pax.get('tour_room_seq', ''),
                     'master_tour_id': tour_data and tour_data.id or False,
                 })
 

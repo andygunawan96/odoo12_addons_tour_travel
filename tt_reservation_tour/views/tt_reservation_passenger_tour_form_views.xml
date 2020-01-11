@@ -7,6 +7,16 @@
         <field name="inherit_id" ref="tt_reservation.tt_reservation_passenger_form_view"/>
         <field name="arch" type="xml">
             <xpath expr="//group[@name='basic_info']" position="after">
+                <separator string="Room Information"/>
+                <group>
+                    <group>
+                        <field name="booking_id"/>
+                    </group>
+                    <group>
+                        <field name="tour_room_id"/>
+                        <field name="tour_room_seq"/>
+                    </group>
+                </group>
                 <separator string="Service Charges"/>
                 <field name="cost_service_charge_ids"
                 context="{
