@@ -77,13 +77,19 @@ class ReservationAirline(models.Model):
     def action_booked_api_airline(self,context,pnr_list,hold_date):
         if type(hold_date) != datetime:
             hold_date = False
-        self.write({
+
+        write_values = {
             'state': 'booked',
             'pnr': ', '.join(pnr_list),
             'hold_date': hold_date,
             'booked_uid': context['co_uid'],
             'booked_date': datetime.now()
-        })
+        }
+
+        if write_values['pnr'] == '':
+            write_values.pop('pnr')
+
+        self.write(write_values)
 
     def action_issued_api_airline(self,acquirer_id,customer_parent_id,context):
         self.action_issued_airline(context['co_uid'],customer_parent_id,acquirer_id)
