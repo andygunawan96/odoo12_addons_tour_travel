@@ -164,6 +164,16 @@
                     <button string="Check Booking Status" name="check_booking_status" type="object" states="confirm,issued,fail,cancel" />
                     <button string="Cancel Booking (Policy Applied)" groups="base.group_no_one" name="cancel_booking" states="issued" type="object"/>
                     <button string="Booking Policy" groups="base.group_no_one" name="check_booking_policy" type="object"/>
+                    <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action"
+                            groups="tt_base.group_tt_accounting_operator"
+                                       context="{
+                        'default_res_model': res_model,
+                        'default_res_id': id,
+                        'default_agent_id': agent_id,
+                        'default_referenced_document': name,
+                        'default_currency_id': currency_id,
+                        'default_adj_type': provider_type_id
+                   }"/>
 
 <!--                    <button class="oe_highlight" string="Send Email" groups="tt_base.group_tt_agent_user_operator" name="action_send_email" states="approved" type="object"/>-->
 <!--                    <button string="Force Send Email" groups="tt_base.group_tt_agent_user_operator" name="action_force_send_email" states="approved" type="object"/>-->
@@ -195,6 +205,10 @@
                             <field name="agent_id" readonly="1"/>
                             <field name="booker_id"/>
                             <field name="customer_parent_id"/>
+                            <field name="res_model" invisible="1"/>
+                            <field name="id" invisible="1"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="provider_type_id" invisible="1"/>
                             <!--<field name="sub_agent_id"/>-->
                             <!--<field name="pnr"/>-->
                             <!--<field name="provider_name" groups="tt_base.group_tt_tour_travel_operator"/>-->
