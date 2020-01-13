@@ -1073,10 +1073,13 @@ class PrintoutRefund(models.AbstractModel):
     _name = 'report.tt_report_common.printout_refund'
     _description = 'Rodex Model'
 
-    def compute_terbilang_from_objs(self, recs, currency_str='rupiah'):
+    def compute_terbilang_from_objs(self, recs, is_ho=False, currency_str='rupiah'):
         a = {}
         for rec2 in recs:
-            a.update({rec2.name: num2words(rec2.total_amount_cust) + ' Rupiah'})
+            if is_ho:
+                a.update({rec2.name: num2words(rec2.total_amount) + ' Rupiah'})
+            else:
+                a.update({rec2.name: num2words(rec2.total_amount_cust) + ' Rupiah'})
         return a
 
     @api.model
@@ -1087,12 +1090,23 @@ class PrintoutRefund(models.AbstractModel):
                 'active_model': 'tt.refund',
                 'active_ids': docids
             }
-        return {
+
+        temp_docs = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        return_dat = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
-            'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
+            'docs': temp_docs,
             'is_ho': data.get('is_ho') and data['is_ho'] or False,
             'is_est': data.get('is_est') and data['is_est'] or False,
             'terbilang': self.compute_terbilang_from_objs(
-                self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
+                self.env[data['context']['active_model']].browse(data['context']['active_ids']), data.get('is_ho')),
         }
+
+        if data.get('is_ho'):
+            ho_obj = self.env['tt.agent'].sudo().search([('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
+            if ho_obj:
+                return_dat.update({
+                    'ho_obj': ho_obj[0]
+                })
+
+        return return_dat
