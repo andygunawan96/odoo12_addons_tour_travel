@@ -99,17 +99,19 @@ class AgentReportBilling(models.Model):
         return fields.Datetime.context_timestamp(self,value).strftime('%Y-%b-%d')
 
     def _get_lines_data(self, date_from, date_to, agent_id, state):
-        lines = []
-        if state != 'all':
-            lines = self._lines(date_from, date_to, agent_id, state)
-            lines = self._convert_data(lines)
-        else:
-            states = ['all', 'draft', 'confirm', 'partial', 'paid', 'cancel']
-            for i in states:
-                line = self._lines(date_from, date_to, agent_id, i)
-                line = self._convert_data(line)
-                for j in line:
-                    lines.append(j)
+        lines = self._lines(date_from, date_to, agent_id, state)
+        lines = self._convert_data(lines)
+        # lines = []
+        # if state != 'all':
+        #     lines = self._lines(date_from, date_to, agent_id, state)
+        #     lines = self._convert_data(lines)
+        # else:
+        #     states = ['all', 'draft', 'confirm', 'partial', 'paid', 'cancel']
+        #     for i in states:
+        #         line = self._lines(date_from, date_to, agent_id, i)
+        #         line = self._convert_data(line)
+        #         for j in line:
+        #             lines.append(j)
         return lines
 
     def _get_lines_data_more(self, date_from, date_to, agent_id, state):
