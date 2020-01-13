@@ -265,9 +265,9 @@ class TtTopUp(models.Model):
             if data.get('name'):
                 dom.append(('name','=',data['name']))
             if data.get('date_from'):
-                dom.append(('booked_date', '>=', data['date_from']))
+                dom.append(('request_date', '>=', data['date_from']))
             if data.get('date_to'):
-                dom.append(('booked_date', '<=', data['date_to']))
+                dom.append(('request_date', '<=', data['date_to']))
             if data.get('state'):
                 if data.get('state') != 'all':
                     dom.append(('state', '=', data['state']))
