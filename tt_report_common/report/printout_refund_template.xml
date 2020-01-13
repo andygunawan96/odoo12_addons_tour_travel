@@ -19,7 +19,7 @@
                         <t t-call="tt_report_common.external_layout">
                             <br/>
                             <div style="margin: 0 20px">
-                                <!--                                <t t-call="tt_report_common.refund_est_content_view"/>-->
+                                <t t-call="tt_report_common.refund_est_content_view"/>
                             </div>
                         </t>
                     </t>
@@ -84,7 +84,7 @@
                 <td style="width:50px;"/>
                 <td style="width:10px;"/>
                 <td style="width:100px;"/>
-                <td style="width:150px;">Est. Date</td>
+                <td style="width:150px;">Est. Refund Date</td>
                 <td style="width:10px;">:</td>
                 <td style="width:400px;text-align: right;">
                     <i t-field="doc.refund_date" t-options ='{"format": "dd MMMM yyyy"}'/>
@@ -114,35 +114,56 @@
         </div>
         <table style="width: 100%; line-height: normal; border-collapse: separate; border-spacing: 0;">  <!--border-radius: 20px; border: 1px solid #CCC; border-spacing: 0; margin-bottom: 30px; padding: 5px 0px 5px 0px;-->
             <tr style="background-color: #DC5413; padding-top: 5px; padding-bottom: 5px">
-                <th style="width: 40%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
-                    <span>Description</span>
+                <th style="width: 30%; padding: 7px 7px 7px 20px; border-left: 1px solid #CCC; border-top-left-radius: 20px; color: white; font-weight: 800; font-size: 18px">
+                    <span>Passenger</span>
                 </th>
-                <th style="width: 20%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
+                <th style="width: 25%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
+                    <span>Birth Date</span>
+                </th>
+                <th style="width: 15%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
                     <span>Amount</span>
                 </th>
-                <th style="width: 20%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
+                <th style="width: 15%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
                     <span>Admin Fee</span>
                 </th>
-                <th style="width: 20%; padding: 7px 7px 7px 20px; border-right: 1px solid #CCC; border-top-right-radius: 20px; color: white; font-weight: 800; font-size: 18px">
+                <th style="width: 15%; padding: 7px 7px 7px 20px; border-right: 1px solid #CCC; border-top-right-radius: 20px; color: white; font-weight: 800; font-size: 18px">
                     <span>Sub Total</span>
                 </th>
             </tr>
-
+            <t t-set="row_idx" t-value="0"/>
             <t t-foreach="doc.refund_line_cust_ids" t-as="pax">
                 <tr valign="top" style="padding-top: 5px; padding-bottom: 5px;">
-                    <td style="background: #F0F0F0; width: 40%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 20px; border-color: #CCC; padding: 7px 7px 7px 20px;">
-                        <span t-esc="pax.name"/>
+                    <t t-if="row_idx == len(doc.refund_line_cust_ids)-1">
+                        <td style="background: #F0F0F0; width: 30%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 20px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                            <span t-esc="pax.name"/>
+                        </td>
+                    </t>
+                    <t t-else="">
+                        <td style="background: #F0F0F0; width: 30%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                            <span t-esc="pax.name"/>
+                        </td>
+                    </t>
+                    <td style="width: 25%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                        <span t-esc="pax.birth_date"/>
                     </td>
-                    <td class="text-right" style="background: #F0F0F0; width: 20%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 20px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                    <td class="text-right" style="width: 15%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
                         <span t-esc="pax.refund_amount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
                     </td>
-                    <td class="text-right" style="background: #F0F0F0; width: 20%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 20px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                    <td class="text-right" style="width: 15%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
                         <span t-esc="pax.citra_fee" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
                     </td>
-                    <td class="text-right" style="background: #F0F0F0; width: 20%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 20px; border-color: #CCC; padding: 7px 7px 7px 20px;">
-                        <span t-esc="pax.total_amount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
-                    </td>
+                    <t t-if="row_idx == len(doc.refund_line_cust_ids)-1">
+                        <td class="text-right" style="width: 15%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 20px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                            <span t-esc="pax.total_amount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                        </td>
+                    </t>
+                    <t t-else="">
+                        <td class="text-right" style="width: 15%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                            <span t-esc="pax.total_amount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                        </td>
+                    </t>
                 </tr>
+                <t t-set="row_idx" t-value="row_idx+1"/>
             </t>
         </table>
 
@@ -168,11 +189,126 @@
                     <tr class="border-black">
                         <td><strong>Grand Total</strong></td>
                         <td class="text-right">
-                            <span style="padding: 10px 25px;" t-field="doc.total_amount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                            <span style="padding: 10px 25px;" t-field="doc.total_amount_cust" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
                         </td>
                     </tr>
                 </table>
             </div>
         </div>
     </template>
+
+    <template id="refund_est_content_view">
+        <!-- Base Info Booker dkk -->
+        <table style="margin: 1px; 1px; 15px;">
+            <tr>
+                <td style="width:50px;">To</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px; vertical-align: top;" rowspan="5">
+                    <strong><span t-field="doc.booker_id.name"/></strong>
+                </td>
+                <td style="width:100px;"/>
+                <td style="width:150px;">Operator</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px;text-align: right;">
+                    <i t-field="doc.confirm_uid.name"/>
+                </td>
+            </tr>
+
+            <tr>
+                <td style="width:50px;"/>
+                <td style="width:10px;"/>
+                <td style="width:100px;"/>
+                <td style="width:150px;">Refund Type</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px;text-align: right;">
+                    <t t-if="doc.refund_type == 'quick'">
+                        <i>Quick Refund</i>
+                    </t>
+                    <t t-if="doc.refund_type == 'regular'">
+                        <i>Regular Refund</i>
+                    </t>
+                </td>
+            </tr>
+
+            <tr>
+                <td style="width:50px;"/>
+                <td style="width:10px;"/>
+                <td style="width:100px;"/>
+                <td style="width:150px;">Date</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px;text-align: right;">
+                    <i t-field="doc.confirm_date" t-options ='{"format": "dd MMMM yyyy"}'/>
+                </td>
+            </tr>
+
+            <tr>
+                <td style="width:50px;"/>
+                <td style="width:10px;"/>
+                <td style="width:100px;"/>
+                <td style="width:150px;">Est. Refund Date</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px;text-align: right;">
+                    <i t-field="doc.cust_refund_date" t-options ='{"format": "dd MMMM yyyy"}'/>
+                </td>
+            </tr>
+
+            <tr>
+                <td style="width:50px;"/>
+                <td style="width:10px;"/>
+                <td style="width:100px;"/>
+                <td style="width:150px;">Notes</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px;text-align: right;">
+                    <t t-if="doc.notes">
+                        <span t-esc="doc.notes"/>
+                    </t>
+                    <t t-if="not doc.notes">
+                        -
+                    </t>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Issued Code + Line Info -->
+        <div style="margin-bottom: 10px; margin-top: 20px;">
+            <span style="font-size: 28px; font-weight: 730">PASSENGER DETAILS</span><br/>
+        </div>
+        <table style="width: 100%; line-height: normal; border-collapse: separate; border-spacing: 0;">  <!--border-radius: 20px; border: 1px solid #CCC; border-spacing: 0; margin-bottom: 30px; padding: 5px 0px 5px 0px;-->
+            <tr style="background-color: #DC5413; padding-top: 5px; padding-bottom: 5px">
+                <th style="width: 30%; padding: 7px 7px 7px 20px; border-left: 1px solid #CCC; border-top-left-radius: 20px; color: white; font-weight: 800; font-size: 18px">
+                    <span>Passenger</span>
+                </th>
+                <th style="width: 25%; padding: 7px 7px 7px 20px; border-right: 1px solid #CCC; border-top-right-radius: 20px; color: white; font-weight: 800; font-size: 18px">
+                    <span>Birth Date</span>
+                </th>
+            </tr>
+            <t t-set="row_idx" t-value="0"/>
+            <t t-foreach="doc.refund_line_ids" t-as="pax">
+                <tr valign="top" style="padding-top: 5px; padding-bottom: 5px;">
+                    <t t-if="row_idx == len(doc.refund_line_ids)-1">
+                        <td style="background: #F0F0F0; width: 50%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 20px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                            <span t-esc="pax.name"/>
+                        </td>
+                    </t>
+                    <t t-else="">
+                        <td style="background: #F0F0F0; width: 50%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                            <span t-esc="pax.name"/>
+                        </td>
+                    </t>
+                    <t t-if="row_idx == len(doc.refund_line_ids)-1">
+                        <td style="width: 50%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 20px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                            <span t-esc="pax.birth_date"/>
+                        </td>
+                    </t>
+                    <t t-else="">
+                        <td style="width: 50%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                            <span t-esc="pax.birth_date"/>
+                        </td>
+                    </t>
+                </tr>
+                <t t-set="row_idx" t-value="row_idx+1"/>
+            </t>
+        </table>
+    </template>
+
 </odoo>

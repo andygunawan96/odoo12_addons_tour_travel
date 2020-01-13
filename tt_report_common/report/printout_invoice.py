@@ -1076,7 +1076,7 @@ class PrintoutRefund(models.AbstractModel):
     def compute_terbilang_from_objs(self, recs, currency_str='rupiah'):
         a = {}
         for rec2 in recs:
-            a.update({rec2.name: num2words(rec2.total_amount) + ' Rupiah'})
+            a.update({rec2.name: num2words(rec2.total_amount_cust) + ' Rupiah'})
         return a
 
     @api.model

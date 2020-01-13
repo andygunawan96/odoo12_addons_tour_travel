@@ -90,13 +90,18 @@ class ProviderOffline(models.Model):
     def create_service_charge(self):
         self.delete_service_charge()
 
-        provider_type_id = self.env['tt.provider.type'].search([('code', '=', self.booking_id.offline_provider_type)], limit=1)
+        if self.booking_id.offline_provider_type != 'other':
+            provider_type_id = self.env['tt.provider.type'].search(
+                [('code', '=', self.booking_id.offline_provider_type)], limit=1)
+        else:
+            provider_type_id = self.env['tt.provider.type'].search(
+                [('code', '=', self.env.ref('tt_reservation_offline.tt_provider_type_offline').code)], limit=1)
         scs_list = []
         scs_list_2 = []
         pricing_obj = self.env['tt.pricing.agent'].sudo()
         sale_price = 0
         provider_line_count = 0
-        if self.booking_id.provider_type_id_name in ['airline', 'train']:
+        if self.booking_id.provider_type_id_name not in ['activity']:
             line_count = 0
             for line in self.booking_id.line_ids:
                 line_count += 1
