@@ -1006,3 +1006,12 @@ class ReservationAirline(models.Model):
             'provider_name': provider_name[:-2] if provider_name else '',
             'carrier_name': carrier_name[:-2] if carrier_name else '',
         })
+
+    def get_aftersales_desc(self):
+        desc_txt = ''
+        for rec in self.segment_ids:
+            desc_txt += 'PNR: ' + rec.pnr + '<br/>'
+            desc_txt += 'Carrier: ' + rec.carrier_id.name + ' (' + rec.name + ')<br/>'
+            desc_txt += 'Departure: ' + rec.origin_id.display_name+ ' (' + datetime.strptime(rec.departure_date, '%Y-%m-%d %H:%M:%S').strftime('%d %b %Y %H:%M') + ')<br/>'
+            desc_txt += 'Arrival: ' + rec.destination_id.display_name+ ' (' + datetime.strptime(rec.arrival_date, '%Y-%m-%d %H:%M:%S').strftime('%d %b %Y %H:%M') + ')<br/><br/>'
+        return desc_txt

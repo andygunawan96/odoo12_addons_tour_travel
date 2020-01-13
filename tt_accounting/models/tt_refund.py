@@ -116,7 +116,7 @@ class TtRefund(models.Model):
     total_amount = fields.Monetary('Total Amount', default=0, readonly=True, compute="_compute_total_amount")
     total_amount_cust = fields.Monetary('Total Amount (Customer)', default=0, readonly=True, compute="_compute_total_amount_cust")
     final_admin_fee = fields.Monetary('Admin Fee Amount', default=0, readonly=True)
-    booking_desc = fields.Text('Booking Description', readonly=True)
+    booking_desc = fields.Html('Booking Description', readonly=True)
     notes = fields.Text('Notes', readonly=True, states={'draft': [('readonly', False)]})
     refund_line_ids = fields.One2many('tt.refund.line', 'refund_id', 'Refund Line(s)', readonly=False)
     refund_line_cust_ids = fields.One2many('tt.refund.line.customer', 'refund_id', 'Payment to Customer(s)', readonly=True, states={'payment': [('readonly', False)]})
