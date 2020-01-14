@@ -21,6 +21,7 @@ Key Features
         'data/agent_type_rodex_data.xml',
         'data/customer_parent_type_rodex_data.xml',
         'data/tt_agent_ho_data.xml',
+        'data/agent_b2c_data.xml',
         'data/skipped_history_data.xml',
         'data/tt.bank.csv',
         'data/tt.error.api.csv',

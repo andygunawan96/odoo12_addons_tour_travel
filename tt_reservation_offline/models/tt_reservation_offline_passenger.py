@@ -45,7 +45,7 @@ class IssuedOfflinePassenger(models.Model):
 
     def to_dict(self):
         return {
-            # 'agent_id': self.agent_id.id,
+            'ticket_number': self.ticket_number,
             'pax_type': self.pax_type,
             'first_name': self.first_name,
             'last_name': self.last_name,

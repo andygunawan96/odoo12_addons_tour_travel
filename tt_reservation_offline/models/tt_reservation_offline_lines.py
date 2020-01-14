@@ -286,7 +286,7 @@ class IssuedOfflineLines(models.Model):
         elif self.booking_id.provider_type_id_name == 'cruise':
             vals = self.get_line_cruise_description()
         else:
-            vals = self.get_line_other_description()
+            vals = self.get_other_line_description()
         return vals
 
     @api.multi
@@ -302,8 +302,8 @@ class IssuedOfflineLines(models.Model):
                 'pnr': self.pnr,
                 'origin': self.origin_id.name,
                 'destination': self.destination_id.name,
-                'departure_date': self.departure_date,
-                'return_date': self.return_date,
+                'departure_date': (self.departure_date if self.departure_date else '') + ' ' + (self.departure_hour if self.departure_hour else '') + ':' + (self.departure_minute if self.departure_minute else ''),
+                'return_date': (self.return_date if self.return_date else '') + ' ' + (self.return_hour if self.return_hour else '') + ':' + (self.return_minute if self.return_minute else ''),
                 'carrier': self.carrier_id.name,
                 'carrier_code': self.carrier_code,
                 'carrier_number': self.carrier_number,
@@ -322,7 +322,19 @@ class IssuedOfflineLines(models.Model):
             return {
                 'pnr': self.pnr,
                 'hotel_name': self.hotel_name,
-                'room_type': self.room_type,
+                'room': self.room_type,
+                'check_in': self.check_in,
+                'check_out': self.check_out,
+                'description': self.description
+            }
+        elif self.transaction_type == 'cruise':
+            return {
+                'pnr': self.pnr,
+                'carrier': self.carrier_id.name,
+                'cruise_package': self.cruise_package,
+                'departure_location': self.departure_location,
+                'arrival_location': self.arrival_location,
+                'room': self.room,
                 'check_in': self.check_in,
                 'check_out': self.check_out,
                 'description': self.description

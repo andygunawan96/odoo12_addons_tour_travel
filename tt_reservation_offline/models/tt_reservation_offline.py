@@ -947,50 +947,11 @@ class IssuedOffline(models.Model):
 
                 # lines
                 for line in book_obj.line_ids:
-                    if book_obj.offline_provider_type in ['airline', 'train']:
-                        lines.append({
-                            'pnr': line.pnr,
-                            'origin': line.origin_id.name,
-                            'destination': line.destination_id.name,
-                            'departure_date': (line.departure_date if line.departure_date else '') + ' ' + (line.departure_hour if line.departure_hour else '') + ':' + (line.departure_minute if line.departure_minute else ''),
-                            'arrival_date': (line.return_date if line.return_date else '') + ' ' + (line.return_hour if line.return_hour else '') + ':' + (line.return_minute if line.return_minute else ''),
-                            'carrier': line.carrier_id.name,
-                            'carrier_code': line.carrier_code,
-                            'carrier_number': line.carrier_number,
-                            'class_of_service': line.class_of_service,
-                            'subclass': line.subclass
-                        })
-                    elif book_obj.offline_provider_type in ['hotel']:
-                        lines.append({
-                            'pnr': line.pnr,
-                            'hotel_name': line.hotel_name,
-                            'room': line.room,
-                            'check_in': line.check_in,
-                            'check_out': line.check_out,
-                            'description': line.description,
-                        })
-                    elif book_obj.offline_provider_type in ['activity']:
-                        lines.append({
-                            'pnr': line.pnr,
-                            'activity_name': line.activity_name,
-                            'activity_package': line.activity_package,
-                            'visit_date': line.visit_date,
-                            'description': line.description
-                        })
-                    # elif rec.offline_provider_type in ['tour', 'visa', 'other']:
-                    #     lines.append({
-                    #         'pnr': line.pnr
-                    #     })
+                    lines.append(line.to_dict())
 
                 # passengers
                 for psg in book_obj.passenger_ids:
-                    passengers.append({
-                        'title': psg.title,
-                        'first_name': psg.first_name,
-                        'last_name': psg.last_name,
-                        'pax_type': psg.pax_type,
-                        'ticket_number': psg.ticket_number
-                    })
+                    passengers.append(psg.to_dict())
 
                 # attachments
                 for attachment in book_obj.attachment_ids:
