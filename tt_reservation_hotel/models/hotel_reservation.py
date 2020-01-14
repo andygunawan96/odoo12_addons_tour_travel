@@ -637,9 +637,10 @@ class HotelReservation(models.Model):
         api_context = {
             'co_uid': self.env.user.agent_id.id
         }
-        res = API_CN_HOTEL.check_booking_status_by_api({'name': self.name, 'booking_name': self.room_detail_ids[0].name,
+        res = API_CN_HOTEL.check_booking_status_by_api({'name': self.name, 'provider': self.room_detail_ids[0].provider_id.code,
+                                                        'booked_name': self.room_detail_ids[0].name,
                                                         'issued_name': self.room_detail_ids[0].issued_name,
-                                                        'provider': self.room_detail_ids[0].provider_id.code}, api_context)
+                                                        }, api_context)
         if res['error_code'] != 0:
             raise ('Error')
         else:
@@ -649,8 +650,9 @@ class HotelReservation(models.Model):
         api_context = {
             'co_uid': self.env.user.agent_id.id
         }
-        res = API_CN_HOTEL.check_booking_policy_by_api({'name': self.name, 'issued_name': self.room_detail_ids[0].issued_name,
-                                                            'provider': self.room_detail_ids[0].provider_id.code
+        res = API_CN_HOTEL.check_booking_policy_by_api({'name': self.name, 'provider': self.room_detail_ids[0].provider_id.code,
+                                                        'booked_name': self.room_detail_ids[0].name,
+                                                        'issued_name': self.room_detail_ids[0].issued_name,
                                                         }, api_context)
         if res['error_code'] != 0:
             raise ('Error')
@@ -662,9 +664,9 @@ class HotelReservation(models.Model):
             'co_uid': self.env.user.agent_id.id
         }
         res = API_CN_HOTEL.cancel_booking_by_api({
-            'name': self.name,
+            'name': self.name, 'provider': self.room_detail_ids[0].provider_id.code,
+            'booked_name': self.room_detail_ids[0].name,
             'issued_name': self.room_detail_ids[0].issued_name,
-            'provider': self.room_detail_ids[0].provider_id.provider_code
         }, api_context)
         if res['error_code'] != 0:
             raise ('Error')
