@@ -563,7 +563,7 @@
                             <t t-if="pax_count == 0">
                                 <td t-att-rowspan="len(line['pax_data'])" style="width: 25%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc;">
                                     <t t-foreach="line['descs']" t-as="desc">
-                                        <span t-esc="desc"/>
+                                        <span t-raw="desc"/>
                                         <br/>
                                     </t>
                                 </td>

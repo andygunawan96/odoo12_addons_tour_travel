@@ -18,7 +18,7 @@
                 <filter string="Confirmed" name='confirm' domain="[('state', '=', 'confirm')]"/>
                 <filter string="Sent to Agent" name='sent' domain="[('state', '=', 'sent')]"/>
                 <filter string="Validated" name='validate' domain="[('state', '=', 'validate')]"/>
-                <filter string="Approved" name='approve' domain="[('state', '=', 'approve')]"/>
+                <filter string="Finalized" name='final' domain="[('state', '=', 'final')]"/>
                 <filter string="Done" name='done' domain="[('state', '=', 'done')]"/>
                 <filter string="Cancelled" name='cancel' domain="[('state', '=', 'cancel')]"/>
                 <filter string="Expired" name='expired' domain="[('state', '=', 'expired')]"/>
@@ -57,14 +57,14 @@
                 <header>
                     <button name="confirm_reschedule_from_button" string="Confirm" type="object" groups="tt_base.group_tt_agent_user_operator" attrs="{'invisible':[('state','!=', 'draft')]}"/>
                     <button name="send_reschedule_from_button" string="Send to Agent" type="object" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible':[('state','!=', 'confirm')]}"/>
-                    <button name="validate_reschedule_from_button" string="Validate" type="object" groups="tt_base.group_tt_agent_user_operator" attrs="{'invisible':[('state','!=', 'sent')]}"/>
-                    <button name="approve_reschedule_from_button" string="Approve" type="object" groups="tt_base.group_tt_accounting_manager" attrs="{'invisible':[('state','!=', 'validate')]}"/>
-                    <button name="action_done" string="Done" type="object" groups="tt_base.group_tt_accounting_manager" attrs="{'invisible':[('state','!=', 'approve')]}"/>
+                    <button name="validate_reschedule_from_button" string="Validate" type="object" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator" attrs="{'invisible':[('state','!=', 'sent')]}"/>
+                    <button name="finalize_reschedule_from_button" string="Finalize" type="object" groups="tt_base.group_tt_accounting_operator" attrs="{'invisible':[('state','!=', 'validate')]}"/>
+                    <button name="action_done" string="Approve (Done)" type="object" groups="tt_base.group_tt_accounting_manager" attrs="{'invisible':[('state','!=', 'final')]}"/>
                     <button name="set_to_confirm" string="Set to Confirm" type="object" groups="tt_base.group_tt_accounting_manager" attrs="{'invisible':[('state','not in', ['sent', 'validate'])]}"/>
                     <button name="cancel_reschedule_from_button" string="Cancel" type="object" attrs="{'invisible':[('state','in', ['done', 'cancel'])]}"/>
                     <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action"
                             groups="tt_base.group_tt_accounting_operator"
-                                       context="{
+                            context="{
                         'default_res_model': 'tt.reschedule',
                         'default_res_id': id,
                         'default_agent_id': agent_id,
@@ -73,7 +73,7 @@
                         'default_adj_type': 3,
                         'hide_component_type': True
                    }"/>
-                    <field name="state" widget="statusbar"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,sent,validate,final,done"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
@@ -116,10 +116,10 @@
                                 <field name="validate_uid" readonly="1" class="oe_inline"/> -
                                 <field name="validate_date" readonly="1" class="oe_inline"/>
                             </div>
-                            <label for="approve_uid" string="Approved by"/>
+                            <label for="final_uid" string="Finalized by"/>
                             <div>
-                                <field name="approve_uid" readonly="1" class="oe_inline"/> -
-                                <field name="approve_date" readonly="1" class="oe_inline"/>
+                                <field name="final_uid" readonly="1" class="oe_inline"/> -
+                                <field name="final_date" readonly="1" class="oe_inline"/>
                             </div>
                             <label for="done_uid" string="Done by"/>
                             <div>
@@ -143,7 +143,7 @@
                             <field name="total_amount"/>
                         </group>
                         <group>
-                            <field name="payment_acquirer_id" attrs="{'invisible':['|', ('state','not in', ['validate', 'approve', 'done', 'cancel', 'expired']), ('customer_parent_type_id', '=', %(tt_base.customer_type_cor)d)], 'required':[('state','in', ['validate', 'approve', 'done']), ('customer_parent_type_id', '!=', %(tt_base.customer_type_cor)d)]}"/>
+                            <field name="payment_acquirer_id" attrs="{'invisible':['|', ('state','not in', ['validate', 'final', 'done', 'cancel', 'expired']), ('customer_parent_type_id', '=', %(tt_base.customer_type_cor)d)], 'required':[('state','in', ['validate', 'final', 'done']), ('customer_parent_type_id', '!=', %(tt_base.customer_type_cor)d)]}"/>
                             <field name="notes"/>
                         </group>
                     </group>
@@ -151,7 +151,7 @@
                         <page string="Segments" name="segment_page">
                             <separator string="Old Segments"/>
                             <field name="old_segment_ids">
-                                <tree create="false">
+                                <tree create="false" delete="false">
                                     <field name="name"/>
                                     <field name="pnr"/>
                                     <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
@@ -162,7 +162,7 @@
                             </field>
                             <separator string="New Segments"/>
                             <field name="new_segment_ids">
-                                <tree create="false">
+                                <tree create="false" delete="false">
                                     <field name="name"/>
                                     <field name="pnr"/>
                                     <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
@@ -171,15 +171,46 @@
                                     <field name="departure_date"/>
                                 </tree>
                             </field>
+                            <button name="generate_changes" string="Generate Changes" type="object" attrs="{'invisible':[('state','not in', ['draft', 'confirm'])]}"/>
+                            <separator string="Changes"/>
+                            <field name="change_ids">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="old_value"/>
+                                    <field name="new_value"/>
+                                </tree>
+                                <form>
+                                    <div class="oe_title">
+                                        <label for="Name" class="oe_edit_only" string="Name"/>
+                                        <h1>
+                                            <field name="name"/>
+                                        </h1>
+                                    </div>
+                                    <group>
+                                        <group>
+                                            <field name="old_value"/>
+                                        </group>
+                                        <group>
+                                            <field name="new_value"/>
+                                        </group>
+                                    </group>
+                                </form>
+                            </field>
                         </page>
                         <page string="Passenger(s)" name="passenger_page">
-                            <field name="passenger_ids"/>
+                            <field name="passenger_ids">
+                                <tree>
+                                    <field name="title"/>
+                                    <field name="name"/>
+                                    <field name="birth_date"/>
+                                </tree>
+                            </field>
                         </page>
                     </notebook>
                     <notebook colspan="4" name="notebooks">
                         <page string="After Sales Line(s)" name="reschedule_line_page">
                             <field name="reschedule_line_ids">
-                                <tree editable="bottom">
+                                <tree>
                                     <field name="sequence" widget="handle"/>
                                     <field name="reschedule_type"/>
                                     <field name="reschedule_amount" groups="tt_base.group_tt_agent_user_operator"/>

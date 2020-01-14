@@ -708,8 +708,16 @@ class ReservationTour(models.Model):
             book_obj.printout_itinerary_id = upc_id.id
         url = {
             'type': 'ir.actions.act_url',
-            'name': "ZZZ",
+            'name': "Tour Itinerary",
             'target': 'new',
             'url': book_obj.printout_itinerary_id.url,
         }
         return url
+
+    def get_aftersales_desc(self):
+        desc_txt = 'PNR: ' + self.pnr + '<br/>'
+        desc_txt += 'Tour: ' + self.tour_id.name + '<br/>'
+        desc_txt += 'Category: ' + dict(self.tour_id._fields['tour_category'].selection).get(self.tour_id.tour_category) + ' - ' + dict(self.tour_id._fields['tour_type'].selection).get(self.tour_id.tour_type) + '<br/>'
+        desc_txt += 'Departure Date: ' + datetime.strptime(self.departure_date, '%Y-%m-%d').strftime('%d %b %Y') + '<br/>'
+        desc_txt += 'Return Date: ' + datetime.strptime(self.return_date, '%Y-%m-%d').strftime('%d %b %Y') + '<br/>'
+        return desc_txt

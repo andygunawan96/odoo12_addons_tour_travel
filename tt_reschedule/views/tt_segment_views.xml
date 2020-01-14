@@ -57,7 +57,7 @@
                         <form>
                             <group>
                                 <group>
-<!--                                    <field name="segment_id"/>-->
+                                    <field name="segment_id" invisible="1"/>
                                     <field name="passenger_id"/>
                                 </group>
                                 <group>
