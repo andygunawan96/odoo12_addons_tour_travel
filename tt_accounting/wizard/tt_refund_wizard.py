@@ -24,7 +24,7 @@ class TtRefundWizard(models.TransientModel):
     currency_id = fields.Many2one('res.currency', readonly=True)
     service_type = fields.Char('Service Type', required=True, readonly=True)
 
-    refund_type = fields.Selection([('quick', 'Quick Refund'), ('regular', 'Regular Refund')], 'Refund Type',
+    refund_type = fields.Selection([('quick', 'Quick Refund (Max. 3 days process)'), ('regular', 'Regular Refund (40 days process)')], 'Refund Type',
                                    required=True, default='regular')
 
     referenced_pnr = fields.Char('Ref. PNR',required=True,readonly=True)
@@ -66,7 +66,8 @@ class TtRefundWizard(models.TransientModel):
                     pax_price += cost.amount
             self.env['tt.refund.line'].create({
                 'refund_id': refund_obj.id,
-                'name': pax.name,
+                'name': pax.title + ' ' + pax.name,
+                'birth_date': pax.birth_date,
                 'pax_price': pax_price,
             })
 

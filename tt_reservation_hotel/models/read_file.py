@@ -1936,7 +1936,7 @@ class HotelInformation(models.Model):
         # provider_list = ['hotelspro', 'hotelspro_file', 'fitruums', 'webbeds_pool', 'webbeds_excel_pool',
         #                  'itank', 'quantum', 'quantum_pool', 'mgholiday', 'mg_pool', 'miki_api', 'miki_scrap', 'miki_pool',
         #                  'dida_pool', 'tbo', 'oyo']
-        provider_list = ['dida_pool', 'webbeds_pool', 'webbeds_excel_pool']
+        provider_list = ['dida_pool', 'webbeds_pool', 'webbeds_excel_pool', 'oyo']
 
         need_to_add_list = [['No', 'CityName', 'RodexTrip City_id'] + provider_list + ['Total']]
         new_to_add_list2 = [['Type', '#1:Name', '#1:address', '#1:provider', '#2:Similar Name', '#2:address', '#2:provider']]
@@ -1948,6 +1948,8 @@ class HotelInformation(models.Model):
             for target_city in city_ids:
                 city_name = target_city[22 + len(master_provider):-5]
                 if city_name in rendered_city:
+                    continue
+                if target_city_index:
                     continue
                 cache_content = []
                 city_obj = self.env['res.city'].find_city_by_name(city_name)

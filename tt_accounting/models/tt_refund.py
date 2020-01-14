@@ -10,6 +10,7 @@ class TtRefundLine(models.Model):
     _description = "Refund Line Model"
 
     name = fields.Char('Name', readonly=True)
+    birth_date = fields.Date('Birth Date', readonly=True)
     currency_id = fields.Many2one('res.currency', readonly=True,
                                   default=lambda self: self.env.user.company_id.currency_id)
     pax_price = fields.Monetary('Passenger Price', default=0, readonly=True)
@@ -46,6 +47,7 @@ class TtRefundLineCustomer(models.Model):
     _description = "Refund Line Customer Model"
 
     name = fields.Char('Name', readonly=True)
+    birth_date = fields.Date('Birth Date', readonly=True)
     currency_id = fields.Many2one('res.currency', readonly=True,
                                   default=lambda self: self.env.user.company_id.currency_id)
     method = fields.Selection([('validation', 'Validation of the bank card'), ('server2server', 'Server To Server'),
@@ -112,8 +114,9 @@ class TtRefund(models.Model):
     real_refund_amount = fields.Monetary('Real Refund Amount from Vendor', default=0, readonly=True, compute='_compute_real_refund_amount')
     admin_fee = fields.Monetary('Admin Fee Amount', default=0, readonly=True, compute="_compute_admin_fee")
     total_amount = fields.Monetary('Total Amount', default=0, readonly=True, compute="_compute_total_amount")
+    total_amount_cust = fields.Monetary('Total Amount (Customer)', default=0, readonly=True, compute="_compute_total_amount_cust")
     final_admin_fee = fields.Monetary('Admin Fee Amount', default=0, readonly=True)
-    booking_desc = fields.Text('Booking Description', readonly=True)
+    booking_desc = fields.Html('Booking Description', readonly=True)
     notes = fields.Text('Notes', readonly=True, states={'draft': [('readonly', False)]})
     refund_line_ids = fields.One2many('tt.refund.line', 'refund_id', 'Refund Line(s)', readonly=False)
     refund_line_cust_ids = fields.One2many('tt.refund.line.customer', 'refund_id', 'Payment to Customer(s)', readonly=True, states={'payment': [('readonly', False)]})
@@ -209,6 +212,15 @@ class TtRefund(models.Model):
     def _compute_total_amount(self):
         for rec in self:
             rec.total_amount = rec.refund_amount - rec.admin_fee
+
+    @api.depends('refund_line_cust_ids')
+    @api.onchange('refund_line_cust_ids')
+    def _compute_total_amount_cust(self):
+        for rec in self:
+            cust_total = 0
+            for rec2 in rec.refund_line_cust_ids:
+                cust_total += rec2.total_amount
+            rec.total_amount_cust = cust_total
 
     def parse_service_type(self,type):
         return self.env['tt.provider.type'].browse(int(type)).code
@@ -413,6 +425,7 @@ class TtRefund(models.Model):
                 self.env['tt.refund.line.customer'].create({
                     'refund_id': self.id,
                     'name': rec.name,
+                    'birth_date': rec.birth_date,
                     'refund_amount': rec.refund_amount - fee,
                 })
             self.write({

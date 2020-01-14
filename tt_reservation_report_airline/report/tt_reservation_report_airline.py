@@ -17,8 +17,8 @@ class ReservationReportAirline(models.Model):
         airline.issued_date as airline_issued_date, airline.adult as adult, airline.child as child, airline.infant as infant,
         airline.departure_date as departure_date, airline.return_date as return_date,
         airline.sector_type as airline_sector, airline.provider_name, airline.carrier_name, airline.total_fare,
-        departure.name as departure_name, departure.city as departure_city, departure_country.name as departure_country,
-        destination.name as destination_name, destination.city as destination_city, destination_country.name as destination_country,
+        departure.display_name as departure_name, departure.city as departure_city, departure_country.name as departure_country,
+        destination.display_name as destination_name, destination.city as destination_city, destination_country.name as destination_country,
         service_charge.charge_type, service_charge.total as service_charge_total,
         booker.name as booker_name,
         currency.name as currency_name

@@ -661,7 +661,7 @@ class TestSearch(models.Model):
                     self.env['tt.service.charge'].create(price)
 
             # todo Room Info IDS
-            total_rate += float(room_rate['price_total_currency'])
+            total_rate += float(room_rate['price_total'])
             total_commision += float(room_rate['commission'])
 
         resv_id.total = total_rate
