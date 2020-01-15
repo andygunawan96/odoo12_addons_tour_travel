@@ -14,5 +14,9 @@
             <field name="model_name">tt.reservation.airline</field>
             <field name="field_name">sale_service_charge_ids</field>
         </record>
+        <record id="skip_tt_provider_provider_ledger_ids" model="tt.skipped.keys">
+            <field name="model_name">tt.provider</field>
+            <field name="field_name">provider_ledger_ids</field>
+        </record>
     </data>
 </odoo>
