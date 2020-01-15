@@ -1,4 +1,4 @@
-from odoo import api,models,fields
+from odoo import api,models,fields,_
 from odoo.exceptions import UserError
 from dateutil.relativedelta import relativedelta
 from datetime import datetime, date
@@ -11,13 +11,23 @@ class Ledger(models.Model):
     reschedule_id = fields.Many2one('tt.reschedule', 'After Sales')
 
 
+class TtRescheduleChanges(models.Model):
+    _name = "tt.reschedule.changes"
+    _description = "After Sales Model"
+
+    name = fields.Char('Field Name', readonly=True)
+    old_value = fields.Text('Old Value', readonly=True)
+    new_value = fields.Text('New Value', readonly=True)
+    reschedule_id = fields.Many2one('tt.reschedule', 'After Sales', readonly=True)
+
+
 class TtRescheduleLine(models.Model):
     _name = "tt.reschedule.line"
     _description = "After Sales Model"
     _order = 'id DESC'
 
-    reschedule_type = fields.Selection([('reschedule', 'Reschedule'), ('revalidate', 'Revalidate'),
-                                        ('reissued', 'Reissued'), ('upgrade', 'Upgrade Service'),
+    reschedule_type = fields.Selection([('reschedule', 'Reschedule'), ('reroute', 'Reroute'), ('revalidate', 'Revalidate'),
+                                        ('reissue', 'Reissue'), ('upgrade', 'Upgrade Service'),
                                         ('addons', 'Addons (Meals, Baggage, Seat, etc)')], 'After Sales Type',
                                        default='reschedule',
                                        states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]},
@@ -80,15 +90,15 @@ class TtReschedule(models.Model):
     _order = 'id DESC'
 
     state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'),
-                              ('sent', 'Sent'), ('validate', 'Validated'), ('approve', 'Approved'),
+                              ('sent', 'Sent'), ('validate', 'Validated'), ('final', 'Finalization'),
                               ('done', 'Done'), ('cancel', 'Canceled'), ('expired', 'Expired')], 'Status',
                              default='draft',
                              help=" * The 'Draft' status is used for Agent to make after sales request.\n"
                                   " * The 'Confirmed' status is used for HO to confirm and process the request.\n"
                                   " * The 'Sent' status is used for HO to send the request back to Agent with a set price.\n"
                                   " * The 'Validated' status is used for Agent to final check and validate the request.\n"
-                                  " * The 'Approved' status is used for HO to approve and process the request.\n"
-                                  " * The 'Done' status means the agent's request has been done.\n"
+                                  " * The 'Finalization' status is used for HO to finalize and process the request.\n"
+                                  " * The 'Done' status means the agent's request has been done. Therefore the agent's balance has been cut.\n"
                                   " * The 'Canceled' status is used for Agent or HO to cancel the request.\n"
                                   " * The 'Expired' status means the request has been expired.\n")
 
@@ -108,10 +118,11 @@ class TtReschedule(models.Model):
                                   readonly=True, states={'draft': [('readonly', False)]})
     passenger_ids = fields.Many2many('tt.reservation.passenger.airline', 'tt_reschedule_passenger_rel', 'reschedule_id', 'passenger_id',
                                     readonly=True)
-    payment_acquirer_id = fields.Many2one('payment.acquirer', 'Payment Acquirer', domain="[('agent_id', '=', agent_id)]")
+    payment_acquirer_id = fields.Many2one('payment.acquirer', 'Payment Acquirer', domain="[('agent_id', '=', agent_id)]", readonly=False, states={'done': [('readonly', True)]})
     reschedule_amount = fields.Integer('Expected Reschedule Amount', default=0, required=True, readonly=True, compute='_compute_reschedule_amount')
-    reschedule_line_ids = fields.One2many('tt.reschedule.line', 'reschedule_id', 'After Sales Line(s)', readonly=True, states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
+    reschedule_line_ids = fields.One2many('tt.reschedule.line', 'reschedule_id', 'After Sales Line(s)', readonly=True, states={'confirm': [('readonly', False)]})
     reschedule_type_str = fields.Char('Reschedule Type', readonly=True, compute='_compute_reschedule_type_str', store=True)
+    change_ids = fields.One2many('tt.reschedule.changes', 'reschedule_id', 'Changes', readonly=True)
 
     @api.depends('invoice_line_ids')
     def set_agent_invoice_state(self):
@@ -215,14 +226,14 @@ class TtReschedule(models.Model):
             'final_admin_fee': self.admin_fee,
         })
 
-    def approve_reschedule_from_button(self):
+    def finalize_reschedule_from_button(self):
         if self.state != 'validate':
-            raise UserError("Cannot Approve because state is not 'Validated'.")
+            raise UserError("Cannot Finalize because state is not 'Validated'.")
 
         self.write({
-            'state': 'approve',
-            'approve_uid': self.env.user.id,
-            'approve_date': datetime.now()
+            'state': 'final',
+            'final_uid': self.env.user.id,
+            'final_date': datetime.now()
         })
 
     def action_done(self):
@@ -272,7 +283,28 @@ class TtReschedule(models.Model):
                     **{'reschedule_id': self.id}
                 )
 
-        self.action_create_invoice(self.total_amount)
+                ho_agent = self.env['tt.agent'].sudo().search(
+                    [('agent_type_id.id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
+                credit = 0
+                debit = rec.admin_fee
+                self.env['tt.ledger'].create_ledger_vanilla(
+                    self.res_model,
+                    self.res_id,
+                    'After Sales Admin Fee: %s' % (self.name),
+                    self.referenced_document,
+                    datetime.now() + relativedelta(hours=7),
+                    ledger_type,
+                    self.currency_id.id,
+                    self.env.user.id,
+                    ho_agent and ho_agent[0].id or False,
+                    False,
+                    debit,
+                    credit,
+                    temp_desc + ' Admin Fee for %s' % (self.referenced_document),
+                    **{'reschedule_id': self.id}
+                )
+
+        self.action_create_invoice()
 
         self.write({
             'state': 'done',
@@ -281,7 +313,7 @@ class TtReschedule(models.Model):
         })
 
     def cancel_reschedule_from_button(self):
-        if self.state in ['validate', 'approve']:
+        if self.state in ['validate', 'final']:
             if not self.cancel_message:
                 raise UserError("Please fill the cancellation message!")
         self.write({
@@ -290,7 +322,7 @@ class TtReschedule(models.Model):
             'cancel_date': datetime.now()
         })
 
-    def action_create_invoice(self, total_credit):
+    def action_create_invoice(self):
         invoice_id = False
 
         if not invoice_id:
@@ -306,12 +338,16 @@ class TtReschedule(models.Model):
 
         desc_str = self.name + ' ('
         if self.referenced_document:
-            desc_str += 'After Sales for ' + self.referenced_document + ')\n'
+            desc_str += 'After Sales for ' + self.referenced_document + '); '
         else:
-            desc_str += ')\n'
+            desc_str += '); '
 
-        for rec in self.reschedule_line_ids:
-            desc_str += str(dict(rec._fields['reschedule_type'].selection).get(rec.reschedule_type)) + '\n'
+        if self.passenger_ids:
+            desc_str += 'Passengers: '
+            for rec in self.passenger_ids:
+                desc_str += rec.title + ' ' + rec.name + ', '
+            desc_str = desc_str[:-2]
+            desc_str += ';'
 
         inv_line_obj = self.env['tt.agent.invoice.line'].create({
             'res_model_resv': self._name,
@@ -322,14 +358,15 @@ class TtReschedule(models.Model):
 
         invoice_line_id = inv_line_obj.id
 
-        inv_line_obj.write({
-            'invoice_line_detail_ids': [(0, 0, {
-                'desc': desc_str,
-                'price_unit': total_credit,
-                'quantity': 1,
-                'invoice_line_id': invoice_line_id,
-            })]
-        })
+        for rec in self.reschedule_line_ids:
+            inv_line_obj.write({
+                'invoice_line_detail_ids': [(0, 0, {
+                    'desc': str(dict(rec._fields['reschedule_type'].selection).get(rec.reschedule_type)),
+                    'price_unit': rec.total_amount,
+                    'quantity': 1,
+                    'invoice_line_id': invoice_line_id,
+                })]
+            })
 
         ##membuat payment dalam draft
         payment_obj = self.env['tt.payment'].create({
@@ -344,4 +381,26 @@ class TtReschedule(models.Model):
             'payment_id': payment_obj.id,
             'pay_amount': inv_line_obj.total,
         })
+
+    def generate_changes(self):
+        for rec in self.change_ids:
+            rec.sudo().unlink()
+        required_fields = ['pnr']
+        unchecked_fields = ['create_uid', 'create_date', 'write_uid', 'write_date', 'seat_ids', 'segment_addons_ids', 'passenger_ids',
+                            'id', 'journey_id', 'booking_id', 'leg_ids', '__last_update']
+        for idx, rec in enumerate(self.new_segment_ids):
+            new_seg_dict = rec.read()
+            old_seg_dict = self.old_segment_ids[idx].read()
+            for key, val in new_seg_dict[0].items():
+                if key in required_fields and not val:
+                    raise UserError(_('%s in New Segments cannot be empty!' % (key)))
+                if key not in unchecked_fields:
+                    if val != old_seg_dict[0][key]:
+                        change_vals = {
+                            'reschedule_id': self.id,
+                            'name': rec._fields[str(key)].string,
+                            'old_value': str(old_seg_dict[0][key]),
+                            'new_value': str(val)
+                        }
+                        self.env['tt.reschedule.changes'].sudo().create(change_vals)
 

@@ -9,6 +9,13 @@
             <field name="provider_type_id" ref="tt_reservation_tour.tt_provider_type_tour"/>
         </record>
 
+        <record id="tt_transport_carrier_tour_gcn" model="tt.transport.carrier">
+            <field name="name">GoChina</field>
+            <field name="code">GCN</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_tour.tt_provider_type_tour"/>
+        </record>
+
     </data>
 </odoo>
     

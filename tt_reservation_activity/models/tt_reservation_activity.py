@@ -1135,6 +1135,15 @@ class ReservationActivity(models.Model):
         self.ensure_one()
         return self.env['report'].get_action(self, 'tt_reservation_activity.printout_activity_invoice')
 
+    def get_aftersales_desc(self):
+        desc_txt = 'PNR: ' + self.pnr + '<br/>'
+        desc_txt += 'Activity: ' + self.activity_id.name + '<br/>'
+        desc_txt += 'Product: ' + self.activity_product_id.name + '<br/>'
+        desc_txt += 'Visit Date: ' + self.visit_date.strftime('%d %b %Y')
+        if self.timeslot:
+            desc_txt += ' (' + self.timeslot + ')'
+        return desc_txt
+
 
 class PrintoutActivityInvoice(models.AbstractModel):
     _name = 'report.tt_reservation_activity.printout_activity_invoice'

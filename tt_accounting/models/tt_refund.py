@@ -379,7 +379,7 @@ class TtRefund(models.Model):
 
     def create_profit_loss_ledger(self):
         value = self.real_refund_amount - self.refund_amount
-        if value != 0 and not self.profit_loss_created:
+        if self.real_refund_amount != 0 and value != 0 and not self.profit_loss_created:
             debit = value >= 0 and value or 0
             credit = value < 0 and value * -1 or 0
 
