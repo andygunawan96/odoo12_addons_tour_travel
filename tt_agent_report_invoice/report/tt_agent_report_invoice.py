@@ -18,7 +18,7 @@ class AgentReportInvoice(models.Model):
         invoice.state, invoice.payment_acquirers as payment_acquirers, billing.name as billing_statement,
         agent.name as agent_name, agent_type.name as agent_type,
         customer.name as customer_name,
-        invoice_detail.name as invoice_line, invoice_detail.total as invoice_line_total,
+        invoice_detail.name as invoice_line, invoice_detail.total as invoice_line_total, invoice_detail.reference as invoice_line_reference,
         payment.reference as payment_ref, acquirer.name as payment_acquirer
         """
 
