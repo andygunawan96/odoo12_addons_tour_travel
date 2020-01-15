@@ -88,7 +88,7 @@
                         <div class="oe_button_box" name="button_box">
                             <button name="%(tt_base.tt_upload_center_wizard_action_view)d" string="Upload Document" type="action"
                                     class="oe_stat_button" icon="fa-upload" groups="tt_base.group_tt_tour_travel_operator"
-                                    attrs="{'invisible': [('state_offline', 'not in', ['validate'])]}"/>
+                                    attrs="{'invisible': [('state_offline', '=', 'done')]}"/>
                             <button name="print_ho_invoice"
                                     class="oe_stat_button" states="issued,done"
                                     string="Print Invoice (HO)" type="object" icon="fa-print"
@@ -224,7 +224,7 @@
                                 </group>
                             </page>
                             <page name="attachment" string="Attachment">
-                                <field name="attachment_ids" attrs="{'readonly': [('state_offline', 'not in', ['validate'])]}"/>  <!-- string="Attach a File" widget="many2many_tags"-->
+                                <field name="attachment_ids" attrs="{'readonly': [('state_offline', '=', 'done')]}"/>  <!-- string="Attach a File" widget="many2many_tags"-->
                             </page>
                             <page string="Adjustment">
                                 <field name="adjustment_ids"/>
