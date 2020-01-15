@@ -225,6 +225,7 @@ class TtSplitReservationWizard(models.TransientModel):
                                     'sequence': rec2.sequence,
                                     'pax_count': 1,
                                     'total': rec2.amount * 1,
+                                    'commission_agent_id': rec2.commission_agent_id and rec2.commission_agent_id.id or False,
                                     'passenger_airline_ids': [(4, prov_pax.id)]
                                 }
                                 new_cost_obj = self.env['tt.service.charge'].sudo().create(cost_val)
@@ -439,6 +440,7 @@ class TtSplitReservationWizard(models.TransientModel):
                                         'sequence': rec2.sequence,
                                         'pax_count': 1,
                                         'total': rec2.amount * 1,
+                                        'commission_agent_id': rec2.commission_agent_id and rec2.commission_agent_id.id or False,
                                         'passenger_airline_ids': [(4, new_pax_obj.id)]
                                     }
                                     new_cost_obj = self.env['tt.service.charge'].sudo().create(cost_val)

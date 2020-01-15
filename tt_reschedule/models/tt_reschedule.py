@@ -16,8 +16,9 @@ class TtRescheduleChanges(models.Model):
     _description = "After Sales Model"
 
     name = fields.Char('Field Name', readonly=True)
-    old_value = fields.Text('Old Value', readonly=True)
-    new_value = fields.Text('New Value', readonly=True)
+    seg_sequence = fields.Integer('Segment Sequence', readonly=True)
+    old_value = fields.Html('Old Value', readonly=True)
+    new_value = fields.Html('New Value', readonly=True)
     reschedule_id = fields.Many2one('tt.reschedule', 'After Sales', readonly=True)
 
 
@@ -43,7 +44,7 @@ class TtRescheduleLine(models.Model):
     admin_fee = fields.Integer('Admin Fee Amount', default=0, readonly=True, compute="_compute_admin_fee")
     total_amount = fields.Integer('Total Amount', default=0, readonly=True, compute="_compute_total_amount")
     sequence = fields.Integer('Sequence', default=50, states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]}, readonly=True)
-    state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'), ('done', 'Done')], 'State', default='draft')
+    state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'), ('done', 'Done')], 'State', default='confirm')
 
     @api.depends('admin_fee_id', 'reschedule_amount', 'reschedule_id')
     @api.onchange('admin_fee_id', 'reschedule_amount', 'reschedule_id')
@@ -113,15 +114,17 @@ class TtReschedule(models.Model):
                                      'Invoice Status', help="Agent Invoice status", default='wait',
                                      readonly=True, compute='set_agent_invoice_state')
     old_segment_ids = fields.Many2many('tt.segment.airline', 'tt_reschedule_old_segment_rel', 'reschedule_id', 'segment_id', string='Old Segments',
-                                      readonly=True)
+                                       readonly=True)
     new_segment_ids = fields.Many2many('tt.segment.reschedule', 'tt_reschedule_new_segment_rel', 'reschedule_id', 'segment_id', string='New Segments',
-                                  readonly=True, states={'draft': [('readonly', False)]})
+                                       readonly=True, states={'draft': [('readonly', False)]})
     passenger_ids = fields.Many2many('tt.reservation.passenger.airline', 'tt_reschedule_passenger_rel', 'reschedule_id', 'passenger_id',
-                                    readonly=True)
+                                     readonly=True)
     payment_acquirer_id = fields.Many2one('payment.acquirer', 'Payment Acquirer', domain="[('agent_id', '=', agent_id)]", readonly=False, states={'done': [('readonly', True)]})
-    reschedule_amount = fields.Integer('Expected Reschedule Amount', default=0, required=True, readonly=True, compute='_compute_reschedule_amount')
+    reschedule_amount = fields.Integer('Expected After Sales Amount', default=0, required=True, readonly=True, compute='_compute_reschedule_amount')
+    real_reschedule_amount = fields.Monetary('Real After Sales Amount from Vendor', default=0, readonly=True,
+                                         compute='_compute_real_reschedule_amount')
     reschedule_line_ids = fields.One2many('tt.reschedule.line', 'reschedule_id', 'After Sales Line(s)', readonly=True, states={'confirm': [('readonly', False)]})
-    reschedule_type_str = fields.Char('Reschedule Type', readonly=True, compute='_compute_reschedule_type_str', store=True)
+    reschedule_type_str = fields.Char('After Sales Type', readonly=True, compute='_compute_reschedule_type_str', store=True)
     change_ids = fields.One2many('tt.reschedule.changes', 'reschedule_id', 'Changes', readonly=True)
 
     @api.depends('invoice_line_ids')
@@ -165,6 +168,15 @@ class TtReschedule(models.Model):
             for rec2 in rec.reschedule_line_ids:
                 resch_amount += rec2.reschedule_amount
             rec.reschedule_amount = resch_amount
+
+    @api.depends('reschedule_line_ids')
+    @api.onchange('reschedule_line_ids')
+    def _compute_real_reschedule_amount(self):
+        for rec in self:
+            resch_amount = 0
+            for rec2 in rec.reschedule_line_ids:
+                resch_amount += rec2.real_reschedule_amount
+            rec.real_reschedule_amount = resch_amount
 
     @api.depends('admin_fee', 'reschedule_amount')
     @api.onchange('admin_fee', 'reschedule_amount')
@@ -398,9 +410,137 @@ class TtReschedule(models.Model):
                     if val != old_seg_dict[0][key]:
                         change_vals = {
                             'reschedule_id': self.id,
+                            'seg_sequence': rec.sequence,
                             'name': rec._fields[str(key)].string,
-                            'old_value': str(old_seg_dict[0][key]),
-                            'new_value': str(val)
+                            'old_value': old_seg_dict[0][key],
+                            'new_value': val
                         }
                         self.env['tt.reschedule.changes'].sudo().create(change_vals)
+            if rec.seat_ids:
+                if self.old_segment_ids[idx].seat_ids:
+                    old_seat_str = ''
+                    for rec2 in self.old_segment_ids[idx].seat_ids:
+                        if rec2.passenger_id:
+                            old_seat_str += 'Passenger: ' + (rec2.passenger_id.title and rec2.passenger_id.title + ' ' or '') + (rec2.passenger_id.name and rec2.passenger_id.name or '-') + '<br/>'
+                            old_seat_str += 'Seat: ' + (rec2.seat and rec2.seat or 'No Seat') + '<br/><br/>'
+                    new_seat_str = ''
+                    for rec2 in rec.seat_ids:
+                        if rec2.passenger_id:
+                            new_seat_str += 'Passenger: ' + (rec2.passenger_id.title and rec2.passenger_id.title + ' ' or '') + (rec2.passenger_id.name and rec2.passenger_id.name or '-') + '<br/>'
+                            new_seat_str += 'Seat: ' + (rec2.seat and rec2.seat or 'No Seat') + '<br/><br/>'
+
+                    if old_seat_str != new_seat_str:
+                        change_vals = {
+                            'reschedule_id': self.id,
+                            'seg_sequence': rec.sequence,
+                            'name': 'Seats',
+                            'old_value': old_seat_str,
+                            'new_value': new_seat_str
+                        }
+                        self.env['tt.reschedule.changes'].sudo().create(change_vals)
+                else:
+                    new_seat_str = ''
+                    for rec2 in rec.seat_ids:
+                        if rec2.passenger_id:
+                            new_seat_str += 'Passenger: ' + (rec2.passenger_id.title and rec2.passenger_id.title + ' ' or '') + (rec2.passenger_id.name and rec2.passenger_id.name or '-') + '<br/>'
+                            new_seat_str += 'Seat: ' + (rec2.seat and rec2.seat or 'No Seat') + '<br/><br/>'
+                    change_vals = {
+                        'reschedule_id': self.id,
+                        'seg_sequence': rec.sequence,
+                        'name': 'Seats',
+                        'old_value': 'Standard Seat',
+                        'new_value': new_seat_str
+                    }
+                    self.env['tt.reschedule.changes'].sudo().create(change_vals)
+            else:
+                if self.old_segment_ids[idx].seat_ids:
+                    old_seat_str = ''
+                    for rec2 in self.old_segment_ids[idx].seat_ids:
+                        if rec2.passenger_id:
+                            old_seat_str += 'Passenger: ' + (rec2.passenger_id.title and rec2.passenger_id.title + ' ' or '') + (rec2.passenger_id.name and rec2.passenger_id.name or '-') + '<br/>'
+                            old_seat_str += 'Seat: ' + (rec2.seat and rec2.seat or 'No Seat') + '<br/><br/>'
+                    change_vals = {
+                        'reschedule_id': self.id,
+                        'seg_sequence': rec.sequence,
+                        'name': 'Seats',
+                        'old_value': old_seat_str,
+                        'new_value': 'Standard Seat'
+                    }
+                    self.env['tt.reschedule.changes'].sudo().create(change_vals)
+
+            if rec.segment_addons_ids:
+                if self.old_segment_ids[idx].segment_addons_ids:
+                    old_addons_str = ''
+                    for rec2 in self.old_segment_ids[idx].segment_addons_ids:
+                        old_addons_str += 'Detail Code: ' + (rec2.detail_code and rec2.detail_code or '-') + '<br/>'
+                        old_addons_str += 'Detail Type: ' + (rec2.detail_type and rec2.detail_type or '-') + '<br/>'
+                        old_addons_str += 'Detail Name: ' + (rec2.detail_name and rec2.detail_name or '-') + '<br/>'
+                        old_addons_str += 'Amount: ' + (rec2.amount and str(rec2.amount) or '-') + '<br/>'
+                        old_addons_str += 'Unit: ' + (rec2.unit and rec2.unit or '-') + '<br/>'
+                        old_addons_str += 'Description: ' + (rec2.description and rec2.description or '-') + '<br/><br/>'
+                    new_addons_str = ''
+                    for rec2 in rec.segment_addons_ids:
+                        new_addons_str += 'Detail Code: ' + (rec2.detail_code and rec2.detail_code or '-') + '<br/>'
+                        new_addons_str += 'Detail Type: ' + (rec2.detail_type and rec2.detail_type or '-') + '<br/>'
+                        new_addons_str += 'Detail Name: ' + (rec2.detail_name and rec2.detail_name or '-') + '<br/>'
+                        new_addons_str += 'Amount: ' + (rec2.amount and str(rec2.amount) or '-') + '<br/>'
+                        new_addons_str += 'Unit: ' + (rec2.unit and rec2.unit or '-') + '<br/>'
+                        new_addons_str += 'Description: ' + (rec2.description and rec2.description or '-') + '<br/><br/>'
+
+                    if old_addons_str != new_addons_str:
+                        change_vals = {
+                            'reschedule_id': self.id,
+                            'seg_sequence': rec.sequence,
+                            'name': 'Addons',
+                            'old_value': old_addons_str,
+                            'new_value': new_addons_str
+                        }
+                        self.env['tt.reschedule.changes'].sudo().create(change_vals)
+                else:
+                    new_addons_str = ''
+                    for rec2 in rec.segment_addons_ids:
+                        new_addons_str += 'Detail Code: ' + (rec2.detail_code and rec2.detail_code or '-') + '<br/>'
+                        new_addons_str += 'Detail Type: ' + (rec2.detail_type and rec2.detail_type or '-') + '<br/>'
+                        new_addons_str += 'Detail Name: ' + (rec2.detail_name and rec2.detail_name or '-') + '<br/>'
+                        new_addons_str += 'Amount: ' + (rec2.amount and str(rec2.amount) or '-') + '<br/>'
+                        new_addons_str += 'Unit: ' + (rec2.unit and rec2.unit or '-') + '<br/>'
+                        new_addons_str += 'Description: ' + (rec2.description and rec2.description or '-') + '<br/><br/>'
+                    change_vals = {
+                        'reschedule_id': self.id,
+                        'seg_sequence': rec.sequence,
+                        'name': 'Addons',
+                        'old_value': 'No Addons',
+                        'new_value': new_addons_str
+                    }
+                    self.env['tt.reschedule.changes'].sudo().create(change_vals)
+            else:
+                if self.old_segment_ids[idx].segment_addons_ids:
+                    old_addons_str = ''
+                    for rec2 in self.old_segment_ids[idx].segment_addons_ids:
+                        old_addons_str += 'Detail Code: ' + (rec2.detail_code and rec2.detail_code or '-') + '<br/>'
+                        old_addons_str += 'Detail Type: ' + (rec2.detail_type and rec2.detail_type or '-') + '<br/>'
+                        old_addons_str += 'Detail Name: ' + (rec2.detail_name and rec2.detail_name or '-') + '<br/>'
+                        old_addons_str += 'Amount: ' + (rec2.amount and str(rec2.amount) or '-') + '<br/>'
+                        old_addons_str += 'Unit: ' + (rec2.unit and rec2.unit or '-') + '<br/>'
+                        old_addons_str += 'Description: ' + (rec2.description and rec2.description or '-') + '<br/><br/>'
+                    change_vals = {
+                        'reschedule_id': self.id,
+                        'seg_sequence': rec.sequence,
+                        'name': 'Addons',
+                        'old_value': old_addons_str,
+                        'new_value': 'No Addons'
+                    }
+                    self.env['tt.reschedule.changes'].sudo().create(change_vals)
+
+    def print_reschedule_changes(self):
+        datas = {
+            'ids': self.env.context.get('active_ids', []),
+            'model': self._name,
+        }
+        res = self.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        reschedule_printout_id = self.env.ref('tt_report_common.action_report_printout_reschedule')
+        return reschedule_printout_id.report_action(self, data=datas)
+
 

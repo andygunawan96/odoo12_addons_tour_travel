@@ -42,7 +42,7 @@
                     <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
                     <filter name="group_by_agent_type_id" string="Agent Type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                     <filter name="group_by_service_type" string="Service Type" domain="[]" context="{'group_by':'service_type'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
-                    <filter name="group_by_reschedule_type" string="Reschedule Type" domain="[]" context="{'group_by':'reschedule_type_str'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                    <filter name="group_by_reschedule_type" string="After Sales Type" domain="[]" context="{'group_by':'reschedule_type_str'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                     <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                 </group>
             </search>
@@ -76,6 +76,11 @@
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,sent,validate,final,done"/>
                 </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="print_reschedule_changes"
+                                class="oe_stat_button" states="final,done"
+                                string="After Sales Changes" type="object" icon="fa-print"/>
+                    </div>
                     <div class="oe_title">
                         <label for="Name" class="oe_edit_only" string="Name"/>
                         <h1>
@@ -137,13 +142,14 @@
                     <separator string="After Sales"/>
                     <group>
                         <group>
-                            <field name="reschedule_type_str"/>
                             <field name="reschedule_amount"/>
+                            <field name="real_reschedule_amount"/>
                             <field name="admin_fee"/>
                             <field name="total_amount"/>
+                            <field name="reschedule_type_str"/>
                         </group>
                         <group>
-                            <field name="payment_acquirer_id" attrs="{'invisible':['|', ('state','not in', ['validate', 'final', 'done', 'cancel', 'expired']), ('customer_parent_type_id', '=', %(tt_base.customer_type_cor)d)], 'required':[('state','in', ['validate', 'final', 'done']), ('customer_parent_type_id', '!=', %(tt_base.customer_type_cor)d)]}"/>
+                            <field name="payment_acquirer_id" attrs="{'invisible':['|', ('state','not in', ['sent', 'validate', 'final', 'done', 'cancel', 'expired']), ('customer_parent_type_id', '=', %(tt_base.customer_type_cor)d)], 'required':[('state','in', ['sent', 'validate', 'final', 'done']), ('customer_parent_type_id', '!=', %(tt_base.customer_type_cor)d)]}"/>
                             <field name="notes"/>
                         </group>
                     </group>
@@ -152,6 +158,7 @@
                             <separator string="Old Segments"/>
                             <field name="old_segment_ids">
                                 <tree create="false" delete="false">
+                                    <field name="sequence" style="width:5%"/>
                                     <field name="name"/>
                                     <field name="pnr"/>
                                     <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
@@ -159,10 +166,69 @@
                                     <field name="destination_id"/>
                                     <field name="departure_date"/>
                                 </tree>
+                                <form>
+                                    <sheet>
+                                        <group>
+                                            <group>
+                                                <field name="pnr"/>
+                                                <!--<field name="booking_id" invisible="1"/>-->
+                                                <field name="booking_id"/>
+                                                <field name="journey_id"/>
+                                                <field name="segment_code"/>
+                                                <field name="fare_code"/>
+                                                <field name="sequence"/>
+                                            </group>
+                                            <group>
+                                                <field name="carrier_id"/>
+                                                <field name="carrier_code"/>
+                                                <field name="carrier_number"/>
+                                            </group>
+                                        </group>
+                                        <group>
+                                            <group>
+                                                <!--<field name="agent_id"/>-->
+                                                <field name="name"/>
+                                                <field name="provider_id"/>
+                                            </group>
+                                            <group>
+
+                                            </group>
+                                        </group>
+                                        <group>
+                                            <separator colspan="6" string="Booking"/>
+                                            <group>
+                                                <field name="origin_id"/>
+                                                <field name="departure_date"/>
+                                            </group>
+                                            <group>
+                                                <field name="destination_id"/>
+                                                <field name="arrival_date"/>
+                                            </group>
+                                        </group>
+                                        <group>
+                                            <group>
+                                            </group>
+                                            <group>
+                                                <field name="cabin_class"/>
+                                                <field name="class_of_service"/>
+                                            </group>
+                                        </group>
+                                        <separator colspan="6" string="Seats"/>
+                                        <field name="seat_ids">
+                                            <tree>
+                                                <field name="passenger_id"/>
+                                                <field name="seat"/>
+                                            </tree>
+                                        </field>
+                                        <separator string="Addons"/>
+                                        <field name="segment_addons_ids"/>
+                                    </sheet>
+                                </form>
                             </field>
                             <separator string="New Segments"/>
                             <field name="new_segment_ids">
                                 <tree create="false" delete="false">
+                                    <field name="sequence" style="width:5%"/>
                                     <field name="name"/>
                                     <field name="pnr"/>
                                     <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
@@ -175,6 +241,7 @@
                             <separator string="Changes"/>
                             <field name="change_ids">
                                 <tree>
+                                    <field name="seg_sequence" style="width:5%"/>
                                     <field name="name"/>
                                     <field name="old_value"/>
                                     <field name="new_value"/>
@@ -215,10 +282,10 @@
                                     <field name="reschedule_type"/>
                                     <field name="reschedule_amount" groups="tt_base.group_tt_agent_user_operator"/>
                                     <field name="reschedule_amount_ho" groups="tt_base.group_tt_tour_travel_operator"/>
-                                    <field name="real_reschedule_amount" groups="tt_base.group_tt_tour_travel_operator"/>
                                     <field name="admin_fee_id" groups="tt_base.group_tt_tour_travel_operator"/>
                                     <field name="admin_fee"/>
                                     <field name="total_amount"/>
+                                    <field name="real_reschedule_amount" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible':[('state','not in', ['final','done'])]}"/>
                                     <field name="state" invisible="1"/>
                                 </tree>
                                 <form>
@@ -234,7 +301,7 @@
                                                 <field name="reschedule_type"/>
                                                 <field name="reschedule_amount" groups="tt_base.group_tt_agent_user_operator"/>
                                                 <field name="reschedule_amount_ho" groups="tt_base.group_tt_tour_travel_operator"/>
-                                                <field name="real_reschedule_amount" groups="tt_base.group_tt_tour_travel_operator"/>
+                                                <field name="real_reschedule_amount" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible':[('state','not in', ['final','done'])]}"/>
                                             </group>
                                             <group>
                                                 <field name="admin_fee_id" groups="tt_base.group_tt_tour_travel_operator" attrs="{'readonly':[('state','!=','confirm')], 'required':[('state','=','confirm')]}"/>
@@ -285,11 +352,11 @@
                 <field name="name"/>
                 <field name="agent_id"/>
                 <field name="customer_parent_id"/>
-                <field name="service_type"/>
-                <field name="reschedule_type_str"/>
                 <field name="reschedule_amount"/>
                 <field name="admin_fee"/>
                 <field name="total_amount"/>
+                <field name="service_type"/>
+                <field name="reschedule_type_str"/>
                 <field name="hold_date"/>
                 <field name="done_uid"/>
                 <field name="done_date"/>
