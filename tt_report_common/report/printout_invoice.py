@@ -1112,3 +1112,25 @@ class PrintoutRefund(models.AbstractModel):
                 })
 
         return return_dat
+
+
+class PrintoutReschedule(models.AbstractModel):
+    _name = 'report.tt_report_common.printout_reschedule'
+    _description = 'Rodex Model'
+
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        if not data.get('context'):
+            internal_model_id = docids.pop(0)
+            data['context'] = {
+                'active_model': 'tt.refund',
+                'active_ids': docids
+            }
+
+        temp_docs = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+
+        return {
+            'doc_ids': data['context']['active_ids'],
+            'doc_model': data['context']['active_model'],
+            'docs': temp_docs,
+        }
