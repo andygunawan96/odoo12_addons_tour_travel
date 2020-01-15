@@ -219,9 +219,7 @@
                                 <field name="provider_booking_ids" readonly="1"/>
                             </page>
                             <page string="Ledger" attrs="{'invisible': [('state', '=', 'draft')]}">  <!--groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"-->
-                                <group>
-                                    <field name="ledger_ids" readonly="1"/>  <!--groups="tt_base.group_tt_tour_travel_operator"-->
-                                </group>
+                                <field name="ledger_ids" readonly="1"/>  <!--groups="tt_base.group_tt_tour_travel_operator"-->
                             </page>
                             <page name="attachment" string="Attachment">
                                 <field name="attachment_ids" attrs="{'readonly': [('state_offline', 'not in', ['validate'])]}"/>  <!-- string="Attach a File" widget="many2many_tags"-->
