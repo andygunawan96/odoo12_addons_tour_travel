@@ -202,29 +202,31 @@ class PrintoutInvoiceHO(models.AbstractModel):
                 if rec._name == 'tt.reservation.visa':
                     # add expenses
                     for provider in rec.provider_booking_ids:
-                        pnr = provider.pnr + ' - expenses'
+                        pnr = provider.pnr + ' - expenses '
                         for vendor in provider.vendor_ids:
                             if vendor.is_invoice_created:
-                                a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [],
-                                          'provider_type': ''}
-                                a[pnr]['descs'].append(self.get_description(provider, data))
-                                a[pnr]['provider_type'] = rec.provider_type_id.name
-                        add_dict = self.get_additional_dict(rec, provider)
-                        for add in add_dict:
-                            a[pnr]['pax_data'].append(add_dict[add])
+                                pnr2 = pnr + vendor.create_date.strftime("%d-%m-%Y")
+                                if not a.get(pnr2):
+                                    a[pnr2] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [],
+                                              'provider_type': ''}
+                                a[pnr2]['descs'].append(self.get_description(provider, data))
+                                a[pnr2]['provider_type'] = rec.provider_type_id.name
+                                add_dict = self.get_additional_dict(rec, provider, add=vendor)
+                                for add in add_dict:
+                                    a[pnr2]['pax_data'].append(add_dict[add])
         return a
 
-    def get_additional_dict(self, rec, provider):
+    def get_additional_dict(self, rec, provider, add=None):
         add_dict = {}
         if rec._name == 'tt.reservation.visa':
-            for vendor in provider.vendor_ids:
-                if vendor.is_invoice_created:
-                    add_dict[vendor.id] = {}
-                    add_dict[vendor.id]['name'] = ''
-                    add_dict[vendor.id]['name'] += vendor.vendor_id.name if vendor.vendor_id else ''
-                    add_dict[vendor.id]['name'] += ' - '
-                    add_dict[vendor.id]['name'] += vendor.reference_number if vendor.reference_number else ''
-                    add_dict[vendor.id]['total'] = vendor.amount if vendor.amount else 0
+            add_dict[add.id] = {}
+            add_dict[add.id]['name'] = ''
+            if add.vendor_id.name:
+                add_dict[add.id]['name'] += add.vendor_id.name
+            add_dict[add.id]['name'] += ' - '
+            if add.reference_number:
+                add_dict[add.id]['name'] += add.reference_number
+            add_dict[add.id]['total'] = add.amount
         return add_dict
 
     def get_pax_dict(self, rec, provider):

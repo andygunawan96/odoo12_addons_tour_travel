@@ -95,7 +95,7 @@ class IssuedOfflineLines(models.Model):
     activity_name = fields.Char('Activity Name', readonly=False)
     activity_package = fields.Char('Activity Package', readonly=False)
     activity_timeslot = fields.Char('Timeslot', readonly=False)
-    cruise_name = fields.Char('Cruise Name', readonly=False)
+    cruise_package = fields.Char('Cruise Package', readonly=False)
     departure_location = fields.Char('Departure Location', readonly=False)
     arrival_location = fields.Char('Arrival Location', readonly=False)
 
@@ -245,14 +245,16 @@ class IssuedOfflineLines(models.Model):
             vals += 'Description : ' + line.description if line.description else 'Description : '
         return vals
 
-    def get_line_cruise_description(self, line):
+    def get_line_cruise_description(self):
         vals = ''
-        vals += 'Cruise : ' + line.cruise_name + '\n' if line.cruise_name else 'Cruise : ' + '\n'
-        vals += 'Room : ' + line.room + ' ' + str(line.obj_qty) + 'x\n' if line.room else 'Room : ' + '\n'
-        vals += 'Date : ' + str(line.check_in) + ' - ' if line.check_in else 'Date : ' + ' - '
-        vals += str(line.check_out) + '\n' if line.check_out else '' + '\n'
-        vals += 'Passengers : \n' + str(self.get_passengers_list())
-        vals += 'Description : ' + line.description if line.description else 'Description : '
+        vals += 'Cruise : ' + self.cruise_package + '\n' if self.cruise_package else 'Cruise : ' + '\n'
+        vals += 'Room : ' + self.room + ' ' + str(self.obj_qty) + 'x\n' if self.room else 'Room : ' + '\n'
+        vals += 'Date : ' + str(self.check_in) + ' - ' if self.check_in else 'Date : ' + ' - '
+        vals += str(self.check_out) + '\n' if self.check_out else '' + '\n'
+        vals += 'Passengers : \n' + str(self.get_passengers_list()) + '\n'
+        vals += 'Description : ' + self.description if self.description else 'Description : '
+        vals += '\n\n'
+        return vals
 
     def get_all_line_cruise_description(self):
         vals = ''
@@ -266,6 +268,11 @@ class IssuedOfflineLines(models.Model):
             vals += 'Description : ' + line.description if line.description else 'Description : '
         return vals
 
+    def get_other_line_description(self):
+        vals = ''
+        vals += 'Description : ' + self.description if self.description else 'Description : '
+        return vals
+
     def get_line_description(self):
         vals = ''
         if self.booking_id.provider_type_id_name == 'airline' or self.booking_id.provider_type_id_name == 'train':
@@ -277,7 +284,9 @@ class IssuedOfflineLines(models.Model):
         elif self.booking_id.provider_type_id_name == 'activity':
             vals = self.get_line_activity_description()
         elif self.booking_id.provider_type_id_name == 'cruise':
-            vals = self.get_all_line_cruise_description()
+            vals = self.get_line_cruise_description()
+        else:
+            vals = self.get_line_other_description()
         return vals
 
     @api.multi
@@ -286,3 +295,40 @@ class IssuedOfflineLines(models.Model):
             if rec.state != 'draft':
                 raise UserError(_('You cannot delete a line. You have to set state to draft.'))
         return super(IssuedOfflineLines, self).unlink()
+
+    def to_dict(self):
+        if self.transaction_type in ['airline', 'train']:
+            return {
+                'pnr': self.pnr,
+                'origin': self.origin_id.name,
+                'destination': self.destination_id.name,
+                'departure_date': self.departure_date,
+                'return_date': self.return_date,
+                'carrier': self.carrier_id.name,
+                'carrier_code': self.carrier_code,
+                'carrier_number': self.carrier_number,
+                'class': self.class_of_service,
+                'subclass': self.subclass,
+            }
+        elif self.transaction_type == 'activity':
+            return {
+                'pnr': self.pnr,
+                'activity_name': self.activity_name,
+                'activity_package': self.activity_package,
+                'visit_date': self.visit_date,
+                'description': self.description
+            }
+        elif self.transaction_type == 'hotel':
+            return {
+                'pnr': self.pnr,
+                'hotel_name': self.hotel_name,
+                'room_type': self.room_type,
+                'check_in': self.check_in,
+                'check_out': self.check_out,
+                'description': self.description
+            }
+        else:
+            return {
+                'pnr': self.pnr,
+                'description': self.description
+            }
