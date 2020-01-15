@@ -398,7 +398,7 @@ class TtReschedule(models.Model):
                     if val != old_seg_dict[0][key]:
                         change_vals = {
                             'reschedule_id': self.id,
-                            'name': str(key),
+                            'name': rec._fields[str(key)].string,
                             'old_value': str(old_seg_dict[0][key]),
                             'new_value': str(val)
                         }
