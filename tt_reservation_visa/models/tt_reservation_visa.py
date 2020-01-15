@@ -1805,7 +1805,7 @@ class TtVisa(models.Model):
 
             book_obj.document_to_ho_date = datetime.now() + timedelta(days=1)
             book_obj.ho_validate_date = datetime.now() + timedelta(days=3)
-            book_obj.hold_date = datetime.now() + timedelta(days=7)
+            book_obj.hold_date = datetime.now() + timedelta(days=31)
 
             book_obj.pnr = book_obj.name
 

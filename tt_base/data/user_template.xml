@@ -346,5 +346,15 @@
                     ]"/>
         </record>
 
+        <record id="customer_template_user" model="res.users">
+            <field name="name">Customer Template</field>
+            <field name="login">customer_template</field>
+            <field name="password">CU_`yK8xZ*2f\7M}nG(7</field>
+            <field name="groups_id"
+                   eval="[(4,ref('tt_base.group_tt_sub_agent_user_operator'))]"/>
+            <field name="frontend_security_ids"
+                   eval="[(4,ref('tt_base.able_to_login'))]"/>
+        </record>
+
     </data>
 </odoo>

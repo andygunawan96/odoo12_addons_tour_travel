@@ -43,5 +43,14 @@ class IssuedOfflinePassenger(models.Model):
     channel_service_charge_ids = fields.Many2many('tt.service.charge', 'tt_reservation_visa_channel_charge_rel',
                                                   'passenger_id', 'service_charge_id', 'Channel Service Charges')
 
+    def to_dict(self):
+        return {
+            'ticket_number': self.ticket_number,
+            'pax_type': self.pax_type,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'title': self.title
+        }
+
     # def compute_agent_id(self):
     #     self.agent_id = self.booking_id.sub_agent_id

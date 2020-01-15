@@ -107,7 +107,7 @@ class IssuedOffline(models.Model):
     currency_id = fields.Many2one('res.currency', 'Currency', default=lambda self: self.env.user.company_id.currency_id,
                                   readonly=True, states={'draft': [('readonly', False)]})
     total = fields.Monetary('Total Sale Price', store=True)
-    total_commission_amount = fields.Monetary('Total Commission Amount')
+    total_commission_amount = fields.Monetary('Total Commission Amount', store=True)
     # total_supplementary_price = fields.Monetary('Total Supplementary', compute='_get_total_supplement')
     total_tax = fields.Monetary('Total Taxes')
 
@@ -699,20 +699,34 @@ class IssuedOffline(models.Model):
         return empty
 
     param_issued_offline_data = {
-        "type": "other",
+        "type": "cruise",
         "total_sale_price": 100000,
-        "desc": "Translate Dokumen Visa Jerman",
+        "desc": "Itinerary\n 02-05-2020: Singapore\n 03-05-2020: Surabaya\n 04-05-2020: Bali\n 05-05-2020: Surabaya\n 06-05-2020: Singapore",
         # "pnr": "10020120",
         "social_media_id": "Facebook",
         "expired_date": "2019-10-04 02:29",
         "line_ids": [
             {
                 'pnr': 'NVIDIA',
-                'description': ''
+                'provider': 'Genting Dream',
+                'cruise_package': '4D3N Surabaya Bali Package',
+                'departure_location': 'Singapore',
+                'arrival_location': 'Singapore',
+                'room': 'Balcony',
+                'check_in': "2020-05-02",
+                'check_out': "2020-05-05",
+                'description': 'Itinerary\n 02-05-2020: Singapore\n 03-05-2020: Surabaya\n 04-05-2020: Bali\n 05-05-2020: Singapore'
             },
             {
-                'pnr': 'NVIDIA',
-                'description': ''
+                'pnr': 'AMDFTW',
+                'provider': 'Royal Caribbean Cruise',
+                'cruise_package': '5D/4N QUANTUM OF THE SEAS SINGAPORE MALAYSIA',
+                'departure_location': 'Singapore',
+                'arrival_location': 'Singapore',
+                'room': 'Ocean View',
+                'check_in': "2020-06-02",
+                'check_out': "2020-06-06",
+                'description': 'Itinerary\n 02-06-2020: Singapore\n 03-06-2020: Kuala Lumpur\n 04-06-2020: Penang\n 05-06-2020: Cruising\n 06-06-2020: Singapore'
             },
         ]
         # "line_ids": [
@@ -875,7 +889,7 @@ class IssuedOffline(models.Model):
             "pax_type": "INF",
             "first_name": "ivan",
             "last_name": "suryajaya",
-            "title": "MR",
+            "title": "MSTR",
             "birth_date": "2019-08-25",
             "nationality_name": "Indonesia",
             "nationality_code": "ID",
@@ -933,50 +947,11 @@ class IssuedOffline(models.Model):
 
                 # lines
                 for line in book_obj.line_ids:
-                    if book_obj.offline_provider_type in ['airline', 'train']:
-                        lines.append({
-                            'pnr': line.pnr,
-                            'origin': line.origin_id.name,
-                            'destination': line.destination_id.name,
-                            'departure_date': (line.departure_date if line.departure_date else '') + ' ' + (line.departure_hour if line.departure_hour else '') + ':' + (line.departure_minute if line.departure_minute else ''),
-                            'arrival_date': (line.return_date if line.return_date else '') + ' ' + (line.return_hour if line.return_hour else '') + ':' + (line.return_minute if line.return_minute else ''),
-                            'carrier': line.carrier_id.name,
-                            'carrier_code': line.carrier_code,
-                            'carrier_number': line.carrier_number,
-                            'class_of_service': line.class_of_service,
-                            'subclass': line.subclass
-                        })
-                    elif book_obj.offline_provider_type in ['hotel']:
-                        lines.append({
-                            'pnr': line.pnr,
-                            'hotel_name': line.hotel_name,
-                            'room': line.room,
-                            'check_in': line.check_in,
-                            'check_out': line.check_out,
-                            'description': line.description,
-                        })
-                    elif book_obj.offline_provider_type in ['activity']:
-                        lines.append({
-                            'pnr': line.pnr,
-                            'activity_name': line.activity_name,
-                            'activity_package': line.activity_package,
-                            'visit_date': line.visit_date,
-                            'description': line.description
-                        })
-                    # elif rec.offline_provider_type in ['tour', 'visa', 'other']:
-                    #     lines.append({
-                    #         'pnr': line.pnr
-                    #     })
+                    lines.append(line.to_dict())
 
                 # passengers
                 for psg in book_obj.passenger_ids:
-                    passengers.append({
-                        'title': psg.title,
-                        'first_name': psg.first_name,
-                        'last_name': psg.last_name,
-                        'pax_type': psg.pax_type,
-                        'ticket_number': psg.ticket_number
-                    })
+                    passengers.append(psg.to_dict())
 
                 # attachments
                 for attachment in book_obj.attachment_ids:
@@ -1021,23 +996,7 @@ class IssuedOffline(models.Model):
         payment = data['payment']  # self.param_payment
 
         try:
-            ## hapus 3 jan 2020 krn chandra travel mau book tdk bs
-            # cek saldo
-            # balance_res = self.env['tt.agent'].check_balance_limit_api(context['co_agent_id'], data_reservation_offline['total_sale_price'])
-            # if balance_res['error_code'] != 0:
-            #     _logger.error('Agent Balance not enough')
-            #     raise RequestException(1007, additional_message="agent balance")
-
-            # user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
-            # remove sementara update_api_context
-            # context.update({
-            #     'agent_id': user_obj.agent_id.id,
-            #     'user_id': user_obj.id
-            # })
             booker_id = self.create_booker_api(booker, context)  # create booker
-            # passenger_ids = self._create_passenger(context, passenger)  # create passenger
-            # contact_ids = self._create_contact(context, contact)
-            # contact_id = self._create_contact(context, contact[0])
             contact_id = self.create_contact_api(contact[0], booker_id, context)
             passenger_ids = self.create_customer_api(passengers, context, booker_id, contact_id)  # create passenger
             # customer_parent_id = self._set_customer_parent(context, contact_id)
@@ -1193,6 +1152,23 @@ class IssuedOffline(models.Model):
                 }
                 line_obj = line_env.create(line_tmp)
                 line_list.append(line_obj.id)
+        elif provider_type == 'cruise':
+            for line in lines:
+                check_in_time = datetime.strptime(line.get('check_in'), '%Y-%m-%d')
+                check_out_time = datetime.strptime(line.get('check_out'), '%Y-%m-%d')
+                line_tmp = {
+                    "pnr": line.get('pnr'),
+                    "cruise_package": line.get('cruise_package'),
+                    "carrier_id": provider_env.search([('name', '=', line.get('provider'))], limit=1).id,
+                    "departure_location": line.get('departure_location'),
+                    "arrival_location": line.get('arrival_location'),
+                    "room": line.get('room'),
+                    "check_in": check_in_time.strftime('%Y-%m-%d'),
+                    "check_out": check_out_time.strftime('%Y-%m-%d'),
+                    "description": line.get('description')
+                }
+                line_obj = line_env.create(line_tmp)
+                line_list.append(line_obj.id)
         else:
             for line in lines:
                 line_tmp = {
@@ -1271,3 +1247,17 @@ class IssuedOffline(models.Model):
                 'agent_commission': random.randrange(1000, 20000, 500),
             })
         return True
+
+    def to_dict(self):
+        return {
+            'agent_id': self.agent_id.id,
+            'booker_id': self.booker_id.id,
+            'contact_id': self.contact_id.id,
+            'offline_provider_type': self.offline_provider_type,
+            'offline_provider_type_name': self.offline_provider_type_name,
+            'total': self.total,
+            'description': self.description,
+            'state': self.state,
+            'state_offline': self.state_offline,
+            'social_media_type': self.social_media_type.id
+        }
