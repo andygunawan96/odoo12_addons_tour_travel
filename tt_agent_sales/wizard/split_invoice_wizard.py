@@ -49,6 +49,7 @@ class SplitInvoice(models.Model):
                 'name': '%s%s' % (self.current_invoice_name,chr(idx + 97)),
                 'res_model_resv': self.res_model_resv,
                 'res_id_resv': self.res_id_resv,
+                'reference': self.reference,
                 'invoice_id': self.invoice_id.id
             })
             invoice_line_list.append(new_invoice)

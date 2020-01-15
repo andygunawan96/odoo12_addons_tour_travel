@@ -61,6 +61,7 @@ class ReservationVisa(models.Model):
             'res_model_resv': book_obj._name,
             'res_id_resv': book_obj.id,
             'invoice_id': invoice_id.id,
+            'reference': book_obj.name,
             'desc': book_obj.get_visa_summary()
         })
 

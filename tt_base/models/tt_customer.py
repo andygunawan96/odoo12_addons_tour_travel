@@ -42,7 +42,8 @@ class TtCustomer(models.Model):
 
     @api.depends('first_name', 'last_name')
     def _compute_name(self):
-        self.name = "%s %s" % (self.first_name and self.first_name or '', self.last_name and self.last_name or '')
+        for rec in self:
+            rec.name = "%s %s" % (rec.first_name and rec.first_name or '', rec.last_name and rec.last_name or '')
 
     @api.depends('logo')
     def _get_logo_image(self):

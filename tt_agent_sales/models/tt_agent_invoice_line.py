@@ -29,6 +29,9 @@ class AgentInvoice(models.Model):
 
     desc = fields.Text('Description')
 
+    reference = fields.Char('Reference')
+
+    @api.model
     def create(self, vals_list):
         # yang harusnya di pakai
         # if 'name' not in vals_list:
@@ -52,6 +55,10 @@ class AgentInvoice(models.Model):
             new_invoice_line.model_type_id = new_invoice_line_obj.provider_type.id
 
         return new_invoice_line
+
+    def fill_reference(self):
+        for rec in self.search([('reference','=',False)]):
+            rec.reference = self.env[self.res_model_resv].browse(self.res_id_resv).name
 
     @api.multi
     @api.depends('invoice_line_detail_ids.price_subtotal')

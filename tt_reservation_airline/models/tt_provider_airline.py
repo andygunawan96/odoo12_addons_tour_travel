@@ -106,9 +106,13 @@ class TtProviderAirline(models.Model):
         #     raise UserError("This Provider Ledger is not Created.")
 
         ##fixme salahhh, ini ke reverse semua provider bukan provider ini saja
+        ## ^ harusnay sudah fix
         for rec in self.booking_id.ledger_ids:
             if rec.pnr == self.pnr and not rec.is_reversed:
                 rec.reverse_ledger()
+
+        for rec in self.cost_service_charge_ids:
+            rec.is_ledger_created = False
 
         self.write({
             'state': 'fail_refunded',

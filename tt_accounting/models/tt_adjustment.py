@@ -85,7 +85,8 @@ class TtAdjustment(models.Model):
     def create(self, vals_list):
         vals_list['name'] = self.env['ir.sequence'].next_by_code('tt.adjustment')
         if 'adj_type' in vals_list:
-            vals_list['adj_type'] = self.parse_adjustment_type(vals_list['adj_type'])
+            if type(vals_list['adj_type']) == int:
+                vals_list['adj_type'] = self.parse_adjustment_type(vals_list['adj_type'])
         return super(TtAdjustment, self).create(vals_list)
         
     def parse_adjustment_type(self,type):

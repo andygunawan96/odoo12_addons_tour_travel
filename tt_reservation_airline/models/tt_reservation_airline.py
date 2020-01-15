@@ -438,7 +438,7 @@ class ReservationAirline(models.Model):
 
     def get_booking_airline_api(self,req, context):
         try:
-            _logger.info("Get req\n" + json.dumps(context))
+            # _logger.info("Get req\n" + json.dumps(context))
             book_obj = self.get_book_obj(req.get('book_id'),req.get('order_number'))
             if book_obj and book_obj.agent_id.id == context.get('co_agent_id',-1):
                 res = book_obj.to_dict()
@@ -457,7 +457,7 @@ class ReservationAirline(models.Model):
                     'provider_bookings': prov_list,
                     # 'provider_type': book_obj.provider_type_id.code
                 })
-                _logger.info("Get resp\n" + json.dumps(res))
+                # _logger.info("Get resp\n" + json.dumps(res))
                 return Response().get_no_error(res)
             else:
                 raise RequestException(1001)

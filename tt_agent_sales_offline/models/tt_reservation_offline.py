@@ -59,6 +59,7 @@ class ReservationOffline(models.Model):
             'res_model_resv': self._name,
             'res_id_resv': self.id,
             'invoice_id': invoice_id.id,
+            'reference': self.name,
             'desc': line_desc
         })
 
