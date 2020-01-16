@@ -398,7 +398,7 @@ class TtReschedule(models.Model):
         for rec in self.change_ids:
             rec.sudo().unlink()
         required_fields = ['pnr']
-        unchecked_fields = ['create_uid', 'create_date', 'write_uid', 'write_date', 'seat_ids', 'segment_addons_ids', 'passenger_ids',
+        unchecked_fields = ['create_uid', 'create_date', 'write_uid', 'write_date', 'old_id', 'sequence', 'seat_ids', 'segment_addons_ids', 'passenger_ids',
                             'id', 'journey_id', 'booking_id', 'leg_ids', '__last_update']
         for idx, rec in enumerate(self.new_segment_ids):
             new_seg_dict = rec.read()
@@ -410,7 +410,7 @@ class TtReschedule(models.Model):
                     if val != old_seg_dict[0][key]:
                         change_vals = {
                             'reschedule_id': self.id,
-                            'seg_sequence': rec.sequence,
+                            'seg_sequence': rec.old_id,
                             'name': rec._fields[str(key)].string,
                             'old_value': old_seg_dict[0][key],
                             'new_value': val
@@ -432,7 +432,7 @@ class TtReschedule(models.Model):
                     if old_seat_str != new_seat_str:
                         change_vals = {
                             'reschedule_id': self.id,
-                            'seg_sequence': rec.sequence,
+                            'seg_sequence': rec.old_id,
                             'name': 'Seats',
                             'old_value': old_seat_str,
                             'new_value': new_seat_str
@@ -446,7 +446,7 @@ class TtReschedule(models.Model):
                             new_seat_str += 'Seat: ' + (rec2.seat and rec2.seat or 'No Seat') + '<br/><br/>'
                     change_vals = {
                         'reschedule_id': self.id,
-                        'seg_sequence': rec.sequence,
+                        'seg_sequence': rec.old_id,
                         'name': 'Seats',
                         'old_value': 'Standard Seat',
                         'new_value': new_seat_str
@@ -461,7 +461,7 @@ class TtReschedule(models.Model):
                             old_seat_str += 'Seat: ' + (rec2.seat and rec2.seat or 'No Seat') + '<br/><br/>'
                     change_vals = {
                         'reschedule_id': self.id,
-                        'seg_sequence': rec.sequence,
+                        'seg_sequence': rec.old_id,
                         'name': 'Seats',
                         'old_value': old_seat_str,
                         'new_value': 'Standard Seat'
@@ -490,7 +490,7 @@ class TtReschedule(models.Model):
                     if old_addons_str != new_addons_str:
                         change_vals = {
                             'reschedule_id': self.id,
-                            'seg_sequence': rec.sequence,
+                            'seg_sequence': rec.old_id,
                             'name': 'Addons',
                             'old_value': old_addons_str,
                             'new_value': new_addons_str
@@ -507,7 +507,7 @@ class TtReschedule(models.Model):
                         new_addons_str += 'Description: ' + (rec2.description and rec2.description or '-') + '<br/><br/>'
                     change_vals = {
                         'reschedule_id': self.id,
-                        'seg_sequence': rec.sequence,
+                        'seg_sequence': rec.old_id,
                         'name': 'Addons',
                         'old_value': 'No Addons',
                         'new_value': new_addons_str
@@ -525,7 +525,7 @@ class TtReschedule(models.Model):
                         old_addons_str += 'Description: ' + (rec2.description and rec2.description or '-') + '<br/><br/>'
                     change_vals = {
                         'reschedule_id': self.id,
-                        'seg_sequence': rec.sequence,
+                        'seg_sequence': rec.old_id,
                         'name': 'Addons',
                         'old_value': old_addons_str,
                         'new_value': 'No Addons'

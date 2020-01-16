@@ -7,26 +7,13 @@
                 <sheet>
                     <group>
                         <group>
+                            <field name="name"/>
                             <field name="pnr"/>
-                            <!--<field name="booking_id" invisible="1"/>-->
-                            <field name="segment_code"/>
-                            <field name="fare_code"/>
-                            <field name="sequence"/>
                         </group>
                         <group>
-                            <field name="carrier_id"/>
+                            <field name="carrier_id" invisible="1"/>
                             <field name="carrier_code"/>
                             <field name="carrier_number"/>
-                        </group>
-                    </group>
-                    <group>
-                        <group>
-                            <!--<field name="agent_id"/>-->
-                            <field name="name"/>
-                            <field name="provider_id"/>
-                        </group>
-                        <group>
-
                         </group>
                     </group>
                     <group>
@@ -57,6 +44,7 @@
                         <form>
                             <group>
                                 <group>
+                                    <field name="dummy_field" attrs="{'invisible':[('dummy_field','=', True)]}"/>
                                     <field name="segment_id" invisible="1"/>
                                     <field name="passenger_id"/>
                                 </group>
@@ -91,6 +79,7 @@
                             </group>
                         </form>
                     </field>
+                    <field name="passenger_ids" groups="base.user_admin"/>
                 </sheet>
             </form>
         </field>

@@ -14,3 +14,4 @@ class TtSegmentReschedule(models.Model):
     segment_addons_ids = fields.One2many('tt.segment.addons.reschedule', 'segment_id', 'Addons', ondelete="cascade")
     passenger_ids = fields.Many2many('tt.reservation.passenger.airline', 'tt_segment_reschedule_passenger_rel', 'segment_id',
                                      'passenger_id', readonly=True, ondelete="cascade")
+    old_id = fields.Integer('Sequence', readonly=True)

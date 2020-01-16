@@ -79,6 +79,7 @@ class TtRescheduleWizard(models.TransientModel):
                 'class_of_service': rec.class_of_service,
                 'cabin_class': rec.cabin_class,
                 'sequence': rec.sequence,
+                'old_id': rec.id,
             })
             for rec2 in rec.seat_ids:
                 self.env['tt.seat.reschedule'].sudo().create({
