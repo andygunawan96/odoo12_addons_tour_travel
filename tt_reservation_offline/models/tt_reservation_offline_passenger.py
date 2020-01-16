@@ -40,7 +40,7 @@ class IssuedOfflinePassenger(models.Model):
     first_name = fields.Char('First Name', related='passenger_id.first_name')
     last_name = fields.Char('Last Name', related='passenger_id.last_name')
     title = fields.Selection(variables.TITLE, 'Title')
-
+    birth_date = fields.Date('Birth Date')
     channel_service_charge_ids = fields.Many2many('tt.service.charge', 'tt_reservation_visa_channel_charge_rel',
                                                   'passenger_id', 'service_charge_id', 'Channel Service Charges')
 
