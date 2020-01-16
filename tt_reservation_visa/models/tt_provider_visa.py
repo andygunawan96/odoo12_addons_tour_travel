@@ -44,6 +44,7 @@ class TtProviderVisa(models.Model):
     pnr = fields.Char('PNR')  # di isi aja order number
     provider_id = fields.Many2one('tt.provider', 'Provider')
     booking_id = fields.Many2one('tt.reservation.visa', 'Order Number', ondelete='cascade')
+    agent_id = fields.Many2one('tt.agent', 'Agent', related='booking_id.agent_id')
     visa_id = fields.Many2one('tt.reservation.visa.pricelist', 'Visa Pricelist')
     state = fields.Selection(variables.BOOKING_STATE, 'Status', default='draft')
     state_visa = fields.Selection(STATE_VISA, 'State', related="booking_id.state_visa")
@@ -69,6 +70,9 @@ class TtProviderVisa(models.Model):
     ready_date = fields.Datetime('Ready Date', readonly=1)
     hold_date = fields.Datetime('Hold Date', readonly=1)
     expired_date = fields.Datetime('Expired Date', readonly=True)
+
+    currency_id = fields.Many2one('res.currency', 'Currency', readonly=True, states={'draft': [('readonly', False)]},
+                                  default=lambda self: self.env.user.company_id.currency_id)
 
     is_ledger_created = fields.Boolean('Ledger Created', default=False, readonly=True,
                                        states={'draft': [('readonly', False)]})
@@ -149,6 +153,17 @@ class TtProviderVisa(models.Model):
 
     def action_create_ledger(self, issued_uid, pay_method=None):
         self.env['tt.ledger'].action_create_ledger(self, issued_uid)
+
+    def action_create_expenses_invoice(self):
+        datas = {
+            'ids': self.env.context.get('active_ids', []),
+            'model': self._name
+        }
+        res = self.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        printout_expenses_id = self.env.ref('tt_report_common.action_create_expenses_invoice')
+        return printout_expenses_id.report_action(self, data=datas)
 
     def to_dict(self):
         passenger_list = []

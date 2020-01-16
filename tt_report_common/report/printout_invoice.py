@@ -698,6 +698,71 @@ class PrintoutInvoice(models.AbstractModel):
         return val
 
 
+class PrintoutExpenses(models.AbstractModel):
+    _name = 'report.tt_report_common.printout_visa_expenses_invoice'
+    _description = 'Rodex Model'
+
+    def get_invoice_data(self, rec, context, data):
+        a = {}
+        for rec in rec.vendor_ids:
+            create_date = rec.create_date.strftime('%d-%m-%Y')
+            if not a.get(create_date):
+                a[create_date] = {'model': rec._name, 'create_date': create_date, 'vendor': [], 'ref_number': [], 'nta_amount': [], 'ho_amount': [], 'psg': []}
+            a[create_date]['vendor'].append(rec.vendor_id.name)
+            a[create_date]['ref_number'].append(rec.reference_number)
+            a[create_date]['nta_amount'].append(rec.nta_amount)
+            a[create_date]['ho_amount'].append(rec.amount)
+            a[create_date]['psg'].append(rec.pax_to_dict())
+        return a
+
+    # Get Terbilang dkk di hapus
+    def compute_terbilang_from_objs(self, recs, currency_str='rupiah'):
+        a = {}
+        for rec2 in recs:
+            a.update({rec2.booking_id.name: num2words(rec2.total) + ' Rupiah'})
+        return a
+
+    def _get_report_values(self, docids, data=None):
+        if not data.get('context'):
+            internal_model_id = docids.pop(0)
+            data['context'] = {}
+            if internal_model_id == 1:
+                data['context']['active_model'] = 'tt.reservation.airline'
+            elif internal_model_id == 2:
+                data['context']['active_model'] = 'tt.reservation.train'
+            elif internal_model_id == 3:
+                data['context']['active_model'] = 'tt.reservation.hotel'
+            elif internal_model_id == 4:
+                data['context']['active_model'] = 'tt.reservation.activity'
+            elif internal_model_id == 5:
+                data['context']['active_model'] = 'tt.reservation.tour'
+            data['context']['active_ids'] = docids
+        values = {}
+        nta_amount = 0
+        ho_amount = 0
+        for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            values[rec.id] = []
+            expenses_data = self.get_invoice_data(rec, data.get('context'), data)
+            values[rec.id].append(expenses_data)
+            for vendor in rec.vendor_ids:
+                nta_amount += vendor.nta_amount
+                ho_amount += vendor.amount
+        vals = {
+            'doc_ids': data['context']['active_ids'],
+            'doc_model': data['context']['active_model'],
+            'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
+            'doc_type': 'expenses',
+            'price_lines': values,
+            'inv_lines': values,
+            'nta_amount': nta_amount,
+            'ho_amount': ho_amount,
+            # 'terbilang': self.compute_terbilang_from_objs(
+            #     self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
+            'date_now': fields.Date.today().strftime('%d %b %Y'),
+        }
+        return vals
+
+
 class PrintoutIteneraryForm(models.AbstractModel):
     _name = 'report.tt_report_common.printout_itinerary'
     _description = 'Rodex Model'

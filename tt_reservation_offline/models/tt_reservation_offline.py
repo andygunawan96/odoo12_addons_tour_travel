@@ -154,7 +154,7 @@ class IssuedOffline(models.Model):
                                          states={'draft': [('readonly', False)]},
                                          help='COR / POR', domain="[('parent_agent_id', '=', agent_id)]")
 
-    quick_issued = fields.Boolean('Quick Issued', default=False)
+    quick_validate = fields.Boolean('Quick Validate', default=False)
 
     acquirer_id = fields.Many2one('payment.acquirer', 'Payment Acquirer', readonly=True)
 
@@ -292,6 +292,8 @@ class IssuedOffline(models.Model):
                 'co_uid': self.env.user.id,
                 'co_agent_id': self.agent_id.id
             }
+            if self.state_offline != 'sent':
+                raise UserError('State is already validate. Please refresh the page.')
             payment = self.payment_reservation_api('offline', req, context)
             if payment['error_code'] != 0:
                 _logger.error(payment['error_msg'])
@@ -705,6 +707,7 @@ class IssuedOffline(models.Model):
         # "pnr": "10020120",
         "social_media_id": "Facebook",
         "expired_date": "2019-10-04 02:29",
+        "quick_validate": True,
         "line_ids": [
             {
                 'pnr': 'NVIDIA',
@@ -972,7 +975,8 @@ class IssuedOffline(models.Model):
                     'lines': lines,
                     'passengers': passengers,
                     'total': book_obj.total,
-                    'agent_commission': book_obj.agent_commission
+                    'agent_commission': book_obj.agent_commission,
+                    'currency': book_obj.currency_id.name
                 }
                 print(res)
                 _logger.info("Get resp\n" + json.dumps(res))

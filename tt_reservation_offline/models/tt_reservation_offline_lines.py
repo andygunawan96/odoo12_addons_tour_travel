@@ -299,48 +299,48 @@ class IssuedOfflineLines(models.Model):
     def to_dict(self):
         if self.transaction_type in ['airline', 'train']:
             return {
-                'pnr': self.pnr,
-                'origin': self.origin_id.name,
-                'destination': self.destination_id.name,
+                'pnr': self.pnr if self.pnr else '',
+                'origin': self.origin_id.name if self.origin_id.name else '',
+                'destination': self.destination_id.name if self.destination_id.name else '',
                 'departure_date': (self.departure_date if self.departure_date else '') + ' ' + (self.departure_hour if self.departure_hour else '') + ':' + (self.departure_minute if self.departure_minute else ''),
                 'return_date': (self.return_date if self.return_date else '') + ' ' + (self.return_hour if self.return_hour else '') + ':' + (self.return_minute if self.return_minute else ''),
-                'carrier': self.carrier_id.name,
-                'carrier_code': self.carrier_code,
-                'carrier_number': self.carrier_number,
-                'class': self.class_of_service,
-                'subclass': self.subclass,
+                'carrier': self.carrier_id.name if self.carrier_id.name else '',
+                'carrier_code': self.carrier_code if self.carrier_code else '',
+                'carrier_number': self.carrier_number if self.carrier_number else '',
+                'class': dict(self._fields['class_of_service'].selection).get(self.class_of_service) if self.class_of_service else '',
+                'subclass': self.subclass if self.subclass else '',
             }
         elif self.transaction_type == 'activity':
             return {
-                'pnr': self.pnr,
-                'activity_name': self.activity_name,
-                'activity_package': self.activity_package,
-                'visit_date': self.visit_date,
-                'description': self.description
+                'pnr': self.pnr if self.pnr else '',
+                'activity_name': self.activity_name if self.activity_name else '',
+                'activity_package': self.activity_package if self.activity_package else '',
+                'visit_date': self.visit_date if self.visit_date else '',
+                'description': self.description if self.description else '',
             }
         elif self.transaction_type == 'hotel':
             return {
-                'pnr': self.pnr,
-                'hotel_name': self.hotel_name,
-                'room': self.room_type,
-                'check_in': self.check_in,
-                'check_out': self.check_out,
-                'description': self.description
+                'pnr': self.pnr if self.pnr else '',
+                'hotel_name': self.hotel_name if self.hotel_name else '',
+                'room': self.room_type if self.room_type else '',
+                'check_in': self.check_in if self.check_in else '',
+                'check_out': self.check_out if self.check_out else '',
+                'description': self.description if self.description else '',
             }
         elif self.transaction_type == 'cruise':
             return {
-                'pnr': self.pnr,
-                'carrier': self.carrier_id.name,
-                'cruise_package': self.cruise_package,
-                'departure_location': self.departure_location,
-                'arrival_location': self.arrival_location,
-                'room': self.room,
-                'check_in': self.check_in,
-                'check_out': self.check_out,
-                'description': self.description
+                'pnr': self.pnr if self.pnr else '',
+                'carrier': self.carrier_id.name if self.carrier_id.name else '',
+                'cruise_package': self.cruise_package if self.cruise_package else '',
+                'departure_location': self.departure_location if self.departure_location else '',
+                'arrival_location': self.arrival_location if self.arrival_location else '',
+                'room': self.room if self.room else '',
+                'check_in': self.check_in if self.check_in else '',
+                'check_out': self.check_out if self.check_out else '',
+                'description': self.description if self.description else ''
             }
         else:
             return {
-                'pnr': self.pnr,
-                'description': self.description
+                'pnr': self.pnr if self.pnr else '',
+                'description': self.description if self.description else ''
             }
