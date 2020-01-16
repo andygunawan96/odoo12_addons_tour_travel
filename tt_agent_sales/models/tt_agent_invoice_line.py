@@ -58,7 +58,7 @@ class AgentInvoice(models.Model):
 
     def fill_reference(self):
         for rec in self.search([('reference','=',False)]):
-            rec.reference = self.env[self.res_model_resv].browse(self.res_id_resv).name
+            rec.reference = self.env[rec.res_model_resv].browse(rec.res_id_resv).name
 
     @api.multi
     @api.depends('invoice_line_detail_ids.price_subtotal')

@@ -90,13 +90,13 @@ class TtAdjustment(models.Model):
         return super(TtAdjustment, self).create(vals_list)
         
     def parse_adjustment_type(self,type):
-        if type == '0':
+        if type == -1:
             return 'balance'
-        elif type == '1':
+        elif type == -2:
             return 'payment_transaction'
-        elif type == '2':
+        elif type == -3:
             return 'refund'
-        elif type == '3':
+        elif type == -4:
             return 'after_sales'
         else:
             return self.env['tt.provider.type'].browse(int(type)).code
