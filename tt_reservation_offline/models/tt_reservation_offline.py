@@ -707,6 +707,7 @@ class IssuedOffline(models.Model):
         # "pnr": "10020120",
         "social_media_id": "Facebook",
         "expired_date": "2019-10-04 02:29",
+        "quick_validate": True,
         "line_ids": [
             {
                 'pnr': 'NVIDIA',
@@ -974,7 +975,8 @@ class IssuedOffline(models.Model):
                     'lines': lines,
                     'passengers': passengers,
                     'total': book_obj.total,
-                    'agent_commission': book_obj.agent_commission
+                    'agent_commission': book_obj.agent_commission,
+                    'currency': book_obj.currency_id.name
                 }
                 print(res)
                 _logger.info("Get resp\n" + json.dumps(res))
