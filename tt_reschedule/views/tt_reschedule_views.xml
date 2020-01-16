@@ -158,7 +158,7 @@
                             <separator string="Old Segments"/>
                             <field name="old_segment_ids">
                                 <tree create="false" delete="false">
-                                    <field name="sequence" style="width:5%"/>
+                                    <field name="id" string="Sequence" style="width:5%"/>
                                     <field name="name"/>
                                     <field name="pnr"/>
                                     <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
@@ -228,7 +228,7 @@
                             <separator string="New Segments"/>
                             <field name="new_segment_ids">
                                 <tree create="false" delete="false">
-                                    <field name="sequence" style="width:5%"/>
+                                    <field name="old_id" style="width:5%"/>
                                     <field name="name"/>
                                     <field name="pnr"/>
                                     <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>

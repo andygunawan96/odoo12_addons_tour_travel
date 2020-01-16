@@ -96,12 +96,12 @@
                 <tr valign="top" style="padding-top: 5px; padding-bottom: 5px;">
                     <t t-if="row_idx == len(doc.old_segment_ids)-1">
                         <td style="background: #F0F0F0; width: 3%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 20px; border-color: #CCC; padding: 7px 7px 7px 20px;">
-                            <span t-esc="seg.sequence"/>
+                            <span t-esc="seg.id"/>
                         </td>
                     </t>
                     <t t-else="">
                         <td style="background: #F0F0F0; width: 3%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
-                            <span t-esc="seg.sequence"/>
+                            <span t-esc="seg.id"/>
                         </td>
                     </t>
                     <td style="width: 10%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
@@ -166,12 +166,12 @@
                 <tr valign="top" style="padding-top: 5px; padding-bottom: 5px;">
                     <t t-if="row_idx == len(doc.new_segment_ids)-1">
                         <td style="background: #F0F0F0; width: 3%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 20px; border-color: #CCC; padding: 7px 7px 7px 20px;">
-                            <span t-esc="seg.sequence"/>
+                            <span t-esc="seg.old_id"/>
                         </td>
                     </t>
                     <t t-else="">
                         <td style="background: #F0F0F0; width: 3%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
-                            <span t-esc="seg.sequence"/>
+                            <span t-esc="seg.old_id"/>
                         </td>
                     </t>
                     <td style="width: 10%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">

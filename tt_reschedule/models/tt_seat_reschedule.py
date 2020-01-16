@@ -6,6 +6,7 @@ class TtSeatReschedule(models.Model):
     _inherit = 'tt.seat.airline'
 
     segment_id = fields.Many2one('tt.segment.reschedule', 'Segment')
+    dummy_field = fields.Boolean('Generate Passenger List', default=False)
 
     def get_seat_passenger_domain(self):
         pax_id_list = []
@@ -15,9 +16,10 @@ class TtSeatReschedule(models.Model):
 
     passenger_id = fields.Many2one('tt.reservation.passenger.airline', 'Passenger', domain=get_seat_passenger_domain)
 
-    @api.depends('segment_id')
-    @api.onchange('segment_id')
+    @api.depends('segment_id', 'dummy_field')
+    @api.onchange('segment_id', 'dummy_field')
     def _onchange_domain_passenger(self):
         return {'domain': {
             'passenger_id': self.get_seat_passenger_domain()
         }}
+
