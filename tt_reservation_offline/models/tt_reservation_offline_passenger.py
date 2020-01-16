@@ -41,7 +41,8 @@ class IssuedOfflinePassenger(models.Model):
     last_name = fields.Char('Last Name', related='passenger_id.last_name')
     title = fields.Selection(variables.TITLE, 'Title')
     birth_date = fields.Date('Birth Date')
-    channel_service_charge_ids = fields.Many2many('tt.service.charge', 'tt_reservation_visa_channel_charge_rel',
+    cost_service_charge_ids = fields.Many2many('tt.service.charge','tt_reservation_offline_cost_charge_rel', 'passenger_id', 'service_charge_id', 'Cost Service Charges')
+    channel_service_charge_ids = fields.Many2many('tt.service.charge', 'tt_reservation_offline_channel_charge_rel',
                                                   'passenger_id', 'service_charge_id', 'Channel Service Charges')
 
     def to_dict(self):
