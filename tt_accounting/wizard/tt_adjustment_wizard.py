@@ -21,7 +21,7 @@ class TtAdjustmentWizard(models.TransientModel):
                                     readonly=True)
 
     currency_id = fields.Many2one('res.currency', readonly=True)
-    adj_type = fields.Char('Adjustment Type', required=True, readonly=True)
+    adj_type = fields.Integer('Adjustment Type', required=True, readonly=True)
 
     referenced_document = fields.Char('Ref. Document',required=True,readonly=True)
 

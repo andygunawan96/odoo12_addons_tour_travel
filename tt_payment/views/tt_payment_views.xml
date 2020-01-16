@@ -68,7 +68,7 @@
                         'default_agent_id': agent_id,
                         'default_referenced_document': name,
                         'default_currency_id': currency_id,
-                        'default_adj_type': 1,
+                        'default_adj_type': -2,
                         'hide_component_type': True
                    }"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,validated,approved"/>

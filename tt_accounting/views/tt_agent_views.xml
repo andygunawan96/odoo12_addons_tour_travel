@@ -14,7 +14,7 @@
                         'default_agent_id': id,
                         'default_referenced_document': name,
                         'default_currency_id': currency_id,
-                        'default_adj_type': 0,
+                        'default_adj_type': -1,
                         'hide_component_type': True
                    }"/>
             </xpath>

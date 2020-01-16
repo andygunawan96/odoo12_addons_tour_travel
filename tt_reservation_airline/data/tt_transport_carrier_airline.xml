@@ -27,6 +27,8 @@
             <field name="code">CI</field>
             <field name="icao">CAL</field>
             <field name="call_sign">DYNASTY</field>
+            <field name="adult_length_name">25</field>
+            <field name="child_length_name">25</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
