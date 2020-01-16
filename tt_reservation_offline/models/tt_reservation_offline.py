@@ -154,7 +154,7 @@ class IssuedOffline(models.Model):
                                          states={'draft': [('readonly', False)]},
                                          help='COR / POR', domain="[('parent_agent_id', '=', agent_id)]")
 
-    quick_issued = fields.Boolean('Quick Issued', default=False)
+    quick_validate = fields.Boolean('Quick Validate', default=False)
 
     acquirer_id = fields.Many2one('payment.acquirer', 'Payment Acquirer', readonly=True)
 
@@ -292,6 +292,8 @@ class IssuedOffline(models.Model):
                 'co_uid': self.env.user.id,
                 'co_agent_id': self.agent_id.id
             }
+            if self.state_offline != 'sent':
+                raise UserError('State is already validate. Please refresh the page.')
             payment = self.payment_reservation_api('offline', req, context)
             if payment['error_code'] != 0:
                 _logger.error(payment['error_msg'])

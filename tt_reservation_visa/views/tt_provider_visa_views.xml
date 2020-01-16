@@ -5,9 +5,16 @@
         <field name="model">tt.provider.visa</field>
         <field name="arch" type="xml">
             <form>
-                <field name="state" readonly="1"/>
-                <field name="state_visa" readonly="1" invisible="1"/>
+                <header>
+                    <field name="state_visa" readonly="1" invisible="1"/>
+                    <field name="state" widget="statusbar" statusbar_visible="booked,issued"/>
+                </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_create_expenses_invoice"
+                                class="oe_stat_button" icon="fa-file"
+                                type="object" string="Expenses Invoice"/>
+                    </div>
                     <group>
                         <group>
                             <field name="is_ledger_created" readonly="1"/>

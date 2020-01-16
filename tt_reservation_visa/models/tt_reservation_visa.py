@@ -319,6 +319,7 @@ class TtVisa(models.Model):
                 raise UserError(
                     _('You have to Fill Expenses.'))
         if self.state_visa != 'delivered':
+            self.calc_visa_upsell_vendor()
             self.calc_visa_vendor()
 
         self.write({
@@ -379,7 +380,6 @@ class TtVisa(models.Model):
 
     def action_calc_expenses_visa(self):
         # Calc visa vendor
-        # self.calc_visa_expenses()
         self.calc_visa_upsell_vendor()
         # Create new agent invoice (panggil di agent sales visa)
 

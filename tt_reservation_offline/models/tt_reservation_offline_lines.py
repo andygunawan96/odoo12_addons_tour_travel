@@ -307,7 +307,7 @@ class IssuedOfflineLines(models.Model):
                 'carrier': self.carrier_id.name,
                 'carrier_code': self.carrier_code,
                 'carrier_number': self.carrier_number,
-                'class': self.class_of_service,
+                'class': dict(self._fields['class_of_service'].selection).get(self.class_of_service),
                 'subclass': self.subclass,
             }
         elif self.transaction_type == 'activity':
