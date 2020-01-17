@@ -61,6 +61,7 @@
             <field name="arch" type="xml">
                 <form>
                     <header>
+                        <field name="refundable" invisible="1"/>
                         <button string="Set to Draft" name="action_draft" type="object" states="cancel" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                         <button string="Confirm" class="oe_highlight" name="action_confirm" type="object" attrs="{'invisible':[('state_offline','!=','draft')]}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                         <button string="Sent" name="action_sent" type="object" attrs="{'invisible':[('state_offline','!=','confirm')]}" groups="tt_base.group_tt_tour_travel_operator"/>  <!--states="confirm"-->
@@ -79,7 +80,21 @@
                         'default_currency_id': currency_id,
                         'default_adj_type': provider_type_id
                     }"/>
+                        <button string="Refund Request" name="%(tt_accounting.tt_refund_wizard_action_view)d" type="action" groups="tt_base.group_tt_agent_user_operator"
+                                       context="{
+                        'default_res_model': res_model,
+                        'default_res_id': id,
+                        'default_agent_id': agent_id,
+                        'default_customer_parent_id': customer_parent_id,
+                        'default_referenced_document': name,
+                        'default_referenced_pnr': pnr,
+                        'default_booker_id': booker_id,
+                        'default_currency_id': currency_id,
+                        'default_service_type': provider_type_id
+                   }" attrs="{'invisible':[('refundable','=',False)]}"/>
 <!--                        <button string="Get Booking Offline" name="get_booking_offline" type="object"/>-->
+<!--                        <button string="Test Repricing Offline" name="test_repricing_offline" type="object"/>-->
+                        <button string="Sync Service Charge" name="sync_service_charge" type="object"/>
                         <!--                        <button string="Print Invoice Ticket" name="print_invoice_ticket" type="object" states="paid,posted"/>-->
                         <!--                        <button string="Get Config API" name="get_config_api" type="object"/>-->
                         <field name="state_offline" widget="statusbar" statusbar_visible="draft,confirm,sent,validate,done"/>
@@ -163,6 +178,11 @@
                                     <field name="done_date" class="oe_inline"/> -
                                     <field name="done_uid" class="oe_inline"/>
                                 </div>
+                                <label for="refund_uid" string="Refund"/>
+                                <div>
+                                    <field name="refund_date" class="oe_inline"/> -
+                                    <field name="refund_uid" class="oe_inline" readonly="1"/>
+                                </div>
                                 <label for="cancel_uid" string="Cancel"/>
                                 <div attrs="{'invisible': [('cancel_date', '=', False)]}">
                                     <field name="cancel_date" class="oe_inline"/> -
@@ -232,6 +252,9 @@
                             </page>
                             <page string="Adjustment">
                                 <field name="adjustment_ids"/>
+                            </page>
+                            <page string="Refund" name="refund_page" attrs="{'invisible':[('refund_ids','=', [])]}">
+                                <field name="refund_ids"/>
                             </page>
                         </notebook>
                     </sheet>

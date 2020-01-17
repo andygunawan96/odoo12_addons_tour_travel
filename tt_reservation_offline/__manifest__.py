@@ -25,6 +25,7 @@
         'views/tt_reservation_offline_lines_views.xml',
         'views/tt_reservation_offline_passenger_views.xml',
         'views/tt_provider_offline_views.xml',
+        'views/tt_reservation_offline_service_charge_views.xml',
         'report/paperformat_A4.xml',
         'report/printout_menu.xml',
         'report/printout_invoice_template.xml',

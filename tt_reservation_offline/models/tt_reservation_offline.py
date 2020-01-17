@@ -18,6 +18,7 @@ STATE_OFFLINE = [
     ('validate', 'Validate'),
     ('done', 'Done'),
     ('refund', 'Refund'),
+    ('fail_refunded', 'Fail Refunded'),
     ('expired', 'Expired'),
     ('cancel', 'Canceled')
 ]
@@ -385,7 +386,12 @@ class IssuedOffline(models.Model):
 
     @api.one
     def action_refund(self):
-        self.state = 'refund'
+        self.write({
+            'state': 'refund',
+            'state_offline': 'refund',
+            'refund_date': datetime.now(),
+            'refund_uid': self.env.user.id
+        })
 
     def action_expired(self):
         super(IssuedOffline, self).action_expired()
@@ -474,6 +480,15 @@ class IssuedOffline(models.Model):
             self.write({
                 'sale_service_charge_ids': values
             })
+
+    def sync_service_charge(self):
+        for provider in self.provider_booking_ids:
+            for scs in provider.cost_service_charge_ids:
+                psg_list = []
+                for psg in self.passenger_ids:
+                    if scs.pax_type == psg.pax_type:
+                        psg_list.append(psg.id)
+                scs.passenger_offline_ids = [(6, 0, psg_list)]
 
     def create_final_ho_ledger(self, provider_obj):
         for rec in self:
@@ -1037,6 +1052,7 @@ class IssuedOffline(models.Model):
                 'total': data_reservation_offline['total_sale_price'],
                 "social_media_type": self._get_social_media_id_by_name(data_reservation_offline.get('social_media_id')),
                 "expired_date": data_reservation_offline.get('expired_date'),
+                "quick_validate": data_reservation_offline.get('quick_validate'),
                 'state': 'draft',
                 'state_offline': 'confirm',
                 'agent_id': context['co_agent_id'],
@@ -1222,15 +1238,23 @@ class IssuedOffline(models.Model):
         return social_media_id
 
     def check_provider_state(self, context, pnr_list=[], hold_date=False, req={}):
-        if all(rec.state_offline == 'draft' for rec in self.provider_booking_ids):
+        if all(rec.state == 'booked' for rec in self.provider_booking_ids):
+            # booked
             pass
-        elif all(rec.state_offline == 'confirm' for rec in self.provider_booking_ids):
+        elif all(rec.state == 'issued' for rec in self.provider_booking_ids):
+            # issued
             pass
-        elif all(rec.state_offline == 'sent' for rec in self.provider_booking_ids):
-            pass
-        elif all(rec.state_offline == 'validate' for rec in self.provider_booking_ids):
-            pass
-        elif all(rec.state_offline == 'done' for rec in self.provider_booking_ids):
+        elif all(rec.state == 'refund' for rec in self.provider_booking_ids):
+            # refund
+            self.action_refund()
+        elif all(rec.state == 'fail_refunded' for rec in self.provider_booking_ids):
+            self.write({
+                'state': 'fail_refunded',
+                'state_offline': 'fail_refunded',
+                'refund_uid': context['co_uid'],
+                'refund_date': datetime.now()
+            })
+        elif any(rec.state == 'refund' for rec in self.provider_booking_ids):
             pass
         else:
             # entah status apa

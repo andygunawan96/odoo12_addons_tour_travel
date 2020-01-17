@@ -128,9 +128,11 @@ class ProviderOffline(models.Model):
                 'pax_type': psg.pax_type,
                 'currency_id': self.currency_id.id,
                 'provider_offline_booking_id': self.id,
+                'passenger_offline_ids': [],
                 'pax_count': 1,
                 'total': sale_price / len(self.booking_id.passenger_ids),
             }
+            vals['passenger_offline_ids'].append(psg.id)
             scs_list.append(vals)
             commission_list = pricing_obj.get_commission(self.booking_id.total_commission_amount / len(self.booking_id.passenger_ids),
                                                          self.booking_id.agent_id, provider_type_id)
@@ -143,7 +145,9 @@ class ProviderOffline(models.Model):
                         'amount': comm['amount'] * -1 / len(self.booking_id.line_ids) * provider_line_count,
                         'charge_code': comm['code'],
                         'charge_type': 'RAC',
+                        'passenger_offline_ids': [],
                     })
+                    vals2['passenger_offline_ids'].append(psg.id)
                     scs_list.append(vals2)
 
         # Gather pricing based on pax type
@@ -158,6 +162,7 @@ class ProviderOffline(models.Model):
                         scs_2['pax_count'] = scs_2['pax_count'] + 1,
                         scs_2['total'] += scs.get('amount')
                         scs_2['pax_count'] = scs_2['pax_count'][0]
+                        scs_2['passenger_offline_ids'].append(scs['passenger_offline_ids'][0])
                         break
             if scs_same is False:
                 vals = {
@@ -168,6 +173,7 @@ class ProviderOffline(models.Model):
                     'description': scs['description'],
                     'pax_type': scs['pax_type'],
                     'currency_id': scs['currency_id'],
+                    'passenger_offline_ids': scs['passenger_offline_ids'],
                     'provider_offline_booking_id': scs['provider_offline_booking_id'],
                     'pax_count': 1,
                     'total': scs['total'],
@@ -178,6 +184,7 @@ class ProviderOffline(models.Model):
         scs_list_3 = []
         service_chg_obj = self.env['tt.service.charge']
         for scs_2 in scs_list_2:
+            scs_2['passenger_offline_ids'] = [(6, 0, scs_2['passenger_offline_ids'])]
             scs_obj = service_chg_obj.create(scs_2)
             scs_list_3.append(scs_obj.id)
 
