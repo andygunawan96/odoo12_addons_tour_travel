@@ -53,7 +53,7 @@ class ReservationVisa(models.Model):
                 'customer_parent_id': book_obj.customer_parent_id.id,
                 'customer_parent_type_id': book_obj.customer_parent_type_id.id,
                 'state': 'confirm',
-                'confirmed_uid': context['co_uid'],
+                'confirmed_uid': book_obj.confirmed_uid.id,
                 'confirmed_date': datetime.now()
             })
 
