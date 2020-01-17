@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <record id="customer_parent_tt_billing_inh" model="ir.ui.view">
-        <field name="name">customer.parenttt.billing.inh</field>
+        <field name="name">customer.parent.billing.inh</field>
         <field name="model">tt.customer.parent</field>
         <field name="inherit_id" ref="tt_base.tt_customer_parent_form_view"/>
         <field name="arch" type="xml">
             <xpath expr="//group[@name='ctp_info']" position="after">
                 <group>
-                    <field name="billing_cycle_ids" widget="many2many_tags" options="{'no_create_edit': True,'color_field': 'color'}"/>
-                    <field name="billing_due_date" options='{"type": "number", "step": 1}'/>
-                    <field name="billing_due_date_ids" widget="many2many_tags" options="{'no_create_edit': True,'color_field': 'color'}"/>
-<!--                    <button name="test_check_billing_cycle" type="object" string="Check Cycle"/>-->
-<!--                    <button name="cron_create_billing_statement" type="object" string="Cron Cycle"/>-->
+                    <field name="billing_cycle_ids" widget="many2many_tags" options="{'no_create_edit': True,'color_field': 'color'}" readonly="1"/>
+                    <field name="billing_due_date" options='{"type": "number", "step": 1}' readonly="1"/>
+                    <field name="billing_due_date_ids" widget="many2many_tags" options="{'no_create_edit': True,'color_field': 'color'}" readonly="1"/>
+                    <!--                    <button name="test_check_billing_cycle" type="object" string="Check Cycle"/>-->
+                    <!--                    <button name="cron_create_billing_statement" type="object" string="Cron Cycle"/>-->
                 </group>
             </xpath>
         </field>
@@ -24,11 +24,48 @@
         <field name="arch" type="xml">
             <xpath expr="//group[@name='ctp_info']" position="after">
                 <group>
-                    <field name="billing_cycle_ids" widget="many2many_tags" options="{'no_create_edit': True,'color_field': 'color'}"/>
-                    <field name="billing_due_date" options='{"type": "number", "step": 1}'/>
-                    <field name="billing_due_date_ids" widget="many2many_tags" options="{'no_create_edit': True,'color_field': 'color'}"/>
+                    <field name="billing_cycle_ids" widget="many2many_tags" options="{'no_create_edit': True,'color_field': 'color'}" readonly="1"/>
+                    <field name="billing_due_date" options='{"type": "number", "step": 1}' readonly="1"/>
+                    <field name="billing_due_date_ids" widget="many2many_tags" options="{'no_create_edit': True,'color_field': 'color'}" readonly="1"/>
                 </group>
             </xpath>
         </field>
     </record>
+
+    <record id="customer_parent_tt_billing_inh_finance" model="ir.ui.view">
+        <field name="name">customer.parent.billing.inh.finance</field>
+        <field name="model">tt.customer.parent</field>
+        <field name="inherit_id" ref="tt_billing_statement.customer_parent_tt_billing_inh"/>
+        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_finance_operator'), ref('base.user_admin') ])]" />
+        <field name="arch" type="xml">
+            <field name="billing_cycle_ids" position="replace">
+                <field name="billing_cycle_ids" widget="many2many_tags" options="{'no_create_edit': True,'color_field': 'color'}" readonly="0"/>
+            </field>
+            <field name="billing_due_date" position="replace">
+                <field name="billing_due_date" options='{"type": "number", "step": 1}' readonly="0"/>
+            </field>
+            <field name="billing_due_date_ids" position="replace">
+                <field name="billing_due_date_ids" widget="many2many_tags" options="{'no_create_edit': True,'color_field': 'color'}" readonly="0"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="customer_parent_customer_tt_billing_inh_finance" model="ir.ui.view">
+        <field name="name">customer.parent.customer.billing.inh.finance</field>
+        <field name="model">tt.customer.parent</field>
+        <field name="inherit_id" ref="tt_billing_statement.customer_parent_customer_tt_billing_inh"/>
+        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_finance_operator'), ref('base.user_admin') ])]" />
+        <field name="arch" type="xml">
+            <field name="billing_cycle_ids" position="replace">
+                <field name="billing_cycle_ids" widget="many2many_tags" options="{'no_create_edit': True,'color_field': 'color'}" readonly="0"/>
+            </field>
+            <field name="billing_due_date" position="replace">
+                <field name="billing_due_date" options='{"type": "number", "step": 1}' readonly="0"/>
+            </field>
+            <field name="billing_due_date_ids" position="replace">
+                <field name="billing_due_date_ids" widget="many2many_tags" options="{'no_create_edit': True,'color_field': 'color'}" readonly="0"/>
+            </field>
+        </field>
+    </record>
+
 </odoo>
