@@ -17,6 +17,7 @@ TT_PAYMENT
         'views/tt_payment_views.xml',
         'views/tt_top_up_views.xml',
         'security/ir.model.access.csv',
+        'security/ir_rule_data.xml',
     ],
     'demo': [],
     'qweb': [],

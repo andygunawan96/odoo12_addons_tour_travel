@@ -169,18 +169,18 @@ access_address_detail_for_tour_travel_operator,address.detail.for.tour.travel.op
 access_address_detail_for_tour_travel_supervisor,address.detail.for.tour.travel.supervisor,model_address_detail,tt_base.group_tt_tour_travel_supervisor,1,0,1,0
 access_address_detail_for_tour_travel_manager,address.detail.for.tour.travel.manager,model_address_detail,tt_base.group_tt_tour_travel_manager,1,1,1,0
 access_address_detail_for_agent_management_operator,address.detail.for.agent.management.operator,model_address_detail,tt_base.group_tt_agent_management_operator,1,1,1,0
-access_address_detail_for_agent_user_operator,address.detail.for.agent.user.operator,model_address_detail,tt_base.group_tt_agent_user_operator,1,0,0,0
-access_address_detail_for_agent_user_supervisor,address.detail.for.agent.user.supervisor,model_address_detail,tt_base.group_tt_agent_user_supervisor,1,0,1,0
-access_address_detail_for_agent_user_manager,address.detail.for.agent.user.manager,model_address_detail,tt_base.group_tt_agent_user_manager,1,1,1,0
+access_address_detail_for_agent_user_operator,address.detail.for.agent.user.operator,model_address_detail,tt_base.group_tt_agent_user_operator,1,1,1,0
+access_address_detail_for_agent_user_supervisor,address.detail.for.agent.user.supervisor,model_address_detail,tt_base.group_tt_agent_user_supervisor,1,1,1,0
+access_address_detail_for_agent_user_manager,address.detail.for.agent.user.manager,model_address_detail,tt_base.group_tt_agent_user_manager,1,1,1,1
 
 access_phone_detail_for_public,phone.detail.for.public,model_phone_detail,,1,0,0,0
 access_phone_detail_for_tour_travel_operator,phone.detail.for.tour.travel.operator,model_phone_detail,tt_base.group_tt_tour_travel_operator,1,0,0,0
 access_phone_detail_for_tour_travel_supervisor,phone.detail.for.tour.travel.supervisor,model_phone_detail,tt_base.group_tt_tour_travel_supervisor,1,0,1,0
 access_phone_detail_for_tour_travel_manager,phone.detail.for.tour.travel.manager,model_phone_detail,tt_base.group_tt_tour_travel_manager,1,1,1,0
 access_phone_detail_for_agent_management_operator,phone.detail.for.agent.management.operator,model_phone_detail,tt_base.group_tt_agent_management_operator,1,1,1,0
-access_phone_detail_for_agent_user_operator,phone.detail.for.agent.user.operator,model_phone_detail,tt_base.group_tt_agent_user_operator,1,0,0,0
-access_phone_detail_for_agent_user_supervisor,phone.detail.for.agent.user.supervisor,model_phone_detail,tt_base.group_tt_agent_user_supervisor,1,0,1,0
-access_phone_detail_for_agent_user_manager,phone.detail.for.agent.user.manager,model_phone_detail,tt_base.group_tt_agent_user_manager,1,1,1,0
+access_phone_detail_for_agent_user_operator,phone.detail.for.agent.user.operator,model_phone_detail,tt_base.group_tt_agent_user_operator,1,1,1,0
+access_phone_detail_for_agent_user_supervisor,phone.detail.for.agent.user.supervisor,model_phone_detail,tt_base.group_tt_agent_user_supervisor,1,1,1,0
+access_phone_detail_for_agent_user_manager,phone.detail.for.agent.user.manager,model_phone_detail,tt_base.group_tt_agent_user_manager,1,1,1,1
 
 access_tt_skipped_keys_for_public,tt.skipped.keys.for.public,model_tt_skipped_keys,,1,0,0,0
 access_tt_skipped_keys_for_tour_travel_operator,tt.skipped.keys.for.tour.travel.operator,model_tt_skipped_keys,tt_base.group_tt_tour_travel_operator,1,0,0,0
@@ -229,10 +229,10 @@ access_tt_commission_rule_for_agent_management_operator,tt.commission.rule.for.a
 access_tt_commission_rule_for_agent_management_supervisor,tt.commission.rule.for.agent.man.supervisor,model_tt_commission_rule,group_tt_agent_management_supervisor,1,1,1,1
 access_tt_commission_rule_for_agent_management_manager,tt.commission.rule.for.agent.man.manager,model_tt_commission_rule,group_tt_agent_management_manager,1,1,1,1
 
-access_tt_customer_parent_for_public,tt.customer.parent.for.public,model_tt_customer_parent,,1,1,1,1
+access_tt_customer_parent_for_public,tt.customer.parent.for.public,model_tt_customer_parent,,1,1,1,0
 access_tt_customer_parent_for_agent_management_manager,tt.customer.parent.for.agent.management.manager,model_tt_customer_parent,group_tt_agent_management_manager,1,1,1,1
 
-access_tt_customer_parent_type_for_public,tt.customer.for.public,model_tt_customer_parent_type,,1,1,1,1
+access_tt_customer_parent_type_for_public,tt.customer.for.public,model_tt_customer_parent_type,,1,0,0,0
 access_tt_customer_parent_type_for_agent_management_manager,tt.customer.parent.type.for.agent.management.manager,model_tt_customer_parent_type,group_tt_agent_management_manager,1,1,1,1
 
 access_tt_agent_target_for_public,tt.agent.target.for.public,model_tt_agent_target,,1,0,0,0
