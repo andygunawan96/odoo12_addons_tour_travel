@@ -27,8 +27,8 @@
                             </div>
                             <group>
 <!--                                <field name="user_agent_id" readonly="True" invisible="0"/>-->
-                                <field name="agent_id" readonly="True"/>
-                                <field name="name" readonly="True"/>
+                                <field name="agent_id" readonly="1"/>
+                                <field name="name" readonly="1"/>
                                 <field name="email"/>
                                 <field name="gender"/>
                                 <field name="marital_status"/>
@@ -131,6 +131,9 @@
         <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_user_operator') ])]" />
         <field name="priority">40</field>
         <field name="arch" type="xml">
+            <field name="agent_id" position="replace">
+                <field name="agent_id" readonly="1"/>
+            </field>
             <field name="identity_ids" position="replace">
                 <field name="identity_ids" context="{'default_customer_id': id}">
                     <tree>
