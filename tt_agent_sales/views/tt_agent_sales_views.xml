@@ -53,6 +53,7 @@
                     <button name="%(tt_agent_invoice_wizard_action_view)d" string="Move" type="action" context = "{'default_invoice_id1': id}"/>
                     <button name="set_as_confirm" string="Set as Confirm" type="object" groups="base.user_admin"/>
                     <button name="set_as_paid" string="Set as Paid" type="object" groups="base.user_admin"/>
+                    <button name="action_cancel_invoice" string="Cancel Invoice" type="object" groups="base.user_admin" states="confirm"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,issued"/>
                 </header>
                 <sheet>
@@ -75,8 +76,16 @@
                         </group>
                         <group>
                             <field name="agent_id"/>
-                            <field name="confirmed_uid"/>
-                            <field name="confirmed_date"/>
+                            <label for="confirm_uid" string="Confirm By"/>
+                            <div>
+                                <field name="confirmed_uid" class="oe_inline"/> -
+                                <field name="confirmed_date" class="oe_inline"/>
+                            </div>
+                            <label for="cancel_uid" string="Cancel By"/>
+                            <div>
+                                <field name="cancel_uid" class="oe_inline"/> -
+                                <field name="cancel_date" class="oe_inline"/>
+                            </div>
                             <field name="printout_invoice_id" invisible="1"/>
                         </group>
                     </group>

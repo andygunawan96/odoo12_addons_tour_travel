@@ -22,16 +22,25 @@ class TtProvider(models.Model):
     balance = fields.Monetary('Balance', related="provider_ledger_ids.balance")
     track_balance = fields.Boolean('Do balance tracking')
 
+    #kasus concurrent update
+    # def sync_balance(self):
+    #     ##send request to gateway
+    #     #_send_request('sia')
+    #     if self.track_balance:
+    #         self.sudo().write({
+    #             'provider_ledger_ids': [(0,0,{
+    #                 'balance': self.env['tt.%s.api.con' % (self.provider_type_id.code)].get_balance(self.code)['response']['balance'],
+    #                 'provider_id': self.id
+    #             })]
+    #         })
+
     def sync_balance(self):
         ##send request to gateway
-        #_send_request('sia')
         if self.track_balance:
-            self.sudo().write({
-                'provider_ledger_ids': [(0,0,{
+            self.env['tt.provider.ledger'].sudo().create({
                     'balance': self.env['tt.%s.api.con' % (self.provider_type_id.code)].get_balance(self.code)['response']['balance'],
                     'provider_id': self.id
-                })]
-            })
+                })
 
 
     def to_dict(self):

@@ -405,6 +405,22 @@ class IssuedOffline(models.Model):
         else:
             raise UserError(_('Sale Price or NTA Price can\'t be 0 (Zero)'))
 
+    def validate_api(self, data, context):
+        try:
+            _logger.info("Get req\n" + json.dumps(context))
+            book_obj = self.get_book_obj(data.get('book_id'), data.get('order_number'))
+            if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1):
+                book_obj.action_issued_backend()
+            else:
+                raise RequestException(1001)
+
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+        return ERR.get_error(1013)
     # to generate sale service charge
     def calculate_service_charge(self):
         for service_charge in self.sale_service_charge_ids:
@@ -953,7 +969,7 @@ class IssuedOffline(models.Model):
             _logger.error(msg=str(e) + '\n' + traceback.format_exc())
         return res
 
-    def get_booking_offline(self, data, context):  #
+    def get_booking_offline_api(self, data, context):  #
         try:
             _logger.info("Get req\n" + json.dumps(context))
             book_obj = self.get_book_obj(data.get('book_id'), data.get('order_number'))
@@ -968,8 +984,11 @@ class IssuedOffline(models.Model):
                     lines.append(line.to_dict())
 
                 # passengers
-                for psg in book_obj.passenger_ids:
+                for idx, psg in enumerate(book_obj.passenger_ids):
                     passengers.append(psg.to_dict())
+                    passengers[len(passengers)-1].update({
+                        'sequence': int(idx)
+                    })
 
                 # attachments
                 for attachment in book_obj.attachment_ids:
@@ -982,7 +1001,7 @@ class IssuedOffline(models.Model):
 
                 res = {
                     'order_number': book_obj.name,
-                    'hold_date': book_obj.hold_date.strftime('%d-%m-%Y %H:%M'),
+                    'hold_date': book_obj.hold_date and book_obj.hold_date.strftime('%d-%m-%Y %H:%M') or '',
                     'pnr': book_obj.pnr,
                     'state': book_obj.state,
                     'state_offline': book_obj.state_offline,
@@ -990,7 +1009,7 @@ class IssuedOffline(models.Model):
                     'lines': lines,
                     'passengers': passengers,
                     'total': book_obj.total,
-                    'agent_commission': book_obj.agent_commission,
+                    'commission': book_obj.agent_commission,
                     'currency': book_obj.currency_id.name
                 }
                 print(res)

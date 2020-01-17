@@ -64,7 +64,21 @@ class TtCustomer(models.Model):
     def create(self, vals_list):
         util.pop_empty_key(vals_list)
         vals_list['seq_id'] = self.env['ir.sequence'].next_by_code('tt.customer')
+        if 'first_name' in vals_list:
+            vals_list['first_name'] = vals_list['first_name'].strip()
+        if 'last_name' in vals_list:
+            vals_list['last_name'] = vals_list['last_name'].strip()
         return super(TtCustomer, self).create(vals_list)
+
+    @api.model
+    def write(self, vals):
+        util.pop_empty_key(vals)
+        vals['seq_id'] = self.env['ir.sequence'].next_by_code('tt.customer')
+        if 'first_name' in vals:
+            vals['first_name'] = vals['first_name'].strip()
+        if 'last_name' in vals:
+            vals['last_name'] = vals['last_name'].strip()
+        return super(TtCustomer, self).write(vals)
 
     def to_dict(self):
         phone_list = []
@@ -348,10 +362,6 @@ class TtCustomerIdentityNumber(models.Model):
                     raise UserError ('%s|%s Already Exists.' % (id1.id,id1.identity_type))
 
         return new_identity
-    
-    def write(self, vals):
-        # util.vals_cleaner(vals,self)
-        super(TtCustomerIdentityNumber, self).write(vals)
         
     def to_dict(self):
         image_list = [(rec.url,rec.seq_id) for rec in self.identity_image_ids]

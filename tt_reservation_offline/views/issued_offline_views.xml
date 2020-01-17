@@ -103,7 +103,10 @@
                         <div class="oe_button_box" name="button_box">
                             <button name="%(tt_base.tt_upload_center_wizard_action_view)d" string="Upload Document" type="action"
                                     class="oe_stat_button" icon="fa-upload" groups="tt_base.group_tt_tour_travel_operator"
-                                    attrs="{'invisible': [('state_offline', '=', 'done')]}"/>
+                                    attrs="{'invisible': [('state_offline', '=', 'done')]}"
+                                    context="{'default_agent_id': agent_id,
+                                              'default_owner_id': confirm_uid,
+                                              'default_target_field_name': 'attachment_ids'}"/>
                             <button name="print_ho_invoice"
                                     class="oe_stat_button" states="issued,done"
                                     string="Print Invoice (HO)" type="object" icon="fa-print"

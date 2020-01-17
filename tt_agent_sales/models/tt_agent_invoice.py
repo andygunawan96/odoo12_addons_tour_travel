@@ -72,6 +72,8 @@ class AgentInvoice(models.Model):
     payment_acquirers = fields.Char('List of Acquirers',compute="_compute_acquirers",store=True)
     confirmed_uid = fields.Many2one('res.users', 'Confirmed by', readonly=True)
     confirmed_date = fields.Datetime('Confirmed Date', readonly=True)
+    cancel_uid = fields.Many2one('res.users', 'Cancel by', readonly=True)
+    cancel_date = fields.Datetime('Cancel Date', readonly=True)
 
     date_invoice = fields.Date(string='Invoice Date', default=fields.Date.context_today,
                                index=True, copy=False, readonly=True)
@@ -113,6 +115,19 @@ class AgentInvoice(models.Model):
             'confirmed_uid': self.env.user.id,
             'confirmed_date': datetime.now()
         })
+
+    def action_cancel_invoice(self):
+        if self.state == 'confirm':
+            legal = True
+            for i in self.payment_ids:
+                if i.state != 'confirm':
+                    legal = False
+            if legal:
+                self.state = "cancel"
+            else:
+                raise UserError("Invoice payment state not [Confirm].")
+        else:
+            raise UserError("Invoice state not [Confirm].")
 
     def set_as_paid(self):
         self.state = "paid"
@@ -233,8 +248,19 @@ class AgentInvoice(models.Model):
         res = self.read()
         res = res and res[0] or {}
         datas['form'] = res
+
         invoice_id = self.env.ref('tt_report_common.action_report_printout_invoice')
         if not self.printout_invoice_id:
+            if self.agent_id:
+                co_agent_id = self.agent_id.id
+            else:
+                co_agent_id = self.env.user.agent_id.id
+
+            if self.confirmed_uid:
+                co_uid = self.confirmed_uid.id
+            else:
+                co_uid = self.env.user.id
+
             pdf_report = invoice_id.report_action(self, data=datas)
             pdf_report['context'].update({
                 'active_model': self._name,
@@ -249,8 +275,8 @@ class AgentInvoice(models.Model):
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },
                 {
-                    'co_agent_id': self.env.user.agent_id.id,
-                    'co_uid': self.env.user.id,
+                    'co_agent_id': co_agent_id,
+                    'co_uid': co_uid
                 }
             )
             upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)

@@ -45,8 +45,12 @@
                     <!--                    </div>-->
                     <!--TITLE-->
                     <div class="oe_button_box" name="button_box">
-                        <button name="%(tt_base.tt_upload_center_wizard_action_view)d" string="Upload Document" type="action"
-                                class="oe_stat_button" icon="fa-upload" groups="tt_base.group_tt_tour_travel_operator"/>
+                        <button name="%(tt_base.tt_upload_center_wizard_action_view)d" string="Upload Image" type="action"
+                                class="oe_stat_button" icon="fa-upload" groups="tt_base.group_tt_tour_travel_operator"
+                                context="{'default_target_field_name': 'image_ids'}"/>
+                        <button name="%(tt_base.tt_upload_center_wizard_action_view)d" string="Upload Itinerary" type="action"
+                                class="oe_stat_button" icon="fa-upload" groups="tt_base.group_tt_tour_travel_operator"
+                                context="{'default_target_field_name': 'document_url'}"/>
                         <button name="toggle_active" type="object"
                                 class="oe_stat_button" icon="fa-archive"
                                 groups="tt_base.group_tt_tour_travel_supervisor">
