@@ -331,7 +331,7 @@ class TtCustomerIdentityNumber(models.Model):
     identity_country_of_issued_id = fields.Many2one('res.country','Issued  Country')
     identity_image_ids = fields.Many2many('tt.upload.center','tt_customer_identity_upload_center_rel','identity_id','upload_id','Uploads')
 
-    customer_id = fields.Many2one('tt.customer','Owner',required=True)
+    customer_id = fields.Many2one('tt.customer','Owner')
 
     def create(self, vals_list):
         new_identity = super(TtCustomerIdentityNumber, self).create(vals_list)

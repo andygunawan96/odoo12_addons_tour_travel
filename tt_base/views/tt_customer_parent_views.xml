@@ -28,7 +28,7 @@
         <field name="name">tt.customer.parent.form.view</field>
         <field name="model">tt.customer.parent</field>
         <field name="arch" type="xml">
-            <form>
+            <form create="false">
                 <header/>
                 <sheet>
                     <div class="oe_button_box" name="button_box"/>
@@ -41,19 +41,19 @@
                     </div>
                     <group>
                         <group name="ctp_info">
-                            <field name="customer_parent_type_id"/>
-                            <field name="parent_agent_id"/>
+                            <field name="customer_parent_type_id" readonly="1"/>
+                            <field name="parent_agent_id" readonly="1"/>
                             <field name="tax_percentage"/>
                             <field name="actual_balance"/>
                             <field name="balance"/>
-                            <field name="credit_limit"/>
+                            <field name="credit_limit" readonly="1"/>
                             <field name="unprocessed_amount"/>
                             <field name="currency_id"/>
                         </group>
                     </group>
                     <notebook>
                         <page string="Customer">
-                            <field name="customer_ids" domain="[('agent_id', '=', parent_agent_id)]">
+                            <field name="customer_ids" domain="[('agent_id', '=', parent_agent_id)]" context="{'default_agent_id': parent_agent_id}">
                                 <tree limit="10">
                                     <field name="first_name"/>
                                     <field name="last_name"/>
@@ -71,11 +71,46 @@
         </field>
     </record>
 
+    <record id="tt_customer_parent_form_view_finance" model="ir.ui.view">
+        <field name="name">tt.customer.parent.form.view.finance</field>
+        <field name="model">tt.customer.parent</field>
+        <field name="inherit_id" ref="tt_base.tt_customer_parent_form_view"/>
+        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_finance_operator') ])]" />
+        <field name="priority">40</field>
+        <field name="arch" type="xml">
+            <field name="parent_agent_id" position="replace">
+                <field name="parent_agent_id" readonly="0"/>
+            </field>
+            <field name="credit_limit" position="replace">
+                <field name="credit_limit" readonly="0"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="tt_customer_parent_form_view_admin" model="ir.ui.view">
+        <field name="name">tt.customer.parent.form.view.admin</field>
+        <field name="model">tt.customer.parent</field>
+        <field name="inherit_id" ref="tt_base.tt_customer_parent_form_view"/>
+        <field name="groups_id" eval="[(6, 0, [ref('base.user_admin') ])]" />
+        <field name="priority">40</field>
+        <field name="arch" type="xml">
+            <field name="customer_parent_type_id" position="replace">
+                <field name="customer_parent_type_id" readonly="0"/>
+            </field>
+            <field name="parent_agent_id" position="replace">
+                <field name="parent_agent_id" readonly="0"/>
+            </field>
+            <field name="credit_limit" position="replace">
+                <field name="credit_limit" readonly="0"/>
+            </field>
+        </field>
+    </record>
+
     <record id="tt_customer_parent_tree_view" model="ir.ui.view">
         <field name="name">tt.customer.parent.tree.view</field>
         <field name="model">tt.customer.parent</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree create="false">
                 <field name="name"/>
                 <field name="parent_agent_id"/>
             </tree>
@@ -89,7 +124,12 @@
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[]</field>
-        <field name="context"/>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_base.tt_customer_parent_form_view',
+            'tree_view_ref': 'tt_base.tt_customer_parent_tree_view',
+            }
+        </field>
     </record>
 
     <menuitem id="menu_customer_customer_parent"

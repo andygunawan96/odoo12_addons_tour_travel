@@ -35,6 +35,7 @@ Key Features
         'views/menu_item_base.xml',
 
         'wizard/tt_upload_center_wizard_view.xml',
+        'wizard/create_customer_parent_wizard_view.xml',
 
         'views/res_country_views.xml',
         'views/res_country_state_views.xml',
