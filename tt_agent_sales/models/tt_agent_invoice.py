@@ -114,6 +114,15 @@ class AgentInvoice(models.Model):
             'confirmed_date': datetime.now()
         })
 
+    def cancel_invoice(self):
+        if self.state == 'confirm':
+            legal = True
+            for i in self.payment_ids:
+                if i.state == 'confirm':
+                    legal = False
+            if legal:
+                self.state = "cancel"
+
     def set_as_paid(self):
         self.state = "paid"
 

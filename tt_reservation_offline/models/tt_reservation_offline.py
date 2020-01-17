@@ -154,7 +154,7 @@ class IssuedOffline(models.Model):
                                          states={'draft': [('readonly', False)]},
                                          help='COR / POR', domain="[('parent_agent_id', '=', agent_id)]")
 
-    quick_issued = fields.Boolean('Quick Issued', default=False)
+    quick_validate = fields.Boolean('Quick Validate', default=False)
 
     acquirer_id = fields.Many2one('payment.acquirer', 'Payment Acquirer', readonly=True)
 
@@ -292,6 +292,8 @@ class IssuedOffline(models.Model):
                 'co_uid': self.env.user.id,
                 'co_agent_id': self.agent_id.id
             }
+            if self.state_offline != 'sent':
+                raise UserError('State is already validate. Please refresh the page.')
             payment = self.payment_reservation_api('offline', req, context)
             if payment['error_code'] != 0:
                 _logger.error(payment['error_msg'])
@@ -397,6 +399,22 @@ class IssuedOffline(models.Model):
         else:
             raise UserError(_('Sale Price or NTA Price can\'t be 0 (Zero)'))
 
+    def validate_api(self, data, context):
+        try:
+            _logger.info("Get req\n" + json.dumps(context))
+            book_obj = self.get_book_obj(data.get('book_id'), data.get('order_number'))
+            if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1):
+                book_obj.action_issued_backend()
+            else:
+                raise RequestException(1001)
+
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+        return ERR.get_error(1013)
     # to generate sale service charge
     def calculate_service_charge(self):
         for service_charge in self.sale_service_charge_ids:
@@ -705,6 +723,7 @@ class IssuedOffline(models.Model):
         # "pnr": "10020120",
         "social_media_id": "Facebook",
         "expired_date": "2019-10-04 02:29",
+        "quick_validate": True,
         "line_ids": [
             {
                 'pnr': 'NVIDIA',
@@ -935,7 +954,7 @@ class IssuedOffline(models.Model):
             _logger.error(msg=str(e) + '\n' + traceback.format_exc())
         return res
 
-    def get_booking_offline(self, data, context):  #
+    def get_booking_offline_api(self, data, context):  #
         try:
             _logger.info("Get req\n" + json.dumps(context))
             book_obj = self.get_book_obj(data.get('book_id'), data.get('order_number'))
@@ -950,8 +969,11 @@ class IssuedOffline(models.Model):
                     lines.append(line.to_dict())
 
                 # passengers
-                for psg in book_obj.passenger_ids:
+                for idx, psg in enumerate(book_obj.passenger_ids):
                     passengers.append(psg.to_dict())
+                    passengers[len(passengers)-1].update({
+                        'sequence': int(idx)
+                    })
 
                 # attachments
                 for attachment in book_obj.attachment_ids:
@@ -964,7 +986,7 @@ class IssuedOffline(models.Model):
 
                 res = {
                     'order_number': book_obj.name,
-                    'hold_date': book_obj.hold_date.strftime('%d-%m-%Y %H:%M'),
+                    'hold_date': book_obj.hold_date and book_obj.hold_date.strftime('%d-%m-%Y %H:%M') or '',
                     'pnr': book_obj.pnr,
                     'state': book_obj.state,
                     'state_offline': book_obj.state_offline,
@@ -972,7 +994,8 @@ class IssuedOffline(models.Model):
                     'lines': lines,
                     'passengers': passengers,
                     'total': book_obj.total,
-                    'agent_commission': book_obj.agent_commission
+                    'commission': book_obj.agent_commission,
+                    'currency': book_obj.currency_id.name
                 }
                 print(res)
                 _logger.info("Get resp\n" + json.dumps(res))

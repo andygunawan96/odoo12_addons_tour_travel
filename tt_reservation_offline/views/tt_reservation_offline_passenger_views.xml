@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="tt_reservation_offline_passenger_view_form" model="ir.ui.view">
+            <field name="name">tt.reservation.offline.passenger.view.form</field>
+            <field name="model">tt.reservation.offline.passenger</field>
+            <field name="arch" type="xml">
+                <form string="">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="booking_id"/>
+                                <field name="agent_id"/>
+                                <field name="transaction_name"/>
+                                <field name="ticket_number"/>
+                                <field name="seat"/>
+                                <field name="first_name"/>
+                                <field name="birth_date"/>
+                            </group>
+                            <group>
+                                <field name="passenger_id"/>
+                                <field name="pax_type"/>
+                                <field name="state"/>
+                                <field name="state_offline"/>
+                                <field name="name"/>
+                                <field name="last_name"/>
+                                <field name="title"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="cost_service_charge_ids"/>
+                            <field name="channel_service_charge_ids"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="tt_reservation_offline_passenger_view_tree" model="ir.ui.view">
+            <field name="name">tt.reservation.offline.passenger.view.tree</field>
+            <field name="model">tt.reservation.offline.passenger</field>
+            <field name="arch" type="xml">
+                <tree editable="bottom">
+                    <field name="booking_id" invisible="1"/>
+                    <field name="transaction_name" invisible="1"/>
+                    <field name="ticket_number" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
+                    <field name="seat" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>  <!--attrs="{'invisible': [('transaction_name', 'not in', ['airline','train'])]}"-->
+                    <field name="agent_id" readonly="1"/>
+                    <field name="title"/>
+                    <field name="passenger_id" string="Name" context="{'default_commercial_agent_id': agent_id}"/>
+                    <field name="pax_type"/>
+                    <field name="state" readonly="1" invisible="1"/>
+                    <field name="state_offline" readonly="1"/>
+                </tree>
+            </field>
+        </record>
+
+    </data>
+</odoo>

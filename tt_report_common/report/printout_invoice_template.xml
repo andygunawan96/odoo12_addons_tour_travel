@@ -282,6 +282,9 @@
                     <t t-elif="doc_model == 'tt.reservation.hotel'">
                         <t t-set="printout_icon" t-value="'/tt_report_common/static/images/hotel-white.png'"/>
                     </t>
+                </t><t t-elif="doc_type == 'expenses'">
+                    <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Expenses</span><br/>
+                    <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
                 </t><t t-else="">
                     <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Other</span><br/>
                 </t>
@@ -294,6 +297,9 @@
                             <div style="vertical-align: middle; display: flex; letter-spacing: 0.05em; font-size: 24px; color: white; font-weight: 600; margin-top: 0px; margin-left: -10px;">
                                 <t t-if="doc_type == 'itin'">
                                     <span style="margin-top: 5px;">Itinerary Form</span>
+                                </t>
+                                <t t-elif="doc_type == 'expenses'">
+                                    <span style="margin-top: 5px;">Expenses Form</span>
                                 </t>
                                 <t t-else="">
                                     <span t-field="doc.name" style="margin-top: 5px;"/>

@@ -22,6 +22,7 @@ STATE = [
 
 class IssuedOfflinePassenger(models.Model):
     _name = 'tt.reservation.offline.passenger'
+    _inherit = 'tt.reservation.passenger'
     _description = 'Rodex Model'
 
     booking_id = fields.Many2one('tt.reservation.offline', 'Issued Offline')
@@ -39,18 +40,23 @@ class IssuedOfflinePassenger(models.Model):
     first_name = fields.Char('First Name', related='passenger_id.first_name')
     last_name = fields.Char('Last Name', related='passenger_id.last_name')
     title = fields.Selection(variables.TITLE, 'Title')
-
-    channel_service_charge_ids = fields.Many2many('tt.service.charge', 'tt_reservation_visa_channel_charge_rel',
+    birth_date = fields.Date('Birth Date')
+    cost_service_charge_ids = fields.Many2many('tt.service.charge','tt_reservation_offline_cost_charge_rel', 'passenger_id', 'service_charge_id', 'Cost Service Charges')
+    channel_service_charge_ids = fields.Many2many('tt.service.charge', 'tt_reservation_offline_channel_charge_rel',
                                                   'passenger_id', 'service_charge_id', 'Channel Service Charges')
 
     def to_dict(self):
-        return {
-            'ticket_number': self.ticket_number,
-            'pax_type': self.pax_type,
-            'first_name': self.first_name,
-            'last_name': self.last_name,
-            'title': self.title
+        res = {
+            'ticket_number': self.ticket_number if self.ticket_number else '',
+            'pax_type': self.pax_type if self.pax_type else '',
+            'first_name': self.first_name if self.first_name else '',
+            'last_name': self.last_name if self.last_name else '',
+            'title': self.title if self.title else '',
+            'birth_date': str(self.birth_date) if self.birth_date else ''
         }
+        if len(self.channel_service_charge_ids.ids)>0:
+            res['channel_service_charges'] = self.get_channel_service_charges()
+        return res
 
     # def compute_agent_id(self):
     #     self.agent_id = self.booking_id.sub_agent_id

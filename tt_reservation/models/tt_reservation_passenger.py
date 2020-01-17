@@ -87,7 +87,7 @@ class TtReservationCustomer(models.Model):
         currency_code = 'IDR'
         for rec in self.channel_service_charge_ids:
             total+= rec.amount
-            currency_code = rec.currency_id.code
+            currency_code = rec.currency_id.name
 
         return {
             'amount': total,

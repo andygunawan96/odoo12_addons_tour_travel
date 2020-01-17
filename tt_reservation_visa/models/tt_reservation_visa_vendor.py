@@ -39,3 +39,11 @@ class VisaVendorLines(models.Model):
             'payment_date': self.payment_date
         }
         return res
+
+    def pax_to_dict(self):
+        psg_list = []
+        for psg in self.passenger_ids:
+            psg_list.append({
+                'name': psg.name
+            })
+        return psg_list

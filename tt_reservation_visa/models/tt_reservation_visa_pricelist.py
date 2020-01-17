@@ -121,6 +121,7 @@ class VisaPricelist(models.Model):
                     })
                 visa_vals = {
                     'sequence': idx,
+                    'name': rec.name,
                     'pax_type': rec.pax_type,
                     'entry_type': rec.entry_type,
                     'visa_type': rec.visa_type,

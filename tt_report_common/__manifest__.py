@@ -36,6 +36,7 @@
         'report/printout_hotel_voucher_template.xml',
         'report/printout_refund_template.xml',
         'report/printout_reschedule_template.xml',
+        'report/printout_expenses_invoice_template.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
