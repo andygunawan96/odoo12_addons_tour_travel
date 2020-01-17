@@ -15,10 +15,42 @@ class SplitInvoice(models.TransientModel):
     delete_time = fields.Datetime('Deleted Time')
     file = fields.Binary('File',required=True)
     target_field_name = fields.Char("Target Field")
+    agent_id = fields.Many2one('tt.agent','Agent ID')
+    owner_id = fields.Many2one('res.users','Owner ID')
 
     def upload_from_button(self):
         # self.upload(self.filename,self.file_reference,base64.b64decode(self.file))
-        self.upload(self.filename,self.file_reference,self.file,{'co_agent_id': self.env.user.agent_id.id, 'co_uid': self.env.user.id},self.delete_time)
+        if self.agent_id:
+            co_agent_id = self.agent_id.id
+        else:
+            co_agent_id = self.env.user.agent_id.id
+        if self.owner_id:
+            co_uid = self.owner_id.id
+        else:
+            co_uid = self.env.user.id
+
+        context = {
+            'co_agent_id': co_agent_id,
+            'co_uid': co_uid
+        }
+        upload_res = self.upload(self.filename,self.file_reference,self.file,context,self.delete_time)
+        if self.target_field_name:
+            if upload_res['error_code'] == 0:
+                upload_res = upload_res['response']
+                active_id = self.env.context['active_id']
+                active_model = self.env.context['active_model']
+                offline_record = self.env[active_model].browse(active_id)
+                upload_id = self.env['tt.upload.center'].search([('seq_id','=',upload_res['seq_id'])],limit=1).id
+                if offline_record._fields[self.target_field_name].type == 'many2one':
+                    write_vals = {
+                        self.target_field_name: upload_id
+                    }
+                else:
+                    write_vals = {
+                        self.target_field_name: [(4, upload_id)]
+                    }
+
+                offline_record.write(write_vals)
 
     def upload_file_api(self,data,context):
         return self.upload(data['filename'],data['file_reference'],data['file'],context,data.get('delete_date'))

@@ -839,6 +839,16 @@ class ReservationAirline(models.Model):
         airline_ticket_id = book_obj.env.ref('tt_report_common.action_report_printout_reservation_airline')
 
         if not book_obj.printout_ticket_id:
+            if book_obj.agent_id:
+                co_agent_id = book_obj.agent_id.id
+            else:
+                co_agent_id = self.env.user.agent_id.id
+
+            if book_obj.user_id:
+                co_uid = book_obj.user_id.id
+            else:
+                co_uid = self.env.user.id
+
             pdf_report = airline_ticket_id.report_action(book_obj, data=datas)
             pdf_report['context'].update({
                 'active_model': book_obj._name,
@@ -853,8 +863,8 @@ class ReservationAirline(models.Model):
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },
                 {
-                    'co_agent_id': self.env.user.agent_id.id,
-                    'co_uid': self.env.user.id,
+                    'co_agent_id': co_agent_id,
+                    'co_uid': co_uid
                 }
             )
             upc_id = book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
@@ -883,7 +893,18 @@ class ReservationAirline(models.Model):
         datas['form'] = res
         datas['is_with_price'] = True
         airline_ticket_id = book_obj.env.ref('tt_report_common.action_report_printout_reservation_airline')
+
         if not book_obj.printout_ticket_price_id:
+            if book_obj.agent_id:
+                co_agent_id = book_obj.agent_id.id
+            else:
+                co_agent_id = self.env.user.agent_id.id
+
+            if book_obj.user_id:
+                co_uid = book_obj.user_id.id
+            else:
+                co_uid = self.env.user.id
+
             pdf_report = airline_ticket_id.report_action(book_obj, data=datas)
             pdf_report['context'].update({
                 'active_model': book_obj._name,
@@ -898,8 +919,8 @@ class ReservationAirline(models.Model):
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },
                 {
-                    'co_agent_id': self.env.user.agent_id.id,
-                    'co_uid': self.env.user.id,
+                    'co_agent_id': co_agent_id,
+                    'co_uid': co_uid
                 }
             )
             upc_id = book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
@@ -939,6 +960,16 @@ class ReservationAirline(models.Model):
         datas['form'] = res
         airline_itinerary_id = book_obj.env.ref('tt_report_common.action_printout_itinerary_airline')
         if not book_obj.printout_itinerary_id:
+            if book_obj.agent_id:
+                co_agent_id = book_obj.agent_id.id
+            else:
+                co_agent_id = self.env.user.agent_id.id
+
+            if book_obj.user_id:
+                co_uid = book_obj.user_id.id
+            else:
+                co_uid = self.env.user.id
+
             pdf_report = airline_itinerary_id.report_action(book_obj, data=datas)
             pdf_report['context'].update({
                 'active_model': book_obj._name,
@@ -953,8 +984,8 @@ class ReservationAirline(models.Model):
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },
                 {
-                    'co_agent_id': self.env.user.agent_id.id,
-                    'co_uid': self.env.user.id,
+                    'co_agent_id': co_agent_id,
+                    'co_uid': co_uid
                 }
             )
             upc_id = book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)

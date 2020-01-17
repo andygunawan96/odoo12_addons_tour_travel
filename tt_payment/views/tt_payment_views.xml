@@ -77,6 +77,11 @@
                     <h1>
                         <field name="name"/>
                     </h1>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="%(tt_base.tt_upload_center_wizard_action_view)d" string="Upload Document" type="action"
+                                class="oe_stat_button" icon="fa-upload" groups="tt_base.group_tt_tour_travel_operator"
+                                context="{'default_target_field_name': 'payment_image_ids'}"/>
+                    </div>
                     <group name="payment_info">
                         <group string="Agent">
                             <field name="agent_id"/>
@@ -122,9 +127,6 @@
                     </group>
                     <notebook>
                         <page string="Uploads">
-<!--                            <button name="%(tt_base.tt_upload_center_wizard_action_view)d" string="New Upload" type="action"/>-->
-                            <button name="%(tt_base.tt_upload_center_wizard_action_view)d" string="Upload Document" type="action"
-                                    class="oe_stat_button" icon="fa-upload" groups="tt_base.group_tt_tour_travel_operator"/>
                             <field name="payment_image_ids" options="{'no_create':True}"/>
                         </page>
                         <page name="used_on" string="Used On">

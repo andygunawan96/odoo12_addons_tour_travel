@@ -249,18 +249,18 @@ class AgentInvoice(models.Model):
         res = res and res[0] or {}
         datas['form'] = res
 
-        if self.agent_id:
-            co_agent_id = self.agent_id
-        else:
-            co_agent_id = self.env.user.agent_id.id
-
-        if self.env.user.id:
-            co_uid = self.env.user.id
-        else:
-            co_uid = self.env.user.agent_id.id
-
         invoice_id = self.env.ref('tt_report_common.action_report_printout_invoice')
         if not self.printout_invoice_id:
+            if self.agent_id:
+                co_agent_id = self.agent_id.id
+            else:
+                co_agent_id = self.env.user.agent_id.id
+
+            if self.confirmed_uid:
+                co_uid = self.confirmed_uid.id
+            else:
+                co_uid = self.env.user.id
+
             pdf_report = invoice_id.report_action(self, data=datas)
             pdf_report['context'].update({
                 'active_model': self._name,

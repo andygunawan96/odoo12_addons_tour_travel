@@ -76,10 +76,12 @@
                         </group>
                         <group>
                             <field name="agent_id"/>
+                            <label for="confirm_uid" string="Confirm By"/>
                             <div>
                                 <field name="confirmed_uid" class="oe_inline"/> -
                                 <field name="confirmed_date" class="oe_inline"/>
                             </div>
+                            <label for="cancel_uid" string="Cancel By"/>
                             <div>
                                 <field name="cancel_uid" class="oe_inline"/> -
                                 <field name="cancel_date" class="oe_inline"/>
