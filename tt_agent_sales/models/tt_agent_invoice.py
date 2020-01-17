@@ -233,6 +233,8 @@ class AgentInvoice(models.Model):
         res = self.read()
         res = res and res[0] or {}
         datas['form'] = res
+        co_agent_id = self.agent_id if self.agent_id else co_agent_id = self.env.user.agent_id.id
+        co_uid = self.env.user.id if self.env.user.id else co_uid = self.env.user.agent_id.id
         invoice_id = self.env.ref('tt_report_common.action_report_printout_invoice')
         if not self.printout_invoice_id:
             pdf_report = invoice_id.report_action(self, data=datas)
@@ -249,8 +251,8 @@ class AgentInvoice(models.Model):
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },
                 {
-                    'co_agent_id': self.env.user.agent_id.id,
-                    'co_uid': self.env.user.id,
+                    'co_agent_id': co_agent_id,
+                    'co_uid': co_uid
                 }
             )
             upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)

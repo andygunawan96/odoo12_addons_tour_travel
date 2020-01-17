@@ -514,7 +514,6 @@ class ReservationAirline(models.Model):
             dest_idx -= 1
             dest2 = searchRQ['journey_list'][dest_idx]['destination']
 
-
         booking_tmp = {
             'direction': searchRQ.get('direction'),
             'departure_date': searchRQ['journey_list'][0]['departure_date'],
@@ -528,7 +527,6 @@ class ReservationAirline(models.Model):
             'agent_id': context_gateway['co_agent_id'],
             'user_id': context_gateway['co_uid']
         }
-
         return booking_tmp
 
     def check_provider_state(self,context,pnr_list=[],hold_date=False,req={}):
