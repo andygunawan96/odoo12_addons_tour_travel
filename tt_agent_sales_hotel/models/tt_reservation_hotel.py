@@ -32,7 +32,7 @@ class ReservationHotel(models.Model):
             tmp += 'Date  : %s - %s\n' % (str(self.checkin_date)[:10], str(self.checkout_date)[:10])
             tmp += 'Guest :\n'
             for idx, guest in enumerate(self.passenger_ids):
-                tmp += str(idx+1) + '. ' + guest.name + '\n'
+                tmp += str(idx+1) + '. ' + guest['customer_id'].name + '\n'
             spc = rec.special_request or '-'
             tmp += 'Special Request: ' + spc + '\n'
         return tmp

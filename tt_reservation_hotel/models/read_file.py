@@ -1926,20 +1926,33 @@ class HotelInformation(models.Model):
         self.file_log_write('==  Cache Hotel for Homas DONE ==')
         self.file_log_write('=================================')
 
+    def get_rendered_city(self):
+        rendered_city = []
+        filename = "/var/log/cache_hotel/result log/merger_process_result.csv"
+        with open(filename, 'r') as file:
+            city_ids = csv.reader(file)
+            for city in city_ids:
+                rendered_city.append(city[1])
+        return len(rendered_city) >= 1 and rendered_city[1:] or rendered_city
+
     # Get Record From HOMAS, Single Vendor
     def get_record_homas(self):
         # Read CSV CITY
-        target_city_index = 0
+        rendered_city = self.get_rendered_city()
+        target_city_index = len(rendered_city)
         hotel_id = 0
-        rendered_city = []
 
         # provider_list = ['hotelspro', 'hotelspro_file', 'fitruums', 'webbeds_pool', 'webbeds_excel_pool',
         #                  'itank', 'quantum', 'quantum_pool', 'mgholiday', 'mg_pool', 'miki_api', 'miki_scrap', 'miki_pool',
         #                  'dida_pool', 'tbo', 'oyo']
         provider_list = ['dida_pool', 'webbeds_pool', 'webbeds_excel_pool', 'oyo']
 
-        need_to_add_list = [['No', 'CityName', 'RodexTrip City_id'] + provider_list + ['Total']]
-        new_to_add_list2 = [['Type', '#1:Name', '#1:address', '#1:provider', '#2:Similar Name', '#2:address', '#2:provider']]
+        if not rendered_city:
+            need_to_add_list = [['No', 'CityName', 'RodexTrip City_id'] + provider_list + ['Total']]
+            new_to_add_list2 = [['Type', '#1:Name', '#1:address', '#1:provider', '#2:Similar Name', '#2:address', '#2:provider']]
+        else:
+            need_to_add_list = []
+            new_to_add_list2 = []
 
         import glob
         for master_provider in provider_list:
@@ -1948,8 +1961,6 @@ class HotelInformation(models.Model):
             for target_city in city_ids:
                 city_name = target_city[22 + len(master_provider):-5]
                 if city_name in rendered_city:
-                    continue
-                if target_city_index:
                     continue
                 cache_content = []
                 city_obj = self.env['res.city'].find_city_by_name(city_name)
@@ -1988,7 +1999,7 @@ class HotelInformation(models.Model):
                                         same_name[0]['images'] += hotel_fmt['images']
                                         if len(same_name[0]['facilities']) < len(hotel_fmt['facilities']):
                                             same_name[0]['facilities'] = hotel_fmt['facilities']
-                                        self.file_log_write('Sync: ' + hotel_fmt['name'] + '->' + same_name[0]['name'])
+                                        # self.file_log_write('Sync: ' + hotel_fmt['name'] + '->' + same_name[0]['name'])
                                         new_to_add_list2.append([
                                             'sync', hotel_fmt['name'].encode("utf-8"), hotel_fmt['location']['address'].encode("utf-8"), ','.join(hotel_fmt['external_code'].keys()).encode("utf-8"),
                                             same_name[0]['name'].encode("utf-8"), same_name[0]['location']['address'].encode("utf-8"), ','.join(same_name[0]['external_code'].keys()).encode("utf-8")
@@ -1996,7 +2007,7 @@ class HotelInformation(models.Model):
                                     else:
                                         # create baru di memory
                                         cache_content.append(hotel_fmt)
-                                        self.file_log_write('New : ' + hotel_fmt['name'])
+                                        # self.file_log_write('New : ' + hotel_fmt['name'])
                                         new_to_add_list2.append(['new', hotel_fmt['name'].encode("utf-8"), hotel_fmt['location']['address'].encode("utf-8"), ','.join(hotel_fmt['external_code'].keys()).encode("utf-8"),
                                                                  ''])
                             f2.close()
@@ -2027,22 +2038,25 @@ class HotelInformation(models.Model):
 
                 if target_city_index % 50 == 0:
                     # Simpan record tiap 50 city
-                    with open('/var/log/cache_hotel/result log/merger_process_result.csv', 'w') as csvFile:
+                    with open('/var/log/cache_hotel/result log/merger_process_result.csv', 'a') as csvFile:
                         writer = csv.writer(csvFile)
                         writer.writerows(need_to_add_list)
                     csvFile.close()
+                    need_to_add_list = []
 
-                    with open('/var/log/cache_hotel/result log/merger_history.csv', 'w') as csvFile:
+                    with open('/var/log/cache_hotel/result log/merger_history.csv', 'a') as csvFile:
                         writer = csv.writer(csvFile)
                         writer.writerows(new_to_add_list2)
                     csvFile.close()
+                    new_to_add_list2 = []
 
-        with open('/var/log/cache_hotel/result log/merger_process_result.csv', 'w') as csvFile:
+
+        with open('/var/log/cache_hotel/result log/merger_process_result.csv', 'a') as csvFile:
             writer = csv.writer(csvFile)
             writer.writerows(need_to_add_list)
         csvFile.close()
 
-        with open('/var/log/cache_hotel/result log/merger_history.csv', 'w') as csvFile:
+        with open('/var/log/cache_hotel/result log/merger_history.csv', 'a') as csvFile:
             writer = csv.writer(csvFile)
             writer.writerows(new_to_add_list2)
         csvFile.close()
