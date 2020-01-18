@@ -73,7 +73,6 @@ class TtCustomer(models.Model):
     @api.multi
     def write(self, vals):
         util.pop_empty_key(vals)
-        vals['seq_id'] = self.env['ir.sequence'].next_by_code('tt.customer')
         if 'first_name' in vals:
             vals['first_name'] = vals['first_name'].strip()
         if 'last_name' in vals:
