@@ -87,7 +87,7 @@
                             <field name="agent_id"/>
                             <field name="customer_parent_id"/>
                             <field name="create_date"/>
-                            <field name="acquirer_domain"/>
+                            <field name="dummy_acquirer_field" class="oe_edit_only" attrs="{'invisible':[('dummy_acquirer_field','=', True)]}"/>
 <!--                            <field name="acquirer_id" domain="acquirer_domain"/>-->
                             <field name="acquirer_id"/>
                         </group>

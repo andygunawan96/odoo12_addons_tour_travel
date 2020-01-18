@@ -96,8 +96,18 @@ class PaymentTransaction(models.Model):
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True,readonly=True,states={'draft': [('readonly', False)]})
     customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer',readonly=True,states={'draft': [('readonly', False)]}, domain=_get_c_parent_domain)
     # acquirer_id = fields.Many2one('payment.acquirer', 'Acquirer', domain=_get_acquirer_domain,states={'validated': [('readonly', True)]})
-    acquirer_domain = fields.Char('acquirer_domain',compute="_compute_acquirer_domain")
-    acquirer_id = fields.Many2one('payment.acquirer', 'Acquirer',states={'validated': [('readonly', True)]})
+    dummy_acquirer_field = fields.Boolean('Generate Acquirer List', default=False)
+
+    def get_payment_acquirer_domain(self):
+        if self.customer_parent_id:
+            dom = self.env['payment.acquirer'].search([('agent_id','=',self.agent_id.id )]).ids
+        else:
+            ho_id = self.env.ref('tt_base.rodex_ho').id
+            dom = self.env['payment.acquirer'].search([('agent_id','=', ho_id )]).ids
+        domain = "[('id','in',[%s])]" % (",".join(list(map(str,dom))))
+        return domain
+
+    acquirer_id = fields.Many2one('payment.acquirer', 'Acquirer',states={'validated': [('readonly', True)]}, domain=[('id', '=', -1)])
 
     # #Todo:
     # # 1. Pertimbangkan penggunaan monetary field untuk integer field (pertimbangkan multi currency juga)
@@ -107,15 +117,13 @@ class PaymentTransaction(models.Model):
     # # 5. Ganti payment_uid dengan agent_id
     # # 6. Tambahkan Payment Acquirer metode pembayaran e
 
-    def _compute_acquirer_domain(self):
-        if self.customer_parent_id:
-            dom = self.env['payment.acquirer'].search([('agent_id','=',self.agent_id.id )]).ids
-        else:
-            ho_id = self.env.ref('tt_base.rodex_ho').id
-            dom = self.env['payment.acquirer'].search([('agent_id','=', ho_id )]).ids
-        domain = "[('id','in',[%s])]" % (",".join(list(map(str,dom))))
-        print(domain)
-        self.acquirer_domain = domain
+
+    @api.depends('customer_parent_id', 'agent_id', 'dummy_acquirer_field')
+    @api.onchange('customer_parent_id', 'agent_id', 'dummy_acquirer_field')
+    def _onchange_domain_payment_acquirer(self):
+        return {'domain': {
+            'acquirer_id': self.get_payment_acquirer_domain()
+        }}
 
     def _compute_fee_payment(self):
         for rec in self:
@@ -168,6 +176,13 @@ class PaymentTransaction(models.Model):
         vals_list['state'] = 'confirm'
         new_payment = super(PaymentTransaction, self).create(vals_list)
         return new_payment
+
+    @api.multi
+    def write(self, vals_list):
+        vals_list.update({
+            'dummy_acquirer_field': False
+        })
+        return super(PaymentTransaction, self).write(vals_list)
 
     def action_validate_from_button(self):
         if self.state != 'confirm':
