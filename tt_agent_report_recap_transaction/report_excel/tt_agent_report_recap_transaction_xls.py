@@ -98,6 +98,9 @@ class AgentReportRecapTransactionXls(models.TransientModel):
             if temp_order_number != i['order_number']:
                 #set checker for order number
                 temp_order_number = i['order_number']
+                temp_charge = list(filter(lambda x: x['order_number'] == i['order_number'], service_charge))
+                if temp_charge[0]['ledger_created'] == False:
+                    continue
 
                 #get pnr list
                 try:
@@ -149,7 +152,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                 filtered_data = []
 
                 for j in pnr_list:
-                    temp_charge = list(filter(lambda x: x['order_number'] == i['order_number'] and x['booking_pnr'] == j, service_charge))
+                    temp_charge = list(filter(lambda x: x['booking_pnr'] == j, temp_charge))
                     temp_book = list(filter(lambda x: x['order_number'] == i['order_number'] and x['ledger_pnr'] == j, datas))
                     temp_dict = {
                         'order_number': i['order_number'],

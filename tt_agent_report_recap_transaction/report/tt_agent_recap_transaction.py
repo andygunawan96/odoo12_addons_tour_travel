@@ -27,7 +27,8 @@ class AgentReportRecapTransacion(models.Model):
         return """
             rsv.id, rsv.name as order_number, rsv.pnr, rsv.total as grand_total, rsv.total_commission, rsv.total_nta, rsv.state,
             booking_ids.id as booking_id, booking_ids.pnr as booking_pnr, booking_ids.state as booking_state,
-            booking_service_charge.total as booking_charge_total, booking_service_charge.charge_type as booking_charge_type
+            booking_service_charge.total as booking_charge_total, booking_service_charge.charge_type as booking_charge_type,
+            booking_service_charge.is_ledger_created as ledger_created
             """
 
     @staticmethod
@@ -38,7 +39,7 @@ class AgentReportRecapTransacion(models.Model):
         LEFT JOIN tt_provider_type provider_type ON provider_type.id = rsv.provider_type_id
         LEFT JOIN tt_agent_type agent_type ON agent_type.id = rsv.agent_type_id
         LEFT JOIN res_currency currency ON currency.id = rsv.currency_id
-        RIGHT JOIN tt_ledger ledger ON ledger.res_model = rsv.res_model AND ledger.res_id = rsv.id
+        LEFT JOIN tt_ledger ledger ON ledger.res_model = rsv.res_model AND ledger.res_id = rsv.id
         LEFT JOIN tt_agent ledger_agent ON ledger_agent.id = ledger.agent_id
         """
         return query
