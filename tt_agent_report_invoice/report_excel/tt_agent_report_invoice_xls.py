@@ -92,7 +92,10 @@ class AgentReportInvoiceXls(models.TransientModel):
                 sheet.write(row_data, 13, i['state'], sty_table_data)
 
                 filtered_data = list(filter(lambda x: x['invoice_number'] == i['invoice_number'], values['lines']))
-                sort_by_payment = sorted(filtered_data, key=lambda x: x['payment_ref'])
+                try:
+                    sort_by_payment = sorted(filtered_data, key=lambda x: x['payment_ref'])
+                except:
+                    sort_by_payment = []
                 payment_ref = ''
                 for j in sort_by_payment:
                     row_data += 1
