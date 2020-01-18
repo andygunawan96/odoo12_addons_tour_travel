@@ -626,7 +626,12 @@ class TestSearch(models.Model):
         passenger_objs = self.env['tt.reservation.hotel'].create_customer_api(cust_names, context, booker_obj.id, cust_partner_obj.id)  # create passenger
 
         resv_id = self.env['tt.reservation.hotel'].sudo().create(vals)
-        resv_id.write({'passenger_ids': [(6, 0, [rec[0].id for rec in passenger_objs])]})
+        # resv_id.write({'passenger_ids': [(6, 0, [rec[0].id for rec in passenger_objs])]})
+        for rec in passenger_objs:
+            self.env['tt.reservation.passenger.hotel'].create({
+                'booking_id': resv_id.id,
+                'customer_id': rec.id,
+            })
 
         for room_rate in room_rates[0]['rooms']:
             vendor_currency_id = self.env['res.currency'].sudo().search([('name', '=', room_rate['currency'])], limit=1).id
@@ -798,7 +803,8 @@ class TestSearch(models.Model):
 
     def prepare_booking_room(self, lines, customers):
         guests = []
-        for cust in customers:
+        for passenger in customers:
+            cust = passenger['customer_id']
             last_name = cust.last_name and ' ' + cust.last_name or ''
             a = {
                 'prefix': 'prefix' in cust._fields.keys() and cust.prefix or 'mr',
@@ -827,11 +833,11 @@ class TestSearch(models.Model):
 
     def prepare_passengers(self, customers):
         return [{
-            'title': cust['gender'] == 'male' and 'MR' or cust['marital_status'] in ['married', 'widowed'] and 'MRS' or 'MS',
-            'first_name': cust['first_name'],
-            'last_name': cust['last_name'] or '',
+            'title': cust['customer_id']['gender'] == 'male' and 'MR' or cust['customer_id']['marital_status'] in ['married', 'widowed'] and 'MRS' or 'MS',
+            'first_name': cust['customer_id']['first_name'],
+            'last_name': cust['customer_id']['last_name'] or '',
             'pax_type': 'ADT',
-            'birth_date': cust['birth_date'],
+            'birth_date': cust['customer_id']['birth_date'],
         } for cust in customers]
 
     def get_booking_result(self, resv_id, context=False):
@@ -1033,7 +1039,7 @@ class TestSearch(models.Model):
 
         city_id = self.env['res.city'].find_city_by_name(dest_name, 1)
         country_id = city_id.state_id and city_id.state_id.country_id or city_id.country_id
-        vendor_ids = self.env['tt.provider.destination'].sudo().search([('country_id', '=', country_id.id)])
+        vendor_ids = self.env['tt.provider.destination'].sudo().search([('country_id', '=', country_id.id), ('is_apply', '=', True)])
         providers = [provider_to_dic(rec, city_id) for rec in vendor_ids]
 
         return providers

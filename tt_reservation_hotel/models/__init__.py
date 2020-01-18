@@ -21,6 +21,7 @@ from . import hotel_provider_data
 from . import tt_provider_hotel
 from . import hotel_reservation
 from . import hotel_reservation_details
+from . import tt_reservation_passenger_hotel
 
 from . import scrapper_history
 from . import read_file
