@@ -70,7 +70,7 @@ class TtCustomer(models.Model):
             vals_list['last_name'] = vals_list['last_name'].strip()
         return super(TtCustomer, self).create(vals_list)
 
-    @api.model
+    @api.multi
     def write(self, vals):
         util.pop_empty_key(vals)
         vals['seq_id'] = self.env['ir.sequence'].next_by_code('tt.customer')
