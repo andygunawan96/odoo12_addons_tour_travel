@@ -80,7 +80,7 @@ class TtCustomerParentInh(models.Model):
 
     def get_billing_due_date(self, bill_due_date, bill_day_list):
         final_due_date = date.today() + timedelta(days=bill_due_date)
-        while final_due_date.strftime('%A') not in bill_day_list:
+        while final_due_date.strftime('%A') not in bill_day_list and bill_day_list:
             final_due_date += timedelta(days=1)
         return final_due_date
 
@@ -123,7 +123,8 @@ class TtCustomerParentInh(models.Model):
                         'due_date': self.get_billing_due_date(cor.billing_due_date, bill_day_list),
                         'agent_id': cor.parent_agent_id.id,
                         'customer_parent_id': cor.id,
-                        'invoice_ids': invoice_list
+                        'invoice_ids': invoice_list,
+                        'state': 'confirm'
                     })
         except Exception as e:
             dest = '/var/log/odoo/cron_log'

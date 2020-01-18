@@ -31,4 +31,4 @@ class PhoneDetail(models.Model):
     @api.onchange('calling_code', 'calling_number')
     def _compute_phone_number(self):
         for rec in self:
-            rec.phone_number = (rec.calling_code and rec.calling_code + ' ' or '') + (rec.calling_number and rec.calling_number or '')
+            rec.phone_number = (rec.calling_code and rec.calling_code or '') + (rec.calling_number and rec.calling_number or '')
