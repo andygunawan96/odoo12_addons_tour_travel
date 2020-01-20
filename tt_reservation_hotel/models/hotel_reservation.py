@@ -42,9 +42,10 @@ class HotelReservation(models.Model):
         x: x.env.ref('tt_reservation_hotel.tt_provider_type_hotel'))
 
     # Guests Information
-    passenger_ids = fields.Many2many('tt.customer', 'tt_reservation_hotel_guest_rel', 'booking_id',
-                                     'passenger_id',
-                                     string='List of Guest', readonly=True, states={'draft': [('readonly', False)]})
+    # passenger_ids = fields.Many2many('tt.customer', 'tt_reservation_hotel_guest_rel', 'booking_id',
+    #                                  'passenger_id',
+    #                                  string='List of Guest', readonly=True, states={'draft': [('readonly', False)]})
+    passenger_ids = fields.One2many('tt.reservation.passenger.hotel', 'booking_id', string='Passengers')
 
     # Hotel Information
     hotel_id = fields.Many2one('tt.hotel', 'Hotel Information', readonly=True, states={'draft': [('readonly', False)]})
