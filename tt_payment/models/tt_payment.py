@@ -14,7 +14,7 @@ class PaymentTransaction(models.Model):
     fee = fields.Monetary('Fee', help='Third party fee',readonly=True, compute="_compute_fee_payment", states={'draft': [('readonly', False)]}) # g dihitung sebagai uang yg bisa digunakan
     loss_or_profit = fields.Monetary('Loss or Profit', readonly=True, compute="_compute_fee_payment", states={'draft': [('readonly', False)]})
 
-    used_amount = fields.Monetary('Used Amount',readonly=True)#yang sudah dipakai membayar
+    used_amount = fields.Monetary('Used Amount',readonly=True, compute="compute_available_amount")#yang sudah dipakai membayar
     available_amount = fields.Monetary('Available Amount', compute="compute_available_amount",
                                        help='payment amount + unique amount',readonly=True) #nominal yg bisa digunakan
 
