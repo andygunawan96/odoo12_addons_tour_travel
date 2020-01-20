@@ -14,7 +14,7 @@ class PaymentTransaction(models.Model):
     fee = fields.Monetary('Fee', help='Third party fee',readonly=True, compute="_compute_fee_payment", states={'draft': [('readonly', False)]}) # g dihitung sebagai uang yg bisa digunakan
     loss_or_profit = fields.Monetary('Loss or Profit', readonly=True, compute="_compute_fee_payment", states={'draft': [('readonly', False)]})
 
-    used_amount = fields.Monetary('Used Amount',readonly=True)#yang sudah dipakai membayar
+    used_amount = fields.Monetary('Used Amount',readonly=True, compute="compute_available_amount")#yang sudah dipakai membayar
     available_amount = fields.Monetary('Available Amount', compute="compute_available_amount",
                                        help='payment amount + unique amount',readonly=True) #nominal yg bisa digunakan
 
@@ -177,15 +177,11 @@ class PaymentTransaction(models.Model):
                 if ({self.env.ref('tt_base.group_tt_tour_travel_operator').id,
                      self.env.ref('tt_base.group_tt_accounting_operator').id}.intersection(set(self.env.user.groups_id.ids))):
                     self.top_up_id.action_validate_top_up(self.total_amount)
-                    self.write({
-                        'state': 'validated',
-                        'validate_uid': self.env.user.id,
-                        'validate_date': datetime.now()
-                    })
+                    self.action_validate_payment()
                 else:
                     raise exceptions.UserError('No permission to validate Top Up.')
             else:
-                self.state = 'validated'
+                self.action_validate_payment()
         else:
             raise exceptions.UserError('Please write down the payment reference.')
 
@@ -200,24 +196,32 @@ class PaymentTransaction(models.Model):
                 # if self.top_up_id.total != self.real_total_amount and datetime.now().day == self.create_date.day:
                 #     raise exceptions.UserError('Cannot change, have to wait 1 day.')
                 self.top_up_id.action_approve_top_up()
-                approve_values = {
-                    'state': 'approved',
-                    'approve_uid': self.env.user.id,
-                    'approve_date': datetime.now()
-                }
-                if not self.payment_date:
-                    approve_values.update({
-                        'payment_date': datetime.now()
-                    })
-                self.write(approve_values)
+                self.action_approve_payment()
             else:
                 raise exceptions.UserError('No permission to approve Top Up.')
         else:
-            self.invoice_approve_action()
+            self.action_approve_payment()
 
 
-    def invoice_approve_action(self):
-        self.state = 'approved'
+    def action_approve_payment(self):
+        approve_values = {
+            'state': 'approved',
+            'approve_uid': self.env.user.id,
+            'approve_date': datetime.now()
+        }
+        if not self.payment_date:
+            approve_values.update({
+                'payment_date': datetime.now()
+            })
+        self.write(approve_values)
+
+
+    def action_validate_payment(self):
+        self.write({
+            'state': 'validated',
+            'validate_uid': self.env.user.id,
+            'validate_date': datetime.now()
+        })
 
     def action_cancel_payment(self,context):
         if self.state != 'confirm':

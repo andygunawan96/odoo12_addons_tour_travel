@@ -81,8 +81,8 @@ class TtPaymentInh(models.Model):
             if rec.available_amount < 0:
                 raise exceptions.UserError("Pay amount on %s exceeded payment's residual amount" % (self.name))
 
-    def invoice_approve_action(self):
-        super(TtPaymentInh, self).invoice_approve_action()
+    def action_approve_payment(self):
+        super(TtPaymentInh, self).action_approve_payment()
         for rec in self.invoice_ids:
             rec.invoice_id.check_paid_status()
             if rec.invoice_id.billing_statement_id:
