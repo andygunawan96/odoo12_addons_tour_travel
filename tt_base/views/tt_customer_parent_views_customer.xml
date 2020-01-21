@@ -27,11 +27,28 @@
                             <field name="currency_id"/>
                         </group>
                     </group>
+                    <group>
+                        <group>
+                            <field name="tax_identity_number"/>
+                        </group>
+                        <group>
+                            <field name="company_bank_data"/>
+                        </group>
+                    </group>
                     <notebook>
                         <page string="Customer">
                             <field name="customer_ids"
                                    domain="[('agent_id', '=', parent_agent_id)]"
                                    context="{'tree_view_ref': 'tt_base.tt_customer_customer_tree_view', 'default_agent_id': parent_agent_id}"/>
+                        </page>
+                        <page string="Addresses">
+                            <field name="address_ids"/>
+                        </page>
+                        <page string="Phones">
+                            <field name="phone_ids"/>
+                        </page>
+                        <page string="Social Media">
+                            <field name="social_media_ids"/>
                         </page>
                     </notebook>
                 </sheet>
@@ -89,13 +106,13 @@
         </field>
     </record>
 
-<!--    <record id="action_view_customer_parent_server" model="ir.actions.server">-->
-<!--        <field name="name">Customer Parent</field>-->
-<!--        <field name="model_id" ref="model_tt_customer_parent"/>-->
-<!--        <field name="state">code</field>-->
-<!--        <field name="code">action = model.customer_parent_action_view_customer()</field>-->
-<!--        <field eval="True" name="condition"/>-->
-<!--    </record>-->
+    <!--    <record id="action_view_customer_parent_server" model="ir.actions.server">-->
+    <!--        <field name="name">Customer Parent</field>-->
+    <!--        <field name="model_id" ref="model_tt_customer_parent"/>-->
+    <!--        <field name="state">code</field>-->
+    <!--        <field name="code">action = model.customer_parent_action_view_customer()</field>-->
+    <!--        <field eval="True" name="condition"/>-->
+    <!--    </record>-->
 
     <record id="tt_customer_parent_action_view_customer" model="ir.actions.act_window">
         <field name="name">Customer Parent</field>
