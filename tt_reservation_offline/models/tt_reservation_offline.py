@@ -624,9 +624,9 @@ class IssuedOffline(models.Model):
         for rec in self:
             if rec.offline_provider_type and rec.offline_provider_type != 'other':
                 pricing_obj = rec.env['tt.pricing.agent'].sudo()
-                provider_type_id = self.env['tt.provider.type'].search([('code', '=', rec.offline_provider_type)], limit=1)
-                commission_list = pricing_obj.get_commission(rec.total_commission_amount, rec.agent_id,
-                                                             provider_type_id)
+                provider_type_id = self.env['tt.provider.type'].sudo().search([('code', '=', rec.offline_provider_type)], limit=1)
+                commission_list = pricing_obj.sudo().get_commission(rec.total_commission_amount, rec.agent_id,
+                                                                    provider_type_id)
                 rec.agent_commission = 0
                 rec.parent_agent_commission = 0
                 rec.ho_commission = 0
@@ -634,16 +634,16 @@ class IssuedOffline(models.Model):
                 for comm in commission_list:
                     if comm.get('code') == 'rac':
                         rec.agent_commission += comm.get('amount')
-                    elif comm.get('agent_type_id') == rec.env.ref('tt_base.rodex_ho').agent_type_id.id:
+                    elif comm.get('agent_type_id') == rec.env.ref('tt_base.rodex_ho').sudo().agent_type_id.id:
                         rec.ho_commission += comm.get('amount')
                     else:
                         rec.parent_agent_commission += comm.get('amount')
             elif rec.offline_provider_type and rec.offline_provider_type == 'other':
                 pricing_obj = rec.env['tt.pricing.agent'].sudo()
-                provider_type_id = self.env['tt.provider.type'].search([('code', '=', 'offline')],
+                provider_type_id = self.env['tt.provider.type'].sudo().search([('code', '=', 'offline')],
                                                                        limit=1)
-                commission_list = pricing_obj.get_commission(rec.total_commission_amount, rec.agent_id,
-                                                             provider_type_id)
+                commission_list = pricing_obj.sudo().get_commission(rec.total_commission_amount, rec.agent_id,
+                                                                    provider_type_id)
                 rec.agent_commission = 0
                 rec.parent_agent_commission = 0
                 rec.ho_commission = 0
@@ -651,7 +651,7 @@ class IssuedOffline(models.Model):
                 for comm in commission_list:
                     if comm.get('code') == 'rac':
                         rec.agent_commission += comm.get('amount')
-                    elif comm.get('agent_type_id') == rec.env.ref('tt_base.rodex_ho').agent_type_id.id:
+                    elif comm.get('agent_type_id') == rec.env.ref('tt_base.rodex_ho').sudo().agent_type_id.id:
                         rec.ho_commission += comm.get('amount')
                     else:
                         rec.parent_agent_commission += comm.get('amount')
@@ -1261,11 +1261,6 @@ class IssuedOffline(models.Model):
             _logger.error('Entah status apa')
             raise RequestException(1006)
 
-    # @api.depends("sale_service_charge_ids")
-    # def _compute_total(self):
-    #     for rec in self:
-    #         pass
-
     def confirm_api(self, id):
         obj = self.sudo().browse(id)
         obj.action_confirm()
@@ -1294,6 +1289,53 @@ class IssuedOffline(models.Model):
                 'agent_commission': random.randrange(1000, 20000, 500),
             })
         return True
+
+    def get_aftersales_desc(self):
+        desc_txt = ''
+        if self.offline_provider_type in ['airline', 'train']:
+            for rec in self.line_ids:
+                desc_txt += 'PNR: ' + rec.pnr + '<br/>'
+                desc_txt += 'Carrier: ' + rec.carrier_id.name + '<br/>'
+                desc_txt += 'Departure: ' + rec.origin_id.display_name + ' (' + rec.departure_date + ' ' + rec.departure_hour + ':' + rec.departure_minute + ')<br/>'
+                desc_txt += 'Arrival: ' + rec.destination_id.display_name + ' (' + rec.return_date + ' ' + rec.return_hour + ':' + rec.return_minute + ')<br/><br/>'
+        elif self.offline_provider_type == 'hotel':
+            for rec in self.line_ids:
+                desc_txt += 'PNR: ' + rec.pnr + '<br/>'
+                desc_txt += 'Hotel : ' + rec.hotel_name + '<br/>'
+                desc_txt += 'Room : ' + rec.room + ' ' + str(rec.obj_qty) + 'x' + '<br/>'
+                desc_txt += 'Date : ' + str(rec.check_in) + ' - ' + str(rec.check_out) + '<br/>'
+                desc_txt += 'Passengers : ' + '<br/>'
+                for idx, psg in enumerate(self.passenger_ids):
+                    index = idx + 1
+                    desc_txt += str(index) + '. ' + psg.first_name + ' ' + psg.last_name + '<br/>'
+                desc_txt += 'Description : ' + rec.description + '<br/><br/>'
+        elif self.offline_provider_type == 'activity':
+            for rec in self.line_ids:
+                desc_txt += 'PNR: ' + rec.pnr + '<br/>'
+                desc_txt += 'Activity : ' + rec.activity_name + '<br/>'
+                desc_txt += 'Package : ' + rec.activity_package + str(rec.obj_qty) + 'x' + '<br/>'
+                desc_txt += 'Date : ' + str(rec.check_in) + '<br/>'
+                desc_txt += 'Passengers : ' + '<br/>'
+                for idx, psg in enumerate(rec.passenger_ids):
+                    index = idx + 1
+                    desc_txt += str(index) + '. ' + psg.first_name + ' ' + psg.last_name + '<br/>'
+                desc_txt += 'Description : ' + rec.description + '<br/><br/>'
+        elif self.offline_provider_type == 'cruise':
+            for rec in self.line_ids:
+                desc_txt += 'PNR: ' + rec.pnr + '<br/>'
+                desc_txt += 'Cruise : ' + rec.cruise_package + '<br/>'
+                desc_txt += 'Room : ' + rec.room + ' ' + str(rec.obj_qty) + '<br/>'
+                desc_txt += 'Date : ' + str(rec.check_in) + ' - ' + str(rec.check_out) + '<br/>'
+                desc_txt += 'Passengers : ' + '<br/>'
+                for idx, psg in enumerate(rec.passenger_ids):
+                    index = idx + 1
+                    desc_txt += str(index) + '. ' + psg.first_name + ' ' + psg.last_name + '<br/>'
+                desc_txt += 'Description : ' + rec.description + '<br/><br/>'
+        else:
+            for rec in self.line_ids:
+                desc_txt += 'PNR: ' + rec.pnr + '<br/>'
+                desc_txt += 'Description : ' + rec.description + '<br/><br/>'
+        return desc_txt
 
     def to_dict(self):
         return {

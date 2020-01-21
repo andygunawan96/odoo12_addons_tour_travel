@@ -120,8 +120,8 @@ class PricingAgent(models.Model):
             'agent_type_id': agent_id.agent_type_id.id,
             'code': agent_id.agent_type_id.code,
         })
-        if agent_id.parent_agent_id and agent_id.parent_agent_id.name != agent_id.name:
-            return self.get_agent_hierarchy(agent_id.parent_agent_id, hierarchy)
+        if agent_id.sudo().parent_agent_id and agent_id.sudo().parent_agent_id.name != agent_id.sudo().name:
+            return self.get_agent_hierarchy(agent_id.sudo().parent_agent_id, hierarchy)
         else:
             return hierarchy
 
@@ -129,7 +129,7 @@ class PricingAgent(models.Model):
         """ Fungsi untuk membagi commisison berdasarkan jenis provider type dan agent type """
 
         """ Search object pricing agent berdasarkan provider type dan agent type """
-        price_obj = self.search([('agent_type_id', '=', agent_id.agent_type_id.id),
+        price_obj = self.sudo().search([('agent_type_id', '=', agent_id.agent_type_id.id),
                                  ('provider_type_id', '=', provider_type_id.id)], limit=1)
         vals_list = []  # output list of pricing
         remaining_diff = 0  # sisa diff yang jika masih ada sisa, akan dimasukkan ke HO
@@ -174,7 +174,7 @@ class PricingAgent(models.Model):
                 remaining_diff = input_commission - comm  # sisa diff = input komisi awal - komisi agent yang pesan
 
                 """ list agents hierarchy (list of dict mulai dari agent yang pesan hingga HO) """
-                agent_hierarchy = self.get_agent_hierarchy(agent_id, hierarchy=[])
+                agent_hierarchy = self.sudo().get_agent_hierarchy(agent_id, hierarchy=[])
                 curr_rule = {}
 
                 """ Looping uplines """
