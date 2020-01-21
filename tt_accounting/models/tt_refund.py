@@ -440,6 +440,9 @@ class TtRefund(models.Model):
                 'done_date': datetime.now()
             })
 
+    def refund_cor_payment(self):
+        print('')
+
     def action_approve_cust(self):
         self.write({
             'state': 'approve_cust',
@@ -492,6 +495,9 @@ class TtRefund(models.Model):
                 'Refund Agent Admin Fee for %s' % (self.referenced_document),
                 **{'refund_id': self.id}
             )
+
+            if self.customer_parent_id.customer_parent_type_id.id != self.env.ref('tt_base.customer_type_fpo').id:
+                self.refund_cor_payment()
 
         self.write({
             'state': 'done',
