@@ -305,6 +305,9 @@ class TtRefund(models.Model):
             self.action_approve()
 
     def action_approve(self):
+        if self.state != 'final':
+            raise UserError("Cannot appove because state is not 'Final'.")
+
         credit = 0
         debit = self.refund_amount
         if debit < 0:
@@ -416,31 +419,32 @@ class TtRefund(models.Model):
             'state': 'approve',
         })
 
+    def refund_cor_payment(self):
+        pass
+
     def action_payment(self):
-        if self.agent_type_id.id in [self.env.ref('tt_base.agent_type_citra').id, self.env.ref('tt_base.agent_type_japro').id]:
-            fee = len(self.refund_line_ids) > 0 and self.final_admin_fee / len(self.refund_line_ids) or 0
-            for rec in self.refund_line_cust_ids:
-                rec.sudo().unlink()
-            for rec in self.refund_line_ids:
-                self.env['tt.refund.line.customer'].create({
-                    'refund_id': self.id,
-                    'name': rec.name,
-                    'birth_date': rec.birth_date,
-                    'refund_amount': rec.refund_amount - fee,
-                })
-            self.write({
-                'state': 'payment',
-                'payment_uid': self.env.user.id,
-                'payment_date': datetime.now()
+        if self.state != 'approve':
+            raise UserError("Cannot process payment to customer because state is not 'approved'.")
+
+        fee = len(self.refund_line_ids) > 0 and self.final_admin_fee / len(self.refund_line_ids) or 0
+        for rec in self.refund_line_cust_ids:
+            rec.sudo().unlink()
+        for rec in self.refund_line_ids:
+            self.env['tt.refund.line.customer'].create({
+                'refund_id': self.id,
+                'name': rec.name,
+                'birth_date': rec.birth_date,
+                'refund_amount': rec.refund_amount - fee,
             })
-        else:
-            self.write({
-                'state': 'done',
-                'done_uid': self.env.user.id,
-                'done_date': datetime.now()
-            })
+        self.write({
+            'state': 'payment',
+            'payment_uid': self.env.user.id,
+            'payment_date': datetime.now()
+        })
 
     def action_approve_cust(self):
+        if self.state != 'payment':
+            raise UserError("Cannot process payment to customer because state is not 'approved'.")
         self.write({
             'state': 'approve_cust',
             'approve2_uid': self.env.user.id,
@@ -448,6 +452,12 @@ class TtRefund(models.Model):
         })
 
     def action_done(self):
+        state_list = ['approve_cust']
+        if self.customer_parent_id.customer_parent_type_id.id == self.env.ref('tt_base.customer_type_fpo').id:
+            state_list.append('approve')
+        if self.state not in state_list:
+            raise UserError("Cannot set the transaction to Done because state is not 'approved'. Payment to Customer needs to be processed if the customer is COR/POR.")
+
         tot_citra_fee = 0
         for rec in self.refund_line_cust_ids:
             tot_citra_fee += rec.citra_fee
@@ -492,6 +502,9 @@ class TtRefund(models.Model):
                 'Refund Agent Admin Fee for %s' % (self.referenced_document),
                 **{'refund_id': self.id}
             )
+
+            if self.customer_parent_id.customer_parent_type_id.id != self.env.ref('tt_base.customer_type_fpo').id:
+                self.refund_cor_payment()
 
         self.write({
             'state': 'done',

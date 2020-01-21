@@ -91,7 +91,7 @@
                         'default_booker_id': booker_id,
                         'default_currency_id': currency_id,
                         'default_service_type': provider_type_id
-                   }" attrs="{'invisible':[('refundable','=',False)]}"/>
+                    }" attrs="{'invisible':[('refundable','=',False)]}"/>
 <!--                        <button string="Get Booking Offline" name="get_booking_offline" type="object"/>-->
 <!--                        <button string="Test Repricing Offline" name="test_repricing_offline" type="object"/>-->
                         <button string="Sync Service Charge" name="sync_service_charge" type="object"/>

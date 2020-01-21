@@ -39,7 +39,8 @@ class ReservationReportAirline(models.Model):
     @staticmethod
     def _where(date_from, date_to, agent_id, state):
         where = """airline.create_date >= '%s' and airline.create_date <= '%s'""" % (date_from, date_to)
-        where += """ AND airline.state = '%s'""" %(state)
+        if state != 'all':
+            where += """ AND airline.state = '%s'""" %(state)
         return where
 
     @staticmethod
@@ -56,17 +57,8 @@ class ReservationReportAirline(models.Model):
         return self.env.cr.dictfetchall()
 
     def _get_lines_data(self, date_from, date_to, agent_id, state):
-        lines = []
-        if state != 'all':
-            lines = self._lines(date_from, date_to, agent_id, state)
-            lines = self._convert_data(lines)
-        else:
-            state = ['booked', 'issued', 'expired', 'others']
-            for i in state:
-                line = self._lines(date_from, date_to, agent_id, i)
-                line = self._convert_data(line)
-                for j in line:
-                    lines.append(j)
+        lines = self._lines(date_from, date_to, agent_id, state)
+        lines = self._convert_data(lines)
         return lines
 
     def _convert_data(self, lines):

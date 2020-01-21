@@ -11,11 +11,16 @@ class CreateCustomerParentWizard(models.TransientModel):
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.user.company_id.currency_id.id, string='Currency')
 
     def submit_customer_parent(self):
+        if self.customer_parent_type_id.id == self.env.ref('tt_base.customer_type_cor').id:
+            tax_percentage = 1.0
+        else:
+            tax_percentage = 0.0
         cust_parent_obj = self.env['tt.customer.parent'].create({
             'name': self.name,
             'customer_parent_type_id': self.customer_parent_type_id.id,
             'parent_agent_id': self.parent_agent_id.id,
             'credit_limit': 0,
+            'tax_percentage': tax_percentage,
         })
 
         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')

@@ -10,7 +10,7 @@ class TtPaymentInvoiceRel(models.Model):
 
     def get_payment_domain(self):
         cust_par_id = self.invoice_id.customer_parent_id.id
-        domain = [('available_amount','>',0),('state','=','validated'),('customer_parent_id', '=', cust_par_id)]
+        domain = [('available_amount','>',0),('state','=','approved'),('customer_parent_id', '=', cust_par_id)]
         return domain
 
     payment_id = fields.Many2one('tt.payment', 'Payment', required=True, domain=[('id', '=', -1)])

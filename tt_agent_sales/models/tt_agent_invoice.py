@@ -93,13 +93,15 @@ class AgentInvoice(models.Model):
         new_invoice = super(AgentInvoice, self).create(vals_list)
         new_invoice.set_default_billing_to()
         return new_invoice
-    
+
+    @api.multi
     def write(self, vals):
         #pengecekan paid di sini dan tidak di compute paid supaya status berubah ketika tekan tombol save
         #jika tidak, saat pilih payment sebelum save bisa lgsg berubah jadi paid
-        super(AgentInvoice, self).write(vals)
+        res = super(AgentInvoice, self).write(vals)
         # if 'payment_ids' in vals:
         self.check_paid_status()
+        return res
 
     @api.depends("payment_ids.payment_acquirer")
     def _compute_acquirers(self):
@@ -139,7 +141,11 @@ class AgentInvoice(models.Model):
             self.confirmed_uid = self.env.user.id
 
     def check_paid_status(self):
-        if self.state != 'paid' and (self.paid_amount >= self.total and self.total != 0):
+        paid_amount = 0
+        for rec in self.payment_ids:
+            if rec.state in ['approved']:
+                paid_amount += rec.pay_amount
+        if self.state != 'paid' and (paid_amount >= self.total and self.total != 0):
             self.state = 'paid'
         # return
 
