@@ -66,7 +66,7 @@ class TtRefundWizard(models.TransientModel):
                     pax_price += cost.amount
             self.env['tt.refund.line'].create({
                 'refund_id': refund_obj.id,
-                'name': pax.title + ' ' + pax.name,
+                'name': (pax.title or '') + ' ' + (pax.name or ''),
                 'birth_date': pax.birth_date,
                 'pax_price': pax_price,
             })
