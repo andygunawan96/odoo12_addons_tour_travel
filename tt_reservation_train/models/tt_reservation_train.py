@@ -295,7 +295,7 @@ class TtReservationTrain(models.Model):
                 if payment_res['error_code'] != 0:
                     raise RequestException(payment_res['error_code'])
 
-            self.action_issued_api_train(acquirer_id.id, customer_parent_id, context)
+            self.action_issued_api_train(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
         elif all(rec.state == 'refund' for rec in self.provider_booking_ids):
             self.write({
                 'state': 'refund',

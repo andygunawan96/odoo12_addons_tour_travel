@@ -32,6 +32,7 @@
                 <header/>
                 <sheet>
                     <div class="oe_button_box" name="button_box"/>
+                    <field name="logo" widget='image' class="oe_avatar"/>
                     <div class="oe_title">
                         <label for="name" class="oe_edit_only"/>
                         <h1>
@@ -51,6 +52,14 @@
                             <field name="currency_id"/>
                         </group>
                     </group>
+                    <group>
+                        <group>
+                            <field name="tax_identity_number"/>
+                        </group>
+                        <group>
+                            <field name="company_bank_data"/>
+                        </group>
+                    </group>
                     <notebook>
                         <page string="Customer">
                             <field name="customer_ids" domain="[('agent_id', '=', parent_agent_id)]" context="{'default_agent_id': parent_agent_id}">
@@ -60,6 +69,15 @@
                                     <field name="birth_date"/>
                                 </tree>
                             </field>
+                        </page>
+                        <page string="Addresses">
+                            <field name="address_ids"/>
+                        </page>
+                        <page string="Phones">
+                            <field name="phone_ids"/>
+                        </page>
+                        <page string="Social Media">
+                            <field name="social_media_ids"/>
                         </page>
                     </notebook>
                 </sheet>
