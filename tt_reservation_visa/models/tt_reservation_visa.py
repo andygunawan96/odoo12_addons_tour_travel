@@ -1449,7 +1449,8 @@ class TtVisa(models.Model):
 
     param_context = {
         'co_uid': 8,
-        'co_agent_id': 2
+        'co_agent_id': 2,
+        'co_agent_type_id': 2
     }
 
     param_kwargs = {
@@ -1457,9 +1458,10 @@ class TtVisa(models.Model):
     }
 
     param_payment = {
-        "member": False,
-        "seq_id": "PQR.0429001",
-        # "seq_id": "PQR.9999999"
+        "member": True,
+        "seq_id": "CTP.1411067",
+        # "member": False,
+        # "seq_id": "PQR.0429001",
     }
 
     param_voucher = {
@@ -1745,7 +1747,7 @@ class TtVisa(models.Model):
         contact = data['contact']  # self.param_contact
         passengers = copy.deepcopy(data['passenger'])  # self.param_passenger
         search = data['search']  # self.param_search
-        # payment = data['payment']  # self.param_payment
+        payment = data['payment']  # self.param_payment
         context = context  # self.param_context
         try:
             # cek saldo
@@ -1780,8 +1782,8 @@ class TtVisa(models.Model):
                 'provider_name': self.env['tt.provider'].sudo().search([('code', '=', 'visa_rodextrip')], limit=1).name,
                 'booker_id': booker_id.id,
                 'voucher_code': voucher,
-                'is_member': data['member'],
-                'payment_method': data['seq_id'],
+                'is_member': payment['member'],
+                'payment_method': payment['seq_id'],
                 'payment_active': True,
                 'contact_title': contact[0]['title'],
                 'contact_id': contact_id.id,
@@ -2193,7 +2195,7 @@ class TtVisa(models.Model):
         book_obj = self.env['tt.reservation.visa'].search([('name', '=', data['order_number'])])
 
         if data.get('member'):
-            customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', data['seq_id'])])
+            customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', data['acquirer_seq_id'])]).id
         else:
             customer_parent_id = book_obj.agent_id.customer_parent_walkin_id.id
 

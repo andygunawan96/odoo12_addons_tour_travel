@@ -943,9 +943,10 @@ class IssuedOffline(models.Model):
     }
 
     param_payment = {
-        "member": False,
-        "seq_id": "PQR.0429001"
-        # "seq_id": "PQR.9999999"
+        "member": True,
+        "seq_id": "CTP.1411067",
+        # "member": False,
+        # "seq_id": "PQR.0429001"
     }
 
     def get_config_api(self):
@@ -1069,15 +1070,17 @@ class IssuedOffline(models.Model):
             })
 
             if payment.get('member'):
-                customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', payment['seq_id'])])
+                customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', payment['seq_id'])]).id
             else:
                 customer_parent_id = book_obj.agent_id.customer_parent_walkin_id.id
-            if payment.get('seq_id'):
-                acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', payment['seq_id'])], limit=1)
-                if not acquirer_id:
-                    raise RequestException(1017)
+                if payment.get('seq_id'):
+                    acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', payment['seq_id'])], limit=1)
+                    if not acquirer_id:
+                        raise RequestException(1017)
+                    else:
+                        book_obj.acquirer_id = acquirer_id.id
                 else:
-                    book_obj.acquirer_id = acquirer_id.id
+                    book_obj.acquirer_id = book_obj.agent_id.default_acquirer_id
 
             book_obj.sudo().write({
                 'customer_parent_id': customer_parent_id,
