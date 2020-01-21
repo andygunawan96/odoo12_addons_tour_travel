@@ -322,7 +322,7 @@ class IssuedOfflineLines(models.Model):
             return {
                 'pnr': self.pnr if self.pnr else '',
                 'hotel_name': self.hotel_name if self.hotel_name else '',
-                'room': self.room_type if self.room_type else '',
+                'room': self.room if self.room else '',
                 'check_in': self.check_in if self.check_in else '',
                 'check_out': self.check_out if self.check_out else '',
                 'description': self.description if self.description else '',
