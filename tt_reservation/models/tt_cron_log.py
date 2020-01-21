@@ -21,4 +21,4 @@ class TtCronLogInhResv(models.Model):
                             '%s something failed during expired cron.\n' % (booking.name) + traceback.format_exc())
         except Exception as e:
             self.create_cron_log_folder()
-            self.write_cron_log('auto-reset payment unique amount')
+            self.write_cron_log('auto expired booking')

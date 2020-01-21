@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <data>
+    <data noupdate="1">
         <record id="tt_transport_carrier_search_sq_all" model="tt.transport.carrier.search">
             <field name="name">Singapore Airlines</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_sq"/>

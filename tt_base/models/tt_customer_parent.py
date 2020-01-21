@@ -9,7 +9,7 @@ class TtCustomerParent(models.Model):
     _description = 'Tour & Travel - Customer Parent'
 
     name = fields.Char('Name', required=True,default="PT.")
-    logo_thumb = fields.Binary('Agent Logo Thumb', compute="_get_logo_image", store=True, attachment=True) #fixme later
+    logo = fields.Binary('Customer Logo')
 
     customer_parent_type_id = fields.Many2one('tt.customer.parent.type', 'Customer Parent Type', required=True)
     parent_agent_id = fields.Many2one('tt.agent', 'Parent', required=True)  # , default=lambda self: self.env.user.agent_id
@@ -31,6 +31,8 @@ class TtCustomerParent(models.Model):
     agent_bank_detail_ids = fields.One2many('agent.bank.detail', 'agent_id', 'Agent Bank')  # agent_bank_detail
     tac = fields.Text('Terms and Conditions', readonly=True)
     tax_percentage = fields.Float('Tax (%)', default=0)
+    tax_identity_number = fields.Char('NPWP')
+    company_bank_data = fields.Char('Company Bank Data')
     active = fields.Boolean('Active', default='True')
 
     def _compute_unprocessed_amount(self):
