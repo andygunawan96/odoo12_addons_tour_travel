@@ -1749,6 +1749,7 @@ class TtVisa(models.Model):
         search = data['search']  # self.param_search
         payment = data['payment']  # self.param_payment
         context = context  # self.param_context
+        voucher = data['voucher']  # self.param_voucher
         try:
             # cek saldo
             total_price = 0
@@ -1783,7 +1784,7 @@ class TtVisa(models.Model):
                 'booker_id': booker_id.id,
                 'voucher_code': voucher,
                 'is_member': payment['member'],
-                'payment_method': payment['seq_id'],
+                'payment_method': payment['acquirer_seq_id'],
                 'payment_active': True,
                 'contact_title': contact[0]['title'],
                 'contact_id': contact_id.id,
@@ -1817,21 +1818,6 @@ class TtVisa(models.Model):
                 'confirmed_uid': context['co_uid']
             })
             book_obj.message_post(body='Order CONFIRMED')
-
-            # if payment.get('member'):
-            #     customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', payment['seq_id'])])
-            # else:
-            #     customer_parent_id = book_obj.agent_id.customer_parent_walkin_id.id
-            # if payment.get('seq_id'):
-            #     acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', payment['seq_id'])], limit=1)
-            #     if not acquirer_id:
-            #         raise RequestException(1017)
-            #     else:
-            #         book_obj.acquirer_id = acquirer_id.id
-            #
-            # book_obj.sudo().write({
-            #     'customer_parent_id': customer_parent_id,
-            # })
 
             self._calc_grand_total()
 
@@ -2480,8 +2466,8 @@ class TtVisa(models.Model):
         elif all(rec.state == 'issued' for rec in self.provider_booking_ids):
             # issued
             ##get payment acquirer
-            if req.get('seq_id'):
-                acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', req['seq_id'])])
+            if req.get('acquirer_seq_id'):
+                acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', req['acquirer_seq_id'])])
                 if not acquirer_id:
                     raise RequestException(1017)
             else:

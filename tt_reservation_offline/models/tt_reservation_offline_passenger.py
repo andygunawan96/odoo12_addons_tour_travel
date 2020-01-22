@@ -39,6 +39,7 @@ class IssuedOfflinePassenger(models.Model):
     state_offline = fields.Selection(STATE, string='State', default='draft', related='booking_id.state_offline')
     first_name = fields.Char('First Name', related='passenger_id.first_name')
     last_name = fields.Char('Last Name', related='passenger_id.last_name')
+    name = fields.Char('Name', compute='compute_name', store=True)
     title = fields.Selection(variables.TITLE, 'Title')
     birth_date = fields.Date('Birth Date')
 
@@ -60,6 +61,12 @@ class IssuedOfflinePassenger(models.Model):
         if len(self.channel_service_charge_ids.ids)>0:
             res['channel_service_charges'] = self.get_channel_service_charges()
         return res
+
+    @api.onchange('first_name', 'last_name')
+    @api.depends('first_name', 'last_name')
+    def compute_name(self):
+        for rec in self:
+            rec.name = rec.first_name + ' ' + rec.last_name
 
     # def compute_agent_id(self):
     #     self.agent_id = self.booking_id.sub_agent_id

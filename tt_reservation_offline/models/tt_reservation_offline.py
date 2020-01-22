@@ -1011,7 +1011,8 @@ class IssuedOffline(models.Model):
                     'passengers': passengers,
                     'total': book_obj.total,
                     'commission': book_obj.agent_commission,
-                    'currency': book_obj.currency_id.name
+                    'currency': book_obj.currency_id.name,
+                    'attachment': attachments
                 }
                 print(res)
                 _logger.info("Get resp\n" + json.dumps(res))
