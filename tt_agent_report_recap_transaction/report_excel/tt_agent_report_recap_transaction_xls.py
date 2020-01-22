@@ -99,120 +99,84 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                 #set checker for order number
                 temp_order_number = i['order_number']
                 temp_charge = list(filter(lambda x: x['order_number'] == i['order_number'], service_charge))
-                if temp_charge[0]['ledger_created'] == False:
-                    continue
-
-                #get pnr list
-                try:
-                    pnr_list = i['pnr'].split(", ")
-                except:
-                    if i['provider_type'].lower() == "offline":
-                        pnr_list = []
-                    else:
-                        pnr_list = []
-                        pass
-
-                counter += 1
-                row_data += 1
-                sty_table_data_center = style.table_data_center_border
-                sty_table_data = style.table_data_border
-                sty_datetime = style.table_data_datetime_border
-                sty_date = style.table_data_date_border
-                sty_amount = style.table_data_amount_border
-                if row_data % 2 == 0:
-                    sty_table_data_center = style.table_data_center_even_border
-                    sty_table_data = style.table_data_even_border
-                    sty_datetime = style.table_data_datetime_even_border
-                    sty_date = style.table_data_date_even_border
-                    sty_amount = style.table_data_amount_even_border
-                # print first data
-                sheet.write(row_data, 0, counter, sty_table_data_center)
-                sheet.write(row_data, 1, i['provider_type'], sty_table_data)
-                sheet.write(row_data, 2, i['agent_type_name'], sty_table_data)
-                sheet.write(row_data, 3, i['agent_name'], sty_table_data)
-                sheet.write(row_data, 4, i['issued_date'], sty_date)
-                sheet.write(row_data, 5, i['agent_email'], sty_table_data)
-                sheet.write(row_data, 6, i['provider_name'], sty_table_data)
-                sheet.write(row_data, 7, i['order_number'], sty_amount)
-                sheet.write(row_data, 8, i['adult'], sty_amount)
-                sheet.write(row_data, 9, i['child'], sty_amount)
-                sheet.write(row_data, 10, i['infant'], sty_amount)
-                sheet.write(row_data, 11, i['state'], sty_table_data)
-                sheet.write(row_data, 12, i['pnr'], sty_table_data)
-                sheet.write(row_data, 13, i['ledger_name'], sty_table_data)
-                sheet.write(row_data, 14, '', sty_table_data)
-                sheet.write(row_data, 15, i['currency_name'], sty_table_data_center)
-                sheet.write(row_data, 16, i['total_nta'], sty_amount)
-                sheet.write(row_data, 17, i['total_commission'], sty_amount)
-                sheet.write(row_data, 18, i['grand_total'], sty_amount)
-                sheet.write(row_data, 19, '', sty_table_data)
-                sheet.write(row_data, 20, '', sty_amount)
-
-                # filtered data
-                filtered_data = []
-
-                for j in pnr_list:
-                    temp_charge = list(filter(lambda x: x['booking_pnr'] == j, temp_charge))
-                    temp_book = list(filter(lambda x: x['order_number'] == i['order_number'] and x['ledger_pnr'] == j, datas))
-                    temp_dict = {
-                        'order_number': i['order_number'],
-                        'pnr': j
-                    }
-                    grand_total = 0
-                    nta_total = 0
-                    commission = 0
-                    if temp_dict not in filtered_data:
-                        filtered_data.append(temp_dict)
+                for j in temp_charge:
+                    if j['ledger_created'] == True:
+                        # get pnr list
                         try:
-                            booking_state = temp_charge[0]['booking_state']
+                            pnr_list = i['pnr'].split(", ")
                         except:
-                            booking_state = ''
-                        for k in temp_charge:
-                            if k['booking_charge_type'] == 'RAC':
-                                commission -= k['booking_charge_total']
-                                nta_total += k['booking_charge_total']
+                            if i['provider_type'].lower() == "offline":
+                                pnr_list = []
                             else:
-                                if k['booking_charge_type'] != '' and k['booking_charge_total']:
-                                    nta_total += k['booking_charge_total']
-                        grand_total = nta_total + commission
+                                pnr_list = []
+                                pass
 
-                    row_data += 1
-                    sty_table_data_center = style.table_data_center
-                    sty_table_data = style.table_data
-                    sty_datetime = style.table_data_datetime
-                    sty_date = style.table_data_date
-                    sty_amount = style.table_data_amount
-                    if row_data % 2 == 0:
-                        sty_table_data_center = style.table_data_center_even
-                        sty_table_data = style.table_data_even
-                        sty_datetime = style.table_data_datetime_even
-                        sty_date = style.table_data_date_even
-                        sty_amount = style.table_data_amount_even
+                        counter += 1
+                        row_data += 1
+                        sty_table_data_center = style.table_data_center_border
+                        sty_table_data = style.table_data_border
+                        sty_datetime = style.table_data_datetime_border
+                        sty_date = style.table_data_date_border
+                        sty_amount = style.table_data_amount_border
+                        if row_data % 2 == 0:
+                            sty_table_data_center = style.table_data_center_even_border
+                            sty_table_data = style.table_data_even_border
+                            sty_datetime = style.table_data_datetime_even_border
+                            sty_date = style.table_data_date_even_border
+                            sty_amount = style.table_data_amount_even_border
+                        # print first data
+                        sheet.write(row_data, 0, counter, sty_table_data_center)
+                        sheet.write(row_data, 1, i['provider_type'], sty_table_data)
+                        sheet.write(row_data, 2, i['agent_type_name'], sty_table_data)
+                        sheet.write(row_data, 3, i['agent_name'], sty_table_data)
+                        sheet.write(row_data, 4, i['issued_date'], sty_date)
+                        sheet.write(row_data, 5, i['agent_email'], sty_table_data)
+                        sheet.write(row_data, 6, i['provider_name'], sty_table_data)
+                        sheet.write(row_data, 7, i['order_number'], sty_amount)
+                        sheet.write(row_data, 8, i['adult'], sty_amount)
+                        sheet.write(row_data, 9, i['child'], sty_amount)
+                        sheet.write(row_data, 10, i['infant'], sty_amount)
+                        sheet.write(row_data, 11, i['state'], sty_table_data)
+                        sheet.write(row_data, 12, i['pnr'], sty_table_data)
+                        sheet.write(row_data, 13, i['ledger_name'], sty_table_data)
+                        sheet.write(row_data, 14, '', sty_table_data)
+                        sheet.write(row_data, 15, i['currency_name'], sty_table_data_center)
+                        sheet.write(row_data, 16, i['total_nta'], sty_amount)
+                        sheet.write(row_data, 17, i['total_commission'], sty_amount)
+                        sheet.write(row_data, 18, i['grand_total'], sty_amount)
+                        sheet.write(row_data, 19, '', sty_table_data)
+                        sheet.write(row_data, 20, '', sty_amount)
 
-                    sheet.write(row_data, 0, '', sty_table_data_center)
-                    sheet.write(row_data, 1, '', sty_table_data)
-                    sheet.write(row_data, 2, '', sty_table_data)
-                    sheet.write(row_data, 3, '', sty_table_data)
-                    sheet.write(row_data, 4, '', sty_date)
-                    sheet.write(row_data, 5, '', sty_table_data)
-                    sheet.write(row_data, 6, '', sty_table_data)
-                    sheet.write(row_data, 7, '', sty_amount)
-                    sheet.write(row_data, 8, '', sty_amount)
-                    sheet.write(row_data, 9, '', sty_amount)
-                    sheet.write(row_data, 10, '', sty_amount)
-                    sheet.write(row_data, 11, i['state'], sty_table_data)
-                    sheet.write(row_data, 12, j, sty_table_data)
-                    sheet.write(row_data, 13, '', sty_table_data_center)
-                    sheet.write(row_data, 14, booking_state, sty_table_data)
-                    sheet.write(row_data, 15, '', sty_table_data_center)
-                    sheet.write(row_data, 16, nta_total, sty_amount)
-                    sheet.write(row_data, 17, commission, sty_amount)
-                    sheet.write(row_data, 18, grand_total, sty_amount)
-                    sheet.write(row_data, 19, '', sty_table_data)
-                    sheet.write(row_data, 20, '', sty_amount)
+                        # filtered data
+                        filtered_data = []
 
-                    for k in temp_book:
-                        if k['ledger_transaction_type'] == 3:
+                        for j in pnr_list:
+                            temp_charge = list(filter(lambda x: x['booking_pnr'] == j, temp_charge))
+                            temp_book = list(
+                                filter(lambda x: x['order_number'] == i['order_number'] and x['ledger_pnr'] == j,
+                                       datas))
+                            temp_dict = {
+                                'order_number': i['order_number'],
+                                'pnr': j
+                            }
+                            grand_total = 0
+                            nta_total = 0
+                            commission = 0
+                            if temp_dict not in filtered_data:
+                                filtered_data.append(temp_dict)
+                                try:
+                                    booking_state = temp_charge[0]['booking_state']
+                                except:
+                                    booking_state = ''
+                                for k in temp_charge:
+                                    if k['booking_charge_type'] == 'RAC':
+                                        commission -= k['booking_charge_total']
+                                        nta_total += k['booking_charge_total']
+                                    else:
+                                        if k['booking_charge_type'] != '' and k['booking_charge_total']:
+                                            nta_total += k['booking_charge_total']
+                                grand_total = nta_total + commission
+
                             row_data += 1
                             sty_table_data_center = style.table_data_center
                             sty_table_data = style.table_data
@@ -238,15 +202,55 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                             sheet.write(row_data, 9, '', sty_amount)
                             sheet.write(row_data, 10, '', sty_amount)
                             sheet.write(row_data, 11, i['state'], sty_table_data)
-                            sheet.write(row_data, 12, '', sty_table_data)
-                            sheet.write(row_data, 13, '', sty_table_data)
-                            sheet.write(row_data, 14, '', sty_table_data_center)
+                            sheet.write(row_data, 12, j, sty_table_data)
+                            sheet.write(row_data, 13, '', sty_table_data_center)
+                            sheet.write(row_data, 14, booking_state, sty_table_data)
                             sheet.write(row_data, 15, '', sty_table_data_center)
-                            sheet.write(row_data, 16, '', sty_amount)
-                            sheet.write(row_data, 17, '', sty_amount)
-                            sheet.write(row_data, 18, '', sty_amount)
-                            sheet.write(row_data, 19, k['ledger_agent_name'], sty_table_data)
-                            sheet.write(row_data, 20, k['debit'], sty_amount)
+                            sheet.write(row_data, 16, nta_total, sty_amount)
+                            sheet.write(row_data, 17, commission, sty_amount)
+                            sheet.write(row_data, 18, grand_total, sty_amount)
+                            sheet.write(row_data, 19, '', sty_table_data)
+                            sheet.write(row_data, 20, '', sty_amount)
+
+                            for k in temp_book:
+                                if k['ledger_transaction_type'] == 3:
+                                    row_data += 1
+                                    sty_table_data_center = style.table_data_center
+                                    sty_table_data = style.table_data
+                                    sty_datetime = style.table_data_datetime
+                                    sty_date = style.table_data_date
+                                    sty_amount = style.table_data_amount
+                                    if row_data % 2 == 0:
+                                        sty_table_data_center = style.table_data_center_even
+                                        sty_table_data = style.table_data_even
+                                        sty_datetime = style.table_data_datetime_even
+                                        sty_date = style.table_data_date_even
+                                        sty_amount = style.table_data_amount_even
+
+                                    sheet.write(row_data, 0, '', sty_table_data_center)
+                                    sheet.write(row_data, 1, '', sty_table_data)
+                                    sheet.write(row_data, 2, '', sty_table_data)
+                                    sheet.write(row_data, 3, '', sty_table_data)
+                                    sheet.write(row_data, 4, '', sty_date)
+                                    sheet.write(row_data, 5, '', sty_table_data)
+                                    sheet.write(row_data, 6, '', sty_table_data)
+                                    sheet.write(row_data, 7, '', sty_amount)
+                                    sheet.write(row_data, 8, '', sty_amount)
+                                    sheet.write(row_data, 9, '', sty_amount)
+                                    sheet.write(row_data, 10, '', sty_amount)
+                                    sheet.write(row_data, 11, i['state'], sty_table_data)
+                                    sheet.write(row_data, 12, '', sty_table_data)
+                                    sheet.write(row_data, 13, '', sty_table_data)
+                                    sheet.write(row_data, 14, '', sty_table_data_center)
+                                    sheet.write(row_data, 15, '', sty_table_data_center)
+                                    sheet.write(row_data, 16, '', sty_amount)
+                                    sheet.write(row_data, 17, '', sty_amount)
+                                    sheet.write(row_data, 18, '', sty_amount)
+                                    sheet.write(row_data, 19, k['ledger_agent_name'], sty_table_data)
+                                    sheet.write(row_data, 20, k['debit'], sty_amount)
+                        break;
+                    else:
+                        continue
 
         row_data += 1
         sty_table_data_center = style.table_data_center_border
