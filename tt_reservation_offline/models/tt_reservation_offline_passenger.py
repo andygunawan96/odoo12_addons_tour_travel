@@ -66,7 +66,7 @@ class IssuedOfflinePassenger(models.Model):
     @api.depends('first_name', 'last_name')
     def compute_name(self):
         for rec in self:
-            rec.name = rec.first_name + ' ' + rec.last_name
+            rec.name = (rec.first_name or '') + ' ' + (rec.last_name or '')
 
     # def compute_agent_id(self):
     #     self.agent_id = self.booking_id.sub_agent_id
