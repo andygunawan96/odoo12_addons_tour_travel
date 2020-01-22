@@ -5,5 +5,25 @@
             <field name="name">Agent B2C</field>
             <field name="agent_type_id" ref="agent_type_citra"/>
         </record>
+
+        <record id="agent_b2c_user" model="res.users">
+            <field name="name">Agent B2C User</field>
+            <field name="agent_id" ref="tt_base.agent_b2c"/>
+            <field name="login">agent_b2c</field>
+            <field name="password">2ebaebb25402547966930e235e93c004</field>
+            <field name="groups_id"
+                   eval="[(4,ref('tt_base.group_tt_billing_statement_operator')),
+                          (4,ref('tt_base.group_tt_agent_invoice_operator')),
+                          (4,ref('tt_base.group_tt_agent_user_operator'))]"/>
+            <field name="frontend_security_ids"
+                   eval="[(4,ref('tt_base.able_to_ticketing')),
+                    (4,ref('tt_base.able_to_book')),
+                    (4,ref('tt_base.able_to_issued')),
+                    (4,ref('tt_base.able_to_top_up')),
+                    (4,ref('tt_base.able_to_login')),
+                    (4,ref('tt_base.able_to_psg_cache_1')),
+                    (4,ref('tt_base.able_to_psg_cache_2'))
+                    ]"/>
+        </record>
     </data>
 </odoo>
