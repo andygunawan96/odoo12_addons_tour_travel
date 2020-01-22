@@ -105,6 +105,7 @@ class TtAgent(models.Model):
             'parent_agent_id': new_agent.id,
             'customer_parent_type_id': self.env.ref('tt_base.customer_type_fpo').id,
             'name': agent_name + ' FPO',
+            'state': 'done'
         }
 
     def action_create_user(self):
