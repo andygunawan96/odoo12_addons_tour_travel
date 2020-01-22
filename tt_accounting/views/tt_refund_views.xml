@@ -9,6 +9,7 @@
                 <field name="referenced_document"/>
                 <field name="referenced_pnr"/>
                 <field name="notes"/>
+                <field name="booking_desc"/>
                 <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>
                 <separator/>
                 <filter string="All" name='all'/>
