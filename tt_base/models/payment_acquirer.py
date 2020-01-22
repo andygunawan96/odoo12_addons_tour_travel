@@ -167,7 +167,7 @@ class PaymentAcquirer(models.Model):
             raise Exception('Booker not found')
         values = []
         for rec in booker_obj.customer_parent_ids:
-            if rec.credit_limit != 0:
+            if rec.credit_limit != 0 and rec.state == 'done':
                 values.append({
                     'name': rec.name,
                     'actual_balance': rec.actual_balance,

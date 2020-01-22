@@ -96,6 +96,12 @@
                   parent="tt_base.top_customers_agent"
                   groups="group_tt_agent_user_operator"
                   name="Agent"
+                  sequence="2"/>
+
+        <menuitem id="submenu_customers_all_agent"
+                  parent="tt_base.menu_customers_agent"
+                  groups="group_tt_agent_user_operator"
+                  name="All"
                   sequence="2"
                   action="tt_agent_customer_action_view"/>
 

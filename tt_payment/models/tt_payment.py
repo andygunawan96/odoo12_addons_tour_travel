@@ -100,12 +100,11 @@ class PaymentTransaction(models.Model):
 
     def get_payment_acquirer_domain(self):
         if self.customer_parent_id:
-            dom = self.env['payment.acquirer'].search([('agent_id','=',self.agent_id.id )]).ids
+            dom = [('agent_id','=',self.agent_id.id)]
         else:
             ho_id = self.env.ref('tt_base.rodex_ho').id
-            dom = self.env['payment.acquirer'].search([('agent_id','=', ho_id )]).ids
-        domain = "[('id','in',[%s])]" % (",".join(list(map(str,dom))))
-        return domain
+            dom = [('agent_id','=', ho_id)]
+        return dom
 
     acquirer_id = fields.Many2one('payment.acquirer', 'Acquirer',states={'validated': [('readonly', True)]}, domain=[('id', '=', -1)])
 
