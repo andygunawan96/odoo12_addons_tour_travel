@@ -35,7 +35,8 @@ class tt_ledger(models.Model):
             'is_reversed': True,
             'description': 'Reverse for %s' % (self.name),
             'adjustment_id': self.adjustment_id and self.adjustment_id.id or False,
-            'refund_id': self.refund_id and self.refund.id or False
+            'refund_id': self.refund_id and self.refund.id or False,
+            'provider_type_id': self.provider_type_id and self.provider_type_id.id or False
         }])
 
         self.update({
