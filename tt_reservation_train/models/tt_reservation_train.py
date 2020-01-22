@@ -528,7 +528,9 @@ class TtReservationTrain(models.Model):
             provider_obj = self.env['tt.provider.train'].browse(provider['provider_id'])
             if not provider_obj:
                 raise RequestException(1002)
-            provider_obj.delete_service_charge()
+            ledger_created = provider_obj.delete_service_charge()
+            if ledger_created:
+                raise RequestException(1027)
             provider_obj.write({
                 'balance_due': provider['balance_due']
             })
