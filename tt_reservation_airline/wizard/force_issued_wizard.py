@@ -16,14 +16,21 @@ class ForceIssuedWizard(models.TransientModel):
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', related='agent_id.agent_type_id', readonly=True)
     customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer', required=True, domain=[('id', '=', -1)])
     customer_parent_type_id = fields.Many2one('tt.customer.parent.type', 'Customer Type', related='customer_parent_id.customer_parent_type_id', readonly=True)
-    use_credit_limit = fields.Boolean('Use Credit Limit', default=False)
+    use_credit_limit = fields.Boolean('Use COR Credit Limit', default=False)
     acquirer_id = fields.Many2one('payment.acquirer', 'Payment Method', domain="[('agent_id', '=', agent_id)]")
 
     @api.depends('provider_id')
     @api.onchange('provider_id')
     def _onchange_provider_id(self):
+        dom_id_list = []
+        for rec in self.booker_id.customer_parent_ids:
+            if rec.customer_parent_type_id.id != self.env.ref('tt_base.customer_type_fpo').id:
+                if rec.credit_limit != 0 and rec.state == 'done':
+                    dom_id_list.append(rec.id)
+            else:
+                dom_id_list.append(rec.id)
         return {'domain': {
-            'customer_parent_id': [('id', 'in', self.booker_id.customer_parent_ids.ids)]
+            'customer_parent_id': [('id', 'in', dom_id_list)]
         }}
 
     @api.depends('provider_id')
