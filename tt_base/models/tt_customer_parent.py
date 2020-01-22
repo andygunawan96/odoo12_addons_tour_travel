@@ -111,6 +111,9 @@ class TtCustomerParent(models.Model):
         return self.actual_balance >= amount
 
     def action_confirm(self):
+        if self.state != 'draft':
+            raise UserError("Cannot Confirm because state is not 'draft'.")
+
         self.write({
             'state': 'confirm',
             'confirm_uid': self.env.user.id,
@@ -118,6 +121,9 @@ class TtCustomerParent(models.Model):
         })
 
     def action_request(self):
+        if self.state != 'confirm':
+            raise UserError("Cannot Submit Request because state is not 'confirm'.")
+
         self.write({
             'state': 'request',
             'request_uid': self.env.user.id,
@@ -125,6 +131,9 @@ class TtCustomerParent(models.Model):
         })
 
     def action_validate(self):
+        if self.state != 'request':
+            raise UserError("Cannot Validate because state is not 'request'.")
+
         self.write({
             'state': 'validate',
             'validate_uid': self.env.user.id,
@@ -132,6 +141,9 @@ class TtCustomerParent(models.Model):
         })
 
     def action_done(self):
+        if self.state != 'validate':
+            raise UserError("Cannot Approve because state is not 'validate'.")
+
         self.write({
             'state': 'done',
             'done_uid': self.env.user.id,
@@ -139,10 +151,26 @@ class TtCustomerParent(models.Model):
         })
 
     def action_reject(self):
+        if self.state == 'done':
+            raise UserError("Cannot reject already approved Customer Parent.")
+
         self.write({
             'state': 'reject',
             'reject_uid': self.env.user.id,
             'reject_date': datetime.now()
+        })
+
+    def set_to_done(self):
+        self.write({
+            'state': 'done',
+        })
+
+    def set_to_draft(self):
+        if self.state != 'reject':
+            raise UserError("Please reject this Customer Parent before setting it to draft!")
+
+        self.write({
+            'state': 'draft',
         })
 
     #ledger history

@@ -95,8 +95,11 @@ class Ledger(models.Model):
                           date, ledger_type,
                           currency_id, issued_uid,
                           debit, credit,description)
-        vals['agent_id'] = agent_id
-        vals['customer_parent_id'] = customer_parent_id
+        if customer_parent_id:
+            vals['customer_parent_id'] = customer_parent_id
+        else:
+            vals['agent_id'] = agent_id
+
         if kwargs:
             vals.update(kwargs)
         self.create(vals)

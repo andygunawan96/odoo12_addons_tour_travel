@@ -17,10 +17,11 @@
                         context="{
                         'default_res_model': 'tt.customer.parent',
                         'default_res_id': id,
+                        'default_agent_id': parent_agent_id,
                         'default_customer_parent_id': id,
                         'default_referenced_document': name,
                         'default_currency_id': currency_id,
-                        'default_adj_type': 0,
+                        'default_adj_type': -1,
                         'hide_component_type': True
                    }"/>
             </xpath>

@@ -11,32 +11,53 @@ class ForceIssuedWizard(models.TransientModel):
     _description = 'Airline Force Issued Wizard'
 
     provider_id = fields.Many2one('tt.provider.airline', 'Provider', readonly=True)
-    agent_id = fields.Many2one('tt.agent', 'Agent', required=True, readonly=True, compute='_compute_agent_id')
+    booker_id = fields.Many2one('tt.customer', 'Booker', ondelete='restrict', required=True, readonly=True, compute='_compute_booker_agent_id')
+    agent_id = fields.Many2one('tt.agent', 'Agent', required=True, readonly=True, compute='_compute_booker_agent_id')
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', related='agent_id.agent_type_id', readonly=True)
-    cor_membership = fields.Selection([('member', 'Member'), ('non_member', 'Non-Member')], 'Corporate Membership', required=True)
-    customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer', domain="[('parent_agent_id', '=', agent_id)]")
+    customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer', required=True, domain=[('id', '=', -1)])
     customer_parent_type_id = fields.Many2one('tt.customer.parent.type', 'Customer Type', related='customer_parent_id.customer_parent_type_id', readonly=True)
+    use_credit_limit = fields.Boolean('Use Credit Limit', default=False)
     acquirer_id = fields.Many2one('payment.acquirer', 'Payment Method', domain="[('agent_id', '=', agent_id)]")
 
     @api.depends('provider_id')
     @api.onchange('provider_id')
-    def _compute_agent_id(self):
+    def _onchange_provider_id(self):
+        return {'domain': {
+            'customer_parent_id': [('id', 'in', self.booker_id.customer_parent_ids.ids)]
+        }}
+
+    @api.depends('provider_id')
+    @api.onchange('provider_id')
+    def _compute_booker_agent_id(self):
         for rec in self:
             provider_obj = self.env['tt.provider.airline'].sudo().search([('id', '=', rec.provider_id.id)])
             rec.agent_id = provider_obj.booking_id.agent_id.id
+            rec.booker_id = provider_obj.booking_id.booker_id.id
 
     def submit_force_issued(self):
+        if self.customer_parent_type_id.id != self.env.ref('tt_base.customer_type_fpo').id:
+            payment_data = {
+                'member': self.use_credit_limit,
+                'acquirer_seq_id': self.use_credit_limit and self.customer_parent_id.seq_id or self.acquirer_id.seq_id
+            }
+        else:
+            payment_data = {
+                'member': False,
+                'acquirer_seq_id': self.acquirer_id.seq_id
+            }
         provider_obj = self.env['tt.provider.airline'].sudo().search([('id', '=', self.provider_id.id)])
-        payment_data = {
-            'member': self.cor_membership == 'member' and True or False,
-            'acquirer_seq_id': self.cor_membership == 'member' and self.customer_parent_id.id or self.acquirer_id.id
-        }
         provider_obj.action_force_issued_from_button(payment_data)
 
     def submit_set_to_issued(self):
+        if self.customer_parent_type_id.id != self.env.ref('tt_base.customer_type_fpo').id:
+            payment_data = {
+                'member': self.use_credit_limit,
+                'acquirer_seq_id': self.use_credit_limit and self.customer_parent_id.seq_id or self.acquirer_id.seq_id
+            }
+        else:
+            payment_data = {
+                'member': False,
+                'acquirer_seq_id': self.acquirer_id.seq_id
+            }
         provider_obj = self.env['tt.provider.airline'].sudo().search([('id', '=', self.provider_id.id)])
-        payment_data = {
-            'member': self.cor_membership == 'member' and True or False,
-            'acquirer_seq_id': self.cor_membership == 'member' and self.customer_parent_id.id or self.acquirer_id.id
-        }
         provider_obj.action_set_to_issued_from_button(payment_data)
