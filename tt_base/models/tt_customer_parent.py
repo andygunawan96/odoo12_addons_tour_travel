@@ -1,6 +1,8 @@
 from odoo import fields,api,models
 from ...tools import ERR
 from odoo.exceptions import UserError
+from datetime import datetime
+
 
 class TtCustomerParent(models.Model):
     _inherit = 'tt.history'
@@ -8,7 +10,7 @@ class TtCustomerParent(models.Model):
     _rec_name = 'name'
     _description = 'Tour & Travel - Customer Parent'
 
-    name = fields.Char('Name', required=True,default="PT.")
+    name = fields.Char('Name', required=True, default="PT.")
     logo = fields.Binary('Customer Logo')
 
     customer_parent_type_id = fields.Many2one('tt.customer.parent.type', 'Customer Parent Type', required=True)
@@ -34,6 +36,17 @@ class TtCustomerParent(models.Model):
     tax_identity_number = fields.Char('NPWP')
     company_bank_data = fields.Char('Company Bank Data')
     active = fields.Boolean('Active', default='True')
+    state = fields.Selection([('draft', 'Draft'),('confirm', 'Confirmed'),('request', 'Requested'),('validate', 'Validated'),('done', 'Done'),('reject', 'Rejected')], 'State', default='draft', readonly=True)
+    confirm_uid = fields.Many2one('res.users', 'Confirmed by', readonly=True)
+    confirm_date = fields.Datetime('Confirmed Date', readonly=True)
+    request_uid = fields.Many2one('res.users', 'Requested by', readonly=True)
+    request_date = fields.Datetime('Requested Date', readonly=True)
+    validate_uid = fields.Many2one('res.users', 'Validated by', readonly=True)
+    validate_date = fields.Datetime('Validated Date', readonly=True)
+    done_uid = fields.Many2one('res.users', 'Approved by', readonly=True)
+    done_date = fields.Datetime('Approved Date', readonly=True)
+    reject_uid = fields.Many2one('res.users', 'Rejected by', readonly=True)
+    reject_date = fields.Datetime('Rejected Date', readonly=True)
 
     def _compute_unprocessed_amount(self):
         for rec in self:
@@ -96,6 +109,41 @@ class TtCustomerParent(models.Model):
         if not self.ensure_one():
             raise UserError('Can only check 1 agent each time got ' + str(len(self._ids)) + ' Records instead')
         return self.actual_balance >= amount
+
+    def action_confirm(self):
+        self.write({
+            'state': 'confirm',
+            'confirm_uid': self.env.user.id,
+            'confirm_date': datetime.now()
+        })
+
+    def action_request(self):
+        self.write({
+            'state': 'request',
+            'request_uid': self.env.user.id,
+            'request_date': datetime.now()
+        })
+
+    def action_validate(self):
+        self.write({
+            'state': 'validate',
+            'validate_uid': self.env.user.id,
+            'validate_date': datetime.now()
+        })
+
+    def action_done(self):
+        self.write({
+            'state': 'done',
+            'done_uid': self.env.user.id,
+            'done_date': datetime.now()
+        })
+
+    def action_reject(self):
+        self.write({
+            'state': 'reject',
+            'reject_uid': self.env.user.id,
+            'reject_date': datetime.now()
+        })
 
     #ledger history
     #booking History
