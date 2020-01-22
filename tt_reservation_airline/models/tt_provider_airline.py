@@ -53,7 +53,7 @@ class TtProviderAirline(models.Model):
     # , domain = [('res_model', '=', 'tt.provider.airline')]
 
     ##button function
-    def action_set_to_issued_from_button(self):
+    def action_set_to_issued_from_button(self, payment_data={}):
         if self.state == 'issued':
             raise UserError("Has been Issued.")
         self.write({
@@ -61,20 +61,21 @@ class TtProviderAirline(models.Model):
             'issued_uid': self.env.user.id,
             'issued_date': datetime.now()
         })
-        self.booking_id.check_provider_state({'co_uid': self.env.user.id})
+        self.booking_id.check_provider_state({'co_uid': self.env.user.id}, [], False, payment_data)
 
         return {
             'type': 'ir.actions.client',
             'tag': 'reload',
         }
 
-
-    def action_force_issued_from_button(self):
+    def action_force_issued_from_button(self, payment_data={}):
         if self.state == 'issued':
             raise UserError("Has been Issued.")
 
         req = {
-            'book_id': self.booking_id.id
+            'book_id': self.booking_id.id,
+            'member': payment_data.get('member'),
+            'acquirer_seq_id': payment_data.get('acquirer_seq_id'),
         }
         context = {
             'co_agent_id': self.booking_id.agent_id.id,
@@ -91,7 +92,7 @@ class TtProviderAirline(models.Model):
         #     raise UserError("Balance not enough.")
         #
         # self.action_create_ledger(self.env.user.id)
-        self.action_set_to_issued_from_button()
+        self.action_set_to_issued_from_button(payment_data)
 
         return {
             'type': 'ir.actions.client',

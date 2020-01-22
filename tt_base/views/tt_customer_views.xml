@@ -149,7 +149,7 @@
     <menuitem id="menu_customer_customer"
               parent="tt_base.top_tour_travel_customers"
               groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"
-              name="Customer"
+              name="Customer List"
               sequence="1"
               action="tt_customer_action_view"/>
 

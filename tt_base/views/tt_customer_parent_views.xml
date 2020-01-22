@@ -29,7 +29,9 @@
         <field name="model">tt.customer.parent</field>
         <field name="arch" type="xml">
             <form create="false">
-                <header/>
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,request,validate,done"/>
+                </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box"/>
                     <field name="logo" widget='image' class="oe_avatar"/>
@@ -130,6 +132,7 @@
         <field name="arch" type="xml">
             <tree create="false">
                 <field name="name"/>
+                <field name="customer_parent_type_id"/>
                 <field name="parent_agent_id"/>
             </tree>
         </field>
@@ -146,6 +149,55 @@
             {
             'form_view_ref': 'tt_base.tt_customer_parent_form_view',
             'tree_view_ref': 'tt_base.tt_customer_parent_tree_view',
+            'search_default_all': 1
+            }
+        </field>
+    </record>
+
+    <record id="tt_customer_parent_action_view_fpo" model="ir.actions.act_window">
+        <field name="name">Customer Parent</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.customer.parent</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_base.tt_customer_parent_form_view',
+            'tree_view_ref': 'tt_base.tt_customer_parent_tree_view',
+            'search_default_fpo': 1
+            }
+        </field>
+    </record>
+
+    <record id="tt_customer_parent_action_view_cor" model="ir.actions.act_window">
+        <field name="name">Customer Parent</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.customer.parent</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_base.tt_customer_parent_form_view',
+            'tree_view_ref': 'tt_base.tt_customer_parent_tree_view',
+            'search_default_cor': 1
+            }
+        </field>
+    </record>
+
+    <record id="tt_customer_parent_action_view_por" model="ir.actions.act_window">
+        <field name="name">Customer Parent</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.customer.parent</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_base.tt_customer_parent_form_view',
+            'tree_view_ref': 'tt_base.tt_customer_parent_tree_view',
+            'search_default_por': 1
             }
         </field>
     </record>
@@ -154,7 +206,34 @@
               parent="tt_base.top_tour_travel_customers"
               groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"
               name="Customer Parent"
+              sequence="1"/>
+
+    <menuitem id="submenu_customer_customer_parent_all"
+              parent="tt_base.menu_customer_customer_parent"
+              groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"
+              name="All"
               sequence="1"
               action="tt_customer_parent_action_view"/>
+
+    <menuitem id="submenu_customer_customer_parent_fpo"
+              parent="tt_base.menu_customer_customer_parent"
+              groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"
+              name="FPO"
+              sequence="2"
+              action="tt_customer_parent_action_view_fpo"/>
+
+    <menuitem id="submenu_customer_customer_parent_cor"
+              parent="tt_base.menu_customer_customer_parent"
+              groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"
+              name="COR"
+              sequence="3"
+              action="tt_customer_parent_action_view_cor"/>
+
+    <menuitem id="submenu_customer_customer_parent_por"
+              parent="tt_base.menu_customer_customer_parent"
+              groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"
+              name="POR"
+              sequence="4"
+              action="tt_customer_parent_action_view_por"/>
 
 </odoo>
