@@ -503,7 +503,7 @@ class IssuedOffline(models.Model):
                 vals = self.env['tt.ledger'].prepare_vals_for_resv(self, pnr, vals)
                 vals.update({
                     'pnr': self.pnr,
-                    'provider_type_id': self.offline_provider_type,
+                    'provider_type_id': self.provider_type_id.id,
                     'display_provider_name': self.provider_name,
                     'agent_id': self.env.ref('tt_base.rodex_ho').id
                 })
@@ -519,7 +519,7 @@ class IssuedOffline(models.Model):
                 vals = self.env['tt.ledger'].prepare_vals_for_resv(self, pnr, vals)
                 vals.update({
                     'pnr': self.pnr,
-                    'provider_type_id': self.offline_provider_type,
+                    'provider_type_id': self.provider_type_id.id,
                     'display_provider_name': self.provider_name,
                     'agent_id': self.env.ref('tt_base.rodex_ho').id
                 })
