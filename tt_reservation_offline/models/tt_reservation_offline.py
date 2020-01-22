@@ -169,10 +169,11 @@ class IssuedOffline(models.Model):
 
     @api.depends('offline_provider_type')
     def offline_type_to_char(self):
-        if self.offline_provider_type:
-            self.provider_type_id_name = self.offline_provider_type
-        else:
-            self.provider_type_id_name = ''
+        for rec in self:
+            if rec.offline_provider_type:
+                rec.provider_type_id_name = rec.offline_provider_type
+            else:
+                rec.provider_type_id_name = ''
 
     # @api.depends('offline_provider_type')
     # def offline_type_to_char2(self):
@@ -1039,9 +1040,18 @@ class IssuedOffline(models.Model):
             booker_id = self.create_booker_api(booker, context)  # create booker
             contact_id = self.create_contact_api(contact[0], booker_id, context)
             passenger_ids = self.create_customer_api(passengers, context, booker_id, contact_id)  # create passenger
-            # customer_parent_id = self._set_customer_parent(context, contact_id)
-            booking_line_ids = self._create_line(lines, data_reservation_offline)  # create booking line
-            iss_off_psg_ids = self._create_reservation_offline_order(passengers, passenger_ids, context)
+            booking_line_ids = []
+            iss_off_psg_ids = []
+            create_line_res = self._create_line(lines, data_reservation_offline)
+            if create_line_res['error_code'] == 0:
+                booking_line_ids = create_line_res['response']
+            else:
+                raise Exception(create_line_res['error_msg'])
+            create_psg_res = self._create_reservation_offline_order(passengers, passenger_ids, context)
+            if create_psg_res['error_code'] == 0:
+                iss_off_psg_ids = create_psg_res['response']
+            else:
+                raise Exception(create_psg_res['error_msg'])
             header_val = {
                 'booker_id': booker_id.id,
                 'passenger_ids': [(6, 0, iss_off_psg_ids)],
@@ -1102,36 +1112,8 @@ class IssuedOffline(models.Model):
         except Exception as e:
             self.env.cr.rollback()
             _logger.error(msg=str(e) + '\n' + traceback.format_exc())
-            res = Response().get_error(str(e), 500)
+            res = Response().get_error(str(e), 1004)
         return res
-
-    def _set_customer_parent(self, context, contact):
-        customer_parent_env = self.env['tt.customer.parent']
-        print('Agent ID : ' + str(context['co_agent_id']))
-        agent_obj = self.env['tt.agent'].search([('id', '=', context['co_agent_id'])])
-        # customer_parent_obj = customer_parent_env.sudo().search([('name', '=', context.agent_id.name + ' FPO')], limit=1)
-        walkin_obj = agent_obj.customer_parent_walkin_id
-        if walkin_obj:
-            walkin_obj.write({
-                'customer_ids': [(4, contact.id)]
-            })
-            return walkin_obj.id
-        else:
-            # create new Customer Parent FPO
-            walkin_obj = customer_parent_env.create(
-                {
-                    'parent_agent_id': context['co_agent_id'],
-                    'customer_parent_type_id': self.env.ref('tt_base.customer_type_fpo').id,
-                    'name': agent_obj.name + ' FPO'
-                }
-            )
-            agent_obj.sudo().write({
-                'customer_parent_walkin_id': walkin_obj.id
-            })
-            walkin_obj.write({
-                'customer_ids': [(4, contact)]
-            })
-            return walkin_obj.id
 
     def _create_line(self, lines, data_reservation_offline):
         line_list = []
@@ -1140,102 +1122,113 @@ class IssuedOffline(models.Model):
         provider_env = self.env['tt.transport.carrier'].sudo()
         provider_type = data_reservation_offline['type']
         print('Provider_type : ' + provider_type)
-        if provider_type in ['airline', 'train']:
-            for line in lines:
-                # print('Origin: ' + str(destination_env.search([('code', '=', line.get('origin'))], limit=1).name))
-                # print('Destination: ' + str(destination_env.search([('code', '=', line.get('destination'))], limit=1).name))
-                # print('Carrier : ' + str(provider_env.search([('name', '=', line.get('provider'))], limit=1).name))
-                departure_time = datetime.strptime(line.get('departure'), '%Y-%m-%d %H:%M')
-                arrival_time = datetime.strptime(line.get('arrival'), '%Y-%m-%d %H:%M')
-                line_tmp = {
-                    "pnr": line.get('pnr'),
-                    "origin_id": destination_env.search([('code', '=', line.get('origin'))], limit=1).id,
-                    "destination_id": destination_env.search([('code', '=', line.get('destination'))], limit=1).id,
-                    "provider": line.get('provider'),
-                    "departure_date": departure_time.strftime('%Y-%m-%d'),
-                    "departure_hour": str(departure_time.hour),
-                    "departure_minute": str(departure_time.minute),
-                    "return_date": arrival_time.strftime('%Y-%m-%d'),
-                    "return_hour": str(arrival_time.hour),
-                    "return_minute": str(arrival_time.minute),
-                    "carrier_id": provider_env.search([('name', '=', line.get('provider'))], limit=1).id,
-                    "carrier_code": line.get('carrier_code'),
-                    "carrier_number": line.get('carrier_number'),
-                    "subclass": line.get('sub_class'),
-                    "class_of_service": line.get('class_of_service'),
-                }
-                line_obj = line_env.create(line_tmp)
-                line_list.append(line_obj.id)
-        elif provider_type == 'hotel':
-            for line in lines:
-                check_in_time = datetime.strptime(line.get('check_in'), '%Y-%m-%d')
-                check_out_time = datetime.strptime(line.get('check_out'), '%Y-%m-%d')
-                line_tmp = {
-                    "pnr": line.get('pnr'),
-                    "hotel_name": line.get('name'),
-                    "room": line.get('room'),
-                    "meal_type": line.get('meal_type'),
-                    "qty": int(line.get('qty')),
-                    "description": line.get('description'),
-                    "check_in": check_in_time.strftime('%Y-%m-%d'),
-                    "check_out": check_out_time.strftime('%Y-%m-%d'),
-                }
-                line_obj = line_env.create(line_tmp)
-                line_list.append(line_obj.id)
-        elif provider_type == 'activity':
-            for line in lines:
-                visit_time = datetime.strptime(line.get('visit_date'), '%Y-%m-%d')
-                line_tmp = {
-                    "pnr": line.get('pnr'),
-                    "activity_name": line.get('name'),
-                    "activity_package": line.get('activity_package'),
-                    "qty": int(line.get('qty')),
-                    "description": line.get('description'),
-                    "visit_date": visit_time,
-                }
-                line_obj = line_env.create(line_tmp)
-                line_list.append(line_obj.id)
-        elif provider_type == 'cruise':
-            for line in lines:
-                check_in_time = datetime.strptime(line.get('check_in'), '%Y-%m-%d')
-                check_out_time = datetime.strptime(line.get('check_out'), '%Y-%m-%d')
-                line_tmp = {
-                    "pnr": line.get('pnr'),
-                    "cruise_package": line.get('cruise_package'),
-                    "carrier_id": provider_env.search([('name', '=', line.get('provider'))], limit=1).id,
-                    "departure_location": line.get('departure_location'),
-                    "arrival_location": line.get('arrival_location'),
-                    "room": line.get('room'),
-                    "check_in": check_in_time.strftime('%Y-%m-%d'),
-                    "check_out": check_out_time.strftime('%Y-%m-%d'),
-                    "description": line.get('description')
-                }
-                line_obj = line_env.create(line_tmp)
-                line_list.append(line_obj.id)
-        else:
-            for line in lines:
-                line_tmp = {
-                    "pnr": line.get('pnr'),
-                    "description": line.get('description')
-                }
-                line_obj = line_env.create(line_tmp)
-                line_list.append(line_obj.id)
-        return line_list
+        try:
+            if provider_type in ['airline', 'train']:
+                for line in lines:
+                    # print('Origin: ' + str(destination_env.search([('code', '=', line.get('origin'))], limit=1).name))
+                    # print('Destination: ' + str(destination_env.search([('code', '=', line.get('destination'))], limit=1).name))
+                    # print('Carrier : ' + str(provider_env.search([('name', '=', line.get('provider'))], limit=1).name))
+                    departure_time = datetime.strptime(line.get('departure'), '%Y-%m-%d %H:%M')
+                    arrival_time = datetime.strptime(line.get('arrival'), '%Y-%m-%d %H:%M')
+                    line_tmp = {
+                        "pnr": line.get('pnr'),
+                        "origin_id": destination_env.search([('code', '=', line.get('origin'))], limit=1).id,
+                        "destination_id": destination_env.search([('code', '=', line.get('destination'))], limit=1).id,
+                        "provider": line.get('provider'),
+                        "departure_date": departure_time.strftime('%Y-%m-%d'),
+                        "departure_hour": str(departure_time.hour),
+                        "departure_minute": str(departure_time.minute),
+                        "return_date": arrival_time.strftime('%Y-%m-%d'),
+                        "return_hour": str(arrival_time.hour),
+                        "return_minute": str(arrival_time.minute),
+                        "carrier_id": provider_env.search([('name', '=', line.get('provider'))], limit=1).id,
+                        "carrier_code": line.get('carrier_code'),
+                        "carrier_number": line.get('carrier_number'),
+                        "subclass": line.get('sub_class'),
+                        "class_of_service": line.get('class_of_service'),
+                    }
+                    line_obj = line_env.create(line_tmp)
+                    line_list.append(line_obj.id)
+            elif provider_type == 'hotel':
+                for line in lines:
+                    check_in = datetime.strptime(line.get('check_in'), '%Y-%m-%d')
+                    check_out = datetime.strptime(line.get('check_out'), '%Y-%m-%d')
+                    line_tmp = {
+                        "pnr": line.get('pnr'),
+                        "hotel_name": line.get('name'),
+                        "room": line.get('room'),
+                        "meal_type": line.get('meal_type'),
+                        "qty": int(line.get('qty')),
+                        "description": line.get('description'),
+                        "check_in": check_in.strftime('%Y-%m-%d'),
+                        "check_out": check_out.strftime('%Y-%m-%d'),
+                    }
+                    line_obj = line_env.create(line_tmp)
+                    line_list.append(line_obj.id)
+            elif provider_type == 'activity':
+                for line in lines:
+                    visit_time = datetime.strptime(line.get('visit_date'), '%Y-%m-%d')
+                    line_tmp = {
+                        "pnr": line.get('pnr'),
+                        "activity_name": line.get('name'),
+                        "activity_package": line.get('activity_package'),
+                        "qty": int(line.get('qty')),
+                        "description": line.get('description'),
+                        "visit_date": visit_time,
+                    }
+                    line_obj = line_env.create(line_tmp)
+                    line_list.append(line_obj.id)
+            elif provider_type == 'cruise':
+                for line in lines:
+                    check_in_time = datetime.strptime(line.get('check_in'), '%Y-%m-%d')
+                    check_out_time = datetime.strptime(line.get('check_out'), '%Y-%m-%d')
+                    line_tmp = {
+                        "pnr": line.get('pnr'),
+                        "cruise_package": line.get('cruise_package'),
+                        "carrier_id": provider_env.search([('name', '=', line.get('provider'))], limit=1).id,
+                        "departure_location": line.get('departure_location'),
+                        "arrival_location": line.get('arrival_location'),
+                        "room": line.get('room'),
+                        "check_in": check_in_time.strftime('%Y-%m-%d'),
+                        "check_out": check_out_time.strftime('%Y-%m-%d'),
+                        "description": line.get('description')
+                    }
+                    line_obj = line_env.create(line_tmp)
+                    line_list.append(line_obj.id)
+            else:
+                for line in lines:
+                    line_tmp = {
+                        "pnr": line.get('pnr'),
+                        "description": line.get('description')
+                    }
+                    line_obj = line_env.create(line_tmp)
+                    line_list.append(line_obj.id)
+            res = Response().get_no_error(line_list)
+            return res
+        except Exception as e:
+            print('Error line : ' + str(e))
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1004, additional_message='Error create line : ' + str(e))
 
     def _create_reservation_offline_order(self, passengers, passenger_ids, context):
         iss_off_psg_env = self.env['tt.reservation.offline.passenger'].sudo()
         iss_off_pas_list = []
-        for idx, psg in enumerate(passengers):
-            psg_vals = {
-                'passenger_id': passenger_ids[idx][0].id,
-                'agent_id': context['co_agent_id'],
-                'pax_type': psg['pax_type'],
-                'title': psg['title']
-            }
-            iss_off_psg_obj = iss_off_psg_env.create(psg_vals)
-            iss_off_pas_list.append(iss_off_psg_obj.id)
-
-        return iss_off_pas_list
+        try:
+            for idx, psg in enumerate(passengers):
+                psg_vals = {
+                    'passenger_id': passenger_ids[idx][0].id,
+                    'agent_id': context['co_agent_id'],
+                    'pax_type': psg['pax_type'],  # 'OAM'
+                    'title': psg['title']
+                }
+                iss_off_psg_obj = iss_off_psg_env.create(psg_vals)
+                iss_off_pas_list.append(iss_off_psg_obj.id)
+        except Exception as e:
+            print('Error line : ' + str(e))
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1004, additional_message='Error create passenger : ' + str(e))
+        res = Response().get_no_error(iss_off_pas_list)
+        return res
 
     def _get_social_media_id_by_name(self, name):
         social_media_id = self.env['res.social.media.type'].search([('name', '=', name)], limit=1).id
