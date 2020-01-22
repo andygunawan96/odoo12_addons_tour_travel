@@ -44,12 +44,12 @@ class tt_ledger(models.Model):
             'is_reversed': True,
         })
 
-    @api.model
-    def create(self, vals):
-        if vals.get('res_model') and vals.get('res_id'):
-            if 'provider_type_id' in vals:
-                vals['provider_type_id'] = self.env[vals['res_model']].browse(vals['res_id']).provider_type_id.id
-        return super(tt_ledger, self).create(vals)
+    # @api.model
+    # def create(self, vals):
+    #     if vals.get('res_model') and vals.get('res_id'):
+    #         if 'provider_type_id' in vals:
+    #             vals['provider_type_id'] = self.env[vals['res_model']].browse(vals['res_id']).provider_type_id.id
+    #     return super(tt_ledger, self).create(vals)
 
     def get_allowed_list(self):
         a = super(tt_ledger, self).get_allowed_list()
