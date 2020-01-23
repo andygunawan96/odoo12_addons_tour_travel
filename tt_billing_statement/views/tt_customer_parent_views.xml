@@ -24,9 +24,9 @@
         <field name="arch" type="xml">
             <xpath expr="//group[@name='ctp_info']" position="after">
                 <group>
-                    <field name="billing_cycle_ids" widget="many2many_tags" options="{'no_create_edit': True,'color_field': 'color'}" readonly="1"/>
-                    <field name="billing_due_date" options='{"type": "number", "step": 1}' readonly="1"/>
-                    <field name="billing_due_date_ids" widget="many2many_tags" options="{'no_create_edit': True,'color_field': 'color'}" readonly="1"/>
+                    <field name="billing_cycle_ids" widget="many2many_tags" options="{'no_create_edit': True,'color_field': 'color'}" attrs="{'readonly':[('state','!=','draft')]}"/>
+                    <field name="billing_due_date" options='{"type": "number", "step": 1}' attrs="{'readonly':[('state','!=','draft')]}"/>
+                    <field name="billing_due_date_ids" widget="many2many_tags" options="{'no_create_edit': True,'color_field': 'color'}" attrs="{'readonly':[('state','!=','draft')]}"/>
                 </group>
             </xpath>
         </field>
