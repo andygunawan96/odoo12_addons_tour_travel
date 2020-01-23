@@ -4,7 +4,7 @@
 
         <record id="ho_template_user_accounting_operator" model="res.users">
             <field name="name">HO Agent Template Accounting Operator</field>
-<!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
+            <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
             <field name="login">ho_template_accounting_operator</field>
             <field name="password">mC/JdmC@D>sE`r2tbb*c</field>
             <field name="groups_id"
@@ -19,7 +19,7 @@
 
         <record id="ho_template_user_accounting_supervisor" model="res.users">
             <field name="name">HO Agent Template Accounting Supervisor</field>
-<!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
+            <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
             <field name="login">ho_template_accounting_supervisor</field>
             <field name="password">Gx3`>J2Q!gUh3MXnQbEh</field>
             <field name="groups_id"
@@ -34,7 +34,7 @@
 
         <record id="ho_template_user_accounting_manager" model="res.users">
             <field name="name">HO Agent Template Accounting Manager</field>
-<!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
+            <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
             <field name="login">ho_template_accounting_manager</field>
             <field name="password">g3ND*Gw;S/3J}=}Bt3Dr</field>
             <field name="groups_id"
@@ -49,7 +49,7 @@
 
         <record id="ho_template_user_btb_operator" model="res.users">
             <field name="name">HO Agent Template BTB Operator</field>
-<!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
+            <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
             <field name="login">ho_template_btb_operator</field>
             <field name="password">x4L"36v,2?qsh$G?q6#+</field>
             <field name="groups_id"
@@ -68,7 +68,7 @@
 
         <record id="ho_template_user_btb_supervisor" model="res.users">
             <field name="name">HO Agent Template BTB Supervisor</field>
-<!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
+            <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
             <field name="login">ho_template_btb_supervisor</field>
             <field name="password">rr5KxjM4)P7;^%dMvaz5</field>
             <field name="groups_id"
@@ -87,7 +87,7 @@
 
         <record id="ho_template_user_btb_manager" model="res.users">
             <field name="name">HO Agent Template BTB Manager</field>
-<!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
+            <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
             <field name="login">ho_template_btb_manager</field>
             <field name="password">\E\a/46}(bj~QbEwZg8~</field>
             <field name="groups_id"
@@ -106,7 +106,7 @@
 
         <record id="citra_template_user_operator" model="res.users">
             <field name="name">Citra Agent Template Operator</field>
-<!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
+            <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
             <field name="login">citra_template_operator</field>
             <field name="password">R$^}j>UG4Ye{rzvb"/3_</field>
             <field name="groups_id"
@@ -114,7 +114,7 @@
                           (4,ref('tt_base.group_tt_agent_invoice_operator')),
                           (4,ref('tt_base.group_tt_agent_user_operator'))]"/>
             <field name="frontend_security_ids"
-                    eval="[(4,ref('tt_base.able_to_ticketing')),
+                   eval="[(4,ref('tt_base.able_to_ticketing')),
                     (4,ref('tt_base.able_to_book')),
                     (4,ref('tt_base.able_to_issued')),
                     (4,ref('tt_base.able_to_top_up')),
@@ -128,13 +128,13 @@
 
         <record id="citra_template_user_supervisor" model="res.users">
             <field name="name">Citra Agent Template Supervisor</field>
-<!--                <field name="partner_id" ref="tt_base.citra_template_partner_supervisor"/>-->
-<!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
+            <!--                <field name="partner_id" ref="tt_base.citra_template_partner_supervisor"/>-->
+            <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
             <field name="login">citra_template_supervisor</field>
             <field name="password">Jk]FvLK-5cPK$*=\>tbC</field>
             <field name="groups_id" eval="[(4,ref('tt_base.group_tt_billing_statement_supervisor')), (4,ref('tt_base.group_tt_agent_invoice_supervisor')), (4,ref('tt_base.group_tt_agent_user_supervisor'))]"/>
             <field name="frontend_security_ids"
-                    eval="[(4,ref('tt_base.able_to_ticketing')),
+                   eval="[(4,ref('tt_base.able_to_ticketing')),
                     (4,ref('tt_base.able_to_book')),
                     (4,ref('tt_base.able_to_issued')),
                     (4,ref('tt_base.able_to_top_up')),
@@ -148,13 +148,13 @@
 
         <record id="citra_template_user_manager" model="res.users">
             <field name="name">Citra Agent Template Manager</field>
-<!--                <field name="partner_id" ref="tt_base.citra_template_partner_manager"/>-->
-<!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
+            <!--                <field name="partner_id" ref="tt_base.citra_template_partner_manager"/>-->
+            <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
             <field name="login">citra_template_manager</field>
             <field name="password">tCBttKJ52_ts3/^#Cyr_</field>
             <field name="groups_id" eval="[(4,ref('tt_base.group_tt_billing_statement_manager')), (4,ref('tt_base.group_tt_agent_invoice_manager')), (4,ref('tt_base.group_tt_agent_user_manager'))]"/>
             <field name="frontend_security_ids"
-                    eval="[(4,ref('tt_base.able_to_ticketing')),
+                   eval="[(4,ref('tt_base.able_to_ticketing')),
                     (4,ref('tt_base.able_to_book')),
                     (4,ref('tt_base.able_to_issued')),
                     (4,ref('tt_base.able_to_top_up')),
@@ -168,7 +168,7 @@
 
         <record id="citra_template_finance_operator" model="res.users">
             <field name="name">Citra Agent Template Finance Operator</field>
-<!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
+            <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
             <field name="login">citra_finance_template_operator</field>
             <field name="password">kaUAeSx2wBvtfB5m2VcJ</field>
             <field name="groups_id"
@@ -177,7 +177,7 @@
                           (4,ref('tt_base.group_tt_agent_user_operator')),
                           (4,ref('tt_base.group_tt_agent_finance_operator'))]"/>
             <field name="frontend_security_ids"
-                    eval="[(4,ref('tt_base.able_to_ticketing')),
+                   eval="[(4,ref('tt_base.able_to_ticketing')),
                     (4,ref('tt_base.able_to_book')),
                     (4,ref('tt_base.able_to_issued')),
                     (4,ref('tt_base.able_to_top_up')),
@@ -191,7 +191,7 @@
 
         <record id="citra_template_finance_supervisor" model="res.users">
             <field name="name">Citra Agent Template Finance Supervisor</field>
-<!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
+            <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
             <field name="login">citra_finance_template_supervisor</field>
             <field name="password">P484rmha4CDzSJKn2mSG</field>
             <field name="groups_id"
@@ -200,7 +200,7 @@
                           (4,ref('tt_base.group_tt_agent_user_operator')),
                           (4,ref('tt_base.group_tt_agent_finance_supervisor'))]"/>
             <field name="frontend_security_ids"
-                    eval="[(4,ref('tt_base.able_to_ticketing')),
+                   eval="[(4,ref('tt_base.able_to_ticketing')),
                     (4,ref('tt_base.able_to_book')),
                     (4,ref('tt_base.able_to_issued')),
                     (4,ref('tt_base.able_to_top_up')),
@@ -214,7 +214,7 @@
 
         <record id="citra_template_finance_manager" model="res.users">
             <field name="name">Citra Agent Template Finance Manager</field>
-<!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
+            <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
             <field name="login">citra_finance_template_manager</field>
             <field name="password">mDSwP8cH2tMzHSqEYmZn</field>
             <field name="groups_id"
@@ -223,7 +223,7 @@
                           (4,ref('tt_base.group_tt_agent_user_operator')),
                           (4,ref('tt_base.group_tt_agent_finance_manager'))]"/>
             <field name="frontend_security_ids"
-                    eval="[(4,ref('tt_base.able_to_ticketing')),
+                   eval="[(4,ref('tt_base.able_to_ticketing')),
                     (4,ref('tt_base.able_to_book')),
                     (4,ref('tt_base.able_to_issued')),
                     (4,ref('tt_base.able_to_top_up')),
@@ -237,13 +237,13 @@
 
         <record id="japro_template_user_operator" model="res.users">
             <field name="name">Japro Agent Template Operator</field>
-<!--                <field name="partner_id" ref="tt_base.japro_template_partner_operator"/>-->
-<!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
+            <!--                <field name="partner_id" ref="tt_base.japro_template_partner_operator"/>-->
+            <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
             <field name="login">japro_template_operator</field>
             <field name="password">*b6\hTq5!{FkP8Hbt2g-</field>
             <field name="groups_id" eval="[(4,ref('tt_base.group_tt_billing_statement_operator')), (4,ref('tt_base.group_tt_agent_invoice_operator')), (4,ref('tt_base.group_tt_agent_user_operator'))]"/>
             <field name="frontend_security_ids"
-                    eval="[(4,ref('tt_base.able_to_ticketing')),
+                   eval="[(4,ref('tt_base.able_to_ticketing')),
                     (4,ref('tt_base.able_to_book')),
                     (4,ref('tt_base.able_to_issued')),
                     (4,ref('tt_base.able_to_top_up')),
@@ -257,13 +257,13 @@
 
         <record id="japro_template_user_supervisor" model="res.users">
             <field name="name">Japro Agent Template Supervisor</field>
-<!--                <field name="partner_id" ref="tt_base.japro_template_partner_supervisor"/>-->
-<!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
+            <!--                <field name="partner_id" ref="tt_base.japro_template_partner_supervisor"/>-->
+            <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
             <field name="login">japro_template_supervisor</field>
             <field name="password">j@JZY9r`5^qY.AL-Us3f</field>
             <field name="groups_id" eval="[(4,ref('tt_base.group_tt_billing_statement_supervisor')), (4,ref('tt_base.group_tt_agent_invoice_supervisor')), (4,ref('tt_base.group_tt_agent_user_supervisor'))]"/>
             <field name="frontend_security_ids"
-                    eval="[(4,ref('tt_base.able_to_ticketing')),
+                   eval="[(4,ref('tt_base.able_to_ticketing')),
                     (4,ref('tt_base.able_to_book')),
                     (4,ref('tt_base.able_to_issued')),
                     (4,ref('tt_base.able_to_top_up')),
@@ -273,12 +273,12 @@
                     (4,ref('tt_base.able_to_book')),
                     (4,ref('tt_base.able_to_issued'))
                     ]"/>
-       </record>
+        </record>
 
         <record id="japro_template_user_manager" model="res.users">
             <field name="name">Japro Agent Template Manager</field>
-<!--                <field name="partner_id" ref="tt_base.japro_template_partner_manager"/>-->
-<!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
+            <!--                <field name="partner_id" ref="tt_base.japro_template_partner_manager"/>-->
+            <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
             <field name="login">japro_template_manager</field>
             <field name="password">es!cR-!+Q#p256sKPKzs</field>
             <field name="groups_id" eval="[(4,ref('tt_base.group_tt_billing_statement_manager')), (4,ref('tt_base.group_tt_agent_invoice_manager')), (4,ref('tt_base.group_tt_agent_user_manager'))]"/>
@@ -295,17 +295,86 @@
                     ]"/>
         </record>
 
+        <record id="japro_template_finance_operator" model="res.users">
+            <field name="name">Japro Agent Template Finance Operator</field>
+            <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
+            <field name="login">japro_finance_template_operator</field>
+            <field name="password">UsLxrz9ndHfVZqxdJcjY</field>
+            <field name="groups_id"
+                   eval="[(4,ref('tt_base.group_tt_billing_statement_operator')),
+                          (4,ref('tt_base.group_tt_agent_invoice_operator')),
+                          (4,ref('tt_base.group_tt_agent_user_operator')),
+                          (4,ref('tt_base.group_tt_agent_finance_operator'))]"/>
+            <field name="frontend_security_ids"
+                   eval="[(4,ref('tt_base.able_to_ticketing')),
+                    (4,ref('tt_base.able_to_book')),
+                    (4,ref('tt_base.able_to_issued')),
+                    (4,ref('tt_base.able_to_top_up')),
+                    (4,ref('tt_base.able_to_login')),
+                    (4,ref('tt_base.able_to_psg_cache_1')),
+                    (4,ref('tt_base.able_to_psg_cache_2')),
+                    (4,ref('tt_base.able_to_book')),
+                    (4,ref('tt_base.able_to_issued'))
+                    ]"/>
+        </record>
+
+        <record id="japro_template_finance_supervisor" model="res.users">
+            <field name="name">Japro Agent Template Finance Supervisor</field>
+            <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
+            <field name="login">japro_finance_template_supervisor</field>
+            <field name="password">gzKd7t7JTx8xyy2EztqA</field>
+            <field name="groups_id"
+                   eval="[(4,ref('tt_base.group_tt_billing_statement_operator')),
+                          (4,ref('tt_base.group_tt_agent_invoice_operator')),
+                          (4,ref('tt_base.group_tt_agent_user_operator')),
+                          (4,ref('tt_base.group_tt_agent_finance_supervisor'))]"/>
+            <field name="frontend_security_ids"
+                   eval="[(4,ref('tt_base.able_to_ticketing')),
+                    (4,ref('tt_base.able_to_book')),
+                    (4,ref('tt_base.able_to_issued')),
+                    (4,ref('tt_base.able_to_top_up')),
+                    (4,ref('tt_base.able_to_login')),
+                    (4,ref('tt_base.able_to_psg_cache_1')),
+                    (4,ref('tt_base.able_to_psg_cache_2')),
+                    (4,ref('tt_base.able_to_book')),
+                    (4,ref('tt_base.able_to_issued'))
+                    ]"/>
+        </record>
+
+        <record id="japro_template_finance_manager" model="res.users">
+            <field name="name">Japro Agent Template Finance Manager</field>
+            <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
+            <field name="login">japro_finance_template_manager</field>
+            <field name="password">JcrKyNUL9MDKpqCP3sME</field>
+            <field name="groups_id"
+                   eval="[(4,ref('tt_base.group_tt_billing_statement_operator')),
+                          (4,ref('tt_base.group_tt_agent_invoice_operator')),
+                          (4,ref('tt_base.group_tt_agent_user_operator')),
+                          (4,ref('tt_base.group_tt_agent_finance_manager'))]"/>
+            <field name="frontend_security_ids"
+                   eval="[(4,ref('tt_base.able_to_ticketing')),
+                    (4,ref('tt_base.able_to_book')),
+                    (4,ref('tt_base.able_to_issued')),
+                    (4,ref('tt_base.able_to_top_up')),
+                    (4,ref('tt_base.able_to_login')),
+                    (4,ref('tt_base.able_to_psg_cache_1')),
+                    (4,ref('tt_base.able_to_psg_cache_2')),
+                    (4,ref('tt_base.able_to_book')),
+                    (4,ref('tt_base.able_to_issued'))
+                    ]"/>
+        </record>
+
         <record id="btbo_template_user_operator" model="res.users">
             <field name="name">BTBO Agent Template Operator</field>
-<!--                <field name="partner_id" ref="tt_base.btbo_template_partner_operator"/>-->
-<!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
+            <!--                <field name="partner_id" ref="tt_base.btbo_template_partner_operator"/>-->
+            <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
             <field name="login">btbo_template_operator</field>
             <field name="password">E-/'dFSAmg'}e(c6)]{$</field>
             <field name="groups_id" eval="[(4,ref('tt_base.group_tt_billing_statement_operator')),
                                             (4,ref('tt_base.group_tt_agent_invoice_operator')),
                                                (4,ref('tt_base.group_tt_agent_user_operator'))]"/>
             <field name="frontend_security_ids"
-                    eval="[(4,ref('tt_base.able_to_ticketing')),
+                   eval="[(4,ref('tt_base.able_to_ticketing')),
                     (4,ref('tt_base.able_to_book')),
                     (4,ref('tt_base.able_to_issued')),
                     (4,ref('tt_base.able_to_top_up')),
@@ -319,13 +388,13 @@
 
         <record id="btbo_template_user_supervisor" model="res.users">
             <field name="name">BTBO Agent Template Supervisor</field>
-<!--                <field name="partner_id" ref="tt_base.btbo_template_partner_supervisor"/>-->
-<!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
+            <!--                <field name="partner_id" ref="tt_base.btbo_template_partner_supervisor"/>-->
+            <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
             <field name="login">btbo_template_supervisor</field>
             <field name="password">h.Cxy+jY-eSpsM7Gz:95</field>
             <field name="groups_id" eval="[(4,ref('tt_base.group_tt_billing_statement_supervisor')), (4,ref('tt_base.group_tt_agent_invoice_supervisor')), (4,ref('tt_base.group_tt_agent_user_supervisor'))]"/>
             <field name="frontend_security_ids"
-                    eval="[(4,ref('tt_base.able_to_ticketing')),
+                   eval="[(4,ref('tt_base.able_to_ticketing')),
                     (4,ref('tt_base.able_to_book')),
                     (4,ref('tt_base.able_to_issued')),
                     (4,ref('tt_base.able_to_top_up')),
@@ -339,13 +408,13 @@
 
         <record id="btbo_template_user_manager" model="res.users">
             <field name="name">BTBO Agent Template Manager</field>
-<!--                <field name="partner_id" ref="tt_base.btbo_template_partner_manager"/>-->
-<!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
+            <!--                <field name="partner_id" ref="tt_base.btbo_template_partner_manager"/>-->
+            <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
             <field name="login">btbo_template_manager</field>
             <field name="password">frdC~ypYs9@*BQ/EPzS\</field>
             <field name="groups_id" eval="[(4,ref('tt_base.group_tt_billing_statement_manager')), (4,ref('tt_base.group_tt_agent_invoice_manager')), (4,ref('tt_base.group_tt_agent_user_manager'))]"/>
             <field name="frontend_security_ids"
-                    eval="[(4,ref('tt_base.able_to_ticketing')),
+                   eval="[(4,ref('tt_base.able_to_ticketing')),
                     (4,ref('tt_base.able_to_book')),
                     (4,ref('tt_base.able_to_issued')),
                     (4,ref('tt_base.able_to_top_up')),
@@ -359,13 +428,13 @@
 
         <record id="btbr_template_user_operator" model="res.users">
             <field name="name">BTBR Agent Template Operator</field>
-<!--                <field name="partner_id" ref="tt_base.btbr_template_partner_operator"/>-->
-<!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
+            <!--                <field name="partner_id" ref="tt_base.btbr_template_partner_operator"/>-->
+            <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
             <field name="login">btbr_template_operator</field>
             <field name="password">D{,8zFhX~KNQpXuYR4TS</field>
             <field name="groups_id" eval="[(4,ref('tt_base.group_tt_billing_statement_operator')), (4,ref('tt_base.group_tt_agent_invoice_operator')), (4,ref('tt_base.group_tt_agent_user_operator'))]"/>
             <field name="frontend_security_ids"
-                    eval="[(4,ref('tt_base.able_to_ticketing')),
+                   eval="[(4,ref('tt_base.able_to_ticketing')),
                     (4,ref('tt_base.able_to_book')),
                     (4,ref('tt_base.able_to_issued')),
                     (4,ref('tt_base.able_to_top_up')),
@@ -379,13 +448,13 @@
 
         <record id="btbr_template_user_supervisor" model="res.users">
             <field name="name">BTBR Agent Template Supervisor</field>
-<!--                <field name="partner_id" ref="tt_base.btbr_template_partner_supervisor"/>-->
-<!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
+            <!--                <field name="partner_id" ref="tt_base.btbr_template_partner_supervisor"/>-->
+            <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
             <field name="login">btbr_template_supervisor</field>
             <field name="password">3@2>N8s"4c*j~zWBU>A@</field>
             <field name="groups_id" eval="[(4,ref('tt_base.group_tt_billing_statement_supervisor')), (4,ref('tt_base.group_tt_agent_invoice_supervisor')), (4,ref('tt_base.group_tt_agent_user_supervisor'))]"/>
             <field name="frontend_security_ids"
-                    eval="[(4,ref('tt_base.able_to_ticketing')),
+                   eval="[(4,ref('tt_base.able_to_ticketing')),
                     (4,ref('tt_base.able_to_book')),
                     (4,ref('tt_base.able_to_issued')),
                     (4,ref('tt_base.able_to_top_up')),
@@ -399,13 +468,13 @@
 
         <record id="btbr_template_user_manager" model="res.users">
             <field name="name">BTBR Agent Template Manager</field>
-<!--                <field name="partner_id" ref="tt_base.btbr_template_partner_manager"/>-->
-<!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
+            <!--                <field name="partner_id" ref="tt_base.btbr_template_partner_manager"/>-->
+            <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
             <field name="login">btbr_template_manager</field>
             <field name="password">x\#T6M"rCR}v`"XWx^V"</field>
             <field name="groups_id" eval="[(4,ref('tt_base.group_tt_billing_statement_manager')), (4,ref('tt_base.group_tt_agent_invoice_manager')), (4,ref('tt_base.group_tt_agent_user_manager'))]"/>
             <field name="frontend_security_ids"
-                    eval="[(4,ref('tt_base.able_to_ticketing')),
+                   eval="[(4,ref('tt_base.able_to_ticketing')),
                     (4,ref('tt_base.able_to_book')),
                     (4,ref('tt_base.able_to_issued')),
                     (4,ref('tt_base.able_to_top_up')),

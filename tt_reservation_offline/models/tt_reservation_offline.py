@@ -1291,43 +1291,43 @@ class IssuedOffline(models.Model):
         desc_txt = ''
         if self.offline_provider_type in ['airline', 'train']:
             for rec in self.line_ids:
-                desc_txt += 'PNR: ' + rec.pnr + '<br/>'
-                desc_txt += 'Carrier: ' + rec.carrier_id.name + '<br/>'
-                desc_txt += 'Departure: ' + rec.origin_id.display_name + ' (' + rec.departure_date + ' ' + rec.departure_hour + ':' + rec.departure_minute + ')<br/>'
-                desc_txt += 'Arrival: ' + rec.destination_id.display_name + ' (' + rec.return_date + ' ' + rec.return_hour + ':' + rec.return_minute + ')<br/><br/>'
+                desc_txt += 'PNR: ' + (rec.pnr or '') + '<br/>'
+                desc_txt += 'Carrier: ' + (rec.carrier_id.name or '') + '<br/>'
+                desc_txt += 'Departure: ' + (rec.origin_id.display_name or '') + ' (' + (rec.departure_date or '') + ' ' + (rec.departure_hour or '') + ':' + (rec.departure_minute or '') + ')<br/>'
+                desc_txt += 'Arrival: ' + (rec.destination_id.display_name or '') + ' (' + (rec.return_date or '') + ' ' + (rec.return_hour or '') + ':' + (rec.return_minute or '') + ')<br/><br/>'
         elif self.offline_provider_type == 'hotel':
             for rec in self.line_ids:
-                desc_txt += 'PNR: ' + rec.pnr + '<br/>'
-                desc_txt += 'Hotel : ' + rec.hotel_name + '<br/>'
-                desc_txt += 'Room : ' + rec.room + ' ' + str(rec.obj_qty) + 'x' + '<br/>'
+                desc_txt += 'PNR: ' + (rec.pnr or '') + '<br/>'
+                desc_txt += 'Hotel : ' + (rec.hotel_name or '') + '<br/>'
+                desc_txt += 'Room : ' + (rec.room or '') + ' ' + str(rec.obj_qty) + 'x' + '<br/>'
                 desc_txt += 'Date : ' + str(rec.check_in) + ' - ' + str(rec.check_out) + '<br/>'
                 desc_txt += 'Passengers : ' + '<br/>'
                 for idx, psg in enumerate(self.passenger_ids):
                     index = idx + 1
-                    desc_txt += str(index) + '. ' + psg.first_name + ' ' + psg.last_name + '<br/>'
-                desc_txt += 'Description : ' + rec.description + '<br/><br/>'
+                    desc_txt += str(index) + '. ' + (psg.first_name or '') + ' ' + (psg.last_name or '') + '<br/>'
+                desc_txt += 'Description : ' + (rec.description or '') + '<br/><br/>'
         elif self.offline_provider_type == 'activity':
             for rec in self.line_ids:
-                desc_txt += 'PNR: ' + rec.pnr + '<br/>'
-                desc_txt += 'Activity : ' + rec.activity_name + '<br/>'
-                desc_txt += 'Package : ' + rec.activity_package + str(rec.obj_qty) + 'x' + '<br/>'
+                desc_txt += 'PNR: ' + (rec.pnr or '') + '<br/>'
+                desc_txt += 'Activity : ' + (rec.activity_name or '') + '<br/>'
+                desc_txt += 'Package : ' + (rec.activity_package or '') + str(rec.obj_qty) + 'x' + '<br/>'
                 desc_txt += 'Date : ' + str(rec.check_in) + '<br/>'
                 desc_txt += 'Passengers : ' + '<br/>'
                 for idx, psg in enumerate(rec.passenger_ids):
                     index = idx + 1
-                    desc_txt += str(index) + '. ' + psg.first_name + ' ' + psg.last_name + '<br/>'
-                desc_txt += 'Description : ' + rec.description + '<br/><br/>'
+                    desc_txt += str(index) + '. ' + (psg.first_name or '') + ' ' + (psg.last_name or '') + '<br/>'
+                desc_txt += 'Description : ' + (rec.description or '') + '<br/><br/>'
         elif self.offline_provider_type == 'cruise':
             for rec in self.line_ids:
-                desc_txt += 'PNR: ' + rec.pnr + '<br/>'
-                desc_txt += 'Cruise : ' + rec.cruise_package + '<br/>'
-                desc_txt += 'Room : ' + rec.room + ' ' + str(rec.obj_qty) + '<br/>'
+                desc_txt += 'PNR: ' + (rec.pnr or '') + '<br/>'
+                desc_txt += 'Cruise : ' + (rec.cruise_package or '') + '<br/>'
+                desc_txt += 'Room : ' + (rec.room or '') + ' ' + str(rec.obj_qty) + '<br/>'
                 desc_txt += 'Date : ' + str(rec.check_in) + ' - ' + str(rec.check_out) + '<br/>'
                 desc_txt += 'Passengers : ' + '<br/>'
                 for idx, psg in enumerate(rec.passenger_ids):
                     index = idx + 1
-                    desc_txt += str(index) + '. ' + psg.first_name + ' ' + psg.last_name + '<br/>'
-                desc_txt += 'Description : ' + rec.description + '<br/><br/>'
+                    desc_txt += str(index) + '. ' + (psg.first_name or '') + ' ' + (psg.last_name or '') + '<br/>'
+                desc_txt += 'Description : ' + (rec.description or '') + '<br/><br/>'
         else:
             for rec in self.line_ids:
                 desc_txt += 'PNR: ' + rec.pnr + '<br/>'

@@ -7,6 +7,9 @@
             <field name="model">tt.reservation.offline.passenger</field>
             <field name="arch" type="xml">
                 <form string="">
+                    <header>
+                        <button string="Sync Name" name="compute_name" type="object"/>
+                    </header>
                     <sheet>
                         <group>
                             <group>
