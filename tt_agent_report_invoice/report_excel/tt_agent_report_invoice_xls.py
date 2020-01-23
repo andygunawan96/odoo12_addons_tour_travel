@@ -59,6 +59,7 @@ class AgentReportInvoiceXls(models.TransientModel):
         invoice_number = ''
         invoice_line_number = ''
         counter = 0
+        summary = []
         for i in values['lines']:
             if invoice_number != i['invoice_number']:
                 counter += 1
@@ -100,10 +101,26 @@ class AgentReportInvoiceXls(models.TransientModel):
                 for j in sort_by_payment:
                     row_data += 1
                     sty_table_data = style.table_data
+                    sty_amount = style.table_data_amount
                     if row_data % 2 == 0:
                         sty_table_data = style.table_data_even
+                        sty_amount = style.table_data_amount_even
 
                     if payment_ref != j['payment_ref']:
+                        #check if bank is exist in summary
+                        returning_index = self.returning_index(summary, {'payment_acquirer': j['payment_acquirer'], 'payment_account': j['payment_acquirer_account_number']})
+                        if returning_index == -1:
+                            temp_dict = {
+                                'payment_acquirer': j['payment_acquirer'],
+                                'payment_account': j['payment_acquirer_account_number'],
+                                'transaction_counter': 1,
+                                'total_amount': float(j['payment_pay_amount'])
+                            }
+                            summary.append(temp_dict)
+                        else:
+                            summary[returning_index]['transaction_counter'] += 1
+                            summary[returning_index]['total_amount'] += float(j['payment_pay_amount'])
+
                         sheet.write(row_data, 0, '', sty_table_data)
                         sheet.write(row_data, 1, '', sty_table_data)
                         sheet.write(row_data, 2, '', sty_table_data)
@@ -114,9 +131,9 @@ class AgentReportInvoiceXls(models.TransientModel):
                         sheet.write(row_data, 7, '', sty_table_data)
                         sheet.write(row_data, 8, '', sty_table_data)
                         sheet.write(row_data, 9, '', sty_table_data)
-                        sheet.write(row_data, 10, j['payment_acquirer'], sty_table_data)
+                        sheet.write(row_data, 10, str(j['payment_acquirer']) + ' ' + str(j['payment_acquirer_account_number']), sty_table_data)
                         sheet.write(row_data, 11, j['payment_ref'], sty_table_data)
-                        sheet.write(row_data, 12, '', sty_table_data)
+                        sheet.write(row_data, 12, j['payment_pay_amount'], sty_amount)
                         sheet.write(row_data, 13, '', sty_table_data)
 
                 for j in filtered_data:
@@ -151,6 +168,26 @@ class AgentReportInvoiceXls(models.TransientModel):
                         sheet.write(row_data, 13, i['state'], sty_table_data)
             else:
                 continue
+
+        row_data += 3
+        sheet.write(row_data, 10, 'Payment account', style.table_head_center)
+        sheet.write(row_data, 11, 'total amount', style.table_head_center)
+        for i in summary:
+            row_data += 1
+            sty_table_data = style.table_data
+            sty_amount = style.table_data_amount
+            if row_data % 2 == 0:
+                sty_table_data = style.table_data_even
+                sty_amount = style.table_data_amount_even
+
+            if i['payment_acquirer'] == 'None':
+                sheet.write(row_data, 10, 'Unknown', sty_table_data)
+            elif i['payment_acquirer'] == 'Cash':
+                sheet.write(row_data, 10, 'Cash', sty_table_data)
+            else:
+                sheet.write(row_data, 10, str(i['payment_acquirer']) + ' ' + str(i['payment_account']), sty_table_data)
+            sheet.write(row_data, 11, i['total_amount'], sty_amount)
+
 
         workbook.close()
         # sheet.write('B9', 'Invoice Date', style.table_head_center)
