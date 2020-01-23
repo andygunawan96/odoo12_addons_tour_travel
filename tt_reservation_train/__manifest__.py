@@ -21,6 +21,8 @@ TT_TRANSPORT
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
 
+        'wizard/force_issued_wizard_views.xml',
+
         'views/menu_item_base.xml',
         'views/tt_reservation_train.xml',
         'views/tt_provider_views.xml',

@@ -24,9 +24,9 @@ class TtCustomerParent(models.Model):
     seq_id = fields.Char('Sequence ID', index=True, readonly=True)
     email = fields.Char(string="Email", required=False, )
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.user.company_id.currency_id.id, string='Currency')
-    address_ids = fields.One2many('address.detail', 'agent_id', string='Addresses')
-    phone_ids = fields.One2many('phone.detail', 'agent_id', string='Phones')
-    social_media_ids = fields.One2many('social.media.detail', 'agent_id', 'Social Media')
+    address_ids = fields.One2many('address.detail', 'customer_parent_id', string='Addresses')
+    phone_ids = fields.One2many('phone.detail', 'customer_parent_id', string='Phones')
+    social_media_ids = fields.One2many('social.media.detail', 'customer_parent_id', 'Social Media')
     customer_ids = fields.Many2many('tt.customer', 'tt_customer_customer_parent_rel','customer_parent_id','customer_id','Customer')
     user_ids = fields.One2many('res.users', 'agent_id', 'User')
     payment_acquirer_ids = fields.Char(string="Payment Acquirer", required=False, )  # payment_acquirer

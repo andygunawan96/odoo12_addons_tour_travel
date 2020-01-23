@@ -18,6 +18,7 @@ class PhoneDetail(models.Model):
     phone_number = fields.Char('Phone Number', readonly=True, compute='_compute_phone_number')
     agent_id = fields.Many2one('tt.agent', string='Agent')
     customer_id = fields.Many2one('tt.customer', string='Customer')
+    customer_parent_id = fields.Many2one('tt.customer.parent', string='Customer Parent')
     active = fields.Boolean('Active', default=True)
 
     def to_dict(self):
