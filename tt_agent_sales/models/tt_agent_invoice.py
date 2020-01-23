@@ -87,6 +87,8 @@ class AgentInvoice(models.Model):
     additional_information = fields.Text('Additional Information')
     bill_address_id = fields.Many2one('address.detail', 'Address')
 
+    pnr = fields.Char("PNR",compute="_compute_invoice_pnr",store=True)
+
     @api.model
     def create(self, vals_list):
         vals_list['name'] = self.env['ir.sequence'].next_by_code('agent.invoice')
@@ -102,6 +104,11 @@ class AgentInvoice(models.Model):
         # if 'payment_ids' in vals:
         self.check_paid_status()
         return res
+
+    @api.depends("invoice_line_ids.pnr")
+    def _compute_invoice_pnr(self):
+        for rec in self:
+            rec.pnr = ", ".join([rec1.pnr for rec1 in rec.invoice_line_ids if rec1.pnr])
 
     @api.depends("payment_ids.payment_acquirer")
     def _compute_acquirers(self):

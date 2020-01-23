@@ -108,7 +108,7 @@ class TtReschedule(models.Model):
 
     ledger_ids = fields.One2many('tt.ledger', 'reschedule_id', 'Ledger(s)')
     adjustment_ids = fields.One2many('tt.adjustment', 'res_id', 'Adjustment', readonly=True, domain=_get_res_model_domain)
-    new_pnr = fields.Char('New PNR', readonly=True, compute="_compute_new_pnr")
+    pnr = fields.Char('New PNR', readonly=True, compute="_compute_new_pnr")
     invoice_line_ids = fields.One2many('tt.agent.invoice.line', 'res_id_resv', 'Invoice', domain=[('res_model_resv','=','tt.reschedule')], readonly=True)
     state_invoice = fields.Selection([('wait', 'Waiting'), ('partial', 'Partial'), ('full', 'Full')],
                                      'Invoice Status', help="Agent Invoice status", default='wait',
@@ -146,10 +146,10 @@ class TtReschedule(models.Model):
     @api.onchange('new_segment_ids')
     def _compute_new_pnr(self):
         for rec in self:
-            new_pnr = ''
+            pnr = ''
             for rec2 in rec.new_segment_ids:
-                new_pnr += rec2.pnr and rec2.pnr + ',' or ''
-            rec.new_pnr = new_pnr and new_pnr[:-1] or ''
+                pnr += rec2.pnr and rec2.pnr + ',' or ''
+            rec.pnr = pnr and pnr[:-1] or ''
 
     @api.depends('reschedule_line_ids')
     @api.onchange('reschedule_line_ids')

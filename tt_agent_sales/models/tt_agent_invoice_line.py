@@ -31,6 +31,8 @@ class AgentInvoice(models.Model):
 
     reference = fields.Char('Reference')
 
+    pnr = fields.Char("PNR",compute="_compute_invoice_line_pnr",store=True)
+
     @api.model
     def create(self, vals_list):
         # yang harusnya di pakai
@@ -68,6 +70,20 @@ class AgentInvoice(models.Model):
             for detail in rec.invoice_line_detail_ids:
                 total += detail.price_subtotal
             rec.total = total
+
+    @api.multi
+    @api.depends("res_model_resv","res_id_resv")
+    def _compute_invoice_line_pnr(self):
+        for rec in self:
+            if rec.res_model_resv and rec.res_id_resv:
+                try:
+                    rec.pnr = self.env[rec.res_model_resv].browse(rec.res_id_resv).pnr
+                except:
+                    pass
+
+    def compute_pnr(self):
+        for rec in self.search([]):
+            rec._compute_invoice_line_pnr()
 
     @api.multi
     @api.depends('total')

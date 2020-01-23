@@ -466,7 +466,7 @@ class PrintoutInvoice(models.AbstractModel):
                         'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
                     })
         elif rec._name == 'tt.reschedule':
-            pnr = rec.new_pnr and rec.new_pnr or '-'
+            pnr = rec.pnr and rec.pnr or '-'
             re_book_obj = self.env[rec.res_model].sudo().browse(int(rec.res_id))
             if not a.get(pnr):
                 a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'provider_type': ''}
