@@ -112,6 +112,7 @@
                 <field name="name"/>
                 <field name="customer_parent_type_id"/>
                 <field name="parent_agent_id"/>
+                <field name="state"/>
             </tree>
         </field>
     </record>
