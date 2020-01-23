@@ -19,10 +19,8 @@
                    eval="[(4,ref('tt_base.able_to_ticketing')),
                     (4,ref('tt_base.able_to_book')),
                     (4,ref('tt_base.able_to_issued')),
-                    (4,ref('tt_base.able_to_top_up')),
                     (4,ref('tt_base.able_to_login')),
-                    (4,ref('tt_base.able_to_psg_cache_1')),
-                    (4,ref('tt_base.able_to_psg_cache_2'))
+                    (4,ref('tt_base.b2c_limitation')),
                     ]"/>
         </record>
     </data>
