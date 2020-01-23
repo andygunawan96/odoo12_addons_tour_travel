@@ -705,14 +705,15 @@ class PrintoutExpenses(models.AbstractModel):
     def get_invoice_data(self, rec, context, data):
         a = {}
         for rec in rec.vendor_ids:
-            create_date = rec.create_date.strftime('%d-%m-%Y')
-            if not a.get(create_date):
-                a[create_date] = {'model': rec._name, 'create_date': create_date, 'vendor': [], 'ref_number': [], 'nta_amount': [], 'ho_amount': [], 'psg': []}
-            a[create_date]['vendor'].append(rec.vendor_id.name)
-            a[create_date]['ref_number'].append(rec.reference_number)
-            a[create_date]['nta_amount'].append(rec.nta_amount)
-            a[create_date]['ho_amount'].append(rec.amount)
-            a[create_date]['psg'].append(rec.pax_to_dict())
+            if rec.amount:
+                create_date = rec.create_date.strftime('%d-%m-%Y')
+                if not a.get(create_date):
+                    a[create_date] = {'model': rec._name, 'create_date': create_date, 'vendor': [], 'ref_number': [], 'nta_amount': [], 'ho_amount': [], 'psg': []}
+                a[create_date]['vendor'].append(rec.vendor_id.name)
+                a[create_date]['ref_number'].append(rec.reference_number)
+                a[create_date]['nta_amount'].append(rec.nta_amount)
+                a[create_date]['ho_amount'].append(rec.amount)
+                a[create_date]['psg'].append(rec.pax_to_dict())
         return a
 
     # Get Terbilang dkk di hapus
@@ -745,8 +746,9 @@ class PrintoutExpenses(models.AbstractModel):
             expenses_data = self.get_invoice_data(rec, data.get('context'), data)
             values[rec.id].append(expenses_data)
             for vendor in rec.vendor_ids:
-                nta_amount += vendor.nta_amount
-                ho_amount += vendor.amount
+                if vendor.amount:
+                    nta_amount += vendor.nta_amount
+                    ho_amount += vendor.amount
         vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
