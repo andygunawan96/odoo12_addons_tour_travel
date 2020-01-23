@@ -237,6 +237,17 @@ class TtVisa(models.Model):
         }
         # self.action_booked_visa(context)
         self.action_issued_visa_api(data, context)
+        # prepare vals for nta price in expenses
+        provider_id = self.provider_booking_ids[0]
+        expenses_vals = {
+            'provider_id': provider_id.id,
+            'visa_id': self.id,
+            'reference_number': 'NTA',
+            'nta_amount': self.total_nta,
+        }
+        provider_id.write({
+            'vendor_ids': [(0, 0, expenses_vals)]
+        })
         self.message_post(body='Order IN PROCESS')
 
     # kirim data dan dokumen ke vendor
@@ -385,11 +396,37 @@ class TtVisa(models.Model):
 
     def calc_visa_upsell_vendor(self):
         diff_nta_upsell = 0
+        total_charge = 0
         for provider in self.provider_booking_ids:
             for rec in provider.vendor_ids:
-                if not rec.is_upsell_ledger_created:
+                if not rec.is_upsell_ledger_created and rec.amount != 0:
+                    total_charge += rec.amount
                     diff_nta_upsell += (rec.amount - rec.nta_amount)
                     rec.is_upsell_ledger_created = True
+
+        ledger = self.env['tt.ledger']
+        for rec in self:
+            doc_type = []
+            for sc in rec.sale_service_charge_ids:
+                if not sc.pricelist_id.visa_type in doc_type:
+                    doc_type.append(sc.pricelist_id.visa_type)
+
+            doc_type = ','.join(str(e) for e in doc_type)
+
+            vals = ledger.prepare_vals(self._name, self.id, 'Additional Charge Visa : ' + rec.name, rec.name,
+                                       datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 2,
+                                       rec.currency_id.id, self.env.user.id, 0, total_charge,
+                                       'Additional Charge Visa : ' + rec.name)
+            vals.update({
+                'pnr': self.pnr,
+                'display_provider_name': self.provider_name,
+                'provider_type_id': self.provider_type_id.id
+            })
+            vals['agent_id'] = self.agent_id.id
+
+            new_aml = ledger.create(vals)
+            # new_aml.action_done()
+            rec.ledger_id = new_aml
 
         """ Jika diff nta upsell > 0 """
         if diff_nta_upsell > 0:
@@ -449,7 +486,8 @@ class TtVisa(models.Model):
         total_expenses = 0
         for provider in self.provider_booking_ids:
             for rec in provider.vendor_ids:
-                total_expenses += rec.nta_amount
+                if rec.amount == 0:
+                    total_expenses += rec.nta_amount
 
         """ Hitung total nta per pax """
         nta_price = 0
@@ -658,7 +696,7 @@ class TtVisa(models.Model):
                     "total_price": 485000,
                     "currency": "IDR"
                 },
-                "id": 23,
+                "id": 1,
                 "notes": [],
                 "commission": [
                     {
@@ -1202,52 +1240,47 @@ class TtVisa(models.Model):
 
     param_booker = {
         "title": "MR",
-        "first_name": "ivan",
-        "last_name": "suryajaya",
+        "first_name": "Lala",
+        "last_name": "Lala",
         "email": "asd@gmail.com",
         "calling_code": "62",
-        "mobile": "81823812832",
+        "mobile": "81238823122",
         "nationality_name": "Indonesia",
+        "booker_seq_id": "",
         "nationality_code": "ID",
-        "booker_id": ""
+        "gender": "male"
     }
 
     param_contact = [
         {
             "title": "MR",
-            "first_name": "ivan",
-            "last_name": "suryajaya",
+            "first_name": "Lala",
+            "last_name": "Lala",
             "email": "asd@gmail.com",
             "calling_code": "62",
-            "mobile": "81823812832",
+            "mobile": "81238823122",
             "nationality_name": "Indonesia",
+            "contact_seq_id": "",
+            "is_booker": True,
             "nationality_code": "ID",
-            "contact_id": "",
-            "is_booker": True
+            "gender": "male"
         }
     ]
 
     param_passenger = [
         {
             "pax_type": "ADT",
-            "first_name": "ivan",
-            "last_name": "suryajaya",
+            "first_name": "Lala",
+            "last_name": "Lala",
             "title": "MR",
-            "birth_date": "2002-10-01",
+            "birth_date": "2003-01-31",
             "nationality_name": "Indonesia",
-            "nationality_code": "ID",
-            "identity": {
-                "identity_country_of_issued_code": "ID",
-                "identity_expdate": "2022-11-10",
-                "identity_number": "0938675340864",
-                "identity_type": "passport"
-            },
-            "passenger_id": "",
+            "passenger_seq_id": "",
             "is_booker": False,
             "is_contact": False,
             "number": 1,
-            "master_visa_Id": "23",
-            "notes": "Pax Notes",
+            "nationality_code": "ID",
+            "master_visa_Id": "1",
             "required": [
                 {
                     "is_original": True,
@@ -1259,65 +1292,28 @@ class TtVisa(models.Model):
                 {
                     "answer": False,
                     "id": 21
-                },
-                {
-                    "answer": False,
-                    "id": 22
-                },
-                {
-                    "answer": True,
-                    "id": 23
-                },
-                {
-                    "answer": True,
-                    "id": 24
-                },
-                {
-                    "answer": True,
-                    "id": 25
-                },
-                {
-                    "answer": False,
-                    "id": 26
-                },
-                {
-                    "answer": True,
-                    "id": 27
-                },
-                {
-                    "answer": False,
-                    "id": 28
-                },
-                {
-                    "answer": True,
-                    "id": 29
-                },
-                {
-                    "answer": False,
-                    "id": 30
-                },
-            ]
+                }
+            ],
+            "notes": "",
+            "sequence": 1,
+            "passenger_id": "PSG_1",
+            "gender": "male",
+            "is_also_booker": False,
+            "is_also_contact": False
         },
         {
             "pax_type": "ADT",
-            "first_name": "andy",
-            "last_name": "sanjaya",
+            "first_name": "Lili",
+            "last_name": "Lili",
             "title": "MR",
-            "birth_date": "2000-02-15",
+            "birth_date": "2003-01-31",
             "nationality_name": "Indonesia",
-            "nationality_code": "ID",
-            "identity": {
-                "identity_country_of_issued_code": "ID",
-                "identity_expdate": "2022-11-10",
-                "identity_number": "0938675340864",
-                "identity_type": "passport"
-            },
-            "passenger_id": "",
+            "passenger_seq_id": "",
             "is_booker": False,
             "is_contact": False,
-            "number": 1,
-            "master_visa_Id": "23",
-            "notes": "Pax Notes2",
+            "number": 2,
+            "nationality_code": "ID",
+            "master_visa_Id": "1",
             "required": [
                 {
                     "is_original": True,
@@ -1329,114 +1325,14 @@ class TtVisa(models.Model):
                 {
                     "answer": False,
                     "id": 21
-                },
-                {
-                    "answer": False,
-                    "id": 22
-                },
-                {
-                    "answer": True,
-                    "id": 23
-                },
-                {
-                    "answer": True,
-                    "id": 24
-                },
-                {
-                    "answer": True,
-                    "id": 25
-                },
-                {
-                    "answer": False,
-                    "id": 26
-                },
-                {
-                    "answer": True,
-                    "id": 27
-                },
-                {
-                    "answer": False,
-                    "id": 28
-                },
-                {
-                    "answer": True,
-                    "id": 29
-                },
-                {
-                    "answer": False,
-                    "id": 30
-                },
-            ]
-        },
-        {
-            "pax_type": "CHD",
-            "first_name": "ricky",
-            "last_name": "sanjaya",
-            "title": "MR",
-            "birth_date": "2017-02-15",
-            "nationality_name": "Indonesia",
-            "nationality_code": "ID",
-            # "identity": {
-            #     "identity_country_of_issued_code": "ID",
-            #     "identity_expdate": "2022-11-10",
-            #     "identity_number": "0938675340864",
-            #     "identity_type": "passport"
-            # },
-            "passenger_id": "",
-            "is_booker": False,
-            "is_contact": False,
-            "number": 1,
-            "master_visa_Id": "24",
-            "notes": "Pax Notes3",
-            "required": [
-                {
-                    "is_original": True,
-                    "is_copy": False,
-                    "id": 2
                 }
             ],
-            "handling": [
-                {
-                    "answer": False,
-                    "id": 21
-                },
-                {
-                    "answer": False,
-                    "id": 22
-                },
-                {
-                    "answer": True,
-                    "id": 23
-                },
-                {
-                    "answer": True,
-                    "id": 24
-                },
-                {
-                    "answer": True,
-                    "id": 25
-                },
-                {
-                    "answer": False,
-                    "id": 26
-                },
-                {
-                    "answer": True,
-                    "id": 27
-                },
-                {
-                    "answer": False,
-                    "id": 28
-                },
-                {
-                    "answer": True,
-                    "id": 29
-                },
-                {
-                    "answer": False,
-                    "id": 30
-                },
-            ]
+            "notes": "",
+            "sequence": 1,
+            "passenger_id": "PSG_1",
+            "gender": "female",
+            "is_also_booker": False,
+            "is_also_contact": False
         }
     ]
 
@@ -1459,14 +1355,13 @@ class TtVisa(models.Model):
 
     param_payment = {
         "member": True,
-        "seq_id": "CTP.1411067",
+        "acquirer_seq_id": "CTP.1411067",
+        'force_issued': False
         # "member": False,
         # "seq_id": "PQR.0429001",
     }
 
-    param_voucher = {
-
-    }
+    param_voucher = False
 
     def get_booking_visa_api(self, data, context):  #
         res = {}
