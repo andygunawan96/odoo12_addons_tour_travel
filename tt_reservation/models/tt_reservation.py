@@ -220,7 +220,7 @@ class TtReservation(models.Model):
             'first_name': vals.get('first_name'),
             'last_name': vals.get('last_name'),
             'marital_status': 'married' if vals.get('title') == 'MRS' else '',
-            'customer_parent_ids': [(4, agent_obj.customer_parent_walkin_id.id)],
+            'customer_parent_ids': [(4, agent_obj.customer_parent_walkin_id.id)],##TODO jadi COR ID jika yang login adalah user COR
             'gender': vals.get('gender')
         })
 
@@ -265,7 +265,7 @@ class TtReservation(models.Model):
             psg['agent_id'] = context['co_agent_id']
             agent_obj = self.env['tt.agent'].sudo().browse(context['co_agent_id'])
             psg.update({
-                'customer_parent_ids': [(4, agent_obj.customer_parent_walkin_id.id)],
+                'customer_parent_ids': [(4, agent_obj.customer_parent_walkin_id.id)], ##TODO jadi COR ID jika yang login adalah user COR
                 'marital_status': 'married' if psg.get('title') == 'MRS' else '',
             })
             #if ada phone, kalau dari frontend cache passenger

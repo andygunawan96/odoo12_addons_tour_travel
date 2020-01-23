@@ -52,7 +52,7 @@ class ForceIssuedWizard(models.TransientModel):
                 'member': False,
                 'acquirer_seq_id': self.acquirer_id.seq_id
             }
-        provider_obj = self.env['tt.provider.airline'].sudo().search([('id', '=', self.provider_id.id)])
+        provider_obj = self.env['tt.provider.airline'].search([('id', '=', self.provider_id.id)])
         provider_obj.action_force_issued_from_button(payment_data)
 
     def submit_set_to_issued(self):
@@ -66,5 +66,5 @@ class ForceIssuedWizard(models.TransientModel):
                 'member': False,
                 'acquirer_seq_id': self.acquirer_id.seq_id
             }
-        provider_obj = self.env['tt.provider.airline'].sudo().search([('id', '=', self.provider_id.id)])
+        provider_obj = self.env['tt.provider.airline'].search([('id', '=', self.provider_id.id)])
         provider_obj.action_set_to_issued_from_button(payment_data)

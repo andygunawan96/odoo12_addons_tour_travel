@@ -100,6 +100,23 @@ class TtProviderTrain(models.Model):
             'tag': 'reload',
         }
 
+    def action_set_to_book_from_button(self):
+        if self.state == 'booked':
+            raise UserError("Has been Booked.")
+
+        self.write({
+            'state': 'booked',
+            'booked_uid': self.env.user.id,
+            'booked_date': datetime.now()
+        })
+
+        self.booking_id.check_provider_state({'co_uid':self.env.user.id})
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
+
     def action_reverse_ledger_from_button(self):
         if self.state == 'fail_refunded':
             raise UserError("Cannot refund, this PNR has been refunded.")
