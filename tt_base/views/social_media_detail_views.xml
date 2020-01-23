@@ -30,9 +30,9 @@
                         </div>
                         <group>
                             <field name="type_id"/>
-                            <field name="agent_id"/>
-                            <field name="customer_id"/>
-                            <field name="customer_parent_id"/>
+<!--                            <field name="agent_id"/>-->
+<!--                            <field name="customer_id"/>-->
+<!--                            <field name="customer_parent_id"/>-->
                         </group>
                     </sheet>
                 </form>
