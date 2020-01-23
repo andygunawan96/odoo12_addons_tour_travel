@@ -385,7 +385,11 @@ class TtReschedule(models.Model):
             'agent_id': self.agent_id.id,
             'acquirer_id': self.payment_acquirer_id and self.payment_acquirer_id.id or False,
             'real_total_amount': inv_line_obj.total,
-            'customer_parent_id': self.customer_parent_id.id
+            'customer_parent_id': self.customer_parent_id.id,
+            'state': 'confirm',
+            'payment_date': datetime.now(),
+            'reference': self.name,
+            'confirm_uid': self.confirm_uid.id
         })
 
         self.env['tt.payment.invoice.rel'].create({
