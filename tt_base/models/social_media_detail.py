@@ -10,4 +10,5 @@ class SocialMediaDetail(models.Model):
     type_id = fields.Many2one('res.social.media.type', 'Social Media Type')
     agent_id = fields.Many2one('tt.agent', 'Agent')
     customer_id = fields.Many2one('tt.customer', 'Customer', store=True)
+    customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer Parent', store=True)
     active = fields.Boolean('Active', default=True)
