@@ -73,10 +73,11 @@
                             <field name="booker_id"/>
                             <field name="customer_parent_id"/>
                             <field name="customer_parent_type_id" string="Customer Type"/>
+                            <field name="pnr"/>
                         </group>
                         <group>
                             <field name="agent_id"/>
-                            <label for="confirm_uid" string="Confirm By"/>
+                            <label for="confirmed_uid" string="Confirm By"/>
                             <div>
                                 <field name="confirmed_uid" class="oe_inline"/> -
                                 <field name="confirmed_date" class="oe_inline"/>
@@ -149,9 +150,12 @@
                 <field name="date_invoice"/>
                 <field name="name"/>
                 <field name="state"/>
-                <field name="agent_id"/>
+                <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>
                 <field name="customer_parent_id"/>
+                <field name="booker_id"/>
+                <field name="pnr"/>
                 <field name="payment_acquirers"/>
+                <field name="confirmed_uid"/>
                 <field name="total_after_tax"/>
                 <field name="paid_amount"/>
             </tree>

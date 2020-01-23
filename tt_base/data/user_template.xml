@@ -189,7 +189,7 @@
                     ]"/>
         </record>
 
-                <record id="citra_template_finance_supervisor" model="res.users">
+        <record id="citra_template_finance_supervisor" model="res.users">
             <field name="name">Citra Agent Template Finance Supervisor</field>
 <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
             <field name="login">citra_finance_template_supervisor</field>
