@@ -55,7 +55,7 @@ class TtProviderTrain(models.Model):
     error_history_ids = fields.One2many('tt.reservation.err.history','res_id','Error History', domain=[('res_model','=','tt.provider.train')])
 
     ##button function
-    def action_set_to_issued_from_button(self):
+    def action_set_to_issued_from_button(self, payment_data={}):
         if self.state == 'issued':
             raise UserError("Has been Issued.")
         self.write({
@@ -63,10 +63,14 @@ class TtProviderTrain(models.Model):
             'issued_uid': self.env.user.id,
             'issued_date': datetime.now()
         })
-        self.booking_id.check_provider_state({'co_uid': self.env.user.id})
+        self.booking_id.check_provider_state({'co_uid': self.env.user.id}, [], False, payment_data)
 
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
 
-    def action_force_issued_from_button(self, payment_data):
+    def action_force_issued_from_button(self, payment_data={}):
         if self.state == 'issued':
             raise UserError("Has been Issued.")
 
@@ -89,7 +93,24 @@ class TtProviderTrain(models.Model):
         #     raise UserError("Balance not enough.")
         #
         # self.action_create_ledger(self.env.user.id)
-        self.action_set_to_issued_from_button()
+        self.action_set_to_issued_from_button(payment_data)
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
+
+    def action_set_to_book_from_button(self):
+        if self.state == 'booked':
+            raise UserError("Has been Booked.")
+
+        self.write({
+            'state': 'booked',
+            'booked_uid': self.env.user.id,
+            'booked_date': datetime.now()
+        })
+
+        self.booking_id.check_provider_state({'co_uid':self.env.user.id})
 
         return {
             'type': 'ir.actions.client',

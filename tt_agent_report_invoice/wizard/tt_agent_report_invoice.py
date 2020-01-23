@@ -33,3 +33,9 @@ class AgentReportInvoice(models.TransientModel):
             'data_form': data['form']
         }
         return self.env.ref('tt_agent_report_invoice.action_agent_report_invoice').report_action(self, data=records)
+
+    def returning_index(self, lst, params):
+        for i, dic in enumerate(lst):
+            if dic['payment_acquirer'] == params['payment_acquirer'] and dic['payment_account'] == params['payment_account']:
+                return i
+        return -1

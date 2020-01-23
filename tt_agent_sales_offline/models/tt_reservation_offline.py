@@ -110,6 +110,8 @@ class ReservationOffline(models.Model):
             'agent_id': self.agent_id.id,
             'real_total_amount': inv_line_obj.total_after_tax,
             'customer_parent_id': self.customer_parent_id.id,
+            'confirm_uid': invoice_id.confirmed_uid,
+            'confirm_date': datetime.now()
         })
         if self.acquirer_id:
             payment_obj.update({

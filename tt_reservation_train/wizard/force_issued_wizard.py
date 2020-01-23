@@ -7,10 +7,10 @@ _logger = logging.getLogger(__name__)
 
 
 class ForceIssuedWizard(models.TransientModel):
-    _name = "force.issued.wizard"
-    _description = 'Airline Force Issued Wizard'
+    _name = "force.issued.wizard.train"
+    _description = 'Train Force Issued Wizard'
 
-    provider_id = fields.Many2one('tt.provider.airline', 'Provider', readonly=True)
+    provider_id = fields.Many2one('tt.provider.train', 'Provider', readonly=True)
     booker_id = fields.Many2one('tt.customer', 'Booker', ondelete='restrict', required=True, readonly=True, compute='_compute_booker_agent_id')
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True, readonly=True, compute='_compute_booker_agent_id')
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', related='agent_id.agent_type_id', readonly=True)
@@ -37,7 +37,7 @@ class ForceIssuedWizard(models.TransientModel):
     @api.onchange('provider_id')
     def _compute_booker_agent_id(self):
         for rec in self:
-            provider_obj = self.env['tt.provider.airline'].sudo().search([('id', '=', rec.provider_id.id)])
+            provider_obj = self.env['tt.provider.train'].sudo().search([('id', '=', rec.provider_id.id)])
             rec.agent_id = provider_obj.booking_id.agent_id.id
             rec.booker_id = provider_obj.booking_id.booker_id.id
 
@@ -52,7 +52,7 @@ class ForceIssuedWizard(models.TransientModel):
                 'member': False,
                 'acquirer_seq_id': self.acquirer_id.seq_id
             }
-        provider_obj = self.env['tt.provider.airline'].search([('id', '=', self.provider_id.id)])
+        provider_obj = self.env['tt.provider.train'].search([('id', '=', self.provider_id.id)])
         provider_obj.action_force_issued_from_button(payment_data)
 
     def submit_set_to_issued(self):
@@ -66,5 +66,5 @@ class ForceIssuedWizard(models.TransientModel):
                 'member': False,
                 'acquirer_seq_id': self.acquirer_id.seq_id
             }
-        provider_obj = self.env['tt.provider.airline'].search([('id', '=', self.provider_id.id)])
+        provider_obj = self.env['tt.provider.train'].search([('id', '=', self.provider_id.id)])
         provider_obj.action_set_to_issued_from_button(payment_data)
