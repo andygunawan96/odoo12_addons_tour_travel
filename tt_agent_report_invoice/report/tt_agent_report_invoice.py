@@ -14,12 +14,15 @@ class AgentReportInvoice(models.Model):
     def _select():
         # return """* """
         return """
+        invoice.id as invoice_id,
         invoice.date_invoice, invoice.name as invoice_number, invoice.total as invoice_total,
         invoice.state, invoice.payment_acquirers as payment_acquirers, billing.name as billing_statement,
         agent.name as agent_name, agent_type.name as agent_type,
         customer.name as customer_name,
         invoice_detail.name as invoice_line, invoice_detail.total as invoice_line_total, invoice_detail.reference as invoice_line_reference,
-        payment.reference as payment_ref, acquirer.name as payment_acquirer
+        payment.reference as payment_ref, payment_invoice.pay_amount as payment_pay_amount,
+        acquirer.name as payment_acquirer, acquirer.account_number as payment_acquirer_account_number,
+        users.login as user_name
         """
 
     @staticmethod
@@ -35,6 +38,7 @@ class AgentReportInvoice(models.Model):
         LEFT JOIN tt_payment_invoice_rel payment_invoice ON payment_invoice.invoice_id = invoice.id
         LEFT JOIN tt_payment payment ON payment.id = payment_invoice.payment_id
         LEFT JOIN payment_acquirer acquirer ON payment.acquirer_id = acquirer.id
+        LEFT JOIN res_users users ON payment.approve_uid = users.id
         """
 
     STATE = [
@@ -130,6 +134,7 @@ class AgentReportInvoice(models.Model):
         # provider_type = data_form['provider_type']
         # line = self._get_lines_data(date_from, date_to, agent_id, provider_type, state)
         line = self._get_lines_data(date_from, date_to, agent_id, state)
+        # line.sort(key=lambda x: x['invoice_id'])
         self._report_title(data_form)
         return {
             'lines': line,
