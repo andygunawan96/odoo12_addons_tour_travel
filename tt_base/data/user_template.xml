@@ -169,13 +169,13 @@
         <record id="citra_template_finance_operator" model="res.users">
             <field name="name">Citra Agent Template Finance Operator</field>
 <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
-            <field name="login">citra_template_operator</field>
+            <field name="login">citra_finance_template_operator</field>
             <field name="password">kaUAeSx2wBvtfB5m2VcJ</field>
             <field name="groups_id"
                    eval="[(4,ref('tt_base.group_tt_billing_statement_operator')),
                           (4,ref('tt_base.group_tt_agent_invoice_operator')),
                           (4,ref('tt_base.group_tt_agent_user_operator')),
-                          (4,ref('tt_base.group_tt_agent_finance_operator))]"/>
+                          (4,ref('tt_base.group_tt_agent_finance_operator'))]"/>
             <field name="frontend_security_ids"
                     eval="[(4,ref('tt_base.able_to_ticketing')),
                     (4,ref('tt_base.able_to_book')),
@@ -192,13 +192,13 @@
                 <record id="citra_template_finance_supervisor" model="res.users">
             <field name="name">Citra Agent Template Finance Supervisor</field>
 <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
-            <field name="login">citra_template_supervisor</field>
+            <field name="login">citra_finance_template_supervisor</field>
             <field name="password">P484rmha4CDzSJKn2mSG</field>
             <field name="groups_id"
                    eval="[(4,ref('tt_base.group_tt_billing_statement_operator')),
                           (4,ref('tt_base.group_tt_agent_invoice_operator')),
                           (4,ref('tt_base.group_tt_agent_user_operator')),
-                          (4,ref('tt_base.group_tt_agent_finance_supervisor))]"/>
+                          (4,ref('tt_base.group_tt_agent_finance_supervisor'))]"/>
             <field name="frontend_security_ids"
                     eval="[(4,ref('tt_base.able_to_ticketing')),
                     (4,ref('tt_base.able_to_book')),
@@ -215,13 +215,13 @@
         <record id="citra_template_finance_manager" model="res.users">
             <field name="name">Citra Agent Template Finance Manager</field>
 <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
-            <field name="login">citra_template_manager</field>
+            <field name="login">citra_finance_template_manager</field>
             <field name="password">mDSwP8cH2tMzHSqEYmZn</field>
             <field name="groups_id"
                    eval="[(4,ref('tt_base.group_tt_billing_statement_operator')),
                           (4,ref('tt_base.group_tt_agent_invoice_operator')),
                           (4,ref('tt_base.group_tt_agent_user_operator')),
-                          (4,ref('tt_base.group_tt_agent_finance_manager))]"/>
+                          (4,ref('tt_base.group_tt_agent_finance_manager'))]"/>
             <field name="frontend_security_ids"
                     eval="[(4,ref('tt_base.able_to_ticketing')),
                     (4,ref('tt_base.able_to_book')),
