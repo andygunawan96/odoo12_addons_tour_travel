@@ -290,22 +290,18 @@ class HotelReservation(models.Model):
             })
         return True
 
-    def create_commission_ledger(self, uid):
-        # Create Commission
-        vals = self.env['tt.ledger'].prepare_vals(self._name,self.id,'Commission : ' + self.name, self.name, self.issued_date, 3,
-                                                  self.currency_id.id, uid.id, self.total_commission_amount, 0)
-        vals = self.env['tt.ledger'].prepare_vals_for_resv(self, '', vals)
-        self.create_agent_ledger(vals)
+    # def create_commission_ledger(self, uid):
+    #     # Create Commission
+    #     vals = self.env['tt.ledger'].prepare_vals(self._name,self.id,'Commission : ' + self.name, self.name, self.issued_date, 3,
+    #                                               self.currency_id.id, uid.id, self.total_commission_amount, 0)
+    #     vals = self.env['tt.ledger'].prepare_vals_for_resv(self, '', vals)
+    #     self.create_agent_ledger(vals)
 
-    @api.multi
-    def create_ledger(self, uid):
-        for rec in self:
-            # rec.create_commission_ledger(uid)
-            # vals = self.env['tt.ledger'].prepare_vals(self._name, self.id, 'Reservation : '+ rec.name, rec.name, rec.issued_date, 2, rec.currency_id.id, uid.id, 0, rec.total)
-            # vals = self.env['tt.ledger'].prepare_vals_for_resv(rec, vals)
-            # rec.create_agent_ledger(vals)
-            for prov in rec.provider_booking_ids:
-                prov.action_create_ledger(uid)
+    # @api.multi
+    # def create_ledger(self, uid):
+    #     for rec in self:
+    #         for prov in rec.provider_booking_ids:
+        #             self.env['tt.ledger'].action_create_ledger(prov, uid)
 
     @api.multi
     def _refund_ledger(self):

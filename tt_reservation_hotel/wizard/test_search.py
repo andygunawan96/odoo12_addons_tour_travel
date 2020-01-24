@@ -619,7 +619,15 @@ class TestSearch(models.Model):
         vals = self.prepare_resv_value(backend_hotel_obj, hotel_obj, check_in, check_out, room_rates,
                                        cust_partner_obj, provider_data, special_req, cust_names,
                                        context['agent_id'], cancellation_policy)
+        # Set Customer Type by Payment
+        acq_obj = self.env['payment.acquirer'].search([('seq_id', '=', acquirer_id['seq_id'])])
+        if acq_obj:
+            customer_parent_id = self.env['tt.agent'].sudo().browse(context['agent_id']).customer_parent_walkin_id.id  ##fpo
+        else:
+            customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', acquirer_id['seq_id'])], limit=1).id
+
         vals.update({
+            'customer_parent_id': customer_parent_id,
             'sid_booked': context['sid'],
             'sid_issued': context['sid']
         })
