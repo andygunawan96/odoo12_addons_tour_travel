@@ -539,6 +539,7 @@ class TtReservation(models.Model):
                     _logger.info("Waiting Transaction %s" % (cur_time))
 
                 book_obj.agent_id.is_in_transaction = True
+                self.env.cr.commit()
 
                 #cek balance due book di sini, mungkin suatu saat yang akan datang
                 if book_obj.state == 'issued':
