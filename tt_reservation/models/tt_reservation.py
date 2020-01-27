@@ -260,7 +260,9 @@ class TtReservation(models.Model):
                         key: psg[key]
                     }) for key in update_list if psg.get(key) != getattr(current_passenger, key)]
 
-                    current_passenger.update(vals_for_update)
+                    if vals_for_update:
+                        current_passenger.update(vals_for_update)
+
                     if psg.get('identity'):
                         current_passenger.add_or_update_identity(psg['identity'])
                     res_ids.append(current_passenger)
