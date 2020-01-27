@@ -4,6 +4,7 @@ import json
 from ...tools.ERR import RequestException
 import logging, traceback
 from datetime import datetime
+import time
 
 _logger = logging.getLogger(__name__)
 
@@ -531,6 +532,15 @@ class TtReservation(models.Model):
             total_discount = 0
 
             if book_obj and book_obj.agent_id.id == context.get('co_agent_id',-1):
+                start_time = time.time()
+                cur_time = 0
+                while (book_obj.agent_id.is_in_transaction and cur_time - start_time > 60):
+                    cur_time = time.time()
+                    _logger.info("Waiting Transaction %s" % (cur_time))
+                    pass
+
+                book_obj.agent_id.is_in_transaction = True
+
                 #cek balance due book di sini, mungkin suatu saat yang akan datang
                 if book_obj.state == 'issued':
                     _logger.error('Transaction Has been paid.')
@@ -603,6 +613,8 @@ class TtReservation(models.Model):
                 for provider in book_obj.provider_booking_ids:
                     provider.action_create_ledger(context['co_uid'], payment_method)
 
+                book_obj.agent_id.is_in_transaction = False
+
                 return ERR.get_no_error()
             else:
                 raise RequestException(1001)
@@ -610,6 +622,7 @@ class TtReservation(models.Model):
             _logger.error(traceback.format_exc())
             try:
                 book_obj.notes += traceback.format_exc() + '\n'
+                book_obj.agent_id.is_in_transaction = False
             except:
                 _logger.error('Creating Notes Error')
             return e.error_dict()
@@ -617,6 +630,7 @@ class TtReservation(models.Model):
             _logger.info(str(e) + traceback.format_exc())
             try:
                 book_obj.notes += str(e)+traceback.format_exc() + '\n'
+                book_obj.agent_id.is_in_transaction = False
             except:
                 _logger.error('Creating Notes Error')
             return ERR.get_error(1011)

@@ -54,6 +54,8 @@ class TtAgent(models.Model):
                                  context={'active_test': False, 'form_view_ref': 'tt_base.tt_upload_center_form_view'})
     payment_acq_ids = fields.One2many('payment.acquirer.number', 'agent_id', 'Payment Acquirer Number')
 
+    is_in_transaction = fields.Boolean("In Transaction")
+
     # TODO VIN:tnyakan creator
     # 1. Image ckup 1 ae (logo)
     # 2. Credit limit buat agent di kasih ta? jika enggak actual balance di hapus ckup balance sja
@@ -75,6 +77,9 @@ class TtAgent(models.Model):
     #                                 value[key],  # New Value
     #                                 self.env.user.name))  # User that Changed the Value
     #     return super(TtAgent, self).write(value)
+
+    def toggle_is_in_transaction(self):
+        self.is_in_transaction = not self.is_in_transaction
 
     @api.model
     def create(self, vals_list):
