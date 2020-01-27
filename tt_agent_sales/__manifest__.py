@@ -28,6 +28,7 @@
         'security/ir_rule_data.xml',
 
         'data/ir_sequence_data.xml',
+        'data/tt_dynamic_selection_data.xml',
         'views/menu_item_base.xml',
         'wizard/tt_agent_invoice.xml',
         'wizard/tt_split_wizard_view.xml',
