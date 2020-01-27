@@ -474,7 +474,7 @@ class ReservationAirline(models.Model):
 
     def update_cost_service_charge_airline_api(self,req,context):
         try:
-            _logger.info('update cost\n' + json.dumps(req))
+            _logger.info('Update cost\n' + json.dumps(req))
             for provider in req['provider_bookings']:
                 provider_obj = self.env['tt.provider.airline'].browse(provider['provider_id'])
                 if not provider_obj:

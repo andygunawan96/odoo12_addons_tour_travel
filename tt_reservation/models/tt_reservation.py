@@ -254,11 +254,21 @@ class TtReservation(models.Model):
                 current_passenger = passenger_obj.search([('seq_id','=',get_psg_seq_id or booker_contact_seq_id)])
                 if current_passenger:
                     vals_for_update = {}
-                    update_list = ['nationality_id', 'birth_date']
+                    # update_list = ['nationality_id', 'birth_date']
 
-                    [vals_for_update.update({
-                        key: psg[key]
-                    }) for key in update_list if psg.get(key) != getattr(current_passenger, key)]
+                    if psg.get('nationality_id') != current_passenger.nationality_id and current_passenger.nationality_id.id or False:
+                        vals_for_update.update({
+                            'nationality_id': psg['nationality_id']
+                        })
+                    if psg.get('birth_date') != current_passenger.birth_date and datetime.strftime(current_passenger.birth_date,"%Y-%m-%d") or False:
+                        vals_for_update.update({
+                            'birth_date': psg['birth_date']
+                        })
+
+                    #manual aja
+                    # [vals_for_update.update({
+                    #     key: psg[key]
+                    # }) for key in update_list if psg.get(key) != getattr(current_passenger, key)]
 
                     if vals_for_update:
                         current_passenger.update(vals_for_update)
@@ -563,12 +573,12 @@ class TtReservation(models.Model):
                     acquirer_seq_id = req.get('acquirer_seq_id')
                     if acquirer_seq_id:
                         cor_check_amount = book_obj.get_total_amount(payment_method)
-                        cor_check_amount-=total_discount
+                        cor_check_amount -= total_discount
                         ### voucher cor here
 
                         balance_res = self.env['tt.customer.parent'].check_balance_limit_api(acquirer_seq_id,cor_check_amount)
                         if balance_res['error_code']!=0:
-                            _logger.error('Cutomer Parent credit limit not enough')
+                            _logger.error('Customer Parent credit limit not enough')
                             raise RequestException(1007,additional_message="customer credit limit")
 
                 if discount['error_code'] == 0:
