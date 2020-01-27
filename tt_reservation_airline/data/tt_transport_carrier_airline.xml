@@ -242,6 +242,16 @@
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
+        
+        
+        <record id="tt_transport_carrier_airline_ek" model="tt.transport.carrier">
+            <field name="name">Emirates</field>
+            <field name="code">EK</field>
+            <field name="icao">UAE</field>
+            <field name="call_sign">EMIRATES</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
 
         <record id="tt_transport_carrier_airline_ek" model="tt.transport.carrier">
             <field name="name">Emirates</field>
