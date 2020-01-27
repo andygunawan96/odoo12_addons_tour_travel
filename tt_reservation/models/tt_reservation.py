@@ -537,7 +537,6 @@ class TtReservation(models.Model):
                 while (book_obj.agent_id.is_in_transaction and cur_time - start_time > 60):
                     cur_time = time.time()
                     _logger.info("Waiting Transaction %s" % (cur_time))
-                    pass
 
                 book_obj.agent_id.is_in_transaction = True
 
