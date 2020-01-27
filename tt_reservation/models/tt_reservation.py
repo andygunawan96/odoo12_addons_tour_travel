@@ -536,12 +536,12 @@ class TtReservation(models.Model):
                 cur_time = 0
                 while (self.env['tt.reservation.waiting.list'].search([('agent_id','=',book_obj.agent_id.id),
                                                                        ('is_in_transaction','=',True)])
-                                                and cur_time - start_time > 60):
+                                                and cur_time - start_time < 60):
                     cur_time = time.time()
                     _logger.info("Waiting Transaction %s" % (cur_time))
 
                 new_waiting_list = self.env['tt.reservation.waiting.list'].create({'agent_id':book_obj.agent_id.id})
-
+                self.env.cr.commit()
 
                 #cek balance due book di sini, mungkin suatu saat yang akan datang
                 if book_obj.state == 'issued':
@@ -615,7 +615,7 @@ class TtReservation(models.Model):
                 for provider in book_obj.provider_booking_ids:
                     provider.action_create_ledger(context['co_uid'], payment_method)
 
-                new_waiting_list.state = False
+                new_waiting_list.is_in_transaction = False
 
                 return ERR.get_no_error()
             else:
@@ -624,7 +624,7 @@ class TtReservation(models.Model):
             _logger.error(traceback.format_exc())
             try:
                 book_obj.notes += traceback.format_exc() + '\n'
-                new_waiting_list.state = False
+                new_waiting_list.is_in_transaction = False
             except:
                 _logger.error('Creating Notes Error')
             return e.error_dict()
@@ -632,7 +632,7 @@ class TtReservation(models.Model):
             _logger.info(str(e) + traceback.format_exc())
             try:
                 book_obj.notes += str(e)+traceback.format_exc() + '\n'
-                new_waiting_list.state = False
+                new_waiting_list.is_in_transaction = False
             except:
                 _logger.error('Creating Notes Error')
             return ERR.get_error(1011)
