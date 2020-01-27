@@ -146,8 +146,11 @@ class TtReservation(models.Model):
                             'phone_number': vals_phone_number
                         })]
                         update_value['phone_ids'] = new_phone
-                update_value['email'] =vals.get('email', booker_rec.email)
-                booker_rec.update(update_value)
+                if vals.get('email'):
+                    if vals['email'] != booker_rec.email:
+                        update_value['email'] = vals.get('email', booker_rec.email)
+                if update_value:
+                    booker_rec.update(update_value)
                 return booker_rec
 
         country = self.env['res.country'].sudo().search([('code', '=', vals.pop('nationality_code'))])
@@ -199,9 +202,11 @@ class TtReservation(models.Model):
                             'phone_number': vals_phone_number
                         })]
                         update_value['phone_ids'] = new_phone
-                update_value['email'] =vals.get('email', contact_rec.email)
-
-                contact_rec.update(update_value)
+                if vals.get('email'):
+                    if vals['email'] != contact_rec.email:
+                        update_value['email'] = vals.get('email', contact_rec.email)
+                if update_value:
+                    contact_rec.update(update_value)
                 return contact_rec
 
         country = self.env['res.country'].sudo().search([('code', '=', vals.pop('nationality_code'))])
@@ -253,9 +258,11 @@ class TtReservation(models.Model):
 
                     [vals_for_update.update({
                         key: psg[key]
-                    }) for key in update_list if psg.get(key)]
+                    }) for key in update_list if psg.get(key) != getattr(current_passenger, key)]
 
-                    current_passenger.update(vals_for_update)
+                    if vals_for_update:
+                        current_passenger.update(vals_for_update)
+
                     if psg.get('identity'):
                         current_passenger.add_or_update_identity(psg['identity'])
                     res_ids.append(current_passenger)

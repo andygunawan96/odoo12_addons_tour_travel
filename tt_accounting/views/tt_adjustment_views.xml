@@ -69,8 +69,8 @@
                             <field name="currency_id"/>
                             <field name="adj_type"/>
                             <field name="referenced_document"/>
-                            <field name="res_model"/>
-                            <field name="res_id"/>
+                            <field name="res_model" groups="base.user_admin"/>
+                            <field name="res_id" groups="base.user_admin"/>
                             <field name="component_type"/>
                             <field name="adjust_side"/>
                             <field name="adjust_amount"/>

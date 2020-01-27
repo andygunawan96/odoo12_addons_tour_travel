@@ -10,7 +10,7 @@ _logger = logging.getLogger(__name__)
 
 class TtVoucher(models.Model):
     _name = "tt.voucher"
-
+    _description = 'Rodex Model Voucher'
     voucher_reference_code = fields.Char("Reference Code")
     voucher_coverage = fields.Selection([("all", "All"), ("product", "Specified Product"), ("provider", "Specified Provider")])
     voucher_type = fields.Selection([("percent", "Percentage"), ("amount", "Some Amount")])
@@ -343,6 +343,7 @@ class TtVoucher(models.Model):
 
 class TtVoucherDetail(models.Model):
     _name = "tt.voucher.detail"
+    _description = 'Rodex Model Voucher Detail'
 
     voucher_id = fields.Many2one("tt.voucher")
     voucher_reference_code = fields.Char("Voucher Reference", related="voucher_id.voucher_reference_code")
@@ -1236,6 +1237,7 @@ class TtVoucherDetail(models.Model):
 
 class TtVoucherusedDetail(models.Model):
     _name = "tt.voucher.detail.used"
+    _description = "Rodex Model Voucher Detail Used"
 
     voucher_detail_id = fields.Many2one("tt.voucher.detail")
     voucher_date_use = fields.Datetime("Date use")
@@ -1258,6 +1260,7 @@ class TtVoucherusedDetail(models.Model):
 
 class TtVoucherBlackout(models.Model):
     _name = "tt.voucher.detail.blackout"
+    _description = "Rodex Model Voucher Detail Blackout"
 
     voucher_detail_id = fields.Many2one("tt.voucher.detail", "Voucher Detail")
     voucher_blackout_start = fields.Datetime("Blackout Start")

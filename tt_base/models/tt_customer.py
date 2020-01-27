@@ -298,11 +298,19 @@ class TtCustomer(models.Model):
                 create_vals.update({'identity_image_ids':image_ids})
             self.env['tt.customer.identity'].create(create_vals)
         else:
-            update_vals = {
-                'identity_number': number,
-                'identity_country_of_issued_id': c_issued_id,
-                'identity_expdate': expdate
-            }
+            update_vals = {}
+            if number != exixting_identity.identity_number:
+                update_vals.update({
+                    'identity_number': number
+                })
+            if c_issued_id != exixting_identity.identity_country_of_issued_id:
+                update_vals.update({
+                    'identity_country_of_issued_id': c_issued_id
+                })
+            if expdate != exixting_identity.identity_expdate:
+                update_vals.update({
+                    'identity_expdate': expdate
+                })
             if image_ids:
                 update_vals.update({'identity_image_ids':image_ids})
             exixting_identity.write(update_vals)

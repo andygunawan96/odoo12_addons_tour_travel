@@ -1,5 +1,5 @@
 from odoo import models,api,fields
-
+from odoo.exceptions import UserError
 
 class AgentInvoice(models.Model):
 
@@ -114,6 +114,9 @@ class AgentInvoice(models.Model):
         }
 
     def open_split_wizard(self):
+        if not self.invoice_line_detail_ids or len(self.invoice_line_detail_ids.ids) < 2:
+            raise UserError("Cannot split invoice line with less than 2 details.")
+
         wizard_obj = self.env['tt.split.invoice.wizard'].create({
             'current_invoice_line': self.id,
             'invoice_id': self.invoice_id.id,

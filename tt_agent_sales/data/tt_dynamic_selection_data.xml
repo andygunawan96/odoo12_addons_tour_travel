@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Sequences for transport.booking -->
+        <record id="tt_dynamic_selection_1" model="tt.dynamic.selection">
+            <field name="name">1</field>
+        </record>
+
+        <record id="tt_dynamic_selection_2" model="tt.dynamic.selection">
+            <field name="name">2</field>
+        </record>
+
+        <record id="tt_dynamic_selection_3" model="tt.dynamic.selection">
+            <field name="name">3</field>
+        </record>
+
+        <record id="tt_dynamic_selection_4" model="tt.dynamic.selection">
+            <field name="name">4</field>
+        </record>
+
+        <record id="tt_dynamic_selection_5" model="tt.dynamic.selection">
+            <field name="name">5</field>
+        </record>
+
+        <record id="tt_dynamic_selection_6" model="tt.dynamic.selection">
+            <field name="name">6</field>
+        </record>
+
+        <record id="tt_dynamic_selection_7" model="tt.dynamic.selection">
+            <field name="name">7</field>
+        </record>
+
+        <record id="tt_dynamic_selection_8" model="tt.dynamic.selection">
+            <field name="name">8</field>
+        </record>
+
+        <record id="tt_dynamic_selection_9" model="tt.dynamic.selection">
+            <field name="name">9</field>
+        </record>
+    </data>
+</odoo>
