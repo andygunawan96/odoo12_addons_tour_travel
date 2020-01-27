@@ -405,28 +405,29 @@ class TtVisa(models.Model):
                     rec.is_upsell_ledger_created = True
 
         ledger = self.env['tt.ledger']
-        for rec in self:
-            doc_type = []
-            for sc in rec.sale_service_charge_ids:
-                if not sc.pricelist_id.visa_type in doc_type:
-                    doc_type.append(sc.pricelist_id.visa_type)
+        if total_charge > 0:
+            for rec in self:
+                doc_type = []
+                for sc in rec.sale_service_charge_ids:
+                    if not sc.pricelist_id.visa_type in doc_type:
+                        doc_type.append(sc.pricelist_id.visa_type)
 
-            doc_type = ','.join(str(e) for e in doc_type)
+                doc_type = ','.join(str(e) for e in doc_type)
 
-            vals = ledger.prepare_vals(self._name, self.id, 'Additional Charge Visa : ' + rec.name, rec.name,
-                                       datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 2,
-                                       rec.currency_id.id, self.env.user.id, 0, total_charge,
-                                       'Additional Charge Visa : ' + rec.name)
-            vals.update({
-                'pnr': self.pnr,
-                'display_provider_name': self.provider_name,
-                'provider_type_id': self.provider_type_id.id
-            })
-            vals['agent_id'] = self.agent_id.id
+                vals = ledger.prepare_vals(self._name, self.id, 'Additional Charge Visa : ' + rec.name, rec.name,
+                                           datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 2,
+                                           rec.currency_id.id, self.env.user.id, 0, total_charge,
+                                           'Additional Charge Visa : ' + rec.name)
+                vals.update({
+                    'pnr': self.pnr,
+                    'display_provider_name': self.provider_name,
+                    'provider_type_id': self.provider_type_id.id
+                })
+                vals['agent_id'] = self.agent_id.id
 
-            new_aml = ledger.create(vals)
-            # new_aml.action_done()
-            rec.ledger_id = new_aml
+                new_aml = ledger.create(vals)
+                # new_aml.action_done()
+                rec.ledger_id = new_aml
 
         """ Jika diff nta upsell > 0 """
         if diff_nta_upsell > 0:
