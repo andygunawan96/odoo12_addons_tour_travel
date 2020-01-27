@@ -256,11 +256,11 @@ class TtReservation(models.Model):
                     vals_for_update = {}
                     # update_list = ['nationality_id', 'birth_date']
 
-                    if psg.get('nationality_id') != current_passenger.nationality_id and current_passenger.nationality_id.id or False:
+                    if psg.get('nationality_id') != (current_passenger.nationality_id and current_passenger.nationality_id.id or False):
                         vals_for_update.update({
                             'nationality_id': psg['nationality_id']
                         })
-                    if psg.get('birth_date') != current_passenger.birth_date and datetime.strftime(current_passenger.birth_date,"%Y-%m-%d") or False:
+                    if psg.get('birth_date') != (current_passenger.birth_date and datetime.strftime(current_passenger.birth_date,"%Y-%m-%d") or False):
                         vals_for_update.update({
                             'birth_date': psg['birth_date']
                         })
