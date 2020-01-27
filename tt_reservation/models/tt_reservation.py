@@ -534,9 +534,13 @@ class TtReservation(models.Model):
             if book_obj and book_obj.agent_id.id == context.get('co_agent_id',-1):
                 start_time = time.time()
                 cur_time = 0
-                while (self.env['tt.reservation.waiting.list'].search([('agent_id','=',book_obj.agent_id.id),
-                                                                       ('is_in_transaction','=',True)])
-                                                and cur_time - start_time < 60):
+                waiting_list = self.env['tt.reservation.waiting.list'].search([('agent_id', '=', book_obj.agent_id.id),
+                                                                ('is_in_transaction', '=', True)])
+                _logger.info(str(waiting_list.ids))
+                while ( waiting_list and cur_time - start_time < 60):
+                    waiting_list = self.env['tt.reservation.waiting.list'].search([('agent_id', '=', book_obj.agent_id.id),
+                                                                ('is_in_transaction', '=', True)])
+                    _logger.info(str(waiting_list.ids))
                     cur_time = time.time()
                     _logger.info("Waiting Transaction %s" % (cur_time))
 
