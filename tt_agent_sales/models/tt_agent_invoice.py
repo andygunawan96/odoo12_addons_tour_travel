@@ -115,7 +115,8 @@ class AgentInvoice(models.Model):
         for rec in self:
             aqc_list = []
             for payment in rec.payment_ids:
-                aqc_list.append(payment.payment_acquirer and payment.payment_acquirer or "")
+                if payment.payment_acquirer:
+                    aqc_list.append(payment.payment_acquirer)
             rec.payment_acquirers = ",".join(aqc_list)
 
     def set_as_confirm(self):

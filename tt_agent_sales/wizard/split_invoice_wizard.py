@@ -1,5 +1,5 @@
 from odoo import api, fields, models, _
-
+from odoo.exceptions import UserError
 
 class SplitInvoice(models.Model):
     _name = "tt.split.invoice.wizard"
@@ -33,7 +33,7 @@ class SplitInvoice(models.Model):
     @api.depends('split_count')
     def change_limit(self):
         if self.split_count > len(self.invoice_line_detail_list) or self.split_count<2:
-            raise UserWarning("WRONG SPLIT COUNT AMOUNT")
+            raise UserError("WRONG SPLIT COUNT AMOUNT")
         for rec in self.invoice_line_detail_list:
             rec.limit = self.split_count
             rec.modify_domain()
@@ -41,7 +41,7 @@ class SplitInvoice(models.Model):
     def perform_split(self):
         ##fixme cek invoicenumber
         if self.split_count > len(self.invoice_line_detail_list):
-            raise UserWarning("SPLIT COUNT HIGHER THAN PASSENGER COUNT")
+            raise UserError("SPLIT COUNT HIGHER THAN PASSENGER COUNT")
 
         invoice_line_list = []
         for idx,inv_count in enumerate(range(0,self.split_count)):

@@ -20,5 +20,4 @@ class SplitInvoiceLine(models.Model):
     new_invoice_number = fields.Many2one('tt.dynamic.selection','New Invoice',domain="[('name','<=',limit)]")
 
     def modify_domain(self):
-        print("masuk sini")
         return {'domain': {'new_invoice_number': [('name', '<=', self.limit )]}}
