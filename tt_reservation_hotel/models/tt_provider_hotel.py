@@ -131,7 +131,8 @@ class TransportBookingProvider(models.Model):
                 'foreign_amount': scs.foreign_amount,
                 'total': scs.total,
                 'provider_hotel_booking_id': self.id,
-                'description': self.pnr and self.pnr or ''
+                'description': self.pnr and self.pnr or '',
+                'commission_agent_id': scs.commission_agent_id.id,
             })
             # scs_list.append(new_scs)
     # TODO END
