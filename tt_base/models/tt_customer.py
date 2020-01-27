@@ -305,11 +305,11 @@ class TtCustomer(models.Model):
                 })
             if c_issued_id != exixting_identity.identity_country_of_issued_id:
                 update_vals.update({
-                    'identity_country_of_issued_id': number
+                    'identity_country_of_issued_id': c_issued_id
                 })
             if expdate != exixting_identity.identity_expdate:
                 update_vals.update({
-                    'identity_expdate': number
+                    'identity_expdate': expdate
                 })
             if image_ids:
                 update_vals.update({'identity_image_ids':image_ids})

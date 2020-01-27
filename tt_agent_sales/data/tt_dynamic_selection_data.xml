@@ -3,19 +3,39 @@
     <data noupdate="1">
         <!-- Sequences for transport.booking -->
         <record id="tt_dynamic_selection_1" model="tt.dynamic.selection">
-            <field name="name">Agent Invoice</field>
-            <field name="code">agent.invoice</field>
-            <field name="prefix">INV.%(y)s%(month)s%(day)s%(sec)s</field>
-            <field name="padding">3</field>
-            <field name="company_id" eval="False"/>
+            <field name="name">1</field>
         </record>
 
-        <record id="seq_agent_invoice_line" model="ir.sequence">
-            <field name="name">Agent Invoice Line</field>
-            <field name="code">agent.invoice.line</field>
-            <field name="prefix">IVL.%(y)s%(month)s%(day)s%(sec)s</field>
-            <field name="padding">3</field>
-            <field name="company_id" eval="False"/>
+        <record id="tt_dynamic_selection_1" model="tt.dynamic.selection">
+            <field name="name">1</field>
+        </record>
+
+        <record id="tt_dynamic_selection_1" model="tt.dynamic.selection">
+            <field name="name">1</field>
+        </record>
+
+        <record id="tt_dynamic_selection_1" model="tt.dynamic.selection">
+            <field name="name">1</field>
+        </record>
+
+        <record id="tt_dynamic_selection_1" model="tt.dynamic.selection">
+            <field name="name">1</field>
+        </record>
+
+        <record id="tt_dynamic_selection_1" model="tt.dynamic.selection">
+            <field name="name">1</field>
+        </record>
+
+        <record id="tt_dynamic_selection_1" model="tt.dynamic.selection">
+            <field name="name">1</field>
+        </record>
+
+        <record id="tt_dynamic_selection_1" model="tt.dynamic.selection">
+            <field name="name">1</field>
+        </record>
+
+        <record id="tt_dynamic_selection_1" model="tt.dynamic.selection">
+            <field name="name">1</field>
         </record>
     </data>
 </odoo>
