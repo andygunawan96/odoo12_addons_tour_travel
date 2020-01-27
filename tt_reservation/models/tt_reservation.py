@@ -534,12 +534,14 @@ class TtReservation(models.Model):
             if book_obj and book_obj.agent_id.id == context.get('co_agent_id',-1):
                 start_time = time.time()
                 cur_time = 0
-                while (book_obj.agent_id.is_in_transaction and cur_time - start_time > 60):
+                while (self.env['tt.reservation.waiting.list'].search([('agent_id','=',book_obj.agent_id.id),
+                                                                       ('is_in_transaction','=',True)])
+                                                and cur_time - start_time > 60):
                     cur_time = time.time()
                     _logger.info("Waiting Transaction %s" % (cur_time))
 
-                book_obj.agent_id.is_in_transaction = True
-                self.env.cr.commit()
+                new_waiting_list = self.env['tt.reservation.waiting.list'].create({'agent_id':book_obj.agent_id.id})
+
 
                 #cek balance due book di sini, mungkin suatu saat yang akan datang
                 if book_obj.state == 'issued':
@@ -613,7 +615,7 @@ class TtReservation(models.Model):
                 for provider in book_obj.provider_booking_ids:
                     provider.action_create_ledger(context['co_uid'], payment_method)
 
-                book_obj.agent_id.is_in_transaction = False
+                new_waiting_list.state = False
 
                 return ERR.get_no_error()
             else:
@@ -622,7 +624,7 @@ class TtReservation(models.Model):
             _logger.error(traceback.format_exc())
             try:
                 book_obj.notes += traceback.format_exc() + '\n'
-                book_obj.agent_id.is_in_transaction = False
+                new_waiting_list.state = False
             except:
                 _logger.error('Creating Notes Error')
             return e.error_dict()
@@ -630,7 +632,14 @@ class TtReservation(models.Model):
             _logger.info(str(e) + traceback.format_exc())
             try:
                 book_obj.notes += str(e)+traceback.format_exc() + '\n'
-                book_obj.agent_id.is_in_transaction = False
+                new_waiting_list.state = False
             except:
                 _logger.error('Creating Notes Error')
             return ERR.get_error(1011)
+
+class TtReservationWaitingList(models.Model):
+    _name = 'tt.reservation.waiting.list'
+    _description = 'Rodex Model Reservation Waiting List'
+
+    agent_id = fields.Many2one('tt.agent','Agent')
+    is_in_transaction = fields.Boolean("In Transaction",default=True)
