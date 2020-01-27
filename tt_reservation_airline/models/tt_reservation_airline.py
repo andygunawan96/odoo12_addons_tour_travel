@@ -474,7 +474,7 @@ class ReservationAirline(models.Model):
 
     def update_cost_service_charge_airline_api(self,req,context):
         try:
-            _logger.info('update cost\n' + json.dumps(req))
+            _logger.info('Update cost\n' + json.dumps(req))
             for provider in req['provider_bookings']:
                 provider_obj = self.env['tt.provider.airline'].browse(provider['provider_id'])
                 if not provider_obj:
@@ -544,7 +544,9 @@ class ReservationAirline(models.Model):
             if req.get('force_issued'):
                 self.calculate_service_charge()
                 self.action_booked_api_airline(context, pnr_list, hold_date)
-                payment_res = self.payment_airline_api({'book_id': req['book_id']}, context)
+                payment_res = self.payment_airline_api({'book_id': req['book_id'],
+                                                        'member': req['member'],
+                                                        'acquirer_seq_id': req['acquirer_seq_id']}, context)
                 if payment_res['error_code'] != 0:
                     raise RequestException(payment_res['error_code'])
 

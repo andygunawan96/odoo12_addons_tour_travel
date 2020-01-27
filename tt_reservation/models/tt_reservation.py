@@ -4,6 +4,7 @@ import json
 from ...tools.ERR import RequestException
 import logging, traceback
 from datetime import datetime
+import time
 
 _logger = logging.getLogger(__name__)
 
@@ -254,11 +255,21 @@ class TtReservation(models.Model):
                 current_passenger = passenger_obj.search([('seq_id','=',get_psg_seq_id or booker_contact_seq_id)])
                 if current_passenger:
                     vals_for_update = {}
-                    update_list = ['nationality_id', 'birth_date']
+                    # update_list = ['nationality_id', 'birth_date']
 
-                    [vals_for_update.update({
-                        key: psg[key]
-                    }) for key in update_list if psg.get(key) != getattr(current_passenger, key)]
+                    if psg.get('nationality_id') != (current_passenger.nationality_id and current_passenger.nationality_id.id or False):
+                        vals_for_update.update({
+                            'nationality_id': psg['nationality_id']
+                        })
+                    if psg.get('birth_date') != (current_passenger.birth_date and datetime.strftime(current_passenger.birth_date,"%Y-%m-%d") or False):
+                        vals_for_update.update({
+                            'birth_date': psg['birth_date']
+                        })
+
+                    #manual aja
+                    # [vals_for_update.update({
+                    #     key: psg[key]
+                    # }) for key in update_list if psg.get(key) != getattr(current_passenger, key)]
 
                     if vals_for_update:
                         current_passenger.update(vals_for_update)
@@ -521,6 +532,17 @@ class TtReservation(models.Model):
             total_discount = 0
 
             if book_obj and book_obj.agent_id.id == context.get('co_agent_id',-1):
+                start_time = time.time()
+                cur_time = 0
+                while (self.env['tt.reservation.waiting.list'].search([('agent_id','=',book_obj.agent_id.id),
+                                                                       ('is_in_transaction','=',True)])
+                                                and cur_time - start_time < 60):
+                    cur_time = time.time()
+                    _logger.info("Waiting Transaction %s" % (cur_time))
+
+                new_waiting_list = self.env['tt.reservation.waiting.list'].create({'agent_id':book_obj.agent_id.id})
+                self.env.cr.commit()
+
                 #cek balance due book di sini, mungkin suatu saat yang akan datang
                 if book_obj.state == 'issued':
                     _logger.error('Transaction Has been paid.')
@@ -563,12 +585,12 @@ class TtReservation(models.Model):
                     acquirer_seq_id = req.get('acquirer_seq_id')
                     if acquirer_seq_id:
                         cor_check_amount = book_obj.get_total_amount(payment_method)
-                        cor_check_amount-=total_discount
+                        cor_check_amount -= total_discount
                         ### voucher cor here
 
                         balance_res = self.env['tt.customer.parent'].check_balance_limit_api(acquirer_seq_id,cor_check_amount)
                         if balance_res['error_code']!=0:
-                            _logger.error('Cutomer Parent credit limit not enough')
+                            _logger.error('Customer Parent credit limit not enough')
                             raise RequestException(1007,additional_message="customer credit limit")
 
                 if discount['error_code'] == 0:
@@ -593,6 +615,8 @@ class TtReservation(models.Model):
                 for provider in book_obj.provider_booking_ids:
                     provider.action_create_ledger(context['co_uid'], payment_method)
 
+                new_waiting_list.is_in_transaction = False
+
                 return ERR.get_no_error()
             else:
                 raise RequestException(1001)
@@ -600,6 +624,7 @@ class TtReservation(models.Model):
             _logger.error(traceback.format_exc())
             try:
                 book_obj.notes += traceback.format_exc() + '\n'
+                new_waiting_list.is_in_transaction = False
             except:
                 _logger.error('Creating Notes Error')
             return e.error_dict()
@@ -607,6 +632,14 @@ class TtReservation(models.Model):
             _logger.info(str(e) + traceback.format_exc())
             try:
                 book_obj.notes += str(e)+traceback.format_exc() + '\n'
+                new_waiting_list.is_in_transaction = False
             except:
                 _logger.error('Creating Notes Error')
             return ERR.get_error(1011)
+
+class TtReservationWaitingList(models.Model):
+    _name = 'tt.reservation.waiting.list'
+    _description = 'Rodex Model Reservation Waiting List'
+
+    agent_id = fields.Many2one('tt.agent','Agent')
+    is_in_transaction = fields.Boolean("In Transaction",default=True)
