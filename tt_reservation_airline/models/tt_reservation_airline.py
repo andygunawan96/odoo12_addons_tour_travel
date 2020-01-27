@@ -544,7 +544,9 @@ class ReservationAirline(models.Model):
             if req.get('force_issued'):
                 self.calculate_service_charge()
                 self.action_booked_api_airline(context, pnr_list, hold_date)
-                payment_res = self.payment_airline_api({'book_id': req['book_id']}, context)
+                payment_res = self.payment_airline_api({'book_id': req['book_id'],
+                                                        'member': req['member'],
+                                                        'acquirer_seq_id': req['acquirer_seq_id']}, context)
                 if payment_res['error_code'] != 0:
                     raise RequestException(payment_res['error_code'])
 
