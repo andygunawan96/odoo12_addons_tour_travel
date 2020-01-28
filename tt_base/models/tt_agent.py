@@ -203,7 +203,13 @@ class TtAgent(models.Model):
     def check_balance_limit(self, amount):
         if not self.ensure_one():
             raise UserError('Can only check 1 agent each time got ' + str(len(self._ids)) + ' Records instead')
-        return self.balance >= amount
+        sql_query = 'select id,balance from tt_ledger where agent_id = %s order by id desc limit 1;' % (self.id)
+        self.env.cr.execute(sql_query)
+        balance = self.env.cr.dictfetchall()
+        if balance:
+            return balance[0]['balance'] >= amount
+        else:
+            return 0
 
 
     def check_balance_limit_api(self, agent_id, amount):
