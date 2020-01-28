@@ -519,6 +519,13 @@ class TtReservation(models.Model):
         for rec in self.ledger_ids:
             rec.update({'pnr': new_pnr})
 
+    def get_waiting_list(self, agent_id, wait_id):
+        sql_query = 'select * from tt_reservation_waiting_list where agent_id = %s and is_in_transaction = True and id < %s' % (agent_id, wait_id)
+        self.env.cr.execute(sql_query)
+        waiting_list = self.env.cr.dictfetchall()
+        _logger.info(str(waiting_list[0].get('id')) + ', ' + str(waiting_list[-1].get('id')))
+        return waiting_list
+
     ##ini potong ledger
     def payment_reservation_api(self,table_name,req,context):
         _logger.info("Payment\n" + json.dumps(req))
@@ -538,19 +545,18 @@ class TtReservation(models.Model):
                                                                                    'reference': self.name})
                 self.env.cr.commit()
 
-                waiting_list = self.env['tt.reservation.waiting.list'].search([('agent_id', '=', book_obj.agent_id.id),
-                                                                ('is_in_transaction', '=', True),
-                                                                               ('id','<',new_waiting_list.id)])
-                _logger.info(str(waiting_list.ids))
+                # waiting_list = self.env['tt.reservation.waiting.list'].search([('agent_id', '=', book_obj.agent_id.id),
+                #                                                 ('is_in_transaction', '=', True),
+                #                                                                ('id','<',new_waiting_list.id)])
+                waiting_list = self.get_waiting_list(book_obj.agent_id.id, new_waiting_list.id)
 
                 while (waiting_list and cur_time - start_time < 60):
-                    waiting_list = self.env['tt.reservation.waiting.list'].search([('agent_id', '=', book_obj.agent_id.id),
-                                                                ('is_in_transaction', '=', True),
-                                                               ('id','<',new_waiting_list.id)])
-                    _logger.info(str(waiting_list.ids))
+                    # waiting_list = self.env['tt.reservation.waiting.list'].search([('agent_id', '=', book_obj.agent_id.id),
+                    #                                             ('is_in_transaction', '=', True),
+                    #                                            ('id','<',new_waiting_list.id)])
+                    waiting_list = self.get_waiting_list(book_obj.agent_id.id, new_waiting_list.id)
                     cur_time = time.time()
                     _logger.info("%s Waiting Transaction %s" % (self.name,cur_time))
-
 
 
                 #cek balance due book di sini, mungkin suatu saat yang akan datang
