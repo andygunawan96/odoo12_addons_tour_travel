@@ -49,7 +49,10 @@ class VisaPricelist(models.Model):
     currency_id = fields.Many2one('res.currency', 'Currency', readonly=True,
                                   default=lambda self: self.env.user.company_id.currency_id)
 
-    nta_price = fields.Monetary('NTA Price', default=0)
+    visa_nta_price = fields.Monetary('Visa NTA Price', default=0)
+    delivery_nta_price = fields.Monetary('Delivery NTA Price', default=0)
+
+    nta_price = fields.Monetary('NTA Price', default=0, compute="_compute_nta_price", store=True)
     cost_price = fields.Monetary('Cost Price', default=0)
     sale_price = fields.Monetary('Sale Price', default=0)
     commission_price = fields.Monetary('Commission Price', store=True, readonly=1, compute="_compute_commission_price")
@@ -71,6 +74,13 @@ class VisaPricelist(models.Model):
     def _compute_commission_price(self):
         for rec in self:
             rec.commission_price = rec.sale_price - rec.cost_price
+
+    @api.multi
+    @api.depends('visa_nta_price', 'delivery_nta_price')
+    @api.onchange('visa_nta_price', 'delivery_nta_price')
+    def _compute_nta_price(self):
+        for rec in self:
+            rec.nta_price = rec.visa_nta_price + rec.delivery_nta_price
 
     @api.multi
     @api.onchange('duration')

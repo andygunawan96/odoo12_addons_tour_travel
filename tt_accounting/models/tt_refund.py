@@ -15,16 +15,17 @@ class TtRefundLine(models.Model):
                                   default=lambda self: self.env.user.company_id.currency_id)
     pax_price = fields.Monetary('Passenger Price', default=0, readonly=True)
     charge_fee = fields.Monetary('Charge Fee', default=0, readonly=True, states={'confirm': [('readonly', False)]})
+    commission_fee = fields.Monetary('Commission Fee', default=0, readonly=True, states={'confirm': [('readonly', False)]})
     refund_amount = fields.Monetary('Expected Refund Amount', default=0, required=True, readonly=True, compute='_compute_refund_amount')
     real_refund_amount = fields.Monetary('Real Refund Amount', default=0, readonly=False, states={'draft': [('readonly', True)]})
     refund_id = fields.Many2one('tt.refund', 'Refund', readonly=True)
     state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'), ('done', 'Done')], 'State', default='draft', related='')
 
-    @api.depends('pax_price', 'charge_fee')
-    @api.onchange('pax_price', 'charge_fee')
+    @api.depends('pax_price', 'charge_fee', 'commission_fee')
+    @api.onchange('pax_price', 'charge_fee', 'commission_fee')
     def _compute_refund_amount(self):
         for rec in self:
-            rec.refund_amount = rec.pax_price - rec.charge_fee
+            rec.refund_amount = rec.pax_price - (rec.charge_fee + rec.commission_fee)
 
     def set_to_draft(self):
         self.write({

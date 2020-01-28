@@ -284,19 +284,22 @@
                 <th style="width: 25%; padding: 7px 7px 7px 20px; border-left: 1px solid #CCC; border-top-left-radius: 20px; color: white; font-weight: 800; font-size: 18px">
                     <span>Passenger</span>
                 </th>
-                <th style="width: 15%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
+                <th style="width: 12.5%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
                     <span>Birth Date</span>
                 </th>
-                <th style="width: 15%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
+                <th style="width: 12.5%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
                     <span>Ticket Amount</span>
                 </th>
-                <th style="width: 15%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
+                <th style="width: 12.5%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
                     <span>Provider Charge</span>
                 </th>
-                <th style="width: 15%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
+                <th style="width: 12.5%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
+                    <span>Commission Fee</span>
+                </th>
+                <th style="width: 12.5%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
                     <span>Estimated Amount</span>
                 </th>
-                <th style="width: 15%; padding: 7px 7px 7px 20px; border-right: 1px solid #CCC; border-top-right-radius: 20px; color: white; font-weight: 800; font-size: 18px">
+                <th style="width: 12.5%; padding: 7px 7px 7px 20px; border-right: 1px solid #CCC; border-top-right-radius: 20px; color: white; font-weight: 800; font-size: 18px">
                     <span>Real Amount</span>
                 </th>
             </tr>
@@ -313,25 +316,28 @@
                             <span t-esc="pax.name"/>
                         </td>
                     </t>
-                    <td style="width: 25%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                    <td style="width: 12.5%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
                         <span t-esc="pax.birth_date"/>
                     </td>
-                    <td class="text-right" style="width: 15%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                    <td class="text-right" style="width: 12.5%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
                         <span t-esc="pax.pax_price" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
                     </td>
-                    <td class="text-right" style="width: 15%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                    <td class="text-right" style="width: 12.5%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
                         <span t-esc="pax.charge_fee" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
                     </td>
-                    <td class="text-right" style="width: 15%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                    <td class="text-right" style="width: 12.5%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                        <span t-esc="pax.commission_fee" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                    </td>
+                    <td class="text-right" style="width: 12.5%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
                         <span t-esc="pax.refund_amount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
                     </td>
                     <t t-if="row_idx == len(doc.refund_line_cust_ids)-1">
-                        <td class="text-right" style="width: 15%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 20px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                        <td class="text-right" style="width: 12.5%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 20px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
                             <span t-esc="pax.real_refund_amount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
                         </td>
                     </t>
                     <t t-else="">
-                        <td class="text-right" style="width: 15%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                        <td class="text-right" style="width: 12.5%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
                             <span t-esc="pax.real_refund_amount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
                         </td>
                     </t>
