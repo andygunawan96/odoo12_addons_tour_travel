@@ -626,6 +626,7 @@ class TtReservation(models.Model):
                     provider.action_create_ledger(context['co_uid'], payment_method)
 
                 new_waiting_list.is_in_transaction = False
+                self.env.cr.commit()
 
                 return ERR.get_no_error()
             else:
@@ -633,16 +634,18 @@ class TtReservation(models.Model):
         except RequestException as e:
             _logger.error(traceback.format_exc())
             try:
-                book_obj.notes += traceback.format_exc() + '\n'
                 new_waiting_list.is_in_transaction = False
+                self.env.cr.commit()
+                book_obj.notes += traceback.format_exc() + '\n'
             except:
                 _logger.error('Creating Notes Error')
             return e.error_dict()
         except Exception as e:
             _logger.info("Waiting list ID : " + new_waiting_list.id + "\n" + str(e) + traceback.format_exc())
             try:
-                book_obj.notes += str(e)+traceback.format_exc() + '\n'
                 new_waiting_list.is_in_transaction = False
+                self.env.cr.commit()
+                book_obj.notes += str(e)+traceback.format_exc() + '\n'
             except:
                 _logger.error('Creating Notes Error')
             return ERR.get_error(1011)
