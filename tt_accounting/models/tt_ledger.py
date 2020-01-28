@@ -81,7 +81,7 @@ class Ledger(models.Model):
         #     return (balance[0]['balance'] + vals['debit']) - vals['credit']
         # else:
         #     return 0
-        return balance
+        return (balance + vals['debit']) - vals['credit']
 
     def prepare_vals(self, res_model,res_id,name, ref, date, ledger_type, currency_id, issued_uid, debit=0, credit=0,description = ''):
         return {
