@@ -520,11 +520,20 @@ class TtReservation(models.Model):
             rec.update({'pnr': new_pnr})
 
     def get_waiting_list(self, agent_id, wait_id):
-        sql_query = 'select * from tt_reservation_waiting_list where agent_id = %s and is_in_transaction = True and id < %s' % (agent_id, wait_id)
-        self.env.cr.execute(sql_query)
-        waiting_list = self.env.cr.dictfetchall()
+        # sql_query = 'select * from tt_reservation_waiting_list where agent_id = %s and is_in_transaction = True and id < %s' % (agent_id, wait_id)
+        # self.env.cr.execute(sql_query)
+        # waiting_list = self.env.cr.dictfetchall()
+        # if waiting_list:
+        #     _logger.info(str(waiting_list[0].get('id')) + ', ' + str(waiting_list[-1].get('id')))
+        # else:
+        #     _logger.info("Empty Waiting List")
+        # return waiting_list
+        waiting_list = self.env['tt.reservation.waiting.list'].search([('agent_id', '=', agent_id),
+                                                        ('is_in_transaction', '=', True),
+                                                                       ('id','<',wait_id)])
+
         if waiting_list:
-            _logger.info(str(waiting_list[0].get('id')) + ', ' + str(waiting_list[-1].get('id')))
+            _logger.info("Waiting List : " + str(waiting_list.ids))
         else:
             _logger.info("Empty Waiting List")
         return waiting_list
@@ -557,9 +566,11 @@ class TtReservation(models.Model):
                     # waiting_list = self.env['tt.reservation.waiting.list'].search([('agent_id', '=', book_obj.agent_id.id),
                     #                                             ('is_in_transaction', '=', True),
                     #                                            ('id','<',new_waiting_list.id)])
-                    waiting_list = self.get_waiting_list(book_obj.agent_id.id, new_waiting_list.id)
-                    cur_time = time.time()
-                    _logger.info("%s Waiting Transaction %s" % (self.name,cur_time))
+                    # waiting_list = self.get_waiting_list(book_obj.agent_id.id, new_waiting_list.id)
+                    # cur_time = time.time()
+                    # _logger.info("%s Waiting Transaction %s" % (self.name,cur_time))
+
+                    raise RequestException(1028)
 
 
                 #cek balance due book di sini, mungkin suatu saat yang akan datang
@@ -650,7 +661,7 @@ class TtReservation(models.Model):
                 _logger.error('Creating Notes Error')
             return e.error_dict()
         except Exception as e:
-            _logger.info("Waiting list ID : " + new_waiting_list.id + "\n" + str(e) + traceback.format_exc())
+            _logger.info("Waiting list ID : " + str(new_waiting_list.id) + "\n" + str(e) + traceback.format_exc())
             try:
                 new_waiting_list.is_in_transaction = False
                 self.env.cr.commit()

@@ -108,13 +108,7 @@ class TtCustomerParent(models.Model):
     def check_balance_limit(self, amount):
         if not self.ensure_one():
             raise UserError('Can only check 1 agent each time got ' + str(len(self._ids)) + ' Records instead')
-        sql_query = 'select id,balance from tt_ledger where customer_parent_id = %s order by id desc limit 1;' % (self.id)
-        self.env.cr.execute(sql_query)
-        balance = self.env.cr.dictfetchall()
-        if balance:
-            return balance[0]['balance'] >= amount
-        else:
-            return 0
+        return self.actual_balance >= amount
 
     def action_confirm(self):
         if self.state != 'draft':
