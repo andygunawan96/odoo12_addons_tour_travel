@@ -534,18 +534,22 @@ class TtReservation(models.Model):
             if book_obj and book_obj.agent_id.id == context.get('co_agent_id',-1):
                 start_time = time.time()
                 cur_time = 0
+                new_waiting_list = self.env['tt.reservation.waiting.list'].create({'agent_id':book_obj.agent_id.id})
+                self.env.cr.commit()
+
                 waiting_list = self.env['tt.reservation.waiting.list'].search([('agent_id', '=', book_obj.agent_id.id),
-                                                                ('is_in_transaction', '=', True)])
+                                                                ('is_in_transaction', '=', True),
+                                                                               ('id','<',new_waiting_list.id)])
                 _logger.info(str(waiting_list.ids))
-                while ( waiting_list and cur_time - start_time < 60):
+
+                while (waiting_list and cur_time - start_time < 60):
                     waiting_list = self.env['tt.reservation.waiting.list'].search([('agent_id', '=', book_obj.agent_id.id),
                                                                 ('is_in_transaction', '=', True)])
                     _logger.info(str(waiting_list.ids))
                     cur_time = time.time()
-                    _logger.info("Waiting Transaction %s" % (cur_time))
+                    _logger.info("%s Waiting Transaction %s" % (self.name,cur_time))
 
-                new_waiting_list = self.env['tt.reservation.waiting.list'].create({'agent_id':book_obj.agent_id.id})
-                self.env.cr.commit()
+
 
                 #cek balance due book di sini, mungkin suatu saat yang akan datang
                 if book_obj.state == 'issued':
