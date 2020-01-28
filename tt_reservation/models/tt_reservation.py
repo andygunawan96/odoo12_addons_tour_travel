@@ -544,7 +544,8 @@ class TtReservation(models.Model):
 
                 while (waiting_list and cur_time - start_time < 60):
                     waiting_list = self.env['tt.reservation.waiting.list'].search([('agent_id', '=', book_obj.agent_id.id),
-                                                                ('is_in_transaction', '=', True)])
+                                                                ('is_in_transaction', '=', True),
+                                                               ('id','<',new_waiting_list.id)])
                     _logger.info(str(waiting_list.ids))
                     cur_time = time.time()
                     _logger.info("%s Waiting Transaction %s" % (self.name,cur_time))
@@ -637,7 +638,7 @@ class TtReservation(models.Model):
                 _logger.error('Creating Notes Error')
             return e.error_dict()
         except Exception as e:
-            _logger.info(str(e) + traceback.format_exc())
+            _logger.info("Waiting list ID : " + new_waiting_list.id + "\n" + str(e) + traceback.format_exc())
             try:
                 book_obj.notes += str(e)+traceback.format_exc() + '\n'
                 new_waiting_list.is_in_transaction = False
