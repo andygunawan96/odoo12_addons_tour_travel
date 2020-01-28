@@ -65,13 +65,22 @@ class Ledger(models.Model):
         'Related Reservation ID', index=True, help='Id of the followed resource')
 
     def calc_balance(self, vals):
-        # Pertimbangkan Multi Currency Ledger
+        # Pertimbangkan Multi Currency Ledgers
         balance = 0
         if vals.get('agent_id'):
-            balance = self.env['tt.agent'].browse(vals['agent_id']).balance
+            # balance = self.env['tt.agent'].browse(vals['agent_id']).balance
+            sql_query = 'select id,balance from tt_ledger where agent_id = %s order by id desc limit 1;' % (vals['agent_id'])
+            self.env.cr.execute(sql_query)
+            balance = self.env.cr.dictfetchall()
         elif vals.get('customer_parent_id'):
-            balance = self.env['tt.customer.parent'].browse(vals['customer_parent_id']).balance
-        return (balance + vals['debit']) - vals['credit']
+            # balance = self.env['tt.customer.parent'].browse(vals['customer_parent_id']).balance
+            sql_query = 'select id,balance from tt_ledger where customer_parent_id = %s order by id desc limit 1;' % (vals['customer_parent_id'])
+            self.env.cr.execute(sql_query)
+            balance = self.env.cr.dictfetchall()
+        if balance:
+            return (balance[0]['balance'] + vals['debit']) - vals['credit']
+        else:
+            return 0
 
     def prepare_vals(self, res_model,res_id,name, ref, date, ledger_type, currency_id, issued_uid, debit=0, credit=0,description = ''):
         return {

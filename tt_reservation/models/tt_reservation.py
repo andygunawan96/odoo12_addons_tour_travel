@@ -523,7 +523,10 @@ class TtReservation(models.Model):
         sql_query = 'select * from tt_reservation_waiting_list where agent_id = %s and is_in_transaction = True and id < %s' % (agent_id, wait_id)
         self.env.cr.execute(sql_query)
         waiting_list = self.env.cr.dictfetchall()
-        _logger.info(str(waiting_list[0].get('id')) + ', ' + str(waiting_list[-1].get('id')))
+        if waiting_list:
+            _logger.info(str(waiting_list[0].get('id')) + ', ' + str(waiting_list[-1].get('id')))
+        else:
+            _logger.info("Empty Waiting List")
         return waiting_list
 
     ##ini potong ledger
