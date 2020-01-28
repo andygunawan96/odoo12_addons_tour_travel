@@ -15,6 +15,7 @@
 
     # always loaded
     'data': [
+        'wizard/tt_split_reservation_wizard.xml',
         'security/ir.model.access.csv',
         'security/tt_reservation_offline_security.xml',
         'data/ir_sequence_data.xml',

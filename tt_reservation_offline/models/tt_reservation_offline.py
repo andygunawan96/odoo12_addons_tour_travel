@@ -159,6 +159,9 @@ class IssuedOffline(models.Model):
 
     acquirer_id = fields.Many2one('payment.acquirer', 'Payment Acquirer', readonly=True)
 
+    split_from_resv_id = fields.Many2one('tt.reservation.offline', 'Splitted From', readonly=1)
+    split_to_resv_ids = fields.One2many('tt.reservation.offline', 'split_from_resv_id', 'Splitted To', readonly=1)
+
     # display_mobile = fields.Char('Contact Person for Urgent Situation',
     #                              readonly=True, states={'draft': [('readonly', False)]})
     # refund_id = fields.Many2one('tt.refund', 'Refund')
@@ -236,7 +239,8 @@ class IssuedOffline(models.Model):
         if self.state_offline != 'done':
             if self.state_offline == 'validate':
                 for rec in self.ledger_ids:
-                    rec.reverse_ledger()
+                    if not rec.is_reversed:
+                        rec.reverse_ledger()
                     # ledger_obj.update({
                     #     'transaction_type': self.provider_type_id_name,
                     #     'description': rec.description
