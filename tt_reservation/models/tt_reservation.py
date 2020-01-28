@@ -534,7 +534,8 @@ class TtReservation(models.Model):
             if book_obj and book_obj.agent_id.id == context.get('co_agent_id',-1):
                 start_time = time.time()
                 cur_time = 0
-                new_waiting_list = self.env['tt.reservation.waiting.list'].create({'agent_id':book_obj.agent_id.id})
+                new_waiting_list = self.env['tt.reservation.waiting.list'].create({'agent_id':book_obj.agent_id.id,
+                                                                                   'reference': self.name})
                 self.env.cr.commit()
 
                 waiting_list = self.env['tt.reservation.waiting.list'].search([('agent_id', '=', book_obj.agent_id.id),
@@ -651,4 +652,5 @@ class TtReservationWaitingList(models.Model):
     _description = 'Rodex Model Reservation Waiting List'
 
     agent_id = fields.Many2one('tt.agent','Agent')
+    reference = fields.Char("Reference")
     is_in_transaction = fields.Boolean("In Transaction",default=True)
