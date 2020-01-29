@@ -123,10 +123,10 @@ class AgentReportInvoiceXls(models.TransientModel):
                                 summary.append(temp_dict)
                             else:
                                 summary[returning_index]['transaction_counter'] += 1
-                                try:
-                                    summary[returning_index]['total_amount'] += float(j['payment_pay_amount'])
-                                except:
-                                    summary[returning_index]['total_amount'] += 0.0
+                                # try:
+                                summary[returning_index]['total_amount'] += float(j['payment_pay_amount'])
+                                # except:
+                                #     summary[returning_index]['total_amount'] += 0.0
 
                             sheet.write(row_data, 0, '', sty_table_data)
                             sheet.write(row_data, 1, '', sty_table_data)
