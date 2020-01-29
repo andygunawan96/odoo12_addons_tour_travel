@@ -66,7 +66,7 @@
                         <button string="Confirm" class="oe_highlight" name="action_confirm" type="object" attrs="{'invisible':[('state_offline','!=','draft')]}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                         <button string="Sent" name="action_sent" type="object" attrs="{'invisible':[('state_offline','!=','confirm')]}" groups="tt_base.group_tt_tour_travel_operator"/>  <!--states="confirm"-->
                         <button string="Validate" class="oe_highlight" name="action_issued_backend" attrs="{'invisible':[('state_offline','!=','sent')]}" type="object" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_ticketing_operator"/>  <!-- ,tt_base.group_tt_tour_travel_operator groups="tt_base.group_tt_ticketing_operator,account.group_account_user"-->
-                        <button string="Quick Validate" class="oe_highlight" name="action_quick_issued" attrs="{'invisible':[('state_offline','!=','confirm')]}" type="object" groups="tt_base.group_tt_tour_travel_operator"/>
+                        <button string="Quick Validate" class="oe_highlight" name="action_quick_issued" attrs="{'invisible':['|', ('state_offline','!=','confirm'),('quick_validate','=',False)]}" type="object" groups="tt_base.group_tt_tour_travel_operator"/>
                         <!--                        <button string="Post" name="action_done" states="draft,confirm,sent,paid,posted" type="object" groups="tt_base.group_tt_tour_travel_operator"/>-->
                         <button string="Done" class="oe_highlight" name="action_done" attrs="{'invisible':[('state_offline','!=','validate')]}" type="object" groups="tt_base.group_tt_ticketing_operator,account.group_account_invoice"/>
                         <button string="Cancel" name="action_cancel" type="object" attrs="{'invisible':[('state_offline','not in',['confirm','sent','validate'])]}" groups="tt_base.group_tt_ticketing_operator,account.group_account_invoice"/>
@@ -188,6 +188,7 @@
                                     <field name="cancel_date" class="oe_inline"/> -
                                     <field name="cancel_uid" class="oe_inline"/>
                                 </div>
+                                <field name="quick_validate" groups="tt_base.group_tt_tour_travel_operator"/>
                             </group>
                         </group>
                         <group>

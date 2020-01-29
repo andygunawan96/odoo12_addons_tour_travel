@@ -131,16 +131,15 @@ class TtProviderVisa(models.Model):
                         scs['total'] += scs['amount']
             else:
                 for psg in self.passenger_ids:
-                        scs['passenger_visa_ids'].append(psg.passenger_id.id)  # add passenger to passenger visa ids
-                        scs['pax_count'] += 1
-                        scs['total'] += scs['amount']
+                    scs['passenger_visa_ids'].append(psg.passenger_id.id)  # add passenger to passenger visa ids
+                    scs['pax_count'] += 1
+                    scs['total'] += scs['amount']
             scs['passenger_visa_ids'] = [(6, 0, scs['passenger_visa_ids'])]
             if 'commission_agent_id' in scs:
                 scs['commission_agent_id'] = scs['commission_agent_id']
             scs['description'] = self.pnr and self.pnr or ''
             if scs['total'] != 0:
-                scs_obj = service_chg_obj.create(scs)
-                print(scs_obj)
+                service_chg_obj.create(scs)
 
     def delete_service_charge(self):
         ledger_created = False

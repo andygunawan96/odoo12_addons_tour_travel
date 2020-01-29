@@ -29,6 +29,7 @@ STATE_VISA = [
     ('proceed', 'Proceed'),
     ('partial_approve', 'Partial Approve'),
     ('approve', 'Approve'),
+    ('reject', 'Rejected'),
     ('delivered', 'Delivered'),
     ('ready', 'Sent'),
     ('done', 'Done'),
@@ -317,6 +318,12 @@ class TtVisa(models.Model):
         })
         self.message_post(body='Order APPROVED')
 
+    def action_rejected_visa(self):
+        self.write({
+            'state_visa': 'reject'
+        })
+        self.message_post(body='Order REJECTED')
+
     def action_partial_approved_visa(self):
         self.write({
             'state_visa': 'partial_approve'
@@ -363,6 +370,7 @@ class TtVisa(models.Model):
             rec3.sudo().unlink()
         self.write({
             'state_visa': 'cancel',
+            'state': 'cancel',
         })
 
     def action_ready_visa(self):
