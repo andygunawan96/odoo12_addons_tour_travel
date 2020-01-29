@@ -737,37 +737,38 @@ class IssuedOffline(models.Model):
         return empty
 
     param_issued_offline_data = {
-        "type": "cruise",
-        "total_sale_price": 100000,
-        "desc": "Itinerary\n 02-05-2020: Singapore\n 03-05-2020: Surabaya\n 04-05-2020: Bali\n 05-05-2020: Surabaya\n 06-05-2020: Singapore",
-        # "pnr": "10020120",
-        "social_media_id": "Facebook",
-        "expired_date": "2019-10-04 02:29",
-        "quick_validate": True,
-        "line_ids": [
-            {
-                'pnr': 'NVIDIA',
-                'provider': 'Genting Dream',
-                'cruise_package': '4D3N Surabaya Bali Package',
-                'departure_location': 'Singapore',
-                'arrival_location': 'Singapore',
-                'room': 'Balcony',
-                'check_in': "2020-05-02",
-                'check_out': "2020-05-05",
-                'description': 'Itinerary\n 02-05-2020: Singapore\n 03-05-2020: Surabaya\n 04-05-2020: Bali\n 05-05-2020: Singapore'
-            },
-            {
-                'pnr': 'AMDFTW',
-                'provider': 'Royal Caribbean Cruise',
-                'cruise_package': '5D/4N QUANTUM OF THE SEAS SINGAPORE MALAYSIA',
-                'departure_location': 'Singapore',
-                'arrival_location': 'Singapore',
-                'room': 'Ocean View',
-                'check_in': "2020-06-02",
-                'check_out': "2020-06-06",
-                'description': 'Itinerary\n 02-06-2020: Singapore\n 03-06-2020: Kuala Lumpur\n 04-06-2020: Penang\n 05-06-2020: Cruising\n 06-06-2020: Singapore'
-            },
-        ]
+        # "type": "cruise",
+        # "total_sale_price": 100000,
+        # "desc": "Itinerary\n 02-05-2020: Singapore\n 03-05-2020: Surabaya\n 04-05-2020: Bali\n 05-05-2020: Surabaya\n 06-05-2020: Singapore",
+        # # "pnr": "10020120",
+        # "social_media_id": "Facebook",
+        # "expired_date": "2019-10-04 02:29",
+        # "quick_validate": True,
+        # "line_ids": [
+        #     {
+        #         'pnr': 'NVIDIA',
+        #         'provider': 'Genting Dream',
+        #         'cruise_package': '4D3N Surabaya Bali Package',
+        #         'departure_location': 'Singapore',
+        #         'arrival_location': 'Singapore',
+        #         'room': 'Balcony',
+        #         'check_in': "2020-05-02",
+        #         'check_out': "2020-05-05",
+        #         'description': 'Itinerary\n 02-05-2020: Singapore\n 03-05-2020: Surabaya\n 04-05-2020: Bali\n 05-05-2020: Singapore'
+        #     },
+        #     {
+        #         'pnr': 'AMDFTW',
+        #         'provider': 'Royal Caribbean Cruise',
+        #         'cruise_package': '5D/4N QUANTUM OF THE SEAS SINGAPORE MALAYSIA',
+        #         'departure_location': 'Singapore',
+        #         'arrival_location': 'Singapore',
+        #         'room': 'Ocean View',
+        #         'check_in': "2020-06-02",
+        #         'check_out': "2020-06-06",
+        #         'description': 'Itinerary\n 02-06-2020: Singapore\n 03-06-2020: Kuala Lumpur\n 04-06-2020: Penang\n 05-06-2020: Cruising\n 06-06-2020: Singapore'
+        #     },
+        # ]
+
         # "line_ids": [
         #     {
         #         "name": 1,
@@ -778,6 +779,71 @@ class IssuedOffline(models.Model):
         #     }
         # ]
         # "sector_type": "domestic"
+
+        # "type": "airline",
+        # "total_sale_price": 100000,
+        # "desc": "amdaksd",
+        # "pnr": "10020120",
+        # "social_media_id": "Facebook",
+        # "expired_date": "2019-10-04 02:29",
+        # "line_ids": [
+        #     {
+        #         "origin": "SUB",
+        #         "destination": "SIN",
+        #         "provider": "Garuda Indonesia",
+        #         "departure": "2019-10-04 02:30",
+        #         "arrival": "2019-10-04 02:30",
+        #         "carrier_code": "SQ",
+        #         "carrier_number": "a123",
+        #         "sub_class": "B",
+        #         "class_of_service": "eco"
+        #     },  #
+        #     {
+        #         "origin": "SIN",
+        #         "destination": "HKG",
+        #         "provider": "Singapore Airlines",
+        #         "departure": "2019-10-04 02:30",
+        #         "arrival": "2019-10-04 02:30",
+        #         "carrier_code": "SQ",
+        #         "carrier_number": "a123",
+        #         "sub_class": "B",
+        #         "class_of_service": "eco"
+        #     },
+        # ],
+        # "sector_type": "domestic"
+        "type": "airline",
+        "total_sale_price": 100000,
+        "desc": "amdaksd",
+        # "pnr": "10020120",
+        "social_media_id": "Facebook",
+        "expired_date": "2019-10-04 02:29",
+        "quick_validate": False,
+        "line_ids": [
+            {
+                "pnr": "MUIQBF",
+                "origin": "SUB",
+                "destination": "SIN",
+                "provider": "Garuda Indonesia",
+                "departure": "2019-10-04 02:30",
+                "arrival": "2019-10-04 04:30",
+                "carrier_code": "GA",
+                "carrier_number": "X4333",
+                "sub_class": "Y",
+                "class_of_service": "eco"
+            },
+            {
+                "pnr": "QOFUIH",
+                "origin": "SIN",
+                "destination": "HKG",
+                "provider": "Singapore Airlines",
+                "departure": "2019-10-06 12:30",
+                "arrival": "2019-10-06 16:30",
+                "carrier_code": "SQ",
+                "carrier_number": "832",
+                "sub_class": "Y",
+                "class_of_service": "eco"
+            },
+        ]
     }
 
     # param_issued_offline_data = {
@@ -925,16 +991,31 @@ class IssuedOffline(models.Model):
 
     param_passenger = [
         {
-            "pax_type": "INF",
+            "pax_type": "ADT",
             "first_name": "ivan",
             "last_name": "suryajaya",
             "title": "MSTR",
-            "birth_date": "2019-08-25",
+            "birth_date": "1987-08-25",
             "nationality_name": "Indonesia",
             "nationality_code": "ID",
             "country_of_issued_code": "Indonesia",
             "passport_expdate": "2019-10-04",
             "passport_number": "1231312323",
+            "passenger_id": "",
+            "is_booker": True,
+            "is_contact": False
+        },
+        {
+            "pax_type": "CHD",
+            "first_name": "andy",
+            "last_name": "sanjaya",
+            "title": "MR",
+            "birth_date": "1990-02-10",
+            "nationality_name": "Indonesia",
+            "nationality_code": "ID",
+            "country_of_issued_code": "Indonesia",
+            "passport_expdate": "2019-10-04",
+            "passport_number": "1231312324",
             "passenger_id": "",
             "is_booker": True,
             "is_contact": False
@@ -948,8 +1029,8 @@ class IssuedOffline(models.Model):
     }
 
     param_payment = {
-        "member": True,
-        "seq_id": "CTP.1411067",
+        "member": False,
+        "seq_id": "PQR.2211082",
         # "member": False,
         # "seq_id": "PQR.0429001"
     }

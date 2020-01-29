@@ -101,16 +101,6 @@ class VisaOrderPassengers(models.Model):
     handling_ids = fields.One2many('tt.reservation.visa.order.handling', 'to_passenger_id', 'Handling Questions')
     handling_information = fields.Text('Handling Information')
 
-    # biometrics_datetime = fields.Datetime('Datetime')
-    # biometrics_ho_employee = fields.Many2one('res.users', 'Employee', domain=lambda self: self.get_user_HO())
-    # biometrics_meeting_point = fields.Char('Meeting Point')
-    # biometrics_location = fields.Char('Biometrics Location')
-
-    # interview_datetime = fields.Datetime('Datetime')
-    # interview_ho_employee = fields.Many2one('res.users', 'Employee', domain=lambda self: self.get_user_HO())
-    # interview_meeting_point = fields.Char('Meeting Point')
-    # interview_location = fields.Char('Interview Location')
-
     in_process_date = fields.Datetime('In Process Date', readonly=1)  # readonly=1
     payment_date = fields.Datetime('Payment Date', readonly=1)  # readonly=1
     payment_uid = fields.Many2one('res.users', 'Payment By', readonly=1)  # readonly=1
@@ -286,9 +276,6 @@ class VisaOrderPassengers(models.Model):
 
     def action_proceed(self):
         for rec in self:
-            # jika belum ada tanggal wawancara / call_date, tidak bisa proceed
-            # if not rec.call_date:
-            #     raise UserError(_('You have to Fill Passenger Call Date.'))
             # jika interview / biometrics dicentang & belum ada record interview / biometrics, tidak bisa proceed
             if rec.interview is True:
                 if not rec.interview_ids:

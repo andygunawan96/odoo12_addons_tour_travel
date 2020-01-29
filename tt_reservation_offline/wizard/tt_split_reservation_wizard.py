@@ -13,6 +13,9 @@ class TtSplitReservationWizard(models.TransientModel):
     referenced_document = fields.Char('Ref. Document', required=True, readonly=True)
     new_pnr = fields.Char('New PNR(s) separated by comma')
     new_pnr_text = fields.Text('Information', readonly=True)
+    currency_id = fields.Many2one('res.currency', 'Currency', readonly=True, states={'draft': [('readonly', False)]},
+                                  default=lambda self: self.env.user.company_id.currency_id)
+    vendor_amount = fields.Monetary('New Vendor Amount', default=0)
 
     def get_split_provider_domain(self):
         return [('booking_id', '=', self.res_id)]
@@ -172,6 +175,8 @@ class TtSplitReservationWizard(models.TransientModel):
             'description': book_obj.description,
             'sector_type': book_obj.sector_type,
             'total_commission_amount': book_obj.total_commission_amount,
+            'vendor_amount': self.vendor_amount,
+            'resv_code': book_obj.resv_code,
             'social_media_type': book_obj.social_media_type.id,
             'booked_uid': book_obj.booked_uid and book_obj.booked_uid.id or False,
             'booked_date': book_obj.booked_date,
@@ -196,6 +201,7 @@ class TtSplitReservationWizard(models.TransientModel):
             'state_offline': book_obj.state_offline
         }
         new_book_obj = self.env['tt.reservation.offline'].sudo().create(new_vals)
+        book_obj.vendor_amount -= self.vendor_amount
 
         # jika provider only
         if len(pax_list) <= 0:
