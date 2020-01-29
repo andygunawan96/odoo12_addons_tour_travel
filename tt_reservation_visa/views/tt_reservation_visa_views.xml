@@ -73,6 +73,7 @@
                 <attribute name="attrs">{'invisible': [('can_refund', '!=', True)]}</attribute>
             </xpath>
             <button name="action_cancel" position="replace">
+<!--                <button type="object" string="Get Booking Visa" name="get_booking_visa_api"/>-->
                 <button string="Set to Draft" name="action_draft_visa" type="object" attrs="{'invisible': ['|',('state_visa', '!=', 'cancel'), ('commercial_state', '=', 'Paid')]}" groups="tt_base.group_tt_tour_travel_manager"/>
                 <button string="Confirm to HO" name="action_confirm_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'draft')]}" groups="tt_base.group_tt_agent_user_operator"/>
                 <button string="Validate" name="action_validate_visa" type="object" attrs="{'invisible': [('state_visa', 'not in', ['confirm','partial_validate'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
@@ -209,7 +210,6 @@
         <field name="arch" type="xml">
             <tree create="false">
 <!--                <button type="object" string="Create Booking Visa" name="create_booking_visa_api"/>-->
-<!--                <button type="object" string="Get Booking Visa" name="get_booking_visa_api"/>-->
                 <field name="name"/>
                 <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>
                 <field name="agent_type_id" groups="tt_base.group_tt_tour_travel_operator"/>
