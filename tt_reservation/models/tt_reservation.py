@@ -519,6 +519,25 @@ class TtReservation(models.Model):
         for rec in self.ledger_ids:
             rec.update({'pnr': new_pnr})
 
+    def get_waiting_list(self, agent_id, wait_id):
+        # sql_query = 'select * from tt_reservation_waiting_list where agent_id = %s and is_in_transaction = True and id < %s' % (agent_id, wait_id)
+        # self.env.cr.execute(sql_query)
+        # waiting_list = self.env.cr.dictfetchall()
+        # if waiting_list:
+        #     _logger.info(str(waiting_list[0].get('id')) + ', ' + str(waiting_list[-1].get('id')))
+        # else:
+        #     _logger.info("Empty Waiting List")
+        # return waiting_list
+        waiting_list = self.env['tt.reservation.waiting.list'].search([('agent_id', '=', agent_id),
+                                                        ('is_in_transaction', '=', True),
+                                                                       ('id','<',wait_id)])
+
+        if waiting_list:
+            _logger.info("Waiting List : " + str(waiting_list.ids))
+        else:
+            _logger.info("Empty Waiting List")
+        return waiting_list
+
     ##ini potong ledger
     def payment_reservation_api(self,table_name,req,context):
         _logger.info("Payment\n" + json.dumps(req))
@@ -534,14 +553,25 @@ class TtReservation(models.Model):
             if book_obj and book_obj.agent_id.id == context.get('co_agent_id',-1):
                 start_time = time.time()
                 cur_time = 0
-                while (self.env['tt.reservation.waiting.list'].search([('agent_id','=',book_obj.agent_id.id),
-                                                                       ('is_in_transaction','=',True)])
-                                                and cur_time - start_time < 60):
-                    cur_time = time.time()
-                    _logger.info("Waiting Transaction %s" % (cur_time))
-
-                new_waiting_list = self.env['tt.reservation.waiting.list'].create({'agent_id':book_obj.agent_id.id})
+                new_waiting_list = self.env['tt.reservation.waiting.list'].create({'agent_id':book_obj.agent_id.id,
+                                                                                   'reference': self.name})
                 self.env.cr.commit()
+
+                # waiting_list = self.env['tt.reservation.waiting.list'].search([('agent_id', '=', book_obj.agent_id.id),
+                #                                                 ('is_in_transaction', '=', True),
+                #                                                                ('id','<',new_waiting_list.id)])
+                waiting_list = self.get_waiting_list(book_obj.agent_id.id, new_waiting_list.id)
+
+                while (waiting_list and cur_time - start_time < 60):
+                    # waiting_list = self.env['tt.reservation.waiting.list'].search([('agent_id', '=', book_obj.agent_id.id),
+                    #                                             ('is_in_transaction', '=', True),
+                    #                                            ('id','<',new_waiting_list.id)])
+                    # waiting_list = self.get_waiting_list(book_obj.agent_id.id, new_waiting_list.id)
+                    # cur_time = time.time()
+                    # _logger.info("%s Waiting Transaction %s" % (self.name,cur_time))
+
+                    raise RequestException(1028)
+
 
                 #cek balance due book di sini, mungkin suatu saat yang akan datang
                 if book_obj.state == 'issued':
@@ -616,6 +646,7 @@ class TtReservation(models.Model):
                     provider.action_create_ledger(context['co_uid'], payment_method)
 
                 new_waiting_list.is_in_transaction = False
+                self.env.cr.commit()
 
                 return ERR.get_no_error()
             else:
@@ -623,16 +654,18 @@ class TtReservation(models.Model):
         except RequestException as e:
             _logger.error(traceback.format_exc())
             try:
-                book_obj.notes += traceback.format_exc() + '\n'
                 new_waiting_list.is_in_transaction = False
+                self.env.cr.commit()
+                book_obj.notes += traceback.format_exc() + '\n'
             except:
                 _logger.error('Creating Notes Error')
             return e.error_dict()
         except Exception as e:
-            _logger.info(str(e) + traceback.format_exc())
+            _logger.info("Waiting list ID : " + str(new_waiting_list.id) + "\n" + str(e) + traceback.format_exc())
             try:
-                book_obj.notes += str(e)+traceback.format_exc() + '\n'
                 new_waiting_list.is_in_transaction = False
+                self.env.cr.commit()
+                book_obj.notes += str(e)+traceback.format_exc() + '\n'
             except:
                 _logger.error('Creating Notes Error')
             return ERR.get_error(1011)
@@ -642,4 +675,5 @@ class TtReservationWaitingList(models.Model):
     _description = 'Rodex Model Reservation Waiting List'
 
     agent_id = fields.Many2one('tt.agent','Agent')
+    reference = fields.Char("Reference")
     is_in_transaction = fields.Boolean("In Transaction",default=True)

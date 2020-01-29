@@ -352,6 +352,7 @@
                 <field name="name"/>
                 <field name="agent_id"/>
                 <field name="customer_parent_id"/>
+                <field name="referenced_pnr"/>
                 <field name="reschedule_amount"/>
                 <field name="admin_fee"/>
                 <field name="total_amount"/>

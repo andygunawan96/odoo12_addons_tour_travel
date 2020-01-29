@@ -201,6 +201,7 @@
                                     <field name="currency_id"/>
                                     <field name="pax_price"/>
                                     <field name="charge_fee"/>
+                                    <field name="commission_fee"/>
                                     <field name="refund_amount"/>
                                     <field name="real_refund_amount" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible':[('state','not in', ['final','approve','payment','approve_cust','done'])]}"/>
                                     <field name="state" invisible="1"/>
@@ -222,6 +223,7 @@
                                             <group>
                                                 <field name="pax_price"/>
                                                 <field name="charge_fee"/>
+                                                <field name="commission_fee"/>
                                                 <field name="refund_amount"/>
                                                 <field name="real_refund_amount" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible':[('state','not in', ['final','approve','payment','approve_cust','done'])]}"/>
                                             </group>
@@ -307,6 +309,7 @@
                 <field name="name"/>
                 <field name="agent_id"/>
                 <field name="customer_parent_id"/>
+                <field name="referenced_pnr"/>
                 <field name="refund_date"/>
                 <field name="refund_amount"/>
                 <field name="admin_fee"/>
