@@ -15,5 +15,10 @@
                   name="Booking"
                   sequence="1"/>
 
+        <menuitem id="menu_reservations_airline_get_booking"
+                  parent="tt_reservation_airline.top_reservations_airline"
+                  name="Get Booking"
+                  groups="tt_base.group_tt_ticketing_operator"
+                  sequence="2"/>
     </data>
 </odoo>

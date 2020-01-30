@@ -108,7 +108,7 @@ class TtCustomerParent(models.Model):
     def check_balance_limit(self, amount):
         if not self.ensure_one():
             raise UserError('Can only check 1 agent each time got ' + str(len(self._ids)) + ' Records instead')
-        return self.actual_balance >= amount
+        return self.actual_balance >= (amount + (amount * self.tax_percentage / 100))
 
     def action_confirm(self):
         if self.state != 'draft':

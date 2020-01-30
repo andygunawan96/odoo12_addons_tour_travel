@@ -103,7 +103,8 @@ class ReservationActivity(models.Model):
     visit_date = fields.Datetime('Visit Date')
     timeslot = fields.Char('Timeslot')
 
-    sale_service_charge_ids = fields.One2many('tt.service.charge', 'booking_activity_id', string='Prices')
+    sale_service_charge_ids = fields.One2many('tt.service.charge', 'booking_activity_id', string='Service Charge',
+                                              readonly=True, states={'draft': [('readonly', False)]})
     provider_booking_ids = fields.One2many('tt.provider.activity', 'booking_id', string='Provider Booking',
                                            readonly=True, states={'draft': [('readonly', False)]})
     passenger_ids = fields.One2many('tt.reservation.passenger.activity', 'booking_id', string='Passengers')

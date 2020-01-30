@@ -13,6 +13,8 @@ TT_TRANSPORT
     'images' : [],
     'depends' : ['base_setup','tt_base','tt_reservation','base_address_city','tt_in_api_connector'],
     'data': [
+        'views/menu_item_base.xml',
+
         'wizard/tt_split_reservation_wizard.xml',
         'data/ir_sequence_data.xml',
         'data/tt_provider_type_data.xml',
@@ -28,7 +30,6 @@ TT_TRANSPORT
 
         'wizard/force_issued_wizard_views.xml',
 
-        'views/menu_item_base.xml',
         'views/tt_reservation_airline.xml',
         'views/tt_provider_views.xml',
         'views/tt_journey_views.xml',

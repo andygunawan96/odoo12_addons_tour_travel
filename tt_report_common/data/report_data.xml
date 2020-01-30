@@ -10,6 +10,7 @@
             file="tt_report_common.printout_invoice"
             paperformat="tt_report_common.paperformat_A4_no_margin"
             print_report_name="'Invoice - %s' % (object.name)"
+            menu="False"
         />
         <report
             string="HO Invoice Airline"
@@ -20,6 +21,7 @@
             file="tt_report_common.printout_invoice_ho"
             paperformat="tt_report_common.paperformat_A4_no_margin"
             print_report_name="'HO Invoice - %s' % (object.name)"
+            menu="False"
         />
         <report
             string="HO Invoice Train"
@@ -30,6 +32,7 @@
             file="tt_report_common.printout_invoice_ho"
             paperformat="tt_report_common.paperformat_A4_no_margin"
             print_report_name="'HO Invoice - %s' % (object.name)"
+            menu="False"
         />
         <report
             string="HO Invoice Hotel"
@@ -40,6 +43,7 @@
             file="tt_report_common.printout_invoice_ho"
             paperformat="tt_report_common.paperformat_A4_no_margin"
             print_report_name="'HO Invoice - %s' % (object.name)"
+            menu="False"
         />
         <report
             string="HO Invoice Activity"
@@ -50,6 +54,7 @@
             file="tt_report_common.printout_invoice_ho"
             paperformat="tt_report_common.paperformat_A4_no_margin"
             print_report_name="'HO Invoice - %s' % (object.name)"
+            menu="False"
         />
         <report
             string="HO Invoice Tour"
@@ -60,6 +65,7 @@
             file="tt_report_common.printout_invoice_ho"
             paperformat="tt_report_common.paperformat_A4_no_margin"
             print_report_name="'HO Invoice - %s' % (object.name)"
+            menu="False"
         />
         <report
             string="HO Invoice Visa"
@@ -70,6 +76,7 @@
             file="tt_report_common.printout_invoice_ho"
             paperformat="tt_report_common.paperformat_A4_no_margin"
             print_report_name="'HO Invoice - %s' % (object.name)"
+            menu="False"
         />
         <report
             string="HO Invoice Offline"
@@ -80,6 +87,7 @@
             file="tt_report_common.printout_invoice_ho"
             paperformat="tt_report_common.paperformat_A4_no_margin"
             print_report_name="'HO Invoice - %s' % (object.name)"
+            menu="False"
         />
         <report
             string="Hotel Voucher"
@@ -90,6 +98,7 @@
             file="tt_report_common.printout_hotel_voucher"
             paperformat="tt_report_common.paperformat_A4_no_margin"
             print_report_name="'Hotel Voucher - %s' %(object.name)"
+            menu="False"
         />
         <report
             string="Airlines Ticket"
@@ -209,6 +218,7 @@
             file="tt_report_common.printout_billing"
             paperformat="tt_report_common.paperformat_A4_no_margin"
             print_report_name="'Billing - %s' % (object.name)"
+            menu="False"
         />
         <report
             string="Top Up"
@@ -219,6 +229,7 @@
             file="tt_report_common.printout_topup"
             paperformat="tt_report_common.paperformat_A4_no_margin"
             print_report_name="'Top UP - %s' % (object.name)"
+            menu="False"
         />
         <report
             string="Refund"
@@ -229,6 +240,7 @@
             file="tt_report_common.printout_refund"
             paperformat="tt_report_common.paperformat_A4_no_margin"
             print_report_name="'Refund - %s' % (object.name)"
+            menu="False"
         />
         <report
             string="Refund to Customer"
@@ -239,6 +251,7 @@
             file="tt_report_common.printout_refund"
             paperformat="tt_report_common.paperformat_A4_no_margin"
             print_report_name="'Customer Refund - %s' % (object.name)"
+            menu="False"
         />
         <report
             string="After Sales"
@@ -249,6 +262,7 @@
             file="tt_report_common.printout_reschedule"
             paperformat="tt_report_common.paperformat_A4_no_margin"
             print_report_name="'After Sales - %s' % (object.name)"
+            menu="False"
         />
     </data>
 </odoo>
