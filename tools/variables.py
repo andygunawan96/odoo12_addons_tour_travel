@@ -33,7 +33,7 @@ ACCESS_TYPE = [
 AMOUNT_TYPE = [
     ("amount", "Amount"),
     ("percentage", "Percentage"),
-    ]
+]
 
 BANK_STATEMENT = [
     ('not_connect', 'Not Connected'),       #Processing
@@ -154,3 +154,31 @@ ACQUIRER_TYPE = [
     ('credit', 'Credit Card'),
     ('va', 'Virtual Account')
 ]
+
+ACC_TRANSPORT_TYPE = {
+    'tt.reservation.airline': 'Airline',
+    'tt.reservation.train': 'Train',
+    'tt.reservation.hotel': 'Hotel',
+    'tt.reservation.visa': 'Visa',
+    'tt.reservation.tour': 'Tour',
+    'tt.reservation.activity': 'Activity',
+    'tt.refund': 'Refund',
+    'tt.reschedule': 'Airline Reschedule',
+    'tt.agent.invoice': 'Invoice Agent',
+    'tt.top.up': 'Top Up',
+    'tt.adjustment': 'Adjustment',
+}
+
+ACC_TRANSPORT_TYPE_REVERSE = {
+    'Airline': 'tt.reservation.airline',
+    'Train': 'tt.reservation.train',
+    'Hotel': 'tt.reservation.hotel',
+    'Visa': 'tt.reservation.visa',
+    'Tour': 'tt.reservation.tour',
+    'Activity': 'tt.reservation.activity',
+    'Refund': 'tt.refund',
+    'Airline Reschedule': 'tt.reschedule',
+    'Invoice Agent': 'tt.agent.invoice',
+    'Top Up': 'tt.top.up',
+    'Adjustment': 'tt.adjustment',
+}
