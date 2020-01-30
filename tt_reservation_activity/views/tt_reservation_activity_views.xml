@@ -77,10 +77,10 @@
                 </div>
             </xpath>
             <field name="pnr" position="after">
-                <field name="booking_uuid" attrs="{'invisible': [('booking_uuid', '=', False)]}"/>
+                <field name="booking_uuid" readonly="1" attrs="{'invisible': [('booking_uuid', '=', False)]}"/>
             </field>
             <field name="adult" position="after">
-                <field name="senior"/>
+                <field name="senior" readonly="1"/>
             </field>
             <xpath expr="//group[@name='paxgroup']" position="before">
                 <group>

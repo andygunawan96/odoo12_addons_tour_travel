@@ -139,14 +139,14 @@
                     <!--                    <button name="calculate_service_charge" type="object" string="calc"/>-->
                     <!--                    <button name="test_error" type="object" string="test_error"/>-->
                     <field name="installment_invoice_ids">
-                        <tree>
+                        <tree create="false">
                             <field name="amount"/>
                             <field name="due_date"/>
                             <field name="description"/>
                             <field name="state_invoice"/>
                             <field name="agent_invoice_id"/>
                         </tree>
-                        <form>
+                        <form create="false">
                             <header>
                                 <button string="Pay Now" name="action_pay_now" type="object" attrs="{'invisible': [('state_invoice', 'not in', ['open', 'trouble'])]}"/>
                                 <button string="Set to Open" name="action_open" type="object" attrs="{'invisible': [('state_invoice', '=', 'open')]}"/>
