@@ -1372,6 +1372,14 @@ class TtVisa(models.Model):
 
     param_voucher = False
 
+    def change_pnr_api(self, data, context):
+        for rec in self.search([('name', '=', data['order_number'])]):
+            for vendor in rec['provider_booking_ids']:
+                vendor.pnr = data['pnr']
+                vendor.provider_id = self.env['tt.provider'].search([('code', '=', data['provider'])], limit=1).id
+            #ganti yang dalam vendor + tambah provider
+        return True
+
     def get_booking_visa_api(self, data, context):  #
         try:
             _logger.info("Get req\n" + json.dumps(context))
