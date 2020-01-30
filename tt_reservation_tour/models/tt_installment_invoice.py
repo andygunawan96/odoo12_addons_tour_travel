@@ -14,23 +14,23 @@ class InstallmentInvoice(models.Model):
     _name = 'tt.installment.invoice'
     _description = 'Rodex Model'
 
-    currency_id = fields.Many2one('res.currency', 'Currency', required=True,
+    currency_id = fields.Many2one('res.currency', 'Currency', required=True, readonly=True,
                                   default=lambda self: self.env.user.company_id.currency_id)
 
-    amount = fields.Monetary('Amount', default=0)
+    amount = fields.Monetary('Amount', default=0, readonly=True)
 
     due_date = fields.Date('Due Date', required=True)
 
     booking_id = fields.Many2one('tt.reservation.tour', 'Tour Reservation ID', readonly=True)
-    tour_booking_state = fields.Selection(variables.BOOKING_STATE, related="booking_id.state", store=True)
+    tour_booking_state = fields.Selection(variables.BOOKING_STATE, related="booking_id.state", store=True, readonly=True)
 
-    state_invoice = fields.Selection(STATE_INVOICE, 'State Invoice', default='open')
+    state_invoice = fields.Selection(STATE_INVOICE, 'State Invoice', default='open', readonly=True)
 
     # ledger_ids = fields.One2many('tt.ledger', 'resv_id', 'Ledger')
-    agent_invoice_id = fields.Many2one('tt.agent.invoice', 'Agent Invoice')
+    agent_invoice_id = fields.Many2one('tt.agent.invoice', 'Agent Invoice', readonly=True)
 
     description = fields.Text('Description')
-    payment_rules_id = fields.Many2one('tt.payment.rules', 'Payment Rules ID')
+    payment_rules_id = fields.Many2one('tt.payment.rules', 'Payment Rules ID', readonly=True)
 
     def action_open(self):
         self.state_invoice = 'open'
