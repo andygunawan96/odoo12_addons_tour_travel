@@ -41,8 +41,8 @@
         <field name="arch" type="xml">
             <form create="false">
                 <header>
-                    <button name="action_confirm" string="Confirm" type="object" groups="tt_base.group_tt_agent_user_operator,base.user_admin" attrs="{'invisible':[('state','!=', 'draft')]}"/>
-                    <button name="action_request" string="Submit Request" type="object" groups="tt_base.group_tt_agent_user_supervisor,base.user_admin" attrs="{'invisible':[('state','!=', 'confirm')]}"/>
+                    <button name="action_confirm" string="Confirm" type="object" groups="tt_base.group_tt_agent_finance_operator,tt_base.group_tt_agent_user_operator,base.user_admin" attrs="{'invisible':[('state','!=', 'draft')]}"/>
+                    <button name="action_request" string="Submit Request" type="object" groups="tt_base.group_tt_agent_finance_operator,tt_base.group_tt_agent_user_supervisor,base.user_admin" attrs="{'invisible':[('state','!=', 'confirm')]}"/>
                     <button name="action_validate" string="Validate" type="object" groups="tt_base.group_tt_agent_finance_operator,base.user_admin" attrs="{'invisible':[('state','!=', 'request')]}"/>
                     <button name="action_done" string="Approve" type="object" groups="tt_base.group_tt_agent_finance_manager,base.user_admin" attrs="{'invisible':[('state','!=', 'validate')]}"/>
                     <button name="action_reject" string="Reject" type="object" groups="tt_base.group_tt_agent_user_operator,base.user_admin" attrs="{'invisible':[('state','=','done')]}"/>
