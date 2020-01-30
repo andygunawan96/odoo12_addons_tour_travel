@@ -20,11 +20,5 @@
                   name="Get Booking"
                   groups="tt_base.group_tt_ticketing_operator"
                   sequence="2"/>
-        <menuitem id="submenu_reservations_airline_get_booking_from_vendor"
-                  parent="tt_reservation_airline.menu_reservations_airline_get_booking"
-                  name="Get Booking From Vendor"
-                  action="tt_reservation_airline.tt_reservation_airline_get_booking_from_vendor_wizard_action_view"
-                  groups="tt_base.group_tt_ticketing_operator"
-                  sequence="10"/>
     </data>
 </odoo>
