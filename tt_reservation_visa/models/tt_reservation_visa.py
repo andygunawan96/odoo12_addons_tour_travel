@@ -1375,7 +1375,7 @@ class TtVisa(models.Model):
     def get_booking_visa_api(self, data, context):  #
         try:
             _logger.info("Get req\n" + json.dumps(context))
-            book_obj = self.get_book_obj(data.get('book_id'), data.get('order_number'))
+            book_obj = self.env['tt.reservation.visa'].search([('name', '=', data.get('order_number'))], limit=1)
             if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1):
                 res_dict = book_obj.sudo().to_dict()
                 passenger = []
@@ -2175,25 +2175,6 @@ class TtVisa(models.Model):
             }]
         }]
     }
-
-    def calc_channel_service_charge_visa(self):
-        req = self.param_channel_service_charge
-        req.update({
-            "order_number": self.name,
-            'provider_type': 'visa'
-        })
-        self.channel_pricing_api(req, self.param_context)
-        csc_list = []
-        for psg in self.passenger_ids:
-            for channel in psg.channel_service_charge_ids:
-                channel.write({
-                    'total': channel.amount * channel.pax_count,
-                    'pax_type': psg.passenger_type,
-                    'description': 'Repricing'
-                })
-                self.write({  # hasil sementara : isi di prices di replace semuanya
-                    'sale_service_charge_ids': [(4, channel.id)]
-                })
 
     def update_service_charges(self):
         pricing_list = []
