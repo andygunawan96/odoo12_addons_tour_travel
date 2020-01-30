@@ -27,3 +27,12 @@ class TtAirlineApiCon(models.Model):
     def get_balance(self,provider):
         return self.send_request_to_gateway('%s/account/airline' % (self.url),{'provider': provider},'get_vendor_balance')
 
+    def send_force_issued_not_enough_balance_notification(self,order_number,context):
+        request = {
+            'code': 9901,
+            'message': 'Agent/Customer doesn\'t have enough balance, but issued on vendor.\n\nCo User Name : {}\nCo User Agent : {}\n\mOrder Number : {}'.format(context['co_user_name'],context['co_agent_name'],order_number),
+            "title": 'URGENT NOT ENOUGH BALANCE'
+        }
+        return self.send_request_to_gateway('%s/notification' % (self.url),
+                                            request,
+                                            'notification_api')

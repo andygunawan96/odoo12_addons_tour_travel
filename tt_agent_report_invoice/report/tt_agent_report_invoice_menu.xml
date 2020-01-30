@@ -10,6 +10,7 @@
             name="tt_agent_report_invoice.agent_report_invoice"
             file="tt_agent_report_invoice.agent_report_invoice"
             paperformat="tt_report_common.paperformat_A4"
+            menu="False"
         />
     </data>
 </odoo>

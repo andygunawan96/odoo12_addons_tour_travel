@@ -144,7 +144,7 @@ class AgentReportInvoiceXls(models.TransientModel):
                             sheet.write(row_data, 13, '', sty_table_data)
                     except:
                         _logger.error("ERROR in Invoice Name : {} ".format(i['invoice_number']))
-                        raise UserError(_("ERROR in Invoice Name : {} ".format(i['invoice_number'])))
+                        raise UserError("ERROR in Invoice Name : {} ".format(i['invoice_number']))
 
                 for j in filtered_data:
                     if invoice_line_number != j['invoice_line']:
@@ -179,7 +179,7 @@ class AgentReportInvoiceXls(models.TransientModel):
                             sheet.write(row_data, 13, i['state'], sty_table_data)
                         except:
                             _logger.error("ERROR in Invoice Name : {} , Invoice Line : {}".format(i['invoice_number'], j['invoice_line']))
-                            raise UserError(_("ERROR in Invoice Name : {} , Invoice Line : {}".format(i['invoice_number'], j['invoice_line'])))
+                            raise UserError("ERROR in Invoice Name : {} , Invoice Line : {}".format(i['invoice_number'], j['invoice_line']))
             else:
                 continue
 
@@ -204,7 +204,7 @@ class AgentReportInvoiceXls(models.TransientModel):
                 sheet.write(row_data, 11, i['total_amount'], sty_amount)
         except:
             _logger.error("ERROR when Print Invoice Summary")
-            raise UserError(_("ERROR when Print Invoice Summary"))
+            raise UserError("ERROR when Print Invoice Summary")
 
         workbook.close()
         # sheet.write('B9', 'Invoice Date', style.table_head_center)
