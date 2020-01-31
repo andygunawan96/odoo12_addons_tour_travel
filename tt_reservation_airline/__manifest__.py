@@ -16,10 +16,12 @@ TT_TRANSPORT
         'views/menu_item_base.xml',
 
         'wizard/tt_split_reservation_wizard.xml',
+        'wizard/tt_get_booking_from_vendor.xml',
+
         'data/ir_sequence_data.xml',
         'data/tt_provider_type_data.xml',
         'data/tt_provider_airline.xml',
-        'data/tt_destination_airline.xml',
+        #'data/tt_destination_airline.xml',
         'data/tt_transport_carrier_airline.xml',
         'data/tt_transport_carrier_search_airline.xml',
         'data/tt_psg_limiter_rule_data.xml',

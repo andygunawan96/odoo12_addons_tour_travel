@@ -1145,7 +1145,7 @@ class IssuedOffline(models.Model):
             if create_psg_res['error_code'] == 0:
                 iss_off_psg_ids = create_psg_res['response']
             else:
-                raise RequestException(create_psg_res['error_msg'])
+                raise RequestException(create_psg_res['error_code'])
             header_val = {
                 'booker_id': booker_id.id,
                 'passenger_ids': [(6, 0, iss_off_psg_ids)],
@@ -1176,7 +1176,7 @@ class IssuedOffline(models.Model):
 
             # COR / POR
             if payment.get('member'):
-                customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', payment['seq_id'])],                                                               limit=1).id
+                customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', payment['seq_id'])],limit=1).id
             # cash / transfer
             else:
                 # get payment acquirer

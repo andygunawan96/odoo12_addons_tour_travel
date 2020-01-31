@@ -29,7 +29,7 @@ class TtCustomerParentInh(models.Model):
     billing_cycle_ids = fields.Many2many('tt.billing.cycle', 'customer_parent_billing_cycle_rel', 'customer_parent_id', 'billing_cycle_id',
                                          string='Billing Cycle', help='Days of week to billing process')
 
-    billing_due_date = fields.Integer('Billing Due Date (days)', help='0 = immediate payment, 1 = 1 day after billing creation')
+    billing_due_date = fields.Integer('Billing Due Date (days)', help="How many days until due date after billing.")
 
     billing_due_date_ids = fields.Many2many('tt.billing.cycle', 'customer_parent_billing_due_date_rel', 'customer_parent_id',
                                          'billing_cycle_id', domain=[('day', '<', 0)],

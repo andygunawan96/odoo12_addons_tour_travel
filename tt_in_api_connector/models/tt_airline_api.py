@@ -36,3 +36,12 @@ class TtAirlineApiCon(models.Model):
         return self.send_request_to_gateway('%s/notification' % (self.url),
                                             request,
                                             'notification_api')
+
+    def send_get_booking_from_vendor(self,pnr,provider):
+        request = {
+            'pnr': pnr,
+            'provider': provider
+        }
+        return self.send_request_to_gateway('%s/booking/airline/private' % (self.url),
+                                            request,
+                                            'retrieve_booking')

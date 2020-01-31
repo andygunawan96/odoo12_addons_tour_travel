@@ -619,9 +619,11 @@ class TtReservation(models.Model):
                         ### voucher cor here
 
                         balance_res = self.env['tt.customer.parent'].check_balance_limit_api(acquirer_seq_id,cor_check_amount)
-                        if balance_res['error_code']!=0:
+                        if balance_res['error_code'] != 0:
                             _logger.error('Customer Parent credit limit not enough')
                             raise RequestException(1007,additional_message="customer credit limit")
+                    else:
+                        raise RequestException(1017,additional_message=", Customer.")
 
                 if discount['error_code'] == 0:
                     discount = self.env['tt.voucher.detail'].use_voucher_new(voucher, context)
