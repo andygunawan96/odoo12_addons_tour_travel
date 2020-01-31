@@ -29,7 +29,7 @@ class Ledger(models.Model):
     # _order = 'date, id'
 
     name = fields.Char('Name', copy=False)
-    date = fields.Date('Date', default=date.today())
+    date = fields.Date('Date', default=fields.Date.today())
     debit = fields.Monetary('Debit', default=0)
     credit = fields.Monetary('Credit', default=0)
     balance = fields.Monetary('Balance', default=0, help='Current Agent Balance after this ledger')
