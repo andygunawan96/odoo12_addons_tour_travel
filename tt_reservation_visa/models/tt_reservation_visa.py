@@ -1373,12 +1373,14 @@ class TtVisa(models.Model):
     param_voucher = False
 
     def change_pnr_api(self, data, context):
-        for rec in self.search([('name', '=', data['order_number'])]):
-            for vendor in rec['provider_booking_ids']:
+        book_obj = self.env['tt.reservation.visa'].search([('name', '=', data.get('order_number'))], limit=1)
+        if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1):
+            for vendor in book_obj['provider_booking_ids']:
                 vendor.pnr = data['pnr']
                 vendor.provider_id = self.env['tt.provider'].search([('code', '=', data['provider'])], limit=1).id
             #ganti yang dalam vendor + tambah provider
-        return True
+            return True
+        return False
 
     def get_booking_visa_api(self, data, context):  #
         try:
@@ -1409,7 +1411,7 @@ class TtVisa(models.Model):
                                 })
                         elif ssc.charge_code == 'fare':
                             sale['TOTAL'] = {
-                                'charge_code': ssc.charge_code,
+                                'charge_code': 'total',
                                 'amount': ssc.amount
                             }
                             if ssc['currency_id']:
@@ -1517,6 +1519,15 @@ class TtVisa(models.Model):
         except Exception as e:
             _logger.error(traceback.format_exc())
             return ERR.get_error(1013)
+
+    def state_booking_visa_api(self,data, context):
+        book_obj = self.env['tt.reservation.visa'].search([('name', '=', data.get('order_number'))], limit=1)
+        if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1):
+            if data['state'] == 'booked':
+                book_obj.action_booked_visa(context)
+            elif data['state'] == 'failed':
+                # book_obj.state = 'fail_booked'
+                book_obj.state = 'cancel'
 
     def create_booking_visa_api(self, data, context):  #
         sell_visa = data['sell_visa']  # self.param_sell_visa
@@ -1628,7 +1639,7 @@ class TtVisa(models.Model):
             provider_visa_obj.create_service_charge(pricing)
             book_obj.calculate_service_charge()
 
-            book_obj.action_booked_visa(context)
+            # book_obj.action_booked_visa(context)
 
             response = {
                 'order_number': book_obj.name
