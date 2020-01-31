@@ -270,55 +270,51 @@ class IssuedOffline(models.Model):
 
     @api.one
     def action_validate(self, kwargs={}):
-        # cek saldo agent
-        is_enough = self.agent_id.check_balance_limit_api(self.agent_id.id, self.agent_nta_price)
-        # jika saldo mencukupi
-        if is_enough['error_code'] == 0:
-            # create prices
-            self.state = 'booked'
-            for provider in self.provider_booking_ids:
-                # create pricing list
-                if self.provider_type_id_name in ['hotel']:
-                    provider.create_service_charge_hotel()
-                else:
-                    provider.create_service_charge()
-                # provider.action_create_ledger()
+        # create prices
+        self.state = 'booked'
 
-            req = {
-                'book_id': self.id,
-                'order_number': self.name,
-                'acquirer_seq_id': self.acquirer_id.seq_id,
-                'member': False
-            }
-            if self.customer_parent_id.customer_parent_type_id.id != self.env.ref('tt_base.customer_type_fpo').id:
-                req.update({
-                    'member': True
-                })
-            context = {
-                'co_uid': self.env.user.id,
-                'co_agent_id': self.agent_id.id
-            }
-            if self.state_offline != 'sent':
-                raise UserError('State is already validate. Please refresh the page.')
-            payment = self.payment_reservation_api('offline', req, context)
-            if payment['error_code'] != 0:
-                _logger.error(payment['error_msg'])
-                raise UserError(_(payment['error_msg']))
-            self.calculate_service_charge()
-            self.state_offline = 'validate'
-            self.vendor_amount = self.nta_price
-            self.compute_final_ho()
-            self.issued_date = fields.Datetime.now()
-            self.issued_uid = kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
-            for provider in self.provider_booking_ids:
-                provider.issued_date = self.issued_date
-                provider.issued_uid = self.issued_uid
-            try:
-                self.env['tt.offline.api.con'].send_approve_notification(self.name, self.env.user.name,
-                                                                        self.get_total_amount())
-            except Exception as e:
-                _logger.error("Send ISSUED OFFLINE Approve Notification Telegram Error")
-        return is_enough
+        req = {
+            'book_id': self.id,
+            'order_number': self.name,
+            'acquirer_seq_id': self.acquirer_id.seq_id,
+            'member': False
+        }
+        if self.customer_parent_id.customer_parent_type_id.id != self.env.ref('tt_base.customer_type_fpo').id:
+            req.update({
+                'member': True,
+                'acquirer_seq_id': self.customer_parent_id.seq_id
+            })
+        context = {
+            'co_uid': self.env.user.id,
+            'co_agent_id': self.agent_id.id
+        }
+        if self.state_offline != 'sent':
+            raise UserError('State is already validate. Please refresh the page.')
+        payment = self.payment_reservation_api('offline', req, context)
+        if payment['error_code'] != 0:
+            _logger.error(payment['error_msg'])
+            raise UserError(_(payment['error_msg']))
+
+        self.calculate_service_charge()
+        self.state_offline = 'validate'
+        self.vendor_amount = self.nta_price
+        self.compute_final_ho()
+        self.issued_date = fields.Datetime.now()
+        self.issued_uid = kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
+        for provider in self.provider_booking_ids:
+            provider.issued_date = self.issued_date
+            provider.issued_uid = self.issued_uid
+        try:
+            self.env['tt.offline.api.con'].send_approve_notification(self.name, self.env.user.name,
+                                                                     self.get_total_amount())
+        except Exception as e:
+            _logger.error("Send ISSUED OFFLINE Approve Notification Telegram Error")
+        # # cek saldo agent
+        # is_enough = self.agent_id.check_balance_limit_api(self.agent_id.id, self.agent_nta_price)
+        # # jika saldo mencukupi
+        # if is_enough['error_code'] == 0:
+        #
+        # return is_enough
 
     def check_pnr_empty(self):
         empty = False
@@ -358,6 +354,13 @@ class IssuedOffline(models.Model):
         self.get_provider_name()
         if not self.provider_name:
             raise UserError(_('List of Provider can\'t be Empty'))
+        for provider in self.provider_booking_ids:
+            # create pricing list
+            if self.provider_type_id_name in ['hotel']:
+                provider.create_service_charge_hotel()
+            else:
+                provider.create_service_charge()
+            # provider.action_create_ledger()
 
     @api.one
     def action_issued_backend(self):
@@ -406,7 +409,7 @@ class IssuedOffline(models.Model):
     def action_quick_issued(self):
         if self.total > 0 and self.nta_price > 0:
             self.action_sent()
-            self.action_issued_backend()
+            self.action_validate()
         else:
             raise UserError(_('Sale Price or NTA Price can\'t be 0 (Zero)'))
 
@@ -1029,8 +1032,8 @@ class IssuedOffline(models.Model):
     }
 
     param_payment = {
-        "member": False,
-        "seq_id": "PQR.2211082",
+        "member": True,
+        "seq_id": "CTP.1736068",
         # "member": False,
         # "seq_id": "PQR.0429001"
     }
@@ -1127,16 +1130,22 @@ class IssuedOffline(models.Model):
             passenger_ids = self.create_customer_api(passengers, context, booker_id, contact_id)  # create passenger
             booking_line_ids = []
             iss_off_psg_ids = []
+            if data_reservation_offline['total_sale_price'] <= 0:
+                raise RequestException(1004, additional_message='Total sale price must be greater than 0 (zero).')
+            if not lines:
+                raise RequestException(1004, additional_message='Lines can\'t be empty.')
             create_line_res = self._create_line(lines, data_reservation_offline)
             if create_line_res['error_code'] == 0:
                 booking_line_ids = create_line_res['response']
             else:
-                raise Exception(create_line_res['error_msg'])
+                raise RequestException(create_line_res['error_msg'])
+            if not passengers:
+                raise RequestException('Passengers can\'t be empty.')
             create_psg_res = self._create_reservation_offline_order(passengers, passenger_ids, context)
             if create_psg_res['error_code'] == 0:
                 iss_off_psg_ids = create_psg_res['response']
             else:
-                raise Exception(create_psg_res['error_msg'])
+                raise RequestException(create_psg_res['error_msg'])
             header_val = {
                 'booker_id': booker_id.id,
                 'passenger_ids': [(6, 0, iss_off_psg_ids)],
@@ -1165,18 +1174,21 @@ class IssuedOffline(models.Model):
                 'total': data_reservation_offline['total_sale_price']
             })
 
+            # COR / POR
             if payment.get('member'):
-                customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', payment['seq_id'])]).id
+                customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', payment['seq_id'])],                                                               limit=1).id
+            # cash / transfer
             else:
-                customer_parent_id = book_obj.agent_id.customer_parent_walkin_id.id
-                if payment.get('seq_id'):
+                # get payment acquirer
+                if payment['seq_id']:
                     acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', payment['seq_id'])], limit=1)
                     if not acquirer_id:
                         raise RequestException(1017)
-                    else:
-                        book_obj.acquirer_id = acquirer_id.id
                 else:
-                    book_obj.acquirer_id = book_obj.agent_id.default_acquirer_id
+                    # raise RequestException(1017)
+                    acquirer_id = self.agent_id.default_acquirer_id
+                book_obj.acquirer_id = acquirer_id.id
+                customer_parent_id = self.agent_id.customer_parent_walkin_id.id  # fpo
 
             book_obj.sudo().write({
                 'customer_parent_id': customer_parent_id,
