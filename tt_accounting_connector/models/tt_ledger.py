@@ -22,21 +22,47 @@ class TtLedger(models.Model):
             pay_acquirer = ''
             nta = 0
             is_last_ledger = False
+            target_obj = self.env[ledger.res_model].sudo().browse(ledger.res_id)
             ledger_objs = []
-            if ledger.res_model == 'tt.refund':
-                pass
-            elif ledger.res_model == 'tt.reschedule':
-                pass
-            elif ledger.res_model == 'tt.adjustment':
-                pass
-            elif ledger.res_model == 'tt.agent.invoice':
-                pass
-            elif ledger.res_model == 'tt.top.up':
-                pass
-            else:
-                pass
-            url = self.env['ir.config_parameter'].get_param('web.base.url')
+            if 'ledger_ids' in target_obj._fields:
+                tot_debit = 0
+                tot_credit = 0
+                for rec in target_obj.ledger_ids:
+                    tot_debit += rec.debit
+                    tot_credit += rec.credit
+                    temp_dict = {
+                        'obj': rec,
+                        'reference_num': target_obj.name,
+                        'sender': target_obj.agent_id and target_obj.agent_id.name,
+                        'trans_type': ACC_TRANSPORT_TYPE[rec.res_model],
+                    }
+                    if ledger.res_model == 'tt.refund':
+                        pass
+                    elif ledger.res_model == 'tt.reschedule':
+                        pass
+                    elif ledger.res_model == 'tt.adjustment':
+                        temp_dict.update({
+                            'nta': target_obj.adjust_amount
+                        })
+                        if tot_credit == target_obj.adjust_amount or tot_debit == target_obj.adjust_amount:
+                            is_last_ledger = True
+                    elif ledger.res_model == 'tt.agent.invoice':
+                        temp_dict.update({
+                            'nta': rec.debit > 0 and rec.debit or rec.credit
+                        })
+                        is_last_ledger = True
+                    elif ledger.res_model == 'tt.top.up':
+                        pass
+                    else:
+                        temp_dict.update({
+                            'nta': target_obj.total_nta
+                        })
+                        if tot_credit == target_obj.total and tot_debit == target_obj.total_commission:
+                            is_last_ledger = True
+                    ledger_objs.append(temp_dict)
+
             if is_last_ledger:
+                url = self.env['ir.config_parameter'].get_param('web.base.url')
                 submitted_data = []
                 for current_ledger in ledger_objs:
                     temp_debit = current_ledger['obj'].debit and current_ledger['obj'].debit or 0
@@ -66,7 +92,7 @@ class TtLedger(models.Model):
                         'create_uid': current_ledger['obj'].create_uid.name,
                         'commission': 0.0,
                         'description': current_ledger['obj'].description and current_ledger['obj'].description or '',
-                        'agent_id': current_ledger['obj'].agent_id.name,
+                        'agent_id': current_ledger['obj'].agent_id and current_ledger['obj'].agent_id.name or (current_ledger['obj'].customer_parent_id and current_ledger['obj'].customer_parent_id.name or ''),
                         'company_sender': current_ledger['sender'],
                         'company_receiver': ho_name,
                         'state': 'Done',

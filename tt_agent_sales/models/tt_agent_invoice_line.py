@@ -129,7 +129,7 @@ class AgentInvoice(models.Model):
         lines = [self.env['tt.split.invoice.line'].sudo().create({
             'invoice_line_detail_id': p,
             'limit': 2,
-            'new_invoice_number': 18,
+            'new_invoice_number': self.env.ref('tt_agent_sales.tt_dynamic_selection_2').id,
             'split_wizard_id': wizard_obj.id,
         }).id for p in detail_ids]
 

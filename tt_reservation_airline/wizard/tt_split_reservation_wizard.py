@@ -2,6 +2,7 @@ from odoo import api, fields, models, _
 import base64,hashlib,time,os,traceback,logging,re
 from odoo.exceptions import UserError
 from ...tools import ERR
+from datetime import datetime
 
 _logger = logging.getLogger(__name__)
 
@@ -112,7 +113,7 @@ class TtSplitReservationWizard(models.TransientModel):
             'booked_uid': book_obj.booked_uid and book_obj.booked_uid.id or False,
             'booked_date': book_obj.booked_date,
             'issued_uid': book_obj.issued_uid and book_obj.issued_uid.id or False,
-            'issued_date': book_obj.issued_date,
+            'issued_date': datetime.now(),
             'origin_id': book_obj.origin_id and book_obj.origin_id.id or False,
             'destination_id': book_obj.destination_id and book_obj.destination_id.id or False,
             'sector_type': book_obj.sector_type,
@@ -268,7 +269,7 @@ class TtSplitReservationWizard(models.TransientModel):
                         'booked_uid': rec.booked_uid and rec.booked_uid.id or False,
                         'booked_date': rec.booked_date,
                         'issued_uid': rec.issued_uid and rec.issued_uid.id or False,
-                        'issued_date': rec.issued_date,
+                        'issued_date': datetime.now(),
                         'refund_uid': rec.refund_uid and rec.refund_uid.id or False,
                         'refund_date': rec.refund_date,
                         'origin_id': rec.origin_id and rec.origin_id.id or False,
@@ -483,7 +484,7 @@ class TtSplitReservationWizard(models.TransientModel):
                             'booked_uid': rec.booked_uid and rec.booked_uid.id or False,
                             'booked_date': rec.booked_date,
                             'issued_uid': rec.issued_uid and rec.issued_uid.id or False,
-                            'issued_date': rec.issued_date,
+                            'issued_date': datetime.now(),
                             'refund_uid': rec.refund_uid and rec.refund_uid.id or False,
                             'refund_date': rec.refund_date,
                             'origin_id': rec.origin_id and rec.origin_id.id or False,
