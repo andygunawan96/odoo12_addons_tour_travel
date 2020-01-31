@@ -26,6 +26,7 @@
                 <separator/>
                 <group expand="0" string="Group By">
                     <filter name="state" string="State" domain="[]" context="{'group_by':'state'}"/>
+                    <filter name="transport_type" string="Transport Type" domain="[]" context="{'group_by':'transport_type'}"/>
                     <filter name="res_model" string="Res Model" domain="[]" context="{'group_by':'res_model'}"/>
                 </group>
             </search>
@@ -46,6 +47,7 @@
                     <group>
                         <group>
                             <field name="request"/>
+                            <field name="transport_type"/>
                             <field name="res_model"/>
                             <field name="state"/>
                             <field name="parent_id" attrs="{'invisible':[('parent_id','=', False)]}"/>
@@ -82,6 +84,7 @@
         <field name="arch" type="xml">
             <tree create="false">
                 <field name="create_date"/>
+                <field name="transport_type"/>
                 <field name="res_model"/>
                 <field name="parent_id"/>
                 <field name="state"/>
