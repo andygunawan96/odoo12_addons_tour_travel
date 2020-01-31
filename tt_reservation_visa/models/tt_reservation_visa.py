@@ -144,6 +144,10 @@ class TtVisa(models.Model):
             'state_visa': 'fail_booked',
             'state': 'fail_booked'
         })
+        for psg in self.passenger_ids:
+            psg.action_fail_booked()
+        for pvdr in self.provider_booking_ids:
+            pvdr.action_fail_booked_visa()
         self.message_post(body='Order FAILED (Booked)')
 
     def action_draft_visa(self):
