@@ -811,38 +811,38 @@ class IssuedOffline(models.Model):
         #     },
         # ],
         # "sector_type": "domestic"
-        "type": "airline",
-        "total_sale_price": 100000,
+        "type": "hotel",
+        "total_sale_price": 0,
         "desc": "amdaksd",
         # "pnr": "10020120",
         "social_media_id": "Facebook",
         "expired_date": "2019-10-04 02:29",
         "quick_validate": False,
         "line_ids": [
-            {
-                "pnr": "MUIQBF",
-                "origin": "SUB",
-                "destination": "SIN",
-                "provider": "Garuda Indonesia",
-                "departure": "2019-10-04 02:30",
-                "arrival": "2019-10-04 04:30",
-                "carrier_code": "GA",
-                "carrier_number": "X4333",
-                "sub_class": "Y",
-                "class_of_service": "eco"
-            },
-            {
-                "pnr": "QOFUIH",
-                "origin": "SIN",
-                "destination": "HKG",
-                "provider": "Singapore Airlines",
-                "departure": "2019-10-06 12:30",
-                "arrival": "2019-10-06 16:30",
-                "carrier_code": "SQ",
-                "carrier_number": "832",
-                "sub_class": "Y",
-                "class_of_service": "eco"
-            },
+            # {
+            #     "pnr": "MUIQBF",
+            #     "origin": "SUB",
+            #     "destination": "SIN",
+            #     "provider": "Garuda Indonesia",
+            #     "departure": "2019-10-04 02:30",
+            #     "arrival": "2019-10-04 04:30",
+            #     "carrier_code": "GA",
+            #     "carrier_number": "X4333",
+            #     "sub_class": "Y",
+            #     "class_of_service": "eco"
+            # },
+            # {
+            #     "pnr": "QOFUIH",
+            #     "origin": "SIN",
+            #     "destination": "HKG",
+            #     "provider": "Singapore Airlines",
+            #     "departure": "2019-10-06 12:30",
+            #     "arrival": "2019-10-06 16:30",
+            #     "carrier_code": "SQ",
+            #     "carrier_number": "832",
+            #     "sub_class": "Y",
+            #     "class_of_service": "eco"
+            # },
         ]
     }
 
@@ -1127,11 +1127,17 @@ class IssuedOffline(models.Model):
             passenger_ids = self.create_customer_api(passengers, context, booker_id, contact_id)  # create passenger
             booking_line_ids = []
             iss_off_psg_ids = []
+            if data_reservation_offline['total_sale_price'] <= 0:
+                raise Exception('Total sale price must be greater than 0 (zero).')
+            if not lines:
+                raise Exception('Lines can\'t be empty.')
             create_line_res = self._create_line(lines, data_reservation_offline)
             if create_line_res['error_code'] == 0:
                 booking_line_ids = create_line_res['response']
             else:
                 raise Exception(create_line_res['error_msg'])
+            if not passengers:
+                raise Exception('Passengers can\'t be empty.')
             create_psg_res = self._create_reservation_offline_order(passengers, passenger_ids, context)
             if create_psg_res['error_code'] == 0:
                 iss_off_psg_ids = create_psg_res['response']
