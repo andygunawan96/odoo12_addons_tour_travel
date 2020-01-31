@@ -156,7 +156,13 @@
                                         <span t-field="p.pricelist_id.visa_type"/> <span t-field="p.pricelist_id.entry_type"/><br/>
                                         <span t-field="p.pricelist_id.country_id.name"/><br/>
                                         <span t-field="p.pricelist_id.process_type"/><br/>
-                                        <span t-field="p.pricelist_id.duration"/><span style="color: white;">...</span><span>day(s)</span><span style="color: white;">...</span><span>____/____/_____</span>
+                                        <span t-field="p.pricelist_id.duration"/><span style="color: white;">...</span><span>day(s)</span><span style="color: white;">...</span>
+                                        <t t-if="p.visa_id.in_process_date">
+                                            <span t-field="p.visa_id.estimate_date" t-options='{"format": "dd/MM/yyyy"}'/>
+                                        </t>
+                                        <t t-else="">
+                                            <span>____/____/_____</span>
+                                        </t>
                                     </div>
                                 </div>
                             </div>
