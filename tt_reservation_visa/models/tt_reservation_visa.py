@@ -14,6 +14,7 @@ _logger = logging.getLogger(__name__)
 
 
 STATE_VISA = [
+    ('fail_booked', 'Failed (Book)'),
     ('draft', 'Request'),
     ('confirm', 'Confirm to HO'),
     ('partial_validate', 'Partial Validate'),
@@ -137,6 +138,13 @@ class TtVisa(models.Model):
                 rec.commercial_state = 'Paid'
             else:
                 rec.commercial_state = 'Unpaid'
+
+    def action_fail_booked_visa(self):
+        self.write({
+            'state_visa': 'fail_booked',
+            'state': 'fail_booked'
+        })
+        self.message_post(body='Order FAILED (Booked)')
 
     def action_draft_visa(self):
         self.write({
@@ -1526,8 +1534,7 @@ class TtVisa(models.Model):
             if data['state'] == 'booked':
                 book_obj.action_booked_visa(context)
             elif data['state'] == 'failed':
-                # book_obj.state = 'fail_booked'
-                book_obj.state = 'cancel'
+                book_obj.action_fail_booked_visa()
 
     def create_booking_visa_api(self, data, context):  #
         sell_visa = data['sell_visa']  # self.param_sell_visa
