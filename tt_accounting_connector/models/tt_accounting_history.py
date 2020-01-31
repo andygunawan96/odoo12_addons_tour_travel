@@ -10,6 +10,7 @@ class TtAccountingHistory(models.Model):
 
     request = fields.Text('Request', readonly=True)
     response = fields.Text('Response', readonly=True)
+    transport_type = fields.Char('Transport Type', readonly=True)
     res_model = fields.Char('Model', readonly=True)
     parent_id = fields.Many2one('tt.accounting.history', 'Previous Attempt', readonly=True)
     child_ids = fields.One2many('tt.accounting.history', 'parent_id', 'Retry Attempts')
@@ -27,6 +28,7 @@ class TtAccountingHistory(models.Model):
             self.env['tt.accounting.history'].sudo().create({
                 'request': self.request,
                 'response': res,
+                'transport_type': self.transport_type,
                 'res_model': self.res_model,
                 'state': 'success',
                 'parent_id': self.id
@@ -35,6 +37,7 @@ class TtAccountingHistory(models.Model):
             self.env['tt.accounting.history'].sudo().create({
                 'request': self.request,
                 'response': 'Failed: ' + str(res),
+                'transport_type': self.transport_type,
                 'res_model': self.res_model,
                 'state': 'failed',
                 'parent_id': self.id
