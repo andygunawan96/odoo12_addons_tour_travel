@@ -3,7 +3,8 @@ from ...tools import variables
 from datetime import datetime
 
 STATE_VISA = [
-    ('draft', 'Open'),
+    ('fail_booked', 'Failed (Book)'),
+    ('draft', 'Request'),
     ('confirm', 'Confirm to HO'),
     ('validate', 'Validated by HO'),
     ('to_vendor', 'Send to Vendor'),
@@ -97,6 +98,12 @@ class TtProviderVisa(models.Model):
                 'state': 'issued',
                 'issued_date': datetime.now(),
                 'issued_uid': context['co_uid'],
+            })
+
+    def action_fail_booked_visa(self):
+        for rec in self:
+            rec.write({
+                'state': 'fail_booked',
             })
 
     def action_expired(self):

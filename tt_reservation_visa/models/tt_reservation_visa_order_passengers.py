@@ -4,6 +4,7 @@ from dateutil.relativedelta import relativedelta
 from odoo.exceptions import UserError
 
 STATE = [
+    ('fail_booked', 'Failed (Book)'),
     ('draft', 'Draft'),
     ('confirm', 'Confirm'),
     ('validate', 'Validated'),
@@ -160,6 +161,13 @@ class VisaOrderPassengers(models.Model):
         mail = self.env['mail.template'].browse(template.id)
         mail.send_mail(self.id)
         print("Email Biometrics Sent")
+
+    def action_fail_booked(self):
+        for rec in self:
+            rec.write({
+                'state': 'fail_booked'
+            })
+            rec.message_post(body='Passenger FAILED (Book)')
 
     def action_draft(self):
         for rec in self:

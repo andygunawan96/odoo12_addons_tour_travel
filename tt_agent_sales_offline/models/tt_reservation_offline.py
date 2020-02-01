@@ -124,6 +124,6 @@ class ReservationOffline(models.Model):
             'pay_amount': inv_line_obj.total_after_tax,
         })
 
-    def action_issued_backend(self):
-        super(ReservationOffline, self).action_issued_backend()
+    def action_validate(self):
+        super(ReservationOffline, self).action_validate()
         self.action_create_invoice()
