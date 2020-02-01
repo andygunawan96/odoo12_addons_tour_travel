@@ -4,6 +4,7 @@ from datetime import datetime,date
 from dateutil.relativedelta import relativedelta
 from odoo.tools import image
 from ...tools import variables,util,ERR
+from ...tools.api import Response
 from ...tools.ERR import RequestException
 import json,time
 import logging,traceback
@@ -339,6 +340,50 @@ class TtCustomer(models.Model):
         #     'domain': [('agent_id', '=', self.env.user.agent_id.id)]
         # }
 
+    def create_customer_user_api(self, data):
+        try:
+            agent_id = self.env.ref('tt_base.agent_b2c')
+            user_dict = self.env['res.users'].search([('name', 'ilike', 'Customer Template')], limit=1).read()
+            name = (data['first_name'] or '') + ' ' + (data.get('last_name') or '')
+
+            context = {
+                'co_agent_id': agent_id.id
+            }
+
+            # create customer id
+            self.create_or_update_customer_api(data, context)
+
+            # user id vals
+            vals = {
+                'name': name,
+                'login': data.get('email'),
+                'email': data.get('email'),
+                'password': data.get('password'),
+                'agent_id': agent_id.id,
+                # 'customer_parent_id':
+            }
+
+            if user_dict:
+                vals.update({
+                    'groups_id': [(6, 0, user_dict[0]['groups_id'])],
+                    'frontend_security_ids': [(6, 0, user_dict[0]['frontend_security_ids'])]
+                })
+
+            # create user id
+            user_id = self.env['res.users'].create(vals)
+            print('User ' + user_id.name + ' Created!')
+            response = {
+                'error_msg': 'Create user success!'
+            }
+            res = Response().get_no_error(response)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            self.env.cr.rollback()
+            _logger.error(msg=str(e) + '\n' + traceback.format_exc())
+            res = Response().get_error(str(e), 500)
+        return res
 
 
 class TtCustomerIdentityNumber(models.Model):
