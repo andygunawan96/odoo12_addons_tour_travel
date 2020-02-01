@@ -221,7 +221,8 @@ class IssuedOffline(models.Model):
                     self.state_offline = 'confirm'
                     self.confirm_date = fields.Datetime.now()
                     self.confirm_uid = kwargs.get('co_uid') and kwargs['co_uid'] or self.env.user.id
-                    self.acquirer_id = self.agent_id.default_acquirer_id
+                    if not self.acquirer_id:
+                        self.acquirer_id = self.agent_id.default_acquirer_id
                     if self.line_ids:
                         self.get_pnr_list()
                     if self.offline_provider_type != 'other':
@@ -1032,8 +1033,8 @@ class IssuedOffline(models.Model):
     }
 
     param_payment = {
-        "member": True,
-        "seq_id": "CTP.1736068",
+        "member": False,
+        "seq_id": "PQR.2211082",
         # "member": False,
         # "seq_id": "PQR.0429001"
     }
@@ -1187,7 +1188,9 @@ class IssuedOffline(models.Model):
                 else:
                     # raise RequestException(1017)
                     acquirer_id = self.agent_id.default_acquirer_id
-                book_obj.acquirer_id = acquirer_id.id
+                book_obj.sudo().write({
+                    'acquirer_id': acquirer_id.id,
+                })
                 customer_parent_id = self.agent_id.customer_parent_walkin_id.id  # fpo
 
             book_obj.sudo().write({
