@@ -85,53 +85,44 @@ class TtCustomerParentInh(models.Model):
         return final_due_date
 
     def cron_create_billing_statement(self):
-        try:
-            ##search for COR billed today
-            today_int = date.today().strftime('%d')
-            today_str = date.today().strftime('%a')
-            cor_list_obj = self.search([('billing_cycle_ids.day','!=','0'), ## not no billing
-                                        '|',
-                                        '|',
-                                        ('billing_cycle_ids.day','=',DAY_TO_INT[today_str]), ## 'mon'
-                                        ('billing_cycle_ids.day','=',today_int), # date 1
-                                        ('billing_cycle_ids.day','=', 32) # daily
-                                       ])
+        ##search for COR billed today
+        today_int = date.today().strftime('%d')
+        today_str = date.today().strftime('%a')
+        cor_list_obj = self.search([('billing_cycle_ids.day','!=','0'), ## not no billing
+                                    '|',
+                                    '|',
+                                    ('billing_cycle_ids.day','=',DAY_TO_INT[today_str]), ## 'mon'
+                                    ('billing_cycle_ids.day','=',today_int), # date 1
+                                    ('billing_cycle_ids.day','=', 32) # daily
+                                   ])
 
-            for cor in cor_list_obj:
-                pr = cor.name
-                print(pr+ ' : '+','.join([str(rec.name) for rec in cor.billing_cycle_ids]))
+        for cor in cor_list_obj:
+            pr = cor.name
+            print(pr+ ' : '+','.join([str(rec.name) for rec in cor.billing_cycle_ids]))
 
-                ##search invoice cor tersebut
-                invoice_list_obj = self.env['tt.agent.invoice'].search([('customer_parent_id','=',cor.id),('state','in',['draft','confirm'])])
-                invoice_list = []
-                for inv in invoice_list_obj:
-                    print(inv.name)
-                    if inv.state == 'draft':
-                        inv.action_confirm()
-                    inv.action_bill2()
-                    invoice_list.append([4,inv.id])
-                    ##inv.bill
+            ##search invoice cor tersebut
+            invoice_list_obj = self.env['tt.agent.invoice'].search([('customer_parent_id','=',cor.id),('state','in',['draft','confirm'])])
+            invoice_list = []
+            for inv in invoice_list_obj:
+                print(inv.name)
+                if inv.state == 'draft':
+                    inv.action_confirm()
+                inv.action_bill2()
+                invoice_list.append([4,inv.id])
+                ##inv.bill
 
-                bill_day_list = []
-                for rec in cor.billing_due_date_ids:
-                    bill_day_list.append(str(rec.name))
+            bill_day_list = []
+            for rec in cor.billing_due_date_ids:
+                bill_day_list.append(str(rec.name))
 
-                # create BS
-                if invoice_list:
-                    new_bs_obj = self.env['tt.billing.statement'].create({
-                        'date': datetime.now(),
-                        'due_date': self.get_billing_due_date(cor.billing_due_date, bill_day_list),
-                        'agent_id': cor.parent_agent_id.id,
-                        'customer_parent_id': cor.id,
-                        'invoice_ids': invoice_list,
-                        'state': 'confirm'
-                    })
-        except Exception as e:
-            dest = '/var/log/odoo/cron_log'
-            if not os.path.exists(dest):
-                os.mkdir(dest)
-            file = open(
-                '%s/%s_%s_error.log' % (dest, 'auto billing', datetime.now().strftime('%Y-%m-%d_%H:%M:%S')),
-                'w')
-            file.write(traceback.format_exc())
-            file.close()
+            # create BS
+            if invoice_list:
+                new_bs_obj = self.env['tt.billing.statement'].create({
+                    'date': datetime.now(),
+                    'due_date': self.get_billing_due_date(cor.billing_due_date, bill_day_list),
+                    'agent_id': cor.parent_agent_id.id,
+                    'customer_parent_id': cor.id,
+                    'invoice_ids': invoice_list,
+                    'state': 'confirm'
+                })
+
