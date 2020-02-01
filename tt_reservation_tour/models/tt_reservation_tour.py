@@ -484,14 +484,14 @@ class ReservationTour(models.Model):
         except RequestException as e:
             _logger.error(traceback.format_exc())
             try:
-                book_obj.notes += traceback.format_exc()+'\n'
+                book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc()+'\n'
             except:
                 _logger.error('Creating Notes Error')
             return e.error_dict()
         except Exception as e:
             _logger.error(traceback.format_exc())
             try:
-                book_obj.notes += traceback.format_exc()+'\n'
+                book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc()+'\n'
             except:
                 _logger.error('Creating Notes Error')
             return ERR.get_error(1004)
@@ -635,14 +635,14 @@ class ReservationTour(models.Model):
         except RequestException as e:
             _logger.error(traceback.format_exc())
             try:
-                book_obj.notes += traceback.format_exc()+'\n'
+                book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc()+'\n'
             except:
                 _logger.error('Creating Notes Error')
             return e.error_dict()
         except Exception as e:
             _logger.error(traceback.format_exc())
             try:
-                book_obj.notes += traceback.format_exc()+'\n'
+                book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc()+'\n'
             except:
                 _logger.error('Creating Notes Error')
             return ERR.get_error(1005)

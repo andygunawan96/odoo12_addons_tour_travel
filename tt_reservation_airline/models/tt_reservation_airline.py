@@ -285,14 +285,14 @@ class ReservationAirline(models.Model):
         except RequestException as e:
             _logger.error(traceback.format_exc())
             try:
-                book_obj.notes += traceback.format_exc()+'\n'
+                book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc()+'\n'
             except:
                 _logger.error('Creating Notes Error')
             return e.error_dict()
         except Exception as e:
             _logger.error(traceback.format_exc())
             try:
-                book_obj.notes += traceback.format_exc()+'\n'
+                book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc()+'\n'
             except:
                 _logger.error('Creating Notes Error')
             return ERR.get_error(1004)
@@ -307,10 +307,16 @@ class ReservationAirline(models.Model):
                 continue
 
             for name in segment.booking_id.passenger_ids:
-                found_segments = self.env['tt.segment.airline'].search([('segment_code','=',segment.segment_code),
-                                                                   '|',
-                                                                   ('booking_id.passenger_ids.identity_number','=ilike',name.identity_number),
-                                                                   ('booking_id.passenger_ids.name','=ilike',name.name)],order='id DESC')
+                if name.identity_number:
+                    search_query = [('segment_code','=',segment.segment_code),
+                                   '|',
+                                   ('booking_id.passenger_ids.identity_number','=ilike',name.identity_number),
+                                   ('booking_id.passenger_ids.name','=ilike',name.name)]
+                else:
+                    search_query = [('segment_code','=',segment.segment_code),
+                                   ('booking_id.passenger_ids.name','=ilike',name.name)]
+
+                found_segments = self.env['tt.segment.airline'].search(search_query,order='id DESC')
 
                 valid_segments = found_segments.filtered(lambda x: x.booking_id.state in ['booked', 'issued', 'cancel2', 'fail_issue'])
                 # for seg in found_segments:
@@ -424,14 +430,14 @@ class ReservationAirline(models.Model):
         except RequestException as e:
             _logger.error(traceback.format_exc())
             try:
-                book_obj.notes += traceback.format_exc()+'\n'
+                book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc()+'\n'
             except:
                 _logger.error('Creating Notes Error')
             return e.error_dict()
         except Exception as e:
             _logger.error(traceback.format_exc())
             try:
-                book_obj.notes += traceback.format_exc()+'\n'
+                book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc()+'\n'
             except:
                 _logger.error('Creating Notes Error')
             return ERR.get_error(1005)

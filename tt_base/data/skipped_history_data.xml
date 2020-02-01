@@ -18,9 +18,29 @@
             <field name="model_name">tt.provider</field>
             <field name="field_name">provider_ledger_ids</field>
         </record>
-        <record id="skip_tt_provider_provider_ledger_ids" model="tt.skipped.keys">
+        <record id="skip_tt_customer_parent_customer_ids" model="tt.skipped.keys">
             <field name="model_name">tt.customer.parent</field>
             <field name="field_name">customer_ids</field>
+        </record>
+        <record id="skip_tt_reservation_airline_notes" model="tt.skipped.keys">
+            <field name="model_name">tt.reservation.airline</field>
+            <field name="field_name">notes</field>
+        </record>
+        <record id="skip_tt_reservation_train_notes" model="tt.skipped.keys">
+            <field name="model_name">tt.reservation.train</field>
+            <field name="field_name">notes</field>
+        </record>
+        <record id="skip_tt_reservation_activity_notes" model="tt.skipped.keys">
+            <field name="model_name">tt.reservation.activity</field>
+            <field name="field_name">notes</field>
+        </record>
+        <record id="skip_tt_reservation_tour_notes" model="tt.skipped.keys">
+            <field name="model_name">tt.reservation.tour</field>
+            <field name="field_name">notes</field>
+        </record>
+        <record id="skip_tt_reservation_offline_notes" model="tt.skipped.keys">
+            <field name="model_name">tt.reservation.offline</field>
+            <field name="field_name">notes</field>
         </record>
     </data>
 </odoo>

@@ -658,7 +658,7 @@ class TtReservation(models.Model):
             try:
                 new_waiting_list.is_in_transaction = False
                 self.env.cr.commit()
-                book_obj.notes += traceback.format_exc() + '\n'
+                book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc() + '\n'
             except:
                 _logger.error('Creating Notes Error')
             return e.error_dict()
@@ -667,7 +667,7 @@ class TtReservation(models.Model):
             try:
                 new_waiting_list.is_in_transaction = False
                 self.env.cr.commit()
-                book_obj.notes += str(e)+traceback.format_exc() + '\n'
+                book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc() + '\n'
             except:
                 _logger.error('Creating Notes Error')
             return ERR.get_error(1011)
