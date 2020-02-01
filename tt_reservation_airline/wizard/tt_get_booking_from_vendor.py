@@ -68,20 +68,20 @@ class TtGetBookingFromVendor(models.TransientModel):
         if res['error_code'] != 0:
             raise UserError(res['error_msg'])
         get_booking_res = res['response']
-        wizard_form = self.env.ref('tt_reservation_airline_get_booking_from_vendor_review_form_view', False)
+        wizard_form = self.env.ref('tt_reservation_airline.tt_reservation_airline_get_booking_from_vendor_review_form_view', False)
         view_id = self.env['tt.get.booking.from.vendor.review']
         journey_values = ""
         price_values = ""
         prices = {}
         for rec in get_booking_res['journeys']:
-            journey_values += "%s\n%s %s - %s %s\n\n" % (",".join(rec['carrier_code_list']),
-                                                             rec['origin'],
-                                                             rec['departure_date'],
-                                                             rec['destination'],
-                                                             rec['arrival_date'])
             for segment in rec['segments']:
+                journey_values += "%s\n%s %s - %s %s\n\n" % (segment['carrier_name'],
+                                                             segment['origin'],
+                                                             segment['departure_date'],
+                                                             segment['destination'],
+                                                             segment['arrival_date'])
                 for fare in segment['fares']:
-                    for svc in filter(lambda x : x['charge_type'] != 'RAC',fare['service_charges']):
+                    for svc in fare['service_charges']:
                         if svc['pax_type'] not in prices:
                             prices[svc['pax_type']] = {}
                         if svc['charge_type'] not in prices[svc['pax_type']]:
@@ -100,17 +100,23 @@ class TtGetBookingFromVendor(models.TransientModel):
                         prices[svc['pax_type']][svc['charge_type']]['currency'] = svc['currency']
                         prices[svc['pax_type']][svc['charge_type']]['foreign_currency'] = svc['foreign_currency']
         print(json.dumps(prices))
+        grand_total = 0
+        commission = 0
         for pax_type,pax_val in prices.items():
             for charge_type,charge_val in pax_val.items():
-                price_values += "%s x %s %s @ %s = %s" % (charge_val['pax_count'],
-                                                          charge_type,
-                                                          pax_type,
-                                                          charge_val['amount'],
-                                                          charge_val['total'])
+                if charge_type != 'RAC':
+                    price_values += "%s x %s %s @ %s = %s\n\n" % (charge_val['pax_count'],
+                                                              charge_type,
+                                                              pax_type,
+                                                              charge_val['amount'],
+                                                              charge_val['total'])
+                    grand_total += charge_val['total']
+                else:
+                    commission += charge_val['total']
 
         passenger_values = ""
         for rec in get_booking_res['passengers']:
-            passenger_values += "%s %s %s %s" % (rec['title'],rec['first_name'],rec['last_name'],rec['pax_type'])
+            passenger_values += "%s %s %s %s\n\n" % (rec['title'],rec['first_name'],rec['last_name'],rec['pax_type'])
 
         vals = {
             'pnr': get_booking_res['pnr'],
@@ -121,8 +127,9 @@ class TtGetBookingFromVendor(models.TransientModel):
             'journey_ids_char': journey_values,
             'passenger_ids_char': passenger_values,
             'price_itinerary': price_values,
-            # 'grand_total': html_content,
-            # 'total_commission': html_content,
+            'grand_total': grand_total,
+            'total_commission': abs(commission),
+            'get_booking_json': json.dumps(res)
         }
         new = view_id.create(vals)
 
@@ -148,13 +155,18 @@ class TtGetBookingFromVendorReview(models.TransientModel):
     agent_id = fields.Many2one("tt.agent","Agent")
 
     # journey_ids = fields.One2many("")
-    journey_ids_char = fields.Char("Journeys")
+    journey_ids_char = fields.Text("Journeys")
 
     booker_id = fields.Many2one("tt.customer","Booker")
 
-    passenger_ids_char = fields.Char("Passengers")
+    passenger_ids_char = fields.Text("Passengers")
 
-    price_itinerary = fields.Char("Price Itinerary")
+    price_itinerary = fields.Text("Price Itinerary")
 
     grand_total = fields.Char("Grand Total")
     total_commission = fields.Char("Total Commission")
+
+    get_booking_json = fields.Text("Json Data")
+
+    def save_booking(self):
+        pass

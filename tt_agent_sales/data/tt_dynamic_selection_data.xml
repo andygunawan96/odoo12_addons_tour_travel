@@ -37,5 +37,9 @@
         <record id="tt_dynamic_selection_9" model="tt.dynamic.selection">
             <field name="name">9</field>
         </record>
+
+        <record id="tt_dynamic_selection_10" model="tt.dynamic.selection">
+            <field name="name">10</field>
+        </record>
     </data>
 </odoo>

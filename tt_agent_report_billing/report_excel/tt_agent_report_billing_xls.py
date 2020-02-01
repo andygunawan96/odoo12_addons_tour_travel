@@ -3,6 +3,9 @@ from ...tools import tools_excel
 from io import BytesIO
 import xlsxwriter
 import base64
+from odoo.exceptions import UserError
+import logging
+_logger = logging.getLogger(__name__)
 
 class AgentReportBillingXls(models.TransientModel):
     _inherit = 'tt.agent.report.billing.wizard'
@@ -60,82 +63,87 @@ class AgentReportBillingXls(models.TransientModel):
         billing_number = ''
         counter = 0
         for i in values['lines']:
-            if billing_number != i['billing_number']:
-                counter += 1
-                billing_number = i['billing_number']
-                #count paid amount
-                filtered_data = filter(lambda x: x['billing_number'] == i['billing_number'], values['second_line'])
-                invoice_total = 0
-                invoice_paid = 0
-                for j in filtered_data:
-                    try:
-                        invoice_total += j['invoice_total']
-                    except:
-                        pass
+            try:
+                if billing_number != i['billing_number']:
+                    counter += 1
+                    billing_number = i['billing_number']
+                    #count paid amount
+                    filtered_data = filter(lambda x: x['billing_number'] == i['billing_number'], values['second_line'])
+                    invoice_total = 0
+                    invoice_paid = 0
+                    for j in filtered_data:
+                        try:
+                            invoice_total += j['invoice_total']
+                        except:
+                            pass
 
-                    try:
-                        invoice_paid += j['invoice_paid']
-                    except:
-                        pass
+                        try:
+                            invoice_paid += j['invoice_paid']
+                        except:
+                            pass
 
-                row_data += 1
-                sty_table_data_center = style.table_data_center_border
-                sty_table_data = style.table_data_border
-                sty_datetime = style.table_data_datetime_border
-                sty_date = style.table_data_date_border
-                sty_amount = style.table_data_amount_border
-                if row_data % 2 == 0:
-                    sty_table_data_center = style.table_data_center_even_border
-                    sty_table_data = style.table_data_even_border
-                    sty_datetime = style.table_data_datetime_even_border
-                    sty_date = style.table_data_date_even_border
-                    sty_amount = style.table_data_amount_even_border
-
-                sheet.write(row_data, 0, counter, sty_table_data)
-                sheet.write(row_data, 1, i['billing_date'], sty_date)
-                sheet.write(row_data, 2, i['billing_due_date'], sty_date)
-                sheet.write(row_data, 3, i['customer_type_name'], sty_table_data)
-                sheet.write(row_data, 4, i['agent_name'], sty_table_data)
-                sheet.write(row_data, 5, i['customer_name'], sty_table_data)
-                # sheet.write(row_data, 5, i['booker_type'], sty_table_data)
-                # sheet.write(row_data, 6, i['booker'], sty_table_data)
-                sheet.write(row_data, 6, '', sty_table_data)
-                sheet.write(row_data, 7, invoice_total, sty_amount)
-                sheet.write(row_data, 8, i['billing_number'], sty_table_data)
-                sheet.write(row_data, 9, '', sty_table_data)
-                sheet.write(row_data, 10, invoice_paid , sty_amount)
-                sheet.write(row_data, 11, i['billing_state'], sty_table_data)
-
-            #     to print per item
-                main_data = filter(lambda x: x['billing_number'] == i['billing_number'], values['lines'])
-                for j in main_data:
                     row_data += 1
-                    sty_table_data_center = style.table_data_center
-                    sty_table_data = style.table_data
-                    sty_datetime = style.table_data_datetime
-                    sty_date = style.table_data_date
-                    sty_amount = style.table_data_amount
+                    sty_table_data_center = style.table_data_center_border
+                    sty_table_data = style.table_data_border
+                    sty_datetime = style.table_data_datetime_border
+                    sty_date = style.table_data_date_border
+                    sty_amount = style.table_data_amount_border
                     if row_data % 2 == 0:
-                        sty_table_data_center = style.table_data_center_even
-                        sty_table_data = style.table_data_even
-                        sty_datetime = style.table_data_datetime_even
-                        sty_date = style.table_data_date_even
-                        sty_amount = style.table_data_amount_even
+                        sty_table_data_center = style.table_data_center_even_border
+                        sty_table_data = style.table_data_even_border
+                        sty_datetime = style.table_data_datetime_even_border
+                        sty_date = style.table_data_date_even_border
+                        sty_amount = style.table_data_amount_even_border
 
-                    sheet.write(row_data, 0, '', sty_table_data)
-                    sheet.write(row_data, 1, '', sty_table_data)
-                    sheet.write(row_data, 2, '', sty_table_data)
-                    sheet.write(row_data, 3, '', sty_table_data)
-                    sheet.write(row_data, 4, '', sty_table_data)
-                    sheet.write(row_data, 5, '', sty_table_data)
-                    sheet.write(row_data, 6, j['invoice_number'], sty_table_data)
-                    sheet.write(row_data, 7, j['invoice_amount'], sty_amount)
-                    sheet.write(row_data, 8, '*Invoice Detail', sty_table_data)
-                    sheet.write(row_data, 9, j['payment_number'], sty_table_data)
-                    sheet.write(row_data, 10, j['invoice_paid'], sty_amount)
-                    sheet.write(row_data, 11, j['billing_state'], sty_table_data)
-            else:
-                continue
+                    sheet.write(row_data, 0, counter, sty_table_data)
+                    sheet.write(row_data, 1, i['billing_date'], sty_date)
+                    sheet.write(row_data, 2, i['billing_due_date'], sty_date)
+                    sheet.write(row_data, 3, i['customer_type_name'], sty_table_data)
+                    sheet.write(row_data, 4, i['agent_name'], sty_table_data)
+                    sheet.write(row_data, 5, i['customer_name'], sty_table_data)
+                    # sheet.write(row_data, 5, i['booker_type'], sty_table_data)
+                    # sheet.write(row_data, 6, i['booker'], sty_table_data)
+                    sheet.write(row_data, 6, '', sty_table_data)
+                    sheet.write(row_data, 7, invoice_total, sty_amount)
+                    sheet.write(row_data, 8, i['billing_number'], sty_table_data)
+                    sheet.write(row_data, 9, '', sty_table_data)
+                    sheet.write(row_data, 10, invoice_paid , sty_amount)
+                    sheet.write(row_data, 11, i['billing_state'], sty_table_data)
+
+                #     to print per item
+                    main_data = filter(lambda x: x['billing_number'] == i['billing_number'], values['lines'])
+                    for j in main_data:
+                        row_data += 1
+                        sty_table_data_center = style.table_data_center
+                        sty_table_data = style.table_data
+                        sty_datetime = style.table_data_datetime
+                        sty_date = style.table_data_date
+                        sty_amount = style.table_data_amount
+                        if row_data % 2 == 0:
+                            sty_table_data_center = style.table_data_center_even
+                            sty_table_data = style.table_data_even
+                            sty_datetime = style.table_data_datetime_even
+                            sty_date = style.table_data_date_even
+                            sty_amount = style.table_data_amount_even
+
+                        sheet.write(row_data, 0, '', sty_table_data)
+                        sheet.write(row_data, 1, '', sty_table_data)
+                        sheet.write(row_data, 2, '', sty_table_data)
+                        sheet.write(row_data, 3, '', sty_table_data)
+                        sheet.write(row_data, 4, '', sty_table_data)
+                        sheet.write(row_data, 5, '', sty_table_data)
+                        sheet.write(row_data, 6, j['invoice_number'], sty_table_data)
+                        sheet.write(row_data, 7, j['invoice_amount'], sty_amount)
+                        sheet.write(row_data, 8, '*Invoice Detail', sty_table_data)
+                        sheet.write(row_data, 9, j['payment_number'], sty_table_data)
+                        sheet.write(row_data, 10, j['invoice_paid'], sty_amount)
+                        sheet.write(row_data, 11, j['billing_state'], sty_table_data)
+                else:
+                    continue
+            except:
+                _logger.error("Error Billing number {} ".format(i['billing_number']))
+                raise UserError("Error Billing number {} ".format(i['billing_number']))
+
 
         workbook.close()
 

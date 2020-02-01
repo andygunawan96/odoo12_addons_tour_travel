@@ -11,6 +11,8 @@
 <!--                    <button string="Compute PNR" name="compute_pnr" type="object" help="Compute PNR" groups="base.user_admin"/>-->
                     <button name="open_split_wizard" string="Split" type="object"
                             context = "{'default_reservation_model': res_model_resv,'default_reservation_id': res_id_resv }"/>
+                    <button name="open_merge_wizard" string="Merge" type="object"
+                            context = "{'default_reservation_model': res_model_resv,'default_reservation_id': res_id_resv }"/>
                 </header>
                 <sheet>
                     <div class="oe_title">

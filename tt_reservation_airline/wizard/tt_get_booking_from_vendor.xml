@@ -30,7 +30,7 @@
                                                             'invisible':[('is_database_booker','!=',False)]}"/>
 
                     <field name="booker_last_name" attrs="{'invisible':[('is_database_booker','!=',False)]}"/>
-<!--                                               attrs="{'required': [('is_database_booker','=',False)],-->
+                    <!--                                               attrs="{'required': [('is_database_booker','=',False)],-->
 
 
                     <field name="booker_nationality_id" attrs="{'required': [('is_database_booker','=',False)],
@@ -62,17 +62,27 @@
         <field name="arch" type="xml">
             <form string="Get Booking Airline Review">
                 <group>
-                    <field name="pnr"/>
-                    <field name="status"/>
-                    <field name="user_id"/>
-                    <field name="agent_id"/>
-                    <field name="booker_id"/>
-                    <field name="journey_ids_char"/>
-                    <field name="passenger_ids_char"/>
-                    <field name="price_itinerary"/>
-                    <field name="grand_total"/>
-                    <field name="total_commission"/>
+                    <group>
+                        <field name="pnr" readonly="1"/>
+                        <field name="status" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="user_id" readonly="1"/>
+                        <field name="agent_id" readonly="1"/>
+                        <field name="booker_id" readonly="1"/>
+                    </group>
                 </group>
+                <separator string="Journeys"/>
+                <field name="journey_ids_char" readonly="1"/>
+                <separator string="Passengers"/>
+                <field name="passenger_ids_char" readonly="1"/>
+                <separator string="Prices"/>
+                <field name="price_itinerary" readonly="1"/>
+                <group>
+                    <field name="grand_total" readonly="1"/>
+                    <field name="total_commission" readonly="1"/>
+                </group>
+                <field name="get_booking_json" readonly="1" groups="base.user_admin"/>
                 <footer>
                     <button name="send_get_booking" string="Get Booking" type="object" default_focus="1" class="oe_highlight"/>
                     or
