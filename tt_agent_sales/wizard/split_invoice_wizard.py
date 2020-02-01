@@ -24,7 +24,7 @@ class SplitInvoice(models.Model):
     #     lines = [self.env['tt.split.invoice.line'].sudo().create({'passenger_id': p,'limit': len(p_list)+1}).id for p in p_list]
     #     return [(6, 0, lines)]
     
-    invoice_line_detail_list = fields.One2many('tt.split.invoice.line', 'split_wizard_id')
+    invoice_line_detail_list = fields.One2many('tt.split.invoice.line', 'split_wizard_id', ondelete='cascade')
 
     def get_form_id(self):
         return self.env.ref("tt_agent_sales.tt_split_invoice_wizard_form_view")
@@ -32,47 +32,52 @@ class SplitInvoice(models.Model):
     @api.onchange('split_count')
     @api.depends('split_count')
     def change_limit(self):
-        if self.split_count > len(self.invoice_line_detail_list) or self.split_count<2:
-            raise UserError("WRONG SPLIT COUNT AMOUNT")
+        if self.split_count > len(self.invoice_line_detail_list):
+            self.split_count = len(self.invoice_line_detail_list)
+        if self.split_count < 2:
+            self.split_count = 2
         for rec in self.invoice_line_detail_list:
             rec.limit = self.split_count
             rec.modify_domain()
 
     def perform_split(self):
         ##fixme cek invoicenumber
-        if self.split_count > len(self.invoice_line_detail_list):
-            raise UserError("SPLIT COUNT HIGHER THAN PASSENGER COUNT")
+        if self.split_count > len(self.invoice_line_detail_list) or self.split_count < 2:
+            raise UserError("SPLIT COUNT MUST BE GREATER THAN 1 AND CANNOT BE HIGHER THAN PASSENGER COUNT.")
+
+        num_list = []
+        for rec in self.invoice_line_detail_list:
+            if rec.new_invoice_number.name not in num_list:
+                num_list.append(rec.new_invoice_number.name)
+
+        if len(num_list) != self.split_count:
+            raise UserError("The amount of New Invoice set does not match Split Count. (New Invoice Amount: %s, Split Count: %s)"%(len(num_list), self.split_count))
 
         invoice_line_list = []
         for idx,inv_count in enumerate(range(0,self.split_count)):
             new_invoice = self.env['tt.agent.invoice.line'].create({
-                'name': '%s%s' % (self.current_invoice_name,chr(idx + 97)),
+                'name': '%s%s' % (self.current_invoice_name, chr(idx + 97)),
                 'res_model_resv': self.res_model_resv,
                 'res_id_resv': self.res_id_resv,
-                'reference': self.reference,
+                'reference': self.current_invoice_line.reference,
+                'desc': self.current_invoice_line.desc,
                 'invoice_id': self.invoice_id.id
             })
             invoice_line_list.append(new_invoice)
 
             self.current_invoice_line.get_reservation_obj().write({
-                'invoice_line_ids' : [(4,new_invoice.id)]
+                'invoice_line_ids': [(4,new_invoice.id)]
             })
         
         for rec in self.invoice_line_detail_list:
-            if rec.new_invoice_number.name > self.split_count or 0 >= rec.new_invoice_number.name:
+            if (rec.new_invoice_number.name > self.split_count) or (0 >= rec.new_invoice_number.name):
                 raise UserWarning("LIMIT REACHED")
 
             rec.invoice_line_detail_id.invoice_line_id = invoice_line_list[rec.new_invoice_number.name-1]
 
-        return True
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
 
-    # def perform_move(self):
-    #     if self.invoice_id2:+
-    #         target_invoice = self.invoice_id2
-    #     else:
-    #         target_invoice = self.env['tt.agent.invoice'].create({
-    #             'name': 'New'
-    #         })
-    #     for rec in self.invoice_line_ids:
-    #         rec.invoice_id = target_invoice.id
 

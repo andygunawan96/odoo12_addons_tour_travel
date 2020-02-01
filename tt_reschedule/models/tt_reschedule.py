@@ -207,6 +207,10 @@ class TtReschedule(models.Model):
         if self.state != 'draft':
             raise UserError("Cannot Confirm because state is not 'draft'.")
 
+        for rec in self.new_segment_ids:
+            if not rec.pnr:
+                raise UserError("PNR in New Segments cannot be empty!")
+
         self.write({
             'state': 'confirm',
             'confirm_uid': self.env.user.id,

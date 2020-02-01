@@ -63,7 +63,7 @@ class AgentInvoice(models.Model):
             rec.reference = self.env[rec.res_model_resv].browse(rec.res_id_resv).name
 
     @api.multi
-    @api.depends('invoice_line_detail_ids.price_subtotal')
+    @api.depends('invoice_line_detail_ids.price_subtotal','invoice_line_detail_ids')
     def _compute_total(self):
         for rec in self:
             total = 0
@@ -139,6 +139,37 @@ class AgentInvoice(models.Model):
             'type': 'ir.actions.act_window',
             'name': 'Split Wizard',
             'res_model': 'tt.split.invoice.wizard',
+            'res_id': wizard_obj.id,
+            'view_type': 'form',
+            'view_mode': 'form',
+            'view_id': form_id.id,
+            'context': {},
+            'target': 'new',
+        }
+
+    def open_merge_wizard(self):
+        if not self.invoice_line_detail_ids or len(self.invoice_line_detail_ids.ids) < 1:
+            raise UserError("Cannot merge invoice line with empty details.")
+
+        wizard_obj = self.env['tt.merge.invoice.wizard'].create({
+            'current_invoice_line': self.id,
+            'invoice_id': self.invoice_id.id,
+            'res_model_resv': self.res_model_resv,
+            'res_id_resv': self.res_id_resv
+        })
+
+        detail_ids = self.invoice_line_detail_ids.ids
+        lines = [self.env['tt.merge.invoice.line'].sudo().create({
+            'invoice_line_detail_id': p,
+            'merge_wizard_id': wizard_obj.id,
+        }).id for p in detail_ids]
+
+        form_id = self.env['tt.merge.invoice.wizard'].get_form_id()
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Merge Wizard',
+            'res_model': 'tt.merge.invoice.wizard',
             'res_id': wizard_obj.id,
             'view_type': 'form',
             'view_mode': 'form',

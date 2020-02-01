@@ -18,7 +18,7 @@ class AgentInvoice(models.TransientModel):
 
     invoice_line_ids = fields.Many2many('tt.agent.invoice.line','invoice_wizard_line_rel',
                                         'wizard_id','line_id','Invoice Line'
-                                        ,domain="[('invoice_id','=',invoice_id1)]")
+                                        ,domain="[('invoice_id','=',invoice_id1), ('total', '>', 0)]")
 
     def perform_move(self):
         if self.invoice_id2:
