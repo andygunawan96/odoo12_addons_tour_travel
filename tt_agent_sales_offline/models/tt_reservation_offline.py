@@ -125,5 +125,5 @@ class ReservationOffline(models.Model):
         })
 
     def action_issued_backend(self):
-        super(ReservationOffline, self).action_issued_backend()
+        super(ReservationOffline, self).action_validate()
         self.action_create_invoice()
