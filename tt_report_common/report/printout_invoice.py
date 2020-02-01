@@ -389,118 +389,158 @@ class PrintoutInvoice(models.AbstractModel):
     def get_invoice_data(self, line, rec, paxs):
         a = {}
         if rec._name == 'tt.reservation.offline':
-            if rec.line_ids:
-                for rec2 in rec.line_ids:
-                    if rec.offline_provider_type != 'hotel':
-                        pnr_same = True
-                        pnr = rec2.pnr if rec2.pnr else '-'
-                        if not a.get(pnr):
-                            pnr_same = False
-                            a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [],
-                                      'provider_type': ''}
-                        if not pnr_same:
-                            a[pnr]['descs'].append(rec2.get_line_description())
-                            a[pnr]['provider_type'] = rec.provider_type_id.name
-
-                            for provider in rec.provider_booking_ids:
-                                if provider.pnr == pnr:
-                                    div_amount = 0
-                                    for line2 in rec.line_ids:
-                                        if line2.pnr == pnr:
-                                            div_amount += 1
-                                    for line_detail in line.invoice_line_detail_ids:
-                                        a[pnr]['pax_data'].append({
-                                            'name': (line_detail.desc if line_detail.desc else ''),
-                                            'total': (line_detail.price_subtotal/len(rec.line_ids)*div_amount if line_detail.price_subtotal else 0)
-                                        })
-                                    break
-                    else:
-                        pnr_same = True
-                        pnr = rec2.pnr if rec2.pnr else '-'
-                        if not a.get(pnr):
-                            pnr_same = False
-                            a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [],
-                                      'provider_type': ''}
-                        a[pnr]['descs'].append(line.desc if line.desc else '')
-                        a[pnr]['provider_type'] = rec.provider_type_id.name
-                        a[pnr]['pax_data'].append({
-                            'name': (rec2.get_line_hotel_description() if rec2.get_line_hotel_description() else ''),
-                            'total': rec.total / len(rec.line_ids)
-                        })
-            else:
-                for rec2 in rec.provider_booking_ids:
-                    pnr = rec2.pnr if rec2.pnr else '-'
-                    if not a.get(pnr):
-                        a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'provider_type': ''}
-                    a[pnr]['descs'].append(line.desc if line.desc else '')
-                    a[pnr]['provider_type'] = rec.provider_type_id.name
-                    for line_detail in line.invoice_line_detail_ids:
-                        a[pnr]['pax_data'].append({
-                            'name': (line_detail.desc if line_detail.desc else ''),
-                            'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
-                        })
-        elif rec._name == 'tt.reservation.hotel':
-            if rec.room_detail_ids:
-                for rec2 in rec.room_detail_ids:
-                    issued_name = rec2.issued_name if rec2.issued_name else '-'
-                    if not a.get(issued_name):
-                        a[issued_name] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [],
-                                          'provider_type': ''}
-                    a[issued_name]['descs'].append(line.desc if line.desc else '')
-                    a[issued_name]['provider_type'] = rec.provider_type_id.name
-                    for line_detail in line.invoice_line_detail_ids:
-                        a[issued_name]['pax_data'].append({
-                            'name': (line_detail.desc if line_detail.desc else ''),
-                            'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
-                        })
-            else:
-                issued_name = '-'
-                if not a.get(issued_name):
-                    a[issued_name] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [],
-                                      'provider_type': ''}
-                a[issued_name]['descs'].append(line.desc if line.desc else '')
-                a[issued_name]['provider_type'] = rec.provider_type_id.name
-                for line_detail in line.invoice_line_detail_ids:
-                    a[issued_name]['pax_data'].append({
-                        'name': (line_detail.desc if line_detail.desc else ''),
-                        'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
-                    })
-        elif rec._name == 'tt.reschedule':
-            pnr = rec.pnr and rec.pnr or '-'
-            re_book_obj = self.env[rec.res_model].sudo().browse(int(rec.res_id))
-            if not a.get(pnr):
-                a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'provider_type': ''}
-            a[pnr]['descs'].append(line.desc if line.desc else '')
-            a[pnr]['provider_type'] = re_book_obj and re_book_obj.provider_type_id.name or 'Reschedule'
+            a = {'descs': line.desc, 'pnr': [], 'line_detail': []}
+            for provider in rec.provider_booking_ids:
+                a['pnr'].append(provider.pnr)
             for line_detail in line.invoice_line_detail_ids:
-                a[pnr]['pax_data'].append({
-                    'name': (line_detail.desc if line_detail.desc else ''),
-                    'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
+                a['line_detail'].append({
+                    'name': line_detail.desc,
+                    'price': line_detail.price_unit,
+                    'quantity': line_detail.quantity,
+                    'amount': line_detail.price_subtotal
                 })
+            # if rec.line_ids:
+            #     for rec2 in rec.line_ids:
+            #         if rec.offline_provider_type != 'hotel':
+            #             pnr_same = True
+            #             pnr = rec2.pnr if rec2.pnr else '-'
+            #             if not a.get(pnr):
+            #                 pnr_same = False
+            #                 a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [],
+            #                           'provider_type': ''}
+            #             if not pnr_same:
+            #                 a[pnr]['descs'].append(rec2.get_line_description())
+            #                 a[pnr]['provider_type'] = rec.provider_type_id.name
+            #
+            #                 for provider in rec.provider_booking_ids:
+            #                     if provider.pnr == pnr:
+            #                         div_amount = 0
+            #                         for line2 in rec.line_ids:
+            #                             if line2.pnr == pnr:
+            #                                 div_amount += 1
+            #                         for line_detail in line.invoice_line_detail_ids:
+            #                             a[pnr]['pax_data'].append({
+            #                                 'name': (line_detail.desc if line_detail.desc else ''),
+            #                                 'total': (line_detail.price_subtotal/len(rec.line_ids)*div_amount if line_detail.price_subtotal else 0)
+            #                             })
+            #                         break
+            #         else:
+            #             pnr_same = True
+            #             pnr = rec2.pnr if rec2.pnr else '-'
+            #             if not a.get(pnr):
+            #                 pnr_same = False
+            #                 a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [],
+            #                           'provider_type': ''}
+            #             a[pnr]['descs'].append(line.desc if line.desc else '')
+            #             a[pnr]['provider_type'] = rec.provider_type_id.name
+            #             a[pnr]['pax_data'].append({
+            #                 'name': (rec2.get_line_hotel_description() if rec2.get_line_hotel_description() else ''),
+            #                 'total': rec.total / len(rec.line_ids)
+            #             })
+            # else:
+            #     for rec2 in rec.provider_booking_ids:
+            #         pnr = rec2.pnr if rec2.pnr else '-'
+            #         if not a.get(pnr):
+            #             a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'provider_type': ''}
+            #         a[pnr]['descs'].append(line.desc if line.desc else '')
+            #         a[pnr]['provider_type'] = rec.provider_type_id.name
+            #         for line_detail in line.invoice_line_detail_ids:
+            #             a[pnr]['pax_data'].append({
+            #                 'name': (line_detail.desc if line_detail.desc else ''),
+            #                 'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
+            #             })
+        elif rec._name == 'tt.reservation.hotel':
+            a = {'descs': line.desc, 'pnr': [], 'line_detail': []}
+            for room in rec.room_detail_ids:
+                if room.issued_name and room.issued_name not in a['pnr']:
+                    a['pnr'].append(room.issued_name)
+            for line_detail in line.invoice_line_detail_ids:
+                a['line_detail'].append({
+                    'name': line_detail.desc,
+                    'price': line_detail.price_unit,
+                    'quantity': line_detail.quantity,
+                    'amount': line_detail.price_subtotal
+                })
+            # if rec.room_detail_ids:
+                # for rec2 in rec.room_detail_ids:
+                #     issued_name = rec2.issued_name if rec2.issued_name else '-'
+                #     if not a.get(issued_name):
+                #         a[issued_name] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [],
+                #                           'provider_type': ''}
+                #     a[issued_name]['descs'].append(line.desc if line.desc else '')
+                #     a[issued_name]['provider_type'] = rec.provider_type_id.name
+                #     for line_detail in line.invoice_line_detail_ids:
+                #         a[issued_name]['pax_data'].append({
+                #             'name': (line_detail.desc if line_detail.desc else ''),
+                #             'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
+                #         })
+            # else:
+                # issued_name = '-'
+                # if not a.get(issued_name):
+                #     a[issued_name] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [],
+                #                       'provider_type': ''}
+                # a[issued_name]['descs'].append(line.desc if line.desc else '')
+                # a[issued_name]['provider_type'] = rec.provider_type_id.name
+                # for line_detail in line.invoice_line_detail_ids:
+                #     a[issued_name]['pax_data'].append({
+                #         'name': (line_detail.desc if line_detail.desc else ''),
+                #         'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
+                #     })
+        elif rec._name == 'tt.reschedule':
+            a = {'descs': line.desc, 'pnr': [], 'line_detail': []}
+            a['pnr'].append(rec.pnr or '-')
+            for line_detail in line.invoice_line_detail_ids:
+                a['line_detail'].append({
+                    'name': line_detail.desc,
+                    'price': line_detail.price_unit,
+                    'quantity': line_detail.quantity,
+                    'amount': line_detail.price_subtotal
+                })
+            # pnr = rec.pnr and rec.pnr or '-'
+            # re_book_obj = self.env[rec.res_model].sudo().browse(int(rec.res_id))
+            # if not a.get(pnr):
+            #     a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'provider_type': ''}
+            # a[pnr]['descs'].append(line.desc if line.desc else '')
+            # a[pnr]['provider_type'] = re_book_obj and re_book_obj.provider_type_id.name or 'Reschedule'
+            # for line_detail in line.invoice_line_detail_ids:
+            #     a[pnr]['pax_data'].append({
+            #         'name': (line_detail.desc if line_detail.desc else ''),
+            #         'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
+            #     })
         else:
-            if rec.provider_booking_ids:
-                for provider in rec.provider_booking_ids:
-                    pnr = provider.pnr if provider.pnr else '-'
-                    if not a.get(pnr):
-                        a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'provider_type': ''}
-                    a[pnr]['descs'].append(line.desc if line.desc else '')
-                    a[pnr]['provider_type'] = rec.provider_type_id.name
-                    for line_detail in line.invoice_line_detail_ids:
-                        a[pnr]['pax_data'].append({
-                            'name': (line_detail.desc if line_detail.desc else ''),
-                            'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
-                        })
-            else:
-                pnr = '-'
-                if not a.get(pnr):
-                    a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'provider_type': ''}
-                a[pnr]['descs'].append(line.desc if line.desc else '')
-                a[pnr]['provider_type'] = rec.provider_type_id.name
-                for line_detail in line.invoice_line_detail_ids:
-                    a[pnr]['pax_data'].append({
-                        'name': (line_detail.desc if line_detail.desc else ''),
-                        'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
-                    })
+            a = {'descs': line.desc, 'pnr': [], 'line_detail': []}
+            for provider in rec.provider_booking_ids:
+                a['pnr'].append(provider.pnr)
+            for line_detail in line.invoice_line_detail_ids:
+                a['line_detail'].append({
+                    'name': line_detail.desc,
+                    'price': line_detail.price_unit,
+                    'quantity': line_detail.quantity,
+                    'amount': line_detail.price_subtotal
+                })
+            # if rec.provider_booking_ids:
+            #     for provider in rec.provider_booking_ids:
+            #         pnr = provider.pnr if provider.pnr else '-'
+            #         if not a.get(pnr):
+            #             a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'provider_type': ''}
+            #         a[pnr]['descs'].append(line.desc if line.desc else '')
+            #         a[pnr]['provider_type'] = rec.provider_type_id.name
+            #         for line_detail in line.invoice_line_detail_ids:
+            #             a[pnr]['pax_data'].append({
+            #                 'name': (line_detail.desc if line_detail.desc else ''),
+            #                 'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
+            #             })
+            # else:
+            #     pnr = '-'
+            #     if not a.get(pnr):
+            #         a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'provider_type': ''}
+            #     a[pnr]['descs'].append(line.desc if line.desc else '')
+            #     a[pnr]['provider_type'] = rec.provider_type_id.name
+            #     for line_detail in line.invoice_line_detail_ids:
+            #         a[pnr]['pax_data'].append({
+            #             'name': (line_detail.desc if line_detail.desc else ''),
+            #             'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
+            #         })
         return a
 
     def calc_segments(self, rec, paxs):

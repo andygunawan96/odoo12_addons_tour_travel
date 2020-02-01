@@ -2352,3 +2352,12 @@ class TtVisa(models.Model):
                 'country_id': country_id[random.randrange(0, len(country_id) - 1, 1)],
             })
         return True
+
+    def get_aftersales_desc(self):
+        desc_txt = ''
+        for psg in self.passenger_ids:
+            desc_txt += psg.first_name + ' ' + psg.last_name + ', ' + psg.title + ' (' + psg.passenger_type + ') ' + \
+                         psg.pricelist_id.entry_type.capitalize() + ' ' + psg.pricelist_id.visa_type.capitalize() + ' ' \
+                         + psg.pricelist_id.process_type.capitalize() + ' (' + str(psg.pricelist_id.duration) + ' days)'\
+                         + '<br/>'
+        return desc_txt
