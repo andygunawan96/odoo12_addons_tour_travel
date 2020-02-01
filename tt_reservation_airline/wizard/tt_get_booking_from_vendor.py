@@ -68,18 +68,18 @@ class TtGetBookingFromVendor(models.TransientModel):
         if res['error_code'] != 0:
             raise UserError(res['error_msg'])
         get_booking_res = res['response']
-        wizard_form = self.env.ref  ('tt_reservation_airline.tt_reservation_airline_get_booking_from_vendor_review_form_view', False)
+        wizard_form = self.env.ref('tt_reservation_airline.tt_reservation_airline_get_booking_from_vendor_review_form_view', False)
         view_id = self.env['tt.get.booking.from.vendor.review']
         journey_values = ""
         price_values = ""
         prices = {}
         for rec in get_booking_res['journeys']:
-            journey_values += "%s\n%s %s - %s %s\n\n" % (",".join(rec['carrier_code_list']),
-                                                             rec['origin'],
-                                                             rec['departure_date'],
-                                                             rec['destination'],
-                                                             rec['arrival_date'])
             for segment in rec['segments']:
+                journey_values += "%s\n%s %s - %s %s\n\n" % (segment['carrier_name'],
+                                                             segment['origin'],
+                                                             segment['departure_date'],
+                                                             segment['destination'],
+                                                             segment['arrival_date'])
                 for fare in segment['fares']:
                     for svc in fare['service_charges']:
                         if svc['pax_type'] not in prices:
@@ -128,7 +128,8 @@ class TtGetBookingFromVendor(models.TransientModel):
             'passenger_ids_char': passenger_values,
             'price_itinerary': price_values,
             'grand_total': grand_total,
-            'total_commission': commission,
+            'total_commission': abs(commission),
+            'get_booking_json': json.dumps(res)
         }
         new = view_id.create(vals)
 
@@ -164,3 +165,8 @@ class TtGetBookingFromVendorReview(models.TransientModel):
 
     grand_total = fields.Char("Grand Total")
     total_commission = fields.Char("Total Commission")
+
+    get_booking_json = fields.Text("Json Data")
+
+    def save_booking(self):
+        pass
