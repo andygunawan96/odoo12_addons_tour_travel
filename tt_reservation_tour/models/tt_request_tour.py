@@ -30,7 +30,7 @@ class TtRequestTour(models.Model):
     contact_number = fields.Char('Contact Number', required=True, readonly=True, states={'draft': [('readonly', False)]})
     contact_email = fields.Char('Contact Email', required=True, readonly=True, states={'draft': [('readonly', False)]})
     contact_address = fields.Char('Contact Address', required=True, readonly=True, states={'draft': [('readonly', False)]})
-    tour_ref_id = fields.Many2one('tt.master.tour', 'Created Tour Package')
+    tour_ref_id = fields.Many2one('tt.master.tour', 'Created Tour Package', domain="[('tour_category', '=', 'private'), ('agent_id', '=', agent_id)]")
     tour_ref_id_str = fields.Text('Created Tour Package', readonly=True, compute='_compute_tour_ref_id_str')
     tour_category = fields.Selection([('medical', 'Medical'),('education', 'Education'),('recreation', 'Recreation (Family / Group / Insentif / Corporate)'),
                                       ('meeting', 'Meeting'),('training', 'Training'),('religious', 'Religious Tour (Pilgrimage / Jerusalem / etc)'),
