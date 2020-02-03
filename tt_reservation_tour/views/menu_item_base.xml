@@ -12,6 +12,11 @@
                   name="Booking"
                   sequence="1"/>
 
+        <menuitem id="menu_reservations_tour_request"
+                  parent="top_reservations_tour"
+                  name="Request"
+                  sequence="2"/>
+
         <!--    <menuitem id="menu_tour_booking" parent="tt_base.menu_tour_main" name="Order" sequence="30"/>-->
         <!--    <menuitem id="menu_tour_booking_concept" parent="tt_base.menu_tour_main" name="Concept" sequence="40"/>-->
         <!--    groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator,tt_base.group_tt_sub_agent_user_operator"-->
