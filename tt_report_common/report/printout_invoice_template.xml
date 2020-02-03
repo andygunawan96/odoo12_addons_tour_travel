@@ -568,14 +568,14 @@
                     <tr valign="top" style="padding-top: 5px; padding-bottom: 5px;">
                         <t t-if="line_detail_idx == 0">
                             <t t-if="row_idx == len(inv_lines[doc.id])-1">
-                                <td t-att-rowspan="len(line2_idx['line_detail'])" style="width: 25%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 20px;">
+                                <td t-att-rowspan="len(line2_idx['line_detail'])" style="background: #F0F0F0; width: 25%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 20px;">
                                     <t t-foreach="line2_idx['pnr']" t-as="pnr">
                                         <span t-esc="pnr"/><br/>
                                     </t>
                                 </td>
                             </t>
                             <t t-else="">
-                                <td t-att-rowspan="len(line2_idx['line_detail'])" style="width: 25%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px;">
+                                <td t-att-rowspan="len(line2_idx['line_detail'])" style="background: #F0F0F0; width: 25%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px;">
                                     <t t-foreach="line2_idx['pnr']" t-as="pnr">
                                         <span t-esc="pnr"/><br/>
                                     </t>
