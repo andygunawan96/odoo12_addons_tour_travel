@@ -30,5 +30,12 @@
             <field name="prefix">FRDX</field>
             <field name="padding">5</field>
         </record>
+
+        <record id="seq_request_tour" model="ir.sequence">
+            <field name="name">Request Tour</field>
+            <field name="code">request.tour</field>
+            <field name="prefix">TRQ.%(range_y)s%(range_month)s%(range_day)s%(range_sec)s</field>
+            <field name="padding">5</field>
+        </record>
     </data>
 </odoo>

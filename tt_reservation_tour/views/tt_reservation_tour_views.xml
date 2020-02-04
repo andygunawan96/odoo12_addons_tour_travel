@@ -69,7 +69,8 @@
                 <separator string="Tour Information"/>
                 <group>
                     <group>
-                        <field name="tour_id" string="Tour Package Name" readonly="1"/>
+                        <field name="tour_id" readonly="1" groups="tt_base.group_tt_tour_travel_operator"/>
+                        <field name="tour_id_str" readonly="1" groups="tt_base.group_tt_agent_user_operator"/>
                         <field name="payment_method" readonly="1" attrs="{'invisible': [('state', 'not in', ('issued'))]}"/>
                     </group>
                     <group>
