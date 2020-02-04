@@ -384,6 +384,7 @@ class TtVisa(models.Model):
             'state_visa': 'cancel',
             'state': 'cancel',
         })
+        self.message_post(body='Order CANCELED')
 
     def action_ready_visa(self):
         self.write({
@@ -1415,7 +1416,7 @@ class TtVisa(models.Model):
                         if ssc.charge_code == 'rac':
                             sale['RAC'] = {
                                 'charge_code': ssc.charge_code,
-                                'amount': abs(ssc.amount)
+                                'amount': ssc.amount
                             }
                             if ssc.currency_id:
                                 sale['RAC'].update({
@@ -1792,7 +1793,7 @@ class TtVisa(models.Model):
             commission_list2 = []
             for sell in sell_visa['search_data']:
                 if str(sell['id']) == psg['master_visa_Id']:
-                    if 'commission' in sell:
+                    if 'commission' in sell['sale_price']:
                         commission_list2 = sell.get('commission')
                     break
             # commission_list = pricing_obj.get_commission(pricelist_obj.commission_price, agent_id, provider_type_id)
@@ -2186,25 +2187,6 @@ class TtVisa(models.Model):
     ######################################################################################################
     # OTHERS
     ######################################################################################################
-
-    param_channel_service_charge = {
-        # "order_number": "VS.19080500053",
-        "passengers": [{
-            "sequence": 1,
-            "pricing": [{
-                "amount": 30000,
-                "currency_code": "IDR"
-            },
-            {
-                "amount": 10000,
-                "currency_code": "IDR"
-            },
-            {
-                "amount": -50000,
-                "currency_code": "IDR"
-            }]
-        }]
-    }
 
     def update_service_charges(self):
         pricing_list = []
