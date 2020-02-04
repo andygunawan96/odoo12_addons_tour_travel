@@ -77,7 +77,7 @@ class TtRefundWizard(models.TransientModel):
         return {
             'type': 'ir.actions.act_url',
             'name': refund_obj.name,
-            'target': 'new',
+            'target': 'self',
             'url': base_url + "/web#id=" + str(refund_obj.id) + "&action=" + str(action_num) + "&model=tt.refund&view_type=form&menu_id=" + str(menu_num),
         }
 

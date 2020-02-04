@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_import_request_tour_wizard_form_view" model="ir.ui.view">
+        <field name="name">Import Request Tour Wizard</field>
+        <field name="model">tt.import.request.tour.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Reschedule Wizard">
+                <group>
+                    <group>
+                        <field name="agent_id"/>
+                        <field name="booker_id"/>
+                        <field name="import_data"/>
+                    </group>
+                    <group>
+                        <field name="contact_id"/>
+                        <field name="contact_number"/>
+                        <field name="contact_email"/>
+                        <field name="contact_address"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="execute_import_request_tour" string="Create" type="object" default_focus="1" class="oe_highlight"/>
+                    or
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_import_request_tour_wizard_action_view" model="ir.actions.act_window">
+        <field name="name">tt.import.request.tour.wizard.action.view</field>
+        <field name="res_model">tt.import.request.tour.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="submenu_import_request_tour_package" parent="tt_reservation_tour.menu_reservations_tour_request"
+              name="Import Tour Request" action="tt_import_request_tour_wizard_action_view" sequence="2"/>
+
+</odoo>

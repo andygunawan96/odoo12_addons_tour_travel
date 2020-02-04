@@ -150,7 +150,7 @@ class TtRescheduleWizard(models.TransientModel):
         return {
             'type': 'ir.actions.act_url',
             'name': reschedule_obj.name,
-            'target': 'new',
+            'target': 'self',
             'url': base_url + "/web#id=" + str(
                 reschedule_obj.id) + "&action=" + str(action_num) + "&model=tt.reschedule&view_type=form&menu_id=" + str(menu_num),
         }
