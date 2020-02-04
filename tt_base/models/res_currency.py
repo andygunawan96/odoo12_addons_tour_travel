@@ -12,7 +12,7 @@ class ResCurrency(models.Model):
     active = fields.Boolean('Active')
     decimal_places = fields.Integer('Decimal Places',readonly=False)
 
-    def get_id(self, currency_code, default_param_idr = False):
+    def get_id(self, currency_code, default_param_idr=False):
         res = self.search([('name', '=', currency_code)])
         if res:
             return res.id
