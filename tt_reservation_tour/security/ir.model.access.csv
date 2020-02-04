@@ -146,3 +146,10 @@ tt_master_tour_quotation_for_all,tt.master.tour.quotation.for.all,model_tt_maste
 tt_master_tour_quotation_porter_for_all,tt.master.tour.quotation.porter.for.all,model_tt_master_tour_quotation_porter,,1,1,1,1
 ,,,,,,,
 tt_master_tour_quotation_extra_for_all,tt.master.tour.quotation.extra.for.all,model_tt_master_tour_quotation_extra,,1,1,1,1
+,,,,,,,
+tt_request_tour_for_agent_user_operator,tt.request.tour.for.agent.user.operator,model_tt_request_tour,tt_base.group_tt_agent_user_operator,1,1,1,0
+,,,,,,,
+tt_request_tour_for_tour_travel_operator,tt.request.tour.for.tour.travel.operator,model_tt_request_tour,tt_base.group_tt_tour_travel_operator,1,1,1,0
+,,,,,,,
+tt_request_tour_for_tour_division_operator,tt.request.tour.for.tour.division.operator,model_tt_request_tour,tt_base.group_tt_tour_division_operator,1,1,1,1
+

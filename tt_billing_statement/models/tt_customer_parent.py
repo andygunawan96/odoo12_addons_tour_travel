@@ -2,7 +2,10 @@ from odoo import models,api,fields
 from datetime import date,datetime,timedelta
 from odoo.exceptions import UserError
 import os, traceback
+import logging
+import traceback
 
+_logger = logging.getLogger(__name__)
 
 DAY_TO_INT = {
     'Mon' : -1,
@@ -98,13 +101,13 @@ class TtCustomerParentInh(models.Model):
 
         for cor in cor_list_obj:
             pr = cor.name
-            print(pr+ ' : '+','.join([str(rec.name) for rec in cor.billing_cycle_ids]))
+            _logger.info(pr+ ' : '+','.join([str(rec.name) for rec in cor.billing_cycle_ids]))
 
             ##search invoice cor tersebut
             invoice_list_obj = self.env['tt.agent.invoice'].search([('customer_parent_id','=',cor.id),('state','in',['draft','confirm'])])
             invoice_list = []
             for inv in invoice_list_obj:
-                print(inv.name)
+                _logger.info(inv.name)
                 if inv.state == 'draft':
                     inv.action_confirm()
                 inv.action_bill2()

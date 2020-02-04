@@ -64,14 +64,15 @@ class MasterTour(models.Model):
                                      'Tour Category', required=True, default='group')
     tour_type = fields.Selection([('series', 'Series (With Tour Leader)'), ('sic', 'SIC (Without Tour Leader)'), ('land', 'Land Only'), ('city', 'City Tour'), ('private', 'Private Tour')], 'Tour Type', default='series')
 
-    departure_date = fields.Date('Departure Date')
-    return_date = fields.Date('Arrival Date')
+    departure_date = fields.Date('Departure Date', required=True)
+    return_date = fields.Date('Arrival Date', required=True)
     name_with_date = fields.Text('Display Name', readonly=True, compute='_compute_name_with_date', store=True)
     duration = fields.Integer('Duration (days)', help="in day(s)", readonly=True,
                               compute='_compute_duration', store=True)
 
     start_period = fields.Date('Start Period')
     end_period = fields.Date('End Period')
+    agent_id = fields.Many2one('tt.agent', 'Agent')
     survey_date = fields.Date('Survey Send Date', readonly=True, compute='_compute_survey_date')
 
     commercial_duration = fields.Char('Duration', readonly=1)  # compute='_compute_duration'
@@ -166,12 +167,8 @@ class MasterTour(models.Model):
     @api.depends("name", "departure_date", "return_date")
     def _compute_name_with_date(self):
         for rec in self:
-            if rec.tour_category == 'private':
-                start_date = rec.start_period and rec.start_period.strftime('%d %b %Y') or ''
-                end_date = rec.end_period and rec.end_period.strftime('%d %b %Y') or ''
-            else:
-                start_date = rec.departure_date and rec.departure_date.strftime('%d %b %Y') or ''
-                end_date = rec.return_date and rec.return_date.strftime('%d %b %Y') or ''
+            start_date = rec.departure_date and rec.departure_date.strftime('%d %b %Y') or ''
+            end_date = rec.return_date and rec.return_date.strftime('%d %b %Y') or ''
             rec.name_with_date = "[" + start_date + " - " + end_date + "] " + rec.name
 
     @api.depends("name")
@@ -201,11 +198,7 @@ class MasterTour(models.Model):
         for rec in self:
             if rec.tour_category == 'private':
                 rec.tour_type = 'private'
-                rec.departure_date = False
-                rec.return_date = False
             if rec.tour_category == 'group':
-                rec.start_period = False
-                rec.end_period = False
                 if rec.tour_type == 'private':
                     rec.tour_type = 'series'
                 if rec.tour_type == 'sic':
@@ -465,9 +458,18 @@ class MasterTour(models.Model):
             self.env.cr.execute(sql_query)
             result_temp = self.env.cr.dictfetchall()
 
-            result = []
+            result_final = []
+            for rec in result_temp:
+                if rec['tour_category'] == 'private':
+                    if not rec.get('agent_id'):
+                        result_final.append(rec)
+                    elif rec['agent_id'] == context['co_agent_id']:
+                        result_final.append(rec)
+                else:
+                    result_final.append(rec)
 
-            for idx, rec in enumerate(result_temp):
+            result = []
+            for idx, rec in enumerate(result_final):
                 if rec.get('departure_date'):
                     if search_request['departure_month'] != '00':
                         if search_request['departure_year'] != '0000':
@@ -481,19 +483,19 @@ class MasterTour(models.Model):
                             result.append(rec)
                     else:
                         result.append(rec)
-                if rec.get('start_period'):
-                    if search_request['departure_month'] != '00':
-                        if search_request['departure_year'] != '0000':
-                            if str(rec['start_period'])[:7] <= search_request['departure_date'] <= str(rec['end_period'])[:7]:
-                                result.append(rec)
-                        else:
-                            if str(rec['start_period'])[5:7] <= search_request['departure_month'] <= str(rec['end_period'])[5:7]:
-                                result.append(rec)
-                    elif search_request['departure_year'] != '0000':
-                        if str(rec['start_period'])[:4] <= search_request['departure_year'] <= str(rec['end_period'])[:4]:
-                            result.append(rec)
-                    else:
-                        result.append(rec)
+                # if rec.get('start_period'):
+                #     if search_request['departure_month'] != '00':
+                #         if search_request['departure_year'] != '0000':
+                #             if str(rec['start_period'])[:7] <= search_request['departure_date'] <= str(rec['end_period'])[:7]:
+                #                 result.append(rec)
+                #         else:
+                #             if str(rec['start_period'])[5:7] <= search_request['departure_month'] <= str(rec['end_period'])[5:7]:
+                #                 result.append(rec)
+                #     elif search_request['departure_year'] != '0000':
+                #         if str(rec['start_period'])[:4] <= search_request['departure_year'] <= str(rec['end_period'])[:4]:
+                #             result.append(rec)
+                #     else:
+                #         result.append(rec)
 
             deleted_keys = ['import_other_info', 'export_other_info', 'adult_fare', 'adult_commission', 'child_fare',
                             'child_commission', 'infant_fare', 'infant_commission', 'document_url', 'down_payment',
@@ -534,8 +536,8 @@ class MasterTour(models.Model):
                     'images_obj': images,
                     'departure_date': rec['departure_date'] and rec['departure_date'] or '',
                     'return_date': rec['return_date'] and rec['return_date'] or '',
-                    'start_period': rec['start_period'] and rec['start_period'] or '',
-                    'end_period': rec['end_period'] and rec['end_period'] or '',
+                    'start_period': rec.get('start_period') and rec['start_period'] or '',
+                    'end_period': rec.get('end_period') and rec['end_period'] or '',
                     'provider_id': rec.get('provider_id') and rec['provider_id'] or '',
                     'provider': res_provider and res_provider.code or '',
                     'create_date': '',

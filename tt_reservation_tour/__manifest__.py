@@ -38,7 +38,8 @@
         'views/tt_master_tour_otherinfo_views.xml',
         'views/tt_provider_views.xml',
         'views/tt_service_charge_views.xml',
-        'views/tt_reservation_passenger_tour_form_views.xml'
+        'views/tt_reservation_passenger_tour_form_views.xml',
+        'views/tt_request_tour_views.xml'
     ],
     # only loaded in demonstration mode
     'demo': [],
