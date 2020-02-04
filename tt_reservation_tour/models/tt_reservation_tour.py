@@ -35,7 +35,8 @@ class ReservationTour(models.Model):
     _order = 'id DESC'
     _description = 'Rodex Model'
 
-    tour_id = fields.Many2one('tt.master.tour', 'Tour ID')
+    tour_id = fields.Many2one('tt.master.tour', 'Tour Package')
+    tour_id_str = fields.Text('Tour Package', compute='_compute_tour_id_str')
 
     room_ids = fields.One2many('tt.reservation.tour.room', 'booking_id', 'Rooms')
 
@@ -47,6 +48,12 @@ class ReservationTour(models.Model):
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', default=lambda self: self.env.ref('tt_reservation_tour.tt_provider_type_tour'))
     payment_method = fields.Selection(PAYMENT_METHOD, 'Payment Method')
     installment_invoice_ids = fields.One2many('tt.installment.invoice', 'booking_id', 'Installments')
+
+    @api.depends('tour_id')
+    @api.onchange('tour_id')
+    def _compute_tour_id_str(self):
+        for rec in self:
+            rec.tour_id_str = rec.tour_id and rec.tour_id.name or ''
 
     def check_provider_state(self,context,pnr_list=[],hold_date=False,req={}):
         if all(rec.state == 'booked' for rec in self.provider_booking_ids):

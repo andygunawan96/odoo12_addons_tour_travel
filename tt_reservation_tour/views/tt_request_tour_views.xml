@@ -1,0 +1,194 @@
+<odoo>
+    <record id="tt_request_tour_view_filter" model="ir.ui.view">
+        <field name="name">tt.request.tour.view.filter</field>
+        <field name="model">tt.request.tour</field>
+        <field name="arch" type="xml">
+            <search string="Search Tour Request">
+                <field name="name"/>
+                <field name="est_departure_date"/>
+                <field name="est_return_date"/>
+                <field name="booker_id"/>
+                <field name="contact_id"/>
+                <field name="contact_email"/>
+                <field name="notes"/>
+
+                <group expand="0" string="Group By">
+                    <filter name="group_by_tour_category" string="Tour Category" domain="[]" context="{'group_by':'tour_category'}"/>
+                    <filter name="group_by_est_departure_time" string="Estimated Departure Time" domain="[]" context="{'group_by':'est_departure_time'}"/>
+                    <filter name="group_by_est_return_time" string="Estimated Return Time" domain="[]" context="{'group_by':'est_return_time'}"/>
+                    <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}"/>
+                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tt_request_tour_view_form">
+        <field name="name">tt.request.tour.view.form</field>
+        <field name="model">tt.request.tour</field>
+        <field name="arch" type="xml">
+            <form string="">
+                <header>
+                    <!--STATE BUTTON-->
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,approved,done"/>
+                    <button string="Confirm" name="action_confirm" type="object" attrs="{'invisible': [('state', '!=', 'draft')]}" groups="tt_base.group_tt_agent_user_operator"/>
+                    <button string="Approve" name="action_approve" type="object" attrs="{'invisible': [('state', '!=', 'confirm')]}" groups="tt_base.group_tt_tour_division_operator"/>
+                    <button string="Done" name="action_done" type="object" attrs="{'invisible': [('state', '!=', 'approved')]}" groups="tt_base.group_tt_tour_division_operator"/>
+                    <button string="Reject" name="action_reject" type="object" attrs="{'invisible': [('state', 'in', ['draft','done','cancelled','rejected'])]}" groups="tt_base.group_tt_tour_division_operator"/>
+                    <button string="Cancel" name="action_cancel" type="object" attrs="{'invisible': [('state', 'in', ['done','cancelled','rejected'])]}" groups="tt_base.group_tt_agent_user_operator"/>
+                    <button string="Set to Draft" name="action_set_to_draft" type="object" attrs="{'invisible': [('state', 'not in', ['cancelled','rejected'])]}" groups="tt_base.group_tt_tour_division_operator"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" default_focus="1" placeholder="Request Order Number"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="agent_id"/>
+                            <field name="booker_id"/>
+                            <field name="contact_id"/>
+                            <field name="contact_number"/>
+                            <field name="contact_email"/>
+                            <field name="contact_address"/>
+                        </group>
+                        <group>
+                            <label for="confirm_uid" string="Confirmed by"/>
+                            <div>
+                                <field name="confirm_uid" readonly="1" class="oe_inline"/> -
+                                <field name="confirm_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <label for="approve_uid" string="Approved by"/>
+                            <div>
+                                <field name="approve_uid" readonly="1" class="oe_inline"/> -
+                                <field name="approve_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <label for="done_uid" string="Done by"/>
+                            <div>
+                                <field name="done_uid" readonly="1" class="oe_inline"/> -
+                                <field name="done_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <label for="reject_uid" string="Rejected by"/>
+                            <div>
+                                <field name="reject_uid" readonly="1" class="oe_inline"/> -
+                                <field name="reject_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <label for="cancel_uid" string="Cancelled by"/>
+                            <div>
+                                <field name="cancel_uid" readonly="1" class="oe_inline"/> -
+                                <field name="cancel_date" readonly="1" class="oe_inline"/>
+                            </div>
+                        </group>
+                    </group>
+
+                    <separator string="Tour Information"/>
+                    <group>
+                        <group>
+                            <field name="tour_ref_id" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible': [('state', 'not in', ['approved','done'])], 'required': [('state', 'in', ['approved','done'])]}"/>
+                            <field name="tour_ref_id_str" groups="tt_base.group_tt_agent_user_operator" attrs="{'invisible': [('state', 'not in', ['approved','done'])]}"/>
+                            <field name="tour_category"/>
+                        </group>
+                        <group>
+                            <field name="location_ids">
+                                <tree>
+                                    <field name="city_id"/>
+                                    <field name="state_id"/>
+                                    <field name="country_id"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="est_departure_date"/>
+                            <field name="est_departure_time"/>
+                        </group>
+                        <group>
+                            <field name="est_return_date"/>
+                            <field name="est_return_time"/>
+                        </group>
+                    </group>
+                    <separator string="Passenger Count"/>
+                    <group col="3">
+                        <group>
+                            <field name="adult"/>
+                        </group>
+                        <group>
+                            <field name="child"/>
+                        </group>
+                        <group>
+                            <field name="infant"/>
+                        </group>
+                    </group>
+                    <separator string="Special Requests"/>
+                    <group>
+                        <group>
+                            <field name="currency_id"/>
+                            <field name="min_budget"/>
+                            <field name="hotel_star"/>
+                            <field name="carrier_id"/>
+                        </group>
+                        <group>
+                            <field name="food_preference"/>
+                            <field name="max_budget"/>
+                            <field name="est_hotel_price"/>
+                            <field name="class_of_service"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="notes"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tt_request_tour_view_tree" >
+        <field name="name">tt.request.tour.view.tree</field>
+        <field name="model">tt.request.tour</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="create_date"/>
+                <field name="name"/>
+                <field name="agent_id"/>
+                <field name="booker_id"/>
+                <field name="contact_id"/>
+                <field name="tour_category"/>
+                <field name="est_departure_date"/>
+                <field name="est_return_date"/>
+                <field name="adult"/>
+                <field name="child"/>
+                <field name="infant"/>
+                <field name="currency_id"/>
+                <field name="min_budget"/>
+                <field name="max_budget"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_request_tour_view_action">
+        <field name="name">Tour Package Requests</field>
+        <field name="res_model">tt.request.tour</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_tour.tt_request_tour_view_form',
+            'tree_view_ref': 'tt_reservation_tour.tt_request_tour_view_tree',
+            }
+        </field>
+    </record>
+
+    <menuitem id="submenu_request_tour_package" parent="tt_reservation_tour.menu_reservations_tour_request"
+              name="Tour Package" action="tt_request_tour_view_action"/>
+</odoo>

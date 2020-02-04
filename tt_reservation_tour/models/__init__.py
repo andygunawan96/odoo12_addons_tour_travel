@@ -15,4 +15,6 @@ from . import tt_master_tour_otherinfo
 from . import tt_master_tour_adjustment
 from . import tt_reservation_passenger_tour
 from . import tt_cron_log
+from . import tt_request_tour
+
 

@@ -33,24 +33,34 @@ class InstallmentInvoice(models.Model):
     payment_rules_id = fields.Many2one('tt.payment.rules', 'Payment Rules ID', readonly=True)
 
     def action_open(self):
-        self.state_invoice = 'open'
+        self.sudo().write({
+            'state_invoice': 'open'
+        })
 
     def action_trouble(self):
-        self.state_invoice = 'trouble'
+        self.sudo().write({
+            'state_invoice': 'trouble'
+        })
 
     def action_done(self):
         if self.agent_invoice_id.state == 'paid':
-            self.state_invoice = 'done'
+            self.sudo().write({
+                'state_invoice': 'done'
+            })
         else:
             raise UserError(
                 _('Invoice has not been paid.'))
 
     def action_set_to_done(self):
-        self.state_invoice = 'done'
+        self.sudo().write({
+            'state_invoice': 'done'
+        })
 
     def action_cancel(self):
         if self.agent_invoice_id.state == 'cancel':
-            self.state_invoice = 'cancel'
+            self.sudo().write({
+                'state_invoice': 'cancel'
+            })
         else:
             raise UserError(
                 _('Please cancel the invoice first.'))
@@ -68,7 +78,9 @@ class InstallmentInvoice(models.Model):
                             _('Please pay the previous installment first!'))
             for rec in self.booking_id.provider_booking_ids:
                 rec.action_create_installment_ledger(self.booking_id.issued_uid.id, self.payment_rules_id.id, commission_ledger)
-            self.state_invoice = 'done'
+            self.sudo().write({
+                'state_invoice': 'done'
+            })
         else:
             raise UserError(
                 _('This installment cannot be paid.'))
