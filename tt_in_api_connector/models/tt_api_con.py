@@ -84,4 +84,6 @@ class TtApiCon(models.Model):
         except Exception as e:
             _logger.error('Backend Connector Config Error, %s' % str(e))
         signature = self._gateway_sign_in()
-        return self._send_request(url,data,self._get_header(service_name, signature),content_type=content_type,request_type=request_type,timeout=timeout)
+        res = self._send_request(url,data,self._get_header(service_name, signature),content_type=content_type,request_type=request_type,timeout=timeout)
+        res['signature'] = signature
+        return res

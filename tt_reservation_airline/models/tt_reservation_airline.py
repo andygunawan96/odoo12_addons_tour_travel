@@ -40,6 +40,8 @@ class ReservationAirline(models.Model):
     split_from_resv_id = fields.Many2one('tt.reservation.airline', 'Splitted From', readonly=1)
     split_to_resv_ids = fields.One2many('tt.reservation.airline', 'split_from_resv_id', 'Splitted To', readonly=1)
 
+    is_get_booking_from_vendor = fields.Boolean('Get Booking From Vendor')
+
     def get_form_id(self):
         return self.env.ref("tt_reservation_airline.tt_reservation_airline_form_views")
 
@@ -255,7 +257,7 @@ class ReservationAirline(models.Model):
                 'contact_name': contact_obj.name,
                 'contact_email': contact_obj.email,
                 'contact_phone': "%s - %s" % (contact_obj.phone_ids[0].calling_code,contact_obj.phone_ids[0].calling_number),
-                'passenger_ids': list_passenger_value
+                'passenger_ids': list_passenger_value,
             })
 
             book_obj = self.create(values)
@@ -370,7 +372,7 @@ class ReservationAirline(models.Model):
 
             book_status = []
             pnr_list = []
-            hold_date = datetime.max
+            hold_date = datetime.max.replace(year=2020)
             any_provider_changed = False
 
             for provider in req['provider_bookings']:
@@ -532,7 +534,8 @@ class ReservationAirline(models.Model):
             'child': searchRQ['child'],
             'infant': searchRQ['infant'],
             'agent_id': context_gateway['co_agent_id'],
-            'user_id': context_gateway['co_uid']
+            'user_id': context_gateway['co_uid'],
+            'is_get_booking_from_vendor': searchRQ.get('is_get_booking_from_vendor', False)
         }
 
         return booking_tmp

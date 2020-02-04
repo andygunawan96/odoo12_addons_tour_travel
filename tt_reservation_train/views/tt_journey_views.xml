@@ -59,6 +59,7 @@
                 <field name="origin_id"/>
                 <field name="destination_id"/>
                 <field name="departure_date"/>
+                <field name="arrival_date"/>
             </tree>
         </field>
     </record>
