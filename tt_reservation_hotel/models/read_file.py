@@ -1563,7 +1563,7 @@ class HotelInformation(models.Model):
         }
         i = 1
         need_to_add_list = [['No', 'City', 'Country', 'Hotel qty']]
-        with open("/var/log/cache_hotel/tbo/master/country.csv", 'r') as file:
+        with open("/var/log/cache_hotel/tbo/master_csv/country.csv", 'r') as file:
             file_content = csv.reader(file)
             for rec in file_content:
                 # open file
@@ -1600,7 +1600,7 @@ class HotelInformation(models.Model):
                                 # hotel_fmt.append(hotel)
                             # except:
                             #     continue
-                        hotel_fmt = hotel_objs['response'][1]
+                        hotel_fmt = hotel_objs[1]
                         length = len(hotel_fmt)
                     except:
                         length = 0
@@ -1823,6 +1823,12 @@ class HotelInformation(models.Model):
                 return [rec,]
         return False
 
+    def exact_find_similar_name(self, hotel_name, city_name, cache_content):
+        for rec in cache_content:
+            if self.formatting_hotel_name(rec['name'], city_name) == self.formatting_hotel_name(hotel_name, city_name):
+                return [rec,]
+        return False
+
     # Get Record From HOMAS, pool, api langsung jadi file cache
     # By City
     def get_record_homas_all(self):
@@ -1928,31 +1934,38 @@ class HotelInformation(models.Model):
 
     def get_rendered_city(self):
         rendered_city = []
+        length = 0
         filename = "/var/log/cache_hotel/result log/merger_process_result.csv"
-        with open(filename, 'r') as file:
-            city_ids = csv.reader(file)
-            for city in city_ids:
-                rendered_city.append(city[1])
-        return len(rendered_city) >= 1 and rendered_city[1:] or rendered_city
+        try:
+            with open(filename, 'r') as file:
+                city_ids = csv.reader(file)
+                for city in city_ids:
+                    rendered_city.append(city[1])
+            length = city[0]
+        except:
+            pass
+        if len(rendered_city) >= 1 :
+            return rendered_city[1:], length
+        else:
+            return rendered_city, length
 
     # Get Record From HOMAS, Single Vendor
     def get_record_homas(self):
         # Read CSV CITY
-        rendered_city = self.get_rendered_city()
-        target_city_index = len(rendered_city)
+        rendered_city, len_rendered = self.get_rendered_city()
+        target_city_index = int(len_rendered)
         hotel_id = 0
 
         # provider_list = ['hotelspro', 'hotelspro_file', 'fitruums', 'webbeds_pool', 'webbeds_excel_pool',
         #                  'itank', 'quantum', 'quantum_pool', 'mgholiday', 'mg_pool', 'miki_api', 'miki_scrap', 'miki_pool',
         #                  'dida_pool', 'tbo', 'oyo']
-        provider_list = ['dida_pool', 'webbeds_pool', 'webbeds_excel_pool', 'oyo']
+        provider_list = ['miki_api', 'miki_scrap', 'miki_pool', 'quantum', 'quantum_pool']
 
+        new_to_add_list2 = [['Type', '#1:Name', '#1:address', '#1:provider', '#2:Similar Name', '#2:address', '#2:provider']]
         if not rendered_city:
             need_to_add_list = [['No', 'CityName', 'RodexTrip City_id'] + provider_list + ['Total']]
-            new_to_add_list2 = [['Type', '#1:Name', '#1:address', '#1:provider', '#2:Similar Name', '#2:address', '#2:provider']]
         else:
             need_to_add_list = []
-            new_to_add_list2 = []
 
         import glob
         for master_provider in provider_list:
@@ -1987,7 +2000,8 @@ class HotelInformation(models.Model):
                                     # rubah format ke odoo
                                     hotel_fmt = self.formating_homas(hotel, hotel_id, provider, city_id, target_city)
                                     # Cek apakah file dengan kota tsb sdah ada di memory?
-                                    same_name = self.advance_find_similar_name(hotel_fmt['name'], hotel_fmt['location']['city'], cache_content)
+                                    # same_name = self.advance_find_similar_name(hotel_fmt['name'], hotel_fmt['location']['city'], cache_content)
+                                    same_name = self.exact_find_similar_name(hotel_fmt['name'], hotel_fmt['location']['city'], cache_content)
                                     # same_name = False
                                     if same_name:
                                         # tambahkan detail ke record yg sama tersebut
@@ -2044,11 +2058,11 @@ class HotelInformation(models.Model):
                     csvFile.close()
                     need_to_add_list = []
 
-                    with open('/var/log/cache_hotel/result log/merger_history.csv', 'a') as csvFile:
-                        writer = csv.writer(csvFile)
-                        writer.writerows(new_to_add_list2)
-                    csvFile.close()
-                    new_to_add_list2 = []
+                with open('/var/log/cache_hotel/result log/merger_history_' + city_name + '.csv', 'a') as csvFile:
+                    writer = csv.writer(csvFile)
+                    writer.writerows(new_to_add_list2)
+                csvFile.close()
+                new_to_add_list2 = [['Type', '#1:Name', '#1:address', '#1:provider', '#2:Similar Name', '#2:address', '#2:provider']]
 
 
         with open('/var/log/cache_hotel/result log/merger_process_result.csv', 'a') as csvFile:
@@ -2060,6 +2074,10 @@ class HotelInformation(models.Model):
             writer = csv.writer(csvFile)
             writer.writerows(new_to_add_list2)
         csvFile.close()
+
+        _logger.info('===============================')
+        _logger.info('==        RENDER DONE        ==')
+        _logger.info('===============================')
 
     # Cek setiap record HOMAS FIND yg data2x e kurang
     # Return dari file ini adalah jumlah
@@ -2224,6 +2242,7 @@ class HotelInformation(models.Model):
 
     @api.multi
     def prepare_gateway_destination(self):
+        API_CN_HOTEL.signin()
         API_CN_HOTEL.send_request('prepare_gateway_cache', {
             'hotel_ids': [],
             'city_ids': self.env['test.search'].render_cache_city(),
