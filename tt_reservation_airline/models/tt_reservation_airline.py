@@ -267,6 +267,7 @@ class ReservationAirline(models.Model):
 
             book_obj = self.create(values)
             provider_ids,name_ids = book_obj._create_provider_api(schedules,context)
+
             response_provider_ids = []
             for provider in provider_ids:
                 response_provider_ids.append({
@@ -276,7 +277,8 @@ class ReservationAirline(models.Model):
 
             book_obj.write({
                 'provider_name': ','.join(name_ids['provider']),
-                'carrier_name': ','.join(name_ids['carrier'])
+                'carrier_name': ','.join(name_ids['carrier']),
+                'arrival_date': provider_ids[-1].arrival_date
             })
 
             ##pengecekan segment kembar airline dengan nama passengers
@@ -686,18 +688,18 @@ class ReservationAirline(models.Model):
             #     provider_origin = this_pnr_journey[0][2]['origin_id']
             #     provider_destination = this_pnr_journey[0][2]['destination_id']
             #     provider_departure_date = this_pnr_journey[0][2]['departure_date']
-            #     provider_return_date = this_pnr_journey[-1][2]['departure_date']
+            #     provider_arrival_date = this_pnr_journey[-1][2]['departure_date']
             # else:
             #     provider_direction = 'OW'
             #     provider_origin = this_pnr_journey[0][2]['origin_id']
             #     provider_destination = this_pnr_journey[0][2]['destination_id']
             #     provider_departure_date = this_pnr_journey[0][2]['departure_date']
-            #     provider_return_date = False
+            #     provider_arrival_date = False
             dest_idx = self.pick_destination(this_pnr_journey)
             provider_origin = this_pnr_journey[0][2]['origin_id']
             provider_destination = this_pnr_journey[dest_idx][2]['destination_id']
             provider_departure_date = this_pnr_journey[0][2]['departure_date']
-            provider_arrival_date = this_pnr_journey[-1][2]['departure_date']
+            provider_arrival_date = this_pnr_journey[-1][2]['arrival_date']
 
             sequence+=1
             values = {

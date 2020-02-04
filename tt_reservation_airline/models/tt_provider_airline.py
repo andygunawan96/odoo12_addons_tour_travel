@@ -291,7 +291,7 @@ class TtProviderAirline(models.Model):
             scs['pax_count'] = 0
             scs['passenger_airline_ids'] = []
             scs['total'] = 0
-            scs['currency_id'] = currency_obj.get_id(scs.get('currency'))
+            scs['currency_id'] = currency_obj.get_id(scs.get('currency'),default_param_idr=True)
             scs['foreign_currency_id'] = currency_obj.get_id(scs.get('foreign_currency'))
             scs['provider_airline_booking_id'] = self.id
             for psg in self.ticket_ids:
