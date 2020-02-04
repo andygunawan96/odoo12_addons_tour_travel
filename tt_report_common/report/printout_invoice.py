@@ -322,7 +322,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
             desc = ''
             desc += '%s' % (rec.tour_id.name,)
             desc += '\n'
-            desc += '%s - %s ' % (rec.departure_date, rec.return_date,)
+            desc += '%s - %s ' % (rec.departure_date, rec.arrival_date,)
             desc += '\n'
         elif data['context']['active_model'] == 'tt.reservation.visa':
             desc = ''
@@ -637,7 +637,7 @@ class PrintoutInvoice(models.AbstractModel):
             for provider in rec.provider_booking_ids:
                 if not a.get(provider.pnr):
                     a[provider.pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'total': rec.total}
-                temp_desc = (provider.tour_id.name if provider.tour_id.name else '') + '; ' + (str(provider.departure_date)[:10] if provider.departure_date else '') + ' - ' + (str(provider.return_date)[:10] if provider.return_date else '') + '; '
+                temp_desc = (provider.tour_id.name if provider.tour_id.name else '') + '; ' + (str(provider.departure_date)[:10] if provider.departure_date else '') + ' - ' + (str(provider.arrival_date)[:10] if provider.arrival_date else '') + '; '
                 a[provider.pnr]['descs'].append(temp_desc)
                 for ticket in provider.ticket_ids:
                     a[provider.pnr]['pax_data'].append({
@@ -671,7 +671,7 @@ class PrintoutInvoice(models.AbstractModel):
                     a[rec2.pnr]['descs'].append((rec2.origin_id.name if rec2.origin_id.name else '') + ' - ' +
                                                 (rec2.destination_id.name if rec2.destination_id.name else '') + '; ' +
                                                 str(rec2.departure_date if rec2.departure_date else '') + ' - ' +
-                                                str(rec2.return_date if rec2.return_date else '') + '; ' +
+                                                str(rec2.arrival_date if rec2.arrival_date else '') + '; ' +
                                                 (rec2.carrier_id.name if rec2.carrier_id.name else '') + ' ' +
                                                 (rec2.carrier_code if rec2.carrier_code else '') + ' - ' +
                                                 (rec2.carrier_number if rec2.carrier_number else '') + ' ')

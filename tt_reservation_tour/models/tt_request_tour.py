@@ -37,7 +37,7 @@ class TtRequestTour(models.Model):
                                       ('cruise', 'Cruise'),('other', 'Other (Please Specify in Notes)')], 'Tour Category', default='recreation', required=True, readonly=True,
                                      states={'draft': [('readonly', False)]})
     est_departure_date = fields.Date('Estimated Departure Date', required=True, readonly=True, states={'draft': [('readonly', False)]})
-    est_return_date = fields.Date('Estimated Return Date', required=True, readonly=True, states={'draft': [('readonly', False)]})
+    est_arrival_date = fields.Date('Estimated Return Date', required=True, readonly=True, states={'draft': [('readonly', False)]})
     est_departure_time = fields.Selection([('morning', 'Morning'), ('afternoon', 'Afternoon'), ('night', 'Night')], 'Estimated Departure Time', default='morning', required=True, readonly=True, states={'draft': [('readonly', False)]})
     est_return_time = fields.Selection([('morning', 'Morning'), ('afternoon', 'Afternoon'), ('night', 'Night')], 'Estimated Return Time', default='morning', required=True, readonly=True, states={'draft': [('readonly', False)]})
     location_ids = fields.Many2many('tt.tour.master.locations', 'tt_request_tour_location_rel', 'request_id',
@@ -82,7 +82,7 @@ class TtRequestTour(models.Model):
         if self.adult < 1:
             raise UserError("Tour Request must have at least 1 Adult Passenger.")
 
-        if self.est_departure_date >= self.est_return_date:
+        if self.est_departure_date >= self.est_arrival_date:
             raise UserError("Estimated Return Date must be later than Estimated Departure Date!")
 
         if self.min_budget > self.max_budget:

@@ -52,7 +52,7 @@
                         <group>
                             <field name="tour_id"/>
                             <field name="departure_date"/>
-                            <field name="return_date"/>
+                            <field name="arrival_date"/>
                         </group>
                         <group>
                             <field name="currency_id"/>
@@ -91,7 +91,7 @@
                 <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
                 <field name="tour_id"/>
                 <field name="departure_date"/>
-                <field name="return_date"/>
+                <field name="arrival_date"/>
                 <!--<field name="total"/>-->
                 <field name="state"/>
             </tree>

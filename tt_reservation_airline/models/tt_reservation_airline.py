@@ -697,7 +697,7 @@ class ReservationAirline(models.Model):
             provider_origin = this_pnr_journey[0][2]['origin_id']
             provider_destination = this_pnr_journey[dest_idx][2]['destination_id']
             provider_departure_date = this_pnr_journey[0][2]['departure_date']
-            provider_return_date = this_pnr_journey[-1][2]['departure_date']
+            provider_arrival_date = this_pnr_journey[-1][2]['departure_date']
 
             sequence+=1
             values = {
@@ -707,7 +707,7 @@ class ReservationAirline(models.Model):
                 'origin_id': provider_origin,
                 'destination_id': provider_destination,
                 'departure_date': provider_departure_date,
-                'return_date': provider_return_date,
+                'arrival_date': provider_arrival_date,
 
                 'booked_uid': api_context['co_uid'],
                 'booked_date': datetime.now(),

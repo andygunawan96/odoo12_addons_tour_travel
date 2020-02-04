@@ -6,7 +6,7 @@
             <search string="Search Tour Request">
                 <field name="name"/>
                 <field name="est_departure_date"/>
-                <field name="est_return_date"/>
+                <field name="est_arrival_date"/>
                 <field name="booker_id"/>
                 <field name="contact_id"/>
                 <field name="contact_email"/>
@@ -108,7 +108,7 @@
                             <field name="est_departure_time"/>
                         </group>
                         <group>
-                            <field name="est_return_date"/>
+                            <field name="est_arrival_date"/>
                             <field name="est_return_time"/>
                         </group>
                     </group>
@@ -163,7 +163,7 @@
                 <field name="contact_id"/>
                 <field name="tour_category"/>
                 <field name="est_departure_date"/>
-                <field name="est_return_date"/>
+                <field name="est_arrival_date"/>
                 <field name="adult"/>
                 <field name="child"/>
                 <field name="infant"/>

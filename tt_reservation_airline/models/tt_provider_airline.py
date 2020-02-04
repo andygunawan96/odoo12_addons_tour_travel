@@ -22,6 +22,7 @@ class TtProviderAirline(models.Model):
     destination_id = fields.Many2one('tt.destinations', 'Destination')
     departure_date = fields.Char('Departure Date')
     return_date = fields.Char('Return Date')
+    arrival_date = fields.Char('Arrival Date')
 
     sid_issued = fields.Char('SID Issued')#signature generate sendiri
 
@@ -362,7 +363,7 @@ class TtProviderAirline(models.Model):
             'origin': self.origin_id.code,
             'destination': self.destination_id.code,
             'departure_date': self.departure_date,
-            'return_date': self.return_date,
+            'arrival_date': self.arrival_date,
             'journeys': journey_list,
             'currency': self.currency_id.name,
             'hold_date': self.hold_date and self.hold_date or '',

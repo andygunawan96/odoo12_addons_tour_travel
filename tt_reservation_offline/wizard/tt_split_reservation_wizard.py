@@ -55,7 +55,7 @@ class TtSplitReservationWizard(models.TransientModel):
                     "departure_date": line_obj.departure_date,
                     "departure_hour": line_obj.departure_hour,
                     "departure_minute": line_obj.departure_minute,
-                    "return_date": line_obj.return_date,
+                    "arrival_date": line_obj.arrival_date,
                     "return_hour": line_obj.return_hour,
                     "return_minute": line_obj.return_minute,
                     "carrier_id": line_obj.carrier_id.id,

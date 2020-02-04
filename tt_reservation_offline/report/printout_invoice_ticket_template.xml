@@ -130,15 +130,15 @@
                                     </div>
                                     <div class="col-2" style="text-align: center;">
                                         <img t-att-src="'/tt_reservation_offline/static/images/airfreight-orange.svg'" style="max-height: 40px; max-width: 40px; margin-top: 45%; margin-bottom: 10px; transform: rotate(45deg); -webkit-transform: rotate(45deg);"/><br/>
-                                        <span style="font-size: 15px; font-weight: 400;"><span t-esc="(line['return_date']-line['departure_date']).seconds // 3600"/>h:<span t-esc="((line['return_date']-line['departure_date']).seconds // 60) %60"/>m</span>
+                                        <span style="font-size: 15px; font-weight: 400;"><span t-esc="(line['arrival_date']-line['departure_date']).seconds // 3600"/>h:<span t-esc="((line['arrival_date']-line['departure_date']).seconds // 60) %60"/>m</span>
                                     </div>
                                     <div class="col-5">
                                         <div style="height: 75px; max-height: 150px">
                                             <span style="font-size: 18px; font-weight:500"><span t-esc="line['destination_city']"/> (<span t-esc="line['destination_code']"/>)</span><br/>
                                             <span style="font-size: 16px; font-weight:200"><span t-esc="line['destination_name']"/></span>
                                         </div>
-                                        <span style="font-size: 16px; font-weight:200"><span t-esc="line['return_date'].strftime('%%d %B %Y')"/></span><br/>
-                                        <span style="font-size: 16px; font-weight:200"><span t-esc="line['return_date'].strftime('%H%M ( %I.%M %p )')"/></span>
+                                        <span style="font-size: 16px; font-weight:200"><span t-esc="line['arrival_date'].strftime('%%d %B %Y')"/></span><br/>
+                                        <span style="font-size: 16px; font-weight:200"><span t-esc="line['arrival_date'].strftime('%H%M ( %I.%M %p )')"/></span>
                                     </div>
                                 </div>
                             </div>
@@ -147,7 +147,7 @@
                                 <span style="font-size: 18px; font-weight: 400">Transit : <span t-esc="transit_total"/></span><br/>
                                 <t t-foreach="range(transit_total)" t-as="index">
                                     <span style="font-size: 14px">SUB <img t-att-src="'/tt_reservation_offline/static/images/arrow-right.png'" style="max-height:20px; max-width:15px; margin-bottom: 4px;" /> SIN</span><br/>
-                                    <img t-att-src="'/tt_reservation_offline/static/images/clock-circular-outline.png'" style="max-height:15px; max-width:15px;" /> <span style="font-size: 14px; font-weight: 200;"><span t-esc="(line['return_date']-line['departure_date']).seconds // 3600"/>h:<span t-esc="((line['return_date']-line['departure_date']).seconds // 60) %60"/>m</span><br/>
+                                    <img t-att-src="'/tt_reservation_offline/static/images/clock-circular-outline.png'" style="max-height:15px; max-width:15px;" /> <span style="font-size: 14px; font-weight: 200;"><span t-esc="(line['arrival_date']-line['departure_date']).seconds // 3600"/>h:<span t-esc="((line['arrival_date']-line['departure_date']).seconds // 60) %60"/>m</span><br/>
                                     <t t-if="index+1 != transit_total">
                                         <div style="border-bottom: 1px solid #909090; margin-top: 3px; margin-bottom: 3px;"/>
                                     </t>
@@ -358,7 +358,7 @@
                                     <t t-if="line_ids[line_index]['destination_city'] != line_ids[line_index]['destination_name']">
                                         <span t-esc="line_ids[line_index]['destination_name']"/><br/>  <!--<span t-esc="line_ids[line_index]['destination_city']"/>-->
                                     </t>
-                                    <span t-if="line_ids[line_index]['return_date']" t-esc="line_ids[line_index]['return_date'].strftime('%d %B %Y  %H:%M')"/>
+                                    <span t-if="line_ids[line_index]['arrival_date']" t-esc="line_ids[line_index]['arrival_date'].strftime('%d %B %Y  %H:%M')"/>
                                     <span style="color: white;">..</span>
                                 </div>
                             </t>
@@ -707,7 +707,7 @@
                                         <th><span t-esc="line['carrier_id']"/></th>
                                         <th><span t-esc="line['carrier_code']"/> <span t-esc="line['carrier_number']"/></th>
                                         <th><span t-esc="line['departure_date']"/></th>
-                                        <th><span t-esc="line['return_date']"/></th>
+                                        <th><span t-esc="line['arrival_date']"/></th>
                                     </tr>
                                 </tbody>
                             </table>

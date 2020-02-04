@@ -318,7 +318,7 @@ class TtGetBookingFromVendorReview(models.TransientModel):
             "origin": retrieve_res['journeys'][0]['origin'],
             "destination": retrieve_res['journeys'][-1]['destination'],
             "departure_date": retrieve_res['journeys'][0]['departure_date'],
-            "return_date": retrieve_res['journeys'][-1]['arrival_date'],
+            "arrival_date": retrieve_res['journeys'][-1]['arrival_date'],
             "currency": retrieve_res['currency'],
             "hold_date": retrieve_res['hold_date'],
             "tickets": ticket_req_list,##

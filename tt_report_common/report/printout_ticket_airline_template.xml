@@ -151,7 +151,7 @@
                                 <span style="font-size: 18px; font-weight: 400">Transit : <span t-esc="transit_total"/></span><br/>
                                 <t t-foreach="range(transit_total)" t-as="index">
                                     <span style="font-size: 14px">SUB <img t-att-src="'/tt_reservation_offline/static/images/arrow-right.png'" style="max-height:20px; max-width:15px; margin-bottom: 4px;" /> SIN</span><br/>
-                                    <img t-att-src="'/tt_reservation_offline/static/images/clock-circular-outline.png'" style="max-height:20px; max-width:20px;" /> <span style="font-size: 14px; font-weight: 400;"><span t-esc="(line['return_date']-line['departure_date']).seconds // 3600"/>h:<span t-esc="((line['return_date']-line['departure_date']).seconds // 60) %60"/>m</span><br/>
+                                    <img t-att-src="'/tt_reservation_offline/static/images/clock-circular-outline.png'" style="max-height:20px; max-width:20px;" /> <span style="font-size: 14px; font-weight: 400;"><span t-esc="(line['arrival_date']-line['departure_date']).seconds // 3600"/>h:<span t-esc="((line['arrival_date']-line['departure_date']).seconds // 60) %60"/>m</span><br/>
                                     <t t-if="index+1 != transit_total">
                                         <div style="border-bottom: 1px solid #909090; margin-top: 3px; margin-bottom: 3px;"/>
                                     </t>

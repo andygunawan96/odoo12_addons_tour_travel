@@ -97,7 +97,7 @@ class ReservationReportAirlineXls(models.TransientModel):
                 sheet.write(row_data, 6, i['child'], sty_amount)
                 sheet.write(row_data, 7, i['infant'], sty_amount)
                 sheet.write(row_data, 8, i['departure_date'], sty_date)
-                sheet.write(row_data, 9, i['return_date'], sty_date)
+                sheet.write(row_data, 9, i['arrival_date'], sty_date)
                 sheet.write(row_data, 10, i['provider_name'], sty_table_data)
                 sheet.write(row_data, 11, i['carrier_name'], sty_table_data)
                 sheet.write(row_data, 12, i['departure_name'], sty_table_data)

@@ -181,7 +181,7 @@
                     <!--                        &lt;!&ndash;<field name="origin"/>&ndash;&gt;-->
                     <!--                        &lt;!&ndash;<field name="destination"/>&ndash;&gt;-->
                     <!--                        &lt;!&ndash;<field name="departure_date"/>&ndash;&gt;-->
-                    <!--                        &lt;!&ndash;<field name="return_date"/>&ndash;&gt;-->
+                    <!--                        &lt;!&ndash;<field name="arrival_date"/>&ndash;&gt;-->
                     <!--                        &lt;!&ndash;&lt;!&ndash;<field name="total"/>&ndash;&gt;&ndash;&gt;-->
                     <!--                        &lt;!&ndash;<field name="state"/>&ndash;&gt;-->
                     <!--                        &lt;!&ndash;</tree>&ndash;&gt;-->
