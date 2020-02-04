@@ -98,7 +98,7 @@
                         <field name="sector_type"/>
                         <field name="direction"/>
                         <field name="departure_date" string="Departure Date"/>
-                        <field name="return_date" attrs="{'invisible': [('direction', '=', 'OW')],
+                        <field name="arrival_date" attrs="{'invisible': [('direction', '=', 'OW')],
                             'required': [('direction', '=', 'ret')]}"/>
                     </group>
                 </group>

@@ -59,7 +59,8 @@ class TtReservation(models.Model):
     infant = fields.Integer('Infant', default=0, readonly=True, states={'draft': [('readonly', False)]})
 
     departure_date = fields.Char('Journey Date', readonly=True, states={'draft': [('readonly', False)]})  # , required=True
-    return_date = fields.Char('Return Date', readonly=True, states={'draft': [('readonly', False)]})
+    return_date = fields.Char('Arrival Date', readonly=True, states={'draft': [('readonly', False)]})
+    arrival_date = fields.Char('Arrival Date', readonly=True, states={'draft': [('readonly', False)]})
 
     provider_type_id = fields.Many2one('tt.provider.type','Provider Type',readonly=True)
 
@@ -445,7 +446,7 @@ class TtReservation(models.Model):
             },
             'booker': self.booker_id.to_dict(),
             'departure_date': self.departure_date and self.departure_date or '',
-            'return_date': self.return_date and self.return_date or '',
+            'arrival_date': self.arrival_date and self.arrival_date or '',
             'provider_type': self.provider_type_id.code,
             'invoice_ids': invoice_list
         }

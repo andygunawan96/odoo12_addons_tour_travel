@@ -75,7 +75,7 @@
                     </group>
                     <group>
                         <field name="departure_date" string="Departure Date"/>
-                        <field name="return_date"/>
+                        <field name="arrival_date"/>
                     </group>
                 </group>
             </xpath>
@@ -206,7 +206,7 @@
                 <field name="tour_id"/>
                 <!--                    <field name="pnr"/>-->
                 <field name="departure_date"/>
-                <field name="return_date"/>
+                <field name="arrival_date"/>
                 <field name="booked_uid"/>
                 <field name="date"/>
                 <field name="hold_date"/>
