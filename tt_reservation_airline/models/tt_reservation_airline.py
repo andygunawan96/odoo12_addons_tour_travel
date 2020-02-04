@@ -278,7 +278,7 @@ class ReservationAirline(models.Model):
             book_obj.write({
                 'provider_name': ','.join(name_ids['provider']),
                 'carrier_name': ','.join(name_ids['carrier']),
-                'arrival_date': provider_ids[-1].arrival_date
+                'arrival_date': provider_ids[-1].arrival_date[:10]
             })
 
             ##pengecekan segment kembar airline dengan nama passengers

@@ -225,7 +225,7 @@ class TtGetBookingFromVendorReview(models.TransientModel):
             searchRQ_journey_list.append({
                 'origin': journey['origin'],
                 'destination': journey['destination'],
-                'departure_date': journey['departure_date']
+                'departure_date': journey['departure_date'][:10]
             })
             segment_req_list = []
             for segment in journey['segments']:
