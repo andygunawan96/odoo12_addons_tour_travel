@@ -50,7 +50,7 @@ class TtApiCon(models.Model):
             _logger.error(traceback.format_exc())
         return res
 
-    def _gateway_sign_in(self,co_uid = ''):
+    def _gateway_sign_in(self,co_uid=''):
         sign_in_req = {
             'user': self.username,
             'password': self.password,
