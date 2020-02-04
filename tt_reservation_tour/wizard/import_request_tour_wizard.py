@@ -52,7 +52,7 @@ class ImportRequestTourWizard(models.TransientModel):
 
             if upload_file.get('carrier_code'):
                 temp_carrier_id = self.env['tt.transport.carrier'].sudo().search([('code', '=', upload_file['carrier_code'])], limit=1)
-                carrier_id = temp_carrier_id and temp_carrier_id[0] or False
+                carrier_id = temp_carrier_id and temp_carrier_id[0].id or False
             else:
                 carrier_id = False
 
