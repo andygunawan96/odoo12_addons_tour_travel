@@ -736,5 +736,5 @@ class ReservationTour(models.Model):
         desc_txt += 'Tour: ' + self.tour_id.name + '<br/>'
         desc_txt += 'Category: ' + dict(self.tour_id._fields['tour_category'].selection).get(self.tour_id.tour_category) + ' - ' + dict(self.tour_id._fields['tour_type'].selection).get(self.tour_id.tour_type) + '<br/>'
         desc_txt += 'Departure Date: ' + datetime.strptime(self.departure_date, '%Y-%m-%d').strftime('%d %b %Y') + '<br/>'
-        desc_txt += 'Return Date: ' + datetime.strptime(self.arrival_date, '%Y-%m-%d').strftime('%d %b %Y') + '<br/>'
+        desc_txt += 'Arrival Date: ' + datetime.strptime(self.arrival_date, '%Y-%m-%d').strftime('%d %b %Y') + '<br/>'
         return desc_txt

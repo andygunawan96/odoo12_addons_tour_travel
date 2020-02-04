@@ -30,6 +30,7 @@
         'data/ir_cron_data.xml',
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
+        'wizard/import_request_tour_wizard_views.xml',
         'views/menu_item_base.xml',
         'views/tt_reservation_tour_views.xml',
         'views/tt_master_tour_quotation_views.xml',

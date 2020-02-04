@@ -200,6 +200,8 @@ class TestSearch(models.Model):
             return 'oyo'
         elif provider == 'A12':
             return 'knb'
+        elif provider == 'A13':
+            return 'rodextrip_hotel'
         else:
             return provider
 
