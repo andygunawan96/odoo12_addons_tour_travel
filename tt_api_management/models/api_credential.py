@@ -102,6 +102,11 @@ class ApiManagement(models.Model):
                     raise Exception('Co User and Co Password is not match')
                 _co_user = self.env['res.users'].sudo().browse(co_uid)
                 values.update(_co_user.get_credential(prefix='co_'))
+            if data.get('co_uid'):
+                if response['api_role'] != 'admin':
+                    raise Exception('User Role is not allowed.')
+                _co_user = self.env['res.users'].sudo().browse(int(data['co_uid']))
+                values.update(_co_user.get_credential(prefix='co_'))
             response.update(values)
             res = Response().get_no_error(response)
         except Exception as e:

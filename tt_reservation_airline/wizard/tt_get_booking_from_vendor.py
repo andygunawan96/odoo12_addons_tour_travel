@@ -64,7 +64,7 @@ class TtGetBookingFromVendor(models.TransientModel):
             raise UserError("Calling Code Must be Number.")
         if self.booker_mobile and not self.booker_mobile.isnumeric() or False:
             raise UserError("Booker Mobile Must be Number.")
-        res = self.env['tt.airline.api.con'].send_get_booking_from_vendor(self.pnr,self.provider)
+        res = self.env['tt.airline.api.con'].send_get_booking_from_vendor(self.user_id.id,self.pnr,self.provider)
         print(json.dumps(res))
         if res['error_code'] != 0:
             raise UserError(res['error_msg'])

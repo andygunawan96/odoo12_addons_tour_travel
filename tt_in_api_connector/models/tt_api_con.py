@@ -50,14 +50,17 @@ class TtApiCon(models.Model):
             _logger.error(traceback.format_exc())
         return res
 
-    def _gateway_sign_in(self):
+    def _gateway_sign_in(self,co_uid = ''):
+        sign_in_req = {
+            'user': self.username,
+            'password': self.password,
+            'api_key': self.api_key,
+        }
+        if co_uid:
+            sign_in_req['co_uid'] = co_uid
         res = self._send_request(
-            '%s/session' % (self.url)
-            ,{
-                'user': self.username,
-                'password': self.password,
-                'api_key': self.api_key,
-            },
+            '%s/session' % (self.url),
+            sign_in_req,
             self._get_header('signin'),
             content_type='json'
         )
@@ -83,7 +86,7 @@ class TtApiCon(models.Model):
             self.api_key = self.env['tt.api.credential'].search([('user_id','=',self.uid),('api_role','=','admin')],limit=1).api_key
         except Exception as e:
             _logger.error('Backend Connector Config Error, %s' % str(e))
-        signature = self._gateway_sign_in()
+        signature = self._gateway_sign_in(data.get('proxy_co_uid',''))
         res = self._send_request(url,data,self._get_header(service_name, signature),content_type=content_type,request_type=request_type,timeout=timeout)
         res['signature'] = signature
         return res

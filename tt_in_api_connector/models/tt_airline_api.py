@@ -37,8 +37,9 @@ class TtAirlineApiCon(models.Model):
                                             request,
                                             'notification_api')
 
-    def send_get_booking_from_vendor(self,pnr,provider):
+    def send_get_booking_from_vendor(self, co_uid, pnr, provider):
         request = {
+            'proxy_co_uid': co_uid,
             'pnr': pnr,
             'provider': provider
         }
