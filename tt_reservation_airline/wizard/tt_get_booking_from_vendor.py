@@ -141,7 +141,8 @@ class TtGetBookingFromVendor(models.TransientModel):
                 "mobile": self.booker_id.phone_ids and self.booker_id.phone_ids[0].calling_number or "",
                 "nationality_code": self.booker_id.nationality_id.code,
                 "is_also_booker": True,
-                "gender": self.booker_id.gender
+                "gender": self.booker_id.gender,
+                "is_get_booking_from_vendor": True
             }
         else:
             booker_data = {
@@ -153,7 +154,8 @@ class TtGetBookingFromVendor(models.TransientModel):
                 "mobile": self.booker_mobile,
                 "nationality_code": self.booker_nationality_id.code,
                 "is_also_booker": True,
-                "gender": "male" if self.booker_title == "MR" or self.booker_title == "MSTR" else "female"
+                "gender": "male" if self.booker_title == "MR" or self.booker_title == "MSTR" else "female",
+                "is_get_booking_from_vendor": True
             }
 
         vals = {
@@ -265,6 +267,9 @@ class TtGetBookingFromVendorReview(models.TransientModel):
             "direction": "MC",
             "is_get_booking_from_vendor": True
         }
+
+        for rec in retrieve_res['passengers']:
+            rec['is_get_booking_from_vendor'] = True
 
         create_req = {
             "force_issued": False,

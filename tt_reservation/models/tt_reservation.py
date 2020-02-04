@@ -173,6 +173,7 @@ class TtReservation(models.Model):
             'gender': vals.get('gender'),
             'marital_status': 'married' if vals.get('title') == 'MRS' else '',
             'customer_parent_ids': [(4,agent_obj.customer_parent_walkin_id.id )],
+            'is_get_booking_from_vendor': vals.get('is_get_booking_from_vendor',False)
         })
         return booker_obj.create(vals)
 
@@ -228,7 +229,8 @@ class TtReservation(models.Model):
             'last_name': vals.get('last_name'),
             'marital_status': 'married' if vals.get('title') == 'MRS' else '',
             'customer_parent_ids': [(4, agent_obj.customer_parent_walkin_id.id)],##TODO jadi COR ID jika yang login adalah user COR
-            'gender': vals.get('gender')
+            'gender': vals.get('gender'),
+            'is_get_booking_from_vendor': vals.get('is_get_booking_from_vendor', False)
         })
 
         return contact_obj.create(vals)
@@ -286,6 +288,7 @@ class TtReservation(models.Model):
             psg.update({
                 'customer_parent_ids': [(4, agent_obj.customer_parent_walkin_id.id)], ##TODO jadi COR ID jika yang login adalah user COR
                 'marital_status': 'married' if psg.get('title') == 'MRS' else '',
+                'is_get_booking_from_vendor': psg.get('is_get_booking_from_vendor', False)
             })
             #if ada phone, kalau dari frontend cache passenger
             if psg.get('phone'):

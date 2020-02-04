@@ -40,6 +40,7 @@ class TtCustomer(models.Model):
     active = fields.Boolean('Active', default=True)
 
     identity_ids = fields.One2many('tt.customer.identity','customer_id','Identity List')
+    is_get_booking_from_vendor = fields.Boolean('Get Booking From Vendor')
 
     @api.depends('first_name', 'last_name')
     def _compute_name(self):
@@ -206,7 +207,8 @@ class TtCustomer(models.Model):
     def get_customer_list_api(self,req,context):
         try:
             print("request teropong\n"+json.dumps((req))+json.dumps(context))
-            dom = [('agent_id','=',context['co_agent_id'])]
+            dom = [('agent_id','=',context['co_agent_id']),
+                   ('is_get_booking_from_vendor','=',False)]
 
             if util.get_without_empty(req,'name'):
                 dom.append(('name','ilike',req['name']))
