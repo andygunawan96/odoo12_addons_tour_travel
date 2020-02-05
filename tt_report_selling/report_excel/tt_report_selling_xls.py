@@ -301,8 +301,15 @@ class ReportSellingXls(models.TransientModel):
         destination_sector_summary = []
         destination_direction_summary = []
         carrier_name_summary = []
+        no_departure = ""
+        no_destination = ""
         # ================ proceed the data =====================
         for i in values['lines']:
+
+            if str(i['destination']) == "":
+                no_destination += " {}".format(i['reservation_order_number'])
+            if str(i['departure']) == "":
+                no_departure += " {}".format(i['reservation_order_number'])
 
             # ============= Issued Booked ratio by date ==================
             try:
@@ -490,6 +497,8 @@ class ReportSellingXls(models.TransientModel):
                 destination_direction_summary[returning_index]['counter'] += 1
                 destination_direction_summary[returning_index]['passenger_count'] += i['reservation_passenger']
 
+        sheet.write(5, 8, no_departure, style.table_data)
+        sheet.write(6, 8, no_destination, style.table_data)
         # ======== LETS filter some stuffs ===================
         # filtered_by_provider = list(filter(lambda x: x['provider_type_name'] == provider_type_summary[0]['provider_type'], values['lines']))
         international_filter = list(filter(lambda x: x['sector'] == 'International', destination_sector_summary))
@@ -547,7 +556,6 @@ class ReportSellingXls(models.TransientModel):
                 sty_table_data = style.table_data
                 if row_data % 2 == 0:
                     sty_table_data = style.table_data_even
-
 
                 sheet.write(row_data, 1, international_filter[i]['departure'], sty_table_data)
                 sheet.write(row_data, 2, international_filter[i]['destination'], sty_table_data)
@@ -1642,7 +1650,7 @@ class ReportSellingXls(models.TransientModel):
                 pass
 
             product_index = self.check_index(product_summary, 'product', i['reservation_activity_name'])
-            if product_index != -1:
+            if product_index == -1:
                 temp_dict = {
                     'product': i['reservation_activity_name'],
                     'counter': 1,
