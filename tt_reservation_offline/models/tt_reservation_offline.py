@@ -219,6 +219,7 @@ class IssuedOffline(models.Model):
             if not self.check_passenger_empty():
                 if self.total != 0:
                     self.state_offline = 'confirm'
+                    self.state = 'pending'
                     self.confirm_date = fields.Datetime.now()
                     self.confirm_uid = kwargs.get('co_uid') and kwargs['co_uid'] or self.env.user.id
                     if not self.acquirer_id:
@@ -322,6 +323,9 @@ class IssuedOffline(models.Model):
         for rec in self.line_ids:
             if rec.pnr is False:
                 empty = True
+            else:
+                if len(rec.pnr) <= 1:
+                    empty = True
         return empty
 
     def check_provider_empty(self):
@@ -371,27 +375,30 @@ class IssuedOffline(models.Model):
 
     @api.one
     def action_done(self,  kwargs={}):
-        if self.resv_code:
-            if self.provider_type_id_name in ['activity', 'hotel']:
-                if self.check_pnr_empty():
-                    raise UserError(_('PNR(s) can\'t be Empty'))
-            if self.attachment_ids:
-                self.state = 'issued'
-                self.state_offline = 'done'
-                self.done_date = fields.Datetime.now()
-                self.done_uid = kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
-                self.booked_date = fields.Datetime.now()
-                self.booked_uid = kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
-                self.get_pnr_list_from_provider()
-                self.create_final_ho_ledger(self)
-                for provider in self.provider_booking_ids:
-                    provider.state = 'issued'
-                    provider.issued_date = self.issued_date
-                    provider.issued_uid = self.issued_uid
+        if self.state_offline != 'cancel':
+            if self.resv_code:
+                if self.provider_type_id_name in ['activity', 'hotel']:
+                    if self.check_pnr_empty():
+                        raise UserError(_('PNR(s) can\'t be Empty'))
+                if self.attachment_ids:
+                    self.state = 'issued'
+                    self.state_offline = 'done'
+                    self.done_date = fields.Datetime.now()
+                    self.done_uid = kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
+                    self.booked_date = fields.Datetime.now()
+                    self.booked_uid = kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
+                    self.get_pnr_list_from_provider()
+                    self.create_final_ho_ledger(self)
+                    for provider in self.provider_booking_ids:
+                        provider.state = 'issued'
+                        provider.issued_date = self.issued_date
+                        provider.issued_uid = self.issued_uid
+                else:
+                    raise UserError('Attach Booking/Resv. Document')
             else:
-                raise UserError('Attach Booking/Resv. Document')
+                raise UserError('Add Vendor Order Number')
         else:
-            raise UserError('Add Vendor Order Number')
+            raise UserError('Canceled offline cannot be done.')
 
     @api.one
     def action_refund(self):
@@ -430,6 +437,7 @@ class IssuedOffline(models.Model):
         except Exception as e:
             _logger.error(traceback.format_exc())
         return ERR.get_error(1013)
+
     # to generate sale service charge
     def calculate_service_charge(self):
         for service_charge in self.sale_service_charge_ids:
@@ -1187,11 +1195,11 @@ class IssuedOffline(models.Model):
                         raise RequestException(1017)
                 else:
                     # raise RequestException(1017)
-                    acquirer_id = self.agent_id.default_acquirer_id
+                    acquirer_id = book_obj.agent_id.default_acquirer_id
                 book_obj.sudo().write({
                     'acquirer_id': acquirer_id.id,
                 })
-                customer_parent_id = self.agent_id.customer_parent_walkin_id.id  # fpo
+                customer_parent_id = book_obj.agent_id.customer_parent_walkin_id.id  # fpo
 
             book_obj.sudo().write({
                 'customer_parent_id': customer_parent_id,

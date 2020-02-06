@@ -52,9 +52,7 @@ class IssuedOfflineLines(models.Model):
     _name = 'tt.reservation.offline.lines'
     _description = 'Rodex Model'
 
-    pnr = fields.Char('PNR', readonly=True, states={'draft': [('readonly', False)],
-                                                    'confirm': [('readonly', False)],
-                                                    'validate': [('readonly', False)]})
+    pnr = fields.Char('PNR')
 
     booking_id = fields.Many2one('tt.reservation.offline', 'Reservation Offline')
     obj_qty = fields.Integer('Qty', readonly=False, default=1)
