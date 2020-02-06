@@ -139,6 +139,19 @@
                             <field name="destination_country_ids" nolabel="1"/>
                         </group>
                     </group>
+                    <separator string="Infant Pricing Configuration"/>
+                    <group>
+                        <group>
+                            <field name="is_compute_infant_basic"/>
+                            <field name="is_compute_infant_tax"/>
+                            <field name="is_compute_infant_after_tax"/>
+                        </group>
+                        <group>
+                            <field name="is_compute_infant_upsell"/>
+                            <field name="is_compute_infant_fee"/>
+                            <!--<field name="is_provide_infant_commission"/>-->
+                        </group>
+                    </group>
                     <separator string="Details"/>
                     <group>
                         <group>
