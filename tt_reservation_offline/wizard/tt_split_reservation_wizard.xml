@@ -10,6 +10,8 @@
                     <group>
                         <field name="res_id"/>
                         <field name="referenced_document"/>
+                        <field name="total_price"/>
+                        <field name="new_commission"/>
                         <field name="vendor_amount"/>
                         <field name="new_pnr"/>
                         <field name="new_pnr_text"/>
