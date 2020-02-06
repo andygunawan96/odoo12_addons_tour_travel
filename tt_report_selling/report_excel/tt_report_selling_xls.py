@@ -306,9 +306,9 @@ class ReportSellingXls(models.TransientModel):
         # ================ proceed the data =====================
         for i in values['lines']:
 
-            if str(i['destination']) == "":
+            if not i['destination']:
                 no_destination += " {}".format(i['reservation_order_number'])
-            if str(i['departure']) == "":
+            if not i['departure']:
                 no_departure += " {}".format(i['reservation_order_number'])
 
             # ============= Issued Booked ratio by date ==================
