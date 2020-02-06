@@ -218,7 +218,8 @@ class IssuedOffline(models.Model):
         if not self.check_line_empty():
             if not self.check_passenger_empty():
                 if self.total != 0:
-                    self.state_offline = 'pending'
+                    self.state_offline = 'confirm'
+                    self.state = 'pending'
                     self.confirm_date = fields.Datetime.now()
                     self.confirm_uid = kwargs.get('co_uid') and kwargs['co_uid'] or self.env.user.id
                     if not self.acquirer_id:
