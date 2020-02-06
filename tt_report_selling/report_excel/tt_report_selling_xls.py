@@ -350,6 +350,8 @@ class ReportSellingXls(models.TransientModel):
                 pass
 
             # ============= Summary by Carrier ===========================
+            if not i['reservation_provider_name']:
+                i['reservation_provider_name'] = "Undefined"
             carrier_index = self.check_index(carrier_name_summary, 'carrier_name', i['reservation_provider_name'])
             if carrier_index == -1:
                 temp_dict = {
