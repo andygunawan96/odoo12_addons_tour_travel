@@ -41,6 +41,7 @@ class TtCustomer(models.Model):
 
     identity_ids = fields.One2many('tt.customer.identity','customer_id','Identity List')
     is_get_booking_from_vendor = fields.Boolean('Get Booking From Vendor')
+    is_search_allowed = fields.Boolean("Search Allowed", default=True)
 
     @api.depends('first_name', 'last_name')
     def _compute_name(self):
@@ -61,10 +62,12 @@ class TtCustomer(models.Model):
             body = "Message has been approved on %s", datetime.now()
             rec.message_post(body=body)
 
-        
+
     @api.model
     def create(self, vals_list):
-        util.pop_empty_key(vals_list)
+        util.pop_empty_key(vals_list,whitelist=[
+            'is_search_allowed','is_get_booking_from_vendor','active'
+        ])
         vals_list['seq_id'] = self.env['ir.sequence'].next_by_code('tt.customer')
         if 'first_name' in vals_list:
             vals_list['first_name'] = vals_list['first_name'].strip()
@@ -74,12 +77,17 @@ class TtCustomer(models.Model):
 
     @api.multi
     def write(self, vals):
-        util.pop_empty_key(vals)
+        util.pop_empty_key(vals,whitelist=[
+            'is_search_allowed','is_get_booking_from_vendor','active'
+        ])
         if 'first_name' in vals:
             vals['first_name'] = vals['first_name'].strip()
         if 'last_name' in vals:
             vals['last_name'] = vals['last_name'].strip()
         return super(TtCustomer, self).write(vals)
+
+    def toggle_search_allowed(self):
+        self.is_search_allowed = not self.is_search_allowed
 
     def to_dict(self):
         phone_list = []
@@ -88,6 +96,17 @@ class TtCustomer(models.Model):
         identity_dict = {}
         for rec in self.identity_ids:
             identity_dict.update(rec.to_dict())
+        customer_parent_list = []
+        for rec in self.customer_parent_ids:
+            if rec.credit_limit != 0 and rec.state == 'done':
+                customer_parent_list.append({
+                    'name': rec.name,
+                    'actual_balance': rec.actual_balance,
+                    'credit_limit': rec.credit_limit,
+                    'currency': rec.currency_id.name,
+                    'seq_id': rec.seq_id,
+                    'type': rec.customer_parent_type_id and rec.customer_parent_type_id.name or ''
+                })
 
         res = {
             'name': self.name,
@@ -102,7 +121,8 @@ class TtCustomer(models.Model):
             'phones': phone_list,
             'email': self.email and self.email or '',
             'seq_id': self.seq_id,
-            'identities': identity_dict
+            'identities': identity_dict,
+            'customer_parents': customer_parent_list
         }
         return res
 
@@ -208,7 +228,7 @@ class TtCustomer(models.Model):
         try:
             print("request teropong\n"+json.dumps((req))+json.dumps(context))
             dom = [('agent_id','=',context['co_agent_id']),
-                   ('is_get_booking_from_vendor','=',False)]
+                   ('is_search_allowed','=',True)]
 
             if util.get_without_empty(req,'name'):
                 dom.append(('name','ilike',req['name']))
@@ -229,9 +249,10 @@ class TtCustomer(models.Model):
                     if not (upper <= cust.birth_date <= lower):
                         continue
                 else:
-                    if req.get('type') == 'psg' and req['lower']<12:
+                    if req.get('type') == 'psg' and req['upper']<12:
                         continue
                 values = cust.to_dict()
+
                 customer_list.append(values)
             _logger.info(json.dumps(customer_list))
             return ERR.get_no_error(customer_list)
@@ -239,6 +260,33 @@ class TtCustomer(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error()
 
+    def get_customer_customer_parent_list_api(self,req,context):
+        try:
+            print("request customer parent\n"+json.dumps((req))+json.dumps(context))
+            dom = [('agent_id','=',context['co_agent_id']),
+                   ('is_get_booking_from_vendor','=',False),
+                   ('seq_id','=',req.get('seq_id'))]
+
+            cust_obj = self.search(dom,limit=1)
+
+            c_parent_list = []
+            if cust_obj:
+                if cust_obj.customer_parent_ids:
+                    for rec in cust_obj.customer_parent_ids:
+                        if rec.credit_limit != 0 and rec.state == 'done':
+                            c_parent_list.append({
+                                'name': rec.name,
+                                'actual_balance': rec.actual_balance,
+                                'credit_limit': rec.credit_limit,
+                                'currency': rec.currency_id.name,
+                                'seq_id': rec.seq_id,
+                            })
+
+            _logger.info(json.dumps(c_parent_list))
+            return ERR.get_no_error(c_parent_list)
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error()
     def add_identity_button(self):
         self.add_or_update_identity('sim',time.time(),157,'2024-09-01')
 
@@ -416,7 +464,7 @@ class TtCustomerIdentityNumber(models.Model):
                     raise UserError ('%s|%s Already Exists.' % (id1.id,id1.identity_type))
 
         return new_identity
-        
+
     def to_dict(self):
         image_list = [(rec.url,rec.seq_id) for rec in self.identity_image_ids]
         return {

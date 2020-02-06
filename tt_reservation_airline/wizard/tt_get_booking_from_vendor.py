@@ -1,6 +1,7 @@
 from odoo import api, fields, models, _
 import json,copy
 from odoo.exceptions import UserError
+from datetime import date
 
 class TtGetBookingFromVendor(models.TransientModel):
     _name = "tt.get.booking.from.vendor"
@@ -59,13 +60,24 @@ class TtGetBookingFromVendor(models.TransientModel):
         else:
             self.booker_id = False
 
+    def pnr_validator(self,pnr):
+        today = date.today()
+        date_query = today.replace(day=today.day+7)
+        airlines = self.env['tt.reservation.airline'].search([
+            ('pnr','ilike',pnr),
+            ('state','not in',['cancel','draft']),
+            ('arrival_date','>',date_query)
+        ])
+        if airlines:
+            raise UserError('PNR Exists.')
+
     def send_get_booking(self):
         if self.booker_calling_code and not self.booker_calling_code.isnumeric() or False:
             raise UserError("Calling Code Must be Number.")
         if self.booker_mobile and not self.booker_mobile.isnumeric() or False:
             raise UserError("Booker Mobile Must be Number.")
+        self.pnr_validator(self.pnr)
         res = self.env['tt.airline.api.con'].send_get_booking_from_vendor(self.user_id.id,self.pnr,self.provider)
-        print(json.dumps(res))
         if res['error_code'] != 0:
             raise UserError(res['error_msg'])
         get_booking_res = res['response']
@@ -100,7 +112,6 @@ class TtGetBookingFromVendor(models.TransientModel):
                         prices[svc['pax_type']][svc['charge_type']]['pax_count'] = svc['pax_count']
                         prices[svc['pax_type']][svc['charge_type']]['currency'] = svc['currency']
                         prices[svc['pax_type']][svc['charge_type']]['foreign_currency'] = svc['foreign_currency']
-        print(json.dumps(prices))
         grand_total = 0
         commission = 0
         for pax_type,pax_val in prices.items():
@@ -114,6 +125,7 @@ class TtGetBookingFromVendor(models.TransientModel):
                     grand_total += charge_val['total']
                 else:
                     commission += charge_val['total']
+            price_values += '\n'
 
         passenger_values = ""
         pax_count = {}
@@ -142,7 +154,7 @@ class TtGetBookingFromVendor(models.TransientModel):
                 "nationality_code": self.booker_id.nationality_id.code,
                 "is_also_booker": True,
                 "gender": self.booker_id.gender,
-                "is_get_booking_from_vendor": True
+                "booker_seq_id": self.booker_id.seq_id
             }
         else:
             booker_data = {
@@ -155,7 +167,8 @@ class TtGetBookingFromVendor(models.TransientModel):
                 "nationality_code": self.booker_nationality_id.code,
                 "is_also_booker": True,
                 "gender": "male" if self.booker_title == "MR" or self.booker_title == "MSTR" else "female",
-                "is_get_booking_from_vendor": True
+                "is_get_booking_from_vendor": True,
+                "is_search_allowed": False
             }
 
         vals = {
@@ -270,6 +283,7 @@ class TtGetBookingFromVendorReview(models.TransientModel):
 
         for rec in retrieve_res['passengers']:
             rec['is_get_booking_from_vendor'] = True
+            rec['is_search_allowed'] = False
 
         create_req = {
             "force_issued": False,
