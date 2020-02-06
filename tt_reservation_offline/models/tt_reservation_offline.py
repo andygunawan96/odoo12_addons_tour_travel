@@ -320,7 +320,7 @@ class IssuedOffline(models.Model):
     def check_pnr_empty(self):
         empty = False
         for rec in self.line_ids:
-            if rec.pnr is False:
+            if rec.pnr is False or len(rec.pnr) == 1:
                 empty = True
         return empty
 
