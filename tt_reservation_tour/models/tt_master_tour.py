@@ -66,6 +66,7 @@ class MasterTour(models.Model):
 
     departure_date = fields.Date('Departure Date', required=True)
     return_date = fields.Date('Arrival Date', required=True)
+    arrival_date = fields.Date('Arrival Date', required=True)
     name_with_date = fields.Text('Display Name', readonly=True, compute='_compute_name_with_date', store=True)
     duration = fields.Integer('Duration (days)', help="in day(s)", readonly=True,
                               compute='_compute_duration', store=True)
@@ -164,11 +165,11 @@ class MasterTour(models.Model):
                 raise UserError(_('Total Installments and Down Payment cannot be more than 100%. Please re-adjust your Installment Payment Rules!'))
         return super(MasterTour, self).write(vals)
 
-    @api.depends("name", "departure_date", "return_date")
+    @api.depends("name", "departure_date", "arrival_date")
     def _compute_name_with_date(self):
         for rec in self:
             start_date = rec.departure_date and rec.departure_date.strftime('%d %b %Y') or ''
-            end_date = rec.return_date and rec.return_date.strftime('%d %b %Y') or ''
+            end_date = rec.arrival_date and rec.arrival_date.strftime('%d %b %Y') or ''
             rec.name_with_date = "[" + start_date + " - " + end_date + "] " + rec.name
 
     @api.depends("name")
@@ -273,22 +274,22 @@ class MasterTour(models.Model):
             for passenger in rec.passengers_ids:
                 self.action_send_email(passenger.id)
 
-    @api.depends('departure_date', 'return_date')
-    @api.onchange('departure_date', 'return_date')
+    @api.depends('departure_date', 'arrival_date')
+    @api.onchange('departure_date', 'arrival_date')
     def _compute_survey_date(self):
         for rec in self:
-            if rec.departure_date and rec.return_date:
-                diff = (datetime.strptime(str(rec.return_date), '%Y-%m-%d') - datetime.strptime(str(rec.departure_date),'%Y-%m-%d')).days
+            if rec.departure_date and rec.arrival_date:
+                diff = (datetime.strptime(str(rec.arrival_date), '%Y-%m-%d') - datetime.strptime(str(rec.departure_date),'%Y-%m-%d')).days
                 mod = diff % 2
                 mod += int(diff / 2)
                 rec.survey_date = str(datetime.strptime(str(rec.departure_date), '%Y-%m-%d') + relativedelta(days=mod))
 
-    @api.depends('departure_date', 'return_date')
-    @api.onchange('departure_date', 'return_date')
+    @api.depends('departure_date', 'arrival_date')
+    @api.onchange('departure_date', 'arrival_date')
     def _compute_duration(self):
         for rec in self:
-            if rec.departure_date and rec.return_date:
-                diff = (datetime.strptime(str(rec.return_date), '%Y-%m-%d') - datetime.strptime(
+            if rec.departure_date and rec.arrival_date:
+                diff = (datetime.strptime(str(rec.arrival_date), '%Y-%m-%d') - datetime.strptime(
                     str(rec.departure_date), '%Y-%m-%d')).days
                 rec.duration = str(diff)
 
@@ -535,7 +536,7 @@ class MasterTour(models.Model):
                     'infant_sale_price': infant_sale_price,
                     'images_obj': images,
                     'departure_date': rec['departure_date'] and rec['departure_date'] or '',
-                    'return_date': rec['return_date'] and rec['return_date'] or '',
+                    'arrival_date': rec['arrival_date'] and rec['arrival_date'] or '',
                     'start_period': rec.get('start_period') and rec['start_period'] or '',
                     'end_period': rec.get('end_period') and rec['end_period'] or '',
                     'provider_id': rec.get('provider_id') and rec['provider_id'] or '',
@@ -601,12 +602,12 @@ class MasterTour(models.Model):
                 'departure_date_fmt': utc_tz.localize(segment.departure_date).astimezone(user_tz).strftime('%d-%b-%Y %H:%M'),
                 'destination_id': segment.destination_id.display_name,
                 'destination_terminal': segment.destination_terminal,
-                'return_date': utc_tz.localize(segment.return_date).astimezone(user_tz),
-                'return_date_fmt': utc_tz.localize(segment.return_date).astimezone(user_tz).strftime('%d-%b-%Y %H:%M'),
+                'arrival_date': utc_tz.localize(segment.arrival_date).astimezone(user_tz),
+                'arrival_date_fmt': utc_tz.localize(segment.arrival_date).astimezone(user_tz).strftime('%d-%b-%Y %H:%M'),
                 'delay': 'None',
             }
             if old_vals and old_vals['journey_type'] == segment.journey_type:
-                time_delta = utc_tz.localize(segment.departure_date).astimezone(user_tz) - old_vals['return_date']
+                time_delta = utc_tz.localize(segment.departure_date).astimezone(user_tz) - old_vals['arrival_date']
                 day = int(time_delta.days)
                 hours = int(time_delta.seconds / 3600)
                 minute = int((time_delta.seconds / 60) % 60)
@@ -721,7 +722,7 @@ class MasterTour(models.Model):
                 'child_sale_price': child_sale_price <= 0 and '0' or child_sale_price,
                 'infant_sale_price': infant_sale_price <= 0 and '0' or infant_sale_price,
                 'departure_date': tour_obj.departure_date and tour_obj.departure_date or '',
-                'return_date': tour_obj.return_date and tour_obj.return_date or '',
+                'arrival_date': tour_obj.arrival_date and tour_obj.arrival_date or '',
                 'start_period': tour_obj.start_period and tour_obj.start_period or '',
                 'end_period': tour_obj.end_period and tour_obj.end_period or '',
                 'country_names': country_names,

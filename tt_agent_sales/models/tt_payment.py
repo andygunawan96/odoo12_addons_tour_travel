@@ -100,8 +100,8 @@ class TtPaymentInh(models.Model):
 
             print("used amount "+str(rec.used_amount))
             print("available amount "+str(rec.available_amount))
-            if rec.available_amount < 0:
-                raise exceptions.UserError("Pay amount on %s exceeded payment's residual amount" % (self.name))
+            # if rec.available_amount < 0:
+            #     raise exceptions.UserError("Pay amount on %s exceeded payment's residual amount" % (self.name))
 
     def action_approve_payment(self):
         super(TtPaymentInh, self).action_approve_payment()

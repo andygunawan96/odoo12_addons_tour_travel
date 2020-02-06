@@ -22,6 +22,7 @@ class TtProviderTrain(models.Model):
     destination_id = fields.Many2one('tt.destinations', 'Destination')
     departure_date = fields.Char('Departure Date')
     return_date = fields.Char('Return Date')
+    arrival_date = fields.Char('Arrival Date')
 
     sid_issued = fields.Char('SID Issued')#signature generate sendiri
 
@@ -187,9 +188,10 @@ class TtProviderTrain(models.Model):
     def action_expired(self):
         self.state = 'cancel2'
 
-    def action_refund(self):
+    def action_refund(self, check_provider_state=False):
         self.state = 'refund'
-        self.booking_id.check_provider_state({'co_uid': self.env.user.id})
+        if check_provider_state:
+            self.booking_id.check_provider_state({'co_uid': self.env.user.id})
 
     def action_cancel(self):
         self.state = 'cancel'
@@ -321,7 +323,7 @@ class TtProviderTrain(models.Model):
             'origin': self.origin_id.code,
             'destination': self.destination_id.code,
             'departure_date': self.departure_date,
-            'return_date': self.return_date,
+            'arrival_date': self.arrival_date,
             'journeys': journey_list,
             'currency': self.currency_id.name,
             'hold_date': self.hold_date and self.hold_date or '',

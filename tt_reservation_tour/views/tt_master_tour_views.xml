@@ -85,9 +85,9 @@
                             <field name="tour_category"/>
                             <field name="tour_type" attrs="{'invisible': [('tour_category', '=', 'private')], 'required': [('tour_category', '!=', 'private')]}"/>
                             <field name="departure_date"/>
-                            <field name="return_date"/>
+                            <field name="arrival_date"/>
 <!--                            <field name="departure_date" attrs="{'invisible': [('tour_category', '=', 'private')], 'required': [('tour_category', '!=', 'private')]}"/>-->
-<!--                            <field name="return_date" attrs="{'invisible': [('tour_category', '=', 'private')], 'required': [('tour_category', '!=', 'private')]}"/>-->
+<!--                            <field name="arrival_date" attrs="{'invisible': [('tour_category', '=', 'private')], 'required': [('tour_category', '!=', 'private')]}"/>-->
 <!--                            <field name="start_period" attrs="{'invisible': [('tour_category', '!=', 'private')], 'required': [('tour_category', '=', 'private')]}"/>-->
 <!--                            <field name="end_period" attrs="{'invisible': [('tour_category', '!=', 'private')], 'required': [('tour_category', '=', 'private')]}"/>-->
                             <field name="agent_id" attrs="{'invisible': [('tour_category', '!=', 'private')], 'required': [('tour_category', '=', 'private')]}"/>
@@ -133,7 +133,7 @@
                             <field name="destination_id"/>
                             <field name="destination_terminal"/>
                             <field name="departure_date"/>
-                            <field name="return_date"/>
+                            <field name="arrival_date"/>
                         </tree>
                         <form>
                             <sheet>
@@ -155,7 +155,7 @@
                                     </group>
                                     <group>
                                         <field name="destination_id"/>
-                                        <field name="return_date"/>
+                                        <field name="arrival_date"/>
                                         <field name="destination_terminal"/>
                                     </group>
                                 </group>
@@ -475,7 +475,7 @@
                 <field name="tour_type"/>
                 <field name="tour_route"/>
                 <field name="departure_date"/>
-                <field name="return_date"/>
+                <field name="arrival_date"/>
                 <field name="country_str"/>
                 <field name="duration"/>
                 <field name="seat" string="Seat Available"/>

@@ -60,8 +60,8 @@ def get_request_data(request):
     return res
 
 
-def pop_empty_key(data):
-    temp_key = [key for key,value in data.items() if not value]
+def pop_empty_key(data,whitelist = []):
+    temp_key = [key for key,value in data.items() if not value and key not in whitelist]
 
     for key in temp_key:
         data.pop(key)

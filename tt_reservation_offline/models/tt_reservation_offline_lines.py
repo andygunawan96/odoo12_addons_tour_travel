@@ -71,6 +71,7 @@ class IssuedOfflineLines(models.Model):
     departure_hour = fields.Char('Departure Hour', readonly=False)
     departure_minute = fields.Char('Departure Minute', readonly=False)
     return_date = fields.Char('Return Date', readonly=False)
+    arrival_date = fields.Char('Arrival Date', readonly=False)
     return_hour = fields.Char('Return Hour', readonly=False)
     return_minute = fields.Char('Return Minute', readonly=False)
     origin_id = fields.Many2one('tt.destinations', 'Origin', readonly=False, domain="[('provider_type_id.code', '=', transaction_type)]")
@@ -184,7 +185,7 @@ class IssuedOfflineLines(models.Model):
             vals += rec.origin_id.name + ' - ' if rec.origin_id else ' - '
             vals += rec.destination_id.name + ' \n' if rec.destination_id else ' \n'
             vals += str(rec.departure_date) + ' - ' if rec.departure_date else ' - '
-            vals += str(rec.return_date) + ' \n' if rec.return_date else ' \n'
+            vals += str(rec.arrival_date) + ' \n' if rec.arrival_date else ' \n'
             vals += rec.carrier_id.name + ' ' if rec.carrier_id else ' '
             vals += rec.carrier_code + ' ' if rec.carrier_code else ' '
             vals += rec.carrier_number + ' \n' if rec.carrier_number else ' \n'
@@ -197,7 +198,7 @@ class IssuedOfflineLines(models.Model):
         vals += self.departure_date + ' ' if self.departure_date else ' '
         vals += self.departure_hour + ':' if self.departure_hour else ' '
         vals += self.departure_minute + ' - ' if self.departure_minute else ' - '
-        vals += self.return_date + ' ' if self.return_date else ' '
+        vals += self.arrival_date + ' ' if self.arrival_date else ' '
         vals += self.return_hour + ':' if self.return_hour else ' '
         vals += self.return_minute + ' \n' if self.return_minute else ' \n'
         vals += self.carrier_id.name + ' ' if self.carrier_id else ' '
@@ -303,7 +304,7 @@ class IssuedOfflineLines(models.Model):
                 'origin': self.origin_id.name if self.origin_id.name else '',
                 'destination': self.destination_id.name if self.destination_id.name else '',
                 'departure_date': (self.departure_date if self.departure_date else '') + ' ' + (self.departure_hour if self.departure_hour else '') + ':' + (self.departure_minute if self.departure_minute else ''),
-                'return_date': (self.return_date if self.return_date else '') + ' ' + (self.return_hour if self.return_hour else '') + ':' + (self.return_minute if self.return_minute else ''),
+                'arrival_date': (self.arrival_date if self.arrival_date else '') + ' ' + (self.return_hour if self.return_hour else '') + ':' + (self.return_minute if self.return_minute else ''),
                 'carrier': self.carrier_id.name if self.carrier_id.name else '',
                 'carrier_code': self.carrier_code if self.carrier_code else '',
                 'carrier_number': self.carrier_number if self.carrier_number else '',

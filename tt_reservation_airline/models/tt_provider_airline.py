@@ -22,6 +22,7 @@ class TtProviderAirline(models.Model):
     destination_id = fields.Many2one('tt.destinations', 'Destination')
     departure_date = fields.Char('Departure Date')
     return_date = fields.Char('Return Date')
+    arrival_date = fields.Char('Arrival Date')
 
     sid_issued = fields.Char('SID Issued')#signature generate sendiri
 
@@ -196,9 +197,10 @@ class TtProviderAirline(models.Model):
     def action_expired(self):
         self.state = 'cancel2'
 
-    def action_refund(self):
+    def action_refund(self, check_provider_state=False):
         self.state = 'refund'
-        self.booking_id.check_provider_state({'co_uid': self.env.user.id})
+        if check_provider_state:
+            self.booking_id.check_provider_state({'co_uid': self.env.user.id})
 
     def create_ticket_api(self,passengers,pnr=""):
         ticket_list = []
@@ -290,8 +292,8 @@ class TtProviderAirline(models.Model):
             scs['pax_count'] = 0
             scs['passenger_airline_ids'] = []
             scs['total'] = 0
-            scs['currency_id'] = currency_obj.get_id(scs.get('currency'))
-            scs['foreign_currency_id'] = currency_obj.get_id(scs.get('foreign_currency'))
+            scs['currency_id'] = currency_obj.get_id(scs.get('currency'),default_param_idr=True)
+            scs['foreign_currency_id'] = currency_obj.get_id(scs.get('foreign_currency'),default_param_idr=True)
             scs['provider_airline_booking_id'] = self.id
             for psg in self.ticket_ids:
                 if scs['pax_type'] == psg.pax_type:
@@ -362,7 +364,7 @@ class TtProviderAirline(models.Model):
             'origin': self.origin_id.code,
             'destination': self.destination_id.code,
             'departure_date': self.departure_date,
-            'return_date': self.return_date,
+            'arrival_date': self.arrival_date,
             'journeys': journey_list,
             'currency': self.currency_id.name,
             'hold_date': self.hold_date and self.hold_date or '',

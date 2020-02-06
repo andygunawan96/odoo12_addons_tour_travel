@@ -54,7 +54,7 @@
                             <field name="origin_id"/>
                             <field name="destination_id"/>
                             <field name="departure_date"/>
-                            <field name="return_date"/>
+                            <field name="arrival_date"/>
                         </group>
                         <group>
                             <field name="currency_id"/>
@@ -110,7 +110,7 @@
                 <field name="origin_id"/>
                 <field name="destination_id"/>
                 <field name="departure_date"/>
-                <field name="return_date"/>
+                <field name="arrival_date"/>
                 <!--<field name="total"/>-->
                 <field name="state"/>
             </tree>

@@ -537,7 +537,7 @@
                 <td style="width:150px;">Operator</td>
                 <td style="width:10px;">:</td>
                 <td style="width:400px;text-align: right;">
-                    <i t-field="doc.confirmed_uid.name"/>
+                    <i t-field="doc.confirmed_uid.sudo().name"/>
                 </td>
             </tr>
         </table>

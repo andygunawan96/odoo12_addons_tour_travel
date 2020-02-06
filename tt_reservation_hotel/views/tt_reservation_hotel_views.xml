@@ -303,10 +303,13 @@
                             </group>
                         </page>
                         <page string="Guest Detail">
-                            <field name="passenger_ids">
+                            <field name="passenger_ids" readonly="1">
                                 <tree>
-                                    <field name="name"/>
+                                    <field name="title"/>
+                                    <field name="first_name"/>
+                                    <field name="last_name"/>
                                     <field name="gender"/>
+                                    <field name="birth_date"/>
                                     <field name="nationality_id"/>
                                 </tree>
                             </field>

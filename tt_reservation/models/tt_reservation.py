@@ -60,6 +60,7 @@ class TtReservation(models.Model):
 
     departure_date = fields.Char('Journey Date', readonly=True, states={'draft': [('readonly', False)]})  # , required=True
     return_date = fields.Char('Return Date', readonly=True, states={'draft': [('readonly', False)]})
+    arrival_date = fields.Char('Arrival Date', readonly=True, states={'draft': [('readonly', False)]})
 
     provider_type_id = fields.Many2one('tt.provider.type','Provider Type',readonly=True)
 
@@ -172,6 +173,7 @@ class TtReservation(models.Model):
             'gender': vals.get('gender'),
             'marital_status': 'married' if vals.get('title') == 'MRS' else '',
             'customer_parent_ids': [(4,agent_obj.customer_parent_walkin_id.id )],
+            'is_get_booking_from_vendor': vals.get('is_get_booking_from_vendor',False),
         })
         return booker_obj.create(vals)
 
@@ -227,7 +229,8 @@ class TtReservation(models.Model):
             'last_name': vals.get('last_name'),
             'marital_status': 'married' if vals.get('title') == 'MRS' else '',
             'customer_parent_ids': [(4, agent_obj.customer_parent_walkin_id.id)],##TODO jadi COR ID jika yang login adalah user COR
-            'gender': vals.get('gender')
+            'gender': vals.get('gender'),
+            'is_get_booking_from_vendor': vals.get('is_get_booking_from_vendor', False),
         })
 
         return contact_obj.create(vals)
@@ -279,12 +282,12 @@ class TtReservation(models.Model):
                     res_ids.append(current_passenger)
                     continue
 
-            util.pop_empty_key(psg)
             psg['agent_id'] = context['co_agent_id']
             agent_obj = self.env['tt.agent'].sudo().browse(context['co_agent_id'])
             psg.update({
                 'customer_parent_ids': [(4, agent_obj.customer_parent_walkin_id.id)], ##TODO jadi COR ID jika yang login adalah user COR
                 'marital_status': 'married' if psg.get('title') == 'MRS' else '',
+                'is_get_booking_from_vendor': psg.get('is_get_booking_from_vendor', False),
             })
             #if ada phone, kalau dari frontend cache passenger
             if psg.get('phone'):
@@ -445,7 +448,7 @@ class TtReservation(models.Model):
             },
             'booker': self.booker_id.to_dict(),
             'departure_date': self.departure_date and self.departure_date or '',
-            'return_date': self.return_date and self.return_date or '',
+            'arrival_date': self.arrival_date and self.arrival_date or '',
             'provider_type': self.provider_type_id.code,
             'invoice_ids': invoice_list
         }
@@ -607,7 +610,7 @@ class TtReservation(models.Model):
                     agent_check_amount-=total_discount
 
                 balance_res = self.env['tt.agent'].check_balance_limit_api(context['co_agent_id'],agent_check_amount)
-                if balance_res['error_code']!=0:
+                if balance_res['error_code'] != 0:
                     _logger.error('Agent Balance not enough')
                     raise RequestException(1007,additional_message="agent balance")
 

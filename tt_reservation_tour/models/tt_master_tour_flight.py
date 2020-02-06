@@ -31,9 +31,11 @@ class TtMasterTourFlight(models.Model):
 
     departure_date_fmt = fields.Datetime('Departure Date (FMT)')
     return_date_fmt = fields.Datetime('Arrival Date (FMT)')
+    arrival_date_fmt = fields.Datetime('Arrival Date (FMT)')
 
     departure_date = fields.Datetime('Departure Date')
-    return_date = fields.Datetime('Arrival Date')
+    arrival_date = fields.Datetime('Arrival Date')
+    return_date = fields.Datetime('Return Date')
 
     class_of_service = fields.Selection(CLASS_OF_SERVICE, 'Service Class')
     tour_pricelist_id = fields.Many2one('tt.master.tour', 'Pricelist ID', readonly=True)

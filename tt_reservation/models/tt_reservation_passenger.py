@@ -28,7 +28,7 @@ class TtReservationCustomer(models.Model):
             'last_name': self.last_name and self.last_name or '',
             'gender': self.gender,
             'title': self.title,
-            'birth_date': self.birth_date.strftime('%Y-%m-%d'),
+            'birth_date': self.birth_date and self.birth_date.strftime('%Y-%m-%d') or '',
             'nationality_code': self.nationality_id.code and self.nationality_id.code or '',
             'identity_country_of_issued_code': self.identity_country_of_issued_id and self.identity_country_of_issued_id.code or '',
             'identity_type': self.identity_type and self.identity_type or '',

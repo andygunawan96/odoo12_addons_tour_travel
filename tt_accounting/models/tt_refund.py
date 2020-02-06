@@ -293,8 +293,12 @@ class TtRefund(models.Model):
             raise UserError("Cannot finalize because state is not 'Validated'.")
 
         book_obj = self.env[self.res_model].browse(int(self.res_id))
-        for rec in book_obj.provider_booking_ids:
-            rec.action_refund()
+        provider_len = len(book_obj.provider_booking_ids.ids)
+        for idx, rec in enumerate(book_obj.provider_booking_ids):
+            if idx == provider_len - 1:
+                rec.action_refund(True)
+            else:
+                rec.action_refund()
 
         self.write({
             'state': 'final',

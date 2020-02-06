@@ -14,10 +14,9 @@ class TtAirlineRule(models.Model):
     rebooking_limit = fields.Integer('Rebooking Limit',default=1,help="Book while another booking is still valid")
     churning_limit = fields.Integer('Churning Limit',default=2,help="Cancel then rebook")
     adm = fields.Char('ADM /P/R', default="30USD")
-
+    active = fields.Boolean("Active",default=True)
 
 class TtWhitelistedName(models.Model):
-
     _name = 'tt.whitelisted.name'
     _description = 'Whitelisted Name'
 
@@ -27,6 +26,7 @@ class TtWhitelistedName(models.Model):
 class TtWhitelistedPassport(models.Model):
     _name = 'tt.whitelisted.passport'
     _description = 'Whitelisted Passport'
+    _rec_name = 'passport'
 
     passport = fields.Char('Passport Number')
     chances_left = fields.Integer('Chances Left')

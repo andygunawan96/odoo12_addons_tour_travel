@@ -1242,7 +1242,7 @@ class IssuedOffline(models.Model):
                         "departure_date": departure_time.strftime('%Y-%m-%d'),
                         "departure_hour": str(departure_time.hour),
                         "departure_minute": str(departure_time.minute),
-                        "return_date": arrival_time.strftime('%Y-%m-%d'),
+                        "arrival_date": arrival_time.strftime('%Y-%m-%d'),
                         "return_hour": str(arrival_time.hour),
                         "return_minute": str(arrival_time.minute),
                         "carrier_id": provider_env.search([('name', '=', line.get('provider'))], limit=1).id,
@@ -1398,7 +1398,7 @@ class IssuedOffline(models.Model):
                 desc_txt += 'PNR: ' + (rec.pnr or '') + '<br/>'
                 desc_txt += 'Carrier: ' + (rec.carrier_id.name or '') + '<br/>'
                 desc_txt += 'Departure: ' + (rec.origin_id.display_name or '') + ' (' + (rec.departure_date or '') + ' ' + (rec.departure_hour or '') + ':' + (rec.departure_minute or '') + ')<br/>'
-                desc_txt += 'Arrival: ' + (rec.destination_id.display_name or '') + ' (' + (rec.return_date or '') + ' ' + (rec.return_hour or '') + ':' + (rec.return_minute or '') + ')<br/><br/>'
+                desc_txt += 'Arrival: ' + (rec.destination_id.display_name or '') + ' (' + (rec.arrival_date or '') + ' ' + (rec.return_hour or '') + ':' + (rec.return_minute or '') + ')<br/><br/>'
         elif self.offline_provider_type == 'hotel':
             for rec in self.line_ids:
                 desc_txt += 'PNR: ' + (rec.pnr or '') + '<br/>'

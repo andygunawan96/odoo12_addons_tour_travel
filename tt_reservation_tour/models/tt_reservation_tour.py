@@ -385,7 +385,7 @@ class ReservationTour(models.Model):
                 'child': data.get('child') and int(data['child']) or 0,
                 'infant': data.get('infant') and int(data['infant']) or 0,
                 'departure_date': tour_data.departure_date,
-                'return_date': tour_data.return_date,
+                'arrival_date': tour_data.arrival_date,
                 'provider_name': provider_id.name,
                 'transport_type': 'tour',
             })
@@ -402,7 +402,7 @@ class ReservationTour(models.Model):
                     'tour_id': pricelist_id,
                     'provider_id': provider_id.id,
                     'departure_date': tour_data['departure_date'],
-                    'return_date': tour_data['return_date'],
+                    'arrival_date': tour_data['arrival_date'],
                     # 'balance_due': req['amount'],
                 }
 
@@ -523,7 +523,7 @@ class ReservationTour(models.Model):
                 'name': master.name,
                 'duration': master.duration,
                 'departure_date': master.departure_date,
-                'return_date': master.return_date,
+                'arrival_date': master.arrival_date,
                 'visa': master.visa,
                 'flight': master.flight,
                 'image_urls': image_urls,
@@ -597,7 +597,7 @@ class ReservationTour(models.Model):
                 'child': book_obj.child,
                 'infant': book_obj.infant,
                 'departure_date': book_obj.departure_date,
-                'return_date': book_obj.return_date,
+                'arrival_date': book_obj.arrival_date,
                 'order_number': book_obj.name,
                 'hold_date': book_obj.hold_date,
                 'provider': master.provider_id.code,
@@ -736,5 +736,5 @@ class ReservationTour(models.Model):
         desc_txt += 'Tour: ' + self.tour_id.name + '<br/>'
         desc_txt += 'Category: ' + dict(self.tour_id._fields['tour_category'].selection).get(self.tour_id.tour_category) + ' - ' + dict(self.tour_id._fields['tour_type'].selection).get(self.tour_id.tour_type) + '<br/>'
         desc_txt += 'Departure Date: ' + datetime.strptime(self.departure_date, '%Y-%m-%d').strftime('%d %b %Y') + '<br/>'
-        desc_txt += 'Return Date: ' + datetime.strptime(self.return_date, '%Y-%m-%d').strftime('%d %b %Y') + '<br/>'
+        desc_txt += 'Arrival Date: ' + datetime.strptime(self.arrival_date, '%Y-%m-%d').strftime('%d %b %Y') + '<br/>'
         return desc_txt

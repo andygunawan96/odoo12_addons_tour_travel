@@ -66,7 +66,7 @@ class ApiConnectorHotels:
         if res.get('http_code'):
             if res['http_code'] != 200:
                 raise Exception('%s %s' % (res['http_code'], res['error_msg']))
-            res = json.loads(res['response'])['result']
+            res = res['response']['result']
         return res
 
     def check_booking_status_by_api(self, req_post, api_context=None):

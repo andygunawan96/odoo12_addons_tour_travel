@@ -40,6 +40,8 @@ class ReservationAirline(models.Model):
     split_from_resv_id = fields.Many2one('tt.reservation.airline', 'Splitted From', readonly=1)
     split_to_resv_ids = fields.One2many('tt.reservation.airline', 'split_from_resv_id', 'Splitted To', readonly=1)
 
+    is_get_booking_from_vendor = fields.Boolean('Get Booking From Vendor')
+
     def get_form_id(self):
         return self.env.ref("tt_reservation_airline.tt_reservation_airline_form_views")
 
@@ -240,11 +242,16 @@ class ReservationAirline(models.Model):
             list_passenger_value = self.create_passenger_value_api_test(passengers)
             list_customer_id = self.create_customer_api(passengers,context,booker_obj.seq_id,contact_obj.seq_id)
 
+
+
             #fixme diasumsikan idxny sama karena sama sama looping by rec['psg']
             for idx,rec in enumerate(list_passenger_value):
                 rec[2].update({
                     'customer_id': list_customer_id[idx].id
                 })
+
+            for psg in list_passenger_value:
+                util.pop_empty_key(psg[2])
 
             values.update({
                 'user_id': context['co_uid'],
@@ -255,11 +262,12 @@ class ReservationAirline(models.Model):
                 'contact_name': contact_obj.name,
                 'contact_email': contact_obj.email,
                 'contact_phone': "%s - %s" % (contact_obj.phone_ids[0].calling_code,contact_obj.phone_ids[0].calling_number),
-                'passenger_ids': list_passenger_value
+                'passenger_ids': list_passenger_value,
             })
 
             book_obj = self.create(values)
             provider_ids,name_ids = book_obj._create_provider_api(schedules,context)
+
             response_provider_ids = []
             for provider in provider_ids:
                 response_provider_ids.append({
@@ -269,7 +277,8 @@ class ReservationAirline(models.Model):
 
             book_obj.write({
                 'provider_name': ','.join(name_ids['provider']),
-                'carrier_name': ','.join(name_ids['carrier'])
+                'carrier_name': ','.join(name_ids['carrier']),
+                'arrival_date': provider_ids[-1].arrival_date[:10]
             })
 
             ##pengecekan segment kembar airline dengan nama passengers
@@ -370,7 +379,7 @@ class ReservationAirline(models.Model):
 
             book_status = []
             pnr_list = []
-            hold_date = datetime.max
+            hold_date = datetime.max.replace(year=2020)
             any_provider_changed = False
 
             for provider in req['provider_bookings']:
@@ -524,7 +533,7 @@ class ReservationAirline(models.Model):
         booking_tmp = {
             'direction': searchRQ.get('direction'),
             'departure_date': searchRQ['journey_list'][0]['departure_date'],
-            'return_date': searchRQ['journey_list'][-1]['departure_date'],
+            'arrival_date': searchRQ['journey_list'][-1]['departure_date'],
             'origin_id': dest_obj.get_id(searchRQ['journey_list'][0]['origin'], provider_type_id),
             'destination_id': dest_obj.get_id(searchRQ['journey_list'][dest_idx]['destination'], provider_type_id),
             'provider_type_id': provider_type_id.id,
@@ -532,7 +541,8 @@ class ReservationAirline(models.Model):
             'child': searchRQ['child'],
             'infant': searchRQ['infant'],
             'agent_id': context_gateway['co_agent_id'],
-            'user_id': context_gateway['co_uid']
+            'user_id': context_gateway['co_uid'],
+            'is_get_booking_from_vendor': searchRQ.get('is_get_booking_from_vendor', False)
         }
 
         return booking_tmp
@@ -678,18 +688,18 @@ class ReservationAirline(models.Model):
             #     provider_origin = this_pnr_journey[0][2]['origin_id']
             #     provider_destination = this_pnr_journey[0][2]['destination_id']
             #     provider_departure_date = this_pnr_journey[0][2]['departure_date']
-            #     provider_return_date = this_pnr_journey[-1][2]['departure_date']
+            #     provider_arrival_date = this_pnr_journey[-1][2]['departure_date']
             # else:
             #     provider_direction = 'OW'
             #     provider_origin = this_pnr_journey[0][2]['origin_id']
             #     provider_destination = this_pnr_journey[0][2]['destination_id']
             #     provider_departure_date = this_pnr_journey[0][2]['departure_date']
-            #     provider_return_date = False
+            #     provider_arrival_date = False
             dest_idx = self.pick_destination(this_pnr_journey)
             provider_origin = this_pnr_journey[0][2]['origin_id']
             provider_destination = this_pnr_journey[dest_idx][2]['destination_id']
             provider_departure_date = this_pnr_journey[0][2]['departure_date']
-            provider_return_date = this_pnr_journey[-1][2]['departure_date']
+            provider_arrival_date = this_pnr_journey[-1][2]['arrival_date']
 
             sequence+=1
             values = {
@@ -699,7 +709,7 @@ class ReservationAirline(models.Model):
                 'origin_id': provider_origin,
                 'destination_id': provider_destination,
                 'departure_date': provider_departure_date,
-                'return_date': provider_return_date,
+                'arrival_date': provider_arrival_date,
 
                 'booked_uid': api_context['co_uid'],
                 'booked_date': datetime.now(),

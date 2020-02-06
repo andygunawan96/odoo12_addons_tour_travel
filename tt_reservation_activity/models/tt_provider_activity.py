@@ -117,9 +117,10 @@ class TtProviderActivity(models.Model):
     def action_expired(self):
         self.state = 'cancel2'
 
-    def action_refund(self):
+    def action_refund(self, check_provider_state=False):
         self.state = 'refund'
-        self.booking_id.check_provider_state({'co_uid': self.env.user.id})
+        if check_provider_state:
+            self.booking_id.check_provider_state({'co_uid': self.env.user.id})
 
     def create_ticket_api(self,passengers):
         ticket_list = []
@@ -267,7 +268,7 @@ class TtProviderActivity(models.Model):
             'origin': self.origin_id.code,
             'destination': self.destination_id.code,
             'departure_date': self.departure_date,
-            'return_date': self.return_date,
+            'arrival_date': self.arrival_date,
             'journeys': journey_list,
             'currency': self.currency_id.name,
             'hold_date': self.hold_date and self.hold_date or '',

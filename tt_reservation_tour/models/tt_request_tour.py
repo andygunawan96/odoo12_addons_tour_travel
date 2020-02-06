@@ -5,6 +5,8 @@ from dateutil.relativedelta import relativedelta
 from odoo.exceptions import UserError
 from ...tools import util,variables,ERR
 from ...tools.ERR import RequestException
+import json
+import base64
 import logging
 import traceback
 
@@ -37,7 +39,7 @@ class TtRequestTour(models.Model):
                                       ('cruise', 'Cruise'),('other', 'Other (Please Specify in Notes)')], 'Tour Category', default='recreation', required=True, readonly=True,
                                      states={'draft': [('readonly', False)]})
     est_departure_date = fields.Date('Estimated Departure Date', required=True, readonly=True, states={'draft': [('readonly', False)]})
-    est_return_date = fields.Date('Estimated Return Date', required=True, readonly=True, states={'draft': [('readonly', False)]})
+    est_arrival_date = fields.Date('Estimated Return Date', required=True, readonly=True, states={'draft': [('readonly', False)]})
     est_departure_time = fields.Selection([('morning', 'Morning'), ('afternoon', 'Afternoon'), ('night', 'Night')], 'Estimated Departure Time', default='morning', required=True, readonly=True, states={'draft': [('readonly', False)]})
     est_return_time = fields.Selection([('morning', 'Morning'), ('afternoon', 'Afternoon'), ('night', 'Night')], 'Estimated Return Time', default='morning', required=True, readonly=True, states={'draft': [('readonly', False)]})
     location_ids = fields.Many2many('tt.tour.master.locations', 'tt_request_tour_location_rel', 'request_id',
@@ -68,12 +70,19 @@ class TtRequestTour(models.Model):
     cancel_uid = fields.Many2one('res.users', 'Cancelled by', readonly=True)
     state = fields.Selection([('draft', 'Draft'),('confirm', 'Confirmed'), ('approved', 'Approved (In Process)'),
                               ('done', 'Done'), ('rejected', 'Rejected'), ('cancelled', 'Cancelled')], 'State', default='draft')
+    file_name = fields.Char("Filename", compute="_compute_filename", store=True)
+    export_data = fields.Binary('Export JSON')
 
     @api.depends('tour_ref_id')
     @api.onchange('tour_ref_id')
     def _compute_tour_ref_id_str(self):
         for rec in self:
             rec.tour_ref_id_str = rec.tour_ref_id and rec.tour_ref_id.name or ''
+
+    @api.depends("name")
+    def _compute_filename(self):
+        for rec in self:
+            rec.file_name = rec.name + ".json"
 
     def action_confirm(self):
         if self.state != 'draft':
@@ -82,7 +91,7 @@ class TtRequestTour(models.Model):
         if self.adult < 1:
             raise UserError("Tour Request must have at least 1 Adult Passenger.")
 
-        if self.est_departure_date >= self.est_return_date:
+        if self.est_departure_date >= self.est_arrival_date:
             raise UserError("Estimated Return Date must be later than Estimated Departure Date!")
 
         if self.min_budget > self.max_budget:
@@ -133,3 +142,47 @@ class TtRequestTour(models.Model):
         self.write({
             'state': 'draft',
         })
+
+    def export_to_json(self):
+        location_list = []
+        for rec in self.location_ids:
+            location_list.append({
+                'city_name': rec.city_id.name,
+                'country_code': rec.country_id.code,
+            })
+        dict_data = {
+            'tour_category': self.tour_category,
+            'locations': location_list,
+            'est_departure_date': self.est_departure_date.strftime('%d %B %Y'),
+            'est_return_date': self.est_departure_date.strftime('%d %B %Y'),
+            'est_departure_time': self.est_departure_time,
+            'est_return_time': self.est_return_time,
+            'adult': self.adult,
+            'child': self.child,
+            'infant': self.infant,
+            'min_budget': self.min_budget,
+            'max_budget': self.max_budget,
+            'hotel_star': self.hotel_star,
+            'est_hotel_price': self.est_hotel_price,
+            'carrier_code': self.carrier_id.code,
+            'class_of_service': self.class_of_service,
+            'food_preference': self.food_preference,
+            'notes': self.notes,
+        }
+        json_data = json.dumps(dict_data)
+        self.sudo().write({
+            'export_data': base64.b64encode(json_data.encode())
+        })
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
+
+    def remove_export_json(self):
+        self.sudo().write({
+            'export_data': False
+        })
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }

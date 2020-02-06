@@ -65,6 +65,8 @@
                    }"/>
             </xpath>
             <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                <label for="is_get_booking_from_vendor" string="Retrieved From Vendor" attrs="{'invisible': [('is_get_booking_from_vendor','=',False)]}"/>
+                <field name="is_get_booking_from_vendor" invisible="1"/>
                 <div class="oe_button_box" name="button_box">
                     <button name="print_eticket"
                             class="oe_stat_button" states="issued,done"
@@ -96,7 +98,7 @@
                         <field name="sector_type"/>
                         <field name="direction"/>
                         <field name="departure_date" string="Departure Date"/>
-                        <field name="return_date" attrs="{'invisible': [('direction', '=', 'OW')],
+                        <field name="arrival_date" attrs="{'invisible': [('direction', '=', 'OW')],
                             'required': [('direction', '=', 'ret')]}"/>
                     </group>
                 </group>
@@ -146,7 +148,7 @@
                     <!--                        &lt;!&ndash;<field name="origin"/>&ndash;&gt;-->
                     <!--                        &lt;!&ndash;<field name="destination"/>&ndash;&gt;-->
                     <!--                        &lt;!&ndash;<field name="departure_date"/>&ndash;&gt;-->
-                    <!--                        &lt;!&ndash;<field name="return_date"/>&ndash;&gt;-->
+                    <!--                        &lt;!&ndash;<field name="arrival_date"/>&ndash;&gt;-->
                     <!--                        &lt;!&ndash;&lt;!&ndash;<field name="total"/>&ndash;&gt;&ndash;&gt;-->
                     <!--                        &lt;!&ndash;<field name="state"/>&ndash;&gt;-->
                     <!--                        &lt;!&ndash;</tree>&ndash;&gt;-->

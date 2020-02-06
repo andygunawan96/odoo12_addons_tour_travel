@@ -1358,7 +1358,7 @@ class MasterActivity(models.Model):
                     'name': result['name'],
                     'priceExcludes': result.get('priceExcludes') and result['priceExcludes'] or '',
                     'priceIncludes': result.get('priceIncludes') and result['priceIncludes'] or '',
-                    'provider_id': result.get('provider_id') and result['provider_id'] or '',
+                    'provider_id': res_provider and res_provider.id or '',
                     'provider': res_provider and res_provider.code or '',
                     'reviewAverageScore': result.get('reviewAverageScore') and result['reviewAverageScore'] or 0.0,
                     'reviewCount': result.get('reviewCount') and result['reviewCount'] or 0,

@@ -34,7 +34,7 @@ class ReservationTour(models.Model):
         tmp = ''
         tmp += '%s' % (self.tour_id.name,)
         tmp += '\n'
-        tmp += '%s - %s ' % (self.departure_date, self.return_date,)
+        tmp += '%s - %s ' % (self.departure_date, self.arrival_date,)
         tmp += '\n'
         return tmp
 

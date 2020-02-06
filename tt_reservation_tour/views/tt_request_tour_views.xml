@@ -6,7 +6,7 @@
             <search string="Search Tour Request">
                 <field name="name"/>
                 <field name="est_departure_date"/>
-                <field name="est_return_date"/>
+                <field name="est_arrival_date"/>
                 <field name="booker_id"/>
                 <field name="contact_id"/>
                 <field name="contact_email"/>
@@ -40,7 +40,14 @@
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-
+                        <button name="export_to_json"
+                                class="oe_stat_button"
+                                string="Export Data" type="object" icon="fa-external-link"
+                                attrs="{'invisible': ['|',('state', '=', 'draft'),('export_data', '!=', False)]}"/>
+                        <button name="remove_export_json"
+                                class="oe_stat_button"
+                                string="Clear Export Data" type="object" icon="fa-trash-o"
+                                attrs="{'invisible': ['|',('state', '=', 'draft'),('export_data', '=', False)]}"/>
                     </div>
                     <div class="oe_title">
                         <h1>
@@ -57,6 +64,11 @@
                             <field name="contact_address"/>
                         </group>
                         <group>
+                            <label for="create_uid" string="Created by"/>
+                            <div>
+                                <field name="create_uid" readonly="1" class="oe_inline"/> -
+                                <field name="create_date" readonly="1" class="oe_inline"/>
+                            </div>
                             <label for="confirm_uid" string="Confirmed by"/>
                             <div>
                                 <field name="confirm_uid" readonly="1" class="oe_inline"/> -
@@ -84,6 +96,15 @@
                             </div>
                         </group>
                     </group>
+                    <group>
+                        <group>
+                            <field name="file_name" invisible="1"/>
+                            <field name="export_data"  filename="file_name" attrs="{'invisible': [('export_data', '=', False)]}"/>
+                        </group>
+                        <group>
+
+                        </group>
+                    </group>
 
                     <separator string="Tour Information"/>
                     <group>
@@ -108,7 +129,7 @@
                             <field name="est_departure_time"/>
                         </group>
                         <group>
-                            <field name="est_return_date"/>
+                            <field name="est_arrival_date"/>
                             <field name="est_return_time"/>
                         </group>
                     </group>
@@ -163,7 +184,7 @@
                 <field name="contact_id"/>
                 <field name="tour_category"/>
                 <field name="est_departure_date"/>
-                <field name="est_return_date"/>
+                <field name="est_arrival_date"/>
                 <field name="adult"/>
                 <field name="child"/>
                 <field name="infant"/>
@@ -190,5 +211,5 @@
     </record>
 
     <menuitem id="submenu_request_tour_package" parent="tt_reservation_tour.menu_reservations_tour_request"
-              name="Tour Package" action="tt_request_tour_view_action"/>
+              name="Tour Package" action="tt_request_tour_view_action" sequence="1"/>
 </odoo>
