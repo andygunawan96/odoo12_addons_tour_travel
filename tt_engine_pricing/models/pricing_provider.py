@@ -166,6 +166,12 @@ class PricingProviderLine(models.Model):
     upper_margin = fields.Monetary('Equal Upper Margin', default=0)
     upper_amount_type = fields.Selection(variables.AMOUNT_TYPE, 'Upper Amount Type', default='percentage')
     upper_amount = fields.Float('Upper Ammount', default=0)
+    is_compute_infant_basic = fields.Boolean('Compute Inf Basic Amount', default=False)
+    is_compute_infant_tax = fields.Boolean('Compute Inf Tax Amount', default=False)
+    is_compute_infant_after_tax = fields.Boolean('Compute Inf After Tax Amount', default=True)
+    is_compute_infant_upsell = fields.Boolean('Compute Inf Upsell Amount', default=False)
+    is_compute_infant_fee = fields.Boolean('Compute Inf Fee Amount', default=False)
+    # is_provide_infant_commission = fields.Boolean('Provider Infant Commission', default=False)
     active = fields.Boolean('Active', default=True)
     provider_commission_amount = fields.Float('Provider Commission Amount', default=0)
 
@@ -248,5 +254,11 @@ class PricingProviderLine(models.Model):
             'upper_amount_type': self.upper_amount_type,
             'upper_amount': self.upper_amount,
             'provider_commission_amount': self.provider_commission_amount,
+            'is_compute_infant_basic': self.is_compute_infant_basic,
+            'is_compute_infant_tax': self.is_compute_infant_tax,
+            'is_compute_infant_after_tax': self.is_compute_infant_after_tax,
+            'is_compute_infant_upsell': self.is_compute_infant_upsell,
+            'is_compute_infant_fee': self.is_compute_infant_fee,
+            # 'is_provide_infant_commission': self.is_provide_infant_commission,
         }
         return res
