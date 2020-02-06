@@ -218,7 +218,7 @@ class IssuedOffline(models.Model):
         if not self.check_line_empty():
             if not self.check_passenger_empty():
                 if self.total != 0:
-                    self.state_offline = 'confirm'
+                    self.state_offline = 'pending'
                     self.confirm_date = fields.Datetime.now()
                     self.confirm_uid = kwargs.get('co_uid') and kwargs['co_uid'] or self.env.user.id
                     if not self.acquirer_id:
@@ -320,8 +320,11 @@ class IssuedOffline(models.Model):
     def check_pnr_empty(self):
         empty = False
         for rec in self.line_ids:
-            if rec.pnr is False or len(rec.pnr) == 1:
+            if rec.pnr is False:
                 empty = True
+            else:
+                if len(rec.pnr) <= 1:
+                    empty = True
         return empty
 
     def check_provider_empty(self):
@@ -1191,11 +1194,11 @@ class IssuedOffline(models.Model):
                         raise RequestException(1017)
                 else:
                     # raise RequestException(1017)
-                    acquirer_id = self.agent_id.default_acquirer_id
+                    acquirer_id = book_obj.agent_id.default_acquirer_id
                 book_obj.sudo().write({
                     'acquirer_id': acquirer_id.id,
                 })
-                customer_parent_id = self.agent_id.customer_parent_walkin_id.id  # fpo
+                customer_parent_id = book_obj.agent_id.customer_parent_walkin_id.id  # fpo
 
             book_obj.sudo().write({
                 'customer_parent_id': customer_parent_id,
