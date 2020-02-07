@@ -474,7 +474,11 @@ class TtReservation(models.Model):
         try:
             resv_obj = self.env['tt.reservation.%s' % (req['provider_type'])]
             book_obj = resv_obj.get_book_obj(req.get('book_id'), req.get('order_number'))
-            if book_obj and book_obj.agent_id.id == context['co_agent_id']:
+            try:
+                book_obj.create_date
+            except:
+                return ERR.get_error(1001)
+            if book_obj.agent_id.id == context['co_agent_id']:
                 for psg in req['passengers']:
                     book_obj.passenger_ids[psg['sequence']-1].create_channel_pricing(psg['pricing'])
             else:
@@ -552,8 +556,11 @@ class TtReservation(models.Model):
             voucher = None
             discount = {'error_code': -1}
             total_discount = 0
-
-            if book_obj and book_obj.agent_id.id == context.get('co_agent_id',-1):
+            try:
+                book_obj.create_date
+            except:
+                raise RequestException(1001)
+            if book_obj.agent_id.id == context.get('co_agent_id',-1):
                 start_time = time.time()
                 cur_time = 0
                 new_waiting_list = self.env['tt.reservation.waiting.list'].create({'agent_id':book_obj.agent_id.id,

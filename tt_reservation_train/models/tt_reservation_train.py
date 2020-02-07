@@ -171,7 +171,9 @@ class TtReservationTrain(models.Model):
         # req = self.param_update_pnr
         try:
             book_obj = self.env['tt.reservation.train'].browse(req['book_id'])
-            if not book_obj:
+            try:
+                book_obj.create_date
+            except:
                 raise RequestException(1001)
 
             book_status = []
@@ -181,7 +183,9 @@ class TtReservationTrain(models.Model):
 
             for provider in req['provider_bookings']:
                 provider_obj = self.env['tt.provider.train'].browse(provider['provider_id'])
-                if not provider_obj:
+                try:
+                    provider_obj.create_date
+                except:
                     raise RequestException(1002)
                 book_status.append(provider['state'])
 
@@ -468,7 +472,11 @@ class TtReservationTrain(models.Model):
         try:
             # _logger.info("Get req train\n" + json.dumps(context))
             book_obj = self.get_book_obj(req.get('book_id'),req.get('order_number'))
-            if book_obj and book_obj.agent_id.id == context.get('co_agent_id',-1):
+            try:
+                book_obj.create_date
+            except:
+                raise RequestException(1001)
+            if book_obj.agent_id.id == context.get('co_agent_id',-1):
                 res = book_obj.to_dict()
                 psg_list = []
                 for rec in book_obj.sudo().passenger_ids:
@@ -501,7 +509,11 @@ class TtReservationTrain(models.Model):
         try:
             _logger.info("Update Seat train\n" + json.dumps(req))
             book_obj = self.get_book_obj(req.get('book_id'),req.get('order_number'))
-            if book_obj and book_obj.agent_id.id == context.get('co_agent_id',-1):
+            try:
+                book_obj.create_date
+            except:
+                raise RequestException(1001)
+            if book_obj.agent_id.id == context.get('co_agent_id',-1):
                 for provider in req['provider_bookings']:
                     if provider['status'] == 'SUCCESS':
                         for journey in provider['journeys']:
@@ -527,7 +539,9 @@ class TtReservationTrain(models.Model):
         _logger.info('update cost\n' + json.dumps(req))
         for provider in req['provider_bookings']:
             provider_obj = self.env['tt.provider.train'].browse(provider['provider_id'])
-            if not provider_obj:
+            try:
+                provider_obj.create_date
+            except:
                 raise RequestException(1002)
             ledger_created = provider_obj.delete_service_charge()
             if ledger_created:
