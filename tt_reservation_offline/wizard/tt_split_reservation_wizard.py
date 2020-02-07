@@ -265,6 +265,10 @@ class TtSplitReservationWizard(models.TransientModel):
                     })
 
         # Error checking
+        if self.total_price > book_obj.total:
+            raise UserError(_('Total price for split cannot be larger than total sale price.'))
+        if self.new_commission > book_obj.total_commission_amount:
+            raise UserError(_('Total commission for split cannot be larger than total commission amount.'))
         if is_provider_full and is_pax_full:
             raise UserError(_('You cannot split all Provider(s) and Passenger(s) in this reservation. Please leave at least 1 Provider or 1 Passenger!'))
         if is_provider_full and len(pax_list) <= 0:

@@ -61,7 +61,7 @@ class IssuedOffline(models.Model):
 
     # booking_id = fields.Many2one('tt.reservation.offline', 'Booking ID', default=lambda self: self.id)
 
-    state = fields.Selection(variables.BOOKING_STATE, 'State', default='draft')
+    state = fields.Selection(variables.BOOKING_STATE, 'State', default='pending')
     state_offline = fields.Selection(STATE_OFFLINE, 'State Offline', default='draft')
 
     provider_type_id = fields.Many2one('tt.provider.type', string='Provider Type',
@@ -255,7 +255,7 @@ class IssuedOffline(models.Model):
 
     @api.one
     def action_draft(self):
-        self.state = 'draft'
+        self.state = 'pending'
         self.state_offline = 'draft'
         self.confirm_date = False
         self.confirm_uid = False
@@ -291,8 +291,10 @@ class IssuedOffline(models.Model):
             'co_agent_id': self.agent_id.id
         }
 
-        if self.issued_uid.id is not False:
+        if self.state_offline == 'validate':
             raise UserError('State has already been validated. Please refresh the page.')
+        if self.state_offline == 'done':
+            raise UserError('State has already been done. Please refresh the page.')
         payment = self.payment_reservation_api('offline', req, context)
         if payment['error_code'] != 0:
             _logger.error(payment['error_msg'])
@@ -311,12 +313,6 @@ class IssuedOffline(models.Model):
                                                                      self.get_total_amount())
         except Exception as e:
             _logger.error("Send ISSUED OFFLINE Approve Notification Telegram Error")
-        # # cek saldo agent
-        # is_enough = self.agent_id.check_balance_limit_api(self.agent_id.id, self.agent_nta_price)
-        # # jika saldo mencukupi
-        # if is_enough['error_code'] == 0:
-        #
-        # return is_enough
 
     def check_pnr_empty(self):
         empty = False
@@ -344,14 +340,13 @@ class IssuedOffline(models.Model):
         else:
             raise UserError(_('Provider(s) can\'t be Empty'))
         print(self.issued_uid.id)
-        if self.issued_uid.id is not False:
+        if self.state_offline == 'validate':
             raise UserError(_('Offline has been validated. You cannot go back to Sent. Please refresh the page.'))
         self.state_offline = 'sent'
         self.hold_date = datetime.now() + timedelta(days=1)
         self.sent_date = fields.Datetime.now()
         self.sent_uid = self.env.user.id
         self.create_provider_offline()
-        # self.update_provider_offline()
         for provider in self.provider_booking_ids:
             provider.state = 'booked'
             provider.confirm_date = self.confirm_date
@@ -368,7 +363,6 @@ class IssuedOffline(models.Model):
                 provider.create_service_charge_hotel()
             else:
                 provider.create_service_charge()
-            # provider.action_create_ledger()
         self.calculate_service_charge()
 
     @api.one
