@@ -290,14 +290,14 @@ class IssuedOffline(models.Model):
             'co_uid': self.env.user.id,
             'co_agent_id': self.agent_id.id
         }
-        if self.state_offline != 'sent':
-            raise UserError('State is already validate. Please refresh the page.')
+
+        if self.issued_uid.id is not False:
+            raise UserError('State has already been validated. Please refresh the page.')
         payment = self.payment_reservation_api('offline', req, context)
         if payment['error_code'] != 0:
             _logger.error(payment['error_msg'])
             raise UserError(_(payment['error_msg']))
 
-        self.calculate_service_charge()
         self.state_offline = 'validate'
         self.vendor_amount = self.nta_price
         self.compute_final_ho()
@@ -343,6 +343,9 @@ class IssuedOffline(models.Model):
                     raise UserError(_('PNR(s) can\'t be Empty'))
         else:
             raise UserError(_('Provider(s) can\'t be Empty'))
+        print(self.issued_uid.id)
+        if self.issued_uid.id is not False:
+            raise UserError(_('Offline has been validated. You cannot go back to Sent. Please refresh the page.'))
         self.state_offline = 'sent'
         self.hold_date = datetime.now() + timedelta(days=1)
         self.sent_date = fields.Datetime.now()
@@ -366,6 +369,7 @@ class IssuedOffline(models.Model):
             else:
                 provider.create_service_charge()
             # provider.action_create_ledger()
+        self.calculate_service_charge()
 
     @api.one
     def action_issued_backend(self):
@@ -387,7 +391,11 @@ class IssuedOffline(models.Model):
                     self.done_uid = kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
                     self.booked_date = fields.Datetime.now()
                     self.booked_uid = kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
-                    self.get_pnr_list_from_provider()
+                    if self.provider_type_id_name in ['activity', 'hotel']:
+                        self.get_pnr_list()
+                    else:
+                        self.get_pnr_list_from_provider()
+                    self.get_provider_name()
                     self.create_final_ho_ledger(self)
                     for provider in self.provider_booking_ids:
                         provider.state = 'issued'
