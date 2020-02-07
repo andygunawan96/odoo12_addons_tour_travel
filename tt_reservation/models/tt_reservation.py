@@ -587,6 +587,10 @@ class TtReservation(models.Model):
                 payment_method = req.get('payment_method', 'full')
 
                 agent_check_amount = book_obj.get_nta_amount(payment_method)
+
+                if agent_check_amount <= 0 and self._name != 'tt.reservation.offline':
+                    raise Exception("Cannot Payment 0 or lower.")
+
                 voucher = ''
                 ### voucher agent here##
                 if req.get('voucher'):
