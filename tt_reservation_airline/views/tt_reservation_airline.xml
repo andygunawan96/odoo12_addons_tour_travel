@@ -63,7 +63,7 @@
                         'default_res_id': id,
                         'default_referenced_document': name,
                    }"/>
-                <button name="CR8" string="CR8" type="object"/>
+<!--                <button name="CR8" string="CR8" type="object" groups="base.user_admin"/>-->
             </xpath>
             <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
                 <label for="is_get_booking_from_vendor" string="Retrieved From Vendor" attrs="{'invisible': [('is_get_booking_from_vendor','=',False)]}"/>

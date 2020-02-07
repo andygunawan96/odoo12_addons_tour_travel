@@ -20,6 +20,7 @@
                             <field name="provider_type_id"/>
                             <field name="basic_amount_type"/>
                             <field name="basic_amount"/>
+                            <field name="is_per_pnr"/>
                             <field name="loop_level"/>
                         </group>
                         <group>

@@ -12,7 +12,7 @@ Key Features
     """,
     'author': 'PT Roda Express Sukses Mandiri',
     'website': 'rodextravel.tours',
-    'depends': ['tt_base'],
+    'depends': ['tt_base','tt_engine_pricing'],
     'data': [
         'views/menu.xml',
         'views/api_credential_views.xml',

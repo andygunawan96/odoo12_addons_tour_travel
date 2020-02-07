@@ -7,7 +7,6 @@ import json
 
 class TtProviderAirline(models.Model):
     _name = 'tt.provider.airline'
-    _inherit = 'tt.history'
     _rec_name = 'pnr'
     _order = 'departure_date'
     _description = 'Rodex Model'
