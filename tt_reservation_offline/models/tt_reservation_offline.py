@@ -342,6 +342,8 @@ class IssuedOffline(models.Model):
         print(self.issued_uid.id)
         if self.state_offline == 'validate':
             raise UserError(_('Offline has been validated. You cannot go back to Sent. Please refresh the page.'))
+        if self.state_offline == 'done':
+            raise UserError(_('Offline has been done. You cannot go back to Sent. Please refresh the page.'))
         self.state_offline = 'sent'
         self.hold_date = datetime.now() + timedelta(days=1)
         self.sent_date = fields.Datetime.now()
