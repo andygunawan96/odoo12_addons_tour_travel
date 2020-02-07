@@ -8,8 +8,14 @@
             <field name="mode">primary</field>
             <field name="inherit_id" ref="tt_base.tt_agent_form_view"/>
             <field name="arch" type="xml">
+                <field name="name" position="replace">
+                    <field name="name" readonly="1"/>
+                </field>
                 <field name="seq_id" position="replace">
                     <field name="seq_id" readonly="1"/>
+                </field>
+                <field name="currency_id" position="replace">
+                    <field name="currency_id" readonly="1"/>
                 </field>
                 <field name="est_date" position="replace">
                     <field name="est_date" readonly="1"/>
@@ -43,7 +49,7 @@
                     <field name="name"/>
                     <field name="email"/>
                     <field name="est_date"/>
-    <!--                <field name="currency_id"/>-->
+                    <!--                <field name="currency_id"/>-->
                     <templates>
                         <t t-name="kanban-box">
                             <div class="oe_kanban_global_click o_kanban_record_has_image_fill o_hr_kanban_record">
