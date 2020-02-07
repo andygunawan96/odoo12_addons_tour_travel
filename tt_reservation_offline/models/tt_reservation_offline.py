@@ -427,7 +427,11 @@ class IssuedOffline(models.Model):
         try:
             _logger.info("Get req\n" + json.dumps(context))
             book_obj = self.get_book_obj(data.get('book_id'), data.get('order_number'))
-            if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1):
+            try:
+                book_obj.create_date
+            except:
+                raise RequestException(1001)
+            if book_obj.agent_id.id == context.get('co_agent_id', -1):
                 book_obj.action_issued_backend()
             else:
                 raise RequestException(1001)
@@ -1074,7 +1078,11 @@ class IssuedOffline(models.Model):
         try:
             _logger.info("Get req\n" + json.dumps(context))
             book_obj = self.get_book_obj(data.get('book_id'), data.get('order_number'))
-            if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1):
+            try:
+                book_obj.create_date
+            except:
+                raise RequestException(1001)
+            if book_obj.agent_id.id == context.get('co_agent_id', -1):
                 res_dict = book_obj.sudo().to_dict()
                 lines = []
                 passengers = []

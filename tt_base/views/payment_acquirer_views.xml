@@ -8,14 +8,11 @@
                 <form string="Provider">
                     <sheet>
                         <div class="oe_button_box" name="button_box">
-                            <button name="button_test_acquirer"  string="button_test_acquirer" type="object"/>
                             <button name="toggle_website_published"
                                     class="oe_stat_button"
                                     type="object" icon="fa-globe">
                                 <field name="website_published" widget="boolean_button"
                                        options='{"terminology": {"string_true": "Published", "hover_false": "Publish"}}'/>
-                            </button>
-                            <button class="oe_stat_button" name="237" type="action" icon="fa-money" string="Payments">
                             </button>
                         </div>
                         <field name="image" widget="image" class="oe_avatar" options="{&quot;preview_image&quot;: &quot;image_medium&quot;}"/>
