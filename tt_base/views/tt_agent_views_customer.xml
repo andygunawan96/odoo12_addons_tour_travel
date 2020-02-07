@@ -11,6 +11,9 @@
                 <field name="seq_id" position="replace">
                     <field name="seq_id" readonly="1"/>
                 </field>
+                <field name="currency_id" position="replace"/>
+                    <field name="currency_id" readonly="1"/>
+                </field>>
                 <field name="est_date" position="replace">
                     <field name="est_date" readonly="1"/>
                 </field>
