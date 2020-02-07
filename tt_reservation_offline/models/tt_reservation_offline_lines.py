@@ -56,7 +56,7 @@ class IssuedOfflineLines(models.Model):
 
     booking_id = fields.Many2one('tt.reservation.offline', 'Reservation Offline')
     obj_qty = fields.Integer('Qty', readonly=False, default=1)
-    state = fields.Selection(variables.BOOKING_STATE, string='State', default='draft', related='booking_id.state')
+    state = fields.Selection(variables.BOOKING_STATE, string='State', default='pending', related='booking_id.state')
     state_offline = fields.Selection(variables.BOOKING_STATE, string='State', default='draft', related='booking_id.state_offline')
     transaction_type = fields.Selection('tt.provider.type', 'Service Type', related='booking_id.offline_provider_type')
     transaction_name = fields.Char('Service Name', readonly=True, related='booking_id.provider_type_id_name')
@@ -77,7 +77,8 @@ class IssuedOfflineLines(models.Model):
 
     carrier_id = fields.Many2one('tt.transport.carrier', 'Carrier', readonly=False, domain="[('provider_type_id.code', '=', transaction_type)]")
     provider = fields.Char('Provider', readonly=False, required=False, states={'draft': [('required', False)],
-                                                                              'confirm': [('readonly', False)]})
+                                                                               'pending': [('readonly', False)],
+                                                                               'confirm': [('readonly', False)]})
 
     carrier_code = fields.Char('Carrier Code', help='or Flight Code', index=True, readonly=False)
     carrier_number = fields.Char('Carrier Number', help='or Flight Number', index=True, readonly=False)

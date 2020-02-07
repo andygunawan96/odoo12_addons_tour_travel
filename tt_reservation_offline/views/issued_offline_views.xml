@@ -188,7 +188,7 @@
                                     <field name="cancel_date" class="oe_inline"/> -
                                     <field name="cancel_uid" class="oe_inline"/>
                                 </div>
-                                <field name="quick_validate" groups="tt_base.group_tt_tour_travel_operator"/>
+                                <field name="quick_validate" groups="tt_base.group_tt_tour_travel_operator" attrs="{'readonly': [('state_offline', 'not in', ['draft'])]}"/>
                                 <field name="split_from_resv_id" attrs="{'invisible': [('split_from_resv_id', '=', False)]}"/>
                             </group>
                         </group>
