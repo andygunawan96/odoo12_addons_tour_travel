@@ -73,6 +73,7 @@ class IssuedOffline(models.Model):
 
     segment = fields.Integer('Number of Segment', compute='get_segment_length')
     person = fields.Integer('Person', readonly=True, states={'draft': [('readonly', False)],
+                                                             'pending': [('readonly', False)],
                                                              'confirm': [('readonly', False)]})
     # carrier_id = fields.Many2one('tt.transport.carrier')
     sector_type = fields.Selection(SECTOR_TYPE, 'Sector', readonly=True, states={'draft': [('readonly', False)]})
@@ -102,11 +103,13 @@ class IssuedOffline(models.Model):
     cancel_date = fields.Datetime('Cancel Date', readonly=True, copy=False)
     cancel_uid = fields.Many2one('res.users', readonly=True, copy=False)
 
-    expired_date = fields.Datetime('Time Limit', readonly=True, states={'draft': [('readonly', False)]})
+    expired_date = fields.Datetime('Time Limit', readonly=True, states={'draft': [('readonly', False)],
+                                                                        'pending': [('readonly', False)]})
 
     # Monetary
     currency_id = fields.Many2one('res.currency', 'Currency', default=lambda self: self.env.user.company_id.currency_id,
-                                  readonly=True, states={'draft': [('readonly', False)]})
+                                  readonly=True, states={'draft': [('readonly', False)],
+                                                         'pending': [('readonly', False)]})
     total = fields.Monetary('Total Sale Price', store=True)
     total_commission_amount = fields.Monetary('Total Commission Amount', store=True)
     # total_supplementary_price = fields.Monetary('Total Supplementary', compute='_get_total_supplement')
@@ -122,13 +125,15 @@ class IssuedOffline(models.Model):
     attachment_ids = fields.Many2many('tt.upload.center', 'offline_ir_attachments_rel', 'tt_issued_id',
                                       'attachment_id', string='Attachments')
     guest_ids = fields.Many2many('tt.customer', 'tt_issued_guest_rel', 'resv_issued_id', 'tt_product_id',
-                                 'Guest(s)', readonly=True, states={'draft': [('readonly', False)]})
+                                 'Guest(s)', readonly=True, states={'draft': [('readonly', False)],
+                                                                    'pending': [('readonly', False)]})
     # passenger_qty = fields.Integer('Passenger Qty', default=1)
     cancel_message = fields.Text('Cancellation Messages', copy=False)
     cancel_can_edit = fields.Boolean('Can Edit Cancellation Messages')
 
     description = fields.Text('Description', help='Itinerary Description like promo code, how many night or other info',
-                              readonly=True, states={'draft': [('readonly', False)]})
+                              readonly=True, states={'draft': [('readonly', False)],
+                                                     'pending': [('readonly', False)]})
 
     line_ids = fields.One2many('tt.reservation.offline.lines', 'booking_id', 'Issued Offline')
     passenger_ids = fields.One2many('tt.reservation.offline.passenger', 'booking_id', 'Issued Offline')
@@ -143,16 +148,21 @@ class IssuedOffline(models.Model):
     social_media_type = fields.Many2one('res.social.media.type', 'Order From(Media)')
 
     sale_service_charge_ids = fields.One2many('tt.service.charge', 'booking_offline_id', 'Service Charge',
-                                              readonly=True, states={'draft': [('readonly', False)]})
+                                              readonly=True, states={'draft': [('readonly', False)],
+                                                                     'pending': [('readonly', False)]})
 
     contact_ids = fields.One2many('tt.customer', 'reservation_offline_id', 'Contact Person', readonly=True,
-                                  states={'draft': [('readonly', False)]})
+                                  states={'draft': [('readonly', False)],
+                                          'pending': [('readonly', False)]})
     booker_id = fields.Many2one('tt.customer', 'Booker', ondelete='restrict', readonly=True,
-                                states={'draft': [('readonly', False)]})
+                                states={'draft': [('readonly', False)],
+                                        'pending': [('readonly', False)]})
     contact_id = fields.Many2one('tt.customer', 'Contact Person', ondelete='restrict', readonly=True,
-                                 states={'draft': [('readonly', False)]}, domain="[('agent_id', '=', agent_id)]")
+                                 states={'draft': [('readonly', False)],
+                                         'pending': [('readonly', False)]}, domain="[('agent_id', '=', agent_id)]")
     customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer', readonly=True,
-                                         states={'draft': [('readonly', False)]},
+                                         states={'draft': [('readonly', False)],
+                                                 'pending': [('readonly', False)]},
                                          help='COR / POR', domain="[('parent_agent_id', '=', agent_id)]")
 
     quick_validate = fields.Boolean('Quick Validate', default=False)
