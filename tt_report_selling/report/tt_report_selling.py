@@ -27,8 +27,8 @@ class ReportSelling(models.Model):
         reservation.id as reservation_id, reservation.name as reservation_order_number, reservation.create_date as reservation_create_date,
         reservation.total as amount, reservation.sector_type as reservation_sector, reservation.state as reservation_state,
         reservation.provider_name as reservation_provider_name, reservation.direction as reservation_direction,
-        reservation.booked_date as reservation_booked_date,
-        reservation.issued_date as reservation_issued_date,
+        reservation.booked_date as reservation_booked_date, reservation.issued_date as reservation_issued_date,
+        reservation.elder as reservation_elder, reservation.adult as reservation_adult, reservation.child as reservation_child, reservation.infant as reservation_infant,
         provider_type.name as provider_type_name,
         departure.display_name as departure, destination.display_name as destination,
         COUNT(reservation_passenger.id) as reservation_passenger
@@ -40,8 +40,8 @@ class ReportSelling(models.Model):
         reservation.id as reservation_id, reservation.name as reservation_order_number, reservation.create_date as reservation_create_date,
         reservation.total as amount, reservation.sector_type as reservation_sector, reservation.state as reservation_state,
         reservation.provider_name as reservation_provider_name, reservation.direction as reservation_direction,
-        reservation.booked_date as reservation_booked_date,
-        reservation.issued_date as reservation_issued_date,
+        reservation.booked_date as reservation_booked_date, reservation.issued_date as reservation_issued_date,
+        reservation.elder as reservation_elder, reservation.adult as reservation_adult, reservation.child as reservation_child, reservation.infant as reservation_infant,
         provider_type.name as provider_type_name,
         departure.display_name as departure, destination.display_name as destination,
         COUNT(reservation_passenger.id) as reservation_passenger
@@ -54,8 +54,8 @@ class ReportSelling(models.Model):
         reservation.issued_date as reservation_issued_date,
         reservation.create_date as reservation_create_date, reservation.nights as reservation_night, reservation.provider_name as reservation_provider_name,
         reservation.total as amount, reservation.state as reservation_state, reservation.hotel_name as reservation_hotel_name,
-        reservation.booked_date as reservation_booked_date,
-        reservation.issued_date as reservation_issued_date,
+        reservation.booked_date as reservation_booked_date, reservation.issued_date as reservation_issued_date,
+        reservation.elder as reservation_elder, reservation.adult as reservation_adult, reservation.child as reservation_child, reservation.infant as reservation_infant,
         provider_type.name as provider_type_name,
         COUNT(reservation_passenger.booking_id) as reservation_passenger
         """
@@ -67,8 +67,8 @@ class ReportSelling(models.Model):
         reservation.create_date as reservation_create_date, reservation.total as amount, 
         reservation.activity_name as reservation_activity_name, reservation.activity_product,
         reservation.visit_date as reservation_visit_date, reservation.timeslot as reservation_timeslot,
-        reservation.booked_date as reservation_booked_date,
-        reservation.issued_date as reservation_issued_date,
+        reservation.booked_date as reservation_booked_date, reservation.issued_date as reservation_issued_date,
+        reservation.elder as reservation_elder, reservation.adult as reservation_adult, reservation.child as reservation_child, reservation.infant as reservation_infant,
         provider_type.name as provider_type_name,
         COUNT(reservation_passenger.booking_id) as reservation_passenger
         """
@@ -79,8 +79,8 @@ class ReportSelling(models.Model):
         reservation.id as reservation_id, reservation.name as reservation_order_number, reservation.create_date as reservation_create_date,
         reservation.total as amount, reservation.booked_date as reservation_booked_date, reservation.issued_date as reservation_issued_date,
         reservation.provider_name as reservation_provider_name, reservation.state as reservation_state,
-        reservation.booked_date as reservation_booked_date,
-        reservation.issued_date as reservation_issued_date,
+        reservation.booked_date as reservation_booked_date, reservation.issued_date as reservation_issued_date,
+        reservation.elder as reservation_elder, reservation.adult as reservation_adult, reservation.child as reservation_child, reservation.infant as reservation_infant,
         tour.name as tour_name, tour.tour_category as tour_category, tour.tour_type as tour_type, tour.tour_route as tour_route, 
         tour.duration as tour_duration, country.name as tour_country_name,
         tour_location.country_name as tour_location_country
@@ -92,8 +92,8 @@ class ReportSelling(models.Model):
         reservation.id as reservation_id, reservation.name as reservation_order_number, 
         reservation.create_date as reservation_create_date,
         reservation.total as amount, reservation.state as reservation_state,
-        reservation.booked_date as reservation_booked_date,
-        reservation.issued_date as reservation_issued_date,
+        reservation.booked_date as reservation_booked_date, reservation.issued_date as reservation_issued_date,
+        reservation.elder as reservation_elder, reservation.adult as reservation_adult, reservation.child as reservation_child, reservation.infant as reservation_infant,
         country.name as country_name,
         COUNT(reservation_passenger.visa_id) as reservation_passenger
         """
@@ -274,34 +274,85 @@ class ReportSelling(models.Model):
         _logger.info(query)
         return self.env.cr.dictfetchall()
 
+    # ============ convert for all ======================
     def _convert_data(self, lines):
         for i in lines:
             i['reservation_create_date'] = self._datetime_user_context(i['reservation_create_date'])
-            try:
+            if i['reservation_booked_date']:
                 i['reservation_booked_date'] = self._datetime_user_context(i['reservation_booked_date'])
-            except:
-                _logger.error("{} book date cannot be converted to string".format(i['reservation_order_number']))
-                pass
-            try:
+            if i['reservation_issued_date']:
                 i['reservation_issued_date'] = self._datetime_user_context(i['reservation_issued_date'])
-            except:
-                _logger.error("{} issued date cannot be converted to string".format(i['reservation_order_number']))
-                pass
-            try:
+        return lines
+
+    def _convert_data_hotel(self, lines):
+        for i in lines:
+            i['reservation_create_date'] = self._datetime_user_context(i['reservation_create_date'])
+            if i['reservation_booked_date']:
+                i['reservation_booked_date'] = self._datetime_user_context(i['reservation_booked_date'])
+            if i['reservation_issued_date']:
+                i['reservation_issued_date'] = self._datetime_user_context(i['reservation_issued_date'])
+        return lines
+
+    def _convert_data_airline(self, lines):
+        for i in lines:
+            i['reservation_create_date'] = self._datetime_user_context(i['reservation_create_date'])
+            if i['reservation_booked_date']:
+                i['reservation_booked_date'] = self._datetime_user_context(i['reservation_booked_date'])
+            if i['reservation_issued_date']:
+                i['reservation_issued_date'] = self._datetime_user_context(i['reservation_issued_date'])
+        return lines
+
+    def _convert_data_tour(self, lines):
+        for i in lines:
+            i['reservation_create_date'] = self._datetime_user_context(i['reservation_create_date'])
+            if i['reservation_booked_date']:
+                i['reservation_booked_date'] = self._datetime_user_context(i['reservation_booked_date'])
+            if i['reservation_issued_date']:
+                i['reservation_issued_date'] = self._datetime_user_context(i['reservation_issued_date'])
+        return lines
+
+    def _convert_data_train(self, lines):
+        for i in lines:
+            i['reservation_create_date'] = self._datetime_user_context(i['reservation_create_date'])
+            if i['reservation_booked_date']:
+                i['reservation_booked_date'] = self._datetime_user_context(i['reservation_booked_date'])
+            if i['reservation_issued_date']:
+                i['reservation_issued_date'] = self._datetime_user_context(i['reservation_issued_date'])
+
+        return lines
+
+    def _convert_data_activity(self, lines):
+        for i in lines:
+            i['reservation_create_date'] = self._datetime_user_context(i['reservation_create_date'])
+            if i['reservation_booked_date']:
+                i['reservation_booked_date'] = self._datetime_user_context(i['reservation_booked_date'])
+            if i['reservation_issued_date']:
+                i['reservation_issued_date'] = self._datetime_user_context(i['reservation_issued_date'])
+            if i['reservation_visit_date']:
                 i['reservation_visit_date'] = self._datetime_user_context(i['reservation_visit_date'])
-            except:
-                _logger.error("{} visit date cannot be converted to string".format(i['reservation_order_number']))
-                pass
-            try:
+        return lines
+
+    def _convert_data_visa(self, lines):
+        for i in lines:
+            i['reservation_create_date'] = self._datetime_user_context(i['reservation_create_date'])
+            if i['reservation_booked_date']:
+                i['reservation_booked_date'] = self._datetime_user_context(i['reservation_booked_date'])
+            if i['reservation_issued_date']:
+                i['reservation_issued_date'] = self._datetime_user_context(i['reservation_issued_date'])
+        return lines
+
+    def _convert_data_offline(self, lines):
+        for i in lines:
+            i['reservation_create_date'] = self._datetime_user_context(i['reservation_create_date'])
+            if i['reservation_booked_date']:
+                i['reservation_booked_date'] = self._datetime_user_context(i['reservation_booked_date'])
+            if i['reservation_issued_date']:
+                i['reservation_issued_date'] = self._datetime_user_context(i['reservation_issued_date'])
+            if i['reservation_confirm_date']:
                 i['reservation_confirm_date'] = self._datetime_user_context(i['reservation_confirm_date'])
-            except:
-                _logger.error("{} confirm date cannot be converted".format(i['reservation_order_number']))
-                pass
-            try:
+            if i['reservation_done_date']:
                 i['reservation_done_date'] = self._datetime_user_context(i['reservation_done_date'])
-            except:
-                _logger.error("{} done date cannot be converted".format(i['reservation_order_number']))
-                pass
+
         return lines
 
     def _seperate_data(self, lines):
@@ -327,7 +378,22 @@ class ReportSelling(models.Model):
     def _get_lines_data(self, date_from, date_to, agent_id, provider_type):
         if provider_type != 'all':
             lines = self._lines(date_from, date_to, agent_id, provider_type, provider_type)
-            lines = self._convert_data(lines)
+            if provider_type == 'airline':
+                lines = self._convert_data_airline(lines)
+            elif provider_type == 'train':
+                lines = self._convert_data_train(lines)
+            elif provider_type == 'tour':
+                lines = self._convert_data_tour(lines)
+            elif provider_type == 'hotel':
+                lines = self._convert_data_hotel(lines)
+            elif provider_type == 'activity':
+                lines = self._convert_data_activity(lines)
+            elif provider_type == 'visa':
+                lines = self._convert_data_visa(lines)
+            elif provider_type == 'offline':
+                lines = self._convert_data_offline(lines)
+            else:
+                lines = self._convert_data(lines)
             lines = self._seperate_data(lines)
         else:
             lines = []
