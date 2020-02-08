@@ -62,11 +62,11 @@ class TtGetBookingFromVendor(models.TransientModel):
 
     def pnr_validator(self,pnr):
         today = date.today()
-        date_query = today.replace(day=today.day+7)
+        date_query = today.replace(day=today.day-7)
         airlines = self.env['tt.reservation.airline'].search([
             ('pnr','ilike',pnr),
             ('state','not in',['cancel','draft']),
-            ('arrival_date','>',date_query)
+            ('arrival_date','>=',date_query)
         ])
         if airlines:
             raise UserError('PNR Exists.')
