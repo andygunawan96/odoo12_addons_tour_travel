@@ -747,7 +747,10 @@ class ReservationAirline(models.Model):
         ##generate leg data
         provider_type = self.env['tt.provider.type'].search([('code', '=', 'airline')])[0]
         old_state = provider_obj.state
+
+        _logger.info("%s ACTION BOOKED AIRLINE START" % (provider['pnr']))
         provider_obj.action_booked_api_airline(provider, context)
+        _logger.info("%s ACTION BOOKED AIRLINE END" % (provider['pnr']))
 
         if old_state != 'draft':
             return
