@@ -11,8 +11,8 @@ class TtGetBookingFromVendor(models.TransientModel):
     provider = fields.Selection([
         # ('sabre', 'Sabre'),
         ('amadeus', 'Amadeus'),
-        # ('altea', 'Garuda Altea'),
-        # ('lionair', 'Lion Air'),
+        ('altea', 'Garuda Altea'),
+        ('lionair', 'Lion Air'),
     ], string='Provider', required=True)
 
     parent_agent_id = fields.Many2one('tt.agent', 'Parent Agent', readonly=True, related ="agent_id.parent_agent_id")
