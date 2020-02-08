@@ -30,6 +30,8 @@ class TtGetBookingFromVendor(models.TransientModel):
     booker_mobile = fields.Char('Mobile')
     booker_email = fields.Char('Email')
 
+    is_bypass_pnr_validator = fields.Boolean('Is Bypass PNR Validator')
+
     @api.onchange("agent_id")
     def _onchange_agent_id(self):
         if self.agent_id:
@@ -66,17 +68,19 @@ class TtGetBookingFromVendor(models.TransientModel):
         airlines = self.env['tt.reservation.airline'].search([
             ('pnr','ilike',pnr),
             ('state','not in',['cancel','draft']),
-            ('arrival_date','>=',date_query)
+            ('arrival_date','>=',date_query),
         ])
         if airlines:
-            raise UserError('PNR Exists.')
+            raise UserError('PNR Exists on [%s].' % (','.join([rec.name for rec in airlines])))
 
     def send_get_booking(self):
         if self.booker_calling_code and not self.booker_calling_code.isnumeric() or False:
             raise UserError("Calling Code Must be Number.")
         if self.booker_mobile and not self.booker_mobile.isnumeric() or False:
             raise UserError("Booker Mobile Must be Number.")
-        self.pnr_validator(self.pnr)
+        if not self.is_bypass_pnr_validator:
+            self.pnr_validator(self.pnr)
+
         res = self.env['tt.airline.api.con'].send_get_booking_from_vendor(self.user_id.id,self.pnr,self.provider)
         if res['error_code'] != 0:
             raise UserError(res['error_msg'])
