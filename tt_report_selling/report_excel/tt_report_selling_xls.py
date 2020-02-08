@@ -360,6 +360,10 @@ class ReportSellingXls(models.TransientModel):
                     'international_valuation': 0,
                     'domestic_counter': 0,
                     'domestic_valuation': 0,
+                    'elder_count': i['reservation_elder'],
+                    'adult_count': i['reservation_adult'],
+                    'child_count': i['reservation_child'],
+                    'infant_count': i['reservation_infant'],
                     'passenger_count': i['reservation_passenger'],
                     'total_transaction': 0,
                     'issued': 0,
@@ -395,6 +399,10 @@ class ReportSellingXls(models.TransientModel):
                     'departure': i['departure'],
                     'destination': i['destination'],
                     'counter': 1,
+                    'elder_count': i['reservation_elder'],
+                    'adult_count': i['reservation_adult'],
+                    'child_count': i['reservation_child'],
+                    'infant_count': i['reservation_infant'],
                     'passenger_count': i['reservation_passenger'],
                     'total_amount': i['amount']
                 }
@@ -406,11 +414,19 @@ class ReportSellingXls(models.TransientModel):
                     carrier_name_summary[carrier_index]['international_valuation'] += i['amount']
                     carrier_name_summary[carrier_index]['total_transaction'] += 1
                     carrier_name_summary[carrier_index]['passenger_count'] += i['reservation_passenger']
+                    carrier_name_summary[carrier_index]['elder_count'] += i['reservation_elder']
+                    carrier_name_summary[carrier_index]['adult_count'] += i['reservation_adult']
+                    carrier_name_summary[carrier_index]['child_count'] += i['reservation_child']
+                    carrier_name_summary[carrier_index]['infant_count'] += i['reservation_infant']
                 elif i['reservation_sector'] == 'Domestic':
                     carrier_name_summary[carrier_index]['domestic_counter'] += 1
                     carrier_name_summary[carrier_index]['domestic_valuation'] += i['amount']
                     carrier_name_summary[carrier_index]['total_transaction'] += 1
                     carrier_name_summary[carrier_index]['passenger_count'] += i['reservation_passenger']
+                    carrier_name_summary[carrier_index]['elder_count'] += i['reservation_elder']
+                    carrier_name_summary[carrier_index]['adult_count'] += i['reservation_adult']
+                    carrier_name_summary[carrier_index]['child_count'] += i['reservation_child']
+                    carrier_name_summary[carrier_index]['infant_count'] += i['reservation_infant']
                 else:
                     carrier_name_summary[carrier_index]['total_transaction'] += 1
 
@@ -432,6 +448,10 @@ class ReportSellingXls(models.TransientModel):
                         'departure': i['departure'],
                         'destination': i['destination'],
                         'counter': 1,
+                        'elder_count': i['reservation_elder'],
+                        'adult_count': i['reservation_adult'],
+                        'child_count': i['reservation_child'],
+                        'infant_count': i['reservation_infant'],
                         'passenger_count': i['reservation_passenger'],
                         'total_amount': i['amount']
                     }
@@ -440,6 +460,10 @@ class ReportSellingXls(models.TransientModel):
                     carrier_name_summary[carrier_index]['flight'][destination_index]['counter'] += 1
                     carrier_name_summary[carrier_index]['flight'][destination_index]['total_amount'] += i['amount']
                     carrier_name_summary[carrier_index]['flight'][destination_index]['passenger_count'] += i['reservation_passenger']
+                    carrier_name_summary[carrier_index]['flight'][destination_index]['elder_count'] += i['reservation_elder']
+                    carrier_name_summary[carrier_index]['flight'][destination_index]['adult_count'] += i['reservation_adult']
+                    carrier_name_summary[carrier_index]['flight'][destination_index]['child_count'] += i['reservation_child']
+                    carrier_name_summary[carrier_index]['flight'][destination_index]['infant_count'] += i['reservation_infant']
 
             # ============= Summary by Domestic/International ============
             if i['reservation_sector'] == 'International':
@@ -470,19 +494,27 @@ class ReportSellingXls(models.TransientModel):
                 direction_dictionary[2]['passenger_count'] = int(i['reservation_passenger'])
 
             # ============= Search best for every sector ==================
-            returning_index = self.returning_index(destination_sector_summary,{'departure': i['departure'], 'destination': i['destination']})
+            returning_index = self.returning_index_sector(destination_sector_summary,{'departure': i['departure'], 'destination': i['destination'], 'sector': i['reservation_sector']})
             if returning_index == -1:
                 new_dict = {
                     'sector': i['reservation_sector'],
                     'departure': i['departure'],
                     'destination': i['destination'],
                     'counter': 1,
+                    'elder_count': i['reservation_elder'],
+                    'adult_count': i['reservation_adult'],
+                    'child_count': i['reservation_child'],
+                    'infant_count': i['reservation_infant'],
                     'passenger_count': i['reservation_passenger']
                 }
                 destination_sector_summary.append(new_dict)
             else:
                 destination_sector_summary[returning_index]['counter'] += 1
                 destination_sector_summary[returning_index]['passenger_count'] += i['reservation_passenger']
+                destination_sector_summary[returning_index]['elder_count'] += i['reservation_elder']
+                destination_sector_summary[returning_index]['adult_count'] += i['reservation_adult']
+                destination_sector_summary[returning_index]['child_count'] += i['reservation_child']
+                destination_sector_summary[returning_index]['infant_count'] += i['reservation_infant']
 
             # ============= Search for best 50 routes ====================
             returning_index = self.returning_index(destination_direction_summary,{'departure': i['departure'], 'destination': i['destination']})
@@ -492,12 +524,20 @@ class ReportSellingXls(models.TransientModel):
                     'departure': i['departure'],
                     'destination': i['destination'],
                     'counter': 1,
+                    'elder_count': i['reservation_elder'],
+                    'adult_count': i['reservation_adult'],
+                    'child_count': i['reservation_child'],
+                    'infant_count': i['reservation_infant'],
                     'passenger_count': i['reservation_passenger']
                 }
                 destination_direction_summary.append(new_dict)
             else:
                 destination_direction_summary[returning_index]['counter'] += 1
                 destination_direction_summary[returning_index]['passenger_count'] += i['reservation_passenger']
+                destination_direction_summary[returning_index]['elder_count'] += i['reservation_elder']
+                destination_direction_summary[returning_index]['adult_count'] += i['reservation_adult']
+                destination_direction_summary[returning_index]['child_count'] += i['reservation_child']
+                destination_direction_summary[returning_index]['infant_count'] += i['reservation_infant']
 
         sheet.write(5, 8, no_departure, style.table_data)
         sheet.write(6, 8, no_destination, style.table_data)
@@ -545,9 +585,9 @@ class ReportSellingXls(models.TransientModel):
         # ============ SECOND TABLE ======================
         sheet.merge_range(row_data - 1, 0, row_data - 1, 4, 'International', style.table_head_center)
         sheet.write(row_data, 0, 'No.', style.table_head_center)
-        sheet.write(row_data, 1, 'Departure', style.table_head_center)
+        sheet.write(row_data, 1, 'Origin', style.table_head_center)
         sheet.write(row_data, 2, 'Destination', style.table_head_center)
-        sheet.write(row_data, 3, 'Count', style.table_head_center)
+        sheet.write(row_data, 3, '# of Transaction', style.table_head_center)
         sheet.write(row_data, 4, 'Passenger Count', style.table_head_center)
 
         counter = 0
@@ -562,7 +602,12 @@ class ReportSellingXls(models.TransientModel):
                 sheet.write(row_data, 1, international_filter[i]['departure'], sty_table_data)
                 sheet.write(row_data, 2, international_filter[i]['destination'], sty_table_data)
                 sheet.write(row_data, 3, international_filter[i]['counter'], sty_table_data)
-                sheet.write(row_data, 4, international_filter[i]['passenger_count'], sty_table_data)
+                sheet.write(row_data, 4, "{}, {}, {}, {}".format(
+                    international_filter[i]['elder_count'],
+                    international_filter[i]['adult_count'],
+                    international_filter[i]['child_count'],
+                    international_filter[i]['infant_count']
+                ), sty_table_data)
                 sheet.write(row_data, 0, counter, sty_table_data)
             except:
                 break
@@ -571,7 +616,7 @@ class ReportSellingXls(models.TransientModel):
         # ============ THIRD TABLE ======================
         sheet.merge_range(row_data - 1, 0, row_data - 1, 4, 'Domestic', style.table_head_center)
         sheet.write(row_data, 0, 'No.', style.table_head_center)
-        sheet.write(row_data, 1, 'Departure', style.table_head_center)
+        sheet.write(row_data, 1, 'Origin', style.table_head_center)
         sheet.write(row_data, 2, 'Destination', style.table_head_center)
         sheet.write(row_data, 3, 'Count', style.table_head_center)
         sheet.write(row_data, 4, 'Passenger Count', style.table_head_center)
@@ -597,7 +642,7 @@ class ReportSellingXls(models.TransientModel):
         # ============ FORTH TABLE ======================
         sheet.merge_range(row_data - 1, 0, row_data - 1, 4, 'One Way', style.table_head_center)
         sheet.write(row_data, 0, 'No.', style.table_head_center)
-        sheet.write(row_data, 1, 'Departure', style.table_head_center)
+        sheet.write(row_data, 1, 'Origin', style.table_head_center)
         sheet.write(row_data, 2, 'Destination', style.table_head_center)
         sheet.write(row_data, 3, 'Count', style.table_head_center)
         sheet.write(row_data, 4, 'Passenger Count', style.table_head_center)
@@ -623,7 +668,7 @@ class ReportSellingXls(models.TransientModel):
         # ============ FUNF TABLE ======================
         sheet.merge_range(row_data - 1, 0, row_data - 1, 4, 'Return', style.table_head_center)
         sheet.write(row_data, 0, 'No.', style.table_head_center)
-        sheet.write(row_data, 1, 'Departure', style.table_head_center)
+        sheet.write(row_data, 1, 'Origin', style.table_head_center)
         sheet.write(row_data, 2, 'Destination', style.table_head_center)
         sheet.write(row_data, 3, 'Count', style.table_head_center)
         sheet.write(row_data, 4, 'Passenger Count', style.table_head_center)
@@ -649,7 +694,7 @@ class ReportSellingXls(models.TransientModel):
         # ============ SIXTH TABLE ======================
         sheet.merge_range(row_data - 1, 0, row_data - 1, 4, 'Multi City', style.table_head_center)
         sheet.write(row_data, 0, 'No.', style.table_head_center)
-        sheet.write(row_data, 1, 'Departure', style.table_head_center)
+        sheet.write(row_data, 1, 'Origin', style.table_head_center)
         sheet.write(row_data, 2, 'Destination', style.table_head_center)
         sheet.write(row_data, 3, 'Count', style.table_head_center)
         sheet.write(row_data, 4, 'Passenger Count', style.table_head_center)
@@ -878,6 +923,10 @@ class ReportSellingXls(models.TransientModel):
                     'carrier_name': i['reservation_provider_name'],
                     'international_counter': 0,
                     'domestic_counter': 0,
+                    'elder_count': i['reservation_elder'],
+                    'adult_count': i['reservation_adult'],
+                    'child_count': i['reservation_child'],
+                    'infant_count': i['reservation_infant'],
                     'passenger_count': i['reservation_passenger'],
                     'total_transaction': 0,
                     'issued': 0,
@@ -911,6 +960,10 @@ class ReportSellingXls(models.TransientModel):
                     'departure': i['departure'],
                     'destination': i['destination'],
                     'counter': 1,
+                    'elder_count': i['reservation_elder'],
+                    'adult_count': i['reservation_adult'],
+                    'child_count': i['reservation_child'],
+                    'infant_count': i['reservation_infant'],
                     'passenger_count': i['reservation_passenger']
                 }
                 temp_dict['flight'].append(destination_dict)
@@ -920,10 +973,18 @@ class ReportSellingXls(models.TransientModel):
                     carrier_name_summary[carrier_index]['international_counter'] += 1
                     carrier_name_summary[carrier_index]['total_transaction'] += 1
                     carrier_name_summary[carrier_index]['passenger_count'] += i['reservation_passenger']
+                    carrier_name_summary[carrier_index]['elder_count'] += i['reservation_elder']
+                    carrier_name_summary[carrier_index]['adult_count'] += i['reservation_adult']
+                    carrier_name_summary[carrier_index]['child_count'] += i['reservation_child']
+                    carrier_name_summary[carrier_index]['infant_count'] += i['reservation_infant']
                 elif i['reservation_sector'] == 'Domestic':
                     carrier_name_summary[carrier_index]['domestic_counter'] += 1
                     carrier_name_summary[carrier_index]['total_transaction'] += 1
                     carrier_name_summary[carrier_index]['passenger_count'] += i['reservation_passenger']
+                    carrier_name_summary[carrier_index]['elder_count'] += i['reservation_elder']
+                    carrier_name_summary[carrier_index]['adult_count'] += i['reservation_adult']
+                    carrier_name_summary[carrier_index]['child_count'] += i['reservation_child']
+                    carrier_name_summary[carrier_index]['infant_count'] += i['reservation_infant']
                 else:
                     carrier_name_summary[carrier_index]['total_transaction'] += 1
 
@@ -946,6 +1007,10 @@ class ReportSellingXls(models.TransientModel):
                         'departure': i['departure'],
                         'destination': i['destination'],
                         'counter': 1,
+                        'elder_count': i['reservation_elder'],
+                        'adult_count': i['reservation_adult'],
+                        'child_count': i['reservation_child'],
+                        'infant_count': i['reservation_infant'],
                         'passenger_count': i['reservation_passenger']
                     }
                     carrier_name_summary[carrier_index]['flight'].append(destination_dict)
@@ -953,6 +1018,10 @@ class ReportSellingXls(models.TransientModel):
                     carrier_name_summary[carrier_index]['flight'][destination_index]['counter'] += 1
                     carrier_name_summary[carrier_index]['flight'][destination_index]['passenger_count'] += i[
                         'reservation_passenger']
+                    carrier_name_summary[carrier_index]['flight'][destination_index]['elder_count'] += i['reservation_elder']
+                    carrier_name_summary[carrier_index]['flight'][destination_index]['adult_count'] += i['reservation_adult']
+                    carrier_name_summary[carrier_index]['flight'][destination_index]['child_count'] += i['reservation_child']
+                    carrier_name_summary[carrier_index]['flight'][destination_index]['infant_count'] += i['reservation_infant']
 
             # count international or domestic sector is most popular
             if i['reservation_sector'] == 'International':
@@ -991,12 +1060,20 @@ class ReportSellingXls(models.TransientModel):
                     'departure': i['departure'],
                     'destination': i['destination'],
                     'counter': 1,
+                    'elder_count': i['reservation_elder'],
+                    'adult_count': i['reservation_adult'],
+                    'child_count': i['reservation_child'],
+                    'infant_count': i['reservation_infant'],
                     'passenger_count': i['reservation_passenger']
                 }
                 destination_sector_summary.append(new_dict)
             else:
                 destination_sector_summary[returning_index]['counter'] += 1
                 destination_sector_summary[returning_index]['passenger_count'] += i['reservation_passenger']
+                destination_sector_summary[returning_index]['elder_count'] += i['reservation_elder']
+                destination_sector_summary[returning_index]['adult_count'] += i['reservation_adult']
+                destination_sector_summary[returning_index]['child_count'] += i['reservation_child']
+                destination_sector_summary[returning_index]['infant_count'] += i['reservation_infant']
 
             returning_index = self.returning_index(destination_direction_summary,
                                                    {'departure': i['departure'], 'destination': i['destination']})
@@ -1006,12 +1083,20 @@ class ReportSellingXls(models.TransientModel):
                     'departure': i['departure'],
                     'destination': i['destination'],
                     'counter': 1,
+                    'elder_count': i['reservation_elder'],
+                    'adult_count': i['reservation_adult'],
+                    'child_count': i['reservation_child'],
+                    'infant_count': i['reservation_infant'],
                     'passenger_count': i['reservation_passenger']
                 }
                 destination_direction_summary.append(new_dict)
             else:
                 destination_direction_summary[returning_index]['counter'] += 1
                 destination_direction_summary[returning_index]['passenger_count'] += i['reservation_passenger']
+                destination_direction_summary[returning_index]['elder_count'] += i['reservation_elder']
+                destination_direction_summary[returning_index]['adult_count'] += i['reservation_adult']
+                destination_direction_summary[returning_index]['child_count'] += i['reservation_child']
+                destination_direction_summary[returning_index]['infant_count'] += i['reservation_infant']
 
         # ======== LETS filter some stuffs ===================
         # filtered_by_provider = list(filter(lambda x: x['provider_type_name'] == provider_type_summary[0]['provider_type'], values['lines']))
@@ -1656,6 +1741,10 @@ class ReportSellingXls(models.TransientModel):
                 temp_dict = {
                     'product': i['reservation_activity_name'],
                     'counter': 1,
+                    'elder_count': i['reservation_elder'],
+                    'adult_count': i['reservation_adult'],
+                    'child_count': i['reservation_child'],
+                    'infant_count': i['reservation_infant'],
                     'passenger': i['reservation_passenger'],
                     'amount': i['amount']
                 }
@@ -1664,6 +1753,10 @@ class ReportSellingXls(models.TransientModel):
                 product_summary[product_index]['counter'] += 1
                 product_summary[product_index]['passenger'] += i['reservation_passenger']
                 product_summary[product_index]['amount'] += i['amount']
+                product_summary[product_index]['elder_count'] += i['reservation_elder']
+                product_summary[product_index]['adult_count'] += i['reservation_adult']
+                product_summary[product_index]['child_count'] += i['reservation_child']
+                product_summary[product_index]['infant_count'] += i['reservation_infant']
 
         row_data = 9
         sheet.write(row_data, 0, 'No.', style.table_head_center)
@@ -1928,6 +2021,13 @@ class ReportSellingXls(models.TransientModel):
             sheet.write(row_data, 3, i['counter'], sty_table_data)
 
         row_data += 2
+
+        for i in values['lines']:
+            row_data += 1
+
+            sheet.write(row_data, 0, row_data, sty_table_data)
+            sheet.write(row_data, 1, i['reservation_order_number'], sty_table_data)
+            sheet.write(row_data, 2, i['tour_location_country'], sty_table_data)
 
         workbook.close()
 
