@@ -748,31 +748,31 @@ class ReservationAirline(models.Model):
         provider_type = self.env['tt.provider.type'].search([('code', '=', 'airline')])[0]
         old_state = provider_obj.state
 
-        _logger.info("%s ACTION BOOKED AIRLINE START" % (provider['pnr']))
+        # _logger.info("%s ACTION BOOKED AIRLINE START" % (provider['pnr']))
         provider_obj.action_booked_api_airline(provider, context)
-        _logger.info("%s ACTION BOOKED AIRLINE END" % (provider['pnr']))
+        # _logger.info("%s ACTION BOOKED AIRLINE END" % (provider['pnr']))
 
         if old_state != 'draft':
             return
 
-        _logger.info("%s CREATING TICKET START" % (provider['pnr']))
+        # _logger.info("%s CREATING TICKET START" % (provider['pnr']))
         provider_obj.create_ticket_api(provider['passengers'],provider['pnr'])
-        _logger.info("%s CREATING TICKET END" % (provider['pnr']))
+        # _logger.info("%s CREATING TICKET END" % (provider['pnr']))
         # August 16, 2019 - SAM
         # Mengubah mekanisme update booking backend
         segment_dict = provider['segment_dict']
 
         # update leg dan create service charge
-        _logger.info("%s LOOP JOURNEY START" % (provider['pnr']))
+        # _logger.info("%s LOOP JOURNEY START" % (provider['pnr']))
         for idx, journey in enumerate(provider_obj.journey_ids):
-            _logger.info("%s LOOP SEGMENT START" % (provider['pnr']))
+            # _logger.info("%s LOOP SEGMENT START" % (provider['pnr']))
             for idx1, segment in enumerate(journey.segment_ids):
                 # param_segment = provider['journeys'][idx]['segments'][idx1]
                 param_segment = segment_dict[segment.segment_code]
                 if segment.segment_code == param_segment['segment_code']:
                     this_segment_legs = []
                     this_segment_fare_details = []
-                    _logger.info("%s LOOP LEG START" % (provider['pnr']))
+                    # _logger.info("%s LOOP LEG START" % (provider['pnr']))
                     for idx2, leg in enumerate(param_segment['legs']):
                         leg_org = self.env['tt.destinations'].get_id(leg['origin'], provider_type)
                         leg_dest = self.env['tt.destinations'].get_id(leg['destination'], provider_type)
@@ -788,25 +788,25 @@ class ReservationAirline(models.Model):
                             'arrival_date': leg['arrival_date'],
                             'provider_id': leg_prov
                         }))
-                    _logger.info("%s LOOP LEG END" % (provider['pnr']))
+                    # _logger.info("%s LOOP LEG END" % (provider['pnr']))
 
-                    _logger.info("%s LOOP FARES START" % (provider['pnr']))
+                    # _logger.info("%s LOOP FARES START" % (provider['pnr']))
                     for fare in param_segment['fares']:
                         provider_obj.create_service_charge(fare['service_charges'])
                         for addons in fare['fare_details']:
                             addons['description'] = json.dumps(addons['description'])
                             addons['segment_id'] = segment.id
                             this_segment_fare_details.append((0,0,addons))
-                    _logger.info("%s LOOP FARES END" % (provider['pnr']))
+                    # _logger.info("%s LOOP FARES END" % (provider['pnr']))
                     segment.write({
                         'leg_ids': this_segment_legs,
                         'cabin_class': param_segment.get('fares')[0].get('cabin_class',''),
                         'class_of_service': param_segment.get('fares')[0].get('class_of_service',''),
                         'segment_addons_ids': this_segment_fare_details
                     })
-                    _logger.info("%s SEGMENT WRITE FINISH" % (provider['pnr']))
-            _logger.info("%s LOOP SEGMENT END" % (provider['pnr']))
-        _logger.info("%s LOOP JOURNEY END" % (provider['pnr']))
+                    # _logger.info("%s SEGMENT WRITE FINISH" % (provider['pnr']))
+            # _logger.info("%s LOOP SEGMENT END" % (provider['pnr']))
+        # _logger.info("%s LOOP JOURNEY END" % (provider['pnr']))
 
     #to generate sale service charge
     def calculate_service_charge(self):
