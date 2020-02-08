@@ -45,4 +45,5 @@ class TtAirlineApiCon(models.Model):
         }
         return self.send_request_to_gateway('%s/booking/airline/private' % (self.url),
                                             request,
-                                            'retrieve_booking')
+                                            'retrieve_booking',
+                                            timeout=120)
