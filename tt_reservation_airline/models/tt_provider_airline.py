@@ -223,7 +223,7 @@ class TtProviderAirline(models.Model):
                                                                                       psg.get('last_name',
                                                                                               ''))).lower().replace(' ',''))
 
-            if psg_obj and False:
+            if psg_obj:
                 _logger.info(json.dumps(psg_obj.ids))
                 if len(psg_obj.ids) > 1:
                     for psg_o in psg_obj:
