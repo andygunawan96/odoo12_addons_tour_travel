@@ -201,13 +201,6 @@ class IssuedOffline(models.Model):
         provider_type_list.append(('other', 'Other'))
         return provider_type_list
 
-    def print_invoice(self):
-        data = {
-            'ids': self.ids,
-            'model': self._name,
-        }
-        return self.env.ref('tt_reservation_offline.action_report_printout_invoice').report_action(self, data=data)
-
     def print_invoice_ticket(self):
         data = {
             'ids': self.ids,
