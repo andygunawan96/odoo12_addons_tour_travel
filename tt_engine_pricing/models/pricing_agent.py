@@ -31,6 +31,8 @@ class PricingAgent(models.Model):
     line_ids = fields.One2many('tt.pricing.agent.line', 'pricing_id', 'Pricing')
     active = fields.Boolean('Active', default=True)
 
+    is_per_pnr = fields.Boolean('Is per PNR', default=False)
+
     def get_name(self):
         # Perlu diupdate lagi, sementara menggunakan ini
         res = '%s - %s' % (self.agent_type_id.code.title(), self.provider_type_id.code.title())
@@ -106,6 +108,7 @@ class PricingAgent(models.Model):
             'is_per_route': self.is_per_route,
             'is_per_segment': self.is_per_segment,
             'is_per_pax': self.is_per_pax,
+            'is_per_pnr': self.is_per_pnr,
             'loop_level': self.loop_level,
             # 'line_ids': line_ids,
             'line_dict': line_dict,

@@ -2,12 +2,12 @@ from odoo import api, fields, models
 from odoo.exceptions import UserError
 from ...tools import variables
 from datetime import datetime
-import json
+import json, logging
 
+_logger = logging.getLogger(__name__)
 
 class TtProviderAirline(models.Model):
     _name = 'tt.provider.airline'
-    _inherit = 'tt.history'
     _rec_name = 'pnr'
     _order = 'departure_date'
     _description = 'Rodex Model'
@@ -224,14 +224,14 @@ class TtProviderAirline(models.Model):
                                                                                               ''))).lower().replace(' ',''))
 
             if psg_obj:
-                print(psg_obj.ids)
+                _logger.info(json.dumps(psg_obj.ids))
                 if len(psg_obj.ids) > 1:
                     for psg_o in psg_obj:
                         if not psg_o.is_ticketed:
                             psg_obj = psg_o
                             break
 
-                print(str(psg_obj))
+                _logger.info(str(psg_obj))
                 ticket_list.append((0, 0, {
                     'pax_type': psg.get('pax_type'),
                     'ticket_number': psg.get('ticket_number'),
@@ -240,6 +240,10 @@ class TtProviderAirline(models.Model):
                 psg_obj.is_ticketed = True
                 psg_obj.create_ssr(psg['fees'],pnr,self.id)
             else:
+                _logger.info("psg not found :" + json.dumps(psg))
+                _logger.info("psg info: %s " % (
+                    ','.join([rec.name.replace(' ', '').lower() for rec in self.booking_id.passenger_ids])
+                ))
                 ticket_not_found.append(psg)
 
         psg_with_no_ticket = self.booking_id.passenger_ids.filtered(lambda x: x.is_ticketed == False)

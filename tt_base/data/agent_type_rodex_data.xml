@@ -34,5 +34,12 @@
             <field name="registration_fee">0</field>
             <field name="seq_prefix">BR</field>
         </record>
+        <record id="agent_type_btbo2" model="tt.agent.type">
+            <field name="name">Agent BTBO 2</field>
+            <field name="code">btbo2</field>
+            <field name="active">True</field>
+            <field name="registration_fee">0</field>
+            <field name="seq_prefix">BD</field>
+        </record>
     </data>
 </odoo>

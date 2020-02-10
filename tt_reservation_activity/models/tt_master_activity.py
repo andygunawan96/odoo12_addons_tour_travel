@@ -101,6 +101,7 @@ class MasterActivity(models.Model):
     video_ids = fields.One2many('tt.activity.master.videos', 'activity_id', 'Video Path')
     provider_id = fields.Many2one('tt.provider', 'Provider')
     provider_code = fields.Char('Provider Code')
+    provider_fare_code = fields.Char('Provider Fare Code')
     can_hold_booking = fields.Boolean('Can Hold Booking', default=False)
     active = fields.Boolean('Active', default=True)
 
@@ -478,6 +479,7 @@ class MasterActivity(models.Model):
                         'can_hold_booking': rec['product']['can_hold_booking'],
                         'active': True,
                         'provider_id': provider_id.id,
+                        'provider_fare_code': rec['product']['provider_fare_code'],
                     })
                 else:
                     vals = {

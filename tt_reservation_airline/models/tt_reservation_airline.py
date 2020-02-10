@@ -439,7 +439,6 @@ class ReservationAirline(models.Model):
                 'order_number': book_obj.name,
                 'book_id': book_obj.id
             })
-
         except RequestException as e:
             _logger.error(traceback.format_exc())
             try:
@@ -748,24 +747,32 @@ class ReservationAirline(models.Model):
         ##generate leg data
         provider_type = self.env['tt.provider.type'].search([('code', '=', 'airline')])[0]
         old_state = provider_obj.state
+
+        # _logger.info("%s ACTION BOOKED AIRLINE START" % (provider['pnr']))
         provider_obj.action_booked_api_airline(provider, context)
+        # _logger.info("%s ACTION BOOKED AIRLINE END" % (provider['pnr']))
 
         if old_state != 'draft':
             return
 
+        # _logger.info("%s CREATING TICKET START" % (provider['pnr']))
         provider_obj.create_ticket_api(provider['passengers'],provider['pnr'])
+        # _logger.info("%s CREATING TICKET END" % (provider['pnr']))
         # August 16, 2019 - SAM
         # Mengubah mekanisme update booking backend
         segment_dict = provider['segment_dict']
 
         # update leg dan create service charge
+        # _logger.info("%s LOOP JOURNEY START" % (provider['pnr']))
         for idx, journey in enumerate(provider_obj.journey_ids):
+            # _logger.info("%s LOOP SEGMENT START" % (provider['pnr']))
             for idx1, segment in enumerate(journey.segment_ids):
                 # param_segment = provider['journeys'][idx]['segments'][idx1]
                 param_segment = segment_dict[segment.segment_code]
                 if segment.segment_code == param_segment['segment_code']:
                     this_segment_legs = []
                     this_segment_fare_details = []
+                    # _logger.info("%s LOOP LEG START" % (provider['pnr']))
                     for idx2, leg in enumerate(param_segment['legs']):
                         leg_org = self.env['tt.destinations'].get_id(leg['origin'], provider_type)
                         leg_dest = self.env['tt.destinations'].get_id(leg['destination'], provider_type)
@@ -781,20 +788,25 @@ class ReservationAirline(models.Model):
                             'arrival_date': leg['arrival_date'],
                             'provider_id': leg_prov
                         }))
+                    # _logger.info("%s LOOP LEG END" % (provider['pnr']))
 
+                    # _logger.info("%s LOOP FARES START" % (provider['pnr']))
                     for fare in param_segment['fares']:
                         provider_obj.create_service_charge(fare['service_charges'])
                         for addons in fare['fare_details']:
                             addons['description'] = json.dumps(addons['description'])
                             addons['segment_id'] = segment.id
                             this_segment_fare_details.append((0,0,addons))
-
+                    # _logger.info("%s LOOP FARES END" % (provider['pnr']))
                     segment.write({
                         'leg_ids': this_segment_legs,
                         'cabin_class': param_segment.get('fares')[0].get('cabin_class',''),
                         'class_of_service': param_segment.get('fares')[0].get('class_of_service',''),
                         'segment_addons_ids': this_segment_fare_details
                     })
+                    # _logger.info("%s SEGMENT WRITE FINISH" % (provider['pnr']))
+            # _logger.info("%s LOOP SEGMENT END" % (provider['pnr']))
+        # _logger.info("%s LOOP JOURNEY END" % (provider['pnr']))
 
     #to generate sale service charge
     def calculate_service_charge(self):
@@ -854,335 +866,305 @@ class ReservationAirline(models.Model):
                 'sale_service_charge_ids': values
             })
 
-    def CR8(self):
-        cr8_req = {
-            "force_issued": False,
-            "searchRQ": {
-                "journey_list": [
-                    {
-                        "origin": "PNK",
-                        "destination": "CGK",
-                        "departure_date": "2020-02-11"
-                    }
-                ],
-                "adult": 2,
-                "child": 0,
-                "infant": 0,
-                "direction": "OW"
-            },
-            "booker": {
-                "title": "MRS",
-                "first_name": "Nuraeni",
-                "last_name": "Nuraeni",
-                "email": "sherli_jusuf@yahoo.com",
-                "calling_code": "62",
-                "mobile": "087716617047",
-                "nationality_name": "Indonesia",
-                "booker_seq_id": "",
-                "nationality_code": "ID",
-                "gender": "female"
-            },
-            "contacts": [
-                {
-                    "title": "MRS",
-                    "first_name": "Nuraeni",
-                    "last_name": "Nuraeni",
-                    "email": "sherli_jusuf@yahoo.com",
-                    "calling_code": "62",
-                    "mobile": "087716617047",
-                    "nationality_name": "Indonesia",
-                    "contact_seq_id": "",
-                    "is_also_booker": True,
-                    "nationality_code": "ID",
-                    "contact_id": "CTC_1",
-                    "sequence": 1,
-                    "gender": "female"
-                }
-            ],
-            "passengers": [
-                {
-                    "pax_type": "ADT",
-                    "first_name": "Nuraeni",
-                    "last_name": "Nuraeni",
-                    "title": "MRS",
-                    "birth_date": "1989-12-28",
-                    "nationality_name": "Indonesia",
-                    "passenger_seq_id": "",
-                    "is_also_booker": False,
-                    "is_also_contact": False,
-                    "ssr_list": [],
-                    "nationality_code": "ID",
-                    "sequence": 1,
-                    "passenger_id": "PSG_1",
-                    "gender": "female"
-                },
-                {
-                    "pax_type": "ADT",
-                    "first_name": "Ade",
-                    "last_name": "Suparman",
-                    "title": "MR",
-                    "birth_date": "1968-01-01",
-                    "nationality_name": "Indonesia",
-                    "passenger_seq_id": "",
-                    "is_also_booker": False,
-                    "is_also_contact": False,
-                    "ssr_list": [],
-                    "nationality_code": "ID",
-                    "sequence": 2,
-                    "passenger_id": "PSG_2",
-                    "gender": "male"
-                }
-            ],
-            "provider_type": "airline",
-            "promo_codes": [],
-            "adult": 2,
-            "child": 0,
-            "infant": 0,
-            "schedules": [
-                {
-                    "journeys": [
-                        {
-                            "segments": [
-                                {
-                                    "segment_code": "JT,711,PNK,2020-02-11 07:10:00,CGK,2020-02-11 08:40:00,lionair",
-                                    "fare_code": "M0_C0_F0_S17",
-                                    "carrier_code": "JT",
-                                    "class_of_service": "T",
-                                    "fare_pick": 0,
-                                    "carrier_number": "711",
-                                    "origin": "PNK",
-                                    "departure_date": "2020-02-11 07:10:00",
-                                    "destination": "CGK",
-                                    "arrival_date": "2020-02-11 08:40:00",
-                                    "provider": "lionair"
-                                }
-                            ]
-                        }
-                    ],
-                    "provider": "lionair",
-                    "carrier_code": [
-                        "JT"
-                    ],
-                    "paxs": {
-                        "ADT": 2,
-                        "CHD": 0,
-                        "INF": 0
-                    },
-                    "promo_codes": [],
-                    "schedule_id": 1
-                }
-            ]
-        }
-        up8_req = {
-            "force_issued": False,
-            "book_id": 3611,
-            "order_number": "AL.200206553611",
-            "provider_bookings": [
-                {
-                    "pnr": "KVJESQ",
-                    "pnr2": "KVJESQ",
-                    "reference": "KVJESQ",
-                    "hold_date": "2020-02-06 15:18:00",
-                    "expired_date": "2020-02-06 15:18:00",
-                    "contacts": [],
-                    "passengers": [
-                        {
-                            "passenger_id": False,
-                            "title": "MRS",
-                            "country_of_issued_code": "ID",
-                            "first_name": "NURAENI",
-                            "last_name": "NURAENI",
-                            "ff_doc_type": "",
-                            "nationality_code": "ID",
-                            "ff_issued_by_code": "ID",
-                            "birth_date": False,
-                            "gender": "female",
-                            "passenger_ssrs_request": [],
-                            "pax_type": "ADT",
-                            "sale_service_charges": [],
-                            "fees": [],
-                            "ticket_number": ""
-                        },
-                        {
-                            "passenger_id": False,
-                            "title": "MR",
-                            "country_of_issued_code": "ID",
-                            "first_name": "ADE",
-                            "last_name": "SUPARMAN",
-                            "ff_doc_type": "",
-                            "nationality_code": "ID",
-                            "ff_issued_by_code": "ID",
-                            "birth_date": False,
-                            "gender": "male",
-                            "passenger_ssrs_request": [],
-                            "pax_type": "ADT",
-                            "sale_service_charges": [],
-                            "fees": [],
-                            "ticket_number": ""
-                        }
-                    ],
-                    "paxs": {
-                        "ADT": 2,
-                        "CHD": 0,
-                        "INF": 0
-                    },
-                    "balance_due": 1225200,
-                    "balance_due_str": "1225200.0",
-                    "currency": "IDR",
-                    "status": "BOOKED",
-                    "provider": "lionair",
-                    "promo_codes": [],
-                    "sequence": 1,
-                    "provider_id": 3751,
-                    "segment_dict": {
-                        "JT,711,PNK,2020-02-11 07:10:00,CGK,2020-02-11 08:40:00,lionair": {
-                            "segment_code": "JT,711,PNK,2020-02-11 07:10:00,CGK,2020-02-11 08:40:00,lionair",
-                            "carrier_name": " Lion Air",
-                            "carrier_code": "JT",
-                            "carrier_number": "711",
-                            "origin": "Pontianak (PNK)",
-                            "origin_terminal": "",
-                            "departure_date": "2020-02-11 07:10:00",
-                            "destination": "Jakarta Soekarno Hatta (CGK)",
-                            "destination_terminal": "",
-                            "arrival_date": "2020-02-11 08:40:00",
-                            "class": "T",
-                            "provider": "lionair",
-                            "fares": [
-                                {
-                                    "fare_details": [],
-                                    "service_charges": [
-                                        {
-                                            "charge_code": "fare",
-                                            "charge_type": "FARE",
-                                            "currency": "IDR",
-                                            "pax_type": "ADT",
-                                            "pax_count": 2,
-                                            "amount": 516000,
-                                            "foreign_currency": "IDR",
-                                            "foreign_amount": 516000,
-                                            "total": 1032000,
-                                            "sequence": "10"
-                                        },
-                                        {
-                                            "charge_code": "tax",
-                                            "charge_type": "TAX",
-                                            "currency": "IDR",
-                                            "pax_type": "ADT",
-                                            "pax_count": 2,
-                                            "amount": 96600,
-                                            "foreign_currency": "IDR",
-                                            "foreign_amount": 96600,
-                                            "total": 193200,
-                                            "sequence": "10"
-                                        },
-                                        {
-                                            "charge_code": "rac",
-                                            "charge_type": "RAC",
-                                            "currency": "IDR",
-                                            "pax_type": "ADT",
-                                            "pax_count": 2,
-                                            "amount": -11900,
-                                            "foreign_currency": "IDR",
-                                            "foreign_amount": -11900,
-                                            "total": -23800
-                                        },
-                                        {
-                                            "charge_code": "hoc",
-                                            "charge_type": "RAC",
-                                            "currency": "IDR",
-                                            "pax_type": "ADT",
-                                            "pax_count": 2,
-                                            "amount": -3500,
-                                            "foreign_currency": "IDR",
-                                            "foreign_amount": -3500,
-                                            "total": -7000,
-                                            "commission_agent_id": 67
-                                        }
-                                    ],
-                                    "service_charge_summary": [
-                                        {
-                                            "service_charges": [
-                                                {
-                                                    "charge_code": "fare",
-                                                    "charge_type": "FARE",
-                                                    "currency": "IDR",
-                                                    "pax_type": "ADT",
-                                                    "pax_count": 2,
-                                                    "amount": 516000,
-                                                    "foreign_currency": "IDR",
-                                                    "foreign_amount": 516000,
-                                                    "total": 1032000,
-                                                    "sequence": 1
-                                                },
-                                                {
-                                                    "charge_code": "tax",
-                                                    "charge_type": "TAX",
-                                                    "currency": "IDR",
-                                                    "pax_type": "ADT",
-                                                    "pax_count": 2,
-                                                    "amount": 96600,
-                                                    "foreign_currency": "IDR",
-                                                    "foreign_amount": 96600,
-                                                    "total": 193200,
-                                                    "sequence": 2
-                                                },
-                                                {
-                                                    "charge_code": "rac",
-                                                    "charge_type": "RAC",
-                                                    "currency": "IDR",
-                                                    "pax_type": "ADT",
-                                                    "pax_count": 2,
-                                                    "amount": -15400,
-                                                    "foreign_currency": "IDR",
-                                                    "foreign_amount": -15400,
-                                                    "total": -30800,
-                                                    "sequence": 3
-                                                }
-                                            ],
-                                            "pax_type": "ADT",
-                                            "total_fare": 1032000,
-                                            "total_tax": 193200,
-                                            "total_rac": -30800,
-                                            "total_price": 1225200,
-                                            "pax_count": 2
-                                        }
-                                    ],
-                                    "cabin_class": "",
-                                    "class_of_service": "T"
-                                }
-                            ],
-                            "legs": [
-                                {
-                                    "leg_code": "JT,711,PNK,2020-02-11 07:10:00,CGK,2020-02-11 08:40:00,lionair",
-                                    "carrier_name": " Lion Air",
-                                    "carrier_code": "JT",
-                                    "carrier_number": "711",
-                                    "origin": "PNK",
-                                    "origin_terminal": "",
-                                    "departure_date": "2020-02-11 07:10:00",
-                                    "destination": "CGK",
-                                    "destination_terminal": "",
-                                    "arrival_date": "2020-02-1108:40:00",
-                                    "class": "T",
-                                    "provider": "lionair"
-                                }
-                            ]
-                        }
-                    }
-                }
-            ],
-            "member": False,
-            "acquirer_seq_id": ""
-        }
-        context = {
-            'signature': 'hello',
-            # 'co_uid':
-            'co_uid': 12,
-            'co_agent_id': 5,
-        }
-        self.env['tt.reservation.airline'].create_booking_airline_api(cr8_req,context)
-        self.env['tt.reservation.airline'].update_pnr_provider_airline_api(up8_req,context)
+    # def CR8(self):
+    #     cr8_req = {
+    #         "force_issued": False,
+    #         "searchRQ": {
+    #             "journey_list": [
+    #                 {
+    #                     "origin": "SUB",
+    #                     "destination": "AAP",
+    #                     "departure_date": "2020-02-11"
+    #                 }
+    #             ],
+    #             "adult": 1,
+    #             "child": 0,
+    #             "infant": 0,
+    #             "direction": "OW"
+    #         },
+    #         "booker": {
+    #             "title": "MR",
+    #             "first_name": "Rangga Satrio",
+    #             "last_name": "Yudho",
+    #             "email": "hexaglobalinternational@gmail.com",
+    #             "calling_code": "62",
+    #             "mobile": "082341641700",
+    #             "nationality_name": "Indonesia",
+    #             "booker_seq_id": "CU.02013551",
+    #             "nationality_code": "ID",
+    #             "gender": "male"
+    #         },
+    #         "contacts": [
+    #             {
+    #                 "title": "MR",
+    #                 "first_name": "Rangga Satrio",
+    #                 "last_name": "Yudho",
+    #                 "email": "hexaglobalinternational@gmail.com",
+    #                 "calling_code": "62",
+    #                 "mobile": "082341641700",
+    #                 "nationality_name": "Indonesia",
+    #                 "contact_seq_id": "CU.02013551",
+    #                 "is_also_booker": True,
+    #                 "nationality_code": "ID",
+    #                 "contact_id": "CTC_1",
+    #                 "sequence": 1,
+    #                 "gender": "male"
+    #             }
+    #         ],
+    #         "passengers": [
+    #             {
+    #                 "pax_type": "ADT",
+    #                 "first_name": "Rangga Satrio",
+    #                 "last_name": "Yudho",
+    #                 "title": "MR",
+    #                 "birth_date": "1988-01-13",
+    #                 "nationality_name": "Indonesia",
+    #                 "passenger_seq_id": "CU.02013551",
+    #                 "is_also_booker": True,
+    #                 "is_also_contact": True,
+    #                 "ssr_list": [],
+    #                 "nationality_code": "ID",
+    #                 "sequence": 1,
+    #                 "passenger_id": "PSG_1",
+    #                 "gender": "male"
+    #             }
+    #         ],
+    #         "provider_type": "airline",
+    #         "promo_codes": [],
+    #         "adult": 1,
+    #         "child": 0,
+    #         "infant": 0,
+    #         "schedules": [
+    #             {
+    #                 "journeys": [
+    #                     {
+    #                         "segments": [
+    #                             {
+    #                                 "segment_code": "JT,666,SUB,2020-02-11 07:50:00,AAP,2020-02-11 10:20:00,lionair",
+    #                                 "fare_code": "M0_C0_F0_S18",
+    #                                 "carrier_code": "JT",
+    #                                 "class_of_service": "V",
+    #                                 "fare_pick": 0,
+    #                                 "carrier_number": "666",
+    #                                 "origin": "SUB",
+    #                                 "departure_date": "2020-02-11 07:50:00",
+    #                                 "destination": "AAP",
+    #                                 "arrival_date": "2020-02-11 10:20:00",
+    #                                 "provider": "lionair"
+    #                             }
+    #                         ]
+    #                     }
+    #                 ],
+    #                 "provider": "lionair",
+    #                 "carrier_code": [
+    #                     "JT"
+    #                 ],
+    #                 "paxs": {
+    #                     "ADT": 1,
+    #                     "CHD": 0,
+    #                     "INF": 0
+    #                 },
+    #                 "promo_codes": [],
+    #                 "schedule_id": 1
+    #             }
+    #         ]
+    #     }
+    #     up8_req = {
+    #         "book_id": 3749,
+    #         "order_number": "AL.200208513749",
+    #         "force_issued": False,
+    #         "provider_bookings": [
+    #             {
+    #                 "pnr": "UZZEUB",
+    #                 "pnr2": "UZZEUB",
+    #                 "reference": "UZZEUB",
+    #                 "hold_date": "2020-02-08 07:13:00",
+    #                 "expired_date": "2020-02-08 07:13:00",
+    #                 "contacts": [],
+    #                 "passengers": [
+    #                     {
+    #                         "passenger_id": False,
+    #                         "title": "MR",
+    #                         "country_of_issued_code": "ID",
+    #                         "first_name": "RANGGA SATRIO",
+    #                         "last_name": "YUDHO",
+    #                         "ff_doc_type": "",
+    #                         "nationality_code": "ID",
+    #                         "ff_issued_by_code": "ID",
+    #                         "birth_date": False,
+    #                         "gender": "male",
+    #                         "passenger_ssrs_request": [],
+    #                         "pax_type": "ADT",
+    #                         "sale_service_charges": [],
+    #                         "fees": [],
+    #                         "ticket_number": ""
+    #                     }
+    #                 ],
+    #                 "paxs": {
+    #                     "ADT": 1,
+    #                     "CHD": 0,
+    #                     "INF": 0
+    #                 },
+    #                 "balance_due": 636200,
+    #                 "balance_due_str": "636200.0",
+    #                 "currency": "IDR",
+    #                 "status": "BOOKED",
+    #                 "provider": "lionair",
+    #                 "promo_codes": [],
+    #                 "sequence": 1,
+    #                 "provider_id": 3889,
+    #                 "segment_dict": {
+    #                     "JT,666,SUB,2020-02-11 07:50:00,AAP,2020-02-11 10:20:00,lionair": {
+    #                         "segment_code": "JT,666,SUB,2020-02-11 07:50:00,AAP,2020-02-11 10:20:00,lionair",
+    #                         "carrier_name": " Lion Air",
+    #                         "carrier_code": "JT",
+    #                         "carrier_number": "666",
+    #                         "origin": "Surabaya (SUB)",
+    #                         "origin_terminal": "",
+    #                         "departure_date": "2020-02-11 07:50:00",
+    #                         "destination": "Samarinda Tumengg (AAP)",
+    #                         "destination_terminal": "",
+    #                         "arrival_date": "2020-02-11 10:20:00",
+    #                         "class": "V",
+    #                         "provider": "lionair",
+    #                         "fares": [
+    #                             {
+    #                                 "fare_details": [],
+    #                                 "service_charges": [
+    #                                     {
+    #                                         "charge_code": "fare",
+    #                                         "charge_type": "FARE",
+    #                                         "currency": "IDR",
+    #                                         "pax_type": "ADT",
+    #                                         "pax_count": 1,
+    #                                         "amount": 492000,
+    #                                         "foreign_currency": "IDR",
+    #                                         "foreign_amount": 492000,
+    #                                         "total": 492000,
+    #                                         "sequence": "10"
+    #                                     },
+    #                                     {
+    #                                         "charge_code": "tax",
+    #                                         "charge_type": "TAX",
+    #                                         "currency": "IDR",
+    #                                         "pax_type": "ADT",
+    #                                         "pax_count": 1,
+    #                                         "amount": 144200,
+    #                                         "foreign_currency": "IDR",
+    #                                         "foreign_amount": 144200,
+    #                                         "total": 144200,
+    #                                         "sequence": "10"
+    #                                     },
+    #                                     {
+    #                                         "charge_code": "rac",
+    #                                         "charge_type": "RAC",
+    #                                         "currency": "IDR",
+    #                                         "pax_type": "ADT",
+    #                                         "pax_count": 1,
+    #                                         "amount": -14300,
+    #                                         "foreign_currency": "IDR",
+    #                                         "foreign_amount": -14300,
+    #                                         "total": -14300
+    #                                     }
+    #                                 ],
+    #                                 "service_charge_summary": [
+    #                                     {
+    #                                         "service_charges": [
+    #                                             {
+    #                                                 "charge_code": "fare",
+    #                                                 "charge_type": "FARE",
+    #                                                 "currency": "IDR",
+    #                                                 "pax_type": "ADT",
+    #                                                 "pax_count": 1,
+    #                                                 "amount": 492000,
+    #                                                 "foreign_currency": "IDR",
+    #                                                 "foreign_amount": 492000,
+    #                                                 "total": 492000,
+    #                                                 "sequence": 1
+    #                                             },
+    #                                             {
+    #                                                 "charge_code": "tax",
+    #                                                 "charge_type": "TAX",
+    #                                                 "currency": "IDR",
+    #                                                 "pax_type": "ADT",
+    #                                                 "pax_count": 1,
+    #                                                 "amount": 144200,
+    #                                                 "foreign_currency": "IDR",
+    #                                                 "foreign_amount": 144200,
+    #                                                 "total": 144200,
+    #                                                 "sequence": 2
+    #                                             },
+    #                                             {
+    #                                                 "charge_code": "rac",
+    #                                                 "charge_type": "RAC",
+    #                                                 "currency": "IDR",
+    #                                                 "pax_type": "ADT",
+    #                                                 "pax_count": 1,
+    #                                                 "amount": -14300,
+    #                                                 "foreign_currency": "IDR",
+    #                                                 "foreign_amount": -14300,
+    #                                                 "total": -14300,
+    #                                                 "sequence": 3
+    #                                             }
+    #                                         ],
+    #                                         "pax_type": "ADT",
+    #                                         "total_fare": 492000,
+    #                                         "total_tax": 144200,
+    #                                         "total_rac": -14300,
+    #                                         "total_price": 636200,
+    #                                         "pax_count": 1
+    #                                     }
+    #                                 ],
+    #                                 "cabin_class": "",
+    #                                 "class_of_service": "V"
+    #                             }
+    #                         ],
+    #                         "legs": [
+    #                             {
+    #                                 "leg_code": "JT,666,SUB,2020-02-11 07:50:00,AAP,2020-02-11 10:20:00,lionair",
+    #                                 "carrier_name": " Lion Air",
+    #                                 "carrier_code": "JT",
+    #                                 "carrier_number": "666",
+    #                                 "origin": "SUB",
+    #                                 "origin_terminal": "",
+    #                                 "departure_date": "2020-02-11 07:50:00",
+    #                                 "destination": "AAP",
+    #                                 "destination_terminal": "",
+    #                                 "arrival_date": "2020-02-11 10:20:00",
+    #                                 "class": "V",
+    #                                 "provider": "lionair"
+    #                             }
+    #                         ]
+    #                     }
+    #                 }
+    #             }
+    #         ],
+    #         "member": False,
+    #         "acquirer_seq_id": ""
+    #     }
+    #     up8_req_2 = {"book_id": 3749, "order_number": "AL.200208513749", "force_issued": "", "provider_bookings": [{"pnr": "UZZEUB", "pnr2": "UZZEUB", "provider": "lionair", "provider_id": 3889, "state": "booked", "state_description": "Booked", "sequence": 1, "balance_due": 636200.0, "origin": "SUB", "destination": "AAP", "departure_date": "2020-02-11 07:50:00", "arrival_date": "2020-02-11 10:20:00", "currency": "IDR", "hold_date": "2020-02-08 07:13:00", "tickets": [], "error_msg": "", "promo_codes": [], "id": 3889, "reference": "UZZEUB", "expired_date": "2020-02-08 07:13:00", "contacts": [], "passengers": [{"passenger_id": "", "title": "MR", "country_of_issued_code": "ID", "first_name": "RANGGA SATRIO", "last_name": "YUDHO", "ff_doc_type": "", "nationality_code": "ID", "ff_issued_by_code": "ID", "birth_date": False, "gender": "male", "passenger_ssrs_request": [], "pax_type": "ADT", "sale_service_charges": [], "fees": [], "ticket_number": "\u00a0"}], "balance_due_str": "636200.0", "status": "BOOKED", "segment_dict": {"JT,666,SUB,2020-02-11 07:50:00,AAP,2020-02-11 10:20:00,lionair": {"segment_code": "JT,666,SUB,2020-02-11 07:50:00,AAP,2020-02-11 10:20:00,lionair", "carrier_name": " Lion Air", "carrier_code": "JT", "carrier_number": "666", "origin": "Surabaya (SUB)", "origin_terminal": "", "departure_date": "2020-02-11 07:50:00", "destination": "Samarinda Tumengg (AAP)", "destination_terminal": "", "arrival_date": "2020-02-11 10:20:00", "class": "V", "provider": "lionair", "fares": [{"fare_details": [], "service_charges": [{"charge_code": "fare", "charge_type": "FARE", "currency": "IDR", "pax_type": "ADT", "pax_count": 1, "amount": 492000.0, "foreign_currency": "IDR", "foreign_amount": 492000.0, "total": 492000.0, "sequence": "10"}, {"charge_code": "tax", "charge_type": "TAX", "currency": "IDR", "pax_type": "ADT", "pax_count": 1, "amount": 144200.0, "foreign_currency": "IDR", "foreign_amount": 144200.0, "total": 144200.0, "sequence": "10"}, {"charge_code": "ssr", "charge_type": "SSR", "currency": "IDR", "pax_type": "ADT", "pax_count": 1, "amount": 0.0, "foreign_currency": "IDR", "foreign_amount": 0.0, "total": 0.0, "sequence": "10"}, {"charge_code": "rac", "charge_type": "RAC", "currency": "IDR", "pax_type": "ADT", "pax_count": 1, "amount": -14300.0, "foreign_currency": "IDR", "foreign_amount": -14300.0, "total": -14300.0}], "service_charge_summary": [{"service_charges": [{"charge_code": "fare", "charge_type": "FARE", "currency": "IDR", "pax_type": "ADT", "pax_count": 1, "amount": 492000.0, "foreign_currency": "IDR", "foreign_amount": 492000.0, "total": 492000.0, "sequence": 1}, {"charge_code": "tax", "charge_type": "TAX", "currency": "IDR", "pax_type": "ADT", "pax_count": 1, "amount": 144200.0, "foreign_currency": "IDR", "foreign_amount": 144200.0, "total": 144200.0, "sequence": 2}, {"charge_code": "ssr", "charge_type": "SSR", "currency": "IDR", "pax_type": "ADT", "pax_count": 1, "amount": 0.0, "foreign_currency": "IDR", "foreign_amount": 0.0, "total": 0.0, "sequence": 3}, {"charge_code": "rac", "charge_type": "RAC", "currency": "IDR", "pax_type": "ADT", "pax_count": 1, "amount": -14300.0, "foreign_currency": "IDR", "foreign_amount": -14300.0, "total": -14300.0, "sequence": 4}], "pax_type": "ADT", "total_fare": 492000.0, "total_tax": 144200.0, "total_rac": -14300.0, "total_price": 636200.0, "pax_count": 1}], "cabin_class": "", "class_of_service": "V"}], "legs": [{"leg_code": "JT,666,SUB,2020-02-11 07:50:00,AAP,2020-02-11 10:20:00,lionair", "carrier_name": " Lion Air", "carrier_code": "JT", "carrier_number": "666", "origin": "SUB", "origin_terminal": "", "departure_date": "2020-02-11 07:50:00", "destination": "AAP", "destination_terminal": "", "arrival_date": "2020-02-11 10:20:00", "class": "V", "provider": "lionair"}]}}}], "member": False, "acquirer_seq_id": ""}
+    #
+    #     context = {
+    #         'signature': 'hello',
+    #         # 'co_uid':
+    #         'co_uid': 12,
+    #         'co_agent_id': 5,
+    #     }
+    #     cr8_res = self.env['tt.reservation.airline'].create_booking_airline_api(cr8_req,context)
+    #
+    #     up8_req['book_id'] = cr8_res['response']['book_id']
+    #     up8_req['provider_bookings'][0]['provider_id'] = cr8_res['response']['provider_ids'][0]['id']
+    #     self.env['tt.reservation.airline'].update_pnr_provider_airline_api(up8_req,context)
+    #
+    #     up8_req['book_id'] = cr8_res['response']['book_id']
+    #     up8_req['provider_bookings'][0]['provider_id'] = cr8_res['response']['provider_ids'][0]['id']
+    #     self.env['tt.reservation.airline'].update_pnr_provider_airline_api(up8_req,context)
+    #
+    #     up8_req_2['book_id'] = cr8_res['response']['book_id']
+    #     up8_req_2['provider_bookings'][0]['provider_id'] = cr8_res['response']['provider_ids'][0]['id']
+    #     self.env['tt.reservation.airline'].update_pnr_provider_airline_api(up8_req_2,context)
+    #
+    #     print('a')
 
     @api.multi
     def print_eticket(self, data, ctx=None):

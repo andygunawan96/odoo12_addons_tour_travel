@@ -76,39 +76,39 @@
                     <div class="oe_title">
                         <label for="name" class="oe_edit_only"/>
                         <h1>
-                            <field name="name" placeholder="Agent's Name" required="True"/><br/>
+                            <field name="name" placeholder="Agent's Name" required="True" readonly="1"/><br/>
                             <field name="seq_id"/>
                         </h1>
                     </div>
                     <group>
                         <group>
-                            <field name="currency_id"/>
+                            <field name="currency_id" readonly="1"/>
 <!--                            <field name="actual_balance"/>-->
 <!--                            <field name="annual_revenue_target"/>-->
 <!--                            <field name="annual_profit_target"/>-->
 <!--                            <field name="credit_limit"/>-->
                         </group>
                         <group>
-                            <field name="est_date"/>
+                            <field name="est_date" readonly="1"/>
 <!--                            <field name="mou_start"/>-->
 <!--                            <field name="mou_end"/>-->
                         </group>
                     </group>
 
                     <group string="Agent">
-                        <field name="agent_type_id"/>
-                        <field name="reference"/>
-                        <field name="parent_agent_id"/>
-                        <field name="user_ids"/>
-                        <field name="customer_parent_ids" context="{'form_view_ref' : 'tt_base.tt_customer_parent_form_view'}"/>
+                        <field name="agent_type_id" readonly="1"/>
+                        <field name="reference" readonly="1"/>
+                        <field name="parent_agent_id" readonly="1"/>
+                        <field name="user_ids" readonly="1"/>
+                        <field name="customer_parent_ids" context="{'form_view_ref' : 'tt_base.tt_customer_parent_form_view'}" readonly="1"/>
                     </group>
 
                     <group string="Information">
-                        <field name="email" placeholder="Agent's Email"/>
-                        <field name="website"/>
-                        <field name="npwp"/>
-                        <field name="payment_acquirer_ids" context="{'form_view_ref':'tt_base.payment_acquirer_form_view'}"/>
-                        <field name="agent_bank_detail_ids"/>
+                        <field name="email" placeholder="Agent's Email" readonly="1"/>
+                        <field name="website" readonly="1"/>
+                        <field name="npwp" readonly="1"/>
+                        <field name="payment_acquirer_ids" context="{'form_view_ref':'tt_base.payment_acquirer_form_view'}" readonly="1"/>
+                        <field name="agent_bank_detail_ids" readonly="1"/>
                         <!--<field name="history_ids"/>-->
                     </group>
 
@@ -116,16 +116,16 @@
                     </group>
                     <notebook colspan="3">
                         <page string="Addresses">
-                            <field name="address_ids"/>
+                            <field name="address_ids" readonly="1"/>
                         </page>
                         <page string="Phones">
-                            <field name="phone_ids"/>
+                            <field name="phone_ids" readonly="1"/>
                         </page>
                         <page string="Social Media">
-                            <field name="social_media_ids"/>
+                            <field name="social_media_ids" readonly="1"/>
                         </page>
                         <page string="Payment Acquirer Number">
-                            <field name="payment_acq_ids"/>
+                            <field name="payment_acq_ids" readonly="1"/>
                         </page>
                     </notebook>
                 </sheet>
@@ -134,6 +134,86 @@
                     <field name="message_ids" widget="mail_thread"/>
                 </div>
             </form>
+        </field>
+    </record>
+
+    <record id="tt_agent_form_view_agent_management" model="ir.ui.view">
+        <field name="name">tt.agent.form.view.agent.management</field>
+        <field name="model">tt.agent</field>
+        <field name="inherit_id" ref="tt_base.tt_agent_form_view"/>
+        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_management_operator') ])]" />
+        <field name="priority">40</field>
+        <field name="arch" type="xml">
+            <field name="name" position="replace">
+                <field name="name" placeholder="Agent's Name" required="True" readonly="0"/>
+            </field>
+            <field name="currency_id" position="replace">
+                <field name="currency_id" readonly="0"/>
+            </field>
+            <field name="est_date" position="replace">
+                <field name="est_date" readonly="0"/>
+            </field>
+            <field name="agent_type_id" position="replace">
+                <field name="agent_type_id" readonly="0"/>
+            </field>
+            <field name="reference" position="replace">
+                <field name="reference" readonly="0"/>
+            </field>
+            <field name="parent_agent_id" position="replace">
+                 <field name="parent_agent_id" readonly="0"/>
+            </field>
+            <field name="user_ids" position="replace">
+                 <field name="user_ids" readonly="0"/>
+            </field>
+            <field name="customer_parent_ids" position="replace">
+                 <field name="customer_parent_ids" context="{'form_view_ref' : 'tt_base.tt_customer_parent_form_view'}" readonly="0"/>
+            </field>
+            <field name="email" position="replace">
+                 <field name="email" placeholder="Agent's Email" readonly="0"/>
+            </field>
+            <field name="website" position="replace">
+                 <field name="website" readonly="0"/>
+            </field>
+            <field name="npwp" position="replace">
+                 <field name="npwp" readonly="0"/>
+            </field>
+            <field name="agent_bank_detail_ids" position="replace">
+                 <field name="agent_bank_detail_ids" readonly="0"/>
+            </field>
+            <field name="address_ids" position="replace">
+                 <field name="address_ids" readonly="0"/>
+            </field>
+            <field name="phone_ids" position="replace">
+                 <field name="phone_ids" readonly="0"/>
+            </field>
+            <field name="social_media_ids" position="replace">
+                 <field name="social_media_ids" readonly="0"/>
+            </field>
+            <field name="payment_acq_ids" position="replace">
+                 <field name="payment_acq_ids" readonly="0"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="tt_agent_form_view_agent_user" model="ir.ui.view">
+        <field name="name">tt.agent.form.view.agent.user</field>
+        <field name="model">tt.agent</field>
+        <field name="inherit_id" ref="tt_base.tt_agent_form_view"/>
+        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_user_operator') ])]" />
+        <field name="priority">40</field>
+        <field name="arch" type="xml">
+            <field name="payment_acquirer_ids" position="replace">
+                 <field name="payment_acquirer_ids" context="{'form_view_ref':'tt_base.payment_acquirer_form_view'}" readonly="0"/>
+            </field>
+            <field name="address_ids" position="replace">
+                 <field name="address_ids" readonly="0"/>
+            </field>
+            <field name="phone_ids" position="replace">
+                 <field name="phone_ids" readonly="0"/>
+            </field>
+            <field name="social_media_ids" position="replace">
+                 <field name="social_media_ids" readonly="0"/>
+            </field>
         </field>
     </record>
 

@@ -25,6 +25,13 @@ class ReportSelling(models.TransientModel):
                 return i
         return -1
 
+    def returning_index_sector(self, arr, params):
+        for i, dic in enumerate(arr):
+            if dic['departure'] == params['departure'] and dic['destination'] == params['destination'] and dic['sector'] == params['sector']:
+                return i
+
+        return -1
+
     def check_index(self, arr, key, param):
         for i, dic in enumerate(arr):
             if dic[key] == param:

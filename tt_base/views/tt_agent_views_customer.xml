@@ -1,115 +1,258 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
-
-        <record id="tt_agent_form_view_customer" model="ir.ui.view">
-            <field name="name">tt.agent.form.view.customer</field>
-            <field name="model">tt.agent</field>
-            <field name="mode">primary</field>
-            <field name="inherit_id" ref="tt_base.tt_agent_form_view"/>
-            <field name="arch" type="xml">
-                <field name="name" position="replace">
-                    <field name="name" readonly="1"/>
-                </field>
-                <field name="seq_id" position="replace">
-                    <field name="seq_id" readonly="1"/>
-                </field>
-                <field name="currency_id" position="replace">
-                    <field name="currency_id" readonly="1"/>
-                </field>
-                <field name="est_date" position="replace">
-                    <field name="est_date" readonly="1"/>
-                </field>
-                <field name="agent_type_id" position="replace">
-                    <field name="agent_type_id" readonly="1"/>
-                </field>
-                <field name="reference" position="replace">
-                    <field name="reference" readonly="1"/>
-                </field>
-                <field name="parent_agent_id" position="replace">
-                    <field name="parent_agent_id" readonly="1"/>
-                </field>
-                <field name="customer_parent_ids" position="replace">
-                    <field name="customer_parent_ids" readonly="1"
-                           context="{'form_view_ref': 'tt_base.tt_customer_parent_form_view_customer'}"/>
-                </field>
-                <field name="payment_acquirer_ids" position="replace">
-                    <field name="payment_acquirer_ids" readonly="1"/>
-                </field>
-            </field>
-        </record>
-
-        <record id="tt_agent_kanban_view_customer" model="ir.ui.view">
-            <field name="name">tt.agent.kanban.view</field>
-            <field name="model">tt.agent</field>
-            <field name="priority">10</field>
-            <field name="arch" type="xml">
-                <kanban class="o_hr_employee_kanban">
-                    <field name="id"/>
-                    <field name="name"/>
-                    <field name="email"/>
-                    <field name="est_date"/>
-                    <!--                <field name="currency_id"/>-->
-                    <templates>
-                        <t t-name="kanban-box">
-                            <div class="oe_kanban_global_click o_kanban_record_has_image_fill o_hr_kanban_record">
-                                <!-- Medium employee's picture -->
-                                <div class="o_kanban_image_fill_left d-none d-md-block" t-attf-style="background-image: url(#{kanban_image('tt.agent', 'logo', record.id.raw_value)})" role="img"/>
-                                <!-- Employee's picture optimized for mobile -->
-                                <div class="o_kanban_image d-md-none rounded-circle" t-attf-style="background-image: url(#{kanban_image('tt.agent', 'logo', record.id.raw_value)})" role="img"/>
-
-                                <!-- Medium employee's picture -->
-                                <!--<div class="o_kanban_image_fill_left d-none d-md-block" t-attf-style="background-image: url(#{kanban_image('hr.employee', 'image_medium', record.id.raw_value)})" role="img"/>-->
-                                <!-- Employee's picture optimized for mobile -->
-                                <!--<div class="o_kanban_image d-md-none rounded-circle" t-attf-style="background-image: url(#{kanban_image('hr.employee', 'image_small', record.id.raw_value)})" role="img"/>-->
-
-                                <div class="oe_kanban_details">
-                                    <div class="o_kanban_record_top">
-                                        <div class="o_kanban_record_headings">
-                                            <strong class="o_kanban_record_title">
-                                                <h4>
-                                                    <field name="name"/>
-                                                </h4>
-                                            </strong>
-                                            <span class="o_kanban_record_subtitle" name="email_for_inh">Email: <field name="email"/></span>
-                                        </div>
-                                    </div>
-                                    <!--options="{'color_field': 'color'}"-->
-                                    <!--<field name="phone_ids" widget="many2many_tags"/>-->
-                                    <ul>
-                                        <li id="est_date"/>
-                                        <li>Established: <field name="est_date"/></li>
-                                        <!--t-if="record.est_date.raw_value"-->
-                                    </ul>
-                                </div>
+    <record id="tt_agent_form_view_customer" model="ir.ui.view">
+        <field name="name">tt.agent.form.view.customer</field>
+        <field name="model">tt.agent</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="get_current_agent_target" type="object" string="Calc Target" groups="base.user_admin"/>
+                    <button name="generate_va_number" type="object" string="Generate VA" groups="tt_base.group_tt_accounting_supervisor"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" groups="base.group_tt_agent_management_operator"
+                                class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button"
+                                   options='{"terminology": "archive"}'/>
+                        </button>
+                        <button name="action_create_user" type="object" string="Create User" icon="fa-user"
+                                class="oe_stat_button" groups="tt_base.group_tt_agent_user_supervisor,tt_base.group_tt_tour_travel_operator">
+                        </button>
+                        <button type="object" name="action_show_agent_target_history"
+                                groups="tt_base.group_tt_agent_management_operator"
+                                class="oe_stat_button" icon="fa-dollar">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value" widget="statinfo">
+                                    <field name="annual_revenue_target" nolabel="1"/>
+                                </span>
+                                <span class="o_stat_text">Target</span>
+                                <!-- <span class="o_stat_text">Revenue Target</span>-->
                             </div>
-                        </t>
-                    </templates>
-                </kanban>
+                        </button>
+                    </div>
+                    <field name="logo" widget='image' class="oe_avatar"/>  <!-- options='{"preview_image":"logo_thumb"}'-->
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name" placeholder="Agent's Name" required="True" readonly="1"/><br/>
+                            <field name="seq_id"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="currency_id" readonly="1"/>
+                            <!--                            <field name="actual_balance"/>-->
+                            <!--                            <field name="annual_revenue_target"/>-->
+                            <!--                            <field name="annual_profit_target"/>-->
+                            <!--                            <field name="credit_limit"/>-->
+                        </group>
+                        <group>
+                            <field name="est_date" readonly="1"/>
+                            <!--                            <field name="mou_start"/>-->
+                            <!--                            <field name="mou_end"/>-->
+                        </group>
+                    </group>
 
+                    <group string="Agent">
+                        <field name="agent_type_id" readonly="1"/>
+                        <field name="reference" readonly="1"/>
+                        <field name="parent_agent_id" readonly="1"/>
+                        <field name="user_ids" readonly="1"/>
+                        <field name="customer_parent_ids" context="{'form_view_ref' : 'tt_base.tt_customer_parent_form_view'}" readonly="1"/>
+                    </group>
+
+                    <group string="Information">
+                        <field name="email" placeholder="Agent's Email" readonly="1"/>
+                        <field name="website" readonly="1"/>
+                        <field name="npwp" readonly="1"/>
+                        <field name="payment_acquirer_ids" context="{'form_view_ref':'tt_base.payment_acquirer_form_view'}" readonly="1"/>
+                        <field name="agent_bank_detail_ids" readonly="1"/>
+                        <!--<field name="history_ids"/>-->
+                    </group>
+
+                    <group name="Ledger">
+                    </group>
+                    <notebook colspan="3">
+                        <page string="Addresses">
+                            <field name="address_ids" readonly="1"/>
+                        </page>
+                        <page string="Phones">
+                            <field name="phone_ids" readonly="1"/>
+                        </page>
+                        <page string="Social Media">
+                            <field name="social_media_ids" readonly="1"/>
+                        </page>
+                        <page string="Payment Acquirer Number">
+                            <field name="payment_acq_ids" readonly="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_agent_form_view_customer_agent_management" model="ir.ui.view">
+        <field name="name">tt.agent.form.view.customer.agent.management</field>
+        <field name="model">tt.agent</field>
+        <field name="inherit_id" ref="tt_base.tt_agent_form_view_customer"/>
+        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_management_operator') ])]" />
+        <field name="priority">40</field>
+        <field name="arch" type="xml">
+            <field name="name" position="replace">
+                <field name="name" placeholder="Agent's Name" required="True" readonly="0"/>
             </field>
-        </record>
+            <field name="currency_id" position="replace">
+                <field name="currency_id" readonly="0"/>
+            </field>
+            <field name="est_date" position="replace">
+                <field name="est_date" readonly="0"/>
+            </field>
+            <field name="agent_type_id" position="replace">
+                <field name="agent_type_id" readonly="0"/>
+            </field>
+            <field name="reference" position="replace">
+                <field name="reference" readonly="0"/>
+            </field>
+            <field name="parent_agent_id" position="replace">
+                <field name="parent_agent_id" readonly="0"/>
+            </field>
+            <field name="user_ids" position="replace">
+                <field name="user_ids" readonly="0"/>
+            </field>
+            <field name="customer_parent_ids" position="replace">
+                <field name="customer_parent_ids" context="{'form_view_ref' : 'tt_base.tt_customer_parent_form_view'}" readonly="0"/>
+            </field>
+            <field name="email" position="replace">
+                <field name="email" placeholder="Agent's Email" readonly="0"/>
+            </field>
+            <field name="website" position="replace">
+                <field name="website" readonly="0"/>
+            </field>
+            <field name="npwp" position="replace">
+                <field name="npwp" readonly="0"/>
+            </field>
+            <field name="agent_bank_detail_ids" position="replace">
+                <field name="agent_bank_detail_ids" readonly="0"/>
+            </field>
+            <field name="address_ids" position="replace">
+                <field name="address_ids" readonly="0"/>
+            </field>
+            <field name="phone_ids" position="replace">
+                <field name="phone_ids" readonly="0"/>
+            </field>
+            <field name="social_media_ids" position="replace">
+                <field name="social_media_ids" readonly="0"/>
+            </field>
+            <field name="payment_acq_ids" position="replace">
+                <field name="payment_acq_ids" readonly="0"/>
+            </field>
+        </field>
+    </record>
 
-        <record id="tt_agent_customer_action_view" model="ir.actions.server">
-            <field name="name">Agent</field>
-            <field name="model_id" ref="model_tt_agent"/>
-            <field name="state">code</field>
-            <field name="code">action = model.agent_action_view_customer()</field>
-            <field eval="True" name="condition"/>
-        </record>
+    <record id="tt_agent_form_view_customer_agent_user" model="ir.ui.view">
+        <field name="name">tt.agent.form.view.customer.agent.user</field>
+        <field name="model">tt.agent</field>
+        <field name="inherit_id" ref="tt_base.tt_agent_form_view_customer"/>
+        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_user_operator') ])]" />
+        <field name="priority">40</field>
+        <field name="arch" type="xml">
+            <field name="payment_acquirer_ids" position="replace">
+                <field name="payment_acquirer_ids" context="{'form_view_ref':'tt_base.payment_acquirer_form_view'}" readonly="0"/>
+            </field>
+            <field name="address_ids" position="replace">
+                <field name="address_ids" readonly="0"/>
+            </field>
+            <field name="phone_ids" position="replace">
+                <field name="phone_ids" readonly="0"/>
+            </field>
+            <field name="social_media_ids" position="replace">
+                <field name="social_media_ids" readonly="0"/>
+            </field>
+        </field>
+    </record>
 
-        <menuitem id="menu_customers_agent"
-                  parent="tt_base.top_customers_agent"
-                  groups="group_tt_agent_user_operator"
-                  name="Agent"
-                  sequence="2"/>
+    <record id="tt_agent_kanban_view_customer" model="ir.ui.view">
+        <field name="name">tt.agent.kanban.view</field>
+        <field name="model">tt.agent</field>
+        <field name="priority">10</field>
+        <field name="arch" type="xml">
+            <kanban class="o_hr_employee_kanban">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="email"/>
+                <field name="est_date"/>
+                <!--                <field name="currency_id"/>-->
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click o_kanban_record_has_image_fill o_hr_kanban_record">
+                            <!-- Medium employee's picture -->
+                            <div class="o_kanban_image_fill_left d-none d-md-block" t-attf-style="background-image: url(#{kanban_image('tt.agent', 'logo', record.id.raw_value)})" role="img"/>
+                            <!-- Employee's picture optimized for mobile -->
+                            <div class="o_kanban_image d-md-none rounded-circle" t-attf-style="background-image: url(#{kanban_image('tt.agent', 'logo', record.id.raw_value)})" role="img"/>
 
-        <menuitem id="submenu_customers_all_agent"
-                  parent="tt_base.menu_customers_agent"
-                  groups="group_tt_agent_user_operator"
-                  name="All"
-                  sequence="2"
-                  action="tt_agent_customer_action_view"/>
+                            <!-- Medium employee's picture -->
+                            <!--<div class="o_kanban_image_fill_left d-none d-md-block" t-attf-style="background-image: url(#{kanban_image('hr.employee', 'image_medium', record.id.raw_value)})" role="img"/>-->
+                            <!-- Employee's picture optimized for mobile -->
+                            <!--<div class="o_kanban_image d-md-none rounded-circle" t-attf-style="background-image: url(#{kanban_image('hr.employee', 'image_small', record.id.raw_value)})" role="img"/>-->
 
-    </data>
+                            <div class="oe_kanban_details">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <h4>
+                                                <field name="name"/>
+                                            </h4>
+                                        </strong>
+                                        <span class="o_kanban_record_subtitle" name="email_for_inh">Email: <field name="email"/></span>
+                                    </div>
+                                </div>
+                                <!--options="{'color_field': 'color'}"-->
+                                <!--<field name="phone_ids" widget="many2many_tags"/>-->
+                                <ul>
+                                    <li id="est_date"/>
+                                    <li>Established: <field name="est_date"/></li>
+                                    <!--t-if="record.est_date.raw_value"-->
+                                </ul>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+
+        </field>
+    </record>
+
+    <record id="tt_agent_customer_action_view" model="ir.actions.act_window">
+        <field name="name">Agent</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.agent</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_base.tt_agent_form_view_customer',
+            'kanban_view_ref': 'tt_base.tt_agent_kanban_view_customer',
+            }
+        </field>
+    </record>
+
+    <menuitem id="menu_customers_agent"
+              parent="tt_base.top_customers_agent"
+              groups="group_tt_agent_user_operator"
+              name="Agent"
+              sequence="2"/>
+
+    <menuitem id="submenu_customers_all_agent"
+              parent="tt_base.menu_customers_agent"
+              groups="group_tt_agent_user_operator"
+              name="My Agent"
+              sequence="2"
+              action="tt_agent_customer_action_view"/>
+
 </odoo>
