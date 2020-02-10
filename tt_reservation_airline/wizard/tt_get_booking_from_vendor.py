@@ -281,7 +281,7 @@ class TtGetBookingFromVendorReview(models.TransientModel):
             "adult": pax_type_res.get('ADT',0),
             "child": pax_type_res.get('CHD',0),
             "infant": pax_type_res.get('INF',0),
-            "direction": "MC",
+            "direction": "OTHER",
             "is_get_booking_from_vendor": True
         }
 
