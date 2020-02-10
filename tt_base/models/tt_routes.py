@@ -5,6 +5,7 @@ from ...tools import ERR
 import logging
 import traceback
 from ...tools.db_connector import GatewayConnector
+from ...tools.timer import Timer
 
 _logger = logging.getLogger(__name__)
 _gw_con = GatewayConnector()
@@ -606,6 +607,181 @@ class RoutesSchedule(models.Model):
     departure_date = fields.Char('Departure Date', compute='_compute_departure_date', store=True)
     provider = fields.Char('Provider', related='journey_ids.provider', store=True)
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
+
+    def test_button(self):
+        import json
+        import copy
+        schedule_id = 146
+        departure_date = '2019-12-30'
+        # res = self.env.cr.execute("select test_function(%s)", (schedule_id,))
+        # res = self.env.cr.dictfetchall()
+        # print("TRIAL HERE : %s" % json.dumps(res))
+        # temp = res
+        _TIMER = Timer('Execute SQL')
+        self.env.cr.execute('''
+            SELECT 
+                -- Schedule
+                sch.id schedule_id,
+                sch.schedule_code schedule_schedule_code,
+                sch.origin schedule_origin,
+                sch.destination schedule_destination,
+                sch.departure_date schedule_departure_date,
+                -- Journey
+                jr.id journey_id,
+                jr.origin journey_origin,
+                jr.origin_terminal journey_origin_terminal,
+                jr.origin_utc journey_origin_utc,
+                jr.destination journey_destination,
+                jr.destination_terminal journey_destination_terminal,
+                jr.destination_utc journey_destination_utc,
+                jr.departure_date journey_departure_date,
+                jr.arrival_date journey_arrival_date,
+                jr.journey_code journey_journey_code,
+                jr.route_code journey_route_code,
+                jr.provider journey_provider,
+                -- Segment
+                sg.id segment_id,
+                sg.origin segment_origin,
+                sg.origin_terminal segment_origin_terminal,
+                sg.origin_utc segment_origin_utc,
+                sg.destination segment_destination,
+                sg.destination_terminal segment_destination_terminal,
+                sg.destination_utc segment_destination_utc,
+                sg.departure_date segment_departure_date,
+                sg.arrival_date segment_arrival_date,
+                sg.carrier_code segment_carrier_code,
+                sg.operating_airline_code segment_operating_airline_code,
+                sg.carrier_number segment_carrier_number,
+                sg.segment_code segment_segment_code,
+                sg.route_code segment_route_code,
+                sg.provider segment_provider,
+                -- Leg
+                lg.id leg_id,
+                lg.origin leg_origin,
+                lg.origin_terminal leg_origin_terminal,
+                lg.origin_utc leg_origin_utc,
+                lg.destination leg_destination,
+                lg.destination_terminal leg_destination_terminal,
+                lg.destination_utc leg_destination_utc,
+                lg.departure_date leg_departure_date,
+                lg.arrival_date leg_arrival_date,
+                lg.carrier_code leg_carrier_code,
+                lg.operating_airline_code leg_operating_airline_code,
+                lg.carrier_number leg_carrier_number,
+                lg.leg_code leg_leg_code,
+                lg.route_code leg_route_code,
+                lg.provider leg_provider,
+                -- Fare
+                fr.id fare_id,
+                fr.class_of_service fare_class_of_service,
+                fr.cabin_class fare_cabin_class,
+                fr.fare_code fare_fare_code,
+                fr.fare_basis_code fare_fare_basis_code,
+                fr.available_count fare_available_count,
+                fr.fare_class fare_fare_class,
+                fr.fare_name fare_fare_name,
+                -- Pax Fare
+                pf.id paxfare_id,
+                pf.pax_type paxfare_pax_type,
+                pf.fare_amount paxfare_fare_amount,
+                pf.tax_amount paxfare_tax_amount,
+                pf.total_amount paxfare_total_amount,
+                -- Service Charge
+                sc.id servicecharge_id,
+                sc.charge_code servicecharge_charge_code,
+                sc.charge_type servicecharge_charge_type,
+                sc.currency servicecharge_currency,
+                sc.amount servicecharge_amount
+            FROM tt_routes_schedule sch
+            LEFT JOIN tt_routes_journey jr ON jr.schedule_id=sch.id
+            LEFT JOIN tt_routes_segment sg ON sg.journey_id=jr.id
+            LEFT JOIN tt_routes_leg lg ON lg.segment_id=sg.id
+            LEFT JOIN tt_routes_fare fr ON fr.segment_id=sg.id
+            LEFT JOIN tt_routes_pax_fare pf ON pf.fare_id=fr.id
+            LEFT JOIN tt_routes_service_charge sc ON sc.pax_fare_id=pf.id
+            WHERE sch.departure_date='%s';
+        ''' % departure_date)
+        res = self.env.cr.dictfetchall()
+        schedule_dict = {}
+
+        def extract_data(data):
+            extract_result = {}
+            for key, val in data.items():
+                temp = key.split('_')
+                extract_key = temp[0]
+                data_key = '_'.join(temp[1:])
+                if not extract_result.get(extract_key):
+                    extract_result[extract_key] = {}
+                extract_result[extract_key][data_key] = val
+            return extract_result
+
+        def set_data(_data, _key, _obj):
+            obj_id = _data[_key]['id']
+            dict_name = '%s_dict' % _key
+            if not _obj.get(dict_name):
+                _obj[dict_name] = {}
+            if not _obj[dict_name].get(obj_id):
+                _obj[dict_name][obj_id] = _data[_key]
+            res_obj = _obj[dict_name][obj_id]
+            return res_obj
+
+        def key_parser(_key):
+            lib = {
+                'schedule': 'schedules',
+                'journey': 'journeys',
+                'segment': 'segments',
+                'leg': 'legs',
+                'fare': 'fares',
+                'paxfare': 'pax_fares',
+                'servicecharge': 'service_charges',
+            }
+            return lib[_key]
+
+        def get_data(data_dict):
+            for data_key, data_val in copy.deepcopy(data_dict).items():
+                if not data_val:
+                    data_dict[data_key] = ''
+                if '_dict' not in data_key:
+                    continue
+                data_dict.pop(data_key)
+                temp_list = [value_val for value_val in data_val.values()]
+                temp_list.sort(key=lambda i: i['id'])
+                for temp_rec in temp_list:
+                    temp_rec = get_data(temp_rec)
+                label = key_parser(data_key.split('_')[0])
+                data_dict[label] = temp_list
+
+            return data_dict
+
+        for rec in res:
+            rec_data = extract_data(rec)
+            keys = ['schedule', 'journey', 'segment', 'fare', 'paxfare', 'servicecharge']
+            payload_obj = schedule_dict
+            for key in keys:
+                payload_obj = set_data(rec_data, key, payload_obj)
+                if key == 'segment':
+                    set_data(rec_data, 'leg', payload_obj)
+
+        payload = get_data(schedule_dict)
+        _TIMER.stop()
+
+        _TIMER2 = Timer('Odoo Object')
+        odoo_data = self.search([('departure_date', '=', departure_date)])
+        test2 = [rec.get_data() for rec in odoo_data]
+        test2_res = {
+            'schedules': test2
+        }
+        _TIMER2.stop()
+        # print('TRIAL HERE : %s' % json.dumps(schedule_dict))
+        # print('TRIAL 2 HERE : %s' % json.dumps(payload))
+        # _file = open('/var/log/tour_travel/test.txt', 'w')
+        # _file.write(json.dumps(payload))
+        # _file.close()
+
+        # _file2 = open('/var/log/tour_travel/test2.txt', 'w')
+        # _file2.write(json.dumps(test2_res))
+        # _file2.close()
+        print('DONE')
 
     @api.depends('journey_ids', 'origin', 'destination')
     def _compute_data(self):
