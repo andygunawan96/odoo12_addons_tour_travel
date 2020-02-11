@@ -48,9 +48,10 @@ class ReservationReportAirlineXls(models.TransientModel):
         sheet.write('O9', 'Destination', style.table_head_center)
         sheet.write('P9', 'Destination Country', style.table_head_center)
         sheet.write('Q9', 'PNR', style.table_head_center)
-        sheet.write('R9', 'Currency', style.table_head_center)
-        sheet.write('S9', 'Total', style.table_head_center)
-        sheet.merge_range('T9:U9', 'Detail', style.table_head_center)
+        sheet.write('R9', '# of Segment', style.table_head_center)
+        sheet.write('S9', 'Currency', style.table_head_center)
+        sheet.write('T9', 'Total', style.table_head_center)
+        sheet.merge_range('U9:V9', 'Detail', style.table_head_center)
 
         # ====== SET WIDTH AND HEIGHT ==========
         sheet.set_row(0, row_height)  # set_row(row, height) -> row 0-4 (1-5)
@@ -105,10 +106,11 @@ class ReservationReportAirlineXls(models.TransientModel):
                 sheet.write(row_data, 14, i['destination_name'], sty_table_data)
                 sheet.write(row_data, 15, i['destination_country'], sty_table_data)
                 sheet.write(row_data, 16, i['airline_pnr'], sty_table_data)
-                sheet.write(row_data, 17, i['currency_name'], sty_table_data)
-                sheet.write(row_data, 18, i['total_fare'], sty_amount)
-                sheet.write(row_data, 19, '', sty_table_data)
+                sheet.write(row_data, 17, i['segment_counter'], sty_amount)
+                sheet.write(row_data, 18, i['currency_name'], sty_table_data)
+                sheet.write(row_data, 19, i['total_fare'], sty_amount)
                 sheet.write(row_data, 20, '', sty_table_data)
+                sheet.write(row_data, 21, '', sty_table_data)
 
                 #loop print
                 filtered_data = filter(lambda x: x['airline_number'] == i['airline_number'], datas)
@@ -137,17 +139,18 @@ class ReservationReportAirlineXls(models.TransientModel):
                     sheet.write(row_data, 7, '', sty_amount)
                     sheet.write(row_data, 8, '', sty_date)
                     sheet.write(row_data, 9, '', sty_date)
-                    sheet.write(row_data, 10, '', sty_table_data)
+                    sheet.write(row_data, 10, i['provider_name'], sty_table_data)
                     sheet.write(row_data, 11, '', sty_table_data)
                     sheet.write(row_data, 12, '', sty_table_data)
                     sheet.write(row_data, 13, '', sty_table_data)
                     sheet.write(row_data, 14, '', sty_table_data)
                     sheet.write(row_data, 15, '', sty_table_data)
                     sheet.write(row_data, 16, '', sty_table_data)
-                    sheet.write(row_data, 17, i['currency_name'], sty_table_data)
-                    sheet.write(row_data, 18, '', sty_table_data)
-                    sheet.write(row_data, 19, j['charge_type'], sty_amount)
-                    sheet.write(row_data, 20, j['service_charge_total'], sty_amount)
+                    sheet.write(row_data, 17, '', sty_table_data)
+                    sheet.write(row_data, 18, i['currency_name'], sty_table_data)
+                    sheet.write(row_data, 19, '', sty_table_data)
+                    sheet.write(row_data, 20, j['charge_type'], sty_amount)
+                    sheet.write(row_data, 21, j['service_charge_total'], sty_amount)
 
             else:
                 continue
