@@ -1,7 +1,11 @@
 from odoo import models, fields, api, _
 from ...tools import variables
 from ...tools.api import Response
-import traceback
+import traceback, logging
+from datetime import datetime
+
+
+_logger = logging.getLogger(__name__)
 
 
 class PricingProvider(models.Model):
@@ -14,7 +18,7 @@ class PricingProvider(models.Model):
     display_providers = fields.Char('Display Providers', compute='_compute_display_providers', store=True, readonly=1)
     carrier_ids = fields.Many2many('tt.transport.carrier', 'tt_pricing_provider_carrier_rel', 'pricing_id', 'carrier_id', string='Carriers')
     display_carriers = fields.Char('Display Carriers', compute='_compute_display_carriers', store=True, readonly=1)
-    line_ids = fields.One2many('tt.pricing.provider.line', 'pricing_id', 'Configs')
+    line_ids = fields.One2many('tt.pricing.provider.line', 'pricing_id', 'Configs', domain=['|', ('active', '=', 1), ('active', '=', 0)])
     active = fields.Boolean('Active', default=True)
     is_sale = fields.Boolean('Is Sale', default=False)
     is_commission = fields.Boolean('Is Commission', default=False)
@@ -51,7 +55,24 @@ class PricingProvider(models.Model):
     #     return res
 
     def get_pricing_data(self):
-        line_ids = [rec.get_pricing_data() for rec in self.line_ids if rec.active]
+        # February 11, 2020 - SAM
+        # Update mekanisme auto inactive untuk data yang expired
+        # line_ids = [rec.get_pricing_data() for rec in self.line_ids if rec.active]
+        line_ids = []
+        date_now = datetime.now()
+        for rec in self.line_ids:
+            if not rec.active:
+                continue
+            if not rec.is_no_expiration and date_now > rec.date_to:
+                try:
+                    rec.write({'active': False})
+                    _logger.info('Inactive line pricing provider due to expired date')
+                except:
+                    _logger.info('Failed to inactive line pricing provider, %s' % traceback.format_exc())
+                continue
+            line_data = rec.get_pricing_data()
+            line_ids.append(line_data)
+
         # line_ids = sorted(line_ids, key=lambda i: i['sequence'])
         carrier_codes = [rec.code for rec in self.carrier_ids]
         providers = [rec.code for rec in self.provider_ids]
@@ -171,6 +192,7 @@ class PricingProviderLine(models.Model):
     is_compute_infant_after_tax = fields.Boolean('Compute Inf After Tax Amount', default=True)
     is_compute_infant_upsell = fields.Boolean('Compute Inf Upsell Amount', default=False)
     is_compute_infant_fee = fields.Boolean('Compute Inf Fee Amount', default=False)
+    is_no_expiration = fields.Boolean('No Expiration', default=False)
     # is_provide_infant_commission = fields.Boolean('Provider Infant Commission', default=False)
     active = fields.Boolean('Active', default=True)
     provider_commission_amount = fields.Float('Provider Commission Amount', default=0)
@@ -259,6 +281,7 @@ class PricingProviderLine(models.Model):
             'is_compute_infant_after_tax': self.is_compute_infant_after_tax,
             'is_compute_infant_upsell': self.is_compute_infant_upsell,
             'is_compute_infant_fee': self.is_compute_infant_fee,
+            'is_no_expiration': self.is_no_expiration,
             # 'is_provide_infant_commission': self.is_provide_infant_commission,
         }
         return res

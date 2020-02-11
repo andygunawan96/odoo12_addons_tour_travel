@@ -383,6 +383,7 @@ class ReservationAirline(models.Model):
             pnr_list = []
             hold_date = datetime.max.replace(year=2020)
             any_provider_changed = False
+            any_pnr_changed = False
 
             for provider in req['provider_bookings']:
                 provider_obj = self.env['tt.provider.airline'].browse(provider['provider_id'])
@@ -408,6 +409,9 @@ class ReservationAirline(models.Model):
                         continue
                     if req.get('force_issued'):
                         self.update_pnr_booked(provider_obj,provider,context)
+                    if provider.get('pnr', '') != provider_obj.pnr:
+                        provider_obj.write({'pnr': provider['pnr']})
+                        any_pnr_changed = True
 
                     #action issued dan create ticket number
                     provider_obj.action_issued_api_airline(context)
@@ -434,6 +438,9 @@ class ReservationAirline(models.Model):
 
             if any_provider_changed:
                 book_obj.check_provider_state(context,pnr_list,hold_date,req)
+
+            if any_pnr_changed:
+                book_obj.write({'pnr': ','.join(pnr_list)})
 
             return ERR.get_no_error({
                 'order_number': book_obj.name,
