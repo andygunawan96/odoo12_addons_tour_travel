@@ -224,7 +224,7 @@ class TtReservationTrain(models.Model):
                     provider_obj.action_failed_booked_api_train(provider.get('error_code'),provider.get('error_msg'))
                     any_provider_changed = True
                 elif provider['state'] == 'fail_issued':
-                    provider_obj.action_failed_issued_api_train(provider.get('error_msg'))
+                    provider_obj.action_failed_issued_api_train(provider.get('error_code'),provider.get('error_msg'))
                     any_provider_changed = True
 
             for rec in book_obj.provider_booking_ids:
