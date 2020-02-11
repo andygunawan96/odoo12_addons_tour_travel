@@ -178,11 +178,16 @@ class TtProviderTrain(models.Model):
                 })]
             })
 
-    def action_failed_issued_api_train(self,err_msg):
+    def action_failed_issued_api_train(self,err_code,err_msg):
         for rec in self:
             rec.write({
                 'state': 'fail_issued',
-                'error_msg': err_msg
+                'error_history_ids': [(0,0,{
+                    'res_model': self._name,
+                    'res_id': self.id,
+                    'error_code': err_code,
+                    'error_msg': err_msg
+                })]
             })
 
     def action_expired(self):
