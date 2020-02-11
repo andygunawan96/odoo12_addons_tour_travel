@@ -39,6 +39,7 @@ class TtBillingStatement(models.Model):
     #                                           required=True)
 
     paid_amount = fields.Monetary('Paid Amount', store=False, compute='_compute_amount_total')
+    unpaid_amount = fields.Monetary('Unpaid Amount', store=False, compute='_compute_amount_total')
 
     collectibility_status = fields.Selection([('current', 'Current'), ('special_mention', 'Special Mention'),
                                               ('substandard', 'Substandard'), ('doubtful', 'Doubtful'),
@@ -83,6 +84,7 @@ class TtBillingStatement(models.Model):
                 paid_amount += inv.paid_amount
             rec.amount_total = amount_total
             rec.paid_amount = paid_amount
+            rec.unpaid_amount = rec.amount_total - rec.paid_amount
 
     @api.one
     def action_confirm(self):

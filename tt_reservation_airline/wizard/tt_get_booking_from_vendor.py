@@ -21,7 +21,7 @@ class TtGetBookingFromVendor(models.TransientModel):
     user_id = fields.Many2one('res.users', 'User', required=True, domain=[('id','=',-1)])
 
     is_database_booker = fields.Boolean('Is Database Booker', default=True)
-    booker_id = fields.Many2one('tt.customer', 'Booker')
+    booker_id = fields.Many2one('tt.customer', 'Booker', domain=[('id','=',-1)])
     booker_title = fields.Selection([('MR', 'Mr.'), ('MSTR', 'Mstr.'), ('MRS', 'Mrs.'), ('MS', 'Ms.'), ('MISS', 'Miss')], string='Title')
     booker_first_name = fields.Char('First Name')
     booker_nationality_id = fields.Many2one('res.country', default=lambda self: self.env.ref('base.id').id)
@@ -39,6 +39,13 @@ class TtGetBookingFromVendor(models.TransientModel):
             return {'domain': {
                 'user_id': [('agent_id','=',self.agent_id.id)],
                 'customer_parent_id': [('parent_agent_id','=',self.agent_id.id)]
+            }}
+
+    @api.onchange("customer_parent_id")
+    def _onchange_customer_parent_id(self):
+        if self.customer_parent_id:
+            return {'domain': {
+                'booker_id': [('id', 'in', self.customer_parent_id.customer_ids.ids)],
             }}
 
     @api.onchange("pnr")
