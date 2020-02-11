@@ -91,7 +91,8 @@ BOOKING_STATE_STR = {
 JOURNEY_DIRECTION = [
     ('OW', 'One Way'),
     ('RT', 'Return'),
-    ('MC','Multi City')
+    ('MC','Multi City'),
+    ('OTHER','Other')
 ]
 
 JOURNEY_TYPE = [

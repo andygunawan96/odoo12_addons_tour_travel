@@ -30,6 +30,7 @@
                         <group name="ctp_info">
                             <field name="customer_parent_type_id" readonly="1"/>
                             <field name="parent_agent_id" attrs="{'readonly':[('state','!=','draft')]}"/>
+                            <field name="tax_percentage" attrs="{'readonly':[('state','!=','draft')]}"/>
                             <field name="actual_balance"/>
                             <field name="balance"/>
                             <field name="credit_limit" attrs="{'readonly':[('state','!=','draft')]}"/>

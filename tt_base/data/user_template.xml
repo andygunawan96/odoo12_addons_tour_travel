@@ -441,7 +441,7 @@
         </record>
 
         <record id="btbo2_template_user_operator" model="res.users">
-            <field name="name">BTBO 2 Agent Template Operator</field>
+            <field name="name">BTBO2 Agent Template Operator</field>
             <!--                <field name="partner_id" ref="tt_base.btbo_template_partner_operator"/>-->
             <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
             <field name="login">btbo2_template_operator</field>
@@ -463,7 +463,7 @@
         </record>
 
         <record id="btbo2_template_user_supervisor" model="res.users">
-            <field name="name">BTBO 2 Agent Template Supervisor</field>
+            <field name="name">BTBO2 Agent Template Supervisor</field>
             <!--                <field name="partner_id" ref="tt_base.btbo_template_partner_supervisor"/>-->
             <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
             <field name="login">btbo2_template_supervisor</field>
@@ -485,7 +485,7 @@
         </record>
 
         <record id="btbo2_template_user_manager" model="res.users">
-            <field name="name">BTBO 2 Agent Template Manager</field>
+            <field name="name">BTBO2 Agent Template Manager</field>
             <!--                <field name="partner_id" ref="tt_base.btbo_template_partner_manager"/>-->
             <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
             <field name="login">btbo2_template_manager</field>
