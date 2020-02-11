@@ -13,15 +13,30 @@ class ReservationReportAirline(models.Model):
     def _select():
         # return """*"""
         return """
-        airline.name as airline_number, airline.pnr as airline_pnr, airline.state as airline_state,
-        airline.issued_date as airline_issued_date, airline.adult as adult, airline.child as child, airline.infant as infant,
-        airline.departure_date as departure_date, airline.arrival_date as arrival_date,
-        airline.sector_type as airline_sector, airline.provider_name, airline.carrier_name, airline.total_fare,
-        departure.display_name as departure_name, departure.city as departure_city, departure_country.name as departure_country,
-        destination.display_name as destination_name, destination.city as destination_city, destination_country.name as destination_country,
-        service_charge.charge_type, service_charge.total as service_charge_total,
+        airline.name as airline_number, 
+        airline.pnr as airline_pnr, 
+        airline.state as airline_state,
+        airline.issued_date as airline_issued_date, 
+        airline.adult as adult, 
+        airline.child as child, 
+        airline.infant as infant,
+        airline.departure_date as departure_date, 
+        airline.arrival_date as arrival_date,
+        airline.sector_type as airline_sector, 
+        airline.provider_name, 
+        airline.carrier_name, 
+        airline.total_fare,
+        departure.display_name as departure_name, 
+        departure.city as departure_city, 
+        departure_country.name as departure_country,
+        destination.display_name as destination_name, 
+        destination.city as destination_city, 
+        destination_country.name as destination_country,
+        service_charge.charge_type, 
+        service_charge.total as service_charge_total,
         booker.name as booker_name,
-        currency.name as currency_name
+        currency.name as currency_name,
+        COUNT(segment.id) as segment_counter
         """
 
     @staticmethod
@@ -34,6 +49,7 @@ class ReservationReportAirline(models.Model):
         LEFT JOIN tt_service_charge service_charge ON service_charge.booking_airline_id = airline.id
         LEFT JOIN res_currency currency ON currency.id = airline.currency_id
         LEFT JOIN tt_customer booker ON booker.id = airline.booker_id
+        LEFT JOIN tt_segment_airline segment ON segment.booking_id = airline.id
         """
 
     @staticmethod
@@ -44,13 +60,17 @@ class ReservationReportAirline(models.Model):
         return where
 
     @staticmethod
+    def _group_by():
+        return """airline.id, departure.id, departure_country.id, destination.id, destination_country.id, service_charge.id, currency.id, booker.id
+                """
+    @staticmethod
     def _order_by():
         return """airline.id
         """
 
     def _lines(self, date_from, date_to, agent_id, state):
         # query =  "SELECT {} FROM {}".format(self._select(), self._from())
-        query = "SELECT {} FROM {} WHERE {} ORDER BY {}".format(self._select(), self._from(), self._where(date_from, date_to, agent_id, state), self._order_by())
+        query = "SELECT {} FROM {} WHERE {} GROUP BY {} ORDER BY {}".format(self._select(), self._from(), self._where(date_from, date_to, agent_id, state), self._group_by(), self._order_by())
 
         self.env.cr.execute(query)
         _logger.info(query)
