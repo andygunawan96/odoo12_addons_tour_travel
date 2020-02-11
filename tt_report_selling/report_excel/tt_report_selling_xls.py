@@ -3,6 +3,7 @@ from ...tools import tools_excel
 from io import BytesIO
 import xlsxwriter
 import base64
+from datetime import datetime
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -301,149 +302,141 @@ class ReportSellingXls(models.TransientModel):
         destination_sector_summary = []
         destination_direction_summary = []
         carrier_name_summary = []
+        issued_depart_international_summary = []
+        issued_depart_domestic_summary = []
         no_departure = ""
         no_destination = ""
         # ================ proceed the data =====================
+        current_order_number = ''
         for i in values['lines']:
 
-            if not i['destination']:
-                no_destination += " {}".format(i['reservation_order_number'])
-            if not i['departure']:
-                no_departure += " {}".format(i['reservation_order_number'])
+            if current_order_number != i['reservation_order_number']:
+                if not i['destination']:
+                    no_destination += " {}".format(i['reservation_order_number'])
+                if not i['departure']:
+                    no_departure += " {}".format(i['reservation_order_number'])
 
-            # ============= Issued Booked ratio by date ==================
-            try:
-                month_index = self.check_date_index(summary_by_date, {'year': i['booked_year'], 'month': month[int(i['booked_month'])-1]})
-                if month_index == -1:
+                # ============= Issued compareed to depart date ==============
+                filter_data = list(filter(lambda x: x['reservation_order_number'] == i['reservation_order_number'], values['lines']))
+
+                depart_index = 0
+                if len(filter_data) > 1:
+                    earliest_depart = filter_data[0]['journey_departure_date']
+                    for j, dic in enumerate(filter_data):
+                        if earliest_depart > dic['journey_departure_date']:
+                            depart_index = j
+                # lets count
+                try:
+                    date_time_convert = datetime.strptime(filter_data[depart_index]['journey_departure_date'], '%Y-%m-%d %H:%M:%S')
+                    if filter_data[0]['reservation_issued_date_og']:
+                        date_count = date_time_convert - filter_data[0]['reservation_issued_date_og']
+                    else:
+                        date_count = 0
+
+                    if filter_data[0]['reservation_sector'] == 'International':
+                        issued_depart_index = self.check_index(issued_depart_international_summary, "day", date_count.days)
+                        if issued_depart_index == -1:
+                            temp_dict = {
+                                "day": date_count.days,
+                                "counter": 1,
+                                'passenger': filter_data[0]['reservation_passenger']
+                            }
+                            issued_depart_international_summary.append(temp_dict)
+                        else:
+                            issued_depart_international_summary[issued_depart_index]['counter'] += 1
+                            issued_depart_international_summary[issued_depart_index]['passenger'] += filter_data[0]['reservation_passenger']
+                    else:
+                        issued_depart_index = self.check_index(issued_depart_domestic_summary, "day", date_count.days)
+                        if issued_depart_index == -1:
+                            temp_dict = {
+                                "day": date_count.days,
+                                "counter": 1,
+                                'passenger': filter_data[0]['reservation_passenger']
+                            }
+                            issued_depart_domestic_summary.append(temp_dict)
+                        else:
+                            issued_depart_domestic_summary[issued_depart_index]['counter'] += 1
+                            issued_depart_domestic_summary[issued_depart_index]['passenger'] += filter_data[0][
+                                'reservation_passenger']
+                except:
+                    _logger.error("{}".format(i['reservation_order_number']))
+                    pass
+                # ============= Issued Booked ratio by date ==================
+                try:
+                    month_index = self.check_date_index(summary_by_date, {'year': i['booked_year'], 'month': month[int(i['booked_month'])-1]})
+                    if month_index == -1:
+                        temp_dict = {
+                            'year': i['booked_year'],
+                            'month': month[int(i['booked_month'])-1],
+                            'detail': self.add_month_detail()
+                        }
+                        if i['reservation_booked_date']:
+                            splits = i['reservation_booked_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            temp_dict['detail'][day_index]['booked_counter'] += 1
+                        if i['reservation_issued_date']:
+                            splits = i['reservation_issued_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            temp_dict['detail'][day_index]['issued_counter'] += 1
+                        summary_by_date.append(temp_dict)
+                    else:
+                        if i['reservation_booked_date']:
+                            splits = i['reservation_booked_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            summary_by_date[month_index]['detail'][day_index]['booked_counter'] += 1
+                        if i['reservation_issued_date']:
+                            splits = i['reservation_issued_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            summary_by_date[month_index]['detail'][day_index]['issued_counter'] += 1
+                except:
+                    pass
+
+                # ============= Summary by Carrier ===========================
+                if not i['reservation_provider_name']:
+                    i['reservation_provider_name'] = "Undefined"
+                carrier_index = self.check_index(carrier_name_summary, 'carrier_name', i['reservation_provider_name'])
+                if carrier_index == -1:
                     temp_dict = {
-                        'year': i['booked_year'],
-                        'month': month[int(i['booked_month'])-1],
-                        'detail': self.add_month_detail()
+                        'carrier_name': i['reservation_provider_name'],
+                        'international_counter': 0,
+                        'international_valuation': 0,
+                        'domestic_counter': 0,
+                        'domestic_valuation': 0,
+                        'elder_count': i['reservation_elder'],
+                        'adult_count': i['reservation_adult'],
+                        'child_count': i['reservation_child'],
+                        'infant_count': i['reservation_infant'],
+                        'passenger_count': i['reservation_passenger'],
+                        'total_transaction': 0,
+                        'issued': 0,
+                        'fail_issued': 0,
+                        'fail_booked': 0,
+                        'expired': 0,
+                        'other': 0,
+                        'flight': []
                     }
-                    try:
-                        splits = i['reservation_booked_date'].split("-")
-                        day_index = int(splits[2]) - 1
-                        temp_dict['detail'][day_index]['booked_counter'] += 1
-                    except:
-                        pass
-                    try:
-                        splits = i['reservation_issued_date'].split("-")
-                        day_index = int(splits[2]) - 1
-                        temp_dict['detail'][day_index]['issued_counter'] += 1
-                    except:
-                        pass
-                    summary_by_date.append(temp_dict)
-                else:
-                    try:
-                        splits = i['reservation_booked_date'].split("-")
-                        day_index = int(splits[2]) - 1
-                        summary_by_date[month_index]['detail'][day_index]['booked_counter'] += 1
-                    except:
-                        pass
-                    try:
-                        splits = i['reservation_issued_date'].split("-")
-                        day_index = int(splits[2]) - 1
-                        summary_by_date[month_index]['detail'][day_index]['issued_counter'] += 1
-                    except:
-                        pass
-            except:
-                pass
 
-            # ============= Summary by Carrier ===========================
-            if not i['reservation_provider_name']:
-                i['reservation_provider_name'] = "Undefined"
-            carrier_index = self.check_index(carrier_name_summary, 'carrier_name', i['reservation_provider_name'])
-            if carrier_index == -1:
-                temp_dict = {
-                    'carrier_name': i['reservation_provider_name'],
-                    'international_counter': 0,
-                    'international_valuation': 0,
-                    'domestic_counter': 0,
-                    'domestic_valuation': 0,
-                    'elder_count': i['reservation_elder'],
-                    'adult_count': i['reservation_adult'],
-                    'child_count': i['reservation_child'],
-                    'infant_count': i['reservation_infant'],
-                    'passenger_count': i['reservation_passenger'],
-                    'total_transaction': 0,
-                    'issued': 0,
-                    'fail_issued': 0,
-                    'fail_booked': 0,
-                    'expired': 0,
-                    'other': 0,
-                    'flight': []
-                }
+                    #add counter for every provider
+                    if i['reservation_sector'] == 'International':
+                        temp_dict['international_counter'] += 1
+                        temp_dict['international_valuation'] += i['amount']
+                        temp_dict['total_transaction'] += 1
+                    else:
+                        temp_dict['domestic_counter'] += 1
+                        temp_dict['domestic_valuation'] += i['amount']
+                        temp_dict['total_transaction'] += 1
 
-                #add counter for every provider
-                if i['reservation_sector'] == 'International':
-                    temp_dict['international_counter'] += 1
-                    temp_dict['international_valuation'] += i['amount']
-                    temp_dict['total_transaction'] += 1
-                else:
-                    temp_dict['domestic_counter'] += 1
-                    temp_dict['domestic_valuation'] += i['amount']
-                    temp_dict['total_transaction'] += 1
-
-                #to check issued fail ratio
-                if i['reservation_state'] == 'issued':
-                    temp_dict['issued'] += 1
-                elif i['reservation_state'] == 'cancel2':
-                    temp_dict['expired'] += 1
-                elif i['reservation_state'] == 'fail_issued':
-                    temp_dict['fail_issued'] += 1
-                elif i['reservation_state'] == 'fail_booked':
-                    temp_dict['fail_booked'] += 1
-                else:
-                    temp_dict['other'] += 1
-                destination_dict = {
-                    'departure': i['departure'],
-                    'destination': i['destination'],
-                    'counter': 1,
-                    'elder_count': i['reservation_elder'],
-                    'adult_count': i['reservation_adult'],
-                    'child_count': i['reservation_child'],
-                    'infant_count': i['reservation_infant'],
-                    'passenger_count': i['reservation_passenger'],
-                    'total_amount': i['amount']
-                }
-                temp_dict['flight'].append(destination_dict)
-                carrier_name_summary.append(temp_dict)
-            else:
-                if i['reservation_sector'] == 'International':
-                    carrier_name_summary[carrier_index]['international_counter'] += 1
-                    carrier_name_summary[carrier_index]['international_valuation'] += i['amount']
-                    carrier_name_summary[carrier_index]['total_transaction'] += 1
-                    carrier_name_summary[carrier_index]['passenger_count'] += i['reservation_passenger']
-                    carrier_name_summary[carrier_index]['elder_count'] += i['reservation_elder']
-                    carrier_name_summary[carrier_index]['adult_count'] += i['reservation_adult']
-                    carrier_name_summary[carrier_index]['child_count'] += i['reservation_child']
-                    carrier_name_summary[carrier_index]['infant_count'] += i['reservation_infant']
-                elif i['reservation_sector'] == 'Domestic':
-                    carrier_name_summary[carrier_index]['domestic_counter'] += 1
-                    carrier_name_summary[carrier_index]['domestic_valuation'] += i['amount']
-                    carrier_name_summary[carrier_index]['total_transaction'] += 1
-                    carrier_name_summary[carrier_index]['passenger_count'] += i['reservation_passenger']
-                    carrier_name_summary[carrier_index]['elder_count'] += i['reservation_elder']
-                    carrier_name_summary[carrier_index]['adult_count'] += i['reservation_adult']
-                    carrier_name_summary[carrier_index]['child_count'] += i['reservation_child']
-                    carrier_name_summary[carrier_index]['infant_count'] += i['reservation_infant']
-                else:
-                    carrier_name_summary[carrier_index]['total_transaction'] += 1
-
-                # to check issued fail ratio
-                if i['reservation_state'] == 'issued':
-                    carrier_name_summary[carrier_index]['issued'] += 1
-                elif i['reservation_state'] == 'cancel2':
-                    carrier_name_summary[carrier_index]['expired'] += 1
-                elif i['reservation_state'] == 'fail_issued':
-                    carrier_name_summary[carrier_index]['fail_issued'] += 1
-                elif i['reservation_state'] == 'fail_booked':
-                    carrier_name_summary[carrier_index]['fail_booked'] += 1
-                else:
-                    carrier_name_summary[carrier_index]['other'] += 1
-
-                destination_index = self.returning_index(carrier_name_summary[carrier_index]['flight'], {'departure': i['departure'], 'destination': i['destination']})
-                if destination_index == -1:
+                    #to check issued fail ratio
+                    if i['reservation_state'] == 'issued':
+                        temp_dict['issued'] += 1
+                    elif i['reservation_state'] == 'cancel2':
+                        temp_dict['expired'] += 1
+                    elif i['reservation_state'] == 'fail_issued':
+                        temp_dict['fail_issued'] += 1
+                    elif i['reservation_state'] == 'fail_booked':
+                        temp_dict['fail_booked'] += 1
+                    else:
+                        temp_dict['other'] += 1
                     destination_dict = {
                         'departure': i['departure'],
                         'destination': i['destination'],
@@ -455,89 +448,138 @@ class ReportSellingXls(models.TransientModel):
                         'passenger_count': i['reservation_passenger'],
                         'total_amount': i['amount']
                     }
-                    carrier_name_summary[carrier_index]['flight'].append(destination_dict)
+                    temp_dict['flight'].append(destination_dict)
+                    carrier_name_summary.append(temp_dict)
                 else:
-                    carrier_name_summary[carrier_index]['flight'][destination_index]['counter'] += 1
-                    carrier_name_summary[carrier_index]['flight'][destination_index]['total_amount'] += i['amount']
-                    carrier_name_summary[carrier_index]['flight'][destination_index]['passenger_count'] += i['reservation_passenger']
-                    carrier_name_summary[carrier_index]['flight'][destination_index]['elder_count'] += i['reservation_elder']
-                    carrier_name_summary[carrier_index]['flight'][destination_index]['adult_count'] += i['reservation_adult']
-                    carrier_name_summary[carrier_index]['flight'][destination_index]['child_count'] += i['reservation_child']
-                    carrier_name_summary[carrier_index]['flight'][destination_index]['infant_count'] += i['reservation_infant']
+                    if i['reservation_sector'] == 'International':
+                        carrier_name_summary[carrier_index]['international_counter'] += 1
+                        carrier_name_summary[carrier_index]['international_valuation'] += i['amount']
+                        carrier_name_summary[carrier_index]['total_transaction'] += 1
+                        carrier_name_summary[carrier_index]['passenger_count'] += i['reservation_passenger']
+                        carrier_name_summary[carrier_index]['elder_count'] += i['reservation_elder']
+                        carrier_name_summary[carrier_index]['adult_count'] += i['reservation_adult']
+                        carrier_name_summary[carrier_index]['child_count'] += i['reservation_child']
+                        carrier_name_summary[carrier_index]['infant_count'] += i['reservation_infant']
+                    elif i['reservation_sector'] == 'Domestic':
+                        carrier_name_summary[carrier_index]['domestic_counter'] += 1
+                        carrier_name_summary[carrier_index]['domestic_valuation'] += i['amount']
+                        carrier_name_summary[carrier_index]['total_transaction'] += 1
+                        carrier_name_summary[carrier_index]['passenger_count'] += i['reservation_passenger']
+                        carrier_name_summary[carrier_index]['elder_count'] += i['reservation_elder']
+                        carrier_name_summary[carrier_index]['adult_count'] += i['reservation_adult']
+                        carrier_name_summary[carrier_index]['child_count'] += i['reservation_child']
+                        carrier_name_summary[carrier_index]['infant_count'] += i['reservation_infant']
+                    else:
+                        carrier_name_summary[carrier_index]['total_transaction'] += 1
 
-            # ============= Summary by Domestic/International ============
-            if i['reservation_sector'] == 'International':
-                sector_dictionary[0]['valuation'] += int(i['amount'])
-                sector_dictionary[0]['counter'] += 1
-                sector_dictionary[0]['passenger_count'] += int(i['reservation_passenger'])
-            elif i['reservation_sector'] == 'Domestic':
-                sector_dictionary[1]['valuation'] += int(i['amount'])
-                sector_dictionary[1]['counter'] += 1
-                sector_dictionary[1]['passenger_count'] += int(i['reservation_passenger'])
-            else:
-                sector_dictionary[2]['valuation'] += int(i['amount'])
-                sector_dictionary[2]['counter'] += 1
-                sector_dictionary[2]['passenger_count'] += int(i['reservation_passenger'])
+                    # to check issued fail ratio
+                    if i['reservation_state'] == 'issued':
+                        carrier_name_summary[carrier_index]['issued'] += 1
+                    elif i['reservation_state'] == 'cancel2':
+                        carrier_name_summary[carrier_index]['expired'] += 1
+                    elif i['reservation_state'] == 'fail_issued':
+                        carrier_name_summary[carrier_index]['fail_issued'] += 1
+                    elif i['reservation_state'] == 'fail_booked':
+                        carrier_name_summary[carrier_index]['fail_booked'] += 1
+                    else:
+                        carrier_name_summary[carrier_index]['other'] += 1
 
-            # ============= Summary by flight Type (OW, R, MC) ===========
-            if i['reservation_direction'] == 'OW':
-                direction_dictionary[0]['valuation'] += int(i['amount'])
-                direction_dictionary[0]['counter'] += 1
-                direction_dictionary[0]['passenger_count'] = int(i['reservation_passenger'])
-            elif i['reservation_direction'] == 'RT':
-                direction_dictionary[1]['valuation'] += int(i['amount'])
-                direction_dictionary[1]['counter'] += 1
-                direction_dictionary[1]['passenger_count'] = int(i['reservation_passenger'])
-            else:
-                direction_dictionary[2]['valuation'] += int(i['amount'])
-                direction_dictionary[2]['counter'] += 1
-                direction_dictionary[2]['passenger_count'] = int(i['reservation_passenger'])
+                    destination_index = self.returning_index(carrier_name_summary[carrier_index]['flight'], {'departure': i['departure'], 'destination': i['destination']})
+                    if destination_index == -1:
+                        destination_dict = {
+                            'departure': i['departure'],
+                            'destination': i['destination'],
+                            'counter': 1,
+                            'elder_count': i['reservation_elder'],
+                            'adult_count': i['reservation_adult'],
+                            'child_count': i['reservation_child'],
+                            'infant_count': i['reservation_infant'],
+                            'passenger_count': i['reservation_passenger'],
+                            'total_amount': i['amount']
+                        }
+                        carrier_name_summary[carrier_index]['flight'].append(destination_dict)
+                    else:
+                        carrier_name_summary[carrier_index]['flight'][destination_index]['counter'] += 1
+                        carrier_name_summary[carrier_index]['flight'][destination_index]['total_amount'] += i['amount']
+                        carrier_name_summary[carrier_index]['flight'][destination_index]['passenger_count'] += i['reservation_passenger']
+                        carrier_name_summary[carrier_index]['flight'][destination_index]['elder_count'] += i['reservation_elder']
+                        carrier_name_summary[carrier_index]['flight'][destination_index]['adult_count'] += i['reservation_adult']
+                        carrier_name_summary[carrier_index]['flight'][destination_index]['child_count'] += i['reservation_child']
+                        carrier_name_summary[carrier_index]['flight'][destination_index]['infant_count'] += i['reservation_infant']
 
-            # ============= Search best for every sector ==================
-            returning_index = self.returning_index_sector(destination_sector_summary,{'departure': i['departure'], 'destination': i['destination'], 'sector': i['reservation_sector']})
-            if returning_index == -1:
-                new_dict = {
-                    'sector': i['reservation_sector'],
-                    'departure': i['departure'],
-                    'destination': i['destination'],
-                    'counter': 1,
-                    'elder_count': i['reservation_elder'],
-                    'adult_count': i['reservation_adult'],
-                    'child_count': i['reservation_child'],
-                    'infant_count': i['reservation_infant'],
-                    'passenger_count': i['reservation_passenger']
-                }
-                destination_sector_summary.append(new_dict)
-            else:
-                destination_sector_summary[returning_index]['counter'] += 1
-                destination_sector_summary[returning_index]['passenger_count'] += i['reservation_passenger']
-                destination_sector_summary[returning_index]['elder_count'] += i['reservation_elder']
-                destination_sector_summary[returning_index]['adult_count'] += i['reservation_adult']
-                destination_sector_summary[returning_index]['child_count'] += i['reservation_child']
-                destination_sector_summary[returning_index]['infant_count'] += i['reservation_infant']
+                # ============= Summary by Domestic/International ============
+                if i['reservation_sector'] == 'International':
+                    sector_dictionary[0]['valuation'] += int(i['amount'])
+                    sector_dictionary[0]['counter'] += 1
+                    sector_dictionary[0]['passenger_count'] += int(i['reservation_passenger'])
+                elif i['reservation_sector'] == 'Domestic':
+                    sector_dictionary[1]['valuation'] += int(i['amount'])
+                    sector_dictionary[1]['counter'] += 1
+                    sector_dictionary[1]['passenger_count'] += int(i['reservation_passenger'])
+                else:
+                    sector_dictionary[2]['valuation'] += int(i['amount'])
+                    sector_dictionary[2]['counter'] += 1
+                    sector_dictionary[2]['passenger_count'] += int(i['reservation_passenger'])
 
-            # ============= Search for best 50 routes ====================
-            returning_index = self.returning_index(destination_direction_summary,{'departure': i['departure'], 'destination': i['destination']})
-            if returning_index == -1:
-                new_dict = {
-                    'direction': i['reservation_direction'],
-                    'departure': i['departure'],
-                    'destination': i['destination'],
-                    'counter': 1,
-                    'elder_count': i['reservation_elder'],
-                    'adult_count': i['reservation_adult'],
-                    'child_count': i['reservation_child'],
-                    'infant_count': i['reservation_infant'],
-                    'passenger_count': i['reservation_passenger']
-                }
-                destination_direction_summary.append(new_dict)
-            else:
-                destination_direction_summary[returning_index]['counter'] += 1
-                destination_direction_summary[returning_index]['passenger_count'] += i['reservation_passenger']
-                destination_direction_summary[returning_index]['elder_count'] += i['reservation_elder']
-                destination_direction_summary[returning_index]['adult_count'] += i['reservation_adult']
-                destination_direction_summary[returning_index]['child_count'] += i['reservation_child']
-                destination_direction_summary[returning_index]['infant_count'] += i['reservation_infant']
+                # ============= Summary by flight Type (OW, R, MC) ===========
+                if i['reservation_direction'] == 'OW':
+                    direction_dictionary[0]['valuation'] += int(i['amount'])
+                    direction_dictionary[0]['counter'] += 1
+                    direction_dictionary[0]['passenger_count'] = int(i['reservation_passenger'])
+                elif i['reservation_direction'] == 'RT':
+                    direction_dictionary[1]['valuation'] += int(i['amount'])
+                    direction_dictionary[1]['counter'] += 1
+                    direction_dictionary[1]['passenger_count'] = int(i['reservation_passenger'])
+                else:
+                    direction_dictionary[2]['valuation'] += int(i['amount'])
+                    direction_dictionary[2]['counter'] += 1
+                    direction_dictionary[2]['passenger_count'] = int(i['reservation_passenger'])
+
+                # ============= Search best for every sector ==================
+                returning_index = self.returning_index_sector(destination_sector_summary,{'departure': i['departure'], 'destination': i['destination'], 'sector': i['reservation_sector']})
+                if returning_index == -1:
+                    new_dict = {
+                        'sector': i['reservation_sector'],
+                        'departure': i['departure'],
+                        'destination': i['destination'],
+                        'counter': 1,
+                        'elder_count': i['reservation_elder'],
+                        'adult_count': i['reservation_adult'],
+                        'child_count': i['reservation_child'],
+                        'infant_count': i['reservation_infant'],
+                        'passenger_count': i['reservation_passenger']
+                    }
+                    destination_sector_summary.append(new_dict)
+                else:
+                    destination_sector_summary[returning_index]['counter'] += 1
+                    destination_sector_summary[returning_index]['passenger_count'] += i['reservation_passenger']
+                    destination_sector_summary[returning_index]['elder_count'] += i['reservation_elder']
+                    destination_sector_summary[returning_index]['adult_count'] += i['reservation_adult']
+                    destination_sector_summary[returning_index]['child_count'] += i['reservation_child']
+                    destination_sector_summary[returning_index]['infant_count'] += i['reservation_infant']
+
+                # ============= Search for best 50 routes ====================
+                returning_index = self.returning_index(destination_direction_summary,{'departure': i['departure'], 'destination': i['destination']})
+                if returning_index == -1:
+                    new_dict = {
+                        'direction': i['reservation_direction'],
+                        'departure': i['departure'],
+                        'destination': i['destination'],
+                        'counter': 1,
+                        'elder_count': i['reservation_elder'],
+                        'adult_count': i['reservation_adult'],
+                        'child_count': i['reservation_child'],
+                        'infant_count': i['reservation_infant'],
+                        'passenger_count': i['reservation_passenger']
+                    }
+                    destination_direction_summary.append(new_dict)
+                else:
+                    destination_direction_summary[returning_index]['counter'] += 1
+                    destination_direction_summary[returning_index]['passenger_count'] += i['reservation_passenger']
+                    destination_direction_summary[returning_index]['elder_count'] += i['reservation_elder']
+                    destination_direction_summary[returning_index]['adult_count'] += i['reservation_adult']
+                    destination_direction_summary[returning_index]['child_count'] += i['reservation_child']
+                    destination_direction_summary[returning_index]['infant_count'] += i['reservation_infant']
 
         sheet.write(5, 8, no_departure, style.table_data)
         sheet.write(6, 8, no_destination, style.table_data)
@@ -558,6 +600,8 @@ class ReportSellingXls(models.TransientModel):
         one_way_filter.sort(key=lambda x: x['counter'], reverse=True)
         return_filter.sort(key=lambda x: x['counter'], reverse=True)
         multi_city_filter.sort(key=lambda x: x['counter'], reverse=True)
+        issued_depart_international_summary.sort(key=lambda x: x['counter'], reverse=True)
+        issued_depart_domestic_summary.sort(key=lambda x: x['counter'], reverse=True)
 
         # ============ FIRST TABLE ======================
         sheet.write('A9', 'No.', style.table_head_center)
@@ -602,12 +646,13 @@ class ReportSellingXls(models.TransientModel):
                 sheet.write(row_data, 1, international_filter[i]['departure'], sty_table_data)
                 sheet.write(row_data, 2, international_filter[i]['destination'], sty_table_data)
                 sheet.write(row_data, 3, international_filter[i]['counter'], sty_table_data)
-                sheet.write(row_data, 4, "{}, {}, {}, {}".format(
-                    international_filter[i]['elder_count'],
-                    international_filter[i]['adult_count'],
-                    international_filter[i]['child_count'],
-                    international_filter[i]['infant_count']
-                ), sty_table_data)
+                # sheet.write(row_data, 4, "{}, {}, {}, {}".format(
+                #     international_filter[i]['elder_count'],
+                #     international_filter[i]['adult_count'],
+                #     international_filter[i]['child_count'],
+                #     international_filter[i]['infant_count']
+                # ), sty_table_data)
+                sheet.write(row_data, 4, international_filter[i]['reservation_passenger'], sty_table_data)
                 sheet.write(row_data, 0, counter, sty_table_data)
             except:
                 break
@@ -753,7 +798,7 @@ class ReportSellingXls(models.TransientModel):
             sheet.merge_range(side_row_data + 2, 16, side_row_data + 2, 18, 'Domestic', style.table_data)
             sheet.write(side_row_data + 2, 19, i['domestic_counter'], style.table_data)
             side_row_data += 3
-            sheet.write(side_row_data, 16, 'Departure', style.table_head_center)
+            sheet.write(side_row_data, 16, 'Origin', style.table_head_center)
             sheet.write(side_row_data, 17, 'Destination', style.table_head_center)
             sheet.write(side_row_data, 18, '# of Transaction', style.table_head_center)
             sheet.write(side_row_data, 19, '# of Passenger', style.table_head_center)
@@ -773,6 +818,45 @@ class ReportSellingXls(models.TransientModel):
                     sheet.write(side_row_data, 19, i['flight'][j]['passenger_count'], sty_table_data)
                 except:
                     break;
+
+        now_row_data = row_data
+        row_data += 3
+        sheet.merge_range(row_data -1, 6, row_data-1, 9, 'Inernational', style.table_head_center)
+        sheet.write(row_data, 6, 'No', style.table_head_center)
+        sheet.write(row_data, 7, '# of Days, issued - depart', style.table_head_center)
+        sheet.write(row_data, 8, '# of transaction', style.table_head_center)
+        sheet.write(row_data, 9, 'passenger', style.table_head_center)
+        counter = 0
+        for i in issued_depart_international_summary:
+            row_data += 1
+            counter += 1
+            sty_table_data = style.table_data
+            if row_data % 2 == 0:
+                sty_table_data = style.table_data_even
+
+            sheet.write(row_data, 6, counter, sty_table_data)
+            sheet.write(row_data, 7, i['day'], sty_table_data)
+            sheet.write(row_data, 8, i['counter'], sty_table_data)
+            sheet.write(row_data, 9, i['passenger'], sty_table_data)
+
+        row_data = now_row_data + 3
+        sheet.merge_range(row_data - 1, 11, row_data - 1, 14, 'Domestic', style.table_head_center)
+        sheet.write(row_data, 11, 'No', style.table_head_center)
+        sheet.write(row_data, 12, '# of Days, issued - depart', style.table_head_center)
+        sheet.write(row_data, 13, '# of transaction', style.table_head_center)
+        sheet.write(row_data, 14, 'passenger', style.table_head_center)
+        counter = 0
+        for i in issued_depart_domestic_summary:
+            row_data += 1
+            counter += 1
+            sty_table_data = style.table_data
+            if row_data % 2 == 0:
+                sty_table_data = style.table_data_even
+
+            sheet.write(row_data, 11, counter, sty_table_data)
+            sheet.write(row_data, 12, i['day'], sty_table_data)
+            sheet.write(row_data, 13, i['counter'], sty_table_data)
+            sheet.write(row_data, 14, i['passenger'], sty_table_data)
 
         og_row_data = 8
         side_counter = 21
@@ -874,6 +958,8 @@ class ReportSellingXls(models.TransientModel):
         destination_sector_summary = []
         destination_direction_summary = []
         carrier_name_summary = []
+        issued_depart_summary = []
+        to_check = []
         # ================ proceed the data =====================
         for i in values['lines']:
 
@@ -887,36 +973,60 @@ class ReportSellingXls(models.TransientModel):
                         'month': month[int(i['booked_month']) - 1],
                         'detail': self.add_month_detail()
                     }
-                    try:
+                    if i['reservation_booked_date']:
                         splits = i['reservation_booked_date'].split("-")
                         day_index = int(splits[2]) - 1
                         temp_dict['detail'][day_index]['booked_counter'] += 1
-                    except:
-                        pass
-                    try:
+                    if i['reservation_issued_date']:
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
                         temp_dict['detail'][day_index]['issued_counter'] += 1
-                    except:
-                        pass
                     summary_by_date.append(temp_dict)
                 else:
-                    try:
+                    if i['reservation_booked_']:
                         splits = i['reservation_booked_date'].split("-")
                         day_index = int(splits[2]) - 1
                         summary_by_date[month_index]['detail'][day_index]['booked_counter'] += 1
-                    except:
-                        pass
-                    try:
+                    if i['reservation_issued_date']:
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
                         summary_by_date[month_index]['detail'][day_index]['issued_counter'] += 1
-                    except:
-                        pass
             except:
                 pass
 
-            # count check for carrier name
+            # ============= Issued compareed to depart date ==============
+            filter_data = list(
+                filter(lambda x: x['reservation_order_number'] == i['reservation_order_number'], values['lines']))
+
+            depart_index = 0
+            if len(filter_data) > 1:
+                earliest_depart = filter_data[0]['journey_departure_date']
+                for j, dic in enumerate(filter_data):
+                    if earliest_depart > dic['journey_departure_date']:
+                        depart_index = j
+            # lets count
+            try:
+                date_time_convert = datetime.strptime(filter_data[depart_index]['journey_departure_date'],
+                                                      '%Y-%m-%d %H:%M')
+                if filter_data[0]['reservation_issued_date_og']:
+                    date_count = date_time_convert - filter_data[0]['reservation_issued_date_og']
+                else:
+                    date_count = 0
+
+                issued_depart_index = self.check_index(issued_depart_summary, "day", date_count.days)
+                if issued_depart_index == -1:
+                    temp_dict = {
+                        "day": date_count.days,
+                        "counter": 1
+                    }
+                    issued_depart_summary.append(temp_dict)
+                else:
+                    issued_depart_summary[issued_depart_index]['counter'] += 1
+            except:
+                _logger.error("{}".format(i['reservation_order_number']))
+                pass
+
+            # ============= Carrier summary check ========================
             carrier_index = self.check_index(carrier_name_summary, 'carrier_name', i['reservation_provider_name'])
             if carrier_index == -1:
                 temp_dict = {
@@ -1023,7 +1133,7 @@ class ReportSellingXls(models.TransientModel):
                     carrier_name_summary[carrier_index]['flight'][destination_index]['child_count'] += i['reservation_child']
                     carrier_name_summary[carrier_index]['flight'][destination_index]['infant_count'] += i['reservation_infant']
 
-            # count international or domestic sector is most popular
+            # ============= International or Domestic route ==============
             if i['reservation_sector'] == 'International':
                 sector_dictionary[0]['valuation'] += int(i['amount'])
                 sector_dictionary[0]['counter'] += 1
@@ -1037,7 +1147,7 @@ class ReportSellingXls(models.TransientModel):
                 sector_dictionary[2]['counter'] += 1
                 sector_dictionary[2]['passenger_count'] += int(i['reservation_passenger'])
 
-            # count type of direction transaction
+            # ============= Type of direction ============================
             if i['reservation_direction'] == 'OW':
                 direction_dictionary[0]['valuation'] += int(i['amount'])
                 direction_dictionary[0]['counter'] += 1
@@ -1051,7 +1161,7 @@ class ReportSellingXls(models.TransientModel):
                 direction_dictionary[2]['counter'] += 1
                 direction_dictionary[2]['passenger_count'] = int(i['reservation_passenger'])
 
-            # count what product or line is at best
+            # ============= Seek top 50 products by sector ===============
             returning_index = self.returning_index(destination_sector_summary,
                                                    {'departure': i['departure'], 'destination': i['destination']})
             if returning_index == -1:
@@ -1075,6 +1185,7 @@ class ReportSellingXls(models.TransientModel):
                 destination_sector_summary[returning_index]['child_count'] += i['reservation_child']
                 destination_sector_summary[returning_index]['infant_count'] += i['reservation_infant']
 
+            # ============= Seek top 50 products =========================
             returning_index = self.returning_index(destination_direction_summary,
                                                    {'departure': i['departure'], 'destination': i['destination']})
             if returning_index == -1:
@@ -1115,6 +1226,7 @@ class ReportSellingXls(models.TransientModel):
         one_way_filter.sort(key=lambda x: x['counter'], reverse=True)
         return_filter.sort(key=lambda x: x['counter'], reverse=True)
         multi_city_filter.sort(key=lambda x: x['counter'], reverse=True)
+        issued_depart_summary.sort(key=lambda x: x['counter'], reverse=True)
 
         # ============ FIRST TABLE ======================
         sheet.write('A9', 'No.', style.table_head_center)
@@ -1142,7 +1254,7 @@ class ReportSellingXls(models.TransientModel):
         # ============ SECOND TABLE ======================
         sheet.merge_range(row_data - 1, 0, row_data - 1, 4, 'International', style.table_head_center)
         sheet.write(row_data, 0, 'No.', style.table_head_center)
-        sheet.write(row_data, 1, 'Departure', style.table_head_center)
+        sheet.write(row_data, 1, 'Origin', style.table_head_center)
         sheet.write(row_data, 2, 'Destination', style.table_head_center)
         sheet.write(row_data, 3, 'Count', style.table_head_center)
         sheet.write(row_data, 4, 'Passenger Count', style.table_head_center)
@@ -1168,7 +1280,7 @@ class ReportSellingXls(models.TransientModel):
         # ============ THIRD TABLE ======================
         sheet.merge_range(row_data - 1, 0, row_data - 1, 4, 'Domestic', style.table_head_center)
         sheet.write(row_data, 0, 'No.', style.table_head_center)
-        sheet.write(row_data, 1, 'Departure', style.table_head_center)
+        sheet.write(row_data, 1, 'Origin', style.table_head_center)
         sheet.write(row_data, 2, 'Destination', style.table_head_center)
         sheet.write(row_data, 3, 'Count', style.table_head_center)
         sheet.write(row_data, 4, 'Passenger Count', style.table_head_center)
@@ -1194,7 +1306,7 @@ class ReportSellingXls(models.TransientModel):
         # ============ FORTH TABLE ======================
         sheet.merge_range(row_data - 1, 0, row_data - 1, 4, 'One Way', style.table_head_center)
         sheet.write(row_data, 0, 'No.', style.table_head_center)
-        sheet.write(row_data, 1, 'Departure', style.table_head_center)
+        sheet.write(row_data, 1, 'Origin', style.table_head_center)
         sheet.write(row_data, 2, 'Destination', style.table_head_center)
         sheet.write(row_data, 3, 'Count', style.table_head_center)
         sheet.write(row_data, 4, 'Passenger Count', style.table_head_center)
@@ -1220,7 +1332,7 @@ class ReportSellingXls(models.TransientModel):
         # ============ FUNF TABLE ======================
         sheet.merge_range(row_data - 1, 0, row_data - 1, 4, 'Return', style.table_head_center)
         sheet.write(row_data, 0, 'No.', style.table_head_center)
-        sheet.write(row_data, 1, 'Departure', style.table_head_center)
+        sheet.write(row_data, 1, 'Origin', style.table_head_center)
         sheet.write(row_data, 2, 'Destination', style.table_head_center)
         sheet.write(row_data, 3, 'Count', style.table_head_center)
         sheet.write(row_data, 4, 'Passenger Count', style.table_head_center)
@@ -1246,7 +1358,7 @@ class ReportSellingXls(models.TransientModel):
         # ============ SIXTH TABLE ======================
         sheet.merge_range(row_data - 1, 0, row_data - 1, 4, 'Multi City', style.table_head_center)
         sheet.write(row_data, 0, 'No.', style.table_head_center)
-        sheet.write(row_data, 1, 'Departure', style.table_head_center)
+        sheet.write(row_data, 1, 'Origin', style.table_head_center)
         sheet.write(row_data, 2, 'Destination', style.table_head_center)
         sheet.write(row_data, 3, 'Count', style.table_head_center)
         sheet.write(row_data, 4, 'Passenger Count', style.table_head_center)
@@ -1305,7 +1417,7 @@ class ReportSellingXls(models.TransientModel):
             sheet.merge_range(side_row_data + 2, 16, side_row_data + 2, 18, 'Domestic', style.table_data)
             sheet.write(side_row_data + 2, 19, i['domestic_counter'], style.table_data)
             side_row_data += 3
-            sheet.write(side_row_data, 16, 'Departure', style.table_head_center)
+            sheet.write(side_row_data, 16, 'Origin', style.table_head_center)
             sheet.write(side_row_data, 17, 'Destination', style.table_head_center)
             sheet.write(side_row_data, 18, '# of Transaction', style.table_head_center)
             sheet.write(side_row_data, 19, '# of Passenger', style.table_head_center)
@@ -1325,6 +1437,22 @@ class ReportSellingXls(models.TransientModel):
                     sheet.write(side_row_data, 19, i['flight'][j]['passenger_count'], sty_table_data)
                 except:
                     break;
+
+        row_data += 2
+        sheet.write(row_data, 6, 'No', style.table_head_center)
+        sheet.write(row_data, 7, '# of Days, issued - depart', style.table_head_center)
+        sheet.write(row_data, 8, 'count', style.table_head_center)
+        counter = 0
+        for i in issued_depart_summary:
+            row_data += 1
+            counter += 1
+            sty_table_data = style.table_data
+            if row_data % 2 == 0:
+                sty_table_data = style.table_data_even
+
+            sheet.write(row_data, 6, counter, sty_table_data)
+            sheet.write(row_data, 7, i['day'], sty_table_data)
+            sheet.write(row_data, 8, i['counter'], sty_table_data)
 
         og_row_data = 8
         side_counter = 21
