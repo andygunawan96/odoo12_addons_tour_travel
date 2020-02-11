@@ -714,7 +714,7 @@ class ReservationActivity(models.Model):
             res2 = self.env['tt.activity.api.con'].get_vouchers(req)
             attachment_objs = []
             for idx, rec in enumerate(res2['response']['ticket']):
-                if res2['response']['provider'] == 'bemyguest':
+                if res2['response']['provider'] in ['bemyguest', 'rodextrip_activity']:
                     attachment_value = {
                         'filename': 'Activity_Ticket.pdf',
                         'file_reference': str(obj.name) + ' ' + str(idx+1),
