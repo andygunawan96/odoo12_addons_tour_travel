@@ -130,6 +130,7 @@
                                 <field name="provider_type_id_name" invisible="1"/>
                                 <field name="provider_type_id" invisible="1"/>
                                 <field name="provider_name" groups="tt_base.group_tt_tour_travel_operator"/>
+                                <field name="carrier_name" attrs="{'invisible': [('offline_provider_type', 'not in', ['airline','train'])]}"/>
                                 <field name="pnr" string="List of PNR" readonly="1"/>
                                 <field name="sector_type" attrs="{'invisible': [('provider_type_id_name', 'not in', 'airline')]}"/>
                                 <field name="cancel_message" states="cancel"
@@ -265,6 +266,7 @@
                     <field name="offline_provider_type"/>
                     <field name="agent_id"/>
                     <field name="pnr"/>
+                    <field name="carrier_name"/>
                     <field name="sector_type"/>
                     <field name="confirm_uid"/>
                     <field name="confirm_date"/>

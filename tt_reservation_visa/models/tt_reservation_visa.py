@@ -83,7 +83,7 @@ class TtVisa(models.Model):
     ho_validate_date = fields.Datetime('HO Validate Date', readonly=1)
 
     passenger_ids = fields.One2many('tt.reservation.visa.order.passengers', 'visa_id', 'Visa Order Passengers')
-    commercial_state = fields.Char('Payment Status', readonly=1)  # , compute='_compute_commercial_state'
+    commercial_state = fields.Char('Payment Status', readonly=1, compute='_compute_commercial_state')  #
     confirmed_date = fields.Datetime('Confirmed Date', readonly=1)
     confirmed_uid = fields.Many2one('res.users', 'Confirmed By', readonly=1)
 
