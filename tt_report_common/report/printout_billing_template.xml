@@ -7,7 +7,8 @@
                 <td style="width:50px;">To</td>
                 <td style="width:10px;">:</td>
                 <td style="width:400px; vertical-align: top;" rowspan="6">
-<!--                    <t t-set="o_addr" t-value="doc.contact_id"/>-->
+                    <t t-set="o_addr" t-value="doc.customer_parent_id"/>
+                    <t t-set="is_cor" t-value="1"/>
                     <t t-call="tt_report_common.address_layout"/>
                 </td>
                 <td style="width:100px;"/>
@@ -22,7 +23,7 @@
                 <td>Transaction Period</td>
                 <td>:</td>
                 <td>
-                    <span t-esc="last_billing[doc.name]"/> - <span t-field="doc.due_date" t-options ='{"format": "dd/MM/yyyy"}'/>
+                    <span t-field="doc.transaction_start_date" t-options ='{"format": "dd/MM/yyyy"}'/> - <span t-field="doc.transaction_end_date" t-options ='{"format": "dd/MM/yyyy"}'/>
                 </td>
             </tr>
             <tr>
@@ -32,7 +33,7 @@
                 <td>Billing Printed Date</td>
                 <td>:</td>
                 <td>
-                    <span t-field="doc.confirm_date" t-options ='{"format": "dd/MM/yyyy"}'/>
+                    <span t-field="doc.create_date" t-options ='{"format": "dd/MM/yyyy"}'/>
                 </td>
             </tr>
             <tr>
@@ -55,6 +56,16 @@
                     <b t-field="doc.amount_total"/>
                 </td>
             </tr>
+<!--            <tr>-->
+<!--                <td/>-->
+<!--                <td/>-->
+<!--                <td/>-->
+<!--                <td>Collectibility Status</td>-->
+<!--                <td>:</td>-->
+<!--                <td>-->
+<!--                    <span t-field="doc.collectibility_status"/>-->
+<!--                </td>-->
+<!--            </tr>-->
         </table>
         <br/>
         <!-- Line Info -->
