@@ -61,7 +61,7 @@ class IssuedOfflineLines(models.Model):
     transaction_type = fields.Selection('tt.provider.type', 'Service Type', related='booking_id.offline_provider_type')
     transaction_name = fields.Char('Service Name', readonly=True, related='booking_id.provider_type_id_name')
     provider_id = fields.Many2one('tt.provider', 'Provider ID', readonly=False, domain="['|', ('provider_type_id.code', '=', transaction_type), ('provider_type_id.code', '=', 'offline')]")
-    provider_name = fields.Char('Povider Name', compute='compute_provider_name', store=True)
+    provider_name = fields.Char('Provider Name', compute='compute_provider_name', store=True)
     provider_type = fields.Char('Provider Type', related='provider_id.provider_type_id.code')
 
     # Airplane / Train
@@ -292,7 +292,7 @@ class IssuedOfflineLines(models.Model):
     @api.multi
     def unlink(self):
         for rec in self:
-            if rec.state != 'draft':
+            if rec.state_offline != 'draft':
                 raise UserError(_('You cannot delete a line. You have to set state to draft.'))
         return super(IssuedOfflineLines, self).unlink()
 

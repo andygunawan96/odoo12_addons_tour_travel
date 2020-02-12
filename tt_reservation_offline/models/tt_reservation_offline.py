@@ -76,7 +76,8 @@ class IssuedOffline(models.Model):
                                                              'pending': [('readonly', False)],
                                                              'confirm': [('readonly', False)]})
     # carrier_id = fields.Many2one('tt.transport.carrier')
-    sector_type = fields.Selection(SECTOR_TYPE, 'Sector', readonly=True, states={'draft': [('readonly', False)]})
+    sector_type = fields.Selection(SECTOR_TYPE, 'Sector', readonly=True, states={'draft': [('readonly', False)],
+                                                                                 'pending': [('readonly', False)]})
 
     # 171121 CANDY: add field pnr, commission 80%, nta, nta 80%
     agent_commission = fields.Monetary('Agent Commission', readonly=True, compute='_get_agent_commission')
@@ -229,6 +230,7 @@ class IssuedOffline(models.Model):
                         self.acquirer_id = self.agent_id.default_acquirer_id
                     if self.line_ids:
                         self.get_pnr_list()
+                        self.get_carrier_name()
                     if self.offline_provider_type != 'other':
                         self.offline_provider_type_name = self.offline_provider_type
                     # self.send_push_notif()
@@ -360,6 +362,7 @@ class IssuedOffline(models.Model):
             provider.sent_uid = self.sent_uid
         self.get_pnr_list_from_provider()
         self.get_provider_name()
+        self.get_carrier_name()
         if not self.provider_name:
             raise UserError(_('List of Provider can\'t be Empty'))
         for provider in self.provider_booking_ids:
@@ -684,17 +687,6 @@ class IssuedOffline(models.Model):
                     else:
                         rec.parent_agent_commission += comm.get('amount')
 
-    # @api.onchange('agent_commission', 'ho_commission')
-    # @api.depends('agent_commission', 'ho_commission')
-    # def _get_ho_commission(self):
-    #     for rec in self:
-    #         rec.ho_commission = 0
-    #         pricing_obj = rec.env['tt.pricing.agent'].sudo()
-    #         commission_list = pricing_obj.get_commission(rec.agent_commission, rec.agent_id, rec.offline_provider_type_id)
-    #         for comm in commission_list:
-    #             if comm.get('agent_type_id') == rec.env.ref('tt_base.rodex_ho').agent_type_id.id:
-    #                 rec.ho_commission += comm.get('amount')
-
     # Hitung harga final / Agent NTA Price
     @api.onchange('vendor_amount', 'nta_price')
     def compute_final_ho(self):
@@ -721,6 +713,15 @@ class IssuedOffline(models.Model):
                     provider_list.append(rec.provider_name)
         if len(provider_list) != 0:
             self.provider_name = ', '.join(provider_list)
+
+    def get_carrier_name(self):
+        carrier_list = []
+        for rec in self.line_ids:
+            if rec.carrier_id:
+                if rec.carrier_id.name not in carrier_list:
+                    carrier_list.append(rec.carrier_id.name)
+        if len(carrier_list) != 0:
+            self.carrier_name = ', '.join(carrier_list)
 
     def get_provider_name_from_provider(self):
         provider_list = []
