@@ -1113,19 +1113,6 @@ class PrintoutBilling(models.AbstractModel):
     _name = 'report.tt_report_common.printout_billing'
     _description = 'Rodex Model'
 
-    def last_billing(self, recs):
-        a = {}
-        for rec in recs:
-            bill_id = self.env['tt.billing.statement'].search([('customer_parent_id', '=', rec.customer_parent_id.id),('id', '!=', rec.id)],
-                                                              limit=1, order='date DESC')
-            if bill_id:
-                a.update({ rec.name: bill_id.date.strftime('%d/%m/%Y') })
-            else:
-                # Find lowest Invoice Date
-                inv_obj = rec.invoice_ids.sorted(key=lambda x: x.confirmed_date)
-                a.update({ rec.name: inv_obj[0].confirmed_date.strftime('%d/%m/%Y') })
-        return a
-
     def compute_terbilang_from_objs(self, recs, currency_str='rupiah'):
         a = {}
         for rec2 in recs:
@@ -1146,8 +1133,8 @@ class PrintoutBilling(models.AbstractModel):
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
             'terbilang': self.compute_terbilang_from_objs(
                 self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
-            'last_billing': self.last_billing(
-                self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
+            # 'last_billing': self.last_billing(
+            #     self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
         }
 
 

@@ -21,8 +21,10 @@
             <address t-ignore="true" class="mb0" itemscope="itemscope" itemtype="http://schema.org/Organization">
                 <div>
                     <strong><span t-esc="o_addr.name"/></strong>
-                    <t t-if="o_addr.customer_parent_ids">
-                        (<span t-esc="o_addr.customer_parent_ids[0].name"/>)
+                    <t t-if="not is_cor">
+                        <t t-if="o_addr.customer_parent_ids">
+                            (<span t-esc="o_addr.customer_parent_ids[0].name"/>)
+                        </t>
                     </t>
                 </div>
 
@@ -69,7 +71,6 @@
             <div>
                 <strong><span t-esc="doc.bill_name"/></strong>
             </div>
-
             <div>
                 <div style="width:380px;">
                     <span t-esc="doc.bill_address"/>
