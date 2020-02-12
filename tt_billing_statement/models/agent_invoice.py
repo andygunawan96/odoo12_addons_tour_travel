@@ -10,7 +10,6 @@ class AgentInvoice(models.Model):
     _inherit = 'tt.agent.invoice'
 
     billing_statement_id = fields.Many2one('tt.billing.statement', 'Billing Statement', ondelete="set null")
-    billing_date = fields.Date('Billing Date', related='billing_statement_id.date', store=True)
     billing_uid = fields.Many2one('res.users', 'Billed by')
 
     # CANDY: tambah booker type
