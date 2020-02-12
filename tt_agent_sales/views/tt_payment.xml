@@ -6,12 +6,17 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <field name="state" widget="statusbar"/>
+                    <button name="action_approve" string="Approve Usage" type="object"
+                            attrs="{'invisible':['|',('state','!=','confirm'),('payment_state','!=','approved')]}"/>
+                    <button name="action_cancel" string="Cancel Usage" type="object"
+                            attrs="{'invisible':[('state','!=','approved')]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="confirm,approved"/>
                 </header>
                 <sheet>
                     <group>
                         <field name="invoice_id" readonly="1"/>
                         <field name="payment_id"/>
+                        <field name="payment_state"/>
                         <field name="available_amount"/>
                         <field name="pay_amount"/>
                         <field name="payment_acquirer"/>
@@ -31,6 +36,7 @@
                 <field name="pay_amount"/>
                 <field name="payment_acquirer"/>
                 <field name="currency_id" invisible="1"/>
+                <field name="state"/>
             </tree>
         </field>
     </record>

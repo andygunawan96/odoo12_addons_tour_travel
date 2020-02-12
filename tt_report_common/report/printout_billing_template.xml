@@ -7,7 +7,7 @@
                 <td style="width:50px;">To</td>
                 <td style="width:10px;">:</td>
                 <td style="width:400px; vertical-align: top;" rowspan="6">
-                    <t t-set="o_addr" t-value="doc.contact_id"/>
+<!--                    <t t-set="o_addr" t-value="doc.contact_id"/>-->
                     <t t-call="tt_report_common.address_layout"/>
                 </td>
                 <td style="width:100px;"/>
@@ -53,16 +53,6 @@
                 <td>:</td>
                 <td>
                     <b t-field="doc.amount_total"/>
-                </td>
-            </tr>
-            <tr>
-                <td/>
-                <td/>
-                <td/>
-                <td>Collectibility Status</td>
-                <td>:</td>
-                <td>
-                    <span t-field="doc.collectibility_status"/>
                 </td>
             </tr>
         </table>

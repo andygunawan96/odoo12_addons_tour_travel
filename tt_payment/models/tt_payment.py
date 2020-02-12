@@ -18,7 +18,7 @@ class PaymentTransaction(models.Model):
     available_amount = fields.Monetary('Available Amount', compute="compute_available_amount",
                                        help='payment amount + unique amount',readonly=True) #nominal yg bisa digunakan
 
-    display_name = fields.Char('Display Name',compute="_compute_display_name_payment",store=True,readonly=True)
+    display_name = fields.Char('Display Name',compute="_compute_display_name_payment",store=False,readonly=True)
 
     payment_date = fields.Datetime('Payment Date',states={'validated': [('readonly', True)]})
 
@@ -98,6 +98,8 @@ class PaymentTransaction(models.Model):
     # acquirer_id = fields.Many2one('payment.acquirer', 'Acquirer', domain=_get_acquirer_domain,states={'validated': [('readonly', True)]})
     dummy_acquirer_field = fields.Boolean('Generate Acquirer List', default=False)
 
+    is_full = fields.Boolean('Is Full')
+
     def get_payment_acquirer_domain(self):
         if self.customer_parent_id:
             dom = [('agent_id','=',self.agent_id.id)]
@@ -148,6 +150,12 @@ class PaymentTransaction(models.Model):
     #         if datetime.datetime.now().day == self.create_date.day:
     #             raise exceptions.UserError('Cannot change, have to wait 1 day.')
 
+    def check_full(self):
+        if self.available_amount <= 0:
+            self.is_full = True
+        else:
+            self.is_full = False
+
     @api.multi
     def compute_available_amount(self):
         for rec in self:
@@ -163,7 +171,7 @@ class PaymentTransaction(models.Model):
             print("Supered Availale Amount %d" % (rec.available_amount))
 
     @api.multi
-    @api.depends('name','currency_id','total_amount')
+    # @api.depends('name','currency_id','total_amount','available_amount')
     def _compute_display_name_payment(self):
         for rec in self:
             rec.display_name = '%s - %s %s' % (rec.name, rec.currency_id.name , rec.available_amount)
@@ -181,6 +189,9 @@ class PaymentTransaction(models.Model):
         vals_list.update({
             'dummy_acquirer_field': False
         })
+        if 'real_total_amount' in vals_list:
+            if vals_list['real_total_amount'] < self.used_amount:
+                raise exceptions.UserError("Total amount on %s is less than the used amount." % (self.name))
         return super(PaymentTransaction, self).write(vals_list)
 
     def action_validate_from_button(self):
@@ -216,7 +227,6 @@ class PaymentTransaction(models.Model):
         else:
             self.action_approve_payment()
 
-
     def action_approve_payment(self):
         approve_values = {
             'state': 'approved',
@@ -228,7 +238,6 @@ class PaymentTransaction(models.Model):
                 'payment_date': datetime.now()
             })
         self.write(approve_values)
-
 
     def action_validate_payment(self):
         self.write({
@@ -243,6 +252,17 @@ class PaymentTransaction(models.Model):
         self.write({
             'state': 'cancel',
             'cancel_uid': context.get('co_uid'),
+            'cancel_date': datetime.now()
+        })
+
+    def action_cancel_from_button(self):
+        if self.state != 'approved':
+            raise exceptions.UserError('Can only cancel [Approved] state Payment.')
+        if self.top_up_id:
+            raise exceptions.UserError("Cannot cancel top up payment.")
+        self.write({
+            'state': 'cancel',
+            'cancel_uid': self.env.user.id,
             'cancel_date': datetime.now()
         })
 

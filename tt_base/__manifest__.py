@@ -80,6 +80,7 @@ Key Features
 
         'wizard/tt_upload_center_wizard_view.xml',
         'wizard/create_user_wizard_view.xml',
+        'wizard/notification_pop_up_wizard.xml',
         'views/tt_upload_center_views.xml',
     ],
     'demo': [],

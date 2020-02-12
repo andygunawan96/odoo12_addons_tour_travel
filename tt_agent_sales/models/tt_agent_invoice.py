@@ -115,7 +115,7 @@ class AgentInvoice(models.Model):
         for rec in self:
             aqc_list = []
             for payment in rec.payment_ids:
-                if payment.payment_acquirer:
+                if payment.payment_acquirer and payment.state != 'cancel':
                     aqc_list.append(payment.payment_acquirer)
             rec.payment_acquirers = ",".join(aqc_list)
 
@@ -155,6 +155,8 @@ class AgentInvoice(models.Model):
                 paid_amount += rec.pay_amount
         if self.state != 'paid' and (paid_amount >= self.total and self.total != 0):
             self.state = 'paid'
+        elif self.state not in ['confirm','bill','bill2'] and (paid_amount < self.total and self.total != 0):
+            self.state = 'confirm'
         # return
 
 

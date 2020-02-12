@@ -8,7 +8,7 @@
                 <field name="name"/>
                 <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>
                 <field name="customer_parent_id" groups="tt_base.group_tt_tour_travel_operator"/>
-                <field name="contact_id" groups="tt_base.group_tt_tour_travel_operator"/>
+<!--                <field name="contact_id" groups="tt_base.group_tt_tour_travel_operator"/>-->
                 <separator/>
                 <filter string="All" name='all'/>
                 <filter string="Confirm" name='confirm' domain="[('state', '=', 'confirm')]"/>
@@ -53,8 +53,8 @@
                     <!--<button name="automation_billing" string="TEST Billing Automation" groups="base.group_system" type="object" class="oe_highlight"/>-->
                     <!--<button name="unlink_invoice_ids" string="Remove Invoice(s)" groups="account.group_account_invoice"-->
                     <!--states="cancel" type="object" class="oe_highlight"/>-->
-                    <button name="action_cancel" string="Cancel"
-                            states="draft,confirm,paid" type="object"/>
+<!--                    <button name="action_cancel" string="Cancel"-->
+<!--                            states="draft,confirm,paid" type="object"/>-->
                     <!--<button name="compute_double_payment" string="Compute double payment" type="object" class="btn-primary"/>-->
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,paid"/>
                 </header>
@@ -72,12 +72,12 @@
                     </div>
                     <group>
                         <group>
-                            <field name="collectibility_status"/>
-                            <field name="date"/>
+                            <field name="transaction_start_date"/>
+                            <field name="transaction_end_date"/>
                             <field name="due_date"/>
                             <field name="agent_id"/>
                             <field name="customer_parent_id"/>
-                            <field name="contact_id"/>
+<!--                            <field name="contact_id"/>-->
                         </group>
                         <group>
                             <field name="currency_id" invisible="1"/>
@@ -144,7 +144,6 @@
                 <field name="name"/>
                 <field name="agent_id"/>
                 <field name="customer_parent_id"/>
-                <field name="date"/>
                 <field name="due_date"/>
                 <field name="state"/>
             </tree>

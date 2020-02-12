@@ -81,16 +81,17 @@ class TtCustomerParentInh(models.Model):
     #     date_param = date.today()
     #     print(self._check_billing_cycle(date_param))
 
-    def get_billing_due_date(self, bill_due_date, bill_day_list):
-        final_due_date = date.today() + timedelta(days=bill_due_date)
+    def get_billing_due_date(self,today_date, bill_due_date, bill_day_list):
+        final_due_date = today_date + timedelta(days=bill_due_date)
         while final_due_date.strftime('%A') not in bill_day_list and bill_day_list:
             final_due_date += timedelta(days=1)
         return final_due_date
 
     def cron_create_billing_statement(self):
         ##search for COR billed today
-        today_int = date.today().strftime('%d')
-        today_str = date.today().strftime('%a')
+        today_date = date.today()+timedelta(days=1)
+        today_int = today_date.strftime('%d')
+        today_str = today_date.strftime('%a')
         cor_list_obj = self.search([('billing_cycle_ids.day','!=','0'), ## not no billing
                                     '|',
                                     '|',
@@ -122,7 +123,7 @@ class TtCustomerParentInh(models.Model):
             if invoice_list:
                 new_bs_obj = self.env['tt.billing.statement'].create({
                     'date': datetime.now(),
-                    'due_date': self.get_billing_due_date(cor.billing_due_date, bill_day_list),
+                    'due_date': self.get_billing_due_date(today_date,cor.billing_due_date, bill_day_list),
                     'agent_id': cor.parent_agent_id.id,
                     'customer_parent_id': cor.id,
                     'invoice_ids': invoice_list,

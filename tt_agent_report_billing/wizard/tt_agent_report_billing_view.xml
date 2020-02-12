@@ -27,7 +27,7 @@
             name="Billing Report"
             parent="tt_billing_statement.menu_billing_statement_billing_statement"
             action="action_agent_report_billing_wz"
-            sequence="1"
+            sequence="16"
             />
     </data>
 </odoo>
