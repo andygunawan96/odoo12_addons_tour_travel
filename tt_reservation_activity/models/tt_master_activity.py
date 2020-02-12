@@ -205,6 +205,31 @@ class MasterActivity(models.Model):
             file.write(json.dumps(temp))
             file.close()
 
+    def action_get_rodextrip_activity_json(self):
+        req_post = {
+            'provider': 'rodextrip_activity'
+        }
+
+        temp = []
+        res = self.env['tt.master.activity.api.con'].search_provider(req_post)
+        if res['error_code'] == 0:
+            temp = res['response']
+
+        page = 1
+        temp_idx = 0
+        for rec in temp:
+            if rec.get('product_detail'):
+                folder_path = '/var/log/tour_travel/rodextrip_activity_master_data'
+                if not os.path.exists(folder_path):
+                    os.mkdir(folder_path)
+                file = open('/var/log/tour_travel/rodextrip_activity_master_data/rodextrip_activity_master_data' + str(page) + '.json', 'w')
+                file.write(json.dumps(rec))
+                file.close()
+                temp_idx += 1
+                if temp_idx == 100:
+                    page += 1
+                    temp_idx = 0
+
     def action_sync_globaltix(self, start, end):
         provider = 'globaltix'
 
@@ -278,6 +303,17 @@ class MasterActivity(models.Model):
             self.sync_products(provider, file)
         else:
             _logger.error('ERROR Sync Activity %s: %s, %s' % (request.session.sid, res['error_code'], res['error_msg']))
+
+    def action_sync_rodextrip_activity(self, start, end):
+        provider = 'rodextrip_activity'
+
+        file = []
+        for i in range(int(start), int(end) + 1):
+            file_dat = open('/var/log/tour_travel/rodextrip_activity_master_data/rodextrip_activity_master_data' + str(i) + '.json', 'r')
+            file = json.loads(file_dat.read())
+            file_dat.close()
+            if file:
+                self.sync_products(provider, file)
 
     def sync_config(self, provider):
         req_post = {
@@ -421,27 +457,45 @@ class MasterActivity(models.Model):
                 if rec['product'].get('country_id'):
                     rec_provider_codes = self.env['tt.provider.code'].sudo().search([('code', '=', rec['product']['country_id']), ('provider_id', '=', int(provider_id.id))])
                     for prov_data in rec_provider_codes:
-                        new_loc = self.env['tt.activity.master.locations'].sudo().create({
-                            'country_id': prov_data.country_id.id,
-                            'city_id': False,
-                            'state_id': False,
-                        })
-                        self.env.cr.commit()
                         city_id = self.env['res.city'].sudo().search([('name', '=', rec['product']['cities'][0])], limit=1)
-                        new_loc.city_id = city_id
-                        temp2.append(new_loc.id)
+                        search_params = []
+                        if prov_data.country_id:
+                            search_params.append(('country_id', '=', prov_data.country_id.id))
+                        if city_id:
+                            search_params.append(('city_id', '=', city_id[0].id))
+                        if search_params:
+                            temp_loc = self.env['tt.activity.master.locations'].sudo().search(search_params, limit=1)
+                            if temp_loc:
+                                new_loc = temp_loc[0]
+                            else:
+                                new_loc = self.env['tt.activity.master.locations'].sudo().create({
+                                    'country_id': prov_data.country_id and prov_data.country_id.id or False,
+                                    'city_id': city_id and city_id[0].id or False,
+                                    'state_id': False
+                                })
+                                self.env.cr.commit()
+                            temp2.append(new_loc.id)
                 else:
                     for idx, countries in enumerate(rec['product']['countries']):
                         country_id = self.env['res.country'].sudo().search([('name', '=', countries)], limit=1)
-                        new_loc = self.env['tt.activity.master.locations'].sudo().create({
-                            'country_id': country_id.id,
-                            'city_id': False,
-                            'state_id': False,
-                        })
-                        self.env.cr.commit()
                         city_id = self.env['res.city'].sudo().search([('name', '=', rec['product']['cities'][idx])], limit=1)
-                        new_loc.city_id = city_id
-                        temp2.append(new_loc.id)
+                        search_params = []
+                        if country_id:
+                            search_params.append(('country_id', '=', country_id[0].id))
+                        if city_id:
+                            search_params.append(('city_id', '=', city_id[0].id))
+                        if search_params:
+                            temp_loc = self.env['tt.activity.master.locations'].sudo().search(search_params, limit=1)
+                            if temp_loc:
+                                new_loc = temp_loc[0]
+                            else:
+                                new_loc = self.env['tt.activity.master.locations'].sudo().create({
+                                    'country_id': country_id and country_id[0].id or False,
+                                    'city_id': city_id and city_id[0].id or False,
+                                    'state_id': False,
+                                })
+                                self.env.cr.commit()
+                            temp2.append(new_loc.id)
 
                 types_temp = []
                 if provider == 'klook':
@@ -1362,6 +1416,7 @@ class MasterActivity(models.Model):
                     'priceIncludes': result.get('priceIncludes') and result['priceIncludes'] or '',
                     'provider_id': res_provider and res_provider.id or '',
                     'provider': res_provider and res_provider.code or '',
+                    'provider_fare_code': result.get('provider_fare_code') and result['provider_fare_code'] or '',
                     'reviewAverageScore': result.get('reviewAverageScore') and result['reviewAverageScore'] or 0.0,
                     'reviewCount': result.get('reviewCount') and result['reviewCount'] or 0,
                     'safety': result.get('safety') and result['safety'] or '',
