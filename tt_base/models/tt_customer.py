@@ -396,12 +396,14 @@ class TtCustomer(models.Model):
             user_dict = self.env['res.users'].search([('name', 'ilike', 'Customer Template')], limit=1).read()
             name = (data['first_name'] or '') + ' ' + (data.get('last_name') or '')
 
-            context = {
-                'co_agent_id': agent_id.id
-            }
+            data.update({
+                'agent_id': agent_id.id,
+                'nationality_id': self.env['res.country'].search([('code', '=', data.get('nationality_code'))],
+                                                                 limit=1).id
+            })
 
             # create customer id
-            self.create_or_update_customer_api(data, context)
+            customer_obj = self.env['tt.customer'].sudo().create(data)
 
             # user id vals
             vals = {
@@ -410,6 +412,7 @@ class TtCustomer(models.Model):
                 'email': data.get('email'),
                 'password': data.get('password'),
                 'agent_id': agent_id.id,
+                'customer_id': customer_obj.id,
                 # 'customer_parent_id':
             }
 
@@ -419,9 +422,12 @@ class TtCustomer(models.Model):
                     'frontend_security_ids': [(6, 0, user_dict[0]['frontend_security_ids'])]
                 })
 
+            user_res = self.create_user_res(vals)
+            if user_res['error_code'] != 0:
+                raise RequestException(500, additional_message=user_res['error_msg'])
+
             # create user id
-            user_id = self.env['res.users'].create(vals)
-            print('User ' + user_id.name + ' Created!')
+            print('User ' + user_res['response'].name + ' Created!')
             response = {
                 'error_msg': 'Create user success!'
             }
@@ -433,6 +439,27 @@ class TtCustomer(models.Model):
             self.env.cr.rollback()
             _logger.error(msg=str(e) + '\n' + traceback.format_exc())
             res = Response().get_error(str(e), 500)
+        return res
+
+    def create_user_res(self, vals):
+        login_exists = self.env['res.users'].search([('login', '=', vals.get('login'))])
+        if login_exists:
+            return {
+                'error_code': 500,
+                'error_msg': 'Create user error. User exists.'
+            }
+        if 'login' not in vals:
+            return {
+                'error_code': 500,
+                'error_msg': 'Create User Error. You must input an email.'
+            }
+        if 'password' not in vals:
+            return {
+                'error_code': 500,
+                'error_msg': 'Create User Error. You must input a password.'
+            }
+        user_id = self.env['res.users'].create(vals)
+        res = Response().get_no_error(user_id)
         return res
 
 

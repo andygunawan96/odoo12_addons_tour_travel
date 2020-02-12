@@ -582,6 +582,7 @@
                    eval="[(4,ref('tt_base.able_to_login')),
                           (4,ref('tt_base.able_to_book')),
                           (4,ref('tt_base.able_to_issued')),
+                          (4,ref('tt_base.able_to_ticketing')),
                           (4,ref('tt_base.b2c_limitation'))]"/>
         </record>
 

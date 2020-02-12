@@ -800,6 +800,9 @@
             <field name="model">tt.routes.schedule</field>
             <field name="arch" type="xml">
                 <form string="Schedule">
+                    <header>
+                        <button name="test_button" string="Test Button" type="object" class="btn-primary"/>
+                    </header>
                     <sheet>
                         <div class="oe_title">
                             <label for="name" class="oe_edit_only" string="Name"/>

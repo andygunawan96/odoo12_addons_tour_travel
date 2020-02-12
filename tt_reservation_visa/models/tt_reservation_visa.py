@@ -1793,10 +1793,9 @@ class TtVisa(models.Model):
             commission_list2 = []
             for sell in sell_visa['search_data']:
                 if str(sell['id']) == psg['master_visa_Id']:
-                    if 'commission' in sell['sale_price']:
+                    if 'commission' in sell:
                         commission_list2 = sell.get('commission')
                     break
-            # commission_list = pricing_obj.get_commission(pricelist_obj.commission_price, agent_id, provider_type_id)
             for comm in commission_list2:
                 vals2 = vals.copy()
                 vals2.update({

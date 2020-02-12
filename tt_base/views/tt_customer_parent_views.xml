@@ -64,7 +64,7 @@
                         <group name="ctp_info">
                             <field name="customer_parent_type_id" readonly="1"/>
                             <field name="parent_agent_id" readonly="1"/>
-                            <field name="tax_percentage"/>
+                            <field name="tax_percentage" readonly="1"/>
                             <field name="actual_balance"/>
                             <field name="balance"/>
                             <field name="credit_limit" readonly="1"/>

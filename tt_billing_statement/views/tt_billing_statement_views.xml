@@ -122,8 +122,9 @@
                     </notebook>
                     <footer>
                         <group string="Total Information" class="oe_subtotal_footer oe_right">
-                            <field name="paid_amount" class="oe_subtotal_footer_separator"/>
                             <field name="amount_total" class="oe_subtotal_footer_separator"/>
+                            <field name="paid_amount" class="oe_subtotal_footer_separator"/>
+                            <field name="unpaid_amount" class="oe_subtotal_footer_separator"/>
                         </group>
                     </footer>
                 </sheet>

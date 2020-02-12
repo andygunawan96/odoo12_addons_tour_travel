@@ -691,17 +691,18 @@
                             <span style="padding: 10px 25px;">-</span>
                         </td>
                     </tr>
+                    <t t-set="tax" t-value="doc.total_after_tax - doc.total"/>
                     <tr>
                         <td><strong>Tax</strong></td>
                         <td class="text-right">
                             <!--<span style="padding: 10px 25px;" t-esc="0" t-esc-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>-->
-                            <span style="padding: 10px 25px;">-</span>
+                            <span t-esc="tax" style="padding: 10px 25px;" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
                         </td>
                     </tr>
                     <tr class="border-black">
                         <td><strong>Grand Total</strong></td>
                         <td class="text-right">
-                            <span style="padding: 10px 25px;" t-field="doc.total" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                            <span style="padding: 10px 25px;" t-field="doc.total_after_tax" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
                         </td>
                     </tr>
                 </table>
