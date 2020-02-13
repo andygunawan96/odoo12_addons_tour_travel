@@ -73,7 +73,9 @@ class TtCustomer(models.Model):
             vals_list['first_name'] = vals_list['first_name'].strip()
         if 'last_name' in vals_list:
             vals_list['last_name'] = vals_list['last_name'].strip()
-        return super(TtCustomer, self).create(vals_list)
+        cust_obj = super(TtCustomer, self).create(vals_list)
+        cust_obj.customer_parent_ids = [(4, cust_obj.agent_id.customer_parent_walkin_id.id)]
+        return cust_obj
 
     @api.multi
     def write(self, vals):
