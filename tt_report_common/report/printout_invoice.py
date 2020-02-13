@@ -365,6 +365,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
             a = {}
             pax_data = self.get_invoice_data(rec, rec.passenger_ids, data.get('context'), data)
             values[rec.id].append(pax_data)
+        ho_obj = self.env['tt.agent'].sudo().search([('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
         vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -374,6 +375,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
             'terbilang': self.compute_terbilang_from_objs(
                 self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
             'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'ho_obj': ho_obj[0]
         }
         return vals
 
@@ -1156,12 +1158,14 @@ class PrintoutTopUp(models.AbstractModel):
                 'active_model': 'tt.billing.statement',
                 'active_ids': docids
             }
+        ho_obj = self.env['tt.agent'].sudo().search([('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
             'terbilang': self.compute_terbilang_from_objs(
                 self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
+            'ho_obj': ho_obj[0]
         }
 
 

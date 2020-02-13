@@ -1280,129 +1280,76 @@ class MasterActivity(models.Model):
                     activity_obj = self.env['tt.master.activity.lines'].sudo().create(vals)
                 self.env.cr.commit()
 
-                old_adult_sku = self.env['tt.master.activity.sku'].sudo().search([('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Adult'), '|', ('active', '=', False), ('active', '=', True)])
-
-                chd_min_age = 0
-                adt_min_age = rec['type_details']['data'].get('minAdultAge') and rec['type_details']['data']['minAdultAge'] or 0
-                adt_max_age = rec['type_details']['data'].get('maxAdultAge') and rec['type_details']['data']['maxAdultAge'] or 200
-                sku_vals = {
-                    'activity_line_id': activity_obj.id,
-                    'sku_id': 'Adult',
-                    'title': 'Adult',
-                    'pax_type': 'adult',
-                    'minPax': rec['type_details']['data']['minPax'],
-                    'maxPax': rec['type_details']['data']['maxPax'],
-                    'minAge': adt_min_age,
-                    'maxAge': adt_max_age,
-                    'active': True,
-                }
-                if old_adult_sku:
-                    old_adult_sku[0].sudo().write(sku_vals)
-                else:
-                    self.env['tt.master.activity.sku'].sudo().create(sku_vals)
-                self.env.cr.commit()
-
-                old_child_sku = self.env['tt.master.activity.sku'].sudo().search([('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Child'), '|', ('active', '=', False), ('active', '=', True)])
-                if rec['type_details']['data']['allowChildren']:
-                    chd_min_age = rec['type_details']['data'].get('minChildAge') and rec['type_details']['data']['minChildAge'] or 0
-                    chd_max_age = rec['type_details']['data'].get('maxChildAge') and rec['type_details']['data']['maxChildAge'] or (adt_min_age - 1 >= 0 and adt_min_age or 0)
-                    sku_vals = {
-                        'activity_line_id': activity_obj.id,
-                        'sku_id': 'Child',
-                        'title': 'Child',
-                        'pax_type': 'child',
-                        'minPax': rec['type_details']['data']['minChildren'],
-                        'maxPax': rec['type_details']['data']['maxChildren'],
-                        'minAge': chd_min_age,
-                        'maxAge': chd_max_age,
+                for temp_sku in sku_list:
+                    old_sku = self.env['tt.master.activity.sku'].sudo().search([('activity_line_id', '=', activity_obj.id), ('sku_id', '=', temp_sku['sku_id']), '|', ('active', '=', False), ('active', '=', True)], limit=1)
+                    temp_sku.update({
                         'active': True,
-                    }
-                    if old_child_sku:
-                        old_child_sku[0].sudo().write(sku_vals)
-                    else:
-                        self.env['tt.master.activity.sku'].sudo().create(sku_vals)
-                    self.env.cr.commit()
-                else:
-                    if old_child_sku:
-                        old_child_sku[0].sudo().write({
-                            'active': False
-                        })
-
-                old_senior_sku = self.env['tt.master.activity.sku'].sudo().search([('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Senior'), '|', ('active', '=', False), ('active', '=', True)])
-                if rec['type_details']['data']['allowSeniors']:
-                    ycd_min_age = rec['type_details']['data'].get('minSeniorAge') and rec['type_details']['data']['minSeniorAge'] or adt_max_age + 1
-                    ycd_max_age = rec['type_details']['data'].get('maxSeniorAge') and rec['type_details']['data']['maxSeniorAge'] or 200
-                    sku_vals = {
                         'activity_line_id': activity_obj.id,
-                        'sku_id': 'Senior',
-                        'title': 'Senior',
-                        'pax_type': 'senior',
-                        'minPax': rec['type_details']['data']['minSeniors'],
-                        'maxPax': rec['type_details']['data']['maxSeniors'],
-                        'minAge': ycd_min_age,
-                        'maxAge': ycd_max_age,
-                        'active': True,
-                    }
-                    if old_senior_sku:
-                        old_senior_sku[0].sudo().write(sku_vals)
+                    })
+                    if old_sku:
+                        old_sku[0].sudo().write(temp_sku)
                     else:
-                        self.env['tt.master.activity.sku'].sudo().create(sku_vals)
+                        self.env['tt.master.activity.sku'].sudo().create(temp_sku)
                     self.env.cr.commit()
-                else:
-                    if old_senior_sku:
-                        old_senior_sku[0].sudo().write({
-                            'active': False
-                        })
-
-                old_infant_sku = self.env['tt.master.activity.sku'].sudo().search([('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Infant'), '|', ('active', '=', False), ('active', '=', True)])
-                if rec['type_details']['data']['allowInfant']:
-                    inf_min_age = rec['type_details']['data'].get('minInfantAge') and rec['type_details']['data']['minInfantAge'] or 0
-                    inf_max_age = rec['type_details']['data'].get('maxInfantAge') and rec['type_details']['data']['maxInfantAge'] or (chd_min_age and (chd_min_age - 1 >= 0 and chd_min_age or 0) or (adt_min_age - 1 >= 0 and adt_min_age or 0))
-                    sku_vals = {
-                        'activity_line_id': activity_obj.id,
-                        'sku_id': 'Infant',
-                        'title': 'Infant',
-                        'pax_type': 'infant',
-                        'minPax': 0,
-                        'maxPax': 5,
-                        'minAge': inf_min_age,
-                        'maxAge': inf_max_age,
-                        'active': True,
-                    }
-                    if old_infant_sku:
-                        old_infant_sku[0].sudo().write(sku_vals)
-                    else:
-                        self.env['tt.master.activity.sku'].sudo().create(sku_vals)
-                    self.env.cr.commit()
-                else:
-                    if old_infant_sku:
-                        old_infant_sku[0].sudo().write({
-                            'active': False
-                        })
 
                 old_timeslot = self.env['tt.activity.master.timeslot'].sudo().search([('product_type_id', '=', activity_obj.id)])
                 for old_time in old_timeslot:
                     old_time.sudo().write({
                         'active': False
                     })
-
-                if rec['type_details']['data']['timeslots']:
-                    for time in rec['type_details']['data']['timeslots']:
-                        old_timeslot = self.env['tt.activity.master.timeslot'].sudo().search([('product_type_id', '=', activity_obj.id), ('uuid', '=', time['uuid']), '|', ('active', '=', False), ('active', '=', True)])
-                        value = {
-                            'product_type_id': activity_obj.id,
-                            'uuid': time['uuid'],
-                            'startTime': time['startTime'],
-                            'endTime': time['endTime'],
-                            'active': True,
-                        }
-                        if old_timeslot:
-                            old_timeslot[0].sudo().write(value)
-                        else:
-                            self.env['tt.activity.master.timeslot'].sudo().create(value)
-                        self.env.cr.commit()
+                for temp_time in timeslot_list:
+                    old_timeslot = self.env['tt.activity.master.timeslot'].sudo().search([('product_type_id', '=', activity_obj.id), ('uuid', '=', temp_time['uuid']), '|', ('active', '=', False), ('active', '=', True)])
+                    temp_time.update({
+                        'product_type_id': activity_obj.id,
+                        'active': True,
+                    })
+                    if old_timeslot:
+                        old_timeslot[0].sudo().write(temp_time)
+                    else:
+                        self.env['tt.activity.master.timeslot'].sudo().create(temp_time)
+                    self.env.cr.commit()
 
                 option_ids = []
+                for temp_opt in option_list['perBooking']:
+                    temp_opt_items = temp_opt.get('items') and temp_opt.pop('items') or []
+                    temp_cur_code_opt = temp_opt.get('currency_code') and temp_opt.pop('currency_code') or False
+                    cur_obj_opt = temp_cur_code_opt and self.env['res.currency'].sudo().search([('name', '=', temp_cur_code_opt)],limit=1) or False
+                    temp_opt.update({
+                        'currency_id': cur_obj_opt and cur_obj_opt[0].id or False,
+                    })
+                    opt_obj = self.env['tt.activity.booking.option'].sudo().create(temp_opt)
+                    self.env.cr.commit()
+                    for temp_item in temp_opt_items:
+                        temp_cur_code = temp_item.get('currency_code') and temp_item.pop('currency_code') or False
+                        cur_obj = temp_cur_code and self.env['res.currency'].sudo().search([('name', '=', temp_cur_code)], limit=1) or False
+                        temp_item.update({
+                            'currency_id': cur_obj and cur_obj[0].id or False,
+                            'booking_option_id': opt_obj.id,
+                        })
+                        self.env['tt.activity.booking.option.line'].sudo().create(temp_item)
+                        self.env.cr.commit()
+                    option_ids.append(opt_obj.id)
+
+                for temp_opt in option_list['perPax']:
+                    temp_opt_items = temp_opt.get('items') and temp_opt.pop('items') or []
+                    temp_cur_code_opt = temp_opt.get('currency_code') and temp_opt.pop('currency_code') or False
+                    cur_obj_opt = temp_cur_code_opt and self.env['res.currency'].sudo().search([('name', '=', temp_cur_code_opt)], limit=1) or False
+                    temp_opt.update({
+                        'currency_id': cur_obj_opt and cur_obj_opt[0].id or False,
+                    })
+                    opt_obj = self.env['tt.activity.booking.option'].sudo().create(temp_opt)
+                    self.env.cr.commit()
+                    for temp_item in temp_opt_items:
+                        temp_cur_code = temp_item.get('currency_code') and temp_item.pop('currency_code') or False
+                        cur_obj = temp_cur_code and self.env['res.currency'].sudo().search([('name', '=', temp_cur_code)], limit=1) or False
+                        temp_item.update({
+                            'currency_id': cur_obj and cur_obj[0].id or False,
+                            'booking_option_id': opt_obj.id,
+                        })
+                        self.env['tt.activity.booking.option.line'].sudo().create(temp_item)
+                        self.env.cr.commit()
+                    option_ids.append(opt_obj.id)
+
                 if rec['type_details']['data']['options']['perBooking']:
                     for book in rec['type_details']['data']['options']['perBooking']:
                         value2 = {
@@ -1608,7 +1555,7 @@ class MasterActivity(models.Model):
                     'basePrice': result['basePrice'],
                     'businessHoursFrom': result.get('businessHoursFrom') and result['businessHoursFrom'] or '',
                     'businessHoursTo': result.get('businessHoursTo') and result['businessHoursTo'] or '',
-                    'currency_id': result['currency_id'],
+                    'currency_id': result.get('currency_id') and result['currency_id'] or False,
                     'description': result.get('description') and result['description'] or '',
                     'highlights': result.get('highlights') and result['highlights'] or '',
                     'hotelPickup': result.get('hotelPickup') and result['hotelPickup'] or False,
@@ -1760,12 +1707,16 @@ class MasterActivity(models.Model):
                             sale_price = str(int(converted_price / 1000)) + str(idx + 1) + '00'
                         break
 
+                temp_alt_cur = result.get('currency_id') and self.env['res.currency'].sudo().browse(int(result['currency_id'])) or False
+                alt_currency_code = temp_alt_cur and temp_alt_cur.name or False
+
                 result.pop('basePrice')
                 result.update({
                     'activity_price': int(sale_price),
                     'provider_id': result['provider_id'],
                     'provider': res_provider.code,
-                    'currency_code': 'IDR'
+                    'currency_code': 'IDR',
+                    'activity_currency_code': alt_currency_code,
                 })
                 result_list.append(result)
 
@@ -1869,7 +1820,8 @@ class MasterActivity(models.Model):
                             'inputType': activity_opt_obj.inputType,
                             'type': activity_opt_obj.type,
                             'price': activity_opt_obj.price,
-                            'currency_id': activity_opt_obj.currency_id.id,
+                            'currency_id': activity_opt_obj.currency_id and activity_opt_obj.currency_id.id or False,
+                            'currency_code': activity_opt_obj.currency_id and activity_opt_obj.currency_id.name or False,
                         }
                         description = (temp_opt['description'].replace('<p>', '\n').replace('</p>',''))[1:]
                         temp_opt.update({
@@ -1892,7 +1844,8 @@ class MasterActivity(models.Model):
                                     'label': item.label,
                                     'value': item.value,
                                     'price': item.price,
-                                    'currency_id': item.currency_id.id,
+                                    'currency_id': item.currency_id and item.currency_id.id or False,
+                                    'currency_code': item.currency_id and item.currency_id.name or False,
                                 }
                                 if item.price:
                                     req = {
