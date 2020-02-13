@@ -45,7 +45,7 @@
         <field name="name">tt.adjustment.form.view</field>
         <field name="model">tt.adjustment</field>
         <field name="arch" type="xml">
-            <form>
+            <form create="false">
                 <header>
                     <button name="confirm_adj_from_button" string="Confirm" type="object" states="draft"/>
                     <button name="validate_adj_from_button" string="Validate" type="object" states="confirm"/>
@@ -118,7 +118,7 @@
         <field name="name">tt.adjustment.tree.view.page</field>
         <field name="model">tt.adjustment</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree create="false">
                 <field name="create_date"/>
                 <field name="name"/>
                 <field name="agent_id"/>

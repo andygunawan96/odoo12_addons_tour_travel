@@ -10,15 +10,19 @@ class AgentInvoice(models.Model):
     _inherit = 'tt.agent.invoice'
 
     billing_statement_id = fields.Many2one('tt.billing.statement', 'Billing Statement', ondelete="set null")
+    billing_date = fields.Date('Billing Date', related='billing_statement_id.date_billing', store=True)
     billing_uid = fields.Many2one('res.users', 'Billed by')
 
-    # CANDY: tambah booker type
-    #fixme uncomment later
-    # booker_type = fields.Selection(string='Booker Type', related='contact_id.booker_type')
-
-    # Vin Registrasi]
-    #fixme uncomment later
-    # registration_id = fields.Many2one('res.partner.request', 'Registration')
+    def check_paid_status(self):
+        super(AgentInvoice, self).check_paid_status()
+        if self.state == 'paid':
+            if self.customer_parent_type_id.id == self.env.ref('tt_base.customer_type_cor').id:
+                self.create_ledger_invoice(debit=True)
+        elif self.state == 'bill2':
+            if self.customer_parent_type_id.id == self.env.ref('tt_base.customer_type_cor').id:
+                self.create_ledger_invoice(debit=False)
+        if self.billing_statement_id:
+            self.billing_statement_id.check_status_bs()
 
     def _unlink_ledger(self):
         for rec in self:
@@ -40,27 +44,6 @@ class AgentInvoice(models.Model):
         })
         # self._unlink_ledger()
 
-    def action_set_to_confirm_api(self, obj_id, api_context=None):
-        invoice_obj = self.browse(int(obj_id))
-        if invoice_obj:
-            invoice_obj.action_confirm()
-            return {
-                'error_code': 0,
-                'error_msg': "Success",
-                'response': {
-                    'id': invoice_obj.id,
-                    'name': invoice_obj.name,
-                    'confirmed_uid': invoice_obj.confirmed_uid.name,
-                    'state': invoice_obj.state,
-                }
-            }
-        else:
-            return {
-                'error_code': 1,
-                'error_msg': "No Agent Invoice Found",
-                'response': {}
-            }
-
     #manual
     def action_bill(self):
         # security : user_agent_supervisor
@@ -69,9 +52,8 @@ class AgentInvoice(models.Model):
         if self.ledger_ids:
             raise UserError('You cannot Bill already Billed Invoice')
         self.state = 'bill'
-        self.bill_uid = self.env.user.id
-        self.bill_date = fields.Datetime.now()
-        self.create_ledger()
+        self.billing_uid = self.env.user.id
+        self.create_ledger_invoice(debit=False)
 
     #cron
     def action_bill2(self):
@@ -81,37 +63,10 @@ class AgentInvoice(models.Model):
         if self.ledger_ids:
             raise UserError('You cannot Bill already Billed Invoice')
         self.state = 'bill2'
-        self.bill_uid = self.env.user.id
-        self.bill_date = fields.Datetime.now()
-        self.create_ledger()
+        self.billing_uid = self.env.user.id
+        self.create_ledger_invoice(debit=False)
 
-
-    def action_bill_api(self, obj_id, api_context=None):
-        invoice_obj = self.browse(int(obj_id))
-        if invoice_obj:
-            invoice_obj.action_bill()
-            return {
-                'error_code': 0,
-                'error_msg': "Success",
-                'response': {
-                    'id': invoice_obj.id,
-                    'name': invoice_obj.name,
-                    'confirmed_uid': invoice_obj.confirmed_uid.name,
-                    'state': invoice_obj.state,
-                    'billing_statement_id': {
-                        'id': invoice_obj.billing_statement_id.id,
-                        'name': invoice_obj.billing_statement_id.name,
-                    },
-                }
-            }
-        else:
-            return {
-                'error_code': 1,
-                'error_msg': "No Agent Invoice Found",
-                'response': {}
-            }
-
-    def create_ledger(self, for_cor=0):
+    def create_ledger_invoice(self, debit=False):
         # create_ledger dilakukan saat state = bill atau bill2
         # JIKA FPO : TIDAK BOLEH CREATE LEDGER
         # if self.contact_id.booker_type == 'FPO':
@@ -125,21 +80,14 @@ class AgentInvoice(models.Model):
         ledger = self.env['tt.ledger'].sudo()
         amount = 0
         for rec in self.invoice_line_ids:
-            amount += rec.total
+            amount += rec.total_after_tax
 
         vals = ledger.prepare_vals(self._name, self.id, 'Agent Invoice : ' + self.name, self.name, datetime.now(), 2,
-                                   self.currency_id.id, self.env.user.id, for_cor == 1 and amount or 0, for_cor == 0 and amount or 0)
+                                   self.currency_id.id, self.env.user.id, amount if debit else 0, 0 if debit else amount)
 
         vals['customer_parent_id'] = self.customer_parent_id.id
 
         ledger.create(vals)
-
-    def action_write_model_api(self, model, rec_id, vals):
-        rec_obj = self.env[model].browse(int(rec_id))
-        if rec_obj:
-            rec_obj.write(vals)
-        else:
-            return {}
 
     def action_confirm(self):
         if self.state == 'draft':

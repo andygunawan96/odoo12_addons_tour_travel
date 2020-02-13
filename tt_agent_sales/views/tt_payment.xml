@@ -7,9 +7,13 @@
             <form>
                 <header>
                     <button name="action_approve" string="Approve Usage" type="object"
-                            attrs="{'invisible':['|',('state','!=','confirm'),('payment_state','!=','approved')]}"/>
+                            attrs="{'invisible':['|',('state','!=','confirm'),('payment_state','!=','approved')]}"
+                            groups="tt_base.group_tt_accounting_operator,tt_base.group_tt_agent_finance_operator"/>
+
                     <button name="action_cancel" string="Cancel Usage" type="object"
-                            attrs="{'invisible':[('state','!=','approved')]}"/>
+                            attrs="{'invisible':[('state','not in',['approved','confirm'])]}"
+                            groups="tt_base.group_tt_accounting_operator,tt_base.group_tt_agent_finance_operator"/>
+
                     <field name="state" widget="statusbar" statusbar_visible="confirm,approved"/>
                 </header>
                 <sheet>

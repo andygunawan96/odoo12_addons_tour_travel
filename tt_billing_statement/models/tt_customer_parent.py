@@ -2,7 +2,7 @@ from odoo import models,api,fields
 from datetime import date,datetime,timedelta
 from odoo.exceptions import UserError
 import os, traceback
-import logging
+import logging,pytz
 import traceback
 
 _logger = logging.getLogger(__name__)
@@ -89,7 +89,8 @@ class TtCustomerParentInh(models.Model):
 
     def cron_create_billing_statement(self):
         ##search for COR billed today
-        today_date = date.today()+timedelta(days=1)
+        tz_utc7 = pytz.timezone('Asia/Jakarta')
+        today_date = datetime.now(tz_utc7).date()
         today_int = today_date.strftime('%d')
         today_str = today_date.strftime('%a')
         cor_list_obj = self.search([('billing_cycle_ids.day','!=','0'), ## not no billing

@@ -79,6 +79,7 @@
                 <field name="agent_id"/>
                 <field name="total"/>
                 <field name="state"/>
+                <field name="currency_id" invisible="1"/>
             </tree>
         </field>
     </record>

@@ -35,7 +35,6 @@ class TtPaymentInvoiceRel(models.Model):
 
     @api.model
     def create(self, vals_list):
-        print(vals_list)
         #comment 18jan 2020 krn tdk muncul raisenya di invoice tetapi tetap tidak terbuat
         # if vals_list.get('pay_amount') == 0:
         #     raise exceptions.UserError("Pay amount cannot be 0")
@@ -96,7 +95,7 @@ class TtPaymentInvoiceRel(models.Model):
 
         if self.invoice_id:
             # pengecekan overpaid
-            missing_ammount = self.invoice_id.total - self.invoice_id.paid_amount
+            missing_ammount = self.invoice_id.total_after_tax - self.invoice_id.paid_amount
             if self.payment_id.available_amount >= missing_ammount and self.pay_amount > missing_ammount:
                 self.pay_amount = missing_ammount
                 # raise exceptions.UserError("Pay amount c8hanged to missing amount")
@@ -107,7 +106,9 @@ class TtPaymentInvoiceRel(models.Model):
         self.write({
             'state': 'approved'
         })
+        self.invoice_id.check_paid_status()
         self.payment_id.check_full()
+
         return {
             'type': 'ir.actions.client',
             'tag': 'reload',
@@ -123,7 +124,7 @@ class TtPaymentInvoiceRel(models.Model):
             'type': 'ir.actions.client',
             'tag': 'reload',
         }
-    
+
 class TtPaymentInh(models.Model):
     _inherit = 'tt.payment'
 
@@ -139,25 +140,29 @@ class TtPaymentInh(models.Model):
                 if inv.create_date and inv.state == 'approved':
                     used_amount += inv.pay_amount
                 # used_amount += inv.pay_amount
-            print("inv used amount %d" %(used_amount))
             rec.used_amount += used_amount
             rec.available_amount -= used_amount
-            print("check full " + str(rec.is_full))
-            print("used amount " + str(rec.used_amount))
-            print("available amount " + str(rec.available_amount))
             # if rec.available_amount < 0:
             #     raise exceptions.UserError("Pay amount on %s exceeded payment's residual amount" % (rec.name))
+
+    def check_full(self):
+        used_amount = 0
+        for rec in self.invoice_ids:
+            if rec.state == 'approved':
+                used_amount += rec.pay_amount
+
+        if used_amount >= self.real_total_amount:
+            self.is_full = True
+        else:
+            self.is_full = False
+
 
     def action_approve_payment(self):
         super(TtPaymentInh, self).action_approve_payment()
         for rec in self.invoice_ids:
-            rec.action_approve()
-            rec.invoice_id.check_paid_status()
-            # pindah ke inherit 12 feb 2020
-            # if rec.invoice_id.billing_statement_id:
-            #     rec.invoice_id.billing_statement_id.check_status()
-            if rec.invoice_id.customer_parent_type_id.id == self.env.ref('tt_base.customer_type_cor').id:
-                rec.invoice_id.create_ledger(for_cor=1)
+            if rec.state == 'confirm':
+                rec.action_approve()
+
 
     def action_cancel_from_button(self):
         super(TtPaymentInh, self).action_cancel_from_button()

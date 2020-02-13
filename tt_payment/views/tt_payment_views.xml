@@ -91,7 +91,7 @@
                             <field name="customer_parent_id"/>
                             <field name="create_date"/>
                             <field name="dummy_acquirer_field" class="oe_edit_only" attrs="{'invisible':[('dummy_acquirer_field','=', True)]}"/>
-<!--                            <field name="acquirer_id" domain="acquirer_domain"/>-->
+                            <!--                            <field name="acquirer_id" domain="acquirer_domain"/>-->
                             <field name="acquirer_id"/>
                         </group>
                         <group string="User">
@@ -120,7 +120,9 @@
                         </group>
                         <group string="Amount">
                             <field name="total_amount"/>
-                            <field name="real_total_amount" groups="tt_base.group_tt_accounting_operator,tt_base.group_tt_tour_travel_operator"/>
+                            <field name="real_total_amount" groups="tt_base.group_tt_accounting_operator,
+                                                                    tt_base.group_tt_tour_travel_operator,
+                                                                    tt_base.group_tt_agent_finance_operator"/>
                             <field name="fee"/>
                             <field name="loss_or_profit"/>
                             <field name="used_amount"/>
@@ -159,10 +161,11 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="name"/>
+                <field name="agent_id"/>
+                <field name="customer_parent_id"/>
+                <field name="acquirer_id"/>
                 <field name="used_amount"/>
                 <field name="total_amount"/>
-                <field name="acquirer_id"/>
-                <field name="agent_id"/>
                 <field name="state"/>
                 <field name="currency_id" invisible="1"/>
             </tree>

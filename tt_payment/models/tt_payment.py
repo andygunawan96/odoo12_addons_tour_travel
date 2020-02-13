@@ -70,13 +70,11 @@ class PaymentTransaction(models.Model):
 
     @api.onchange('customer_parent_id')
     def _onchange_domain_customer_parent_id(self):
-        print("onchange cpid")
         if self.customer_parent_id:
             dom = [('agent_id', '=', self.agent_id.id)]
         else:
             ho_id = self.env.ref('tt_base.rodex_ho').id
             dom = [('agent_id','=', ho_id )]
-        print(dom)
         return {
             'domain':{
                 'acquirer_id': dom
@@ -167,8 +165,6 @@ class PaymentTransaction(models.Model):
             else:
                 available_amount -= rec.used_amount
             rec.available_amount = available_amount
-            print("Supered Used Amount %d" % (rec.used_amount))
-            print("Supered Availale Amount %d" % (rec.available_amount))
 
     @api.multi
     # @api.depends('name','currency_id','total_amount','available_amount')

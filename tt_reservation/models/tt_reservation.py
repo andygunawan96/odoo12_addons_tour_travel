@@ -579,6 +579,10 @@ class TtReservation(models.Model):
 
                     raise RequestException(1028)
 
+                book_obj.write({
+                    'is_member': req.get('member', False),
+                    'payment_method': req.get('acquirer_seq_id', False)
+                })
 
                 #cek balance due book di sini, mungkin suatu saat yang akan datang
                 if book_obj.state == 'issued':

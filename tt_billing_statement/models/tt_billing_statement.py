@@ -1,6 +1,7 @@
 from odoo import api,models,fields
 from odoo.exceptions import UserError
-from datetime import date,timedelta
+from datetime import date,timedelta,datetime
+import pytz
 
 class TtBillingStatement(models.Model):
     _name = 'tt.billing.statement'
@@ -9,6 +10,8 @@ class TtBillingStatement(models.Model):
     _order = 'id desc'
 
     name = fields.Char('Number', required=True, readonly=True, default='New')
+    date_billing = fields.Date('Date', default=fields.Date.context_today)
+
     due_date = fields.Date('Due Date', readonly=True,
                              states={'draft': [('readonly', False)]})
 
@@ -70,6 +73,10 @@ class TtBillingStatement(models.Model):
 
     # double_payment = fields.Boolean('Double Payment')
 
+    def compute_date_billing_all(self):
+        for rec in self.search([]):
+            rec.date_billing = rec.create_date.date()
+
     @api.model
     def create(self, vals_list):
         # if 'invoice_ids' in vals_list:
@@ -82,30 +89,37 @@ class TtBillingStatement(models.Model):
         new_billing.fill_start_end_date()
         return new_billing
 
-    def find_transaction_date(self,today_date,cycle_list,increment_plus=True):
-        while(today_date.strftime('%A') not in cycle_list and
-              'Date %s' % (today_date.strftime('%d')) not in cycle_list and
-              'No billing' not in cycle_list and
-              cycle_list):
-            today_date += timedelta(days=increment_plus and 1 or -1)
-        return today_date
+    # def find_transaction_date(self,today_date,cycle_list,increment_plus=True):
+    #     while(today_date.strftime('%A') not in cycle_list and
+    #           'Date %s' % (today_date.strftime('%d')) not in cycle_list and
+    #           'No billing' not in cycle_list and
+    #           cycle_list):
+    #         today_date += timedelta(days=increment_plus and 1 or -1)
+    #     return today_date
 
     def fill_start_end_date(self):
         last_billing_obj = self.search([('id','!=',self.id or -1),
-                                        ('customer_parent_id','=',self.customer_parent_id.id)],
+                                        ('customer_parent_id','=',self.customer_parent_id.id),
+                                        ('transaction_end_date','!=',False)],
                                        order='transaction_end_date desc', limit =1)
 
-        cycle_list = [str(rec1.name) for rec1 in self.customer_parent_id.billing_cycle_ids]
+        # cycle_list = [str(rec1.name) for rec1 in self.customer_parent_id.billing_cycle_ids]
 
-        if last_billing_obj.create_date:
+        if last_billing_obj.transaction_end_date:
             start_date = last_billing_obj.transaction_end_date + timedelta(days=1)
             # start_date = self.find_transaction_date(cycle_list,increment_plus=False)
         else:
             start_date = self.customer_parent_id.create_date
 
-        today_date = date.today() + timedelta(days=1)
+        tz_utc7 = pytz.timezone('Asia/Jakarta')
+        # today_date = date.today() + timedelta(days=1)
+        today_date = datetime.now(tz_utc7).date()
         # end_date = self.find_transaction_date(today_date,cycle_list,increment_plus=True)
         end_date = today_date - timedelta(days=1)
+
+        if end_date < start_date:
+            end_date = start_date
+
         self.transaction_start_date = date(start_date.year,start_date.month,start_date.day)
         self.transaction_end_date = date(end_date.year,end_date.month,end_date.day)
 
@@ -135,7 +149,7 @@ class TtBillingStatement(models.Model):
         else:
             raise UserError('You can not set to confirm this billing. Please cancel the "Payment" first')
 
-    def check_status(self):
+    def check_status_bs(self):
         if all([rec.state == 'paid' for rec in self.invoice_ids]):
             self.state = 'paid'
         elif any([rec.state == 'paid' for rec in self.invoice_ids]):

@@ -101,14 +101,9 @@
                                 <field name="refund_uid" readonly="1" class="oe_inline"/> -
                                 <field name="refund_date" readonly="1" class="oe_inline"/>
                             </div>
-                            <label for="voucher" string="Voucher"/>
-                            <div>
-                                <field name="voucher_code" readonly="1" class="oe_inline"/>
-                            </div>
-                            <label for="payment" string="Payment Method"/>
-                            <div>
-                                <field name="payment_method" readonly="1" class="oe_inline"/>
-                            </div>
+                            <field name="voucher_code" readonly="1"/>
+                            <field name="is_member" readonly="1" groups="tt_base.group_tt_tour_travel_operator"/>
+                            <field name="payment_method" readonly="1" groups="tt_base.group_tt_tour_travel_operator"/>
                             <field name="sid_booked" groups="tt_base.group_tt_tour_travel_operator"/>
                         </group>
                     </group>

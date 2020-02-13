@@ -9,8 +9,8 @@ class AgentInvoice(models.Model):
 
     name = fields.Char('Name')
 
-    total = fields.Integer('Total',compute='_compute_total', store=True)
-    total_after_tax = fields.Integer('Total (After Tax)', compute="_compute_total_tax", store=True)
+    total = fields.Monetary('Total',compute='_compute_total', store=True)
+    total_after_tax = fields.Monetary('Total (After Tax)', compute="_compute_total_tax", store=True)
 
     res_model_resv = fields.Char(
         'Related Reservation Name', required=True, index=True)
@@ -32,6 +32,11 @@ class AgentInvoice(models.Model):
     reference = fields.Char('Reference')
 
     pnr = fields.Char("PNR",compute="_compute_invoice_line_pnr",store=True)
+
+    def compute_total_all(self):
+        for rec in self.search([]):
+            rec._compute_total()
+            rec._compute_total_tax()
 
     @api.model
     def create(self, vals_list):
