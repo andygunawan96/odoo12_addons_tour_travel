@@ -37,14 +37,6 @@ BOOKING_STATE = [
     ('done', 'Done')
 ]
 
-TITLE = [
-    ('MR', 'MR'),
-    ('MRS', 'MRS'),
-    ('MS', 'MS'),
-    ('MSTR', 'MSTR'),
-    ('MISS', 'MISS')
-]
-
 PASSENGER_TYPE = [
     ('ADT', 'Adult'),
     ('CHD', 'Child'),
@@ -57,12 +49,29 @@ PROCESS_STATUS = [
 ]
 
 
+class PassportInterviewBiometrics(models.Model):
+    _name = 'tt.reservation.passport.interview.biometrics'
+    _description = 'Passport Interview Biometrics'
+
+    passenger_interview_id = fields.Many2one('tt.reservation.passport.order.passengers', 'Passenger', readonly=1)
+    passenger_biometrics_id = fields.Many2one('tt.reservation.passport.order.passengers', 'Passenger', readonly=1)
+    pricelist_interview_id = fields.Many2one('tt.reservation.passport.pricelist', 'Pricelist',
+                                             related="passenger_interview_id.pricelist_id", readonly=1)
+    pricelist_biometrics_id = fields.Many2one('tt.reservation.passport.pricelist', 'Pricelist',
+                                              related="passenger_biometrics_id.pricelist_id", readonly=1)
+    location_interview_id = fields.Char('Location', related="pricelist_interview_id.description")
+    location_biometrics_id = fields.Char('Location', related="pricelist_biometrics_id.description")
+    datetime = fields.Datetime('Datetime')
+    ho_employee = fields.Char('Employee')
+    meeting_point = fields.Char('Meeting Point')
+    description = fields.Char('Description')
+
+
 class PassportOrderPassengers(models.Model):
     _inherit = ['mail.thread', 'tt.reservation.passenger']
     _name = 'tt.reservation.passport.order.passengers'
     _description = 'Tour & Travel - Passport Order Passengers'
 
-    name = fields.Char('Name', related='passenger_id.first_name', readonly=0)  # readonly=1
     to_requirement_ids = fields.One2many('tt.reservation.passport.order.requirements', 'to_passenger_id', 'Requirements',
                                          readonly=0, states={'ready': [('readonly', True)],
                                                              'done': [('readonly', True)]})  # readonly=0
@@ -70,25 +79,18 @@ class PassportOrderPassengers(models.Model):
     passenger_id = fields.Many2one('tt.customer', 'Passenger', readonly=0)  # readonly=1
     pricelist_id = fields.Many2one('tt.reservation.passport.pricelist', 'Passport Pricelist', readonly=0)  # readonly=1
     passenger_type = fields.Selection(PASSENGER_TYPE, 'Pax Type', readonly=0)  # readonly=1
-    title = fields.Selection(TITLE, 'Title', readonly=0)  # readonly=1
     age = fields.Char('Age', readonly=1, compute="_compute_age", store=True)
     passport_number = fields.Char(string='Passport Number')
-    passport_expdate = fields.Datetime(string='Passport Exp Date')
+    passport_expdate = fields.Date(string='Passport Exp Date')
     passenger_domicile = fields.Char('Domicile', related='passenger_id.domicile', readonly=0)  # readonly=1
     process_status = fields.Selection(PROCESS_STATUS, string='Process Result',
                                       readonly=0)  # readonly=1
 
-    biometrics = fields.Boolean('Biometrics')
-    biometrics_datetime = fields.Datetime('Datetime')
-    biometrics_ho_employee = fields.Many2one('res.users', 'Employee', domain=lambda self: self.get_user_HO())
-    biometrics_meeting_point = fields.Char('Meeting Point')
-    biometrics_location = fields.Char('Biometrics Location')
+    interview = fields.Boolean('Needs Interview')
+    interview_ids = fields.One2many('tt.reservation.passport.interview.biometrics', 'passenger_interview_id', 'Interview')
 
-    interview = fields.Boolean('Interview')
-    interview_datetime = fields.Datetime('Datetime')
-    interview_ho_employee = fields.Many2one('res.users', 'Employee', domain=lambda self: self.get_user_HO())
-    interview_meeting_point = fields.Char('Meeting Point')
-    interview_location = fields.Char('Interview Location')
+    # handling_ids = fields.One2many('tt.reservation.visa.order.handling', 'to_passenger_id', 'Handling Questions')
+    handling_information = fields.Text('Handling Information')
 
     in_process_date = fields.Datetime('In Process Date', readonly=0)  # readonly=1
     payment_date = fields.Datetime('Payment Date', readonly=0)  # readonly=1
@@ -98,9 +100,9 @@ class PassportOrderPassengers(models.Model):
     to_HO_date = fields.Datetime('Send to HO Date', readonly=0)  # readonly=1
     to_agent_date = fields.Datetime('Send to Agent Date', readonly=0)  # readonly=1
     ready_date = fields.Datetime('Ready Date', readonly=0)  # readonly=1
+    expired_date = fields.Date('Expired Date', readonly=0)  # readonly=1
 
-    service_charge_ids = fields.Many2many('tt.service.charge', 'tt_reservation_passport_charge_rel', 'passenger_id',
-                                          'service_charge_id', 'Service Charges')
+    use_vendor = fields.Boolean('Use Vendor', readonly=1, related='passport_id.use_vendor')
 
     cost_service_charge_ids = fields.Many2many('tt.service.charge', 'tt_reservation_passport_cost_charge_rel',
                                                'passenger_id', 'service_charge_id', 'Cost Service Charges')
@@ -123,7 +125,7 @@ class PassportOrderPassengers(models.Model):
                                                 waiting = Documents ready at HO
                                                 done = Documents given to customer''')  # readonly=1
 
-    state = fields.Selection(STATE, default='draft', help='''draft = requested
+    state = fields.Selection(STATE, default='confirm', help='''draft = requested
                                                 confirm = HO accepted
                                                 validate = if all required documents submitted and documents in progress
                                                 cancel = request cancelled
@@ -135,10 +137,6 @@ class PassportOrderPassengers(models.Model):
                                                 rejected = Rejected by the Immigration
                                                 ready = ready to pickup by customer
                                                 done = picked up by customer''')
-
-    @api.model
-    def get_user_HO(self):
-        return [('agent_id', '=', self.env.ref('tt_base.rodex_ho').id)]
 
     def action_send_email_interview(self):
         """Dijalankan, jika user menekan tombol 'Send Email Interview'"""
@@ -191,11 +189,23 @@ class PassportOrderPassengers(models.Model):
             })
             rec.message_post(body='Passenger RE CONFIRM')
 
+    def action_cancel_button(self):
+        self.passport_id.action_cancel_passport()
+
     def action_cancel(self):
         for rec in self:
-            rec.write({
-                'state': 'cancel'
+            rec.passenger_id.write({
+                'state': 'cancel',
+                'state_passport': 'cancel'
             })
+            for psg in rec.passport_id.passenger_ids:
+                psg.write({
+                    'state': 'cancel'
+                })
+            if rec.passport_id.state_passport in ['in_process', 'payment']:
+                rec.passport_id.write({
+                    'can_refund': True
+                })
             rec.message_post(body='Passenger CANCELED')
 
     def action_in_process(self):
@@ -235,13 +245,23 @@ class PassportOrderPassengers(models.Model):
             rec.write({
                 'state': 'waiting',
             })
+            is_proceed = False
+            for psg in rec.passport_id.passenger_ids:
+                if psg.state == 'proceed':
+                    is_proceed = True
+            if is_proceed:
+                rec.passport_id.action_partial_proceed_passport()
             rec.message_post(body='Passenger WAITING')
 
     def action_proceed(self):
         for rec in self:
-            # jika belum ada tanggal wawancara / call_date, tidak bisa proceed
-            if not rec.call_date:
-                raise UserError(_('You have to Fill Passenger Call Date.'))
+            # jika interview / biometrics dicentang & belum ada record interview / biometrics, tidak bisa proceed
+            if rec.interview is True:
+                if not rec.interview_ids:
+                    raise UserError(_('You have to add interview record.'))
+            if rec.biometrics is True:
+                if not rec.biometrics_ids:
+                    raise UserError(_('You have to add biometrics record.'))
             rec.write({
                 'state': 'proceed',
             })
@@ -272,7 +292,15 @@ class PassportOrderPassengers(models.Model):
                 'process_status': 'accepted',
                 'out_process_date': datetime.now()
             })
-            rec.message_post(body='Passenger REJECTED')
+            all_approve = True
+            for psg in rec.visa_id.passenger_ids:
+                if psg.state != 'accepted':
+                    all_approve = False
+            if all_approve:
+                rec.visa_id.action_approved_visa()
+            else:
+                rec.visa_id.action_partial_approved_visa()
+            rec.message_post(body='Passenger ACCEPTED')
 
     def action_to_HO(self):
         for rec in self:
@@ -324,7 +352,7 @@ class PassportOrderPassengers(models.Model):
             if is_done:
                 rec.passport_id.action_done_passport()
 
-    def action_sync(self):
+    def action_sync_requirements(self):
         to_req_env = self.env['tt.reservation.passport.order.requirements']
         for rec in self:
             res = []
@@ -341,6 +369,24 @@ class PassportOrderPassengers(models.Model):
                     'to_requirement_ids': [(4, data)]
                 })
 
+    def action_sync_handling(self):
+        handling_env = self.env['tt.reservation.passport.order.handling']
+        for rec in self:
+            res = []
+            handling_datas = rec.get_all_handling_data()
+            for handling in handling_datas:
+                if not rec.check_handling(handling.id):
+                    vals = {
+                        'handling_id': handling.id,
+                        'to_passenger_id': rec.id,
+                    }
+                    handling_obj = handling_env.create(vals)
+                    res.append(handling_obj.id)
+            for data in res:
+                rec.write({
+                    'handling_ids': [(4, data)]
+                })
+
     @api.depends('birth_date')
     @api.onchange('birth_date')
     def _compute_age(self):
@@ -351,9 +397,16 @@ class PassportOrderPassengers(models.Model):
                 age = str(range_date.years) + 'y ' + str(range_date.months) + 'm ' + str(range_date.days) + 'd'
                 rec.age = age
 
-    def check_requirement(self, id):
+    def check_requirement(self, req_id):
         for rec in self:
             for to_req in rec.to_requirement_ids:
-                if to_req.requirement_id.id == id:
+                if to_req.requirement_id.id == req_id:
+                    return True
+            return False
+
+    def check_handling(self, handling_id):
+        for rec in self:
+            for handling in rec.handling_ids:
+                if handling.handling_id.id == handling_id:
                     return True
             return False
