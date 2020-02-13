@@ -33,7 +33,7 @@
                 <td>Billing Printed Date</td>
                 <td>:</td>
                 <td>
-                    <span t-field="doc.create_date" t-options ='{"format": "dd/MM/yyyy"}'/>
+                    <span t-field="doc.date_billing" t-options ='{"format": "dd/MM/yyyy"}'/>
                 </td>
             </tr>
             <tr>
@@ -56,23 +56,23 @@
                     <b t-field="doc.amount_total"/>
                 </td>
             </tr>
-<!--            <tr>-->
-<!--                <td/>-->
-<!--                <td/>-->
-<!--                <td/>-->
-<!--                <td>Collectibility Status</td>-->
-<!--                <td>:</td>-->
-<!--                <td>-->
-<!--                    <span t-field="doc.collectibility_status"/>-->
-<!--                </td>-->
-<!--            </tr>-->
+            <!--            <tr>-->
+            <!--                <td/>-->
+            <!--                <td/>-->
+            <!--                <td/>-->
+            <!--                <td>Collectibility Status</td>-->
+            <!--                <td>:</td>-->
+            <!--                <td>-->
+            <!--                    <span t-field="doc.collectibility_status"/>-->
+            <!--                </td>-->
+            <!--            </tr>-->
         </table>
         <br/>
         <!-- Line Info -->
         <div class="box" style="margin: 0">
             <div class="title" style="background-color: #DC5413; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px">
                 <div class="row" style="padding-left: 20px; color: white; font-weight: 600; font-size: 18px; text-align: center;">
-<!--                    <div class="col-1">No.</div>-->
+                    <!--                    <div class="col-1">No.</div>-->
                     <div class="col-3">Invoice No.</div>
                     <div class="col-3">Passenger(s)</div>
                     <div class="col-3">Transaction Detail</div>
@@ -82,15 +82,15 @@
             <t t-set="index" t-value="1"/>
             <t t-foreach="doc.invoice_ids" t-as="inv_id">
                 <div class="row" style="margin-left: 0px; margin-right: 0px; border: 1px solid #BBB;">
-<!--                    <div class="col-1" style="background: #F0F0F0;">-->
-<!--                        <t t-esc="index"/>-->
-<!--                    </div>-->
+                    <!--                    <div class="col-1" style="background: #F0F0F0;">-->
+                    <!--                        <t t-esc="index"/>-->
+                    <!--                    </div>-->
                     <div class="col-3" style="text-align:center"><span t-field="inv_id.name"/><br/><span t-field="inv_id.date_invoice"/></div>
                     <div class="col-3">
                         <ul style="padding-left:15px;">
-<!--                            <t t-foreach="inv_id.passenger_ids" t-as="pax">-->
-<!--                                <li><span t-field="pax.first_name"/> <span t-field="pax.last_name"/></li>-->
-<!--                            </t>-->
+                            <!--                            <t t-foreach="inv_id.passenger_ids" t-as="pax">-->
+                            <!--                                <li><span t-field="pax.first_name"/> <span t-field="pax.last_name"/></li>-->
+                            <!--                            </t>-->
                         </ul>
                     </div>
                     <div class="col-3">
