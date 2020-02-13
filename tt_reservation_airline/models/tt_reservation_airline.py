@@ -500,7 +500,8 @@ class ReservationAirline(models.Model):
             return ERR.get_error(1013)
 
     def payment_airline_api(self,req,context):
-        return self.payment_reservation_api('airline',req,context)
+        payment_res = self.payment_reservation_api('airline',req,context)
+        return payment_res
 
     def update_cost_service_charge_airline_api(self,req,context):
         try:
@@ -511,12 +512,12 @@ class ReservationAirline(models.Model):
                     provider_obj.create_date
                 except:
                     raise RequestException(1002)
-                ledger_created = provider_obj.delete_service_charge()
-                if ledger_created:
-                    raise RequestException(1027)
                 provider_obj.write({
                     'balance_due': provider['balance_due']
                 })
+                ledger_created = provider_obj.delete_service_charge()
+                if ledger_created:
+                    raise RequestException(1027)
                 for journey in provider['journeys']:
                     for segment in journey['segments']:
                         for fare in segment['fares']:
@@ -618,21 +619,29 @@ class ReservationAirline(models.Model):
 
     def get_acquirer_n_c_parent_id(self,req):
         acquirer_id = False
+        #credit limit
         if req.get('member'):
             customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', req['acquirer_seq_id'])],
                                                                        limit=1).id
         ##cash / transfer
         else:
-            ##get payment acquirer
-            if req.get('acquirer_seq_id'):
-                acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', req['acquirer_seq_id'])], limit=1)
-                if not acquirer_id:
-                    raise RequestException(1017)
-            # ini harusnya ada tetapi di comment karena rusak ketika force issued from button di tt.provider.airlines
+            if self.payment_method:
+                payment_method = self.payment_method
             else:
-                # raise RequestException(1017)
-                acquirer_id = self.agent_id.default_acquirer_id
-            customer_parent_id = self.agent_id.customer_parent_walkin_id.id  ##fpo
+                payment_method = req.get('acquirer_seq_id',False)
+
+            if self.is_member:
+                customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', payment_method)],
+                                                                           limit=1).id
+            ##get payment acquirer
+            else:
+                if payment_method:
+                    acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', payment_method)], limit=1)
+                    if not acquirer_id.create_date:
+                        raise RequestException(1017)
+                else:
+                    acquirer_id = self.agent_id.default_acquirer_id
+                customer_parent_id = self.agent_id.customer_parent_walkin_id.id  ##fpo
         return acquirer_id,customer_parent_id
 
     def _create_provider_api(self, schedules, api_context):

@@ -408,24 +408,32 @@ class TtReservationTrain(models.Model):
         name['carrier'] = list(set(name['carrier']))
         return res,name
 
-    def get_acquirer_n_c_parent_id(self,req):
+    def get_acquirer_n_c_parent_id(self, req):
         acquirer_id = False
+        # credit limit
         if req.get('member'):
             customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', req['acquirer_seq_id'])],
                                                                        limit=1).id
         ##cash / transfer
         else:
-            ##get payment acquirer
-            if req.get('acquirer_seq_id'):
-                acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', req['acquirer_seq_id'])], limit=1)
-                if not acquirer_id:
-                    raise RequestException(1017)
-            # ini harusnya ada tetapi di comment karena rusak ketika force issued from button di tt.provider.airlines
+            if self.payment_method:
+                payment_method = self.payment_method
             else:
-                # raise RequestException(1017)
-                acquirer_id = self.agent_id.default_acquirer_id
-            customer_parent_id = self.agent_id.customer_parent_walkin_id.id  ##fpo
-        return acquirer_id,customer_parent_id
+                payment_method = req.get('acquirer_seq_id', False)
+
+            if self.is_member:
+                customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', payment_method)],
+                                                                           limit=1).id
+            ##get payment acquirer
+            else:
+                if payment_method:
+                    acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', payment_method)], limit=1)
+                    if not acquirer_id.create_date:
+                        raise RequestException(1017)
+                else:
+                    acquirer_id = self.agent_id.default_acquirer_id
+                customer_parent_id = self.agent_id.customer_parent_walkin_id.id  ##fpo
+        return acquirer_id, customer_parent_id
 
     def update_pnr_booked(self,provider_obj,provider,context):
 

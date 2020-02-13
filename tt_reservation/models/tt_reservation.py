@@ -173,7 +173,6 @@ class TtReservation(models.Model):
             'last_name': vals.get('last_name'),
             'gender': vals.get('gender'),
             'marital_status': 'married' if vals.get('title') == 'MRS' else '',
-            'customer_parent_ids': [(4,agent_obj.customer_parent_walkin_id.id )],
             'is_get_booking_from_vendor': vals.get('is_get_booking_from_vendor',False),
         })
         return booker_obj.create(vals)
@@ -229,7 +228,6 @@ class TtReservation(models.Model):
             'first_name': vals.get('first_name'),
             'last_name': vals.get('last_name'),
             'marital_status': 'married' if vals.get('title') == 'MRS' else '',
-            'customer_parent_ids': [(4, agent_obj.customer_parent_walkin_id.id)],##TODO jadi COR ID jika yang login adalah user COR
             'gender': vals.get('gender'),
             'is_get_booking_from_vendor': vals.get('is_get_booking_from_vendor', False),
         })
@@ -286,7 +284,6 @@ class TtReservation(models.Model):
             psg['agent_id'] = context['co_agent_id']
             agent_obj = self.env['tt.agent'].sudo().browse(context['co_agent_id'])
             psg.update({
-                'customer_parent_ids': [(4, agent_obj.customer_parent_walkin_id.id)], ##TODO jadi COR ID jika yang login adalah user COR
                 'marital_status': 'married' if psg.get('title') == 'MRS' else '',
                 'is_get_booking_from_vendor': psg.get('is_get_booking_from_vendor', False),
             })
@@ -583,6 +580,10 @@ class TtReservation(models.Model):
 
                     raise RequestException(1028)
 
+                book_obj.write({
+                    'is_member': req.get('member', False),
+                    'payment_method': req.get('acquirer_seq_id', False)
+                })
 
                 #cek balance due book di sini, mungkin suatu saat yang akan datang
                 if book_obj.state == 'issued':

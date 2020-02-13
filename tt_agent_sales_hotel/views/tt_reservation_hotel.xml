@@ -14,10 +14,10 @@
                     </group>
                     <field name="invoice_line_ids" readonly="1">
                         <tree>
-                            <field name="invoice_id"/>
                             <field name="name"/>
-                            <field name="state"/>
+                            <field name="currency_id"/>
                             <field name="total"/>
+                            <field name="state"/>
                         </tree>
                     </field>
                 </page>

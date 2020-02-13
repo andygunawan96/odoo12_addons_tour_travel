@@ -75,6 +75,7 @@
                             <field name="customer_parent_id"/>
                             <field name="customer_parent_type_id" string="Customer Type"/>
                             <field name="pnr"/>
+                            <field name="currency_id"/>
                         </group>
                         <group>
                             <field name="agent_id"/>
@@ -112,6 +113,7 @@
                                         <field name="model_type_id"/>
                                         <field name="total"/>
                                         <field name="total_after_tax"/>
+                                        <field name="currency_id" invisible="1"/>
                                         <button string="Go to Reservation" name="open_reservation" type="object"/>
                                     </tree>
                                 </field>
@@ -159,6 +161,7 @@
                 <field name="total_after_tax"/>
                 <field name="paid_amount"/>
                 <field name="state"/>
+                <field name="currency_id" invisible="1"/>
             </tree>
         </field>
     </record>

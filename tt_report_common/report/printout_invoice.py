@@ -365,6 +365,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
             a = {}
             pax_data = self.get_invoice_data(rec, rec.passenger_ids, data.get('context'), data)
             values[rec.id].append(pax_data)
+        ho_obj = self.env['tt.agent'].sudo().search([('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
         vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -374,6 +375,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
             'terbilang': self.compute_terbilang_from_objs(
                 self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
             'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'ho_obj': ho_obj[0]
         }
         return vals
 
@@ -1113,19 +1115,6 @@ class PrintoutBilling(models.AbstractModel):
     _name = 'report.tt_report_common.printout_billing'
     _description = 'Rodex Model'
 
-    def last_billing(self, recs):
-        a = {}
-        for rec in recs:
-            bill_id = self.env['tt.billing.statement'].search([('customer_parent_id', '=', rec.customer_parent_id.id),('id', '!=', rec.id)],
-                                                              limit=1, order='date DESC')
-            if bill_id:
-                a.update({ rec.name: bill_id.date.strftime('%d/%m/%Y') })
-            else:
-                # Find lowest Invoice Date
-                inv_obj = rec.invoice_ids.sorted(key=lambda x: x.confirmed_date)
-                a.update({ rec.name: inv_obj[0].confirmed_date.strftime('%d/%m/%Y') })
-        return a
-
     def compute_terbilang_from_objs(self, recs, currency_str='rupiah'):
         a = {}
         for rec2 in recs:
@@ -1146,8 +1135,8 @@ class PrintoutBilling(models.AbstractModel):
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
             'terbilang': self.compute_terbilang_from_objs(
                 self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
-            'last_billing': self.last_billing(
-                self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
+            # 'last_billing': self.last_billing(
+            #     self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
         }
 
 
@@ -1169,12 +1158,14 @@ class PrintoutTopUp(models.AbstractModel):
                 'active_model': 'tt.billing.statement',
                 'active_ids': docids
             }
+        ho_obj = self.env['tt.agent'].sudo().search([('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
             'terbilang': self.compute_terbilang_from_objs(
                 self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
+            'ho_obj': ho_obj[0]
         }
 
 

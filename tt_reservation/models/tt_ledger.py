@@ -18,7 +18,7 @@ class tt_ledger(models.Model):
         return vals
 
     def reverse_ledger(self):
-        reverse_id = self.env['tt.ledger'].create([{
+        reverse_id = self.env['tt.ledger'].create({
             'name': 'Reverse:' + self.name,
             'debit': self.credit,
             'credit': self.debit,
@@ -28,6 +28,7 @@ class tt_ledger(models.Model):
             'reverse_id': self.id,
             'agent_id': self.agent_id.id,
             'pnr': self.pnr,
+            'date': fields.datetime.now(),
             'issued_uid': self.issued_uid.id,
             'display_provider_name': self.display_provider_name,
             'res_model': self.res_model,
@@ -37,7 +38,7 @@ class tt_ledger(models.Model):
             'adjustment_id': self.adjustment_id and self.adjustment_id.id or False,
             'refund_id': self.refund_id and self.refund.id or False,
             'provider_type_id': self.provider_type_id and self.provider_type_id.id or False
-        }])
+        })
 
         self.update({
             'reverse_id': reverse_id.id,

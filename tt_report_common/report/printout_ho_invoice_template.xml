@@ -5,21 +5,21 @@
             <div class="article" style="margin: 0px !important; padding: 0px !important">
                 <t t-call="tt_report_common.external_layout_header_ho"/>
                 <t t-raw="0"/>
-<!--                <t t-if="doc_model == 'tt.agent.invoice'">-->
-<!--                    <div style="margin: 0 20px">-->
-<!--                    <t t-call="tt_report_common.price_and_sign"/>-->
-<!--                    </div>-->
-<!--                </t>-->
-                <t t-call="tt_report_common.external_layout_footer"/>
+                <!--                <t t-if="doc_model == 'tt.agent.invoice'">-->
+                <!--                    <div style="margin: 0 20px">-->
+                <!--                    <t t-call="tt_report_common.price_and_sign"/>-->
+                <!--                    </div>-->
+                <!--                </t>-->
+                <t t-call="tt_report_common.external_layout_footer_ho"/>
             </div>
         </div>
     </template>
 
     <template id="external_layout_header_ho">
         <div class="row" style="height:100px;">
-            <t t-if="doc.agent_id.logo">
+            <t t-if="ho_obj.logo">
                 <div class="col-4" style="margin-left: 30px">
-                    <img t-att-src="'data:image/png;base64,%s' % to_text(doc.agent_id.logo)" height="200" border="1" width="300" style="max-height:100px; max-width:165px; margin-bottom: 20px"/><br/>
+                    <img t-att-src="'data:image/png;base64,%s' % to_text(ho_obj.logo)" height="200" border="1" width="300" style="max-height:100px; max-width:165px; margin-bottom: 20px"/><br/>
                 </div>
             </t>
             <t t-else="">
@@ -33,7 +33,41 @@
             </div>
             <div class="col-5 text-center">
                 <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
-                <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">HO Invoice</span><br/>
+                <t t-if="doc_model == 'tt.agent.invoice'">
+                    <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">HO Invoice</span><br/>
+                    <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
+                </t><t t-elif="doc_model == 'tt.billing.statement'">
+                    <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Billing</span><br/>
+                    <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
+                </t><t t-elif="doc_model == 'tt.top.up'">
+                    <t t-if="doc.state in ['draft','request','confirm']">
+                        <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Proforma Top Up</span><br/>  <!--Proforma HO Invoice-->
+                        <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
+                    </t>
+                    <t t-if="doc.state in ['validated','approved']">  <!--['valid','done']-->
+                        <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Top Up</span><br/>  <!--HO Invoice-->
+                        <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
+                    </t>
+                </t><t t-elif="doc_model == 'tt.refund'">
+                        <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Refund</span><br/>
+                        <t t-set="printout_icon" t-value="'/tt_report_common/static/images/refund-white.png'"/>
+                </t><t t-elif="doc_model == 'tt.reschedule'">
+                        <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">After Sales</span><br/>
+                        <t t-set="printout_icon" t-value="'/tt_report_common/static/images/refund-white.png'"/>
+                </t><t t-elif="doc_type == 'itin'">
+                    <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Itinerary</span><br/>
+                    <t t-if="doc_model == 'tt.reservation.activity'">
+                        <t t-set="printout_icon" t-value="'/tt_report_common/static/images/activity-white.png'"/>
+                    </t>
+                    <t t-elif="doc_model == 'tt.reservation.hotel'">
+                        <t t-set="printout_icon" t-value="'/tt_report_common/static/images/hotel-white.png'"/>
+                    </t>
+                </t><t t-elif="doc_type == 'expenses'">
+                    <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Expenses</span><br/>
+                    <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
+                </t><t t-else="">
+                    <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">HO Invoice</span><br/>
+                </t>
                 <div style="height: 105px; margin-left: 0px">
                     <div id="circle" style="width: 60px; height: 60px; background: #DC5413; border-radius: 100%; position: absolute; z-index: 1;">
                         <img t-att-src="printout_icon" style="max-height: 35px; max-width: 35px; margin: 12px 0px 0px 0px;"/>
@@ -283,129 +317,67 @@
         </div>
     </template>
 
-    <template id="external_layout_footer">
+    <template id="external_layout_footer_ho">
         <div class="footer" style="position: absolute; left: 0; right: 0; background-image: url('/tt_reservation_offline/static/images/background footer airline.jpg');">
             <div class="box-footer" style="padding: 0px; width: 100%; height: 120px; background: rgba(39,62,84,0.82);">  <!--rgba(70,70,70,0.8);-->
-                <t t-if="doc_type == 'itin'">
-                    <div class="row">
-                        <div class="col-6" style="margin-top:15px; margin-left: 15px; padding: 0 30px;">
-                            <div>
-                                <span style="font-weight: 600; color: white" t-field="doc['agent_id'].name"/>
-                            </div>
-                            <div>
-                                <t t-if="doc['agent_id'].address_ids">
-                                    <span style="color: white" t-field="doc['agent_id'].address_ids[0].address"/>
-                                </t>
-                                <t t-else="">
-                                    <span style="color: white">-</span>
-                                </t>
-                            </div>
+                <div class="row">
+                    <div class="col-6" style="margin-top:15px; margin-left: 15px; padding: 0 30px;">
+                        <div>
+                            <span style="font-weight: 600; color: white" t-field="ho_obj.name"/>
                         </div>
-                        <div class="col-5" style="margin-top:10px;">
-                            <div>
-                                <span style="font-weight: 500; color: white">Contact Customer Care</span>
-                            </div>
-                            <div class="row">
-                                <div class="col-6">
-                                    <div style="margin-top: 5px;">
-                                        <span style="color: white"><img t-att-src="'/tt_report_common/static/images/call-answer.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
-                                            <t t-if="doc['agent_id'].phone_ids">
-                                                <span style="color: white; font-size: 14px" t-field="doc['agent_id'].phone_ids[0].calling_code"/> <span style="color: white; font-size: 14px" t-field="doc['agent_id'].phone_ids[0].calling_number"/>
-                                            </t>
-                                            <t t-else=""><span style="color: white; font-size: 14px">-</span></t>
-                                        </span>
-                                    </div>
-                                    <div style="margin-top: 5px;">
-                                        <span style="color: white"><img t-att-src="'/tt_report_common/static/images/whatsapp.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
-                                            <t t-if="doc['agent_id'].social_media_ids.filtered(lambda x: x.type_id.name == 'WhatsApps')">
-                                                <span style="color: white; font-size: 14px" t-field="doc['agent_id'].social_media_ids.filtered(lambda x: x.type_id.name == 'Whatsapp')[0].name"/>
-                                            </t>
-                                            <t t-else=""><span style="color: white; font-size: 14px">-</span></t>
-                                        </span>
-                                    </div>
+                        <div>
+                            <t t-if="ho_obj.address_ids">
+                                <span style="color: white" t-field="ho_obj.address_ids[0].address"/>
+                            </t>
+                            <t t-else="">
+                                <span style="color: white">-</span>
+                            </t>
+                        </div>
+                    </div>
+                    <div class="col-5" style="margin-top:10px;">
+                        <div>
+                            <span style="font-weight: 500; color: white">Contact Customer Care</span>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div style="margin-top: 5px;">
+                                    <span style="color: white"><img t-att-src="'/tt_report_common/static/images/call-answer.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
+                                        <t t-if="ho_obj.phone_ids">
+                                            <span style="color: white; font-size: 14px" t-field="ho_obj.phone_ids[0].calling_code"/> <span style="color: white; font-size: 14px" t-field="ho_obj.phone_ids[0].calling_number"/>
+                                        </t>
+                                        <t t-else=""><span style="color: white; font-size: 14px">-</span></t>
+                                    </span>
                                 </div>
-                                <div class="col-6">
-                                    <div style="margin-top: 5px;">
-                                        <span style="color: white"><img t-att-src="'/tt_report_common/static/images/telegram.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
-                                            <t t-if="doc['agent_id'].social_media_ids.filtered(lambda x: x.type_id.name == 'Telegram')">
-                                                <span style="color: white; font-size: 14px" t-field="doc['agent_id'].social_media_ids.filtered(lambda x: x.type_id.name == 'Telegram')[0].name"/>
-                                            </t>
-                                            <t t-else=""><span style="color: white; font-size: 14px">-</span></t>
-                                        </span>
-                                    </div>
-                                    <div style="margin-top: 5px;">
-                                        <span style="color: white"><img t-att-src="'/tt_report_common/static/images/line.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
-                                            <t t-if="doc['agent_id'].social_media_ids.filtered(lambda x: x.type_id.name == 'Line')">
-                                                <span style="color: white; font-size: 14px" t-field="doc['agent_id'].social_media_ids.filtered(lambda x: x.type_id.name == 'Line')[0].name"/>
-                                            </t>
-                                            <t t-else=""><span style="color: white; font-size: 14px">-</span></t>
-                                        </span>
-                                    </div>
+                                <div style="margin-top: 5px;">
+                                    <span style="color: white"><img t-att-src="'/tt_report_common/static/images/whatsapp.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
+                                        <t t-if="ho_obj.social_media_ids.filtered(lambda x: x.type_id.name == 'WhatsApps')">
+                                            <span style="color: white; font-size: 14px" t-field="ho_obj.social_media_ids.filtered(lambda x: x.type_id.name == 'Whatsapp')[0].name"/>
+                                        </t>
+                                        <t t-else=""><span style="color: white; font-size: 14px">-</span></t>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div style="margin-top: 5px;">
+                                    <span style="color: white"><img t-att-src="'/tt_report_common/static/images/telegram.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
+                                        <t t-if="ho_obj.social_media_ids.filtered(lambda x: x.type_id.name == 'Telegram')">
+                                            <span style="color: white; font-size: 14px" t-field="ho_obj.social_media_ids.filtered(lambda x: x.type_id.name == 'Telegram')[0].name"/>
+                                        </t>
+                                        <t t-else=""><span style="color: white; font-size: 14px">-</span></t>
+                                    </span>
+                                </div>
+                                <div style="margin-top: 5px;">
+                                    <span style="color: white"><img t-att-src="'/tt_report_common/static/images/line.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
+                                        <t t-if="ho_obj.social_media_ids.filtered(lambda x: x.type_id.name == 'Line')">
+                                            <span style="color: white; font-size: 14px" t-field="ho_obj.social_media_ids.filtered(lambda x: x.type_id.name == 'Line')[0].name"/>
+                                        </t>
+                                        <t t-else=""><span style="color: white; font-size: 14px">-</span></t>
+                                    </span>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </t>
-                <t t-else="">
-                    <div class="row">
-                        <div class="col-6" style="margin-top:15px; margin-left: 15px; padding: 0 30px;">
-                            <div>
-                                <span style="font-weight: 600; color: white" t-field="doc.agent_id.name"/>
-                            </div>
-                            <div>
-                                <t t-if="doc.agent_id.address_ids">
-                                    <span style="color: white" t-field="doc.agent_id.address_ids[0].address"/>
-                                </t>
-                                <t t-else="">
-                                    <span style="color: white">-</span>
-                                </t>
-                            </div>
-                        </div>
-                        <div class="col-5" style="margin-top:10px;">
-                            <div>
-                                <span style="font-weight: 500; color: white">Contact Customer Care</span>
-                            </div>
-                            <div class="row">
-                                <div class="col-6">
-                                    <div style="margin-top: 5px;">
-                                        <span style="color: white"><img t-att-src="'/tt_report_common/static/images/call-answer.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
-                                            <t t-if="doc.agent_id.phone_ids">
-                                                <span style="color: white; font-size: 14px" t-field="doc.agent_id.phone_ids[0].calling_code"/> <span style="color: white; font-size: 14px" t-field="doc.agent_id.phone_ids[0].calling_number"/>
-                                            </t>
-                                            <t t-else=""><span style="color: white; font-size: 14px">-</span></t>
-                                        </span>
-                                    </div>
-                                    <div style="margin-top: 5px;">
-                                        <span style="color: white"><img t-att-src="'/tt_report_common/static/images/whatsapp.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
-                                        <t t-if="doc.agent_id.social_media_ids.filtered(lambda x: x.type_id.name == 'WhatsApps')">
-                                                <span style="color: white; font-size: 14px" t-field="doc.agent_id.social_media_ids.filtered(lambda x: x.type_id.name == 'Whatsapp')[0].name"/>
-                                            </t>
-                                            <t t-else=""><span style="color: white; font-size: 14px">-</span></t>
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div style="margin-top: 5px;">
-                                        <span style="color: white"><img t-att-src="'/tt_report_common/static/images/telegram.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
-                                            <t t-if="doc.agent_id.social_media_ids.filtered(lambda x: x.type_id.name == 'Telegram')">
-                                                <span style="color: white; font-size: 14px" t-field="doc.agent_id.social_media_ids.filtered(lambda x: x.type_id.name == 'Telegram')[0].name"/>
-                                            </t>
-                                            <t t-else=""><span style="color: white; font-size: 14px">-</span></t>
-                                        </span>
-                                    </div>
-                                    <div style="margin-top: 5px;">
-                                        <span style="color: white"><img t-att-src="'/tt_report_common/static/images/line.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
-                                            <t t-if="doc.agent_id.social_media_ids.filtered(lambda x: x.type_id.name == 'Line')">
-                                                <span style="color: white; font-size: 14px" t-field="doc.agent_id.social_media_ids.filtered(lambda x: x.type_id.name == 'Line')[0].name"/>
-                                            </t>
-                                            <t t-else=""><span style="color: white; font-size: 14px">-</span></t>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </t>
+                </div>
             </div>
         </div>
     </template>

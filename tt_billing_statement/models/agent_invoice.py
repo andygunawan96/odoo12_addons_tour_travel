@@ -10,16 +10,19 @@ class AgentInvoice(models.Model):
     _inherit = 'tt.agent.invoice'
 
     billing_statement_id = fields.Many2one('tt.billing.statement', 'Billing Statement', ondelete="set null")
-    billing_date = fields.Date('Billing Date', related='billing_statement_id.date', store=True)
+    billing_date = fields.Date('Billing Date', related='billing_statement_id.date_billing', store=True)
     billing_uid = fields.Many2one('res.users', 'Billed by')
 
-    # CANDY: tambah booker type
-    #fixme uncomment later
-    # booker_type = fields.Selection(string='Booker Type', related='contact_id.booker_type')
-
-    # Vin Registrasi]
-    #fixme uncomment later
-    # registration_id = fields.Many2one('res.partner.request', 'Registration')
+    def check_paid_status(self):
+        super(AgentInvoice, self).check_paid_status()
+        if self.state == 'paid':
+            if self.customer_parent_type_id.id == self.env.ref('tt_base.customer_type_cor').id:
+                self.create_ledger_invoice(debit=True)
+        elif self.state == 'bill2':
+            if self.customer_parent_type_id.id == self.env.ref('tt_base.customer_type_cor').id:
+                self.create_ledger_invoice(debit=False)
+        if self.billing_statement_id:
+            self.billing_statement_id.check_status_bs()
 
     def _unlink_ledger(self):
         for rec in self:
@@ -41,27 +44,6 @@ class AgentInvoice(models.Model):
         })
         # self._unlink_ledger()
 
-    def action_set_to_confirm_api(self, obj_id, api_context=None):
-        invoice_obj = self.browse(int(obj_id))
-        if invoice_obj:
-            invoice_obj.action_confirm()
-            return {
-                'error_code': 0,
-                'error_msg': "Success",
-                'response': {
-                    'id': invoice_obj.id,
-                    'name': invoice_obj.name,
-                    'confirmed_uid': invoice_obj.confirmed_uid.name,
-                    'state': invoice_obj.state,
-                }
-            }
-        else:
-            return {
-                'error_code': 1,
-                'error_msg': "No Agent Invoice Found",
-                'response': {}
-            }
-
     #manual
     def action_bill(self):
         # security : user_agent_supervisor
@@ -70,9 +52,8 @@ class AgentInvoice(models.Model):
         if self.ledger_ids:
             raise UserError('You cannot Bill already Billed Invoice')
         self.state = 'bill'
-        self.bill_uid = self.env.user.id
-        self.bill_date = fields.Datetime.now()
-        self.create_ledger()
+        self.billing_uid = self.env.user.id
+        self.create_ledger_invoice(debit=False)
 
     #cron
     def action_bill2(self):
@@ -82,37 +63,10 @@ class AgentInvoice(models.Model):
         if self.ledger_ids:
             raise UserError('You cannot Bill already Billed Invoice')
         self.state = 'bill2'
-        self.bill_uid = self.env.user.id
-        self.bill_date = fields.Datetime.now()
-        self.create_ledger()
+        self.billing_uid = self.env.user.id
+        self.create_ledger_invoice(debit=False)
 
-
-    def action_bill_api(self, obj_id, api_context=None):
-        invoice_obj = self.browse(int(obj_id))
-        if invoice_obj:
-            invoice_obj.action_bill()
-            return {
-                'error_code': 0,
-                'error_msg': "Success",
-                'response': {
-                    'id': invoice_obj.id,
-                    'name': invoice_obj.name,
-                    'confirmed_uid': invoice_obj.confirmed_uid.name,
-                    'state': invoice_obj.state,
-                    'billing_statement_id': {
-                        'id': invoice_obj.billing_statement_id.id,
-                        'name': invoice_obj.billing_statement_id.name,
-                    },
-                }
-            }
-        else:
-            return {
-                'error_code': 1,
-                'error_msg': "No Agent Invoice Found",
-                'response': {}
-            }
-
-    def create_ledger(self, for_cor=0):
+    def create_ledger_invoice(self, debit=False):
         # create_ledger dilakukan saat state = bill atau bill2
         # JIKA FPO : TIDAK BOLEH CREATE LEDGER
         # if self.contact_id.booker_type == 'FPO':
@@ -126,21 +80,14 @@ class AgentInvoice(models.Model):
         ledger = self.env['tt.ledger'].sudo()
         amount = 0
         for rec in self.invoice_line_ids:
-            amount += rec.total
+            amount += rec.total_after_tax
 
         vals = ledger.prepare_vals(self._name, self.id, 'Agent Invoice : ' + self.name, self.name, datetime.now(), 2,
-                                   self.currency_id.id, self.env.user.id, for_cor == 1 and amount or 0, for_cor == 0 and amount or 0)
+                                   self.currency_id.id, self.env.user.id, amount if debit else 0, 0 if debit else amount)
 
         vals['customer_parent_id'] = self.customer_parent_id.id
 
         ledger.create(vals)
-
-    def action_write_model_api(self, model, rec_id, vals):
-        rec_obj = self.env[model].browse(int(rec_id))
-        if rec_obj:
-            rec_obj.write(vals)
-        else:
-            return {}
 
     def action_confirm(self):
         if self.state == 'draft':
@@ -170,97 +117,3 @@ class AgentInvoice(models.Model):
             # rec._onchange_payment_term_date_invoice()
             rec.action_bill()  #this call create_ledger for Agent Invoice
             rec.billing_statement_id.action_confirm()
-
-    def get_agent_invoice(self, start_date=False, end_date=False, limit=10, offset=1, api_context=None):
-        def compute_agent_inv(rec):
-            def compute_agent_inv_line(rec):
-                vals = {
-                    'id': rec.id,
-                    'name': rec.name,
-                    'price_unit': rec.price_unit,
-                    'discount': rec.discount,
-                    'amount_discount': rec.amount_discount,
-                    'quantity': rec.quantity,
-                    'price_subtotal': rec.price_subtotal,
-                }
-                return vals
-
-            new_vals = {
-                'id': rec.id,
-                'name': rec.name,
-                'date': rec.date_invoice,
-                'due_date': rec.date_due,
-                'invoice_date': rec.date_invoice,
-                'billing_date': rec.billing_date,
-                'agent': rec.agent_id and {
-                    'id': rec.agent_id.id,
-                    'name': rec.agent_id.name,
-                    'type': rec.agent_id.agent_type_id and rec.agent_id.agent_type_id.name or '',
-                } or {},
-                'sub_agent': rec.sub_agent_id and {
-                    'id': rec.sub_agent_id.id,
-                    'name': rec.sub_agent_id.name,
-                    'type': rec.sub_agent_id.agent_type_id and rec.sub_agent_id.agent_type_id.name or '',
-                } or {},
-                'contact_id': rec.contact_id and {
-                    'id': rec.contact_id.id,
-                    'name': rec.contact_id and rec.contact_id.first_name + ' ' + rec.contact_id.last_name and rec.contact_id.last_name or '',
-                } or {},
-                'lines': rec.invoice_line_ids and [compute_agent_inv_line(rec1) for rec1 in rec.invoice_line_ids] or [],
-                'booker_type': rec.booker_type,
-                'origin': rec.origin,
-                'payment_term_id': rec.payment_term_id and rec.payment_term_id.name or False,
-                'amount_total': rec.amount_total,
-                'pnr': rec.pnr,
-                'transport_type': rec.transport_type,
-                'confirmed_uid': rec.confirmed_uid.name,
-                'issued_uid': rec.issued_uid.name,
-                'state': rec.state,
-            }
-            return new_vals
-        try:
-            user_obj = self.env['res.users'].browse(api_context['co_uid'])
-            domain = ['|', ('agent_id', 'in', user_obj.allowed_customer_ids.ids),
-                      ('sub_agent_id', '=', user_obj.agent_id.id)]
-            if start_date and end_date:
-                domain += [('date_invoice', '>=', start_date), ('date_invoice', '<=', end_date)]
-            if api_context.get('agent_id', False):
-                domain += ['|', ('agent_id.name', 'ilike', api_context['agent_id']), ('sub_agent_id.name', 'ilike', api_context['agent_id'])]
-            if api_context.get('amount', False):
-                domain += [('amount_total', '=', api_context['amount'])]
-            if api_context.get('pnr', False):
-                domain += [('pnr', 'ilike', api_context['pnr']), ('pnr', '!=', False)]
-            if api_context.get('state', False):
-                if api_context['state'] != 'all':
-                    if user_obj.agent_id.agent_type_id.id in [self.env.ref('tt_base_rodex.agent_type_cor').id, self.env.ref('tt_base_rodex.agent_type_por').id]:
-                        # If COR POR then show bill only
-                        domain.append(('state', 'in', ['bill', 'bill2']))
-                    else:
-                        domain.append(('state', '=', api_context['state']))
-                else:
-                    domain.append(('state', 'in', ['draft', 'confirm', 'bill', 'bill2']))
-            if api_context.get('name', False):
-                domain += [('name', 'ilike', api_context['name'])]
-            if api_context.get('ref_name', False):
-                domain += [('origin', 'ilike', api_context['ref_name'])]
-            if api_context.get('contact_name', False):
-                domain += ['|',('contact_id.first_name', 'ilike', api_context['contact_name']),('contact_id.last_name', 'ilike', api_context['contact_name'])]
-
-            order = api_context.get('order', 'id DESC')
-            inv_ids = self.search(domain, limit=limit, offset=offset, order=order)
-
-            response = {
-                'error_code': 0,
-                'error_msg': '',
-                'response': {
-                    'agent_invoice': [compute_agent_inv(rec) for rec in inv_ids],
-                }
-            }
-
-        except Exception as e:
-            response = {
-                'error_code': 100,
-                'error_msg': str(e),
-            }
-
-        return response

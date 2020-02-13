@@ -8,12 +8,17 @@
             <xpath expr="//group[@name='billing_info']" position="after">
                 <group>
                     <field name="billing_statement_id" readonly="1"/>
+                    <label for="billing_uid" string="Billed By"/>
+                    <div>
+                        <field name="billing_uid" class="oe_inline" readonly="1"/> -
+                        <field name="billing_date" class="oe_inline" readonly="1"/>
+                    </div>
                 </group>
             </xpath>
-<!--            <field name="contact_id" position="after">-->
-<!--                <field name="booker_type"-->
-<!--                       groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator" readonly="1"/>-->
-<!--            </field>-->
+            <!--            <field name="contact_id" position="after">-->
+            <!--                <field name="booker_type"-->
+            <!--                       groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator" readonly="1"/>-->
+            <!--            </field>-->
             <xpath expr="//button[@name='create_ledger']" position="after">
                 <button name= "create_billing_statement" string='Create Billing Statement' type="object" states="confirm"
                         class="oe_stat_button" icon="fa-bookmark-o" groups="tt_base.group_tt_billing_statement_supervisor"/>

@@ -56,7 +56,7 @@ class AgentInvoice(models.Model):
                                               related='customer_parent_id.customer_parent_type_id')
 
     ledger_ids = fields.One2many('tt.ledger', 'res_id', 'Ledger',
-                                              readonly=True, states={'draft': [('readonly', False)]}, domain=[('res_model', '=', 'tt.agent.invoice')])
+                                 readonly=True, states={'draft': [('readonly', False)]}, domain=[('res_model', '=', 'tt.agent.invoice')])
 
     currency_id = fields.Many2one('res.currency', string='Currency',
                                   required=True, readonly=True, states={'draft': [('readonly', False)]},
@@ -76,7 +76,8 @@ class AgentInvoice(models.Model):
     cancel_date = fields.Datetime('Cancel Date', readonly=True)
 
     date_invoice = fields.Date(string='Invoice Date', default=fields.Date.context_today,
-                               index=True, copy=False, readonly=True)
+                           index=True, copy=False, readonly=True)
+
     description = fields.Text('Description',readonly=True)
 
     printout_invoice_id = fields.Many2one('tt.upload.center', 'Printout Invoice')
@@ -96,14 +97,14 @@ class AgentInvoice(models.Model):
         new_invoice.set_default_billing_to()
         return new_invoice
 
-    @api.multi
-    def write(self, vals):
-        #pengecekan paid di sini dan tidak di compute paid supaya status berubah ketika tekan tombol save
-        #jika tidak, saat pilih payment sebelum save bisa lgsg berubah jadi paid
-        res = super(AgentInvoice, self).write(vals)
-        # if 'payment_ids' in vals:
-        self.check_paid_status()
-        return res
+    # @api.multi
+    # def write(self, vals):
+    #     #pengecekan paid di sini dan tidak di compute paid supaya status berubah ketika tekan tombol save
+    #     #jika tidak, saat pilih payment sebelum save bisa lgsg berubah jadi paid
+    #     res = super(AgentInvoice, self).write(vals)
+    #     # if 'payment_ids' in vals:
+    #     self.check_paid_status()
+    #     return res
 
     @api.depends("invoice_line_ids.pnr")
     def _compute_invoice_pnr(self):
@@ -115,7 +116,7 @@ class AgentInvoice(models.Model):
         for rec in self:
             aqc_list = []
             for payment in rec.payment_ids:
-                if payment.payment_acquirer:
+                if payment.payment_acquirer and payment.state != 'cancel':
                     aqc_list.append(payment.payment_acquirer)
             rec.payment_acquirers = ",".join(aqc_list)
 
@@ -155,6 +156,8 @@ class AgentInvoice(models.Model):
                 paid_amount += rec.pay_amount
         if self.state != 'paid' and (paid_amount >= self.total and self.total != 0):
             self.state = 'paid'
+        elif self.state not in ['confirm','bill','bill2'] and (paid_amount < self.total and self.total != 0):
+            self.state = 'bill2'
         # return
 
 

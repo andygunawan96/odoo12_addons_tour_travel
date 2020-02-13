@@ -29,10 +29,12 @@ class Ledger(models.Model):
     # _order = 'date, id'
 
     name = fields.Char('Name', copy=False)
-    date = fields.Date('Date', default=fields.Date.today())
+    date = fields.Date('Date', default=fields.Date.context_today)
     debit = fields.Monetary('Debit', default=0)
     credit = fields.Monetary('Credit', default=0)
-    balance = fields.Monetary('Balance', default=0, help='Current Agent Balance after this ledger')
+    balance = fields.Monetary('Balance',
+                              default=0,
+                              help='Current Agent Balance after this ledger')
 
     currency_id = fields.Many2one('res.currency', readonly=True,
                                   default=lambda self: self.env.user.company_id.currency_id)
@@ -90,7 +92,6 @@ class Ledger(models.Model):
                 'credit': credit,
                 'ref': ref,
                 'currency_id': currency_id,
-
                 'date': date,
                 'transaction_type': ledger_type,
                 'res_model': res_model,
@@ -116,11 +117,12 @@ class Ledger(models.Model):
 
 
     def reverse_ledger(self):
-        reverse_id = self.env['tt.ledger'].create([{
+        reverse_id = self.env['tt.ledger'].create({
             'name': 'Reverse:' + self.name,
             'debit': self.credit,
             'credit': self.debit,
             'ref': self.ref,
+            'date': fields.datetime.now(),
             'currency_id': self.currency_id.id,
             'reverse_id': self.id,
             'agent_id': self.agent_id.id,
@@ -128,7 +130,7 @@ class Ledger(models.Model):
             'is_reversed': True,
             'adjustment_id': self.adjustment_id and self.adjustment_id.id or False,
             'refund_id': self.refund_id and self.refund.id or False
-        }])
+        })
         self.update({
             'reverse_id': reverse_id.id,
             'is_reversed': True,

@@ -54,7 +54,7 @@ class TtCustomerParent(models.Model):
             invoice_objs = self.env['tt.agent.invoice'].sudo().search([('customer_parent_id', '=', rec.id), ('state', 'in', ['draft', 'confirm'])])
             for rec2 in invoice_objs:
                 for rec3 in rec2.invoice_line_ids:
-                    total_amt += rec3.total
+                    total_amt += rec3.total_after_tax
             rec.unprocessed_amount = total_amt
 
     def _compute_actual_balance(self):

@@ -28,6 +28,5 @@
             action="action_agent_report_balance_wz"
             sequence="1"
         />
-
     </data>
 </odoo>
