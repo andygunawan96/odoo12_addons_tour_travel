@@ -1,43 +1,43 @@
 # -*- coding: utf-8 -*-
 {
     'name': "tt_reservation_passport",
-
-    'summary': """
-        Short (1 phrase/line) summary of the module's purpose, used as
-        subtitle on modules listing or apps.openerp.com""",
-
+    'version' : 'beta',
+    'summary': """Passport Document""",
+    'sequence': 2,
     'description': """
-        Long description of module's purpose
+        TT RESERVATION PASSPORT
     """,
-
-    'author': "My Company",
-    'website': "http://www.yourcompany.com",
-
-    # Categories can be used to filter modules in modules listing
-    # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
-    # for the full list
-    'category': 'Uncategorized',
+    'category': 'booking',
+    'author': "IT Rodex",
+    'website': "http://www.rodextrip.com",
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'tt_base', 'tt_engine_pricing', 'tt_traveldoc', 'tt_reservation'],
+    'depends': ['base', 'tt_base', 'tt_engine_pricing', 'tt_traveldoc', 'tt_reservation', 'tt_report_common'],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
-        # 'data/ir_sequence_data.xml',
+        'security/ir_rule_data.xml',
+        'data/ir_sequence_data.xml',
         # 'data/ir_send_email.xml',
+        'data/tt.reservation.passport.pricelist.csv',
+        'data/tt_provider_type_data.xml',
+        'data/tt_provider_passport.xml',
         'views/tt_reservation_passport_menuheader.xml',
         'views/tt_reservation_passport_views.xml',
         'views/tt_reservation_passport_order_passengers_views.xml',
         'views/tt_reservation_passport_service_charge_views.xml',
         'views/tt_reservation_passport_pricelist_views.xml',
+        'views/tt_reservation_passport_vendor_views.xml',
         'views/tt_provider_passport_views.xml',
-        # 'report/printout_menu.xml',
-        # 'report/printout_passport_customer_template.xml',
-        # 'report/printout_passport_ho_template.xml',
-        # 'report/printout_proforma_invoice_passport_template.xml',
+        'report/printout_menu.xml',
+        'report/printout_passport_customer_template.xml',
+        'report/printout_passport_ho_template.xml'
     ],
     # only loaded in demonstration mode
     'demo': [],
+    'installable': True,
+    'application': True,
+    'auto_install': False,
 }

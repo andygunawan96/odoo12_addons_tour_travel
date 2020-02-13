@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_reservation_passport_vendor_form_views" model="ir.ui.view">
+        <field name="name">tt.reservation.passport.vendor.form.views</field>
+        <field name="model">tt.reservation.passport.vendor</field>
+        <field name="arch" type="xml">
+            <form string="">
+                <sheet>
+                    <div class="oe_title">
+<!--                        <label for="name" class="oe_edit_only"/>-->
+                        <h1>
+                            <field name="name" placeholder="Requirement Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <field name="description"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_reservation_passport_vendor_tree_views" model="ir.ui.view">
+        <field name="name">tt.reservation.passport.vendor.tree.views</field>
+        <field name="model">tt.reservation.passport.vendor</field>
+        <field name="arch" type="xml">
+            <tree string="">
+                <field name="name"/>
+                <field name="description"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_reservation_passport_vendor_action_views">
+        <field name="name">Reservation Passport Vendor</field>
+        <field name="res_model">tt.reservation.passport.vendor</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain"/>
+        <field name="context">
+            {
+                'form_view_ref': 'tt_reservation_passport.tt_reservation_passport_vendor_form_views',
+                'tree_view_ref': 'tt_reservation_passport.tt_reservation_passport_vendor_tree_views',
+            }
+        </field>
+    </record>
+
+    <menuitem id="submenu_passport_vendor"
+              parent="tt_reservation_passport.menu_tour_travel_passport_master"
+              name="Vendor"
+              action="tt_reservation_passport.tt_reservation_passport_vendor_action_views"
+              groups="tt_base.group_tt_tour_travel_operator"
+              sequence="4"/>
+</odoo>

@@ -158,7 +158,13 @@
                                         <span t-field="p.passenger_domicile"/><br/>
                                         <span t-field="p.pricelist_id.passport_type"/> <span t-field="p.pricelist_id.apply_type"/><br/>
                                         <span t-field="p.pricelist_id.process_type"/><br/>
-                                        <span t-field="p.pricelist_id.duration"/><span style="color: white;">...</span><span>day(s)</span><span style="color: white;">...</span><span>____/____/_____</span>
+                                        <span t-field="p.pricelist_id.duration"/><span style="color: white;">...</span><span>day(s)</span><span style="color: white;">...</span>
+                                        <t t-if="p.passport_id.in_process_date">
+                                            <span t-field="p.passport_id.estimate_date" t-options='{"format": "dd/MM/yyyy"}'/>
+                                        </t>
+                                        <t t-else="">
+                                            <span>____/____/_____</span>
+                                        </t>
                                     </div>
                                 </div>
                             </div>
@@ -169,14 +175,14 @@
                                         <span>Phone</span><br/>
                                         <span>Expired</span><br/>
                                         <span/><br/>
-                                        <span>Departure Plan</span><br/>
+<!--                                        <span>Departure Plan</span><br/>-->
                                     </div>
                                     <div class="col-1" style="width: 2%">
                                         <span>:</span><br/>
                                         <span>:</span><br/>
                                         <span>:</span><br/>
                                         <span/><br/>
-                                        <span>:</span>
+<!--                                        <span>:</span>-->
                                     </div>
                                     <div class="col-5">
                                         <span t-field="p.passport_number"/><br/>
@@ -186,7 +192,7 @@
                                         <br/>
                                         <span t-field="p.passport_expdate" t-field-options="{&quot;format&quot;: &quot;dd-MM-yyyy&quot;}"/><br/>
                                         <span/><br/>
-                                        <span t-field="p.passport_id.departure_date" t-field-options="{&quot;format&quot;: &quot;dd-MM-yyyy&quot;}"/>
+<!--                                        <span t-field="p.passport_id.departure_date" t-field-options="{&quot;format&quot;: &quot;dd-MM-yyyy&quot;}"/>-->
                                     </div>
                                 </div>
                             </div>
