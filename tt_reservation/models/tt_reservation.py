@@ -114,6 +114,7 @@ class TtReservation(models.Model):
     printout_ticket_price_id = fields.Many2one('tt.upload.center', 'Ticket (Price)', readonly=True)
     printout_itinerary_id = fields.Many2one('tt.upload.center', 'Itinerary', readonly=True)
     printout_voucher_id = fields.Many2one('tt.upload.center', 'Voucher', readonly=True)
+    printout_ho_invoice_id = fields.Many2one('tt.upload.center', 'Voucher', readonly=True)
 
     @api.model
     def create(self, vals_list):

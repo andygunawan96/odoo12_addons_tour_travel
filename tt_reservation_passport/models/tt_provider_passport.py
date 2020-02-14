@@ -2,6 +2,22 @@ from odoo import api, fields, models
 from ...tools import variables
 from datetime import datetime
 
+STATE_PASSPORT = [
+    ('draft', 'Open'),
+    ('confirm', 'Confirm to HO'),
+    ('validate', 'Validated by HO'),
+    ('to_vendor', 'Send to Vendor'),
+    ('vendor_process', 'Proceed by Vendor'),
+    ('cancel', 'Canceled'),
+    ('payment', 'Payment'),
+    ('in_process', 'In Process'),
+    ('partial_proceed', 'Partial Proceed'),
+    ('proceed', 'Proceed'),
+    ('delivered', 'Delivered'),
+    ('ready', 'Sent'),
+    ('done', 'Done')
+]
+
 
 class ProviderPassportPassengers(models.Model):
     _name = 'tt.provider.passport.passengers'
@@ -28,8 +44,10 @@ class TtProviderPassport(models.Model):
     pnr = fields.Char('PNR')  # di isi aja order number
     provider_id = fields.Many2one('tt.provider', 'Provider')
     booking_id = fields.Many2one('tt.reservation.passport', 'Order Number', ondelete='cascade')
-    visa_id = fields.Many2one('tt.reservation.passport.pricelist', 'Visa Pricelist')
+    agent_id = fields.Many2one('tt.agent', 'Agent', related='booking_id.agent_id')
+    passport_id = fields.Many2one('tt.reservation.passport.pricelist', 'Passport Pricelist')
     state = fields.Selection(variables.BOOKING_STATE, 'Status', default='draft')
+    state_passport = fields.Selection(STATE_PASSPORT, 'State', related="booking_id.state_passport")
     cost_service_charge_ids = fields.One2many('tt.service.charge', 'provider_passport_booking_id', 'Cost Service Charges')
 
     country_id = fields.Many2one('res.country', 'Country', ondelete="cascade", readonly=True,
@@ -37,15 +55,27 @@ class TtProviderPassport(models.Model):
     departure_date = fields.Char('Journey Date', readonly=True,
                                  states={'draft': [('readonly', False)]})
 
-    use_vendor = fields.Boolean('Use Vendor', readonly=True, default=False)
+    # use_vendor = fields.Boolean('Use Vendor', readonly=True, default=False)
 
     booked_uid = fields.Many2one('res.users', 'Booked By')
     booked_date = fields.Datetime('Booking Date')
     issued_uid = fields.Many2one('res.users', 'Issued By')
     issued_date = fields.Datetime('Issued Date')
 
+    in_process_date = fields.Datetime('In Process Date', readonly=1)
+
+    done_date = fields.Datetime('Done Date', readonly=1)
+    ready_date = fields.Datetime('Ready Date', readonly=1)
+    hold_date = fields.Datetime('Hold Date', readonly=1)
+    expired_date = fields.Datetime('Expired Date', readonly=True)
+
+    currency_id = fields.Many2one('res.currency', 'Currency', readonly=True, states={'draft': [('readonly', False)]},
+                                  default=lambda self: self.env.user.company_id.currency_id)
+
     is_ledger_created = fields.Boolean('Ledger Created', default=False, readonly=True,
                                        states={'draft': [('readonly', False)]})
+
+    vendor_ids = fields.One2many('tt.reservation.passport.vendor.lines', 'provider_id', 'Expenses')
 
     passenger_ids = fields.One2many('tt.provider.passport.passengers', 'provider_id', 'Passengers')
 
@@ -81,15 +111,24 @@ class TtProviderPassport(models.Model):
         for scs in service_charge_vals:
             scs['pax_count'] = 0  # jumlah pax
             scs['total'] = 0  # total pricing
+            scs['passenger_passport_ids'] = []
             scs['currency_id'] = currency_obj.get_id('IDR')  # currency (IDR)
             scs['foreign_currency_id'] = currency_obj.get_id('IDR')  # currency (foreign)
-            scs['provider_visa_booking_id'] = self.id  # id provider visa
-            for psg in self.passenger_ids:
-                if scs['pax_type'] == psg.pax_type:
-                    scs['passenger_visa_ids'].append(psg.id)  # add passenger to passenger visa ids
+            scs['provider_passport_booking_id'] = self.id  # id provider visa
+            if scs['charge_code'] != 'disc':
+                for psg in self.passenger_ids:
+                    if scs['pax_type'] == psg.pax_type and scs['pricelist_id'] == psg.pricelist_id.id:
+                        scs['passenger_passport_ids'].append(psg.passenger_id.id)  # add passenger to passenger passport ids
+                        scs['pax_count'] += 1
+                        scs['total'] += scs['amount']
+            else:
+                for psg in self.passenger_ids:
+                    scs['passenger_passport_ids'].append(psg.passenger_id.id)  # add passenger to passenger passport ids
                     scs['pax_count'] += 1
                     scs['total'] += scs['amount']
-            scs['passenger_visa_ids'] = [(6, 0, scs['passenger_visa_ids'])]
+            scs['passenger_passport_ids'] = [(6, 0, scs['passenger_passport_ids'])]
+            if 'commission_agent_id' in scs:
+                scs['commission_agent_id'] = scs['commission_agent_id']
             scs['description'] = self.pnr and self.pnr or ''
             if scs['total'] != 0:
                 service_chg_obj.create(scs)
@@ -107,6 +146,9 @@ class TtProviderPassport(models.Model):
         if not self.is_ledger_created:
             self.write({'is_ledger_created': True})
             self.env['tt.ledger'].action_create_ledger(self)
+
+    def action_create_expenses_invoice(self):
+        pass
 
     def to_dict(self):
         passenger_list = []

@@ -1,0 +1,13 @@
+id,name,passport_type,apply_type,process_type,duration,description,country_id/id,immigration_consulate,passport_nta_price,delivery_nta_price,nta_price,cost_price,sale_price,notes
+passport_pricelist_regular_passport_new,Regular Passport (7 working days after photo),passport,new,regular,7,"IMIGRASI JUANDA , jalan Raya Juanda km 3-4 Surabaya",base.id,Surabaya,1206000,0,,1230000,1310000,
+passport_pricelist_regular_passport_renew,Regular Passport (7 working days after photo),passport,renew,regular,7,"IMIGRASI JUANDA , jalan Raya Juanda km 3-4 Surabaya",base.id,Surabaya,1206000,0,,1230000,1310000,
+passport_pricelist_express_passport_new,Express Passport (5 working days after photo),passport,new,express,5,"IMIGRASI JUANDA , jalan Raya Juanda km 3-4 Surabaya",base.id,Surabaya,1356000,0,,1380000,1460000,
+passport_pricelist_express_passport_renew,Express Passport (5 working days after photo),passport,renew,express,5,"IMIGRASI JUANDA , jalan Raya Juanda km 3-4 Surabaya",base.id,Surabaya,1356000,0,,1380000,1460000,
+passport_pricelist_regular_e-passport_new,E-paspport Regular (14 working days after photo),e-passport,new,regular,14,"IMIGRASI JUANDA , jalan Raya Juanda km 3-4 Surabaya",base.id,Surabaya,1906000,0,,1930000,2010000,
+passport_pricelist_regular_e-passport_renew,E-paspport Regular (14 working days after photo),e-passport,renew,regular,14,"IMIGRASI JUANDA , jalan Raya Juanda km 3-4 Surabaya",base.id,Surabaya,1906000,0,,1930000,2010000,
+passport_pricelist_express_e-passport_new,E-paspport Express (5 working days after photo),e-passport,new,express,5,"IMIGRASI JUANDA , jalan Raya Juanda km 3-4 Surabaya",base.id,Surabaya,2706000,0,,2730000,2830000,
+passport_pricelist_express_e-passport_renew,E-paspport Express (5 working days after photo),e-passport,renew,express,5,"IMIGRASI JUANDA , jalan Raya Juanda km 3-4 Surabaya",base.id,Surabaya,2706000,0,,2730000,2830000,
+passport_pricelist_umroh_passport_new,Umroh Passport (5 working days after photo),passport,umroh,regular,5,"IMIGRASI JUANDA , jalan Raya Juanda km 3-4 Surabaya",base.id,Surabaya,1356000,0,,1380000,1460000,
+passport_pricelist_penambahan_nama_regular,Penambahan Nama (7 Hari Kerja),passport,add_name,regular,7,"IMIGRASI JUANDA , jalan Raya Juanda km 3-4 Surabaya",base.id,Surabaya,400000,0,,450000,500000,
+passport_pricelist_penambahan_nama_express,Penambahan Nama (3 Hari Kerja),passport,add_name,express,3,"IMIGRASI JUANDA , jalan Raya Juanda km 3-4 Surabaya",base.id,Surabaya,600000,0,,650000,700000,
+passport_pricelist_kitas_renew,KITAS,passport,renew,regular,14,"IMIGRASI JUANDA , jalan Raya Juanda km 3-4 Surabaya",base.id,Surabaya,6506000,0,,6620000,6700000,

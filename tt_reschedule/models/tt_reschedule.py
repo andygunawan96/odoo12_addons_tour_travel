@@ -1,7 +1,8 @@
 from odoo import api,models,fields,_
 from odoo.exceptions import UserError
 from dateutil.relativedelta import relativedelta
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
+import base64
 from ...tools import variables
 
 
@@ -126,6 +127,8 @@ class TtReschedule(models.Model):
     reschedule_line_ids = fields.One2many('tt.reschedule.line', 'reschedule_id', 'After Sales Line(s)', readonly=True, states={'confirm': [('readonly', False)]})
     reschedule_type_str = fields.Char('After Sales Type', readonly=True, compute='_compute_reschedule_type_str', store=True)
     change_ids = fields.One2many('tt.reschedule.changes', 'reschedule_id', 'Changes', readonly=True)
+
+    printout_reschedule_id = fields.Many2one('tt.upload.center', 'Printout Reschedule', readonly=True)
 
     @api.depends('invoice_line_ids')
     def set_agent_invoice_state(self):
@@ -548,7 +551,45 @@ class TtReschedule(models.Model):
         res = self.read()
         res = res and res[0] or {}
         datas['form'] = res
-        reschedule_printout_id = self.env.ref('tt_report_common.action_report_printout_reschedule')
-        return reschedule_printout_id.report_action(self, data=datas)
+        reschedule_printout_action = self.env.ref('tt_report_common.action_report_printout_reschedule')
+        if not self.printout_reschedule_id:
+            if self.agent_id:
+                co_agent_id = self.agent_id.id
+            else:
+                co_agent_id = self.env.user.agent_id.id
+
+            # if self.user_id:
+            #     co_uid = self.user_id.id
+            # else:
+            co_uid = self.env.user.id
+
+            pdf_report = reschedule_printout_action.report_action(self, data=datas)
+            pdf_report['context'].update({
+                'active_model': self._name,
+                'active_id': self.id
+            })
+            pdf_report_bytes = reschedule_printout_action.render_qweb_pdf(data=pdf_report)
+            res = self.env['tt.upload.center.wizard'].upload_file_api(
+                {
+                    'filename': 'Reschedule %s.pdf' % self.name,
+                    'file_reference': 'Reschedule Printout',
+                    'file': base64.b64encode(pdf_report_bytes[0]),
+                    'delete_date': datetime.today() + timedelta(minutes=10)
+                },
+                {
+                    'co_agent_id': co_agent_id,
+                    'co_uid': co_uid,
+                }
+            )
+            upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+            self.printout_reschedule_id = upc_id.id
+        url = {
+            'type': 'ir.actions.act_url',
+            'name': "ZZZ",
+            'target': 'new',
+            'url': self.printout_reschedule_id.url,
+        }
+        return url
+        # return reschedule_printout_id.report_action(self, data=datas)
 
 
