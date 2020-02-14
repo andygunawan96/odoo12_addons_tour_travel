@@ -71,7 +71,7 @@
                     <group>
                         <field name="tour_id" readonly="1" groups="tt_base.group_tt_tour_travel_operator"/>
                         <field name="tour_id_str" readonly="1" groups="tt_base.group_tt_agent_user_operator"/>
-                        <field name="payment_method" readonly="1" attrs="{'invisible': [('state', 'not in', ('issued'))]}"/>
+                        <field name="payment_method_tour" readonly="1" attrs="{'invisible': [('state', 'not in', ('issued'))]}"/>
                     </group>
                     <group>
                         <field name="departure_date" string="Departure Date"/>
@@ -136,7 +136,7 @@
                 </page>
             </xpath>
             <xpath expr="//page[@name='anchor']" position="before">
-                <page string="Installments" name="installment_invoice" attrs="{'invisible': [('payment_method', '!=', 'installment')]}">
+                <page string="Installments" name="installment_invoice" attrs="{'invisible': [('payment_method_tour', '!=', 'installment')]}">
                     <!--                    <button name="calculate_service_charge" type="object" string="calc"/>-->
                     <!--                    <button name="test_error" type="object" string="test_error"/>-->
                     <field name="installment_invoice_ids">

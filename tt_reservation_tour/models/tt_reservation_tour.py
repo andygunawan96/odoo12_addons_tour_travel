@@ -46,7 +46,7 @@ class ReservationTour(models.Model):
                                            readonly=True, states={'draft': [('readonly', False)]})
     passenger_ids = fields.One2many('tt.reservation.passenger.tour', 'booking_id', string='Passengers')
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', default=lambda self: self.env.ref('tt_reservation_tour.tt_provider_type_tour'))
-    payment_method = fields.Selection(PAYMENT_METHOD, 'Payment Method')
+    payment_method_tour = fields.Selection(PAYMENT_METHOD, 'Tour Payment Method')
     installment_invoice_ids = fields.One2many('tt.installment.invoice', 'booking_id', 'Installments')
 
     @api.depends('tour_id')
@@ -457,7 +457,7 @@ class ReservationTour(models.Model):
 
             vals = {
                 'customer_parent_id': customer_parent_id,
-                'payment_method': payment_method
+                'payment_method_tour': payment_method
             }
 
             book_obj.sudo().write(vals)
