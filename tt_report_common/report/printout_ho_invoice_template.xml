@@ -25,7 +25,7 @@
             <t t-else="">
                 <div class="col-4" style="margin-left: 30px margin-left: 30px; text-align: center; display: inline-flex; align-items: center;">
 <!--                    <img t-att-src="'/tt_report_common/static/images/tors_logo.png'" height="200" border="1" width="300" style="max-height:100px; max-width:165px; margin-bottom: 20px"/><br/>-->
-                    <span t-field="doc.agent_id.name" style="font-size: 28px;"/>
+                    <span t-field="ho_obj.name" style="font-size: 28px;"/>
                 </div>
             </t>
             <div class="col-2">
