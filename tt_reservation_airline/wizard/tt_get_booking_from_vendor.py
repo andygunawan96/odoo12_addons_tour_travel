@@ -27,7 +27,7 @@ class TtGetBookingFromVendor(models.TransientModel):
     booker_nationality_id = fields.Many2one('res.country', default=lambda self: self.env.ref('base.id').id)
     booker_last_name = fields.Char('Last Name')
     booker_calling_code = fields.Char('Calling Code')
-    booker_mobile = fields.Char('Mobile')
+    booker_mobile = fields.Char('Calling Number')
     booker_email = fields.Char('Email')
 
     is_bypass_pnr_validator = fields.Boolean('Is Bypass PNR Validator')

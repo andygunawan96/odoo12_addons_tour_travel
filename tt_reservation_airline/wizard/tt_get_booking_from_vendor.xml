@@ -37,13 +37,14 @@
                     <field name="booker_nationality_id" attrs="{'required': [('is_database_booker','=',False)],
                                                                 'invisible':[('is_database_booker','!=',False)]}"/>
 
-                    <label for="booker_calling_code" string="Mobile" attrs="{'required': [('is_database_booker','=',False)],
-                                                        'invisible':[('is_database_booker','!=',False)]}"/>
-                    <div attrs="{'required': [('is_database_booker','=',False)],
-                                                        'invisible':[('is_database_booker','!=',False)]}">
-                        <field name="booker_calling_code" class="oe_inline"/> -
-                        <field name="booker_mobile" class="oe_inline"/>
-                    </div>
+
+                    <field name="booker_calling_code" placeholder="62"
+                           attrs="{'required': [('is_database_booker','=',False)],
+                                                                'invisible':[('is_database_booker','!=',False)]}"/>
+
+                    <field name="booker_mobile" attrs="{'required': [('is_database_booker','=',False)],
+                                                                'invisible':[('is_database_booker','!=',False)]}"/>
+
 
                     <field name="booker_email" attrs="{'required': [('is_database_booker','=',False)],
                                                         'invisible':[('is_database_booker','!=',False)]}"/>
