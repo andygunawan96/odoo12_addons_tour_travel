@@ -199,21 +199,6 @@ class PrintoutInvoiceHO(models.AbstractModel):
                     pax_dict = self.get_pax_dict(rec, provider)
                     for psg in pax_dict:
                         a[pnr]['pax_data'].append(pax_dict[psg])
-                if rec._name == 'tt.reservation.visa':
-                    # add expenses
-                    for provider in rec.provider_booking_ids:
-                        pnr = provider.pnr + ' - expenses '
-                        for vendor in provider.vendor_ids:
-                            if vendor.is_invoice_created:
-                                pnr2 = pnr + vendor.create_date.strftime("%d-%m-%Y")
-                                if not a.get(pnr2):
-                                    a[pnr2] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [],
-                                              'provider_type': ''}
-                                a[pnr2]['descs'].append(self.get_description(provider, data))
-                                a[pnr2]['provider_type'] = rec.provider_type_id.name
-                                add_dict = self.get_additional_dict(rec, provider, add=vendor)
-                                for add in add_dict:
-                                    a[pnr2]['pax_data'].append(add_dict[add])
         return a
 
     def get_additional_dict(self, rec, provider, add=None):
@@ -388,12 +373,12 @@ class PrintoutInvoice(models.AbstractModel):
         for `_name` model, please use `report.` as prefix then add `module_name.report_name`.
     """
 
-    def get_invoice_data(self, line, rec, paxs):
+    def get_invoice_data(self, line, rec, paxs, inv):
         a = {}
         if rec._name == 'tt.reservation.offline':
-            a = {'descs': line.desc, 'pnr': [], 'line_detail': []}
-            for provider in rec.provider_booking_ids:
-                a['pnr'].append(provider.pnr)
+            a = {'descs': line.desc, 'pnr': inv.pnr.split(','), 'line_detail': [], 'total_after_tax': line.total_after_tax}
+            # for provider in rec.provider_booking_ids:
+            #     a['pnr'].append(provider.pnr)
             for line_detail in line.invoice_line_detail_ids:
                 a['line_detail'].append({
                     'name': line_detail.desc,
@@ -452,7 +437,7 @@ class PrintoutInvoice(models.AbstractModel):
             #                 'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
             #             })
         elif rec._name == 'tt.reservation.hotel':
-            a = {'descs': line.desc, 'pnr': [], 'line_detail': []}
+            a = {'descs': line.desc, 'pnr': [], 'line_detail': [], 'total_after_tax': line.total_after_tax}
             for room in rec.room_detail_ids:
                 if room.issued_name and room.issued_name not in a['pnr']:
                     a['pnr'].append(room.issued_name)
@@ -489,7 +474,7 @@ class PrintoutInvoice(models.AbstractModel):
                 #         'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
                 #     })
         elif rec._name == 'tt.reschedule':
-            a = {'descs': line.desc, 'pnr': [], 'line_detail': []}
+            a = {'descs': line.desc, 'pnr': [], 'line_detail': [], 'total_after_tax': line.total_after_tax}
             a['pnr'].append(rec.pnr or '-')
             for line_detail in line.invoice_line_detail_ids:
                 a['line_detail'].append({
@@ -510,9 +495,7 @@ class PrintoutInvoice(models.AbstractModel):
             #         'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
             #     })
         else:
-            a = {'descs': line.desc, 'pnr': [], 'line_detail': []}
-            for provider in rec.provider_booking_ids:
-                a['pnr'].append(provider.pnr)
+            a = {'descs': line.desc, 'pnr': inv.pnr.split(','), 'line_detail': [], 'total_after_tax': line.total_after_tax}
             for line_detail in line.invoice_line_detail_ids:
                 a['line_detail'].append({
                     'name': line_detail.desc,
@@ -727,7 +710,7 @@ class PrintoutInvoice(models.AbstractModel):
             values[rec.id] = []
             for rec2 in rec.invoice_line_ids:
                 resv_obj = self.env[rec2.res_model_resv].browse(rec2.res_id_resv)
-                values[rec.id].append(self.get_invoice_data(rec2, resv_obj, resv_obj.passenger_ids))
+                values[rec.id].append(self.get_invoice_data(rec2, resv_obj, resv_obj.passenger_ids, rec))
                 # values[rec.id].append(self.calc_segments(resv_obj, resv_obj.passenger_ids))
         val = {
             'doc_ids': data['context']['active_ids'],

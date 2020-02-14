@@ -73,10 +73,11 @@
             <div class="title" style="background-color: #DC5413; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px">
                 <div class="row" style="padding-left: 20px; color: white; font-weight: 600; font-size: 18px; text-align: center;">
                     <!--                    <div class="col-1">No.</div>-->
-                    <div class="col-3">Invoice No.</div>
+                    <div class="col-2">Invoice No.</div>
                     <div class="col-3">Passenger(s)</div>
                     <div class="col-3">Transaction Detail</div>
-                    <div class="col-3">Amount</div>
+                    <div class="col-2">Amount</div>
+                    <div class="col-2">Total (After Tax)</div>
                 </div>
             </div>
             <t t-set="index" t-value="1"/>
@@ -85,7 +86,10 @@
                     <!--                    <div class="col-1" style="background: #F0F0F0;">-->
                     <!--                        <t t-esc="index"/>-->
                     <!--                    </div>-->
-                    <div class="col-3" style="text-align:center"><span t-field="inv_id.name"/><br/><span t-field="inv_id.date_invoice"/></div>
+                    <div class="col-2" style="text-align:center">
+                        <span t-field="inv_id.name"/><br/>
+                        <span t-field="inv_id.date_invoice"/>
+                    </div>
                     <div class="col-3">
                         <ul style="padding-left:15px;">
                             <t t-foreach="inv_id.invoice_line_ids" t-as="line_id">
@@ -100,8 +104,11 @@
                             <span t-field="line_id.desc"/>
                         </t>
                     </div>
-                    <div class="col-3 text-right" style="padding: 10px 25px;">
+                    <div class="col-2 text-right" style="padding: 10px 25px;">
                         <span t-field="inv_id.total" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                    </div>
+                    <div class="col-2 text-right" style="padding: 10px 25px;">
+                        <span t-field="inv_id.total_after_tax" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
                     </div>
                     <t t-set="index" t-value="index + 1"/>
                 </div>
