@@ -617,33 +617,6 @@ class ReservationAirline(models.Model):
             _logger.error('Entah status apa')
             raise RequestException(1006)
 
-    def get_acquirer_n_c_parent_id(self,req):
-        acquirer_id = False
-        #credit limit
-        if req.get('member'):
-            customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', req['acquirer_seq_id'])],
-                                                                       limit=1).id
-        ##cash / transfer
-        else:
-            if self.payment_method:
-                payment_method = self.payment_method
-            else:
-                payment_method = req.get('acquirer_seq_id',False)
-
-            if self.is_member:
-                customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', payment_method)],
-                                                                           limit=1).id
-            ##get payment acquirer
-            else:
-                if payment_method:
-                    acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', payment_method)], limit=1)
-                    if not acquirer_id.create_date:
-                        raise RequestException(1017)
-                else:
-                    acquirer_id = self.agent_id.default_acquirer_id
-                customer_parent_id = self.agent_id.customer_parent_walkin_id.id  ##fpo
-        return acquirer_id,customer_parent_id
-
     def _create_provider_api(self, schedules, api_context):
         dest_obj = self.env['tt.destinations']
         provider_airline_obj = self.env['tt.provider.airline']
