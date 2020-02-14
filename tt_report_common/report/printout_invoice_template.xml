@@ -365,8 +365,8 @@
                                     </div>
                                     <div style="margin-top: 5px;">
                                         <span style="color: white"><img t-att-src="'/tt_report_common/static/images/whatsapp.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
-                                            <t t-if="doc['agent_id'].social_media_ids.filtered(lambda x: x.type_id.name == 'Whatsapp')">
-                                                <span style="color: white; font-size: 14px" t-field="doc['agent_id'].social_media_ids.filtered(lambda x: x.type_id.name == 'Whatsapp')[0].name"/>
+                                            <t t-if="doc['agent_id'].social_media_ids.filtered(lambda x: x.type_id.name == 'WhatApps')">
+                                                <span style="color: white; font-size: 14px" t-field="doc['agent_id'].social_media_ids.filtered(lambda x: x.type_id.name == 'WhatApps')[0].name"/>
                                             </t>
                                             <t t-else=""><span style="color: white; font-size: 14px">-</span></t>
                                         </span>
@@ -425,10 +425,12 @@
                                     </div>
                                     <div style="margin-top: 5px;">
                                         <span style="color: white"><img t-att-src="'/tt_report_common/static/images/whatsapp.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
-                                            <t t-if="doc.agent_id.social_media_ids.filtered(lambda x: x.type_id.name == 'WhatsApps')">
-                                                <span style="color: white; font-size: 14px" t-field="doc.agent_id.social_media_ids.filtered(lambda x: x.type_id.name == 'WhatsApps')[0].name"/>
+                                            <t t-if="doc.agent_id.social_media_ids.filtered(lambda x: x.type_id.name == 'WhatApps')">
+                                                <span style="color: white; font-size: 14px" t-field="doc.agent_id.social_media_ids.filtered(lambda x: x.type_id.name == 'WhatApps')[0].name"/>
                                             </t>
-                                            <t t-else=""><span style="color: white; font-size: 14px">-</span></t>
+                                            <t t-else="">
+                                                <span style="color: white; font-size: 14px">-</span>
+                                            </t>
                                         </span>
                                     </div>
                                 </div>
@@ -549,17 +551,20 @@
         </div>
         <table style="width: 100%; line-height: normal; border-collapse: separate; border-spacing: 0;">  <!--border-radius: 20px; border: 1px solid #CCC; border-spacing: 0; margin-bottom: 30px; padding: 5px 0px 5px 0px;-->
             <tr style="background-color: #DC5413; padding-top: 5px; padding-bottom: 5px">
-                <th style="width: 16.667%; padding: 7px 7px 7px 20px; border-left: 1px solid #CCC; border-top-left-radius: 20px; color: white; font-weight: 800; font-size: 18px">
+                <th style="width: 20%; padding: 7px 7px 7px 20px; border-left: 1px solid #CCC; border-top-left-radius: 20px; color: white; font-weight: 800; font-size: 18px">
                     <span>Ref. Number</span>
                 </th>
                 <th style="width: 25%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
                     <span>Descriptions</span>
                 </th>
-                <th style="width: 25%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
+                <th style="width: 20%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
                     <span>Details</span>
                 </th>
-                <th style="width: 16.667%; padding: 7px 7px 7px 20px; border-right: 1px solid #CCC; border-top-right-radius: 20px; color: white; font-weight: 800; font-size: 18px">
+                <th style="width: 17.5%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
                     <span>Amount</span>
+                </th>
+                <th style="width: 17.5%; padding: 7px 7px 7px 20px; border-right: 1px solid #CCC; border-top-right-radius: 20px; color: white; font-weight: 800; font-size: 18px">
+                    <span>Total (After Tax)</span>
                 </th>
             </tr>
             <t t-set="row_idx" t-value="0"/>
@@ -569,14 +574,14 @@
                     <tr valign="top" style="padding-top: 5px; padding-bottom: 5px;">
                         <t t-if="line_detail_idx == 0">
                             <t t-if="row_idx == len(inv_lines[doc.id])-1">
-                                <td t-att-rowspan="len(line2_idx['line_detail'])" style="background: #F0F0F0; width: 25%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 20px;">
+                                <td t-att-rowspan="len(line2_idx['line_detail'])" style="background: #F0F0F0; width: 20%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 20px;">
                                     <t t-foreach="line2_idx['pnr']" t-as="pnr">
                                         <span t-esc="pnr"/><br/>
                                     </t>
                                 </td>
                             </t>
                             <t t-else="">
-                                <td t-att-rowspan="len(line2_idx['line_detail'])" style="background: #F0F0F0; width: 25%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px;">
+                                <td t-att-rowspan="len(line2_idx['line_detail'])" style="background: #F0F0F0; width: 20%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px;">
                                     <t t-foreach="line2_idx['pnr']" t-as="pnr">
                                         <span t-esc="pnr"/><br/>
                                     </t>
@@ -586,18 +591,23 @@
                                 <span t-esc="line2_idx['descs']"/>
                             </td>
                         </t>
-                        <td style="width: 25%; height: 50px; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc;">
+                        <td style="width: 20%; height: 50px; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc;">
                             <span t-esc="line_detail['name']" style="height: 100%;"/>
                         </td>
-                        <t t-if="row_idx == len(inv_lines[doc.id])-1 and line_detail_idx == len(line2_idx['line_detail'])-1">
-                            <td style="width: 25%; height: 50px; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 20px 0px; text-align: right; padding-right: 25px;">
-                                <span t-esc="line_detail['amount']" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}" style="height: 100%;"/>
-                            </td>
-                        </t>
-                        <t t-else="">
-                            <td style="width: 25%; height: 50px; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; text-align: right; padding-right: 25px;">
-                                <span t-esc="line_detail['amount']" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
-                            </td>
+                        <td style="width: 17.5%; height: 50px; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; text-align: right; padding-right: 25px;">
+                            <span t-esc="line_detail['amount']" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                        </td>
+                        <t t-if="line_detail_idx == 0">
+                            <t t-if="row_idx == len(inv_lines[doc.id])-1">
+                                <td t-att-rowspan="len(line2_idx['line_detail'])" style="width: 17.5%; height: 50px; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; text-align: right; padding-right: 25px; border-radius: 0px 0px 20px 0px;">
+                                    <span t-esc="line2_idx['total_after_tax']" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}" style="height: 100%;"/>
+                                </td>
+                            </t>
+                            <t t-else="">
+                                <td t-att-rowspan="len(line2_idx['line_detail'])" style="width: 17.5%; height: 50px; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; text-align: right; padding-right: 25px; border-radius: 0px 0px 0px 0px;">
+                                    <span t-esc="line2_idx['total_after_tax']" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}" style="height: 100%;"/>
+                                </td>
+                            </t>
                         </t>
                     </tr>
                     <t t-set="line_detail_idx" t-value="line_detail_idx+1"/>

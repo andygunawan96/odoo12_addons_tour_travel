@@ -353,6 +353,16 @@ class TtTopUp(models.Model):
         top_up_id = book_obj.env.ref('tt_report_common.action_report_printout_topup')
 
         if not book_obj.printout_top_up_id:
+            if book_obj.agent_id:
+                co_agent_id = book_obj.agent_id.id
+            else:
+                co_agent_id = book_obj.env.user.agent_id.id
+
+            # if self.user_id:
+            #     co_uid = self.user_id.id
+            # else:
+            co_uid = book_obj.env.user.id
+
             pdf_report = top_up_id.report_action(book_obj, data=datas)
             pdf_report['context'].update({
                 'active_model': book_obj._name,
@@ -367,8 +377,8 @@ class TtTopUp(models.Model):
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },
                 {
-                    'co_agent_id': self.env.user.agent_id.id,
-                    'co_uid': self.env.user.id,
+                    'co_agent_id': co_agent_id,
+                    'co_uid': co_uid,
                 }
             )
             upc_id = book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)

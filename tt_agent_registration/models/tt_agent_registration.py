@@ -269,10 +269,12 @@ class AgentRegistration(models.Model):
                     val['commission'].append(comm)
                 _logger.info('Proses promotion agent type ids selesai')
                 res.append(val)
+            res = Response().get_no_error(res)
+            return res
         except Exception as e:
             res = Response().get_error(str(e), 500)
             _logger.error(msg=str(e) + '\n' + traceback.format_exc())
-        return res
+            return res
 
     def get_all_registration_documents_api(self):
         regis_doc_env = self.env['tt.document.type']
@@ -339,118 +341,84 @@ class AgentRegistration(models.Model):
     def calc_commission(self):
         ledger = self.env['tt.ledger']
         self.calc_ledger()
+
+        comm_left = self.total_fee
         promotion_obj = self.env['tt.agent.registration.promotion'].search([('id', '=', self.promotion_id.id)]
                                                                            , limit=1)
         comm = promotion_obj.get_commission(self.registration_fee, self.agent_type_id, self.reference_id, self.promotion_id)
         for rec in comm:
             if rec['agent_type_id'] == self.reference_id.agent_type_id.id:
-                agent_comm_vals = ledger.prepare_vals(self._name, self.id, 'Recruit Comm. : ' + self.name,
-                                                      'Recruit Comm. : ' + self.name, datetime.now(), 3,
-                                                      self.currency_id.id, self.env.user.id, rec['amount'], 0)
-                agent_comm_vals = ledger.prepare_vals_for_agent_regis(self, agent_comm_vals)
-                agent_comm_vals.update({
-                    'agent_id': self.reference_id.id
-                })
-                self.env['tt.ledger'].create(agent_comm_vals)
+                # Ledger untuk komisi reference agent
+                ledger.create_ledger_vanilla(
+                    self._name,
+                    self.id,
+                    'Recruit Comm. : ' + self.name,
+                    'Recruit Comm. : ' + self.name,
+                    datetime.now(),
+                    3,
+                    self.currency_id.id,
+                    self.env.user.id,
+                    self.reference_id.id,
+                    False,
+                    rec['amount'],
+                    0,
+                    'Ledger for ' + self.name,
+                )
             else:
-                agent_comm_vals = ledger.prepare_vals(self._name, self.id, 'Recruit Comm. Parent : ' + self.name,
-                                                      'Recruit Comm. : ' + self.name, datetime.now(), 3,
-                                                      self.currency_id.id, self.env.user.id, rec['amount'], 0)
-                agent_comm_vals = ledger.prepare_vals_for_agent_regis(self, agent_comm_vals)
-                agent_comm_vals.update({
-                    'agent_id': rec['agent_id']
-                })
-                self.env['tt.ledger'].create(agent_comm_vals)
-        # line_obj = self.env['tt.agent.registration.promotion.agent.type'].search(
-        #     [('promotion_id', '=', self.promotion_id.id), ('agent_type_id', '=', self.agent_type_id.id)])
-        # # if self.reference_id.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id:
-        # #     self.calc_commission_ho(line_obj)
-        # if self.reference_id.agent_type_id.id == self.env.ref('tt_base.agent_type_japro').id:
-        #     self.calc_commission_japro(line_obj)
-        # elif self.reference_id.agent_type_id.id == self.env.ref('tt_base.agent_type_citra').id:
-        #     self.calc_commission_citra(line_obj)
+                # Komisi etc
+                agent_obj = self.env['tt.agent'].search([('id', '=', rec['agent_id'])])
+                ledger.create_ledger_vanilla(
+                    self._name,
+                    self.id,
+                    'Recruit Comm. Parent : ' + self.name,
+                    'Recruit Comm. Parent : ' + self.name,
+                    datetime.now(),
+                    3,
+                    self.currency_id.id,
+                    self.env.user.id,
+                    agent_obj.id,
+                    False,
+                    rec['amount'],
+                    0,
+                    'Ledger for ' + self.name,
+                )
+            comm_left -= rec['amount']
+        if comm_left > 0:
+            agent_obj = self.env['tt.agent'].search([('id', '=', self.env.ref('tt_base.rodex_ho').id)])
+            ledger.create_ledger_vanilla(
+                self._name,
+                self.id,
+                'Recruit Comm. Parent : ' + self.name,
+                'Recruit Comm. Parent : ' + self.name,
+                datetime.now(),
+                3,
+                self.currency_id.id,
+                self.env.user.id,
+                agent_obj.id,
+                False,
+                comm_left,
+                0,
+                'Ledger for ' + self.name,
+            )
 
     def calc_ledger(self):
         ledger = self.env['tt.ledger']
 
-        agent_comm_vals = ledger.prepare_vals(self._name, self.id, 'Recruit Fee : ' + self.name,
-                                              'Recruit Fee : ' + self.name, datetime.now(), 2, self.currency_id.id,
-                                              self.env.user.id, 0, self.total_fee)
-        agent_comm_vals = ledger.prepare_vals_for_agent_regis(self, agent_comm_vals)
-        agent_comm_vals.update({
-            'agent_id': self.parent_agent_id.id
-        })
-        self.env['tt.ledger'].create(agent_comm_vals)
-
-    # def calc_commission_ho(self, line_obj):
-    #     pass
-    #
-    # def calc_commission_citra(self, line_obj):
-    #     amount_remaining = self.total_fee
-    #     for line in line_obj.line_ids:
-    #         if line.agent_type_id.id == self.env.ref('tt_base.agent_type_citra').id:
-    #             ledger = self.env['tt.ledger']
-    #
-    #             agent_comm_vals = ledger.prepare_vals(self._name, self.id, 'Recruit Comm. : ' + self.name,
-    #                                                   'Recruit Comm. : ' + self.name, datetime.now(), 3,
-    #                                                   self.currency_id.id, self.env.user.id, line.amount, 0)
-    #             agent_comm_vals = ledger.prepare_vals_for_agent_regis(self, agent_comm_vals)
-    #             agent_comm_vals.update({
-    #                 'agent_id': self.reference_id.id
-    #             })
-    #             self.env['tt.ledger'].create(agent_comm_vals)
-    #             amount_remaining -= line.amount
-    #     # HO
-    #     # ledger = self.env['tt.ledger']
-    #     #
-    #     # agent_comm_vals = ledger.prepare_vals('Recruit Comm. HO : ' + self.name, 'Recruit Comm. HO : ' +
-    #     #                                       self.name, datetime.now(), 3, self.currency_id.id, amount_remaining,
-    #     #                                       0)
-    #     # agent_comm_vals = ledger.prepare_vals_for_agent_regis(self, agent_comm_vals)
-    #     # agent_comm_vals.update({
-    #     #     'agent_id': self.env['tt.agent'].sudo().search([('agent_type_id.name', '=', 'HO')], limit=1).id
-    #     # })
-    #     # self.env['tt.ledger'].create(agent_comm_vals)
-    #
-    # def calc_commission_japro(self, line_obj):
-    #     citra_parent_agent = self.get_parent_citra(self.parent_agent_id)
-    #     amount_remaining = self.total_fee
-    #     for line in line_obj.line_ids:
-    #         if line.agent_type_id.id == self.env.ref('tt_base.agent_type_citra').id:
-    #             ledger = self.env['tt.ledger']
-    #
-    #             agent_comm_vals = ledger.prepare_vals(self._name, self.id, 'Recruit Comm. Parent : ' + self.name,
-    #                                                   'Recruit Comm. Parent : ' + self.name, datetime.now(), 3,
-    #                                                   self.currency_id.id, self.env.user.id, line.amount, 0)
-    #             agent_comm_vals = ledger.prepare_vals_for_agent_regis(self, agent_comm_vals)
-    #             agent_comm_vals.update({
-    #                 'agent_id': citra_parent_agent.id
-    #             })
-    #             self.env['tt.ledger'].create(agent_comm_vals)
-    #             amount_remaining -= line.amount
-    #         elif line.agent_type_id.id == self.env.ref('tt_base.agent_type_japro').id:
-    #             ledger = self.env['tt.ledger']
-    #
-    #             agent_comm_vals = ledger.prepare_vals(self._name, self.id, 'Recruit Comm. : ' + self.name,
-    #                                                   'Recruit Comm. : ' + self.name, datetime.now(), 3,
-    #                                                   self.env.user.id, self.currency_id.id, line.amount, 0)
-    #             agent_comm_vals = ledger.prepare_vals_for_agent_regis(self, agent_comm_vals)
-    #             agent_comm_vals.update({
-    #                 'agent_id': self.reference_id.id
-    #             })
-    #             self.env['tt.ledger'].create(agent_comm_vals)
-    #             amount_remaining -= line.amount
-    #     # HO
-    #     ledger = self.env['tt.ledger']
-    #
-    #     agent_comm_vals = ledger.prepare_vals(self._name, self.id, 'Recruit Comm. HO : ' + self.name,
-    #                                           'Recruit Comm. HO : ' + self.name, datetime.now(), 3, self.env.user.id,
-    #                                           self.currency_id.id, amount_remaining, 0)
-    #     agent_comm_vals = ledger.prepare_vals_for_agent_regis(self, agent_comm_vals)
-    #     agent_comm_vals.update({
-    #         'agent_id': self.env['tt.agent'].sudo().search([('agent_type_id.name', '=', 'HO')], limit=1).id
-    #     })
-    #     self.env['tt.ledger'].create(agent_comm_vals)
+        ledger.create_ledger_vanilla(
+            self._name,
+            self.id,
+            'Recruit Fee : ' + self.name,
+            'Recruit Fee : ' + self.name,
+            datetime.now(),
+            2,
+            self.currency_id.id,
+            self.env.user.id,
+            self.parent_agent_id.id,
+            self.parent_agent_id.customer_parent_walkin_id.id,
+            0,
+            self.total_fee,
+            'Ledger for ' + self.name
+        )
 
     def create_opening_balance_ledger(self, agent_id):
         ledger = self.env['tt.ledger']
@@ -641,10 +609,10 @@ class AgentRegistration(models.Model):
                 percentage += rec.percentage
         if percentage >= 100:
             if self.name:
-                balance_res = self.env['tt.agent'].check_balance_limit_api(self.parent_agent_id.id, self.total)
+                balance_res = self.env['tt.agent'].check_balance_limit_api(self.parent_agent_id.id, self.total_fee)
                 if balance_res['error_code'] != 0:
                     _logger.error('Balance not enough')
-                    raise RequestException(1007)
+                    raise UserError(balance_res['error_msg'])
                 self.calc_commission()
                 # self.partner_id = self.parent_agent_id.id
                 self.create_opening_documents()
@@ -805,14 +773,18 @@ class AgentRegistration(models.Model):
                 # contact_ids = self.prepare_contact(pic)
                 agent_registration_customer_ids = self.prepare_customer(pic)
                 address_ids = self.prepare_address(address)
+                if context['co_agent_id'] != self.env.ref('tt_base.agent_b2c').id:
+                    reference_id = context['co_agent_id'],
+                else:
+                    reference_id = self.env.ref('tt_base.rodex_ho').id
                 header.update({
                     'agent_registration_customer_ids': [(6, 0, agent_registration_customer_ids)],
                     'address_ids': [(6, 0, address_ids)],
-                    'reference_id': context['co_agent_id'],
                     'social_media_ids': [(6, 0, social_media_ids)],
                     'registration_fee': agent_type.registration_fee,
                     'registration_date': datetime.now(),
                     'promotion_id': promotion_id,
+                    'reference_id': reference_id,
                     'parent_agent_id': parent_agent_id,
                     'tac': agent_type.terms_and_condition,
                     'create_uid': self.env.user.id
@@ -865,9 +837,21 @@ class AgentRegistration(models.Model):
             if agent_type_id.id == self.env.ref('tt_base.agent_type_citra').id:
                 parent_agent_id = self.env.ref('tt_base.rodex_ho').id
             else:
-                parent_agent_id = agent_id
+                if agent_id:
+                    if agent_id == self.env.ref('tt_base.agent_b2c').id:
+                        parent_agent_id = self.env.ref('tt_base.rodex_ho').id
+                    else:
+                        parent_agent_id = agent_id
+                else:
+                    parent_agent_id = self.env.ref('tt_base.rodex_ho').id
         else:
-            parent_agent_id = agent_id
+            if agent_id:
+                if agent_id == self.env.ref('tt_base.agent_b2c').id:
+                    parent_agent_id = self.env.ref('tt_base.rodex_ho').id
+                else:
+                    parent_agent_id = agent_id
+            else:
+                parent_agent_id = self.env.ref('tt_base.rodex_ho').id
         return parent_agent_id
 
     def get_config_api(self):
