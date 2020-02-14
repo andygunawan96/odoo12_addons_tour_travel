@@ -63,7 +63,7 @@
                         'default_res_id': id,
                         'default_referenced_document': name,
                    }"/>
-<!--                <button name="CR8" string="CR8" type="object" groups="base.user_admin"/>-->
+                <!--                <button name="CR8" string="CR8" type="object" groups="base.user_admin"/>-->
             </xpath>
             <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
                 <label for="is_get_booking_from_vendor" string="Retrieved From Vendor" attrs="{'invisible': [('is_get_booking_from_vendor','=',False)]}"/>
@@ -86,8 +86,17 @@
             </xpath>
 
             <xpath expr="//group[@name='paxgroup']" position="before">
-                <group attrs="{'invisible': [('split_from_resv_id', '=', False)]}">
-                    <field name="split_from_resv_id"/>
+                <group>
+                    <group attrs="{'invisible': [('split_from_resv_id', '=', False)]}">
+                        <field name="split_from_resv_id"/>
+                    </group>
+                    <group attrs="{'invisible': [('split_from_resv_id', '=', False),('split_to_resv_ids', '=', [])]}">
+                        <label for="split_uid" string="Splitted By"/>
+                        <div>
+                            <field name="split_uid" readonly="1" class="oe_inline"/> -
+                            <field name="split_date" readonly="1" class="oe_inline"/>
+                        </div>
+                    </group>
                 </group>
                 <separator string="Trip Information"/>
                 <group>

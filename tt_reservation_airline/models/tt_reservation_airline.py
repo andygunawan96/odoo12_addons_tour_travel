@@ -39,6 +39,8 @@ class ReservationAirline(models.Model):
                                        default= lambda self: self.env.ref('tt_reservation_airline.tt_provider_type_airline'))
     split_from_resv_id = fields.Many2one('tt.reservation.airline', 'Splitted From', readonly=1)
     split_to_resv_ids = fields.One2many('tt.reservation.airline', 'split_from_resv_id', 'Splitted To', readonly=1)
+    split_uid = fields.Many2one('res.users', 'Splitted by', readonly=True)
+    split_date = fields.Datetime('Splitted Date', readonly=True)
 
     is_get_booking_from_vendor = fields.Boolean('Get Booking From Vendor')
 
