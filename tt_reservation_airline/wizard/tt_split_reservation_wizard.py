@@ -98,8 +98,15 @@ class TtSplitReservationWizard(models.TransientModel):
         if len(pax_list) > 0 and len(provider_list) > 0 and len(new_pnr_list) < len(provider_list):
             raise UserError(_('You need to input New PNR for the split Passenger(s) in the new reservation, need {} more.'.format(len(provider_list) - len(new_pnr_list))))
 
+        book_obj.write({
+            'split_uid': self.env.user.id,
+            'split_date': fields.Datetime.now(),
+        })
+
         new_vals = {
             'split_from_resv_id': book_obj.id,
+            'split_uid': self.env.user.id,
+            'split_date': fields.Datetime.now(),
             'pnr': book_obj.pnr,
             'agent_id': book_obj.agent_id and book_obj.agent_id.id or False,
             'customer_parent_id': book_obj.customer_parent_id and book_obj.customer_parent_id.id or False,
@@ -128,7 +135,7 @@ class TtSplitReservationWizard(models.TransientModel):
             'state': book_obj.state
         }
 
-        new_book_obj = self.env['tt.reservation.airline'].sudo().create(new_vals)
+        new_book_obj = self.env['tt.reservation.airline'].create(new_vals)
         if len(pax_list) <= 0:
             new_book_obj.sudo().write({
                 'adult': book_obj.adult,

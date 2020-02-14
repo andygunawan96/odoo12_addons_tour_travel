@@ -46,7 +46,7 @@ class ReservationTour(models.Model):
                                            readonly=True, states={'draft': [('readonly', False)]})
     passenger_ids = fields.One2many('tt.reservation.passenger.tour', 'booking_id', string='Passengers')
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', default=lambda self: self.env.ref('tt_reservation_tour.tt_provider_type_tour'))
-    payment_method = fields.Selection(PAYMENT_METHOD, 'Payment Method')
+    payment_method_tour = fields.Selection(PAYMENT_METHOD, 'Tour Payment Method')
     installment_invoice_ids = fields.One2many('tt.installment.invoice', 'booking_id', 'Installments')
 
     @api.depends('tour_id')
@@ -453,25 +453,11 @@ class ReservationTour(models.Model):
 
             payment_method = data.get('payment_method') and data['payment_method'] or 'full'
 
-            acquirer_id = False
-            if data.get('member'):
-                customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', data['acquirer_seq_id'])], limit=1).id
-            ##cash / transfer
-            else:
-                ##get payment acquirer
-                if data.get('acquirer_seq_id'):
-                    acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', data['acquirer_seq_id'])], limit=1)
-                    if not acquirer_id:
-                        raise RequestException(1017)
-                # ini harusnya ada tetapi di comment karena rusak ketika force issued from button di tt.provider.airlines
-                else:
-                    # raise RequestException(1017)
-                    acquirer_id = book_obj.agent_id.default_acquirer_id
-                customer_parent_id = book_obj.agent_id.customer_parent_walkin_id.id  ##fpo
+            acquirer_id, customer_parent_id = book_obj.get_acquirer_n_c_parent_id(data)
 
             vals = {
                 'customer_parent_id': customer_parent_id,
-                'payment_method': payment_method
+                'payment_method_tour': payment_method
             }
 
             book_obj.sudo().write(vals)
