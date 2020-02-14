@@ -13,7 +13,8 @@ API_CN_HOTEL = ApiConnectorHotels()
 class HotelInformation(models.Model):
     _inherit = 'tt.hotel'
 
-    # HotelsPro
+    # HotelsPro Ver1
+    # Masih gabung
     def get_record_by_file(self, url, filename, number, extension, provider_id):
         # url = '/home/rodex-it-05/Documents/VIN/Document/Hotel/Api./HotelPro/consumer-20180423-export/'
         # filename = 'hotels-'
@@ -181,11 +182,11 @@ class HotelInformation(models.Model):
                 break
         return state, number
 
-    # HotelsPro:
+    # HotelsPro: Ver2
     # Step 01: Ambil smua master(hotel_type, fac, country, destinations)
     # Step 1a: Simpan dalam bentuk File
     def get_record_by_file_2(self):
-        url = '/home/rodex-it-05/Documents/VIN/Document Vendor Hotel, Payment GW/Api./HotelPro/01_DEV/Data/consumer-20190624-export/'
+        url = '/var/log/cache_hotel/hotelspro_file/data/'
 
         cache_hotel = {}
         type = {}
@@ -205,13 +206,13 @@ class HotelInformation(models.Model):
                     cache_hotel[filename[:-1]] = type
                     break
 
-        filename = "/var/log/tour_travel/file_hotelspro_master/master_info.txt"
+        filename = "/var/log/cache_hotel/hotelspro_file/master/master_info.txt"
         file = open(filename, 'w')
         file.write(json.dumps(cache_hotel))
         file.close()
 
     def get_record_by_file_2a(self):
-        url = '/home/rodex-it-05/Documents/VIN/Document Vendor Hotel, Payment GW/Api./HotelPro/01_DEV/Data/consumer-20190624-export/'
+        url = '/var/log/cache_hotel/hotelspro_file/data/'
 
         cache_hotel = {}
         filenames = ['destinations-',]
@@ -237,38 +238,45 @@ class HotelInformation(models.Model):
     # HotelsPro: Read smua file hotel dan map per city
     def get_record_by_file_3(self):
         # Step 1b: Load cache
-        with open("/var/log/tour_travel/file_hotelspro_master/master_info.txt") as f:
+        with open("/var/log/cache_hotel/hotelspro_file/master/master_info.txt") as f:
             cache_data = json.load(f)
             cache_type = cache_data['hoteltypes']
             cache_fac = cache_data['facilities']
             cache_country = cache_data['country']
         f.close()
         # Step 02: Buat smua file dari city
-        with open("/var/log/tour_travel/file_hotelspro_master/master_dest.txt") as f:
+        with open("/var/log/cache_hotel/hotelspro_file/master/master_dest.txt") as f:
             cache_city = json.load(f)
         f.close()
         # Step 03: Loop untuk smua file hotel
         # Step 04: mapping berdasarkan city
-        url = '/home/rodex-it-05/Documents/VIN/Document Vendor Hotel, Payment GW/Api./HotelPro/01_DEV/Data/consumer-20190624-export/'
+        url = '/var/log/cache_hotel/hotelspro_file/data/'
 
         cache_hotel = {}
         filename = 'hotels-'
         number = 1
+        counter_false = 0
         while number:
             try:
-                _logger.info("Opening file (" + filename + str(number - 1) + ").")
-                with open(url + filename + str(number - 1) + '.json') as f:
+                # Perlu tambah ini karena data baru dari hotelpro bisa loncat2x (1,3,4,5,7,8)
+                _logger.info("Opening file " + url + filename + str(number) + '.json')
+                with open(url + filename + str(number) + '.json') as f:
                     data = json.load(f)
                     for obj in data:
-                        city_name = cache_city[obj.get('destination')].replace('/','-').replace("\'",'-').encode("utf-8") or ''
+                        if cache_city.get(obj.get('destination')):
+                            city_name = cache_city[obj['destination']].replace('/', '-').replace("\'", '-') or ''
+                        else:
+                            # _logger.info("Skipping: Destination" + obj.get('destination'))
+                            city_name = 'other'
+
                         if not cache_hotel.get(city_name):
                             cache_hotel[city_name] = []
                         # _logger.info("Process: " + json.dumps(obj))
                         cache_hotel[city_name].append({
                             'id': obj.get('code'),
-                            'name': obj['name'].encode("utf-8"),
-                            'street': obj.get('address') and obj['address'].encode("utf-8") or '',
-                            'description': obj.get('descriptions') and obj['descriptions'].get('hotel_information').encode("utf-8"),
+                            'name': obj['name'],
+                            'street': obj.get('address') and obj['address'] or '',
+                            'description': obj.get('descriptions') and obj['descriptions'].get('hotel_information'),
                             'email': obj.get('email') or '',
                             'images': obj['images'] and [rec['original'] for rec in obj['images']] or [],
                             'facilities': obj['facilities'] and [cache_fac[rec] for rec in obj['facilities']] or [],
@@ -284,7 +292,7 @@ class HotelInformation(models.Model):
                         })
                     if number % 3 == 0:
                         for rec in cache_hotel.keys():
-                            temp_filename = "/var/log/tour_travel/hotelspro_file/" + rec + ".json"
+                            temp_filename = "/var/log/cache_hotel/hotelspro_file/" + rec + ".json"
                             try:
                                 with open(temp_filename, 'r') as f2:
                                     a = f2.read()
@@ -294,28 +302,30 @@ class HotelInformation(models.Model):
                             except:
                                 old_record = cache_hotel[rec]
 
-                            file = open(temp_filename, 'w+')
+                            file = open(temp_filename, 'w')
                             file.write(json.dumps(old_record))
                             file.close()
                         cache_hotel = {}
-                number += 1
+                counter_false = 0
             except IOError as e:
                 _logger.error("Couldn't open or write to file (%s)." % e)
-                for rec in cache_hotel.keys():
-                    filename = "/var/log/tour_travel/hotelspro_file/" + rec + ".json"
-                    try:
-                        with open(temp_filename, 'r') as f2:
-                            a = f2.read()
-                            old_record = json.loads(a)
-                            old_record += cache_hotel[rec]
-                        f2.close()
-                    except:
-                        old_record = cache_hotel[rec]
-                    file = open(filename, 'w')
-                    file.write(json.dumps(old_record))
-                    file.close()
-                break
-
+                counter_false += 1
+                if counter_false == 3:
+                    for rec in cache_hotel.keys():
+                        filename = "/var/log/tour_travel/hotelspro_file/" + str(rec) + ".json"
+                        try:
+                            with open(temp_filename, 'r') as f2:
+                                a = f2.read()
+                                old_record = json.loads(a)
+                                old_record += cache_hotel[rec]
+                            f2.close()
+                        except:
+                            old_record = cache_hotel[rec]
+                        file = open(filename, 'w')
+                        file.write(json.dumps(old_record))
+                        file.close()
+                    break
+            number += 1
     # Hotelspro: Tools untuk hitung jumlah hotel per city dan kelengkapan data nya
     def get_record_by_file_4(self):
         with open("/var/log/tour_travel/file_hotelspro_master/master_dest.txt") as f:
@@ -899,14 +909,13 @@ class HotelInformation(models.Model):
     # Ambil List Country & City, List Hotel untuk setiap city
     def get_record_by_api5(self):
         city_ids = []
-        provider_id = self.env['res.partner'].search(
-            [('is_master_vendor', '=', True), ('provider_code', '=', 'itank')], limit=1)
+        provider_id = self.env['tt.provider'].search([('code', '=', 'itank')], limit=1)
         api_context = {
             'co_uid': self.env.user.id
         }
         search_req = {
             'provider': 'itank',
-            'type': 'country',
+            'type': 'city',
             'limit': '20',
             'offset': '1',
             'codes': '',
@@ -1562,12 +1571,23 @@ class HotelInformation(models.Model):
             'co_uid': self.env.user.id
         }
         i = 1
-        need_to_add_list = [['No', 'City', 'Country', 'Hotel qty']]
-        with open("/var/log/cache_hotel/tbo/master_csv/country.csv", 'r') as file:
-            file_content = csv.reader(file)
-            for rec in file_content:
+        rendered_city = []
+        need_to_add_list = []
+        try:
+            with open("/var/log/cache_hotel/tbo/master_csv/result_data.csv", 'r') as file:
+                file_content = csv.reader(file)
+                for rec in file_content:
+                    i += 1
+                    rendered_city.append(rec[1].lower())
+                    need_to_add_list.append(rec)
+                file.close()
+        except:
+            need_to_add_list.append(['No', 'City', 'City Code', 'Country', 'Hotel qty'])
+
+        file_content = glob.glob("/var/log/cache_hotel/tbo/master/*.txt")
+        for rec in file_content:
                 # open file
-                filename = '/var/log/cache_hotel/tbo/master/' + rec[1].lower() + '.txt'
+                filename = rec
                 try:
                     file = open(filename, 'r')
                     country_file = json.loads(file.read())
@@ -1577,6 +1597,9 @@ class HotelInformation(models.Model):
                 # loop per city ke fungsi get hotel giata
                 for city in country_file:
                 # for city in [{'code':'126632'}, {'code':'115936'}, {'code':'131408'}]:
+                    if city['name'].split(',')[0].lower() in rendered_city:
+                        continue
+
                     search_req = {
                         'provider': 'tbo',
                         'type': 'hotel',
@@ -1608,8 +1631,8 @@ class HotelInformation(models.Model):
                     # need_to_add_list.append([i, city, rec[1], length])
                     # filename = "/var/log/cache_hotel/tbo/" + city + ".json"
 
-                    _logger.info("Get "+str(length)+" Hotel(s) for City: " + city['name'] + ', ' + rec[1])
-                    need_to_add_list.append([i, city['name'].split(',')[0], rec[1], length])
+                    _logger.info("Get "+str(length)+" Hotel(s) for City: " + city['name'] + ', ' + rec[32:-4])
+                    need_to_add_list.append([i, city['name'].split(',')[0], city['code'], rec[32:-4], length])
                     filename = "/var/log/cache_hotel/tbo/" + city['name'].split(',')[0].replace('/', '-') + ".json"
 
                     i += 1
@@ -1617,12 +1640,12 @@ class HotelInformation(models.Model):
                     file = open(filename, 'w')
                     file.write(json.dumps(hotel_fmt))
                     file.close()
-        file.close()
 
-        with open('/var/log/cache_hotel/tbo/master/result_data.csv', 'w') as csvFile:
-            writer = csv.writer(csvFile)
-            writer.writerows(need_to_add_list)
-        csvFile.close()
+                    # Save per City
+                    with open('/var/log/cache_hotel/tbo/master_csv/result_data.csv', 'w') as csvFile:
+                        writer = csv.writer(csvFile)
+                        writer.writerows(need_to_add_list)
+                    csvFile.close()
         return True
 
     # OYO TMC
@@ -1699,6 +1722,78 @@ class HotelInformation(models.Model):
         csvFile.close()
         return True
 
+    # Hotel RodexTrip
+    # AutoComplete Cache
+    def get_record_by_api13(self):
+        api_context = {
+            'co_uid': self.env.user.id
+        }
+
+        search_req = {
+            'provider': 'rodextrip_hotel',
+            'type': 'cache',
+            'limit': 0,
+            'offset': 99999,
+            'codes': '',
+        }
+        hotel_objs = API_CN_HOTEL.get_record_by_api(search_req, api_context)
+        return True
+
+    # Klik and Book get new
+    def get_record_by_api14(self):
+        api_context = {
+            'co_uid': self.env.user.id
+        }
+
+        search_req = {
+            'provider': 'knb',
+            'type': 'cache',
+            'limit': 0,
+            'offset': 99999,
+            'codes': '',
+        }
+        hotel_objs = API_CN_HOTEL.get_record_by_api(search_req, api_context)
+        for rec in hotel_objs.keys():
+            filename = "/var/log/cache_hotel/knb/master/" + rec + ".json"
+            # Create Record Hotel per City
+            file = open(filename, 'w')
+            file.write(hotel_objs[rec][0])
+            file.close()
+
+            filename = "/var/log/cache_hotel/knb/" + rec + ".json"
+            # Create Record Hotel per City
+            file = open(filename, 'w')
+            file.write(hotel_objs[rec][1])
+            file.close()
+        return True
+
+    # Klik and Book get already exist
+    def get_record_by_api14b(self):
+        api_context = {
+            'co_uid': self.env.user.id
+        }
+
+        search_req = {
+            'provider': 'knb',
+            'type': 'cache',
+            'limit': 0,
+            'offset': 99999,
+            'codes': '',
+        }
+        hotel_objs = API_CN_HOTEL.get_record_by_api(search_req, api_context)
+        for rec in hotel_objs.keys():
+            filename = "/var/log/cache_hotel/knb/master/" + rec + ".json"
+            # Create Record Hotel per City
+            file = open(filename, 'w')
+            file.write(hotel_objs[rec][0])
+            file.close()
+
+            filename = "/var/log/cache_hotel/knb/" + rec + ".json"
+            # Create Record Hotel per City
+            file = open(filename, 'w')
+            file.write(hotel_objs[rec][1])
+            file.close()
+        return True
     # ====================== TOOLS =====================================================
     def masking_provider(self, provider):
         # Perlu dibuat gini karena cache data bisa berasal dari mana sja
@@ -1944,7 +2039,7 @@ class HotelInformation(models.Model):
             length = city[0]
         except:
             pass
-        if len(rendered_city) >= 1 :
+        if len(rendered_city) >= 1:
             return rendered_city[1:], length
         else:
             return rendered_city, length
@@ -1959,7 +2054,8 @@ class HotelInformation(models.Model):
         # provider_list = ['hotelspro', 'hotelspro_file', 'fitruums', 'webbeds_pool', 'webbeds_excel_pool',
         #                  'itank', 'quantum', 'quantum_pool', 'mgholiday', 'mg_pool', 'miki_api', 'miki_scrap', 'miki_pool',
         #                  'dida_pool', 'tbo', 'oyo']
-        provider_list = ['miki_api', 'miki_scrap', 'miki_pool', 'quantum', 'quantum_pool']
+        provider_list = ['hotelspro', 'hotelspro_file', 'fitruums', 'webbeds_pool', 'webbeds_excel_pool',
+                         'quantum', 'quantum_pool', 'miki_api', 'miki_scrap', 'miki_pool', 'dida_pool', 'tbo', 'oyo']
 
         new_to_add_list2 = [['Type', '#1:Name', '#1:address', '#1:provider', '#2:Similar Name', '#2:address', '#2:provider']]
         if not rendered_city:
@@ -2014,15 +2110,18 @@ class HotelInformation(models.Model):
                                         if len(same_name[0]['facilities']) < len(hotel_fmt['facilities']):
                                             same_name[0]['facilities'] = hotel_fmt['facilities']
                                         # self.file_log_write('Sync: ' + hotel_fmt['name'] + '->' + same_name[0]['name'])
+                                        add = hotel_fmt['location']['address'] or ''
+                                        add2 = same_name[0]['location']['address'] or ''
                                         new_to_add_list2.append([
-                                            'sync', hotel_fmt['name'].encode("utf-8"), hotel_fmt['location']['address'].encode("utf-8"), ','.join(hotel_fmt['external_code'].keys()).encode("utf-8"),
-                                            same_name[0]['name'].encode("utf-8"), same_name[0]['location']['address'].encode("utf-8"), ','.join(same_name[0]['external_code'].keys()).encode("utf-8")
+                                            'sync', hotel_fmt['name'].encode("utf-8"), add.encode("utf-8"), ','.join(hotel_fmt['external_code'].keys()).encode("utf-8"),
+                                            same_name[0]['name'].encode("utf-8"), add2.encode("utf-8"), ','.join(same_name[0]['external_code'].keys()).encode("utf-8")
                                         ])
                                     else:
                                         # create baru di memory
                                         cache_content.append(hotel_fmt)
+                                        add = hotel_fmt['location']['address'] or ''
                                         # self.file_log_write('New : ' + hotel_fmt['name'])
-                                        new_to_add_list2.append(['new', hotel_fmt['name'].encode("utf-8"), hotel_fmt['location']['address'].encode("utf-8"), ','.join(hotel_fmt['external_code'].keys()).encode("utf-8"),
+                                        new_to_add_list2.append(['new', hotel_fmt['name'].encode("utf-8"), add.encode("utf-8"), ','.join(hotel_fmt['external_code'].keys()).encode("utf-8"),
                                                                  ''])
                             f2.close()
                         except Exception as e:
@@ -2050,7 +2149,7 @@ class HotelInformation(models.Model):
                 new_to_add_list.append(len(cache_content) if cache_content else 0)
                 need_to_add_list.append(new_to_add_list)
 
-                if target_city_index % 50 == 0:
+                if target_city_index % 10 == 0:
                     # Simpan record tiap 50 city
                     with open('/var/log/cache_hotel/result log/merger_process_result.csv', 'a') as csvFile:
                         writer = csv.writer(csvFile)

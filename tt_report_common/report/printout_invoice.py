@@ -1196,13 +1196,13 @@ class PrintoutRefund(models.AbstractModel):
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'docs': temp_docs,
-            'is_ho': data.get('is_ho') and data['is_ho'] or False,
-            'is_est': data.get('is_est') and data['is_est'] or False,
+            'is_ho': data['data'].get('is_ho') and data['data']['is_ho'] or False,
+            'is_est': data['data'].get('is_est') and data['data']['is_est'] or False,
             'terbilang': self.compute_terbilang_from_objs(
-                self.env[data['context']['active_model']].browse(data['context']['active_ids']), data.get('is_ho')),
+                self.env[data['context']['active_model']].browse(data['context']['active_ids']), data['data'].get('is_ho')),
         }
 
-        if data.get('is_ho'):
+        if data['data'].get('is_ho'):
             ho_obj = self.env['tt.agent'].sudo().search([('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
             if ho_obj:
                 return_dat.update({

@@ -1,5 +1,5 @@
 <odoo>
-    <data>
+    <data noupdate="1">
         <record id="payment_acquirer_ho_bca" model="payment.acquirer">
             <field name="name">Bank BCA</field>
             <field name="provider">manual</field>

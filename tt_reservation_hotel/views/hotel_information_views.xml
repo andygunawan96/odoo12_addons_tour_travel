@@ -356,10 +356,10 @@
                     <group>
                         <group string="HotelPro">
                             <button name="get_record_by_file" string="File Country City ver 1" type="object" icon="fa-building"/>
-                            <button name="get_record_by_file_2" string="Country, City" type="object" icon="fa-building"/>
-                            <button name="get_record_by_file_2a" string="HotelsPro" type="object" icon="fa-plus"/>
-                            <button name="get_record_by_file_3" string="HotelsPro" type="object" icon="fa-plus"/>
-                            <button name="get_record_by_file_4" string="HotelsPro" type="object" icon="fa-plus"/>
+                            <button name="get_record_by_file_2" string="Country, HotelType, Facilities Ver2" type="object" icon="fa-building"/>
+                            <button name="get_record_by_file_2a" string="City(Destinations) Ver2" type="object" icon="fa-plus"/>
+                            <button name="get_record_by_file_3" string="Hotel Ver2" type="object" icon="fa-plus"/>
+                            <button name="get_record_by_file_4" string="Count hotel Result Ver2" type="object" icon="fa-plus"/>
                         </group>
                         <group string="Quantum">
                             <button name="get_record_by_api2a" string="Hotel API Development" type="object" icon="fa-spoon"/>
@@ -381,7 +381,17 @@
                         </group>
                         <group string="OYO">
                             <button name="get_record_by_api10" string="Hotel Raw" type="object" icon="fa-home"/>
-                            <button name="get_record_by_api10b" string="Hotel Mapping" type="object" icon="fa-maps"/>
+                            <button name="get_record_by_api10b" string="Hotel Mapping" type="object" icon="fa-spoon"/>
+                        </group>
+                        <group string="Itank">
+                            <button name="get_record_by_api5" string="Hotel" type="object" icon="fa-home"/>
+                        </group>
+                        <group string="Klik and Book">
+                            <button name="get_record_by_api14" string="Hotel" type="object" icon="fa-building"/>
+                        </group>
+                        <group string="Rodextrip">
+                            <button name="get_record_by_api13" string="AutoComplete Cache" type="object" icon="fa-spoon"/>
+                            <!--<button name="get_record_by_api13b" string="Hotel" type="object" icon="fa-home"/>-->
                         </group>
                     </group>
                 </sheet>
