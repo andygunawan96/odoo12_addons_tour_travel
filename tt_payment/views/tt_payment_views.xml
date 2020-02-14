@@ -132,7 +132,7 @@
                     </group>
                     <notebook>
                         <page string="Uploads">
-                            <field name="payment_image_ids" options="{'no_create':True}"/>
+                            <field name="payment_image_ids"/>
                         </page>
                         <page name="used_on" string="Used On">
                             <group>
@@ -183,6 +183,39 @@
         <!--                'tree_view_ref': 'tt_rodex_billing.tt_billing_statement_tree_view'-->
         <!--            }-->
         <!--        </field>-->
+    </record>
+
+    <record id="tt_payment_form_view_agent" model="ir.ui.view">
+        <field name="name">tt.payment.form.view.agent</field>
+        <field name="model">tt.payment</field>
+        <field name="inherit_id" ref="tt_payment.tt_payment_form_view"/>
+        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_user_operator') ])]" />
+        <field name="priority">40</field>
+        <field name="arch" type="xml">
+            <field name="dummy_acquirer_field" position="replace">
+                <field name="dummy_acquirer_field" class="oe_edit_only" attrs="{'invisible':[('dummy_acquirer_field','=', True)], 'readonly':[('top_up_id','!=', False)]}"/>
+            </field>
+            <field name="acquirer_id" position="replace">
+                <field name="acquirer_id" attrs="{'readonly':[('top_up_id','!=', False)]}"/>
+            </field>
+            <field name="payment_date" position="replace">
+                <field name="payment_date" attrs="{'readonly':[('top_up_id','!=', False)]}"/>
+            </field>
+            <field name="reference" position="replace">
+                <field name="reference" attrs="{'readonly':[('top_up_id','!=', False)]}"/>
+            </field>
+            <field name="real_total_amount" position="replace">
+                <field name="real_total_amount" attrs="{'readonly':[('top_up_id','!=', False)]}"/>
+            </field>
+            <field name="payment_image_ids" position="replace">
+                <field name="payment_image_ids" attrs="{'readonly':[('top_up_id','!=', False)]}"/>
+            </field>
+            <button name="%(tt_base.tt_upload_center_wizard_action_view)d" position="replace">
+                <button name="%(tt_base.tt_upload_center_wizard_action_view)d" string="Upload Document" type="action"
+                                class="oe_stat_button" icon="fa-upload"  attrs="{'invisible':[('top_up_id','!=', False)]}"
+                                context="{'default_target_field_name': 'payment_image_ids'}"/>
+            </button>
+        </field>
     </record>
 
     <!-- Billing -->
