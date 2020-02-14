@@ -21,6 +21,11 @@
                     <filter string="Cancelled/Rejected/Refunded" name="cancel" domain="['|', '|', ('state','=','cancel'),('state','=','rejected'),('state','=','refund')]"/>
                 </group>
                 <separator/>
+                <group>
+                    <filter string="Full Payment" name="full_payment" domain="[('payment_method_tour','=','full')]"/>
+                    <filter string="Installment" name="installment" domain="[('payment_method_tour','=','installment')]"/>
+                </group>
+                <separator/>
                 <filter name="today" string="Today" domain="[('date','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>
                 <filter name="yesterday" string="Yesterday"
                         domain="[
@@ -42,6 +47,7 @@
                     <filter name="group_by_customer_parent_id" string="Customer Parent" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                     <filter name="group_by_customer_parent_type_id" string="Customer Parent Type" domain="[]" context="{'group_by':'customer_parent_type_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                     <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}"/>
+                    <filter name="group_by_payment_method_tour" string="Tour Payment Method" domain="[]" context="{'group_by':'payment_method_tour'}"/>
                 </group>
             </search>
         </field>
@@ -71,7 +77,7 @@
                     <group>
                         <field name="tour_id" readonly="1" groups="tt_base.group_tt_tour_travel_operator"/>
                         <field name="tour_id_str" readonly="1" groups="tt_base.group_tt_agent_user_operator"/>
-                        <field name="payment_method" readonly="1" attrs="{'invisible': [('state', 'not in', ('issued'))]}"/>
+                        <field name="payment_method_tour" readonly="1" attrs="{'invisible': [('state', 'not in', ('issued'))]}"/>
                     </group>
                     <group>
                         <field name="departure_date" string="Departure Date"/>
@@ -136,7 +142,7 @@
                 </page>
             </xpath>
             <xpath expr="//page[@name='anchor']" position="before">
-                <page string="Installments" name="installment_invoice" attrs="{'invisible': [('payment_method', '!=', 'installment')]}">
+                <page string="Installments" name="installment_invoice" attrs="{'invisible': [('payment_method_tour', '!=', 'installment')]}">
                     <!--                    <button name="calculate_service_charge" type="object" string="calc"/>-->
                     <!--                    <button name="test_error" type="object" string="test_error"/>-->
                     <field name="installment_invoice_ids">

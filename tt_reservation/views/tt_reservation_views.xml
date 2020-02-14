@@ -86,7 +86,7 @@
                                 <field name="user_id" readonly="1" class="oe_inline"/> -
                                 <field name="create_date" readonly="1" class="oe_inline"/>
                             </div>
-                            <label for="confirm_uid" string="Booked By"/>
+                            <label for="booked_uid" string="Booked By"/>
                             <div>
                                 <field name="booked_uid" readonly="1" class="oe_inline"/> -
                                 <field name="booked_date" readonly="1" class="oe_inline"/>
@@ -96,7 +96,7 @@
                                 <field name="issued_uid" readonly="1" class="oe_inline"/> -
                                 <field name="issued_date" readonly="1" class="oe_inline"/>
                             </div>
-                            <label for="issued_uid" string="Refund By"/>
+                            <label for="refund_uid" string="Refund By"/>
                             <div>
                                 <field name="refund_uid" readonly="1" class="oe_inline"/> -
                                 <field name="refund_date" readonly="1" class="oe_inline"/>
