@@ -14,10 +14,8 @@ class AgentRegistrationDocument(models.Model):
     opening_document_id = fields.Many2one('tt.agent.registration', 'Opening Document')
     state = fields.Selection(STATE, 'State', default='draft')
     description = fields.Text('Description')
-    # attachment_ids = fields.One2many('ir.attachment')
-    document_attach_ids = fields.Many2many('tt.upload.center', 'document_ir_attachments_rel', 'document_id',
-                                           'attachment_id', string='Attachments')
-    # attachment_ids = fields.Char('Attachments')
+    document_attach_ids = fields.Many2many('tt.upload.center', 'document_attach_rel', 'doc_id',
+                                           'attach_id', string='Attachments')
     schedule_date = fields.Datetime('Schedule Date')
     receive_date = fields.Datetime('Receive Date')
     qty = fields.Integer('Qty')

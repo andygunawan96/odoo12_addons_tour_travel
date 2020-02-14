@@ -12,7 +12,7 @@
                     <t t-call="tt_report_common.address_layout"/>
                 </td>
                 <td style="width:100px;"/>
-                <td style="width:200px;"><b>Transaction Report:</b></td>
+                <td style="width:300px;"><b>Transaction Report:</b></td>
                 <td style="width:2%;"></td>
                 <td style="width:350px;"></td>
             </tr>
@@ -88,9 +88,11 @@
                     <div class="col-3" style="text-align:center"><span t-field="inv_id.name"/><br/><span t-field="inv_id.date_invoice"/></div>
                     <div class="col-3">
                         <ul style="padding-left:15px;">
-                            <!--                            <t t-foreach="inv_id.passenger_ids" t-as="pax">-->
-                            <!--                                <li><span t-field="pax.first_name"/> <span t-field="pax.last_name"/></li>-->
-                            <!--                            </t>-->
+                            <t t-foreach="inv_id.invoice_line_ids" t-as="line_id">
+                                <t t-foreach="line_id.invoice_line_detail_ids" t-as="detail_id">
+                                    <li><span t-field="detail_id.desc"/></li>
+                                </t>
+                            </t>
                         </ul>
                     </div>
                     <div class="col-3">
@@ -105,9 +107,9 @@
                 </div>
             </t>
             <div class="row" style="margin-left: 0px; margin-right: 0px; margin-bottom: 20px; border-radius: 0 0 20px 20px; border: 1px solid #BBB;">
-                <div class="col-7" style="background: #F0F0F0; border-radius: 0 0 0px 20px; padding: 10px 10px 10px 20px;"/>
+                <div class="col-6" style="background: #F0F0F0; border-radius: 0 0 0px 20px; padding: 10px 10px 10px 20px;"/>
                 <div class="col-3 text-right" style="background-color: #F0F0F0; padding: 5px;">Billing Total</div>
-                <div class="col-2 text-right" style="background-color: #f15a22; border-radius: 0 0 20px 0; color: white; padding: 5px 25px;"><span t-field="doc.amount_total"/></div>
+                <div class="col-3 text-right" style="background-color: #f15a22; border-radius: 0 0 20px 0; color: white; padding: 5px 25px;"><span t-field="doc.amount_total"/></div>
             </div>
         </div>
         <!-- Price and Sign -->
@@ -152,19 +154,19 @@
         </div>
         <!-- Legend -->
         <br/>
-        <div class="row" style="font-size:12px;">
-            <div class="col-11">
-                Collectibility status information (late categories):
-                <ol style="margin: 0 25px;">
-                    <li>Current (Payment is on time and did not exceed due date)</li>
-                    <li>Special Mention (Payment is yet to be done between 1 - 10 calender days after due date)</li>
-                    <li>Substandart (Payment is yet to be done between 11 - 20 calender days after due date)</li>
-                    <li>Doubtful (Payment is yet to be done between 21 - 30 calender days after due date)</li>
-                </ol>
-            </div>
-            <div class="col-1">
-            </div>
-        </div>
+<!--        <div class="row" style="font-size:12px;">-->
+<!--            <div class="col-11">-->
+<!--                Collectibility status information (late categories):-->
+<!--                <ol style="margin: 0 25px;">-->
+<!--                    <li>Current (Payment is on time and did not exceed due date)</li>-->
+<!--                    <li>Special Mention (Payment is yet to be done between 1 - 10 calender days after due date)</li>-->
+<!--                    <li>Substandart (Payment is yet to be done between 11 - 20 calender days after due date)</li>-->
+<!--                    <li>Doubtful (Payment is yet to be done between 21 - 30 calender days after due date)</li>-->
+<!--                </ol>-->
+<!--            </div>-->
+<!--            <div class="col-1">-->
+<!--            </div>-->
+<!--        </div>-->
     </template>
 
     <template id="printout_billing">

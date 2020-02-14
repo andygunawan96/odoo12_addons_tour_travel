@@ -36,10 +36,18 @@
             <field name="model">tt.agent.registration.document</field>
             <field name="arch" type="xml">
                 <tree string="Agent Registration Document" editable="bottom" create="false">
+                    <button name="%(tt_base.tt_upload_center_wizard_action_view)d" string="Upload Document" type="action"
+                                    class="oe_stat_button" icon="fa-upload" groups="tt_base.group_tt_tour_travel_operator"
+                                    context="{'default_target_field_name': 'document_attach_ids'}"/>
+<!--                                    context="{'default_agent_id': agent_id,-->
+<!--                                              'default_target_field_name': 'document_attach_ids'}"/>-->
+<!--                                              'default_owner_id': confirm_uid,-->
+                    <field name="registration_document_id" invisible="1"/>
+                    <field name="opening_document_id" invisible="1"/>
                     <field name="document_id"/>
                     <field name="schedule_date"/>
                     <field name="receive_date"/>
-                    <field name="document_attach_ids" string="Attach a File" widget="many2many_tags"/>
+                    <field name="document_attach_ids" string="Document Files" widget="many2many_tags"/>
                     <field name="qty"/>
                     <field name="description"/>
                     <field name="state"/>
