@@ -453,7 +453,7 @@ class ReservationTour(models.Model):
 
             payment_method = data.get('payment_method') and data['payment_method'] or 'full'
 
-            acquirer_id, customer_parent_id = self.get_acquirer_n_c_parent_id(data)
+            acquirer_id, customer_parent_id = book_obj.get_acquirer_n_c_parent_id(data)
 
             vals = {
                 'customer_parent_id': customer_parent_id,

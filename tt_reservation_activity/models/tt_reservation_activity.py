@@ -646,7 +646,7 @@ class ReservationActivity(models.Model):
                 book_objs = self.env['tt.reservation.activity'].sudo().search([('name', '=', req['order_number'])], limit=1)
                 book_obj = book_objs[0]
 
-            acquirer_id, customer_parent_id = self.get_acquirer_n_c_parent_id(req)
+            acquirer_id, customer_parent_id = book_obj.get_acquirer_n_c_parent_id(req)
 
             vals = {
                 'customer_parent_id': customer_parent_id,
