@@ -20,13 +20,13 @@ class PaymentTransaction(models.Model):
 
     display_name = fields.Char('Display Name',compute="_compute_display_name_payment",store=False,readonly=True)
 
-    payment_date = fields.Datetime('Payment Date',states={'validated': [('readonly', True)]})
+    payment_date = fields.Datetime('Payment Date',states={'validated': [('readonly', True)]},copy=False)
 
     real_total_amount = fields.Monetary('Adjusting Amount',help='To edit total when real payment done by customer is different.',states={'validated': [('readonly', True)]})
     total_amount = fields.Monetary('Total Payment', required=True, related="real_total_amount") # yang benar benar di transfer
     currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.user.company_id.currency_id,readonly=True)
 
-    top_up_id = fields.Many2one('tt.top.up',"Top Up",readonly=True)
+    top_up_id = fields.Many2one('tt.top.up',"Top Up",readonly=True,copy=False)
 
     state = fields.Selection([('draft','Draft'),
                               ('confirm','Confirm'),
@@ -37,9 +37,9 @@ class PaymentTransaction(models.Model):
                                                                                       'Confirm: Agent Confirmed the payment'                                                                                  'Validate by Operator'
                                                                                       'Validate by Supervisor')
 
-    payment_image_ids = fields.Many2many('tt.upload.center','rel_test_image','payment_id','image_id','Image IDs')
+    payment_image_ids = fields.Many2many('tt.upload.center','rel_test_image','payment_id','image_id','Image IDs',copy=False)
 
-    adjustment_ids = fields.One2many('tt.adjustment','res_id','Adjustment',domain=[('res_model','=','tt.payment')], readonly=True)
+    adjustment_ids = fields.One2many('tt.adjustment','res_id','Adjustment',domain=[('res_model','=','tt.payment')], readonly=True,copy=False)
 
     def unlink_image(self):
         self.payment_image_id.unlink()
@@ -94,7 +94,7 @@ class PaymentTransaction(models.Model):
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True,readonly=True,states={'draft': [('readonly', False)]})
     customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer',readonly=True,states={'draft': [('readonly', False)]}, domain=_get_c_parent_domain)
     # acquirer_id = fields.Many2one('payment.acquirer', 'Acquirer', domain=_get_acquirer_domain,states={'validated': [('readonly', True)]})
-    dummy_acquirer_field = fields.Boolean('Generate Acquirer List', default=False)
+    dummy_acquirer_field = fields.Boolean('Generate Acquirer List', default=False,copy=False)
 
     is_full = fields.Boolean('Is Full')
 

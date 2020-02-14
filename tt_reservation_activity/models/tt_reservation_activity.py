@@ -646,21 +646,7 @@ class ReservationActivity(models.Model):
                 book_objs = self.env['tt.reservation.activity'].sudo().search([('name', '=', req['order_number'])], limit=1)
                 book_obj = book_objs[0]
 
-            acquirer_id = False
-            if req.get('member'):
-                customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', req['acquirer_seq_id'])], limit=1).id
-            ##cash / transfer
-            else:
-                ##get payment acquirer
-                if req.get('acquirer_seq_id'):
-                    acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', req['acquirer_seq_id'])], limit=1)
-                    if not acquirer_id:
-                        raise RequestException(1017)
-                # ini harusnya ada tetapi di comment karena rusak ketika force issued from button di tt.provider.airlines
-                else:
-                    # raise RequestException(1017)
-                    acquirer_id = book_obj.agent_id.default_acquirer_id
-                customer_parent_id = book_obj.agent_id.customer_parent_walkin_id.id  ##fpo
+            acquirer_id, customer_parent_id = book_obj.get_acquirer_n_c_parent_id(req)
 
             vals = {
                 'customer_parent_id': customer_parent_id,
