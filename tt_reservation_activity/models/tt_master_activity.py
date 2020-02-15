@@ -565,6 +565,7 @@ class MasterActivity(models.Model):
                         'can_hold_booking': rec['product']['can_hold_booking'],
                         'active': True,
                         'provider_id': provider_id.id,
+                        'provider_fare_code': rec['product']['provider_fare_code'],
                     }
                     product_obj = self.env['tt.master.activity'].sudo().create(vals)
                     if rec['product']['provider'] == 'bemyguest':
@@ -1743,6 +1744,7 @@ class MasterActivity(models.Model):
                     'uuid': result_id.uuid,
                     'name': result_id.name,
                     'provider_code': provider,
+                    'provider_fare_code': activity_id.provider_fare_code and activity_id.provider_fare_code or '',
                     'description': result_id.description and result_id.description or '',
                     'durationDays': result_id.durationDays and result_id.durationDays or 0,
                     'durationHours': result_id.durationHours and result_id.durationHours or 0,
