@@ -16,26 +16,22 @@
                     <field name="transaction_name" invisible="1"/>
                     <group attrs="{'invisible': [('transaction_name', 'not in', ['airline','train'])]}">  <!--'airline','train'-->
                         <!--Airline / Train-->
-                        <group>
-                            <field name="origin_id" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>  <!-- -->
-                            <field name="destination_id" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
-                        </group>
-                        <group>
-<!--                            <field name="departure_date" placeholder="YYYY-MM-DD" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>-->
-<!--                            <field name="arrival_date" placeholder="YYYY-MM-DD" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>-->
-                            <label for="departure_date" string="Departure Date"/>
-                            <div>
-                                <field name="departure_date" class="oe_inline" style="width: 20%" placeholder="YYYY-MM-DD" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>&#x2063;
-                                <field name="departure_hour" class="oe_inline" style="width: 20%" placeholder="HH" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/> :
-                                <field name="departure_minute" class="oe_inline" style="width: 20%" placeholder="MM" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
-                            </div>
-                            <label for="arrival_date" string="Arrival Date"/>
-                            <div>
-                                <field name="arrival_date" class="oe_inline" style="width: 20%" placeholder="YYYY-MM-DD" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>&#x2063;
-                                <field name="return_hour" class="oe_inline" style="width: 20%" placeholder="HH" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/> :
-                                <field name="return_minute" class="oe_inline" style="width: 20%" placeholder="MM" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
-                            </div>
-                        </group>
+                        <field name="origin_id" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>  <!-- -->
+                        <field name="destination_id" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
+                        <label for="departure_date" string="Departure Date"/>
+                        <div>
+                            <field name="departure_date" class="oe_inline" style="width: 20%" placeholder="Date (YYYY-MM-DD)" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>&#x2063;
+                            <field name="departure_hour" class="oe_inline" style="width: 20%" placeholder="Hour (HH)" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/> :
+                            <field name="departure_minute" class="oe_inline" style="width: 20%" placeholder="Minute (MM)" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
+                        </div>
+                        <label for="arrival_date" string="Arrival Date"/>
+                        <div>
+                            <field name="arrival_date" class="oe_inline" style="width: 20%" placeholder="Date (YYYY-MM-DD)" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>&#x2063;
+                            <field name="return_hour" class="oe_inline" style="width: 20%" placeholder="Hour (HH)" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/> :
+                            <field name="return_minute" class="oe_inline" style="width: 20%" placeholder="Minute (MM)" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
+                        </div>
+                    </group>
+                    <group attrs="{'invisible': [('transaction_name', 'not in', ['airline','train'])]}">
                         <group>
                             <field name="carrier_id" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
                             <field name="provider_id" attrs="{'required' :[('state_offline','in',['confirm'])], 'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}" groups="tt_base.group_tt_tour_travel_operator"/>

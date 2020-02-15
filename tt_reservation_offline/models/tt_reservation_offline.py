@@ -522,6 +522,12 @@ class IssuedOffline(models.Model):
                         psg_list.append(psg.id)
                 scs.passenger_offline_ids = [(6, 0, psg_list)]
 
+    def sync_all_service_charge(self):
+        book_objs = self.env['tt.reservation.offline'].search([('state_offline', 'in', ['sent', 'validate', 'done']),
+                                                               ('offline_provider_type', 'not in', ['', 'hotel'])])
+        for book in book_objs:
+            book.sync_service_charge()
+
     def create_final_ho_ledger(self, provider_obj):
         for rec in self:
             if rec.nta_price > rec.vendor_amount:
@@ -705,6 +711,11 @@ class IssuedOffline(models.Model):
             return {'domain': {
                 'customer_parent_id': [('customer_ids', 'in', self.contact_id.id)]
             }}
+
+    def sync_all_carrier_list(self):
+        book_objs = self.env['tt.reservation.offline'].search([('offline_provider_type', 'in', ['airline', 'train'])])
+        for book in book_objs:
+            book.get_carrier_name()
 
     def get_provider_name(self):
         provider_list = []

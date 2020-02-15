@@ -5,8 +5,10 @@
         <field name="model">tt.provider.passport</field>
         <field name="arch" type="xml">
             <form>
-                <field name="state_passport" readonly="1" invisible="1"/>
-                <field name="state" widget="statusbar" statusbar_visible="booked,issued"/>
+                <header>
+                    <field name="state_passport" readonly="1" invisible="1"/>
+                    <field name="state" widget="statusbar" statusbar_visible="booked,issued"/>
+                </header>
                 <sheet>
                     <group>
                         <group>

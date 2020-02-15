@@ -3,6 +3,7 @@ from ...tools import variables
 from datetime import datetime
 
 STATE_PASSPORT = [
+    ('fail_booked', 'Failed (Book)'),
     ('draft', 'Open'),
     ('confirm', 'Confirm to HO'),
     ('validate', 'Validated by HO'),
@@ -97,8 +98,20 @@ class TtProviderPassport(models.Model):
                 'issued_uid': context['co_uid'],
             })
 
+    def action_fail_booked_passport(self):
+        for rec in self:
+            rec.write({
+                'state': 'fail_booked',
+            })
+
     def action_expired(self):
         self.state = 'cancel2'
+
+    def action_cancel(self):
+        self.state = 'cancel'
+
+    def action_booked(self):
+        self.state = 'booked'
 
     def action_refund(self):
         self.state = 'refund'
