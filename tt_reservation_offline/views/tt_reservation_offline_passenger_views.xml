@@ -47,8 +47,8 @@
                 <tree editable="bottom">
                     <field name="booking_id" invisible="1"/>
                     <field name="transaction_name" invisible="1"/>
-                    <field name="ticket_number" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
-                    <field name="seat" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>  <!--attrs="{'invisible': [('transaction_name', 'not in', ['airline','train'])]}"-->
+                    <field name="ticket_number" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm', 'sent', 'validate'])]}"/>
+                    <field name="seat" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm', 'sent', 'validate'])]}"/>  <!--attrs="{'invisible': [('transaction_name', 'not in', ['airline','train'])]}"-->
                     <field name="agent_id" readonly="1"/>
                     <field name="title"/>
                     <field name="passenger_id" string="Name" context="{'default_agent_id': agent_id}"/>
