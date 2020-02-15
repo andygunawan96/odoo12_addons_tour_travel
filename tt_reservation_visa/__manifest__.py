@@ -38,7 +38,6 @@
         'report/printout_menu.xml',
         'report/printout_visa_ho_template.xml',
         'report/printout_visa_customer_template.xml',
-        'report/printout_proforma_invoice_visa_template.xml'
     ],
     # only loaded in demonstration mode
     'demo': [],
