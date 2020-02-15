@@ -39,11 +39,11 @@ class TtAirlineApiCon(models.Model):
 
     def send_get_booking_from_vendor(self, req):
         request = {
-            'proxy_co_uid': req.get('co_uid'),
+            'proxy_co_uid': req.get('user_id',False),
             'pnr': req.get('pnr'),
             'provider': req.get('provider'),
-            'is_retrieved': req.get('is_retrieved'),
-            'pricing_date': req.get('pricing_date')
+            'is_retrieved': req.get('is_retrieved',False),
+            'pricing_date': req.get('pricing_date',False)
         }
         return self.send_request_to_gateway('%s/booking/airline/private' % (self.url),
                                             request,
