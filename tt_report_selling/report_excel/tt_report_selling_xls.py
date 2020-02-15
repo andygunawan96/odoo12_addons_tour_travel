@@ -326,10 +326,12 @@ class ReportSellingXls(models.TransientModel):
                         if earliest_depart > dic['journey_departure_date']:
                             depart_index = j
                 # lets count
-                try:
+                if filter_data[0]['reservation_issued_date_og']:
                     date_time_convert = datetime.strptime(filter_data[depart_index]['journey_departure_date'], '%Y-%m-%d %H:%M:%S')
                     if filter_data[0]['reservation_issued_date_og']:
                         date_count = date_time_convert - filter_data[0]['reservation_issued_date_og']
+                        if date_count.days < 0:
+                            _logger.error("please check {}".format(i['reservation_order_number']))
                     else:
                         date_count = 0
 
@@ -358,9 +360,9 @@ class ReportSellingXls(models.TransientModel):
                             issued_depart_domestic_summary[issued_depart_index]['counter'] += 1
                             issued_depart_domestic_summary[issued_depart_index]['passenger'] += filter_data[0][
                                 'reservation_passenger']
-                except:
-                    _logger.error("{}".format(i['reservation_order_number']))
-                    pass
+                # except:
+                #     _logger.error("{}".format(i['reservation_order_number']))
+                #     pass
                 # ============= Issued Booked ratio by date ==================
                 try:
                     month_index = self.check_date_index(summary_by_date, {'year': i['booked_year'], 'month': month[int(i['booked_month'])-1]})
@@ -565,6 +567,7 @@ class ReportSellingXls(models.TransientModel):
                         'direction': i['reservation_direction'],
                         'departure': i['departure'],
                         'destination': i['destination'],
+                        'sector': i['reservation_sector'],
                         'counter': 1,
                         'elder_count': i['reservation_elder'],
                         'adult_count': i['reservation_adult'],
@@ -644,6 +647,7 @@ class ReportSellingXls(models.TransientModel):
                     sty_table_data = style.table_data_even
 
                 sheet.write(row_data, 1, international_filter[i]['departure'], sty_table_data)
+                sheet.write(row_data, 1, international_filter[i]['departure'], sty_table_data)
                 sheet.write(row_data, 2, international_filter[i]['destination'], sty_table_data)
                 sheet.write(row_data, 3, international_filter[i]['counter'], sty_table_data)
                 # sheet.write(row_data, 4, "{}, {}, {}, {}".format(
@@ -652,7 +656,7 @@ class ReportSellingXls(models.TransientModel):
                 #     international_filter[i]['child_count'],
                 #     international_filter[i]['infant_count']
                 # ), sty_table_data)
-                sheet.write(row_data, 4, international_filter[i]['reservation_passenger'], sty_table_data)
+                sheet.write(row_data, 4, international_filter[i]['passenger_count'], sty_table_data)
                 sheet.write(row_data, 0, counter, sty_table_data)
             except:
                 break
