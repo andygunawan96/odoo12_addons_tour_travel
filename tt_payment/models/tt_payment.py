@@ -186,7 +186,7 @@ class PaymentTransaction(models.Model):
             'dummy_acquirer_field': False
         })
         if 'real_total_amount' in vals_list:
-            if vals_list['real_total_amount'] < self.used_amount:
+            if vals_list['real_total_amount'] < self.used_amount and not self.top_up_id:
                 raise exceptions.UserError("Total amount on %s is less than the used amount." % (self.name))
         return super(PaymentTransaction, self).write(vals_list)
 

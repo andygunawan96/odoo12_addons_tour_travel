@@ -60,16 +60,29 @@ class PricingProvider(models.Model):
         # line_ids = [rec.get_pricing_data() for rec in self.line_ids if rec.active]
         line_ids = []
         date_now = datetime.now()
-        for rec in self.line_ids:
-            if not rec.active:
-                continue
-            if not rec.is_no_expiration and date_now > rec.date_to:
+
+        # for rec in self.line_ids:
+        #     if not rec.active:
+        #         continue
+        #     if not rec.is_no_expiration and date_now > rec.date_to:
+        #         try:
+        #             rec.write({'active': False})
+        #             _logger.info('Inactive line pricing provider due to expired date')
+        #         except:
+        #             _logger.info('Failed to inactive line pricing provider, %s' % traceback.format_exc())
+        #         continue
+        #     line_data = rec.get_pricing_data()
+        #     line_ids.append(line_data)
+
+        line_ids_obj = self.env['tt.pricing.provider.line'].sudo().with_context(active_test=False).search([('pricing_id', '=', self.id)])
+
+        for rec in line_ids_obj:
+            if rec.active and not rec.is_no_expiration and date_now > rec.date_to:
                 try:
                     rec.write({'active': False})
                     _logger.info('Inactive line pricing provider due to expired date')
                 except:
                     _logger.info('Failed to inactive line pricing provider, %s' % traceback.format_exc())
-                continue
             line_data = rec.get_pricing_data()
             line_ids.append(line_data)
 
@@ -282,6 +295,7 @@ class PricingProviderLine(models.Model):
             'is_compute_infant_upsell': self.is_compute_infant_upsell,
             'is_compute_infant_fee': self.is_compute_infant_fee,
             'is_no_expiration': self.is_no_expiration,
+            'active': self.active,
             # 'is_provide_infant_commission': self.is_provide_infant_commission,
         }
         return res
