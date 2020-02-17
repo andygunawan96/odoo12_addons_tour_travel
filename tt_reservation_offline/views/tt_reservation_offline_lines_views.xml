@@ -70,9 +70,9 @@
 <!--                            <field name="activity_timeslot" attrs="{'invisible': [('transaction_name', 'not in', ['activity'])]}"/>-->
                         </group>
                         <group>
-                            <field name="visit_date" placeholder="YYYY-MM-DD" attrs="{'invisible': [('transaction_name', 'not in', ['activity'])], 'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
-                            <field name="check_in" placeholder="YYYY-MM-DD" attrs="{'invisible': [('transaction_name', 'in', ['activity'])], 'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
-                            <field name="check_out" placeholder="YYYY-MM-DD" attrs="{'invisible': [('transaction_name', 'not in', ['hotel','cruise'])], 'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
+                            <field name="visit_date" placeholder="Date (YYYY-MM-DD)" attrs="{'invisible': [('transaction_name', 'not in', ['activity'])], 'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
+                            <field name="check_in" placeholder="Date (YYYY-MM-DD)" attrs="{'invisible': [('transaction_name', 'in', ['activity'])], 'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
+                            <field name="check_out" placeholder="Date (YYYY-MM-DD)" attrs="{'invisible': [('transaction_name', 'not in', ['hotel','cruise'])], 'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
                             <field name="obj_qty" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
                             <field name="description" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
                         </group>
