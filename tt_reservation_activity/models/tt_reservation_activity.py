@@ -1170,6 +1170,31 @@ class ReservationActivity(models.Model):
         self.ensure_one()
         return self.env['report'].get_action(self, 'tt_reservation_activity.printout_activity_invoice')
 
+    def file_upload_api(self, req, context):
+        try:
+            book_objs = self.env['tt.reservation.activity'].sudo().search([('name', '=', req['order_number'])], limit=1)
+            book_obj = book_objs[0]
+            req.update({
+                'booking_uuid': book_obj.booking_uuid,
+            })
+            req.pop('order_number')
+            response = self.env['tt.activity.api.con'].file_upload(req)
+            return ERR.get_no_error(response)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            try:
+                book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc()+'\n'
+            except:
+                _logger.error('Creating Notes Error')
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            try:
+                book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc()+'\n'
+            except:
+                _logger.error('Creating Notes Error')
+            return ERR.get_error(1004)
+
     def get_aftersales_desc(self):
         desc_txt = 'PNR: ' + self.pnr + '<br/>'
         desc_txt += 'Activity: ' + self.activity_id.name + '<br/>'
