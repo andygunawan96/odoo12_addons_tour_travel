@@ -13,6 +13,8 @@ class TtActivityApiCon(models.Model):
 
         if action == 'get_vouchers':
             res = table_obj.get_vouchers_by_api2(data,context)
+        elif action == 'file_upload':
+            res = table_obj.file_upload_api(data,context)
         elif action == 'create_booking':
             res = table_obj.create_booking_activity_api(data,context)
         elif action == 'issued_booking':
@@ -42,7 +44,7 @@ class TtActivityApiCon(models.Model):
         return res
 
     def resend_voucher(self, data):
-        return self.send_request_to_gatweay('%s/booking/activity' % (self.url), data, 'resend_voucher')
+        return self.send_request_to_gateway('%s/booking/activity' % (self.url), data, 'resend_voucher')
 
     def issued_booking_vendor(self, data):
         return self.send_request_to_gateway('%s/booking/activity' % (self.url), data, 'issued_booking_vendor')
@@ -68,6 +70,9 @@ class TtActivityApiCon(models.Model):
 
     def get_vouchers(self, data):
         return self.send_request_to_gateway('%s/booking/activity' % (self.url), data, 'get_vouchers_provider')
+
+    def file_upload(self, data):
+        return self.send_request_to_gateway('%s/booking/activity' % (self.url), data, 'file_upload_provider')
 
 
 class TtMasterActivityApiCon(models.Model):
