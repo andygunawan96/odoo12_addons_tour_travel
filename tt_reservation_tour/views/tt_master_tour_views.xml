@@ -80,6 +80,7 @@
                         <group>
                             <field name="tour_code"/>
                             <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                            <field name="provider_fare_code" groups="tt_base.group_tt_tour_travel_operator"/>
                             <field name="currency_id"/>
                             <field name="description"/>
                             <field name="tour_category"/>
