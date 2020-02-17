@@ -149,6 +149,7 @@ class MasterTour(models.Model):
     country_name = fields.Char('Country Name')
     itinerary_ids = fields.One2many('tt.reservation.tour.itinerary', 'tour_pricelist_id', 'Itinerary', ondelete='cascade')
     provider_id = fields.Many2one('tt.provider', 'Provider', domain=get_domain, required=True)
+    provider_fare_code = fields.Char('Provider Fare Code', default='tour_rdx1', readonly=True)
     document_url = fields.Many2one('tt.upload.center', 'Document URL')
     import_other_info = fields.Binary('Import JSON')
     export_other_info = fields.Binary('Export JSON')
@@ -734,6 +735,7 @@ class MasterTour(models.Model):
                 'images_obj': images,
                 'document_url': tour_obj.document_url and tour_obj.document_url.url or '',
                 'provider': tour_obj.provider_id and tour_obj.provider_id.code or '',
+                'provider_fare_code': tour_obj.provider_fare_code and tour_obj.provider_fare_code or '',
             }
 
             response = {
