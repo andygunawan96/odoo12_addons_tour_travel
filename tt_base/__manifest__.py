@@ -77,6 +77,7 @@ Key Features
         # 'views/tt_product_class_views.xml',
         # 'views/tt_fare_rules_views.xml',
         'views/tt_frontend_security.xml',
+        'views/tt_ban_user.xml',
 
         'wizard/tt_upload_center_wizard_view.xml',
         'wizard/create_user_wizard_view.xml',

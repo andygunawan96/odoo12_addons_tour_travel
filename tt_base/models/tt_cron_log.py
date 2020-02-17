@@ -35,3 +35,13 @@ class TtCronLog(models.Model):
         except:
             self.create_cron_log_folder()
             self.write_cron_log('auto-delete expired file')
+
+    def cron_unban_users(self):
+        try:
+            banned_users_obj = self.env['tt.ban.user'].search([('end_datetime','<', datetime.now())])
+            for rec in banned_users_obj:
+                rec.user_id.is_banned = False
+                rec.active = False
+        except:
+            self.create_cron_log_folder()
+            self.write_cron_log('auto-unban users')

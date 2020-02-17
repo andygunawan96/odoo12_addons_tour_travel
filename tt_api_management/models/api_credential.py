@@ -1,6 +1,7 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 from ...tools import variables
+from ...tools.ERR import RequestException
 from ...tools.db_connector import BackendConnector
 from ...tools.api import Response
 from datetime import datetime
@@ -76,6 +77,16 @@ class ApiManagement(models.Model):
             if not uid:
                 raise Exception('User and Password is not match')
             _user = self.env['res.users'].sudo().browse(uid)
+
+            if _user.is_banned:
+                additional_msg = ""
+                try:
+                    addtional_msg = 'Until %s.' % datetime.strftime(self.env['tt.ban.user'].search([('user_id', '=', _user.id)],
+                                                                           limit=1).end_datetime,
+                                                                    '%Y-%m-%d %I %p')
+                except:
+                    pass
+                raise RequestException(1029,additional_message=addtional_msg)
             if not _user.is_api_user:
                 raise Exception('User is not allowed to access API')
 
@@ -101,6 +112,18 @@ class ApiManagement(models.Model):
                 if not co_uid:
                     raise Exception('Co User and Co Password is not match')
                 _co_user = self.env['res.users'].sudo().browse(co_uid)
+
+                if _co_user.is_banned:
+                    additional_msg = ""
+                    try:
+                        addtional_msg = 'Until %s.' % datetime.strftime(
+                            self.env['tt.ban.user'].search([('user_id', '=', _co_user.id)],
+                                                           limit=1).end_datetime,
+                            '%Y-%m-%d %I %p')
+                    except:
+                        pass
+                    raise RequestException(1029, additional_message=addtional_msg)
+
                 values.update(_co_user.get_credential(prefix='co_'))
             if data.get('co_uid'):
                 if response['api_role'] != 'admin':
@@ -109,6 +132,9 @@ class ApiManagement(models.Model):
                 values.update(_co_user.get_credential(prefix='co_'))
             response.update(values)
             res = Response().get_no_error(response)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
         except Exception as e:
             res = Response().get_error(str(e), 500)
         return res

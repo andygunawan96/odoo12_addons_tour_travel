@@ -366,7 +366,7 @@ class ReservationAirline(models.Model):
                         whitelist_passport.chances_left -= 1
                         return True
 
-                    raise RequestException(1026,additional_message="Passenger validator failed on %s because of rebooking with same name and same route. %s will be charged for more addtional booking." % (name.name,rule.adm))
+                    raise RequestException(1026,additional_message="Passenger validator failed on %s because of rebooking with same name and same route." % (name.name))
 
     def update_pnr_provider_airline_api(self, req, context):
         ### dapatkan PNR dan ubah ke booked

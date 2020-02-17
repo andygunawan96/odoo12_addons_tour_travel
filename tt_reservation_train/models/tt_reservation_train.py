@@ -37,6 +37,11 @@ class TtReservationTrain(models.Model):
         for rec in self:
             rec.state = 'draft'
 
+    def ban_user(self):
+        self.env['tt.ban.user'].ban_user_api({
+            'user_id': 46,
+            'duration_minutes': 1
+        },{})
 
     @api.multi
     def action_set_as_booked(self):
@@ -226,7 +231,7 @@ class TtReservationTrain(models.Model):
                             whitelist_passport.chances_left -= 1
                             return True
 
-                        raise RequestException(1026,additional_message="Passenger validator failed on %s because of rebooking with same name and same route. %s will be charged for more addtional booking." % (name.name,rule.adm))
+                        raise RequestException(1026,additional_message="Passenger validator failed on %s because of rebooking with same name and same route." % (name.name))
 
     def update_pnr_provider_train_api(self, req, context):
         ### dapatkan PNR dan ubah ke booked

@@ -35,3 +35,4 @@ from . import tt_product_class
 from . import tt_fare_rules
 from . import tt_cron_log
 from . import tt_upload_center
+from . import tt_ban_user

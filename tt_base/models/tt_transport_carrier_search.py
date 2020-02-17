@@ -61,7 +61,6 @@ class TransportCarrier(models.Model):
                 else:
                     res["%s~%s" % (curr_rec['code'],idx+1)] = curr_rec
             res = ERR.get_no_error(res)
-            print(json.dumps(res))
         except Exception as e:
             _logger.error(traceback.format_exc())
             res = ERR.get_error(additional_message="Get Carrier List Error")

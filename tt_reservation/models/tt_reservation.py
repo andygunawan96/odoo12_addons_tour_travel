@@ -419,13 +419,13 @@ class TtReservation(models.Model):
             rec.agent_nta = agent_nta_total + rec.total
 
     def to_dict(self):
-        invoice_list = []
-        if hasattr(self, 'invoice_line_ids'):
-            for rec in self.invoice_line_ids:
-                invoice_list.append({
-                    'name': rec.name,
-                    'state': rec.state
-                })
+        # invoice_list = []
+        # if hasattr(self, 'invoice_line_ids'):
+        #     for rec in self.invoice_line_ids:
+        #         invoice_list.append({
+        #             'name': rec.name,
+        #             'state': rec.state
+        #         })
 
         res = {
             'order_number': self.name,
@@ -448,7 +448,7 @@ class TtReservation(models.Model):
             'departure_date': self.departure_date and self.departure_date or '',
             'arrival_date': self.arrival_date and self.arrival_date or '',
             'provider_type': self.provider_type_id.code,
-            'invoice_ids': invoice_list
+            # 'invoice_ids': invoice_list
         }
 
         return res

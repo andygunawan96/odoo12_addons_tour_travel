@@ -21,10 +21,10 @@
 
         <!--Transactions-->
         <menuitem id="main_transaction"
-              name="Transactions"
-              web_icon="hr,static/description/icon.png"
-              sequence="3"
-              groups="base.group_user"/>
+                  name="Transactions"
+                  web_icon="hr,static/description/icon.png"
+                  sequence="3"
+                  groups="base.group_user"/>
 
         <!--Top Menu-->
         <!--Customers (Menu Customers)-->
@@ -65,14 +65,21 @@
                   groups="base.group_user"
         />
 
+        <!-- Users -->
+        <menuitem id="top_tour_travel_user"
+                  parent="tt_base.main_tour_travel"
+                  name="Users"
+                  sequence="79"
+                  groups="base.group_user"
+        />
+
         <!--Configurations-->
         <menuitem id="top_tour_travel_configuration"
                   parent="tt_base.main_tour_travel"
-
                   name="Configuration"
                   sequence="90"
                   groups="base.group_user"/>
-                  <!--action="tt_base.res_country_action_view"-->
+        <!--action="tt_base.res_country_action_view"-->
 
         <!--After Sales-->
         <menuitem id="top_transaction_aftersales"
@@ -160,7 +167,5 @@
                   groups="tt_base.group_tt_tour_travel_operator"
                   parent="tt_base.top_tour_travel_configuration"
                   sequence = "110"/>
-
-
     </data>
 </odoo>

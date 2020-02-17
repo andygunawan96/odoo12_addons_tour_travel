@@ -62,7 +62,7 @@ class ResUsers(models.Model):
 
     ####security utk django
     frontend_security_ids = fields.Many2many('tt.frontend.security','res_users_frontend_rel','res_users_id','frontend_security_id','Frontend Securities')
-
+    is_banned = fields.Boolean('Banned')
 
     # Fungsi ini perlu di lengkapi/disempurnakan
     # Tujuan : kalau res_pertner.parent_agent_id berubah maka user.agent_id ikut berubah

@@ -23,7 +23,7 @@ class TtCustomer(models.Model):
     first_name = fields.Char('First Name')
     last_name = fields.Char('Last Name')
     gender = fields.Selection(variables.GENDER, string='Gender')
-    marital_status = fields.Selection(variables.MARITAL_STATUS, 'Marital Status')
+    marital_status = fields.Selection(variables.MARITAL_STATUS, 'Marital Status',default="single")
     religion = fields.Selection(variables.RELIGION, 'Religion')
     birth_date = fields.Date('Birth Date')
     nationality_id = fields.Many2one('res.country', 'Nationality')
