@@ -683,7 +683,7 @@
                     <tr>
                         <td>Remarks</td>
                         <td>:</td>
-                        <td/>
+                        <td><span t-field="doc.additional_information" /></td>
                     </tr>
                 </table>
             </div>
