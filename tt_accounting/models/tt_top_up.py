@@ -4,7 +4,7 @@ from datetime import datetime,timedelta
 from ...tools import ERR
 from ...tools.ERR import RequestException
 import logging,traceback
-import json,os
+import json
 import base64
 
 _logger = logging.getLogger(__name__)

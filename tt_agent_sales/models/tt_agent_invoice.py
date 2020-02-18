@@ -76,7 +76,7 @@ class AgentInvoice(models.Model):
     cancel_date = fields.Datetime('Cancel Date', readonly=True)
 
     date_invoice = fields.Date(string='Invoice Date', default=fields.Date.context_today,
-                           index=True, copy=False, readonly=True)
+                               index=True, copy=False, readonly=True)
 
     description = fields.Text('Description',readonly=True)
 
@@ -128,13 +128,16 @@ class AgentInvoice(models.Model):
         })
 
     def action_cancel_invoice(self):
-        if self.state == 'confirm':
+        if self.state not in ['cancel','paid']:
             legal = True
             for i in self.payment_ids:
                 if i.state != 'confirm':
                     legal = False
             if legal:
                 self.state = "cancel"
+                for ledger in self.ledger_ids:
+                    if not ledger.is_reversed:
+                        ledger.reverse_ledger()
             else:
                 raise UserError("Invoice payment state not [Confirm].")
         else:

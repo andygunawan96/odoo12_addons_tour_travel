@@ -82,36 +82,38 @@
             </div>
             <t t-set="index" t-value="1"/>
             <t t-foreach="doc.invoice_ids" t-as="inv_id">
-                <div class="row" style="margin-left: 0px; margin-right: 0px; border: 1px solid #BBB;">
-                    <!--                    <div class="col-1" style="background: #F0F0F0;">-->
-                    <!--                        <t t-esc="index"/>-->
-                    <!--                    </div>-->
-                    <div class="col-2" style="text-align:center">
-                        <span t-field="inv_id.name"/><br/>
-                        <span t-field="inv_id.date_invoice"/>
-                    </div>
-                    <div class="col-3">
-                        <ul style="padding-left:15px;">
-                            <t t-foreach="inv_id.invoice_line_ids" t-as="line_id">
-                                <t t-foreach="line_id.invoice_line_detail_ids" t-as="detail_id">
-                                    <li><span t-field="detail_id.desc"/></li>
+                <t t-if="inv_id.state != 'cancel'">
+                    <div class="row" style="margin-left: 0px; margin-right: 0px; border: 1px solid #BBB;">
+                        <!--                    <div class="col-1" style="background: #F0F0F0;">-->
+                        <!--                        <t t-esc="index"/>-->
+                        <!--                    </div>-->
+                        <div class="col-2" style="text-align:center">
+                            <span t-field="inv_id.name"/><br/>
+                            <span t-field="inv_id.date_invoice"/>
+                        </div>
+                        <div class="col-3">
+                            <ul style="padding-left:15px;">
+                                <t t-foreach="inv_id.invoice_line_ids" t-as="line_id">
+                                    <t t-foreach="line_id.invoice_line_detail_ids" t-as="detail_id">
+                                        <li><span t-field="detail_id.desc"/></li>
+                                    </t>
                                 </t>
+                            </ul>
+                        </div>
+                        <div class="col-3">
+                            <t t-foreach="inv_id.invoice_line_ids" t-as="line_id">
+                                <span t-field="line_id.desc"/>
                             </t>
-                        </ul>
+                        </div>
+                        <div class="col-2 text-right" style="padding: 10px 25px;">
+                            <span t-field="inv_id.total" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                        </div>
+                        <div class="col-2 text-right" style="padding: 10px 25px;">
+                            <span t-field="inv_id.total_after_tax" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                        </div>
+                        <t t-set="index" t-value="index + 1"/>
                     </div>
-                    <div class="col-3">
-                        <t t-foreach="inv_id.invoice_line_ids" t-as="line_id">
-                            <span t-field="line_id.desc"/>
-                        </t>
-                    </div>
-                    <div class="col-2 text-right" style="padding: 10px 25px;">
-                        <span t-field="inv_id.total" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
-                    </div>
-                    <div class="col-2 text-right" style="padding: 10px 25px;">
-                        <span t-field="inv_id.total_after_tax" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
-                    </div>
-                    <t t-set="index" t-value="index + 1"/>
-                </div>
+                </t>
             </t>
             <div class="row" style="margin-left: 0px; margin-right: 0px; margin-bottom: 20px; border-radius: 0 0 20px 20px; border: 1px solid #BBB;">
                 <div class="col-6" style="background: #F0F0F0; border-radius: 0 0 0px 20px; padding: 10px 10px 10px 20px;"/>
@@ -161,19 +163,19 @@
         </div>
         <!-- Legend -->
         <br/>
-<!--        <div class="row" style="font-size:12px;">-->
-<!--            <div class="col-11">-->
-<!--                Collectibility status information (late categories):-->
-<!--                <ol style="margin: 0 25px;">-->
-<!--                    <li>Current (Payment is on time and did not exceed due date)</li>-->
-<!--                    <li>Special Mention (Payment is yet to be done between 1 - 10 calender days after due date)</li>-->
-<!--                    <li>Substandart (Payment is yet to be done between 11 - 20 calender days after due date)</li>-->
-<!--                    <li>Doubtful (Payment is yet to be done between 21 - 30 calender days after due date)</li>-->
-<!--                </ol>-->
-<!--            </div>-->
-<!--            <div class="col-1">-->
-<!--            </div>-->
-<!--        </div>-->
+        <!--        <div class="row" style="font-size:12px;">-->
+        <!--            <div class="col-11">-->
+        <!--                Collectibility status information (late categories):-->
+        <!--                <ol style="margin: 0 25px;">-->
+        <!--                    <li>Current (Payment is on time and did not exceed due date)</li>-->
+        <!--                    <li>Special Mention (Payment is yet to be done between 1 - 10 calender days after due date)</li>-->
+        <!--                    <li>Substandart (Payment is yet to be done between 11 - 20 calender days after due date)</li>-->
+        <!--                    <li>Doubtful (Payment is yet to be done between 21 - 30 calender days after due date)</li>-->
+        <!--                </ol>-->
+        <!--            </div>-->
+        <!--            <div class="col-1">-->
+        <!--            </div>-->
+        <!--        </div>-->
     </template>
 
     <template id="printout_billing">

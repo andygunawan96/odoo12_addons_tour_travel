@@ -133,8 +133,9 @@ class TtBillingStatement(models.Model):
             amount_total = 0
             paid_amount = 0
             for inv in rec.invoice_ids:
-                amount_total += inv.total_after_tax
-                paid_amount += inv.paid_amount
+                if inv.state != 'cancel':
+                    amount_total += inv.total_after_tax
+                    paid_amount += inv.paid_amount
             rec.amount_total = amount_total
             rec.paid_amount = paid_amount
             rec.unpaid_amount = rec.amount_total - rec.paid_amount
@@ -145,7 +146,6 @@ class TtBillingStatement(models.Model):
         # self.amount_total = 200000
         # if self.paid_amount != self.amount_total:
         if True:
-
             self.confirm_uid = self.env.user.id
             self.confirm_date = fields.Datetime.now()
             self.state = 'confirm'

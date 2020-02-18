@@ -27,6 +27,7 @@ class tt_ledger(models.Model):
             'transaction_type': self.transaction_type,
             'reverse_id': self.id,
             'agent_id': self.agent_id.id,
+            'customer_parent_id': self.customer_parent_id.id,
             'pnr': self.pnr,
             'date': fields.datetime.now(),
             'issued_uid': self.issued_uid.id,

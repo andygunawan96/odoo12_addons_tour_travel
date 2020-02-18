@@ -126,6 +126,7 @@ class Ledger(models.Model):
             'currency_id': self.currency_id.id,
             'reverse_id': self.id,
             'agent_id': self.agent_id.id,
+            'customer_parent_id': self.customer_parent_id.id,
             'issued_uid': self.issued_uid.id,
             'is_reversed': True,
             'adjustment_id': self.adjustment_id and self.adjustment_id.id or False,
