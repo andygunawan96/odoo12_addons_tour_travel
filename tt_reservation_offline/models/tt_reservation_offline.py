@@ -1253,9 +1253,9 @@ class IssuedOffline(models.Model):
 
             book_obj.action_confirm(context)
             response = {
-                'id': book_obj.name
+                'order_number': book_obj.name
             }
-            res = Response().get_no_error(response)
+            res = self.get_booking_offline_api(response, context)
         except RequestException as e:
             _logger.error(traceback.format_exc())
             try:
