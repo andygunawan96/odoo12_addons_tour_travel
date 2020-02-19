@@ -61,6 +61,8 @@ class TtAdjustmentWizard(models.TransientModel):
             'reason_uid': self.reason_uid.id,
             'description': self.description
         })
+
+
         #
         # form_id = self.env['tt.adjustment'].get_form_id()
         #

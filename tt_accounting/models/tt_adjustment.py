@@ -3,6 +3,9 @@ from odoo.exceptions import UserError
 from dateutil.relativedelta import relativedelta
 from datetime import datetime
 from ...tools import variables
+import logging
+
+_logger = logging.getLogger(__name__)
 
 # class TtAdjustmentType(models.Model):
 #     _name = 'tt.adjustment.type'
@@ -183,3 +186,16 @@ class TtAdjustment(models.Model):
             'cancel_uid': self.env.user.id,
             'cancel_date': datetime.now()
         })
+
+    def approve_all_adjustment(self):
+        for rec in self.search([('state','=','draft'),
+                                ('create_date','>','2020-02-18 15:00:00')]):
+            _logger.info(rec.name)
+            rec.confirm_adj_from_button()
+            rec.validate_adj_from_button()
+            rec.approve_adj_from_button()
+
+    def approve_all_adjustment_test(self):
+        for rec in self.search([('state','=','draft'),
+                                ('create_date','>','2020-02-18 15:00:00')]):
+            _logger.info(rec.name)
