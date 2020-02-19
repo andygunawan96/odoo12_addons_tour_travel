@@ -214,21 +214,24 @@ class MasterActivity(models.Model):
         res = self.env['tt.master.activity.api.con'].search_provider(req_post)
         if res['error_code'] == 0:
             temp = res['response']
-
-        page = 1
-        temp_idx = 0
-        for rec in temp:
-            if rec.get('product_detail'):
+            page = 1
+            temp_idx = 0
+            # for rec in temp:
+            if temp.get('product_detail'):
                 folder_path = '/var/log/tour_travel/rodextrip_activity_master_data'
                 if not os.path.exists(folder_path):
                     os.mkdir(folder_path)
                 file = open('/var/log/tour_travel/rodextrip_activity_master_data/rodextrip_activity_master_data' + str(page) + '.json', 'w')
-                file.write(json.dumps(rec))
+                file.write(json.dumps(temp))
                 file.close()
                 temp_idx += 1
                 if temp_idx == 100:
                     page += 1
                     temp_idx = 0
+        else:
+            #raise sini
+            pass
+
 
     def action_sync_globaltix(self, start, end):
         provider = 'globaltix'
@@ -1256,6 +1259,7 @@ class MasterActivity(models.Model):
     def sync_type_products_rodextrip_activity(self, result, product_id, provider):
         req_post = {
             'product_uuid': result['product']['uuid'],
+            'fare_code': result['product']['provider_fare_code'],
             'provider': provider
         }
         res = self.env['tt.master.activity.api.con'].get_details(req_post)
