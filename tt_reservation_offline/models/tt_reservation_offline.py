@@ -411,6 +411,24 @@ class IssuedOffline(models.Model):
         else:
             raise UserError('Canceled offline cannot be done.')
 
+    def offline_set_to_issued(self):
+        if self.state_offline != 'cancel':
+            if self.provider_type_id_name in ['activity', 'hotel']:
+                if self.check_pnr_empty():
+                    raise UserError(_('PNR(s) can\'t be Empty'))
+            self.state = 'issued'
+            self.state_offline = 'done'
+            self.done_date = fields.Datetime.now()
+            self.done_uid = self.env.user.id
+            self.booked_date = fields.Datetime.now()
+            self.booked_uid = self.env.user.id
+            for provider in self.provider_booking_ids:
+                provider.state = 'issued'
+                provider.issued_date = self.issued_date
+                provider.issued_uid = self.issued_uid
+        else:
+            raise UserError('Canceled offline cannot be done.')
+
     @api.one
     def action_refund(self):
         self.write({
