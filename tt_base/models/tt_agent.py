@@ -53,6 +53,8 @@ class TtAgent(models.Model):
                                  string='Image',
                                  context={'active_test': False, 'form_view_ref': 'tt_base.tt_upload_center_form_view'})
     payment_acq_ids = fields.One2many('payment.acquirer.number', 'agent_id', 'Payment Acquirer Number')
+    is_using_pnr_quota = fields.Boolean('Using PNR Quota')
+    quota_ids = fields.One2many('tt.pnr.quota','agent_id','Quota')
 
     # TODO VIN:tnyakan creator
     # 1. Image ckup 1 ae (logo)

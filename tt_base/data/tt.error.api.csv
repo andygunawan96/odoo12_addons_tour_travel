@@ -62,6 +62,9 @@ tt_error_api_4024,4024,Vendor Session Expired,,,1,1
 tt_error_api_4025,4025,Flight is not available,,,1,1
 tt_error_api_4026,4026,"Hold booking restricted, You have to Direct Issued this reservation",,,1,1
 tt_error_api_4027,4027,"Not enough vendor balance",,,1,1
+tt_error_api_4028,4028,"Restricted booking, infant cannot be paired with senior citizen (YCD)",,,1,1
+tt_error_api_4029,4029,"Failed Issued",,,1,1
+tt_error_api_4030,4030,"User is banned",,,1,1
 tt_error_api_9001,9901,Notification,For Notif,,1,1
 tt_error_api_9002,9902,Warning,For Warning,,1,1
 tt_error_api_9003,9903,Error,For Error,,1,1

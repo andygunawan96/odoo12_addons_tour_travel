@@ -36,3 +36,6 @@ from . import tt_fare_rules
 from . import tt_cron_log
 from . import tt_upload_center
 from . import tt_ban_user
+from . import tt_pnr_quota_price_list
+from . import tt_pnr_quota
+from . import tt_pnr_quota_usage

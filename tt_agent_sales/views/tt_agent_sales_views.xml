@@ -55,6 +55,18 @@
 
                     <button name="%(tt_agent_invoice_wizard_action_view)d" string="Move Line" type="action" states="confirm" context="{'default_invoice_id1': id}"/>
                     <button name="action_cancel_invoice" string="Cancel Invoice" type="object" groups="tt_base.group_tt_accounting_operator,tt_base.group_tt_agent_finance_manager,base.user_admin" states="confirm,bill,bill2"/>
+                    <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action"
+                            groups="tt_base.group_tt_accounting_operator"
+                            context="{
+                        'default_res_model': 'tt.agent.invoice',
+                        'default_res_id': id,
+                        'default_agent_id': agent_id,
+                        'default_customer_parent_id': customer_parent_id,
+                        'default_referenced_document': name,
+                        'default_currency_id': currency_id,
+                        'default_adj_type': -5,
+                        'hide_component_type': True
+                   }"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,issued"/>
                 </header>
                 <sheet>
@@ -173,7 +185,7 @@
         <field name="res_model">tt.agent.invoice</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
-<!--        <field name="domain">[]</field>-->
+        <!--        <field name="domain">[]</field>-->
         <field name="context">
             {
             'form_view_ref': 'tt_agent_sales.tt_agent_invoice_form_view',

@@ -30,7 +30,6 @@
         <!--Customers (Menu Customers)-->
         <menuitem id="top_tour_travel_customers"
                   parent="tt_base.main_tour_travel"
-
                   name="Customers"
                   sequence="10"
                   groups="base.group_user"/>

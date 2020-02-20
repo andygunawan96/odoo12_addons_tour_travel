@@ -55,10 +55,10 @@
         </field>
     </record>
 
-    <menuitem id="menu_tour_travel_employee"
-              parent="tt_base.top_tour_travel_customers"
-              action="tt_base.res_employee_action_view"
-              name="Employee"
-              sequence="4"
-              groups="base.group_user"/>
+<!--    <menuitem id="menu_tour_travel_employee"-->
+<!--              parent="tt_base.top_tour_travel_customers"-->
+<!--              action="tt_base.res_employee_action_view"-->
+<!--              name="Employee"-->
+<!--              sequence="4"-->
+<!--              groups="base.group_user"/>-->
 </odoo>

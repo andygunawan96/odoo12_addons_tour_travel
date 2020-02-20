@@ -293,3 +293,7 @@ tt_fare_rules_for_tour_travel_manager,tt.fare.rules.for.tour.travel.manager,mode
 tt_ban_user_for_public,tt_base.tt_ban_user_for_public,model_tt_ban_user,,1,0,0,0
 tt_ban_user_for_agent_management_operator,tt_base.tt_ban_user_for_agent_management_operator,model_tt_ban_user,tt_base.group_tt_agent_management_operator,1,1,1,0
 tt_ban_user_for_admin,tt_base.tt_ban_user_for_admin,model_tt_ban_user,base.user_admin,1,1,1,1
+
+access_for_tt_pnr_quota_for_public,tt_base.access_for_tt_pnr_quota_for_public,model_tt_pnr_quota,,1,1,1,1
+access_for_tt_pnr_quota_price_list_for_public,tt_base.access_for_tt_pnr_quota_price_list_for_public,model_tt_pnr_quota_price_list,,1,1,1,1
+access_for_tt_pnr_quota_usage_for_public,tt_base.access_for_tt_pnr_quota_usage_for_public,model_tt_pnr_quota_usage,,1,1,1,1

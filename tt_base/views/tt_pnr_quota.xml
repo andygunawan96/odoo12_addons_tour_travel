@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="tt_pnr_quota_form_view" model="ir.ui.view">
+            <field name="name">tt.pnr.quota.form.view</field>
+            <field name="model">tt.pnr.quota</field>
+            <field name="arch" type="xml">
+                <form string="PNR Quota">
+                    <group>
+                        <field name="name"/>
+                        <field name="amount"/>
+                        <field name="price_list_id"/>
+                        <field name="expired_date"/>
+                        <field name="agent_id"/>
+                        <field name="usage_ids"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <record id="tt_pnr_quota_tree_view" model="ir.ui.view">
+            <field name="name">tt.pnr.quota.tree.view</field>
+            <field name="model">tt.pnr.quota</field>
+            <field name="arch" type="xml">
+                <tree string="PNR Quota">
+                    <field name="name"/>
+                    <field name="amount"/>
+                    <field name="price_list_id"/>
+                    <field name="expired_date"/>
+                    <field name="agent_id"/>
+                    <field name="usage_ids"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="tt_pnr_quota_action_view" model="ir.actions.act_window">
+            <field name="name">PNR Quota</field>
+            <field name="view_type">form</field>
+            <field name="res_model">tt.pnr.quota</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">
+                {
+                'form_view_ref': 'tt_base.tt_pnr_quota_form_view',
+                'tree_view_ref': 'tt_base.tt_pnr_quota_tree_view'
+                }
+            </field>
+        </record>
+
+        <menuitem id="menu_customer_pnr_quota"
+                  parent="tt_base.top_tour_travel_customers"
+                  groups="tt_base.group_tt_accounting_operator,tt_base.group_tt_agent_management_operator"
+                  name="PNR Quota"
+                  sequence="16"/>
+
+        <menuitem id="menu_customer_pnr_quota_pnr_quota"
+                  parent="tt_base.menu_customer_pnr_quota"
+                  groups="tt_base.group_tt_accounting_operator,tt_base.group_tt_agent_management_operator"
+                  action="tt_pnr_quota_action_view"
+                  name="PNR Quota"
+                  sequence="16"/>
+
+    </data>
+</odoo>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <record id="tt_pnr_quota_price_1000" model="tt.pnr.quota.price.list">
+            <field name="name">1000 PNR</field>
+            <field name="price">1500000</field>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+    </data>
+</odoo>

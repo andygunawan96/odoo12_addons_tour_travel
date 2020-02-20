@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="tt_pnr_quota_price_list_form_view" model="ir.ui.view">
+            <field name="name">tt.pnr.quota.price.list.form.view</field>
+            <field name="model">tt.pnr.quota.price.list</field>
+            <field name="arch" type="xml">
+                <form string="PNR Quota Price List">
+                    <group>
+                        <field name="name"/>
+                        <field name="price"/>
+                        <field name="currency_id" invisible="1"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <record id="tt_pnr_quota_price_list_tree_view" model="ir.ui.view">
+            <field name="name">tt.pnr.quota.price.list.tree.view</field>
+            <field name="model">tt.pnr.quota.price.list</field>
+            <field name="arch" type="xml">
+                <tree string="PNR Quota Price List">
+                    <field name="name"/>
+                    <field name="price"/>
+                    <field name="currency_id" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="tt_pnr_quota_price_list_action_view" model="ir.actions.act_window">
+            <field name="name">PNR Quota Price List</field>
+            <field name="view_type">form</field>
+            <field name="res_model">tt.pnr.quota</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">
+                {
+                'form_view_ref': 'tt_base.tt_pnr_quota_price_list_form_view',
+                'tree_view_ref': 'tt_base.tt_pnr_quota_price_list_tree_view'
+                }
+            </field>
+        </record>
+
+        <menuitem id="menu_customer_pnr_quota_pnr_quota_price_list"
+                  parent="tt_base.menu_customer_pnr_quota"
+                  groups="tt_base.group_tt_accounting_operator"
+                  action="tt_pnr_quota_price_list_action_view"
+                  name="PNR Quota Price List"
+                  sequence="17"/>
+
+    </data>
+</odoo>
