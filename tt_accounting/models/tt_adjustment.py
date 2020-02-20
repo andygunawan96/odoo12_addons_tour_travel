@@ -191,7 +191,7 @@ class TtAdjustment(models.Model):
 
     def approve_all_adjustment(self):
         for rec in self.search([('state','=','draft'),
-                                ('create_date','>','2020-02-18 15:00:00')]):
+                                ('create_date','>','2020-02-18 09:30:00')]):
             _logger.info(rec.name)
             rec.confirm_adj_from_button()
             rec.validate_adj_from_button()
@@ -199,5 +199,5 @@ class TtAdjustment(models.Model):
 
     def approve_all_adjustment_test(self):
         for rec in self.search([('state','=','draft'),
-                                ('create_date','>','2020-02-18 15:00:00')]):
+                                ('create_date','>','2020-02-20 09:30:00')]):
             _logger.info(rec.name)
