@@ -216,7 +216,7 @@ class TtProviderTour(models.Model):
         for scs in service_charge_vals:
             if scs.get('description'):
                 scs.pop('description')
-            if scs.get('tour_room_id'):
+            if scs.get('tour_room_code'):
                 service_charge_vals_dup1.append(scs)
             else:
                 service_charge_vals_dup2.append(scs)
@@ -229,8 +229,8 @@ class TtProviderTour(models.Model):
             scs['foreign_currency_id'] = currency_obj.get_id('IDR')
             scs['provider_tour_booking_id'] = self.id
             for psg in self.ticket_ids:
-                if scs.get('tour_room_id'):
-                    if scs['pax_type'] == psg.pax_type and scs['tour_room_id'] == psg.tour_room_id.id:
+                if scs.get('tour_room_code'):
+                    if scs['pax_type'] == psg.pax_type and scs['tour_room_code'] == psg.tour_room_id.room_code:
                         if len(scs['passenger_tour_ids']) < int(scs['pax_count']):
                             scs['passenger_tour_ids'].append(psg.passenger_id.id)
                         else:
@@ -250,8 +250,8 @@ class TtProviderTour(models.Model):
         for scs in service_charge_vals_dup:
             if len(scs['passenger_tour_ids']) < int(scs['pax_count']):
                 for psg in unused_psg:
-                    if scs.get('tour_room_id'):
-                        if scs['tour_room_id'] == psg.tour_room_id.id and psg.passenger_id.id not in scs['passenger_tour_ids']:
+                    if scs.get('tour_room_code'):
+                        if scs['tour_room_code'] == psg.tour_room_id.room_code and psg.passenger_id.id not in scs['passenger_tour_ids']:
                             scs['passenger_tour_ids'].append(psg.passenger_id.id)
                             if len(scs['passenger_tour_ids']) >= int(scs['pax_count']):
                                 break
@@ -262,8 +262,8 @@ class TtProviderTour(models.Model):
                                 break
 
         for scs in service_charge_vals_dup:
-            if scs.get('tour_room_id'):
-                scs.pop('tour_room_id')
+            if scs.get('tour_room_code'):
+                scs.pop('tour_room_code')
             # scs.pop('currency')
             # scs.pop('foreign_currency')
             scs['passenger_tour_ids'] = [(6,0,scs['passenger_tour_ids'])]

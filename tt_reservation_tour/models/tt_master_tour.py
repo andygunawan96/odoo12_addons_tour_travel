@@ -640,12 +640,15 @@ class MasterTour(models.Model):
     def get_tour_details_api(self, data, context, **kwargs):
         try:
             search_request = {
-                'id': data.get('id') and data['id'] or '0'
+                'tour_code': data.get('tour_code') and data['tour_code'] or ''
             }
 
-            tour_obj = self.env['tt.master.tour'].sudo().search([('id', '=', int(search_request['id']))], limit=1)
+            tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', search_request['tour_code'])], limit=1)
             if tour_obj:
                 tour_obj = tour_obj[0]
+                search_request.update({
+                    'id': tour_obj.id
+                })
 
             self.env.cr.execute("""SELECT loc.* FROM tt_master_tour tp LEFT JOIN tt_tour_location_rel tcr ON tcr.product_id = tp.id LEFT JOIN tt_tour_master_locations loc ON loc.id = tcr.location_id WHERE tp.id=%s;""",(tour_obj.id,))
             location_ids = self.env.cr.dictfetchall()
@@ -754,8 +757,10 @@ class MasterTour(models.Model):
 
     def get_payment_rules_api(self, data, context, **kwargs):
         try:
-            search_tour_id = data.get('id')
-            search_tour_obj = self.env['tt.master.tour'].sudo().browse(int(search_tour_id))
+            search_tour_code = data.get('tour_code')
+            search_tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', search_tour_code)], limit=1)
+            if search_tour_obj:
+                search_tour_obj = search_tour_obj[0]
             payment_rules = [
                 {
                     'name': 'Down Payment',
@@ -830,8 +835,8 @@ class MasterTour(models.Model):
 
     def get_tour_pricing_api(self, req, context):
         try:
-            tour_id = req['package_id']
-            tour_data_list = self.env['tt.master.tour'].sudo().search([('id', '=', tour_id)], limit=1)
+            temp_tour_code = req['tour_code']
+            tour_data_list = self.env['tt.master.tour'].sudo().search([('tour_code', '=', temp_tour_code)], limit=1)
             tour_data = tour_data_list[0]
             price_itinerary = {
                 'adult_fare': tour_data.adult_fare,
@@ -889,7 +894,7 @@ class MasterTour(models.Model):
             grand_total_pax = 0
             grand_total_pax_no_infant = 0
             for rec in temp_room_list:
-                tour_room_list = self.env['tt.master.tour.rooms'].sudo().search([('id', '=', int(rec['id']))], limit=1)
+                tour_room_list = self.env['tt.master.tour.rooms'].sudo().search([('room_code', '=', rec['room_code'])], limit=1)
                 tour_room = tour_room_list[0]
                 total_amount = int(rec['adult']) + int(rec['child']) + int(rec['infant'])
                 grand_total_pax += total_amount
@@ -942,6 +947,7 @@ class MasterTour(models.Model):
 
                 temp_accom = {
                     'room_id': tour_room.id,
+                    'room_code': tour_room.room_code,
                     'adult_amount': adult_amt,
                     'child_amount': child_amt,
                     'infant_amount': infant_amt,
@@ -1026,3 +1032,10 @@ class MasterTour(models.Model):
         except Exception as e:
             _logger.error(traceback.format_exc())
             return ERR.get_error(1022)
+
+    def generate_all_room_codes(self):
+        room_list = self.env['tt.master.tour.rooms'].sudo().search([('room_code', '=', False)])
+        for rec in room_list:
+            rec.sudo().write({
+                'room_code': self.env['ir.sequence'].next_by_code('master.tour.room.code') or 'New'
+            })
