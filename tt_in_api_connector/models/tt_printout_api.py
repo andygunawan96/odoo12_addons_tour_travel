@@ -30,7 +30,9 @@ class TtPrintoutApiCon(models.Model):
                     res = self.env['tt.reservation.%s' % data['provider_type']].print_itinerary(data, context)
                 elif data['mode'] == 'visa_cust':
                     res = self.env['tt.reservation.%s' % data['provider_type']].do_print_out_visa_cust(data, context)
-
+            res = {
+                'url': res['url']
+            }
         else:
             raise RequestException(999)
 

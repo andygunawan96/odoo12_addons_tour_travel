@@ -53,6 +53,11 @@ class TtReservationTrain(models.Model):
         for rec in self:
             rec.state = 'issued'
 
+    def action_cancel(self):
+        super(TtReservationTrain, self).action_cancel()
+        for rec in self.provider_booking_ids:
+            rec.action_cancel()
+
     @api.depends('origin_id','destination_id')
     def _compute_sector_type(self):
         for rec in self:

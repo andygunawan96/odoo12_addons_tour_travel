@@ -33,6 +33,8 @@ class TtReservation(models.Model):
     booked_date = fields.Datetime('Booked Date', readonly=True)
     issued_uid = fields.Many2one('res.users', 'Issued by', readonly=True)
     issued_date = fields.Datetime('Issued Date', readonly=True)
+    cancel_uid = fields.Many2one('res.users', 'Cancel by', readonly=False)
+    cancel_date = fields.Datetime('Cancel Date', readonly=True)
     refund_uid = fields.Many2one('res.users', 'Refund by', readonly=False)
     refund_date = fields.Datetime('Refund Date', readonly=True)
     user_id = fields.Many2one('res.users', 'Create by', readonly=True)  # create_uid
@@ -106,9 +108,9 @@ class TtReservation(models.Model):
                                     store=True)
 
     customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer', readonly=True, states={'draft': [('readonly', False)]},
-                                   help='COR / POR')
+                                         help='COR / POR')
     customer_parent_type_id = fields.Many2one('tt.customer.parent.type', 'Customer Type', related='customer_parent_id.customer_parent_type_id',
-                                        store=True, readonly=True)
+                                              store=True, readonly=True)
 
     printout_ticket_id = fields.Many2one('tt.upload.center', 'Ticket', readonly=True)
     printout_ticket_price_id = fields.Many2one('tt.upload.center', 'Ticket (Price)', readonly=True)
@@ -533,6 +535,8 @@ class TtReservation(models.Model):
             _logger.error("provider type %s failed to expire vendor" % (self._name))
 
     def action_cancel(self):
+        self.cancel_date = fields.Datetime.now()
+        self.cancel_uid = self.env.user.id
         self.state = 'cancel'
 
     # def get_installment_dp_amount(self):
@@ -561,7 +565,7 @@ class TtReservation(models.Model):
         #     _logger.info("Empty Waiting List")
         # return waiting_list
         waiting_list = self.env['tt.reservation.waiting.list'].search([('agent_id', '=', agent_id),
-                                                        ('is_in_transaction', '=', True),
+                                                                       ('is_in_transaction', '=', True),
                                                                        ('id','<',wait_id)])
 
         if waiting_list:

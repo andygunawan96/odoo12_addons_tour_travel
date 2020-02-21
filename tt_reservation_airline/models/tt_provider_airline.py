@@ -43,6 +43,8 @@ class TtProviderAirline(models.Model):
     issued_date = fields.Datetime('Issued Date')
     hold_date = fields.Char('Hold Date')
     expired_date = fields.Datetime('Expired Date')
+    cancel_uid = fields.Many2one('res.users', 'Cancel By')
+    cancel_date = fields.Datetime('Cancel Date')
     #
     refund_uid = fields.Many2one('res.users', 'Refund By')
     refund_date = fields.Datetime('Refund Date')
@@ -104,9 +106,6 @@ class TtProviderAirline(models.Model):
     def action_reverse_ledger_from_button(self):
         if self.state == 'fail_refunded':
             raise UserError("Cannot refund, this PNR has been refunded.")
-
-        # if not self.is_ledger_created:
-        #     raise UserError("This Provider Ledger is not Created.")
 
         ##fixme salahhh, ini ke reverse semua provider bukan provider ini saja
         ## ^ harusnay sudah fix
@@ -197,6 +196,11 @@ class TtProviderAirline(models.Model):
 
     def action_expired(self):
         self.state = 'cancel2'
+
+    def action_cancel(self):
+        self.cancel_date = fields.Datetime.now()
+        self.cancel_uid = self.env.user.id
+        self.state = 'cancel'
 
     def action_refund(self, check_provider_state=False):
         self.state = 'refund'

@@ -12,12 +12,10 @@ class PricingProvider(models.Model):
     _name = 'tt.pricing.provider'
     _description = 'Rodex Model'
 
-    name = fields.Char('Name', readonly=1, compute="_compute_name")
+    name = fields.Char('Name', readonly=1, compute="_compute_name", store=True)
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', required=True)
     provider_ids = fields.Many2many('tt.provider', 'pricing_provider_rel', 'pricing_id', 'provider_id', 'Providers')
-    display_providers = fields.Char('Display Providers', compute='_compute_display_providers', store=True, readonly=1)
     carrier_ids = fields.Many2many('tt.transport.carrier', 'tt_pricing_provider_carrier_rel', 'pricing_id', 'carrier_id', string='Carriers')
-    display_carriers = fields.Char('Display Carriers', compute='_compute_display_carriers', store=True, readonly=1)
     line_ids = fields.One2many('tt.pricing.provider.line', 'pricing_id', 'Configs', domain=['|', ('active', '=', 1), ('active', '=', 0)])
     active = fields.Boolean('Active', default=True)
     is_sale = fields.Boolean('Is Sale', default=False)
@@ -25,7 +23,7 @@ class PricingProvider(models.Model):
     is_provider_commission = fields.Boolean('Is Provider Commission', default=False)
 
     @api.multi
-    @api.depends('provider_ids.code','carrier_ids')
+    @api.depends('provider_ids.code','provider_ids','carrier_ids','carrier_ids.code')
     def _compute_name(self):
         for rec in self:
             res = '%s - %s' % (','.join([provider.code.title() for provider in rec.provider_ids]), ','.join([carrier.code for carrier in rec.carrier_ids]))

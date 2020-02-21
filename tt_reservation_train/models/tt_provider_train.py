@@ -45,6 +45,8 @@ class TtProviderTrain(models.Model):
     issued_date = fields.Datetime('Issued Date')
     hold_date = fields.Char('Hold Date')
     expired_date = fields.Datetime('Expired Date')
+    cancel_uid = fields.Many2one('res.users', 'Cancel By')
+    cancel_date = fields.Datetime('Cancel Date')
     #
     refund_uid = fields.Many2one('res.users', 'Refund By')
     refund_date = fields.Datetime('Refund Date')
@@ -122,16 +124,18 @@ class TtProviderTrain(models.Model):
         if self.state == 'fail_refunded':
             raise UserError("Cannot refund, this PNR has been refunded.")
 
-        if not self.is_ledger_created:
-            raise UserError("This Provider Ledger is not Created.")
-
+        ##fixme salahhh, ini ke reverse semua provider bukan provider ini saja
+        ## ^ harusnay sudah fix
         for rec in self.booking_id.ledger_ids:
             if rec.pnr == self.pnr and not rec.is_reversed:
                 rec.reverse_ledger()
 
+        for rec in self.cost_service_charge_ids:
+            rec.is_ledger_created = False
+
         self.write({
             'state': 'fail_refunded',
-            'is_ledger_created': False,
+            # 'is_ledger_created': False,
             'refund_uid': self.env.user.id,
             'refund_date': datetime.now()
         })
@@ -199,6 +203,8 @@ class TtProviderTrain(models.Model):
             self.booking_id.check_provider_state({'co_uid': self.env.user.id})
 
     def action_cancel(self):
+        self.cancel_date = fields.Datetime.now()
+        self.cancel_uid = self.env.user.id
         self.state = 'cancel'
 
     def create_ticket_api(self,passengers,pnr=""):

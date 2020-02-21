@@ -126,9 +126,9 @@ class ReservationAirline(models.Model):
         })
 
     def action_cancel(self):
-        self.cancel_date = fields.Datetime.now()
-        self.cancel_uid = self.env.user.id
-        self.state = 'cancel'
+        super(ReservationAirline, self).action_cancel()
+        for rec in self.provider_booking_ids:
+            rec.action_cancel()
 
     def action_issued_from_button(self):
         api_context = {
