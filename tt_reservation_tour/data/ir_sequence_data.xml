@@ -20,14 +20,21 @@
         <record id="seq_tour_code_group" model="ir.sequence">
             <field name="name">Group Tour Code</field>
             <field name="code">master.tour.code.group</field>
-            <field name="prefix">GRDX</field>
+            <field name="prefix">GRDX%(range_y)s%(range_month)s%(range_sec)s</field>
             <field name="padding">5</field>
         </record>
 
         <record id="seq_tour_code_fit" model="ir.sequence">
             <field name="name">FIT Tour Code</field>
             <field name="code">master.tour.code.fit</field>
-            <field name="prefix">FRDX</field>
+            <field name="prefix">FRDX%(range_y)s%(range_month)s%(range_sec)s</field>
+            <field name="padding">5</field>
+        </record>
+
+        <record id="seq_tour_room_code" model="ir.sequence">
+            <field name="name">Tour Room Code</field>
+            <field name="code">master.tour.room.code</field>
+            <field name="prefix">TRM%(range_y)s%(range_month)s%(range_sec)s</field>
             <field name="padding">5</field>
         </record>
 

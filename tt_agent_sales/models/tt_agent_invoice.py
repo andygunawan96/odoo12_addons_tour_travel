@@ -208,22 +208,27 @@ class AgentInvoice(models.Model):
         self.state = 'bill'
 
     def print_invoice_api(self, data, context):
-        bill_name = data.get('bill_to_name','')
-        bill_address = data.get('bill_address','')
-        additional_information = data.get('additional_information','')
-
-        for rec in self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number'])]):
-            if not bill_name == '' or not bill_address == '' or not additional_information == '':
-                for invoice in rec['invoice_line_ids']:
-                    invoice.invoice_id.write({
-                        'bill_name': bill_name,
-                        'bill_address': bill_address,
-                        'additional_information': additional_information
-                    })
-                    invoice.invoice_id.printout_invoice_id.unlink()
-
+        new_data = {}
+        if data.get('bill_to_name'):
+            new_data.update({
+                'bill_to_name': data.get('bill_to_name')
+            })
+        if data.get('bill_address'):
+            new_data.update({
+                'bill_address': data.get('bill_address')
+            })
+        if data.get('additional_information'):
+            new_data.update({
+                'additional_information': data.get('additional_information')
+            })
+            
         url = []
         for rec in self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number'])]):
+            if new_data:
+                for invoice in rec['invoice_line_ids']:
+                    invoice.invoice_id.write(new_data)
+                    invoice.invoice_id.printout_invoice_id.unlink()
+
             datas = {'ids': self.env.context.get('active_ids', [])}
             # res = self.read(['price_list', 'qty1', 'qty2', 'qty3', 'qty4', 'qty5'])
             res = rec.read()

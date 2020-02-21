@@ -37,6 +37,7 @@ class ReservationTour(models.Model):
 
     tour_id = fields.Many2one('tt.master.tour', 'Tour Package')
     tour_id_str = fields.Text('Tour Package', compute='_compute_tour_id_str')
+    booking_uuid = fields.Char('Booking UUID')
 
     room_ids = fields.One2many('tt.reservation.tour.room', 'booking_id', 'Rooms')
 
@@ -330,12 +331,13 @@ class ReservationTour(models.Model):
             contacts_data = data.get('contacts_data') and data['contacts_data'] or False
             passengers = data.get('passengers_data') and data['passengers_data'] or False
             force_issued = data.get('force_issued') and int(data['force_issued']) or False
-            pricelist_id = data.get('tour_id') and int(data['tour_id']) or 0
+            temp_tour_code = data.get('tour_code') and data['tour_code'] or 0
             room_list = data.get('room_list') and data['room_list'] or []
-            tour_data = self.env['tt.master.tour'].sudo().search([('id', '=', pricelist_id)], limit=1)
+            tour_data = self.env['tt.master.tour'].sudo().search([('tour_code', '=', temp_tour_code)], limit=1)
             pricing = data.get('pricing') and data['pricing'] or []
             if tour_data:
                 tour_data = tour_data[0]
+            pricelist_id = tour_data.id
             provider_id = tour_data.provider_id
             total_all_pax = int(data.get('adult')) + int(data.get('child')) + int(data.get('infant'))
             if tour_data.seat - total_all_pax < 0:
@@ -353,11 +355,13 @@ class ReservationTour(models.Model):
             pax_ids = self.create_customer_api(passengers, context, booker_obj.seq_id, contact_obj.seq_id)
 
             for idx, temp_pax in enumerate(passengers):
+                tour_room_code = temp_pax.get('tour_room_code', '')
+                tour_room_obj = self.env['tt.master.tour.rooms'].sudo().search([('room_code', '=', tour_room_code)], limit=1)
                 list_passenger_value[idx][2].update({
                     'customer_id': pax_ids[idx].id,
                     'title': temp_pax['title'],
                     'pax_type': temp_pax['pax_type'],
-                    'tour_room_id': temp_pax.get('tour_room_id', 0),
+                    'tour_room_id': tour_room_obj and tour_room_obj[0].id or False,
                     'tour_room_seq': temp_pax.get('tour_room_seq', ''),
                     'master_tour_id': tour_data and tour_data.id or False,
                 })
@@ -392,8 +396,10 @@ class ReservationTour(models.Model):
 
             if booking_obj:
                 for room in room_list:
+                    room_obj = self.env['tt.master.tour.rooms'].sudo().search([('room_code', '=', room['room_code'])], limit=1)
                     room.update({
-                        'booking_id': booking_obj.id
+                        'booking_id': booking_obj.id,
+                        'room_id': room_obj and room_obj[0].id or False
                     })
                     self.env['tt.reservation.tour.room'].sudo().create(room)
 
@@ -526,6 +532,7 @@ class ReservationTour(models.Model):
                 rooms.append({
                     'room_index': room_idx,
                     'room_id': room_data.room_id.id,
+                    'room_code': room_data.room_id.room_code,
                     'room_name': room_data.room_id.name,
                     'room_bed_type': room_data.room_id.bed_type,
                     'room_hotel': room_data.room_id.hotel and room_data.room_id.hotel or '-',
@@ -611,7 +618,8 @@ class ReservationTour(models.Model):
             book_info = data.get('book_info') and data['book_info'] or {}
             if book_info:
                 write_vals.update({
-                    'pnr': book_info.get('pnr') and book_info['pnr'] or ''
+                    'pnr': book_info.get('pnr') and book_info['pnr'] or '',
+                    'booking_uuid': book_info.get('booking_uuid') and book_info['booking_uuid'] or False
                 })
 
             for rec in book_obj.provider_booking_ids:

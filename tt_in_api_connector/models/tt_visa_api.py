@@ -11,6 +11,10 @@ class TtOfflineApiCon(models.Model):
 
         if action == 'get_config_api':
             res = self.env['tt.reservation.visa.pricelist'].get_config_api()
+        elif action == 'get_inventory_api':
+            res = self.env['tt.reservation.visa.pricelist'].get_inventory_api()
+        elif action == 'get_inventory_detail_api':
+            res = self.env['tt.reservation.visa.pricelist'].get_product_detail_api(data)
         elif action == 'search_api':
             res = self.env['tt.reservation.visa.pricelist'].search_api(data)
         elif action == 'create_booking_visa_api':
@@ -27,3 +31,9 @@ class TtOfflineApiCon(models.Model):
             raise RequestException(999)
 
         return res
+
+    def get_product_vendor(self, data):
+        return self.send_request_to_gateway('%s/booking/visa' % (self.url), data, 'get_product_provider', timeout=600)
+
+    def get_product_detail_vendor(self, data):
+        return self.send_request_to_gateway('%s/booking/visa' % (self.url), data, 'get_product_detail_provider', timeout=600)
