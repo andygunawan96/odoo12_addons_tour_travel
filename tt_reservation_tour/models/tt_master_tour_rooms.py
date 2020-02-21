@@ -11,6 +11,7 @@ class TourRooms(models.Model):
     _description = 'Rodex Model'
 
     name = fields.Char('Name', required=True, default='Standard')
+    room_code = fields.Char('Room Code', readonly=True, copy=False)
     bed_type = fields.Selection(BED_TYPE, 'Bed Type', default='double', required=True)
     description = fields.Text('Description')
 
@@ -33,3 +34,9 @@ class TourRooms(models.Model):
     extra_bed_limit = fields.Integer('Extra Bed Limit', default=0, help="max extra bed in a room", required=True)
 
     tour_pricelist_id = fields.Many2one('tt.master.tour', 'Pricelist ID', readonly=True)
+
+    @api.model
+    def create(self, vals):
+        if not vals.get('room_code'):
+            vals['room_code'] = self.env['ir.sequence'].next_by_code('master.tour.room.code') or 'New'
+        return super(TourRooms, self).create(vals)
