@@ -1554,7 +1554,7 @@ class TtVisa(models.Model):
             # cek saldo
             total_price = 0
             for psg in passengers:
-                visa_pricelist_obj = self.env['tt.reservation.visa.pricelist'].search([('id', '=', psg['master_visa_Id'])])
+                visa_pricelist_obj = self.env['tt.reservation.visa.pricelist'].search([('reference_code', '=', psg['master_visa_Id'])])
                 if visa_pricelist_obj:
                     total_price += visa_pricelist_obj.sale_price
             # balance_res = self.env['tt.agent'].check_balance_limit_api(context['co_agent_id'], total_price)
@@ -1765,7 +1765,7 @@ class TtVisa(models.Model):
 
         for idx, psg in enumerate(passenger):
             ssc = []
-            pricelist_id = int(psg['master_visa_Id'])
+            pricelist_id = self.env['tt.reservation.visa.pricelist'].search([('reference_code', '=', psg['master_visa_Id'])]).id
             pricelist_obj = pricelist_env.browse(pricelist_id)
             passenger_obj = passenger_env.browse(passenger_ids[idx])
             vals = {
@@ -1891,7 +1891,7 @@ class TtVisa(models.Model):
         to_psg_list = []
 
         for idx, psg in enumerate(passengers):
-            pricelist_id = int(psg['master_visa_Id'])
+            pricelist_id = self.env['tt.reservation.visa.pricelist'].search([('reference_code', '=', psg['master_visa_Id'])]).id
             pricelist_obj = pricelist_env.browse(pricelist_id)
             psg_vals = passenger_ids[idx][0].copy_to_passenger()
             psg_vals.update({
