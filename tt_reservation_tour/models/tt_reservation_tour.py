@@ -37,6 +37,7 @@ class ReservationTour(models.Model):
 
     tour_id = fields.Many2one('tt.master.tour', 'Tour Package')
     tour_id_str = fields.Text('Tour Package', compute='_compute_tour_id_str')
+    booking_uuid = fields.Char('Booking UUID')
 
     room_ids = fields.One2many('tt.reservation.tour.room', 'booking_id', 'Rooms')
 
@@ -617,7 +618,8 @@ class ReservationTour(models.Model):
             book_info = data.get('book_info') and data['book_info'] or {}
             if book_info:
                 write_vals.update({
-                    'pnr': book_info.get('pnr') and book_info['pnr'] or ''
+                    'pnr': book_info.get('pnr') and book_info['pnr'] or '',
+                    'booking_uuid': book_info.get('booking_uuid') and book_info['booking_uuid'] or False
                 })
 
             for rec in book_obj.provider_booking_ids:
