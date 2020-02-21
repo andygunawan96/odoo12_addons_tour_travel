@@ -25,6 +25,9 @@
                             <field name="visa_type"/>
                             <field name="process_type"/>
                             <field name="pax_type"/>
+                            <field name="reference_code"/>
+                            <field name="provider_id"/>
+                            <field name="active"/>
                         </group>
                         <group string="Document Information">
                             <field name="country_id"/>
