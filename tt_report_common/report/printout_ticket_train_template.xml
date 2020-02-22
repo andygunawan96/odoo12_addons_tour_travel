@@ -70,21 +70,21 @@
                                 <div class="col-3" style="max-width: 27.5%;"><span>Nama KA</span></div>
                                 <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
                                 <t t-if="provider.journey_ids.carrier_name">
-                                    <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300"><span t-esc="provider.journey_ids.carrier_name"/> (<span t-if="provider.journey_ids.carrier_name" t-esc="provider.journey_ids.carrier_code"/>)</div>
+                                    <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300"><span t-esc="provider.journey_ids.carrier_name"/> (<span t-if="provider.journey_ids.carrier_name" t-esc="provider.journey_ids.carrier_number"/>)</div>
                                 </t>
                                 <t t-if="not provider.journey_ids.carrier_name">
                                     <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300"><span style="color: white;">kosong</span></div>
                                 </t>
                             </div>
                             <div class="row" style="padding: 0px; margin-top: -3px">
-                                <div class="col-3" style="max-width: 27.5%;"><span>Tgl Berangkat</span></div>
+                                <div class="col-3" style="max-width: 27.5%;"><span>Tgl Pemesanan</span></div>
                                 <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
-                                <t t-if="provider.journey_ids.departure_date">
+                                <t t-if="doc.issued_date">
                                     <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300">
-                                        <span t-esc="provider.journey_ids.departure_date"/>
+                                        <span t-field="doc.issued_date"/>  <!--provider.journey_ids.departure_date">-->
                                     </div>
                                 </t>
-                                <t t-if="not provider.journey_ids.departure_date">
+                                <t t-if="not doc.issued_date">
                                     <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300"><span style="color: white;">kosong</span></div>
                                 </t>
                             </div>
@@ -96,14 +96,24 @@
                                         <t t-if="provider.journey_ids.origin_id.city == provider.journey_ids.origin_id.name">
                                             <span t-esc="provider.journey_ids.origin_id.city"/><br/>
                                         </t>
-                                        <t t-if="provider.journey_ids.origin_id.city != provider.journey_ids.origin_id.name">
+                                        <t t-elif="provider.journey_ids.origin_id.city != provider.journey_ids.origin_id.name">
                                             <span t-esc="provider.journey_ids.origin_id.city"/> <span t-esc="provider.journey_ids.origin_id.name"/><br/>  <!--<span t-esc="line_ids[line_index]['origin_city']"/>-->
                                         </t>
-                                        <span t-if="provider.journey_ids.departure_date" t-esc="provider.journey_ids.departure_date"/>
-                                        <span style="color: white;">..</span>
                                     </div>
                                 </t>
                                 <t t-if="not provider.journey_ids.origin_id">
+                                    <div class="col-7" style="padding: 0px; text-transform:uppercase"><span style="color: white;">kosong</span></div>
+                                </t>
+                            </div>
+                            <div class="row" style="padding: 0px; margin-top: -3px">
+                                <div class="col-3" style="max-width: 27.5%;"><span>Tgl Berangkat</span></div>
+                                <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
+                                <t t-if="provider.journey_ids.departure_date">
+                                    <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300">
+                                        <span t-if="provider.journey_ids.departure_date" t-esc="provider.journey_ids.departure_date"/>
+                                    </div>
+                                </t>
+                                <t t-if="provider.journey_ids.departure_date">
                                     <div class="col-7" style="padding: 0px; text-transform:uppercase"><span style="color: white;">kosong</span></div>
                                 </t>
                             </div>
@@ -118,11 +128,21 @@
                                         <t t-if="provider.journey_ids.destination_id.city != provider.journey_ids.destination_id.name">
                                             <span t-esc="provider.journey_ids.destination_id.city"/> <span t-esc="provider.journey_ids.destination_id.name"/><br/>  <!--<span t-esc="line_ids[line_index]['destination_city']"/>-->
                                         </t>
-                                        <span t-if="provider.journey_ids.arrival_date" t-esc="provider.journey_ids.arrival_date"/>
-                                        <span style="color: white;">..</span>
                                     </div>
                                 </t>
                                 <t t-if="not provider.journey_ids.destination_id.name">
+                                    <div class="col-7" style="padding: 0px; text-transform:uppercase"><span style="color: white;">kosong</span></div>
+                                </t>
+                            </div>
+                            <div class="row" style="padding: 0px; margin-top: -3px">
+                                <div class="col-3" style="max-width: 27.5%;"><span>Tgl Tiba</span></div>
+                                <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
+                                <t t-if="provider.journey_ids.arrival_date">
+                                    <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300">
+                                        <span t-if="provider.journey_ids.arrival_date" t-esc="provider.journey_ids.arrival_date"/>
+                                    </div>
+                                </t>
+                                <t t-if="provider.journey_ids.arrival_date">
                                     <div class="col-7" style="padding: 0px; text-transform:uppercase"><span style="color: white;">kosong</span></div>
                                 </t>
                             </div>

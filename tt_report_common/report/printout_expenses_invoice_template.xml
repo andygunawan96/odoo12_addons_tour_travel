@@ -119,7 +119,7 @@
             </div>
         </template>
 
-        <template id="printout_visa_expenses_invoice">
+        <template id="printout_expenses_invoice">
 <!--        <t t-set="data_report_header_spacing" t-value="20"/>-->
 <!--        <t t-set="data_report_margin_top" t-value="2"/>-->
             <t t-set="data_report_header_spacing" t-value="0"/>

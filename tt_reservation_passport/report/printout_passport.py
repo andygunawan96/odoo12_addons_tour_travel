@@ -12,10 +12,10 @@ class PrintoutPassportHO(models.AbstractModel):
 
     def get_values(self, ids):
         print(ids)
-        visa_obj = self.env['tt.reservation.passport'].browse(ids)
+        passport_obj = self.env['tt.reservation.passport'].browse(ids)
         vals = {
-            'booked_name': visa_obj.sudo().booked_uid.name,
-            'validate_name': visa_obj.sudo().validate_uid.name
+            'booked_name': passport_obj.sudo().booked_uid.name,
+            'validate_name': passport_obj.sudo().validate_uid.name
         }
         return vals
 

@@ -105,11 +105,11 @@
                                 <span t-field="line_id.desc"/>
                             </t>
                         </div>
-                        <div class="col-2 text-right" style="padding: 10px 25px;">
-                            <span t-field="inv_id.total" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                        <div class="col-2 text-right" style="padding: 5px 15px;">
+                            <span t-field="inv_id.total" t-options='{"widget": "monetary", "display_currency": doc.currency_id}' style="letter-spacing: 0.025em;"/>
                         </div>
-                        <div class="col-2 text-right" style="padding: 10px 25px;">
-                            <span t-field="inv_id.total_after_tax" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                        <div class="col-2 text-right" style="padding: 5px 15px;">
+                            <span t-field="inv_id.total_after_tax" t-options='{"widget": "monetary", "display_currency": doc.currency_id}' style="letter-spacing: 0.025em;"/>
                         </div>
                         <t t-set="index" t-value="index + 1"/>
                     </div>
