@@ -18,7 +18,7 @@ TT_RESERVATION_HOTEL
         'data/hotel_type_data.xml',
         'data/tt.hotel.facility.type.csv',
         'data/res.city.type.csv',
-        'data/res.country.state.csv',
+        # 'data/res.country.state.csv',
         'data/res.city.csv',
         # 'data/res.country.district.csv',
         'security/ir.model.access.csv',

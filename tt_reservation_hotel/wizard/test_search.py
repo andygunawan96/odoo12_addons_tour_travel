@@ -641,6 +641,14 @@ class TestSearch(models.Model):
             self.env['tt.reservation.passenger.hotel'].create({
                 'booking_id': resv_id.id,
                 'customer_id': rec.id,
+                'title': rec.title,
+                'first_name': rec.first_name,
+                'last_name': rec.last_name,
+                'gender': rec.gender,
+                'birth_date': rec.birth_date,
+                'nationality_id': rec.nationality_id,
+                'identity_type': rec.identity_type,
+                'identity_number': rec.identity_number,
             })
 
         for room_rate in room_rates[0]['rooms']:
@@ -1126,8 +1134,8 @@ class TestSearch(models.Model):
             }
 
     def get_top_facility(self, limit):
-        return [{'facility_id': facility.facility_id.id, 'facility_name': facility.name, 'sequence': facility.sequence,
-                 'image_url': facility.image_url, 'image_url2': facility.image_url2, 'internal_code': facility.internal_code,} for
+        return [{'facility_name': facility.name, 'sequence': facility.sequence,
+                 'image_url': facility.image_url, 'image_url2': facility.image_url2, 'internal_name': ','.join(rec.code for rec in facility.facility_id.provider_ids),} for
                 facility in self.env['tt.hotel.top.facility'].search([], limit=limit)]
 
     def get_facility_img(self, limit=99):
