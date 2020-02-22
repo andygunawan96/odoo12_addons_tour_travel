@@ -46,7 +46,7 @@ class VisaPricelist(models.Model):
     visa_type = fields.Selection(VISA_TYPE, 'Visa Type')
     process_type = fields.Selection(PROCESS_TYPE, 'Process Type')
 
-    reference_code = fields.Char('Reference Code', required=True)
+    reference_code = fields.Char('Reference Code', required=False)
     provider_id = fields.Many2one('tt.provider', 'Provider')
     active = fields.Boolean('Active', default=True)
 
@@ -127,7 +127,7 @@ class VisaPricelist(models.Model):
 
     def actions_get_product_rodextrip(self, data):
         req = {
-            'provider': 'rodextrip_visa'
+            'provider': 'rodextrip_visa_btbo2'
         }
         res = self.env['tt.visa.api.con'].get_product_vendor(req)
         if res['error_code'] == 0:
@@ -142,7 +142,7 @@ class VisaPricelist(models.Model):
             pass
 
     def actions_sync_product_rodextrip(self, data):
-        provider = 'rodextrip_visa'
+        provider = 'rodextrip_visa_btbo2'
         list_product = self.search([('provider_id', '=', self.env['tt.provider'].search([('code', '=', 'rodextrip_visa')], limit=1).id)])
         for rec in list_product:
             rec.active = True
@@ -160,9 +160,9 @@ class VisaPricelist(models.Model):
                 product_obj = self.search([('reference_code', '=', rec)], limit=1)
                 product_obj = product_obj and product_obj[0] or False
                 temp = []
-                if provider == 'rodextrip_visa':
+                if provider == 'rodextrip_visa_btbo2':
                     req = {
-                        'provider': 'rodextrip_visa',
+                        'provider': provider,
                         'code': rec
                     }
                     res = self.env['tt.visa.api.con'].get_product_detail_vendor(req)
@@ -203,8 +203,10 @@ class VisaPricelist(models.Model):
                                 'commercial_duration': res['response']['commercial_duration'],
                                 'commission_price': res['response']['commission_price'],
                                 'cost_price': res['response']['cost_price'],
-                                'country_id': self.env['res.country'].search([('name', '=', res['response']['country_id'])]).id,
-                                'currency_id': self.env['res.currency'].search([('name', '=', res['response']['currency_id'])]).id,
+                                'country_id': self.env['res.country'].search(
+                                    [('name', '=', res['response']['country_id'])]).id,
+                                'currency_id': self.env['res.currency'].search(
+                                    [('name', '=', res['response']['currency_id'])]).id,
                                 'delivery_nta_price': res['response']['delivery_nta_price'],
                                 'description': res['response']['description'],
                                 'duration': res['response']['duration'],
@@ -214,12 +216,13 @@ class VisaPricelist(models.Model):
                                 'notes': res['response']['notes'],
                                 'nta_price': res['response']['nta_price'],
                                 'pax_type': res['response']['pax_type'],
-                                'process_type': res['response']['commercial_duration'],
-                                'reference_code': res['response']['commercial_duration'],
-                                'provider_id': self.env['tt.provider'].search([('name', '=', res['response']['provider_id'])]).id,
-                                'sale_price': res['response']['commercial_duration'],
-                                'visa_nta_price': res['response']['commercial_duration'],
-                                'visa_type': res['response']['commercial_duration']
+                                'process_type': res['response']['process_type'],
+                                'reference_code': res['response']['reference_code'],
+                                'provider_id': self.env['tt.provider'].search(
+                                    [('name', '=', res['response']['provider_id'])]).id,
+                                'sale_price': res['response']['sale_price'],
+                                'visa_nta_price': res['response']['visa_nta_price'],
+                                'visa_type': res['response']['visa_type']
                             })
                         for data in res['response']['requirement_ids']:
 
