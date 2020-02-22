@@ -16,6 +16,8 @@ class TtTourApiCon(models.Model):
             res = table_obj.update_passenger_api(data,context)
         elif action == 'get_booking':
             res = table_obj.get_booking_api(data,context)
+        elif action == 'get_booking_for_vendor_by_api':
+            res = table_obj.get_booking_for_vendor_by_api(data,context)
         elif action == 'commit_booking':
             res = table_obj.commit_booking_api(data,context)
         elif action == 'issued_booking':
