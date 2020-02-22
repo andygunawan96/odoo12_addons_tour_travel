@@ -89,7 +89,7 @@ class PassportOrderPassengers(models.Model):
     interview = fields.Boolean('Needs Interview')
     interview_ids = fields.One2many('tt.reservation.passport.interview.biometrics', 'passenger_interview_id', 'Interview')
 
-    # handling_ids = fields.One2many('tt.reservation.visa.order.handling', 'to_passenger_id', 'Handling Questions')
+    # handling_ids = fields.One2many('tt.reservation.passport.order.handling', 'to_passenger_id', 'Handling Questions')
     handling_information = fields.Text('Handling Information')
 
     in_process_date = fields.Datetime('In Process Date', readonly=0)  # readonly=1
@@ -151,6 +151,13 @@ class PassportOrderPassengers(models.Model):
         mail = self.env['mail.template'].browse(template.id)
         mail.send_mail(self.id)
         print("Email Biometrics Sent")
+
+    def action_fail_booked(self):
+        for rec in self:
+            rec.write({
+                'state': 'fail_booked'
+            })
+            rec.message_post(body='Passenger FAILED (Book)')
 
     def action_draft(self):
         for rec in self:
@@ -293,13 +300,13 @@ class PassportOrderPassengers(models.Model):
                 'out_process_date': datetime.now()
             })
             all_approve = True
-            for psg in rec.visa_id.passenger_ids:
+            for psg in rec.passport_id.passenger_ids:
                 if psg.state != 'accepted':
                     all_approve = False
             if all_approve:
-                rec.visa_id.action_approved_visa()
+                rec.passport_id.action_approved_passport()
             else:
-                rec.visa_id.action_partial_approved_visa()
+                rec.passport_id.action_partial_approved_passport()
             rec.message_post(body='Passenger ACCEPTED')
 
     def action_to_HO(self):

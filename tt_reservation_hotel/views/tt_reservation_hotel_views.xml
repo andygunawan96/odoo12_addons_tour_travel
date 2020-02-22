@@ -311,6 +311,7 @@
                                     <field name="gender"/>
                                     <field name="birth_date"/>
                                     <field name="nationality_id"/>
+                                    <field name="customer_id"/>
                                 </tree>
                             </field>
                         </page>
