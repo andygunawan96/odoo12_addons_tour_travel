@@ -127,7 +127,7 @@ class TtProviderPassport(models.Model):
             scs['passenger_passport_ids'] = []
             scs['currency_id'] = currency_obj.get_id('IDR')  # currency (IDR)
             scs['foreign_currency_id'] = currency_obj.get_id('IDR')  # currency (foreign)
-            scs['provider_passport_booking_id'] = self.id  # id provider visa
+            scs['provider_passport_booking_id'] = self.id  # id provider passport
             if scs['charge_code'] != 'disc':
                 for psg in self.passenger_ids:
                     if scs['pax_type'] == psg.pax_type and scs['pricelist_id'] == psg.pricelist_id.id:
@@ -161,7 +161,15 @@ class TtProviderPassport(models.Model):
             self.env['tt.ledger'].action_create_ledger(self)
 
     def action_create_expenses_invoice(self):
-        pass
+        datas = {
+            'ids': self.env.context.get('active_ids', []),
+            'model': self._name
+        }
+        res = self.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        printout_expenses_id = self.env.ref('tt_report_common.action_create_expenses_invoice_passport')
+        return printout_expenses_id.report_action(self, data=datas)
 
     def to_dict(self):
         passenger_list = []

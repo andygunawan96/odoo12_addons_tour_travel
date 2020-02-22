@@ -4,6 +4,7 @@ from odoo.exceptions import UserError
 import logging
 import traceback
 import copy
+import base64
 from datetime import date
 from ...tools.api import Response
 from ...tools.ERR import RequestException
@@ -78,7 +79,7 @@ class TtPassport(models.Model):
 
     passenger_ids = fields.One2many('tt.reservation.passport.order.passengers', 'passport_id',
                                     'Passport Order Passengers', readonly=0)
-    commercial_state = fields.Char('Payment Status', readonly=1)  # , compute='_compute_commercial_state'
+    commercial_state = fields.Char('Payment Status', readonly=1, compute='_compute_commercial_state')  #
     confirmed_date = fields.Datetime('Confirmed Date', readonly=1)
     confirmed_uid = fields.Many2one('res.users', 'Confirmed By', readonly=1)
 
@@ -137,6 +138,17 @@ class TtPassport(models.Model):
             else:
                 rec.commercial_state = 'Unpaid'
 
+    def action_fail_booked_passport(self):
+        self.write({
+            'state_passport': 'fail_booked',
+            'state': 'fail_booked'
+        })
+        for psg in self.passenger_ids:
+            psg.action_fail_booked()
+        for pvdr in self.provider_booking_ids:
+            pvdr.action_fail_booked_passport()
+        self.message_post(body='Order FAILED (Booked)')
+
     def action_draft_passport(self):
         self.write({
             'state_passport': 'draft',
@@ -169,7 +181,7 @@ class TtPassport(models.Model):
 
     def action_partial_validate_passport(self):
         self.write({
-            'state_visa': 'partial_validate'
+            'state_passport': 'partial_validate'
         })
         self.message_post(body='Order PROCEED')
 
@@ -250,19 +262,19 @@ class TtPassport(models.Model):
 
     def action_approved_passport(self):
         self.write({
-            'state_visa': 'approve'
+            'state_passport': 'approve'
         })
         self.message_post(body='Order APPROVED')
 
     def action_partial_approved_passport(self):
         self.write({
-            'state_visa': 'partial_approve'
+            'state_passport': 'partial_approve'
         })
         self.message_post(body='Order PARTIAL APPROVED')
 
     def action_rejected_passport(self):
         self.write({
-            'state_visa': 'reject'
+            'state_passport': 'reject'
         })
         self.message_post(body='Order REJECTED')
 
@@ -282,7 +294,7 @@ class TtPassport(models.Model):
 
     def action_cancel_passport(self):
         # set semua state passenger ke cancel
-        if self.state_visa in ['in_process', 'payment']:
+        if self.state_passport in ['in_process', 'payment']:
             self.can_refund = True
         # if self.state_passport not in ['in_process', 'partial_proceed', 'proceed', 'delivered', 'ready', 'done']:
         #     if self.sale_service_charge_ids:
@@ -490,10 +502,6 @@ class TtPassport(models.Model):
         self.write(vals)
 
         self._compute_commercial_state()
-        self._create_ledger_passport()
-        self._create_ho_ledger_passport()
-        # self._create_commission_ledger_passport()
-        # self._calc_grand_total()
 
     def _create_ledger_passport(self):
         ledger = self.env['tt.ledger']
@@ -580,15 +588,87 @@ class TtPassport(models.Model):
             'ids': self.ids,
             'model': self._name,
         }
-        return self.env.ref('tt_reservation_passport.action_report_printout_passport_ho').report_action(self, data=data)
-
-    def do_print_out_passport_cust(self):
-        self.ensure_one()
-        data = {
-            'ids': self.ids,
-            'model': self._name,
+        passport_handling_ho_id = self.env.ref('tt_reservation_passport.action_report_printout_passport_ho')
+        if not self.printout_handling_ho_id:
+            pdf_report = passport_handling_ho_id.report_action(self, data=data)
+            pdf_report['context'].update({
+                'active_model': self._name,
+                'active_id': self.id
+            })
+            pdf_report.update({
+                'ids': self.ids,
+                'model': self._name,
+            })
+            pdf_report_bytes = passport_handling_ho_id.render_qweb_pdf(data=pdf_report)
+            res = self.env['tt.upload.center.wizard'].upload_file_api(
+                {
+                    'filename': 'Passport HO %s.pdf' % self.name,
+                    'file_reference': 'Passport HO Handling',
+                    'file': base64.b64encode(pdf_report_bytes[0]),
+                    'delete_date': datetime.today() + timedelta(minutes=10)
+                },
+                {
+                    'co_agent_id': self.env.user.agent_id.id,
+                    'co_uid': self.env.user.id,
+                }
+            )
+            upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+            self.printout_handling_ho_id = upc_id.id
+        url = {
+            'type': 'ir.actions.act_url',
+            'name': "ZZZ",
+            'target': 'new',
+            'url': self.printout_handling_ho_id.url,
         }
-        return self.env.ref('tt_reservation_passport.action_report_printout_passport_cust').report_action(self, data=data)
+        return url
+        # return passport_handling_ho_id.report_action(self, data=data)
+
+    def do_print_out_passport_cust(self, data, ctx=None):
+        # jika panggil dari backend
+        if 'order_number' not in data:
+            data['order_number'] = self.name
+        if 'provider_type' not in data:
+            data['provider_type'] = self.provider_type_id.name
+
+        book_obj = self.env['tt.reservation.passport'].search([('name', '=', data['order_number'])], limit=1)
+        datas = {'ids': book_obj.env.context.get('active_ids', [])}
+        res = book_obj.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        passport_handling_customer_id = self.env.ref('tt_reservation_passport.action_report_printout_passport_cust')
+        if not book_obj.printout_handling_customer_id:
+            pdf_report = passport_handling_customer_id.report_action(book_obj, data=data)
+            pdf_report['context'].update({
+                'active_model': book_obj._name,
+                'active_id': book_obj.id
+            })
+            pdf_report.update({
+                'ids': book_obj.ids,
+                'model': book_obj._name,
+            })
+            pdf_report_bytes = passport_handling_customer_id.render_qweb_pdf(data=pdf_report)
+            res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
+                {
+                    'filename': 'Passport Customer %s.pdf' % book_obj.name,
+                    'file_reference': 'Passport Customer Handling',
+                    'file': base64.b64encode(pdf_report_bytes[0]),
+                    'delete_date': datetime.today() + timedelta(minutes=10)
+                },
+                {
+                    'co_agent_id': book_obj.env.user.agent_id.id,
+                    'co_uid': book_obj.env.user.id,
+                }
+            )
+            upc_id = book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+            book_obj.printout_handling_customer_id = upc_id.id
+        url = {
+            'type': 'ir.actions.act_url',
+            'name': "ZZZ",
+            'target': 'new',
+            'url': self.printout_handling_ho_id.url,
+        }
+        return url
+        # return passport_handling_customer_id.report_action(self, data=data)
 
     def print_itinerary(self, data, ctx=None):
         # jika panggil dari backend
@@ -602,8 +682,100 @@ class TtPassport(models.Model):
         res = book_obj.read()
         res = res and res[0] or {}
         datas['form'] = res
-        # passport_itinerary_id = book_obj.env.ref('tt_report_common.action_printout_itinerary_passport')
-        return book_obj.env.ref('tt_report_common.action_printout_itinerary_passport').report_action(book_obj, data=data)
+        passport_itinerary_id = book_obj.env.ref('tt_report_common.action_printout_itinerary_passport')
+
+        if not book_obj.printout_itinerary_id:
+            if book_obj.agent_id:
+                co_agent_id = book_obj.agent_id.id
+            else:
+                co_agent_id = self.env.user.agent_id.id
+
+            if book_obj.user_id:
+                co_uid = book_obj.user_id.id
+            else:
+                co_uid = self.env.user.id
+
+            pdf_report = passport_itinerary_id.report_action(book_obj, data=data)
+            pdf_report['context'].update({
+                'active_model': book_obj._name,
+                'active_id': book_obj.id
+            })
+            pdf_report.update({
+                'ids': book_obj.ids,
+                'model': book_obj._name,
+            })
+            pdf_report_bytes = passport_itinerary_id.render_qweb_pdf(data=pdf_report)
+            res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
+                {
+                    'filename': 'Itinerary Passport %s.pdf' % book_obj.name,
+                    'file_reference': 'Itinerary Passport',
+                    'file': base64.b64encode(pdf_report_bytes[0]),
+                    'delete_date': datetime.today() + timedelta(minutes=10)
+                },
+                {
+                    'co_agent_id': co_agent_id,
+                    'co_uid': co_uid
+                }
+            )
+            upc_id = book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+            book_obj.printout_itinerary_passport = upc_id.id
+        url = {
+            'type': 'ir.actions.act_url',
+            'name': "ZZZ",
+            'target': 'new',
+            'url': book_obj.printout_itinerary_passport.url,
+        }
+        return url
+        # return passport_itinerary_id.report_action(book_obj, data=data)
+
+    def print_ho_invoice(self):
+        datas = {
+            'ids': self.env.context.get('active_ids', []),
+            'model': self._name
+        }
+        res = self.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        passport_ho_invoice_id = self.env.ref('tt_report_common.action_report_printout_invoice_ho_passport')
+        if not self.printout_ho_invoice_id:
+            if self.agent_id:
+                co_agent_id = self.agent_id.id
+            else:
+                co_agent_id = self.env.user.agent_id.id
+
+            if self.user_id:
+                co_uid = self.user_id.id
+            else:
+                co_uid = self.env.user.id
+
+            pdf_report = passport_ho_invoice_id.report_action(self, data=datas)
+            pdf_report['context'].update({
+                'active_model': self._name,
+                'active_id': self.id
+            })
+            pdf_report_bytes = passport_ho_invoice_id.render_qweb_pdf(data=pdf_report)
+            res = self.env['tt.upload.center.wizard'].upload_file_api(
+                {
+                    'filename': 'Passport HO Invoice %s.pdf' % self.name,
+                    'file_reference': 'Passport HO Invoice',
+                    'file': base64.b64encode(pdf_report_bytes[0]),
+                    'delete_date': datetime.today() + timedelta(minutes=10)
+                },
+                {
+                    'co_agent_id': co_agent_id,
+                    'co_uid': co_uid,
+                }
+            )
+            upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+            self.printout_ho_invoice_id = upc_id.id
+        url = {
+            'type': 'ir.actions.act_url',
+            'name': "ZZZ",
+            'target': 'new',
+            'url': self.printout_ho_invoice_id.url,
+        }
+        return url
+        # return passport_ho_invoice_id.report_action(self, data=datas)
 
     ######################################################################################################
     # CREATE
@@ -613,8 +785,8 @@ class TtPassport(models.Model):
         "total_cost": 25,
         "provider": "rodextrip_passport",
         "pax": {
-            "adult": 2,
-            "child": 1,
+            "adult": 1,
+            "child": 0,
             "infant": 0,
             "elder": 0
         }
@@ -680,8 +852,7 @@ class TtPassport(models.Model):
 
     param_search = {
         "destination": "Singapore",
-        "consulate": "Surabaya",
-        "departure_date": "2019-04-10",
+        "immigration": "Surabaya",
         "passport_type": "passport",
         "apply_type": "new",
         "provider": "passport_rodextrip"
@@ -689,9 +860,20 @@ class TtPassport(models.Model):
 
     param_payment = {
         "member": False,
-        "seq_id": "PQR.0429001"
+        "acquirer_seq_id": "PQR.0429001",
+        'force_issued': False
         # "seq_id": "PQR.9999999"
     }
+
+    param_voucher = False
+
+    def state_booking_passport_api(self, data, context):
+        book_obj = self.env['tt.reservation.passport'].search([('name', '=', data.get('order_number'))], limit=1)
+        if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1):
+            if data['state'] == 'booked':
+                book_obj.action_booked_passport(context)
+            elif data['state'] == 'failed':
+                book_obj.action_fail_booked_passport()
 
     def create_booking_passport_api(self):
         sell_passport = self.param_sell_passport  # data['passport']
@@ -701,27 +883,38 @@ class TtPassport(models.Model):
         payment = self.param_payment  # data['payment']
         search = self.param_search  # data['payment']
         context = self.param_context  # context
+        voucher = self.param_voucher  # data['voucher']
 
         try:
             header_val = {}
             booker_id = self.create_booker_api(booker, context)
             contact_id = self.create_contact_api(contact[0], booker_id, context)
             passenger_ids = self.create_customer_api(passengers, context, booker_id, contact_id)  # create passenger
-            # to_psg_ids = self._create_visa_order(passengers, passenger_ids)  # create visa order data['passenger']
+            # to_psg_ids = self._create_passport_order(passengers, passenger_ids)  # create passport order data['passenger']
             # pricing = self.create_sale_service_charge_value(passengers, to_psg_ids, context,
             #                                                 sell_passport)  # create pricing dict
 
+            # voucher = ''
+            # if data['voucher']:
+            #     voucher = data['voucher']['voucher_reference']
+
             header_val.update({
-                'departure_date': datetime.strptime(search['departure_date'], '%Y-%m-%d').strftime('%d/%m/%Y'),
                 'country_id': self.env['res.country'].sudo().search([('name', '=', search['destination'])], limit=1).id,
-                'provider_name': self.env['tt.provider'].sudo().search([('code', '=', 'visa_rodextrip')], limit=1).name,
+                'provider_name': self.env['tt.provider'].sudo().search([('code', '=', 'passport_rodextrip')], limit=1).name,
                 'booker_id': booker_id.id,
+                'voucher_code': voucher,
+                'payment_method': payment['acquirer_seq_id'],
+                'payment_active': True,
                 'contact_title': contact[0]['title'],
                 'contact_id': contact_id.id,
                 'contact_name': contact[0]['first_name'] + ' ' + contact[0]['last_name'],
                 'contact_email': contact_id.email,
                 'contact_phone': "%s - %s" % (
                 contact_id.phone_ids[0].calling_code, contact_id.phone_ids[0].calling_number),
+                # 'passenger_ids': [(6, 0, to_psg_ids)],
+                'adult': sell_passport['pax']['adult'],
+                'child': sell_passport['pax']['child'],
+                'infant': sell_passport['pax']['infant'],
                 'state': 'booked',
                 'agent_id': context['co_agent_id'],
                 'user_id': context['co_uid'],
@@ -732,6 +925,19 @@ class TtPassport(models.Model):
             for psg in book_obj.passenger_ids:
                 for scs in psg.cost_service_charge_ids:
                     scs['description'] = book_obj.name
+
+            book_obj.document_to_ho_date = datetime.now() + timedelta(days=1)
+            book_obj.ho_validate_date = datetime.now() + timedelta(days=3)
+            book_obj.hold_date = datetime.now() + timedelta(days=31)
+
+            book_obj.pnr = book_obj.name
+
+            book_obj.write({
+                'state_passport': 'confirm',
+                'confirmed_date': datetime.now(),
+                'confirmed_uid': context['co_uid']
+            })
+            book_obj.message_post(body='Order CONFIRMED')
 
             res = ''
         except RequestException as e:
@@ -825,6 +1031,13 @@ class TtPassport(models.Model):
             ssc_ids.append(ssc_obj.id)
         return ssc_ids
 
+    def get_list_of_provider_passport(self):
+        provider_list = []
+        for rec in self.provider_booking_ids:
+            if rec.provider_id:
+                provider_list.append(rec.provider_id.name)
+        self.provider_name = ', '.join(provider_list)
+
     def action_booked_passport(self, api_context=None):
         if not api_context:  # Jika dari call from backend
             api_context = {
@@ -845,9 +1058,68 @@ class TtPassport(models.Model):
 
         self._compute_commercial_state()
 
+    def action_booked_api_passport(self, context, pnr_list, hold_date):
+        self.write({
+            'state': 'booked',
+            'pnr': ', '.join(pnr_list),
+            'hold_date': hold_date,
+            'booked_uid': context['co_uid'],
+            'booked_date': datetime.now()
+        })
+
+    def action_issued_passport_api(self, data, context):
+        book_obj = self.env['tt.reservation.passport'].search([('name', '=', data['order_number'])])
+
+        if data.get('member'):
+            customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', data['acquirer_seq_id'])]).id
+        else:
+            customer_parent_id = book_obj.agent_id.customer_parent_walkin_id.id
+
+        vals = {}
+
+        vals.update({
+            'state': 'issued',
+            'issued_uid': context['co_uid'],
+            'issued_date': datetime.now(),
+            'customer_parent_id': customer_parent_id
+        })
+
+        book_obj.write(vals)
+        book_obj._compute_commercial_state()
+        for rec in book_obj.provider_booking_ids:
+            rec.write(vals)
+
     ######################################################################################################
     # OTHERS
     ######################################################################################################
+
+    def check_provider_state(self, context, pnr_list=[], hold_date=False, req={}):
+        if all(rec.state == 'booked' for rec in self.provider_booking_ids):
+            # booked
+            self.calculate_service_charge()
+            self.action_booked_api_passport(context, pnr_list, hold_date)
+        elif all(rec.state == 'issued' for rec in self.provider_booking_ids):
+            # issued
+            ##get payment acquirer
+            if req.get('acquirer_seq_id'):
+                acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', req['acquirer_seq_id'])])
+                if not acquirer_id:
+                    raise RequestException(1017)
+            else:
+                # raise RequestException(1017)
+                acquirer_id = self.agent_id.default_acquirer_id
+
+            if req.get('member'):
+                customer_parent_id = acquirer_id.agent_id.id
+            else:
+                customer_parent_id = self.agent_id.customer_parent_walkin_id.id
+
+    @api.onchange('state')
+    @api.depends('state')
+    def _compute_expired_passport(self):
+        for rec in self:
+            if rec.state == 'expired':
+                rec.state_passport = 'expired'
 
     @api.multi
     @api.depends('passenger_ids')

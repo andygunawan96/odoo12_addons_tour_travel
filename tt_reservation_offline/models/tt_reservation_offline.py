@@ -112,7 +112,7 @@ class IssuedOffline(models.Model):
     currency_id = fields.Many2one('res.currency', 'Currency', default=lambda self: self.env.user.company_id.currency_id,
                                   readonly=True, states={'draft': [('readonly', False)],
                                                          'pending': [('readonly', False)]})
-    total = fields.Monetary('Total Sale Price', store=True)
+    total = fields.Monetary('Total Sale Price', readonly=False, store=True, compute="")
     total_commission_amount = fields.Monetary('Total Commission Amount', store=True)
     # total_supplementary_price = fields.Monetary('Total Supplementary', compute='_get_total_supplement')
     total_tax = fields.Monetary('Total Taxes')
@@ -137,8 +137,8 @@ class IssuedOffline(models.Model):
                               readonly=True, states={'draft': [('readonly', False)],
                                                      'pending': [('readonly', False)]})
 
-    line_ids = fields.One2many('tt.reservation.offline.lines', 'booking_id', 'Issued Offline')
-    passenger_ids = fields.One2many('tt.reservation.offline.passenger', 'booking_id', 'Issued Offline')
+    line_ids = fields.One2many('tt.reservation.offline.lines', 'booking_id', 'Lines')
+    passenger_ids = fields.One2many('tt.reservation.offline.passenger', 'booking_id', 'Passengers')
 
     incentive_amount = fields.Monetary('Insentif')
     vendor_amount = fields.Float('Vendor Amount')

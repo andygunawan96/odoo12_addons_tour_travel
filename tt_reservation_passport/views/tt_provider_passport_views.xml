@@ -10,6 +10,11 @@
                     <field name="state" widget="statusbar" statusbar_visible="booked,issued"/>
                 </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_create_expenses_invoice"
+                                class="oe_stat_button" icon="fa-file"
+                                type="object" string="Expenses Invoice"/>
+                    </div>
                     <group>
                         <group>
                             <field name="is_ledger_created"/>

@@ -1727,15 +1727,6 @@ class TtVisa(models.Model):
                 'sale_service_charge_ids': values
             })
 
-    def _update_api_context(self, contact, context):
-        user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
-        context.update({
-            'agent_id': user_obj.agent_id.id,
-            # 'sub_agent_id': user_obj.agent_id.id,
-            'booker_type': 'FPO',
-        })
-        return context
-
     def _visa_header_normalization(self, search, sell_visa):
         res = {}
         str_sell_visa = ['provider']
@@ -2092,14 +2083,6 @@ class TtVisa(models.Model):
             'url': book_obj.printout_handling_customer_id.url,
         }
         return url
-
-    def action_proforma_invoice_visa(self):
-        self.ensure_one()
-        data = {
-            'ids': self.ids,
-            'model': self._name,
-        }
-        return self.env.ref('tt_reservation_visa.action_report_printout_proforma_invoice_visa').report_action(self, data=data)
 
     def print_itinerary(self, data, ctx=None):
         # jika panggil dari backend

@@ -220,7 +220,7 @@
                                 <field name="line_ids" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm', 'validate'])]}"/>
                             </page>
                             <page string="Passenger(s)">
-                                <field name="passenger_ids" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm', 'validate'])]}"/>  <!--context="{'default_agent_id': sub_agent_id}"-->
+                                <field name="passenger_ids" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm', 'sent', 'validate'])]}"/>  <!--context="{'default_agent_id': sub_agent_id}"-->
                             </page>
                             <page string="Prices" name="prices" groups="tt_base.group_tt_tour_travel_operator">  <!--attrs="{'invisible': [('state', '=', 'draft')]}"-->
                                 <field name="sale_service_charge_ids" readonly="1">
