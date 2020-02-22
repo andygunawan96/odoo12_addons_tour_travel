@@ -230,7 +230,7 @@ class HotelInformation(models.Model):
                     _logger.error("Couldn't open or write to file (%s)." % e)
                     break
 
-        filename = "/var/log/tour_travel/file_hotelspro_master/master_dest.txt"
+        filename = "/var/log/cache_hotel/hotelspro_file/master/master_dest.txt"
         file = open(filename, 'w')
         file.write(json.dumps(cache_hotel))
         file.close()
@@ -1768,6 +1768,7 @@ class HotelInformation(models.Model):
         return True
 
     # Klik and Book get already exist
+    # Not Done Yet
     def get_record_by_api14b(self):
         api_context = {
             'co_uid': self.env.user.id
@@ -1794,26 +1795,96 @@ class HotelInformation(models.Model):
             file.write(hotel_objs[rec][1])
             file.close()
         return True
+
+    # Render from master data
+    def get_record_by_api14c(self):
+        need_to_add_list = [['No', 'City', 'Country', 'Hotel qty']]
+        # Find all xls file in selected directory
+        path = '/var/log/cache_hotel/knb/master/'
+        for country_file in glob.glob(os.path.join(path, '*.xls')):
+            _logger.info("========================================")
+            _logger.info("Write Country " + country_file.split('/')[-1].split('_')[2])
+            _logger.info("========================================")
+            # Baca file
+            with open(country_file, 'r') as f:
+                page = f.read()
+                # File memang extension .xls
+                # Ntah kenapa contain nya html page jadi mesti pake fungsi dibawah buat rubah jadi dict
+                tree = html.fromstring(page)
+                # rubah table excel jadi list of dict dengan key nya adalah line 1
+                header = [rec.text for rec in tree.xpath('//tr')[0]]
+                hotel_list = {}
+                a = 0
+                body = {}
+                # dikasih len header supaya header tidak ikut di render
+                for rec in tree.xpath('//td')[len(header):]:
+                    body[header[a]] = rec.text if rec.text != "" else ''
+                    # Reset pointer setelah header habis
+                    if a == len(header) - 1:
+                        # Prepare dict to format cache
+                        if not hotel_list.get(body['CityName']):
+                            hotel_list[body['CityName']] = []
+                        hotel_list[body['CityName']].append({
+                            'id': body['HotelCode'],
+                            'name': body['HotelName'],
+                            'street': body['Address1'],
+                            'street2': body['Address2'],
+                            'street3': body['Address3'],
+                            'description': body['Description'],
+                            'email': body['Email'],
+                            'images': [],
+                            'facilities': [],
+                            'phone': body['Telephone'],
+                            'fax': body['Facsimile'],
+                            'zip': body['Zipcode'],
+                            'website': body['Website'],
+                            'lat': '',
+                            'long': '',
+                            'rating': body['Rating'] or 0,
+                            'hotel_type': '',
+                            'city': body['CityName'],
+                        })
+                        body = {}
+                        a = 0
+                    else:
+                        a += 1
+            f.close()
+            for city in hotel_list.keys():
+                _logger.info("City: " + city + ' Get:' + str(len(hotel_list[city])) + 'Hotel(s)')
+                filename = "/var/log/cache_hotel/knb/" + city.strip().split('/')[0] + ".json"
+                file = open(filename, 'w')
+                file.write(json.dumps(hotel_list[city]))
+                file.close()
+
+                need_to_add_list.append([1, hotel_list[city].encode("utf-8"),
+                                         country_file.split('/')[-1].split('_')[2].encode("utf-8"),
+                                         len(hotel_list[city])])
+
+        with open('/var/log/cache_hotel/knb/result/Result.csv', 'w') as csvFile:
+            writer = csv.writer(csvFile)
+            writer.writerows(need_to_add_list)
+        csvFile.close()
+
     # ====================== TOOLS =====================================================
     def masking_provider(self, provider):
         # Perlu dibuat gini karena cache data bisa berasal dari mana sja
         # EXAMPLE: mg_pool, miki_api, hotelspro_file, dida_pool dll
         provider = provider.split('_')[0]
-        if provider in ['mg', 'mgholiday']:
+        if provider in ['webbeds', 'fitruums']:
             return 'A1'
-        elif provider == 'hotelspro':
+        elif provider == 'dida':
             return 'A2'
-        elif provider == 'miki':
+        elif provider == 'knb':
             return 'A3'
-        elif provider == 'itank':
+        elif provider == 'miki':
             return 'A4'
         elif provider == 'quantum':
             return 'A5'
-        elif provider in ['webbeds', 'fitruums']:
+        elif provider in ['mg', 'mgholiday']:
             return 'A6'
         elif provider == 'hotelbeds':
             return 'A7'
-        elif provider == 'dida':
+        elif provider == 'hotelspro':
             return 'A8'
         elif provider == 'tbo':
             return 'A9'
@@ -1821,8 +1892,42 @@ class HotelInformation(models.Model):
             return 'A10'
         elif provider == 'oyo':
             return 'A11'
+        elif provider == 'itank':
+            return 'A12'
+        elif provider == 'rodextrip_hotel':
+            return 'A13'
         else:
             return provider
+
+    def comp_fac(self):
+        # for fac in new_hotel.get('facilities') or []:
+        #     if isinstance(fac, dict):
+        #         if not fac.get('facility_name'):
+        #             fac['facility_name'] = fac.pop('name')
+        #         fac_name = fac['facility_name']
+        #     else:
+        #         fac_name = fac
+        #         fac = {
+        #             'facility_name': fac,
+        #             'facility_id': False,
+        #         }
+        #     for fac_det in fac_name.split('/'):
+        #         facility = self.env['tt.hotel.facility'].search([('name', '=ilike', fac_det)])
+        #         if facility:
+        #             fac['facility_id'] = facility[0].internal_code
+        #             break
+        #         else:
+        #             facility = self.env['tt.provider.code'].search([('name', '=ilike', fac_det), ('facility_id', '!=', False)])
+        #             if facility:
+        #                 fac['facility_id'] = facility[0].facility_id.internal_code
+        #                 break
+        #
+        #             # Rekap Facility Other Name
+        #             with open('/var/log/cache_hotel/result log/master/new_facility.csv', 'a') as csvFile:
+        #                 writer = csv.writer(csvFile)
+        #                 writer.writerows([[provider, fac_det]])
+        #             csvFile.close()
+        return True
 
     def formating_homas(self, hotel, hotel_id, provider, city_id, city_name):
         new_hotel = {
@@ -1881,9 +1986,22 @@ class HotelInformation(models.Model):
                     'facility_name': fac,
                     'facility_id': False,
                 }
-            # fac_name = isinstance(fac, dict) and fac['facility_name'] or fac
-            facility = self.env['tt.hotel.facility'].search([('name', '=ilike', fac_name)])
-            fac['facility_id'] = facility and facility[0].id or False
+            # for fac_det in fac_name.split('/'):
+            #     facility = self.env['tt.hotel.facility'].search([('name', '=ilike', fac_det)])
+            #     if facility:
+            #         fac['facility_id'] = facility[0].internal_code
+            #         break
+            #     else:
+            #         facility = self.env['tt.provider.code'].search([('name', '=ilike', fac_det), ('facility_id', '!=', False)])
+            #         if facility:
+            #             fac['facility_id'] = facility[0].facility_id.internal_code
+            #             break
+            #
+            #         # Rekap Facility Other Name
+            #         with open('/var/log/cache_hotel/result log/master/new_facility.csv', 'a') as csvFile:
+            #             writer = csv.writer(csvFile)
+            #             writer.writerows([[provider, fac_det]])
+            #         csvFile.close()
         return new_hotel
 
     def formatting_hotel_name(self, hotel_name, city_name=False):
@@ -2054,8 +2172,7 @@ class HotelInformation(models.Model):
         # provider_list = ['hotelspro', 'hotelspro_file', 'fitruums', 'webbeds_pool', 'webbeds_excel_pool',
         #                  'itank', 'quantum', 'quantum_pool', 'mgholiday', 'mg_pool', 'miki_api', 'miki_scrap', 'miki_pool',
         #                  'dida_pool', 'tbo', 'oyo']
-        provider_list = ['hotelspro', 'hotelspro_file', 'fitruums', 'webbeds_pool', 'webbeds_excel_pool',
-                         'quantum', 'quantum_pool', 'miki_api', 'miki_scrap', 'miki_pool', 'dida_pool', 'tbo', 'oyo']
+        provider_list = ['webbeds_pool', 'webbeds_excel_pool', 'dida_pool']
 
         new_to_add_list2 = [['Type', '#1:Name', '#1:address', '#1:provider', '#2:Similar Name', '#2:address', '#2:provider']]
         if not rendered_city:
@@ -2317,6 +2434,12 @@ class HotelInformation(models.Model):
         # Updata CSV Result merger (Nice to have)
         return True
 
+    # ====================== Correction after mapping ============================================
+    def get_other_facility_name(self):
+        return True
+
+    def set_other_facility_name(self):
+        return True
     # ====================== Cache Hotel to Gateway ==============================================
     @api.multi
     def prepare_gateway_cache(self):
