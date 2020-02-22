@@ -998,8 +998,14 @@ class MasterTour(models.Model):
 
     def issued_booking_vendor(self, data, context, **kwargs):
         try:
+            book_obj = self.env['tt.reservation.tour'].sudo().search([('name', '=', data['order_number'])], limit=1)
+            if book_obj:
+                book_obj = book_obj[0]
             response = {
-                'success': True
+                'success': True,
+                'pnr': book_obj.pnr,
+                'booking_uuid': book_obj.name,
+                'status': book_obj.state,
             }
             return ERR.get_no_error(response)
         except RequestException as e:
