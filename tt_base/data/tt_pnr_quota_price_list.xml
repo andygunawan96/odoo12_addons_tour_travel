@@ -1,10 +1,44 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <data>
-        <record id="tt_pnr_quota_price_1000" model="tt.pnr.quota.price.list">
+        <record id="tt_pnr_quota_price_1000a" model="tt.pnr.quota.price.list">
             <field name="name">1000 PNR</field>
+            <field name="amount">1000</field>
             <field name="price">1500000</field>
             <field name="currency_id" ref="base.IDR"/>
+        </record>
+
+        <record id="tt_pnr_quota_price_500a" model="tt.pnr.quota.price.list">
+            <field name="name">500 PNR</field>
+            <field name="amount">500</field>
+            <field name="price">800000</field>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+
+        <record id="tt_pnr_quota_price_1000b" model="tt.pnr.quota.price.list">
+            <field name="name">1000 PNR</field>
+            <field name="amount">1000</field>
+            <field name="price">2500000</field>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+
+        <record id="tt_pnr_quota_price_500b" model="tt.pnr.quota.price.list">
+            <field name="name">500 PNR</field>
+            <field name="amount">500</field>
+            <field name="price">2000000</field>
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+
+        <record id="tt_pnr_quota_price_package_A" model="tt.pnr.quota.price.package">
+            <field name="name">Bayar 12</field>
+            <field name="excess_quota_fee" ref="tt_pnr_quota_price_1000a"/>
+            <field name="excess_quota_fee">5000</field>
+        </record>
+
+        <record id="tt_pnr_quota_price_package_B" model="tt.pnr.quota.price.package">
+            <field name="name">Bayar 0</field>
+            <field name="excess_quota_fee" ref="tt_pnr_quota_price_1000b"/>
+            <field name="excess_quota_fee">5000</field>
         </record>
     </data>
 </odoo>

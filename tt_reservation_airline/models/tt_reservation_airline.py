@@ -584,8 +584,8 @@ class ReservationAirline(models.Model):
                     try:
                         self.env['tt.airline.api.con'].send_force_issued_not_enough_balance_notification(self.name, context)
                     except Exception as e:
-                        _logger.error("Send TOP UP Approve Notification Telegram Error")
-                    raise RequestException(payment_res['error_code'])
+                        _logger.error("Send TOP UP Approve Notification Telegram Error\n" + traceback.format_exc())
+                    raise RequestException(payment_res['error_code'],additional_message=payment_res['error_msg'])
 
             self.action_issued_api_airline(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
         elif all(rec.state == 'refund' for rec in self.provider_booking_ids):

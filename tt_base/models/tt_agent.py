@@ -2,7 +2,7 @@ from odoo import models, fields, api, _
 import logging, traceback
 from ...tools import ERR,variables,util
 from odoo.exceptions import UserError
-import json
+from datetime import date
 
 _logger = logging.getLogger(__name__)
 
@@ -53,8 +53,11 @@ class TtAgent(models.Model):
                                  string='Image',
                                  context={'active_test': False, 'form_view_ref': 'tt_base.tt_upload_center_form_view'})
     payment_acq_ids = fields.One2many('payment.acquirer.number', 'agent_id', 'Payment Acquirer Number')
-    is_using_pnr_quota = fields.Boolean('Using PNR Quota')
+
+    is_using_pnr_quota = fields.Boolean('Using PNR Quota', related="agent_type_id.is_using_pnr_quota")
     quota_ids = fields.One2many('tt.pnr.quota','agent_id','Quota')
+    quota_amount = fields.Integer('Quota', compute='_compute_quota_amount',store = True)
+    quota_total_duration = fields.Date('Max Duration', _compute='_compute_quota_duration',store=True)
 
     # TODO VIN:tnyakan creator
     # 1. Image ckup 1 ae (logo)
@@ -149,6 +152,24 @@ class TtAgent(models.Model):
     #         })
     #
     #     return vals
+
+    @api.depends('quota_ids','quota_ids.available_amount')
+    def _compute_quota_amount(self):
+        for rec in self:
+            quota_amount = 0
+            for quota_id in rec.quota_ids:
+                quota_amount += quota_id.available_amount
+            rec.quota_amount = quota_amount
+
+    @api.depends('quota_ids')
+    def _compute_quota_duration(self):
+        for rec in self:
+            expiry_date = date.today()
+            for quota_id in rec.quota_ids:
+                if expiry_date < quota_id.expired_date:
+                    expiry_date = quota_id.expired_date
+            rec.quota_total_duration = expiry_date
+
 
     def _compute_balance_agent(self):
         for rec in self:

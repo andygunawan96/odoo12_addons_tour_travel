@@ -41,6 +41,13 @@
                                     <field name="can_register_agent"/>
                                     <field name="can_be_registered"/>
                                     <field name="registration_upline_ids"/>
+                                    <field name="is_using_pnr_quota"/>
+                                </group>
+                                <group>
+                                    <field name="create_uid"/>
+                                    <field name="create_date"/>
+                                    <field name="write_uid"/>
+                                    <field name="write_date"/>
                                     <field name="user_template"/>
                                     <field name="currency_id"/>
                                     <field name="registration_fee"/>
@@ -50,12 +57,6 @@
                                     <field name="recruitment_fee"/>
                                     <field name="document"/>
                                     <field name="description"/>
-                                </group>
-                                <group>
-                                    <field name="create_uid"/>
-                                    <field name="create_date"/>
-                                    <field name="write_uid"/>
-                                    <field name="write_date"/>
                                 </group>
                             </group>
                             <group>

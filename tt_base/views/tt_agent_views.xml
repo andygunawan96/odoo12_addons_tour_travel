@@ -24,7 +24,7 @@
                             ('date', '&gt;=', (context_today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d'))
                         ]"/>
                 <filter name="week" string="This Week"
-                    domain="[
+                        domain="[
                             '&amp;',
                             ('date', '>=', (context_today() + relativedelta(weeks=-1,days=1,weekday=0)).strftime('%Y-%m-%d')),
                             ('date', '&lt;=', (context_today() + relativedelta(weekday=6)).strftime('%Y-%m-%d')),
@@ -45,7 +45,7 @@
         <field name="name">tt.agent.form.view</field>
         <field name="model">tt.agent</field>
         <field name="arch" type="xml">
-            <form>
+            <form create="false">
                 <header>
                     <button name="get_current_agent_target" type="object" string="Calc Target" groups="base.user_admin"/>
                     <button name="generate_va_number" type="object" string="Generate VA" groups="tt_base.group_tt_accounting_supervisor"/>
@@ -83,16 +83,17 @@
                     <group>
                         <group>
                             <field name="currency_id" readonly="1"/>
-                            <field name="is_using_pnr_quota" groups="tt_base.group_tt_agent_management_operator"/>
-<!--                            <field name="actual_balance"/>-->
-<!--                            <field name="annual_revenue_target"/>-->
-<!--                            <field name="annual_profit_target"/>-->
-<!--                            <field name="credit_limit"/>-->
+                            <field name="is_using_pnr_quota" groups="tt_base.group_tt_agent_management_operator"
+                            invisible="1"/>
+                            <!--                            <field name="actual_balance"/>-->
+                            <!--                            <field name="annual_revenue_target"/>-->
+                            <!--                            <field name="annual_profit_target"/>-->
+                            <!--                            <field name="credit_limit"/>-->
                         </group>
                         <group>
                             <field name="est_date" readonly="1"/>
-<!--                            <field name="mou_start"/>-->
-<!--                            <field name="mou_end"/>-->
+                            <!--                            <field name="mou_start"/>-->
+                            <!--                            <field name="mou_end"/>-->
                         </group>
                     </group>
 
@@ -128,6 +129,13 @@
                         <page string="Payment Acquirer Number">
                             <field name="payment_acq_ids" readonly="1"/>
                         </page>
+                        <page string="Quota" attrs="{'invisible': [('is_using_pnr_quota','=',False)]}">
+                            <group>
+                                <field name="quota_amount"/>
+                                <field name="quota_total_duration"/>
+                            </group>
+                            <field name="quota_ids"/>
+                        </page>
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">
@@ -161,37 +169,37 @@
                 <field name="reference" readonly="0"/>
             </field>
             <field name="parent_agent_id" position="replace">
-                 <field name="parent_agent_id" readonly="0"/>
+                <field name="parent_agent_id" readonly="0"/>
             </field>
             <field name="user_ids" position="replace">
-                 <field name="user_ids" readonly="0"/>
+                <field name="user_ids" readonly="0"/>
             </field>
             <field name="customer_parent_ids" position="replace">
-                 <field name="customer_parent_ids" context="{'form_view_ref' : 'tt_base.tt_customer_parent_form_view'}" readonly="0"/>
+                <field name="customer_parent_ids" context="{'form_view_ref' : 'tt_base.tt_customer_parent_form_view'}" readonly="0"/>
             </field>
             <field name="email" position="replace">
-                 <field name="email" placeholder="Agent's Email" readonly="0"/>
+                <field name="email" placeholder="Agent's Email" readonly="0"/>
             </field>
             <field name="website" position="replace">
-                 <field name="website" readonly="0"/>
+                <field name="website" readonly="0"/>
             </field>
             <field name="npwp" position="replace">
-                 <field name="npwp" readonly="0"/>
+                <field name="npwp" readonly="0"/>
             </field>
             <field name="agent_bank_detail_ids" position="replace">
-                 <field name="agent_bank_detail_ids" readonly="0"/>
+                <field name="agent_bank_detail_ids" readonly="0"/>
             </field>
             <field name="address_ids" position="replace">
-                 <field name="address_ids" readonly="0"/>
+                <field name="address_ids" readonly="0"/>
             </field>
             <field name="phone_ids" position="replace">
-                 <field name="phone_ids" readonly="0"/>
+                <field name="phone_ids" readonly="0"/>
             </field>
             <field name="social_media_ids" position="replace">
-                 <field name="social_media_ids" readonly="0"/>
+                <field name="social_media_ids" readonly="0"/>
             </field>
             <field name="payment_acq_ids" position="replace">
-                 <field name="payment_acq_ids" readonly="0"/>
+                <field name="payment_acq_ids" readonly="0"/>
             </field>
         </field>
     </record>
@@ -204,16 +212,16 @@
         <field name="priority">40</field>
         <field name="arch" type="xml">
             <field name="payment_acquirer_ids" position="replace">
-                 <field name="payment_acquirer_ids" context="{'form_view_ref':'tt_base.payment_acquirer_form_view'}" readonly="0"/>
+                <field name="payment_acquirer_ids" context="{'form_view_ref':'tt_base.payment_acquirer_form_view'}" readonly="0"/>
             </field>
             <field name="address_ids" position="replace">
-                 <field name="address_ids" readonly="0"/>
+                <field name="address_ids" readonly="0"/>
             </field>
             <field name="phone_ids" position="replace">
-                 <field name="phone_ids" readonly="0"/>
+                <field name="phone_ids" readonly="0"/>
             </field>
             <field name="social_media_ids" position="replace">
-                 <field name="social_media_ids" readonly="0"/>
+                <field name="social_media_ids" readonly="0"/>
             </field>
         </field>
     </record>
@@ -241,7 +249,7 @@
                 <field name="name"/>
                 <field name="email"/>
                 <field name="est_date"/>
-<!--                <field name="currency_id"/>-->
+                <!--                <field name="currency_id"/>-->
                 <templates>
                     <t t-name="kanban-box">
                         <div class="oe_kanban_global_click o_kanban_record_has_image_fill o_hr_kanban_record">
@@ -292,9 +300,9 @@
         <field name="domain">[]</field>
         <field name="context">
             {
-                'form_view_ref': 'tt_base.tt_agent_form_view',
-                'kanban_view_ref': 'tt_base.tt_agent_kanban_view',
-                'search_default_all':1
+            'form_view_ref': 'tt_base.tt_agent_form_view',
+            'kanban_view_ref': 'tt_base.tt_agent_kanban_view',
+            'search_default_all':1
             }
         </field>
     </record>
@@ -368,45 +376,45 @@
     </record>
 
     <menuitem id="menu_tour_travel_agent"
-                  parent="tt_base.top_tour_travel_customers"
-                  groups="group_tt_tour_travel_operator"
-                  name="Agent"
-                  sequence="2"/>
+              parent="tt_base.top_tour_travel_customers"
+              groups="group_tt_tour_travel_operator"
+              name="Agent"
+              sequence="2"/>
 
-        <menuitem id="submenu_tour_travel_all_agent"
-                  parent="tt_base.menu_tour_travel_agent"
-                  groups="group_tt_tour_travel_operator"
-                  name="All"
-                  sequence="1"
-                  action="tt_agent_all_action_view"/>
+    <menuitem id="submenu_tour_travel_all_agent"
+              parent="tt_base.menu_tour_travel_agent"
+              groups="group_tt_tour_travel_operator"
+              name="All"
+              sequence="1"
+              action="tt_agent_all_action_view"/>
 
-        <menuitem id="submenu_tour_travel_citra_agent"
-                  parent="tt_base.menu_tour_travel_agent"
-                  groups="group_tt_tour_travel_operator"
-                  name="Citra"
-                  sequence="2"
-                  action="tt_agent_citra_action_view"/>
+    <menuitem id="submenu_tour_travel_citra_agent"
+              parent="tt_base.menu_tour_travel_agent"
+              groups="group_tt_tour_travel_operator"
+              name="Citra"
+              sequence="2"
+              action="tt_agent_citra_action_view"/>
 
-        <menuitem id="submenu_tour_travel_japro_agent"
-                  parent="tt_base.menu_tour_travel_agent"
-                  groups="group_tt_tour_travel_operator"
-                  name="JaPro"
-                  sequence="3"
-                  action="tt_agent_japro_action_view"/>
+    <menuitem id="submenu_tour_travel_japro_agent"
+              parent="tt_base.menu_tour_travel_agent"
+              groups="group_tt_tour_travel_operator"
+              name="JaPro"
+              sequence="3"
+              action="tt_agent_japro_action_view"/>
 
-        <menuitem id="submenu_tour_travel_btbo_agent"
-                  parent="tt_base.menu_tour_travel_agent"
-                  groups="group_tt_tour_travel_operator"
-                  name="BTBO"
-                  sequence="4"
-                  action="tt_agent_btbo_action_view"/>
+    <menuitem id="submenu_tour_travel_btbo_agent"
+              parent="tt_base.menu_tour_travel_agent"
+              groups="group_tt_tour_travel_operator"
+              name="BTBO"
+              sequence="4"
+              action="tt_agent_btbo_action_view"/>
 
-        <menuitem id="submenu_tour_travel_btbr_agent"
-                  parent="tt_base.menu_tour_travel_agent"
-                  groups="group_tt_tour_travel_operator"
-                  name="BTBR"
-                  sequence="5"
-                  action="tt_agent_btbr_action_view"/>
+    <menuitem id="submenu_tour_travel_btbr_agent"
+              parent="tt_base.menu_tour_travel_agent"
+              groups="group_tt_tour_travel_operator"
+              name="BTBR"
+              sequence="5"
+              action="tt_agent_btbr_action_view"/>
 
     <record id="view_agent_target_form" model="ir.ui.view">
         <field name="name">view.tt.agent.target.form.view</field>
