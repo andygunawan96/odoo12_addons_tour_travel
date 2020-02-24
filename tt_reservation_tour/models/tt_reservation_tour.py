@@ -478,6 +478,7 @@ class ReservationTour(models.Model):
                 'state': book_obj.state,
                 'pnr': book_obj.pnr,
                 'provider': book_obj.tour_id.provider_id.code,
+                'booking_uuid': book_obj.booking_uuid and book_obj.booking_uuid or False,
             }
             return ERR.get_no_error(response)
         except RequestException as e:
@@ -497,6 +498,28 @@ class ReservationTour(models.Model):
 
     def payment_tour_api(self,req,context):
         return self.payment_reservation_api('tour',req,context)
+
+    def get_booking_for_vendor_by_api(self, data, context, **kwargs):
+        try:
+            search_booking_num = data['order_number']
+            book_obj = self.env['tt.reservation.tour'].sudo().search([('name', '=', search_booking_num)], limit=1)
+            if book_obj:
+                book_obj = book_obj[0]
+            master = self.env['tt.master.tour'].browse(book_obj.tour_id.id)
+
+            response = {
+                'pnr': book_obj.pnr,
+                'order_number': book_obj.name,
+                'provider': master.provider_id.code,
+                'booking_uuid': book_obj.booking_uuid and book_obj.booking_uuid or False,
+            }
+            return ERR.get_no_error(response)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1013)
 
     def get_booking_api(self, data, context, **kwargs):
         try:
@@ -585,13 +608,14 @@ class ReservationTour(models.Model):
                 },
                 'passengers': passengers,
                 'pnr': book_obj.pnr,
-                'state': book_obj.state,
+                'state': data.get('state') and data['state'] or book_obj.state,
                 'adult': book_obj.adult,
                 'child': book_obj.child,
                 'infant': book_obj.infant,
                 'departure_date': book_obj.departure_date,
                 'arrival_date': book_obj.arrival_date,
                 'order_number': book_obj.name,
+                'booking_uuid': book_obj.booking_uuid and book_obj.booking_uuid or False,
                 'hold_date': book_obj.hold_date,
                 'provider': master.provider_id.code,
                 'tour_details': tour_package,
