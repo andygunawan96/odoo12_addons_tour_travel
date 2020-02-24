@@ -46,7 +46,7 @@
                     <button name="action_validate" string="Validate" type="object" groups="tt_base.group_tt_agent_finance_operator,base.user_admin" attrs="{'invisible':[('state','!=', 'request')]}"/>
                     <button name="action_done" string="Approve" type="object" groups="tt_base.group_tt_agent_finance_manager,base.user_admin" attrs="{'invisible':[('state','!=', 'validate')]}"/>
                     <button name="action_reject" string="Reject" type="object" groups="tt_base.group_tt_agent_user_operator,base.user_admin" attrs="{'invisible':[('state','=','done')]}"/>
-                    <button name="set_to_done" string="Set to Done" type="object" groups="base.user_admin"/>
+                    <button name="set_to_done" string="Set to Done" type="object" groups="base.user_admin" attrs="{'invisible':[('state','=','done')]}"/>
                     <button name="set_to_draft" string="Set to Draft" type="object" groups="tt_base.group_tt_agent_user_operator,base.user_admin" attrs="{'invisible':[('state','!=','reject')]}"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,request,validate,done"/>
                 </header>
