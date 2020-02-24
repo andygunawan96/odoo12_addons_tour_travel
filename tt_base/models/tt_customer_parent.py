@@ -113,7 +113,8 @@ class TtCustomerParent(models.Model):
     def action_confirm(self):
         if self.state != 'draft':
             raise UserError("Cannot Confirm because state is not 'draft'.")
-
+        if not self.address_ids or not self.phone_ids:
+            raise UserError("Please fill at least one ADDRESS data and one PHONE data!")
         self.write({
             'state': 'confirm',
             'confirm_uid': self.env.user.id,
