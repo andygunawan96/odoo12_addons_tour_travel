@@ -1486,8 +1486,8 @@ class MasterActivity(models.Model):
             country = req.get('country') and req['country'] or ''
             city = req.get('city') and req['city'] or ''
             type_id = 0
-            if req.get('type_id'):
-                temp_type_id = req['type_id'] != '0' and self.env['tt.activity.category'].sudo().search([('id', '=', req['type_id']), ('type', '=', 'type')]) or ''
+            if req.get('type'):
+                temp_type_id = req['type'] != '0' and self.env['tt.activity.category'].sudo().search([('id', '=', req['type']), ('type', '=', 'type')]) or ''
                 type_id = temp_type_id and temp_type_id[0].id or 0
             # sub_category = sub_category != '0' and sub_category or ''
 
