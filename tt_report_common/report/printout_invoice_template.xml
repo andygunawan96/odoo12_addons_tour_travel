@@ -334,7 +334,7 @@
             <div class="box-footer" style="padding: 0px; width: 100%; height: 120px; background: rgba(39,62,84,0.82);">  <!--rgba(70,70,70,0.8);-->
                 <t t-if="doc_type == 'itin'">
                     <div class="row">
-                        <div class="col-6" style="margin-top:15px; margin-left: 15px; padding: 0 30px;">
+                        <div class="col-5" style="margin-top:10px; margin-left: 15px; margin-right: 15px; padding: 0 30px;">
                             <div>
                                 <span style="font-weight: 600; color: white" t-field="doc['agent_id'].name"/>
                             </div>
@@ -347,7 +347,7 @@
                                 </t>
                             </div>
                         </div>
-                        <div class="col-5" style="margin-top:10px;">
+                        <div class="col-6" style="margin-top:10px;">
                             <div>
                                 <span style="font-weight: 500; color: white">Contact Customer Care</span>
                             </div>
@@ -394,11 +394,11 @@
                 </t>
                 <t t-else="">
                     <div class="row">
-                        <div class="col-6" style="margin-top:15px; margin-left: 15px; padding: 0 30px;">
-                            <div>
+                        <div class="col-5" style="margin-top:10px; padding: 0 30px;">
+                            <div style="margin-left: 15px; margin-right: 15px;">
                                 <span style="font-weight: 600; color: white" t-field="doc.agent_id.name"/>
                             </div>
-                            <div>
+                            <div style="margin-left: 15px; margin-right: 15px;">
                                 <t t-if="doc.agent_id.address_ids">
                                     <span style="color: white" t-field="doc.agent_id.address_ids[0].address"/>
                                 </t>
@@ -407,12 +407,12 @@
                                 </t>
                             </div>
                         </div>
-                        <div class="col-5" style="margin-top:10px;">
+                        <div class="col-6" style="margin-top:10px;">
                             <div>
                                 <span style="font-weight: 500; color: white">Contact Customer Care</span>
                             </div>
                             <div class="row">
-                                <div class="col-6">
+                                <div class="col-6" style="padding-right: 10px">
                                     <div style="margin-top: 5px;">
                                         <span style="color: white"><img t-att-src="'/tt_report_common/static/images/call-answer.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
                                             <t t-if="doc.agent_id.phone_ids">
@@ -432,7 +432,7 @@
                                         </span>
                                     </div>
                                 </div>
-                                <div class="col-6">
+                                <div class="col-6" style="padding-right: 10px">
                                     <div style="margin-top: 5px;">
                                         <span style="color: white"><img t-att-src="'/tt_report_common/static/images/telegram.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
                                             <t t-if="doc.agent_id.social_media_ids.filtered(lambda x: x.type_id.name == 'Telegram')">
