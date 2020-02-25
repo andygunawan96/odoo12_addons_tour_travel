@@ -8,7 +8,6 @@
                 <field name="name"/>
                 <field name="pnr"/>
                 <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>
-                <field name="agent_type_id" groups="tt_base.group_tt_tour_travel_operator"/>
                 <field name="customer_parent_id"/>
                 <field name="customer_parent_type_id"/>
                 <field name="booker_id"/>
