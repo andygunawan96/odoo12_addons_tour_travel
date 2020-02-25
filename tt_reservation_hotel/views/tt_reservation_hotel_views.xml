@@ -161,9 +161,6 @@
                     <button string="Invoice" groups="tt_base.group_tt_agent_user_operator" name="create_agent_invoice" states="confirm,issued" type="object"/>
 
                     <button string="Refund" groups="tt_base.group_tt_agent_user_supervisor" name="action_refund" states="cancel" type="object"/>
-                    <button string="Check Booking Status" name="check_booking_status" type="object" states="confirm,issued,fail,cancel" />
-                    <button string="Cancel Booking (Policy Applied)" groups="base.group_no_one" name="cancel_booking" states="issued" type="object"/>
-                    <button string="Booking Policy" groups="base.group_no_one" name="check_booking_policy" type="object"/>
                     <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action"
                             groups="tt_base.group_tt_accounting_operator"
                                        context="{
@@ -180,7 +177,11 @@
 <!--                    <button string="Cancel" groups="tt_base.group_tt_agent_user_operator,tt_base.group_hotel_user"-->
 <!--                            name="action_cancel" type="object" states="confirm"/>-->
 
-                    <button string="Calc detail name" groups="base.group_no_one" name="calc_resv_det_name" type="object"/>
+<!--                    <button string="Calc detail name" groups="base.group_no_one" name="calc_resv_det_name" type="object"/>-->
+                    <button string="Check Booking Status" name="check_booking_status" type="object" states="confirm,issued,fail,cancel" />
+                    <button string="Cancel Booking (Policy Applied)" groups="base.group_no_one" name="cancel_booking" states="issued" type="object"/>
+                    <button string="Booking Policy" groups="base.group_no_one" name="check_booking_policy" type="object"/>
+                    <button string="Calc Passenger Data" groups="base.group_no_one" name="action_calc_passenger_data" type="object"/>
 
                     <!--<field name="state" widget="statusbar" statusbar_visible="draft,confirm,issued,done" clickable='1' groups="tt_base.group_no_one"/>-->
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,issued"/>

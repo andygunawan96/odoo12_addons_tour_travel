@@ -61,6 +61,20 @@
         </div>
     </template>
 
+    <template id="airline_pax_ssr">
+        <t t-set="data_pax" t-value="psg.passenger_id"/>
+        <t t-if="data_pax.fee_ids">
+            <t t-foreach="data_pax.fee_ids" t-as="fee_id">
+                <i style="margin-right:3px;" class="fa fa-suitcase"> <span t-field="fee_id.name"/></i><br/>
+                <!--<i style="margin-right:3px;" class="fa fa-cutlery"/>-->
+                <!--<i style="margin-right:3px;" class="fa fa-wheelchair"/>-->
+            </t>
+        </t>
+        <t t-else="">
+            -
+        </t>
+    </template>
+
     <template id="printout_ticket_airline_template">
         <t t-set="pnr_index" t-value="0"/>
         <t t-foreach="doc.provider_booking_ids" t-as="length">
@@ -251,10 +265,7 @@
                                 <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.passenger_id.title"/> <span t-field="psg.passenger_id.name"/></label>
                             </div>
                             <div class="col-2" style="text-align: center">
-                                -
-                                <!--                                    <i style="margin-right:3px;" class="fa fa-suitcase"/>-->
-                                <!--                                    <i style="margin-right:3px;" class="fa fa-cutlery"/>-->
-                                <!--                                    <i style="margin-right:3px;" class="fa fa-wheelchair"/>-->
+                                <t t-call="tt_report_common.airline_pax_ssr"/>
                             </div>
                             <div class="col-2" style="text-align: center">
                                 <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.pax_type"/></label>

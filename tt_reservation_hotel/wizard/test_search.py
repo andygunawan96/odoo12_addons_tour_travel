@@ -147,22 +147,23 @@ class TestSearch(models.Model):
     def prepare_pnrs(self, room_ids):
         return [{'issued_code': rec.issued_name, 'status':'issued'} for rec in room_ids]
 
+    # TODO Lepas masking
     def masking_provider(self, provider):
-        if provider == 'mg':
+        if provider in ['webbeds', 'fitruums']:
             return 'A1'
-        elif provider == 'hotelspro':
+        elif provider == 'dida':
             return 'A2'
-        elif provider == 'miki':
+        elif provider == 'knb':
             return 'A3'
-        elif provider == 'itank':
+        elif provider == 'miki':
             return 'A4'
         elif provider == 'quantum':
             return 'A5'
-        elif provider == 'webbeds':
+        elif provider in ['mg', 'mgholiday']:
             return 'A6'
         elif provider == 'hotelbeds':
             return 'A7'
-        elif provider == 'dida':
+        elif provider == 'hotelspro':
             return 'A8'
         elif provider == 'tbo':
             return 'A9'
@@ -170,28 +171,31 @@ class TestSearch(models.Model):
             return 'A10'
         elif provider == 'oyo':
             return 'A11'
-        elif provider == 'knb':
+        elif provider == 'itank':
             return 'A12'
+        elif provider == 'rodextrip_hotel':
+            return 'A13'
         else:
             return provider
 
+    # TODO Lepas masking
     def unmasking_provider(self, provider):
         if provider == 'A1':
-            return 'mg'
+            return 'webbeds'
         elif provider == 'A2':
-            return 'hotelspro'
+            return 'dida'
         elif provider == 'A3':
-            return 'miki'
+            return 'knb'
         elif provider == 'A4':
-            return 'itank'
+            return 'miki'
         elif provider == 'A5':
             return 'quantum'
         elif provider == 'A6':
-            return 'webbeds'
+            return 'mg'
         elif provider == 'A7':
             return 'hotelbeds'
         elif provider == 'A8':
-            return 'dida'
+            return 'hotelspro'
         elif provider == 'A9':
             return 'tbo'
         elif provider == 'A10':
@@ -199,7 +203,7 @@ class TestSearch(models.Model):
         elif provider == 'A11':
             return 'oyo'
         elif provider == 'A12':
-            return 'knb'
+            return 'itank'
         elif provider == 'A13':
             return 'rodextrip_hotel'
         else:
@@ -641,14 +645,13 @@ class TestSearch(models.Model):
             self.env['tt.reservation.passenger.hotel'].create({
                 'booking_id': resv_id.id,
                 'customer_id': rec.id,
-                'title': rec.title,
                 'first_name': rec.first_name,
                 'last_name': rec.last_name,
                 'gender': rec.gender,
                 'birth_date': rec.birth_date,
-                'nationality_id': rec.nationality_id,
-                'identity_type': rec.identity_type,
-                'identity_number': rec.identity_number,
+                'nationality_id': rec.nationality_id.id,
+                'identity_type': rec.identity_ids and rec.identity_ids[0].identity_type or '',
+                'identity_number': rec.identity_ids and rec.identity_ids[0].identity_number or '',
             })
 
         for room_rate in room_rates[0]['rooms']:
