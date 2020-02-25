@@ -14,9 +14,9 @@
                     </group>
                     <field name="invoice_line_ids" readonly="1">
                         <tree>
-                            <field name="invoice_id"/>
                             <field name="name"/>
                             <field name="state"/>
+                            <field name="currency_id" invisible="1"/>
                             <field name="total"/>
                         </tree>
                     </field>
