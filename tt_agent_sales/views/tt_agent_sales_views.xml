@@ -8,9 +8,11 @@
                 <field name="name"/>
                 <field name="pnr"/>
                 <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>
-                <field name="customer_parent_id" groups="tt_base.group_tt_tour_travel_operator"/>
-                <field name="booker_id" groups="tt_base.group_tt_tour_travel_operator"/>
-                <field name="invoice_line_ids" groups="tt_base.group_tt_tour_travel_operator"/>
+                <field name="agent_type_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                <field name="customer_parent_id"/>
+                <field name="customer_parent_type_id"/>
+                <field name="booker_id"/>
+                <field name="invoice_line_ids"/>
                 <separator/>
                 <filter string="All" name='all'/>
                 <filter string="Confirm" name='confirm' domain="['|', ('state', '=', 'draft'), ('state', '=', 'confirm')]"/>
@@ -35,7 +37,6 @@
                 <group expand="0" string="Group By">
                     <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
                     <filter name="group_by_customer_parent_id" string="Customer Parent" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
-                    <filter name="group_by_customer_parent_type_id" string="Customer Parent Type" domain="[]" context="{'group_by':'customer_parent_type_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                     <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                 </group>
             </search>
