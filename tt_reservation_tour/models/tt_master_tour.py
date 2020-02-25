@@ -65,7 +65,7 @@ class MasterTour(models.Model):
     tour_type = fields.Selection([('series', 'Series (With Tour Leader)'), ('sic', 'SIC (Without Tour Leader)'), ('land', 'Land Only'), ('city', 'City Tour'), ('private', 'Private Tour')], 'Tour Type', default='series')
 
     departure_date = fields.Date('Departure Date', required=True)
-    return_date = fields.Date('Arrival Date', required=True)
+    return_date = fields.Date('Arrival Date')
     arrival_date = fields.Date('Arrival Date', required=True)
     name_with_date = fields.Text('Display Name', readonly=True, compute='_compute_name_with_date', store=True)
     duration = fields.Integer('Duration (days)', help="in day(s)", readonly=True,
