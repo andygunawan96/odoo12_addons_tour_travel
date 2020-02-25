@@ -252,7 +252,7 @@ class AgentRegistration(models.Model):
                     comm = {
                         'recruited': commission.agent_type_id.name,
                         # 'currency_id': self.env.user.company_id.currency_id.name,
-                        'currency_id': commission.currency_id.name,
+                        'currency': commission.currency_id.name,
                         'registration_fee': commission.agent_type_id.registration_fee,
                         'discount_type': commission.discount_amount_type,
                         'discount_amount': commission.discount_amount,

@@ -40,6 +40,7 @@
             <field name="active">True</field>
             <field name="registration_fee">0</field>
             <field name="seq_prefix">BD</field>
+            <field name="is_using_pnr_quota" eval="True"/>
         </record>
     </data>
 </odoo>

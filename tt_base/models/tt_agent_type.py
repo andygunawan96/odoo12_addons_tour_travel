@@ -27,6 +27,7 @@ class TtAgentType(models.Model):
     can_be_registered = fields.Boolean('Can be Registered', default=False)
     seq_prefix = fields.Char('Sequence Prefix', size=2, required=True)
     terms_and_condition = fields.Html('Terms and Condition')
+    is_using_pnr_quota = fields.Boolean('Is Using PNR Quota')
 
     @api.model
     def create(self, vals_list):

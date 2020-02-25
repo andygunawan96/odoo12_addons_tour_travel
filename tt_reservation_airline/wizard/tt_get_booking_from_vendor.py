@@ -201,6 +201,7 @@ class TtGetBookingFromVendor(models.TransientModel):
             'status': get_booking_res['status'],
             'user_id': self.user_id.id,
             'agent_id': self.agent_id.id,
+            'customer_parent_id': self.customer_parent_id.id,
             'booker_id': self.booker_id and self.booker_id.id or False,
             "booker_data": json.dumps(booker_data),
             'journey_ids_char': journey_values,
@@ -233,6 +234,7 @@ class TtGetBookingFromVendorReview(models.TransientModel):
     status = fields.Char("Status")
     user_id = fields.Many2one("res.users","User")
     agent_id = fields.Many2one("tt.agent","Agent")
+    customer_parent_id = fields.Many2one("tt.customer.parent","Customer Parent")
 
     # journey_ids = fields.One2many("")
     journey_ids_char = fields.Text("Journeys")
@@ -326,7 +328,9 @@ class TtGetBookingFromVendorReview(models.TransientModel):
 
         create_res = self.env['tt.reservation.airline'].create_booking_airline_api(create_req,context={
             'co_uid': self.user_id.id,
+            'co_user_name': self.user_id.name,
             'co_agent_id': self.agent_id.id,
+            'co_agent_name': self.agent_id.name,
             'signature': signature
         })
 
@@ -378,6 +382,7 @@ class TtGetBookingFromVendorReview(models.TransientModel):
             "segment_dict": segment_dict_req_list##
         })
 
+
         update_req = {
             "book_id": create_res['book_id'],
             "order_number": create_res['order_number'],
@@ -387,9 +392,17 @@ class TtGetBookingFromVendorReview(models.TransientModel):
             "acquirer_seq_id": ""
         }
 
+        if self.customer_parent_id.id != self.agent_id.customer_parent_walkin_id.id:
+            update_req.update({
+                'member': True,
+                'acquirer_seq_id': self.customer_parent_id.seq_id
+            })
+
         update_res = self.env['tt.reservation.airline'].update_pnr_provider_airline_api(update_req,context={
             'co_uid': self.user_id.id,
+            'co_user_name': self.user_id.name,
             'co_agent_id': self.agent_id.id,
+            'co_agent_name': self.agent_id.name,
             'signature': signature
         })
 

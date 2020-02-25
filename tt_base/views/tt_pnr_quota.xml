@@ -6,14 +6,18 @@
             <field name="model">tt.pnr.quota</field>
             <field name="arch" type="xml">
                 <form string="PNR Quota">
-                    <group>
-                        <field name="name"/>
-                        <field name="amount"/>
-                        <field name="price_list_id"/>
-                        <field name="expired_date"/>
-                        <field name="agent_id"/>
-                        <field name="usage_ids"/>
-                    </group>
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="amount"/>
+                            <field name="used_amount"/>
+                            <field name="available_amount"/>
+                            <field name="price_list_id"/>
+                            <field name="expired_date"/>
+                            <field name="agent_id"/>
+                            <field name="usage_ids"/>
+                        </group>
+                    </sheet>
                 </form>
             </field>
         </record>

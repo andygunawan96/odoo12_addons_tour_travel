@@ -65,7 +65,7 @@ class MasterTour(models.Model):
     tour_type = fields.Selection([('series', 'Series (With Tour Leader)'), ('sic', 'SIC (Without Tour Leader)'), ('land', 'Land Only'), ('city', 'City Tour'), ('private', 'Private Tour')], 'Tour Type', default='series')
 
     departure_date = fields.Date('Departure Date', required=True)
-    return_date = fields.Date('Arrival Date', required=True)
+    return_date = fields.Date('Arrival Date')
     arrival_date = fields.Date('Arrival Date', required=True)
     name_with_date = fields.Text('Display Name', readonly=True, compute='_compute_name_with_date', store=True)
     duration = fields.Integer('Duration (days)', help="in day(s)", readonly=True,
@@ -985,7 +985,8 @@ class MasterTour(models.Model):
     def commit_booking_vendor(self, data, context, **kwargs):
         try:
             response = {
-                'pnr': self.env['ir.sequence'].next_by_code('rodextrip.tour.reservation.code')
+                'pnr': self.env['ir.sequence'].next_by_code('rodextrip.tour.reservation.code'),
+                'status': 'booked'
             }
             return ERR.get_no_error(response)
         except RequestException as e:
@@ -997,10 +998,27 @@ class MasterTour(models.Model):
 
     def issued_booking_vendor(self, data, context, **kwargs):
         try:
+            book_obj = self.env['tt.reservation.tour'].sudo().search([('name', '=', data['order_number'])], limit=1)
+            if book_obj:
+                book_obj = book_obj[0]
             response = {
-                'success': True
+                'success': True,
+                'pnr': book_obj.pnr,
+                'booking_uuid': book_obj.name,
+                'status': book_obj.state,
             }
             return ERR.get_no_error(response)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1004)
+
+    def get_booking_vendor(self, data, context, **kwargs):
+        try:
+            response = self.env['tt.reservation.tour'].get_booking_api(data, context, **kwargs)
+            return response
         except RequestException as e:
             _logger.error(traceback.format_exc())
             return e.error_dict()
@@ -1033,9 +1051,9 @@ class MasterTour(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1022)
 
-    def generate_all_room_codes(self):
-        room_list = self.env['tt.master.tour.rooms'].sudo().search([('room_code', '=', False)])
-        for rec in room_list:
-            rec.sudo().write({
-                'room_code': self.env['ir.sequence'].next_by_code('master.tour.room.code') or 'New'
-            })
+    # def generate_all_room_codes(self):
+    #     room_list = self.env['tt.master.tour.rooms'].sudo().search([('room_code', '=', False)])
+    #     for rec in room_list:
+    #         rec.sudo().write({
+    #             'room_code': self.env['ir.sequence'].next_by_code('master.tour.room.code') or 'New'
+    #         })
