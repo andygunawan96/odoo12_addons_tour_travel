@@ -339,7 +339,7 @@
                             <span style="font-weight: 500; color: white">Contact Customer Care</span>
                         </div>
                         <div class="row">
-                            <div class="col-6">
+                            <div class="col-5">
                                 <div style="margin-top: 5px;">
                                     <span style="color: white"><img t-att-src="'/tt_report_common/static/images/call-answer.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
                                         <t t-if="ho_obj.phone_ids">
@@ -357,7 +357,7 @@
                                     </span>
                                 </div>
                             </div>
-                            <div class="col-6">
+                            <div class="col-7">
                                 <div style="margin-top: 5px;">
                                     <span style="color: white"><img t-att-src="'/tt_report_common/static/images/telegram.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
                                         <t t-if="ho_obj.social_media_ids.filtered(lambda x: x.type_id.name == 'Telegram')">

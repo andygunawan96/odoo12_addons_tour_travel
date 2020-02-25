@@ -232,7 +232,7 @@ class AgentRegistration(models.Model):
         _logger.info('Mulai get promotions api')
         res = []
         try:
-            agent_type_id = context['agent_type_id']
+            agent_type_id = context['co_agent_type_id']
             promotion_env = self.env['tt.agent.registration.promotion']
             promotion_ids = promotion_env.search([('start_date', '<=', date.today()), ('end_date', '>=', date.today()), ('agent_type_id', '=', agent_type_id)])
 
