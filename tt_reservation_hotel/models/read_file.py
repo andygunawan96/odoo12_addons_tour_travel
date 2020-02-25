@@ -214,6 +214,7 @@ class HotelInformation(models.Model):
     def get_record_by_file_2a(self):
         url = '/var/log/cache_hotel/hotelspro_file/data/'
 
+        breaker = 0
         cache_hotel = {}
         filenames = ['destinations-',]
         for filename in filenames:
@@ -226,9 +227,13 @@ class HotelInformation(models.Model):
                         for rec in data:
                             cache_hotel[rec['code']] = rec['name']
                     number += 1
+                    breaker = 0
                 except IOError as e:
                     _logger.error("Couldn't open or write to file (%s)." % e)
-                    break
+                    number += 1
+                    breaker += 1
+                    if breaker == 3:
+                        break
 
         filename = "/var/log/cache_hotel/hotelspro_file/master/master_dest.txt"
         file = open(filename, 'w')

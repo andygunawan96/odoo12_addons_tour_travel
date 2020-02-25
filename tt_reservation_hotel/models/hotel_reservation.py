@@ -444,6 +444,22 @@ class HotelReservation(models.Model):
         # if state == 'done':
         #     self.action_create_invoice()
 
+    def action_calc_passenger_data(self):
+        for rec in self:
+            for pax in rec.passenger_ids:
+                if pax.title or pax.first_name or pax.gender or pax.identity_type:
+                    continue
+                pax.update({
+                    # 'title': pax.customer_id.title,
+                    'first_name': pax.customer_id.first_name,
+                    'last_name': pax.customer_id.last_name,
+                    'gender': pax.customer_id.gender,
+                    'birth_date': pax.customer_id.birth_date,
+                    'nationality_id': pax.customer_id.nationality_id,
+                    # 'identity_type': pax.customer_id.identity_type,
+                    # 'identity_number': pax.customer_id.identity_number,
+                })
+
     def _prepare_invoice(self):
         a = {
             'payment_term_id': 2,
