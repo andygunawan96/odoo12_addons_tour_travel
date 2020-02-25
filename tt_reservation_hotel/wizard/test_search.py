@@ -621,7 +621,7 @@ class TestSearch(models.Model):
         # except:
         #     cust_partner_obj = booker_obj
 
-        backend_hotel_obj = self.get_backend_object(provider_name, hotel_obj['id'])
+        backend_hotel_obj = self.get_backend_object(room_rates[0]['provider'], hotel_obj['id'])
         vals = self.prepare_resv_value(backend_hotel_obj, hotel_obj, check_in, check_out, room_rates,
                                        cust_partner_obj, provider_data, special_req, cust_names,
                                        context['agent_id'], cancellation_policy)
@@ -656,7 +656,7 @@ class TestSearch(models.Model):
 
         for room_rate in room_rates[0]['rooms']:
             vendor_currency_id = self.env['res.currency'].sudo().search([('name', '=', room_rate['currency'])], limit=1).id
-            provider_id = self.env['tt.provider'].search([('code','=', self.unmasking_provider(provider_name))], limit=1).id
+            provider_id = self.env['tt.provider'].search([('code','=', self.unmasking_provider(room_rates[0]['provider']))], limit=1).id
             detail = self.env['tt.hotel.reservation.details'].sudo().create({
                 'provider_id': provider_id,
                 'reservation_id': resv_id.id,
