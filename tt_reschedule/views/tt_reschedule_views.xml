@@ -151,6 +151,7 @@
                         <group>
                             <field name="payment_acquirer_id" attrs="{'invisible':['|', ('state','not in', ['sent', 'validate', 'final', 'done', 'cancel', 'expired']), ('customer_parent_type_id', '=', %(tt_base.customer_type_cor)d)], 'required':[('state','in', ['sent', 'validate', 'final', 'done']), ('customer_parent_type_id', '!=', %(tt_base.customer_type_cor)d)]}"/>
                             <field name="notes"/>
+                            <field name="created_by_api" invisible="1"/>
                         </group>
                     </group>
                     <notebook colspan="4" name="notebooks_segment">
@@ -237,9 +238,9 @@
                                     <field name="departure_date"/>
                                 </tree>
                             </field>
-                            <button name="generate_changes" string="Generate Changes" type="object" attrs="{'invisible':[('state','not in', ['draft', 'confirm'])]}"/>
-                            <separator string="Changes"/>
-                            <field name="change_ids">
+                            <button name="generate_changes" string="Generate Changes" type="object" attrs="{'invisible':['|', ('state','not in', ['draft', 'confirm']), ('created_by_api','=', True)]}"/>
+                            <separator string="Changes" attrs="{'invisible':[('created_by_api','=', True)]}"/>
+                            <field name="change_ids" attrs="{'invisible':[('created_by_api','=', True)]}">
                                 <tree>
                                     <field name="seg_sequence" style="width:5%"/>
                                     <field name="name"/>
