@@ -13,7 +13,7 @@ class TtPnrQuotaMasterPackage(models.Model):
                                            'Available Price List')
     minimum_monthly_quota_id = fields.Many2one('tt.pnr.quota.price.list','Minimum Monthly Quota')
     excess_quota_fee = fields.Monetary('Excess Quota Fee')
-    currency_id = fields.Many2one('res.currency', default=lambda self:self.env.user.company_id.currency_id.id)
+    currency_id = fields.Many2one('res.currency', 'Currency', default=lambda self:self.env.user.company_id.currency_id.id)
     active = fields.Boolean('Active', default=True)
 
     @api.model

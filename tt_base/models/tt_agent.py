@@ -487,6 +487,16 @@ class TtAgent(models.Model):
             'domain': ['|', ('parent_agent_id', '=', self.env.user.agent_id.id), ('id', '=', self.env.user.agent_id.id)]
         }
 
+    def dummy_buy_pnr_quota(self):
+        self.env['tt.pnr.quota'].create_pnr_quota_api(
+            {
+                'quota_seq_id': 'PQL.2628004'
+            },
+            {
+                'co_agent_id': self.id
+            }
+        )
+
     def dummy_use_pnr_quota(self):
         self.use_pnr_quota({
             'res_model': 'tt.reservation.airline',
@@ -529,7 +539,9 @@ class TtAgent(models.Model):
     def get_available_pnr_price_list_api(self,data,context):
         try:
             agent_obj = self.browse(context['co_agent_id'])
-            if not agent_obj:
+            try:
+                agent_obj.create_date
+            except:
                 raise RequestException(1008)
 
             if not agent_obj.is_using_pnr_quota or not agent_obj.quota_package_id:

@@ -10,9 +10,10 @@ class TtPnrQuotaUsage(models.Model):
     res_model_prov = fields.Char('Res Model Provider')
     res_id_prov = fields.Integer('Res ID Provider')
     ref_name = fields.Char('Reference', compute="_compute_ref_name", store=True)
-    ref_carriers = fields.Char('Reference', compute="_compute_ref_name", store=True)
-    ref_pnrs = fields.Char('Reference', compute="_compute_ref_name", store=True)
+    ref_carriers = fields.Char('Carriers', compute="_compute_ref_name", store=True)
+    ref_pnrs = fields.Char('PNR', compute="_compute_ref_name", store=True)
     pnr_quota_id = fields.Many2one('tt.pnr.quota', 'Quota')
+    active = fields.Boolean('Active', default=True)
 
     @api.depends('res_model_resv','res_id_resv','res_model_prov','res_id_prov')
     def _compute_ref_name(self):
@@ -21,11 +22,7 @@ class TtPnrQuotaUsage(models.Model):
                 res_obj = self.env[rec.res_model_resv].browse(rec.res_id_resv)
                 prov_obj = self.env[rec.res_model_prov].browse(rec.res_id_prov)
                 rec.ref_name = res_obj.name
-                carrier_names = set([])
-                for journey in prov_obj.journey_ids:
-                    for segment in journey.segment_ids:
-                        if segment.carrier_id:
-                            carrier_names.add(segment.carrier_id.name)
+                carrier_names = prov_obj.get_carrier_name()
                 rec.ref_carriers = ','.join(carrier_names)
                 rec.ref_pnrs = prov_obj.pnr
             except:

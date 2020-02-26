@@ -178,3 +178,6 @@ class TransportBookingProvider(models.Model):
         }
 
         return res
+
+    def get_carrier_name(self):
+        return []

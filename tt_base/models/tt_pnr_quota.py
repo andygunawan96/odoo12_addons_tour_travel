@@ -18,11 +18,12 @@ class TtPnrQuota(models.Model):
     amount = fields.Integer('Amount', compute='_compute_amount', store=True)
     price_list_id = fields.Many2one('tt.pnr.quota.price.list', 'Price Data', domain=[('id','=',-1)])
     expired_date = fields.Date('Expired Date', compute="_compute_expired_date",store=True)
-    usage_ids = fields.One2many('tt.pnr.quota.usage','pnr_quota_id','Quota Usage')
+    usage_ids = fields.One2many('tt.pnr.quota.usage','pnr_quota_id','Quota Usage', readonly=True)
     agent_id = fields.Many2one('tt.agent','Agent', domain="[('is_using_pnr_quota','=',True)]")
     is_expired = fields.Boolean('Expired')
     state = fields.Selection([('active','Active'),('expired','Expired')],'State',compute="_compute_state",store=True)
 
+    @api.model
     def create(self, vals_list):
         vals_list['name'] = self.env['ir.sequence'].next_by_code('tt.pnr.quota')
         return super(TtPnrQuota, self).create(vals_list)
@@ -72,7 +73,9 @@ class TtPnrQuota(models.Model):
         try:
             print(json.dumps(data))
             agent_obj = self.browse(context['co_agent_id'])
-            if not agent_obj:
+            try:
+                agent_obj.create_date
+            except:
                 raise RequestException(1008)
 
             res = []
@@ -91,3 +94,30 @@ class TtPnrQuota(models.Model):
         except Exception as e:
             _logger.error(traceback.format_exc())
             return ERR.get_error(1012,additional_message="PNR Quota")
+
+    def create_pnr_quota_api(self,req,context):
+        try:
+            agent_obj = self.env['tt.agent'].browse(context['co_agent_id'])
+            try:
+                agent_obj.create_date
+            except:
+                raise RequestException(1008)
+
+            price_list_obj = self.env['tt.pnr.quota.price.list'].search([('seq_id','=',req['quota_seq_id'])])
+            try:
+                price_list_obj.create_date
+            except:
+                raise RequestException(1032)
+
+            self.create({
+                'agent_id': agent_obj.id,
+                'price_list_id': price_list_obj.id
+            })
+            return ERR.get_no_error()
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1031)
+
