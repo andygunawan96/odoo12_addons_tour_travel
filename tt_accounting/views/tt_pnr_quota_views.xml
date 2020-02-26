@@ -5,7 +5,7 @@
         <field name="model">tt.pnr.quota</field>
         <field name="inherit_id" ref="tt_base.tt_pnr_quota_form_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//span[@name='usage']" position="after">
+            <xpath expr="//page[@name='usage']" position="after">
                 <page string="Ledger(s)">
                     <field name="ledger_ids"/>
                 </page>
