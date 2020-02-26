@@ -84,6 +84,11 @@ class TtRequestTour(models.Model):
         for rec in self:
             rec.file_name = rec.name + ".json"
 
+    def action_send_email_notification(self):
+        template = self.env.ref('tt_reservation_tour.template_mail_tour_request')
+        mail = self.env['mail.template'].browse(template.id)
+        mail.send_mail(self.id, force_send=True)
+
     def action_confirm(self):
         if self.state != 'draft':
             raise UserError("Cannot Confirm because state is not 'draft'.")
@@ -103,6 +108,32 @@ class TtRequestTour(models.Model):
             'confirm_uid': self.env.user.id,
             'confirm_date': datetime.now(),
         })
+        self.env.cr.commit()
+
+        try:
+            base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+            action_num = self.env.ref('tt_reservation_tour.tt_request_tour_view_action').id
+            menu_num = self.env.ref('tt_reservation_tour.submenu_request_tour_package').id
+
+            data = {
+                'url': base_url + "/web#id=" + str(self.id) + "&action=" + str(action_num) + "&model=tt.request.tour&view_type=form&menu_id=" + str(menu_num),
+                'req_number': self.name
+            }
+
+            context = {
+                'co_uid': self.env.user.id,
+                'co_user_name': self.env.user.name,
+                'co_agent_id': self.env.user.agent_id.id,
+                'co_agent_name': self.env.user.agent_id.name,
+            }
+            self.env['tt.master.tour.api.con'].send_tour_request_notification(data, context)
+        except Exception as e:
+            _logger.error("Send Tour Request Notification Telegram Error\n" + traceback.format_exc())
+
+        try:
+            self.action_send_email_notification()
+        except Exception as e:
+            _logger.error("Send Tour Request Notification Email Error\n" + traceback.format_exc())
 
     def action_approve(self):
         if self.state != 'confirm':

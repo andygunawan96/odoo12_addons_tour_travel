@@ -1768,7 +1768,6 @@ class MasterActivity(models.Model):
                     'voucher_validity_days': result_id.voucher_validity_days and result_id.voucher_validity_days or 0,
                     'voucher_validity_date': result_id.voucher_validity_date and result_id.voucher_validity_date or False,
                     'advanceBookingDays': result_id.advanceBookingDays and result_id.advanceBookingDays or 0,
-                    'minimumSellingPrice': result_id.minimumSellingPrice and result_id.minimumSellingPrice or 0,
                 }
                 description = (result['description'].replace('<p>', '\n').replace('</p>', ''))[1:]
                 voucherUse = (result['voucherUse'].replace('<p>', '\n').replace('</p>', ''))[1:]

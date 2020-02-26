@@ -1,6 +1,10 @@
 from odoo import api, fields, models, _
 from ...tools import variables
 from odoo.exceptions import UserError
+import logging
+import traceback
+
+_logger = logging.getLogger(__name__)
 
 STATE_INVOICE = [
     ('open', 'Open'),
@@ -41,6 +45,25 @@ class InstallmentInvoice(models.Model):
         self.sudo().write({
             'state_invoice': 'trouble'
         })
+        try:
+            base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+            action_num = self.env.ref('tt_reservation_tour.tt_reservation_tour_view_action_all').id
+            menu_num = self.env.ref('tt_reservation_tour.submenu_reservation_tour_all').id
+
+            data = {
+                'url': base_url + "/web#id=" + str(self.booking_id.id) + "&action=" + str(action_num) + "&model=tt.reservation.tour&view_type=form&menu_id=" + str(menu_num),
+                'order_number': self.booking_id.name,
+                'tour_name': self.booking_id.tour_id.name,
+                'due_date': self.due_date
+            }
+
+            context = {
+                'co_uid': self.env.user.id,
+                'co_user_name': self.env.user.name,
+            }
+            self.env['tt.tour.api.con'].send_tour_payment_expired_notification(data, context)
+        except Exception as e:
+            _logger.error("Send Tour Payment Expired Notification Telegram Error\n" + traceback.format_exc())
 
     def action_done(self):
         if self.agent_invoice_id.state == 'paid':
