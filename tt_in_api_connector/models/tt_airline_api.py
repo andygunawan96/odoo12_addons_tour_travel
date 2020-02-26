@@ -19,6 +19,12 @@ class TtAirlineApiCon(models.Model):
             res = table_obj.payment_airline_api(data,context)
         elif action == 'update_cost_service_charges':
             res = table_obj.update_cost_service_charge_airline_api(data,context)
+        elif action == 'create_reschedule':
+            res = table_obj.create_reschedule_airline_api(data,context)
+        elif action == 'update_reschedule':
+            res = table_obj.update_reschedule_airline_api(data,context)
+        elif action == 'get_reschedule':
+            res = table_obj.get_reschedule_airline_api(data,context)
         else:
             raise RequestException(999)
 
