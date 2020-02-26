@@ -6,11 +6,21 @@
             <field name="model">tt.pnr.quota.usage</field>
             <field name="arch" type="xml">
                 <form string="PNR Quota Usage">
-                    <group>
-                        <field name="res_model"/>
-                        <field name="res_id"/>
-                        <field name="pnr_quota_id"/>
-                    </group>
+                    <header>
+                        <button name="open_reservation" string="Go to reference" type="object"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <field name="res_model_resv" groups="base.user_admin"/>
+                            <field name="res_id_resv" groups="base.user_admin"/>
+                            <field name="res_model_prov" groups="base.user_admin"/>
+                            <field name="res_id_prov" groups="base.user_admin"/>
+                            <field name="ref_name"/>
+                            <field name="ref_pnrs"/>
+                            <field name="ref_carriers"/>
+                            <field name="pnr_quota_id"/>
+                        </group>
+                    </sheet>
                 </form>
             </field>
         </record>
@@ -20,9 +30,15 @@
             <field name="model">tt.pnr.quota.usage</field>
             <field name="arch" type="xml">
                 <tree string="PNR Quota Usage">
-                    <field name="res_model"/>
-                    <field name="res_id"/>
+                    <field name="res_model_resv" groups="base.user_admin"/>
+                    <field name="res_id_resv" groups="base.user_admin"/>
+                    <field name="res_model_prov" groups="base.user_admin"/>
+                    <field name="res_id_prov" groups="base.user_admin"/>
+                    <field name="ref_name"/>
+                    <field name="ref_pnrs"/>
+                    <field name="ref_carriers"/>
                     <field name="pnr_quota_id"/>
+                    <button name="open_reservation" string="Go to reference" type="object"/>
                 </tree>
             </field>
         </record>

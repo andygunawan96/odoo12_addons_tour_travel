@@ -31,13 +31,17 @@
 
         <record id="tt_pnr_quota_price_package_A" model="tt.pnr.quota.price.package">
             <field name="name">Bayar 12</field>
-            <field name="excess_quota_fee" ref="tt_pnr_quota_price_1000a"/>
+            <field name="available_price_list_ids" eval="[(6, 0, [ref('tt_base.tt_pnr_quota_price_1000a'),
+                                                            ref('tt_base.tt_pnr_quota_price_500a') ])]"/>
+            <field name="minimum_monthly_quota_id" ref="tt_pnr_quota_price_1000a"/>
             <field name="excess_quota_fee">5000</field>
         </record>
 
         <record id="tt_pnr_quota_price_package_B" model="tt.pnr.quota.price.package">
             <field name="name">Bayar 0</field>
-            <field name="excess_quota_fee" ref="tt_pnr_quota_price_1000b"/>
+            <field name="available_price_list_ids" eval="[(6, 0, [ref('tt_base.tt_pnr_quota_price_1000b'),
+                                                            ref('tt_base.tt_pnr_quota_price_500b') ])]"/>
+            <field name="minimum_monthly_quota_id" ref="tt_pnr_quota_price_1000b"/>
             <field name="excess_quota_fee">5000</field>
         </record>
     </data>

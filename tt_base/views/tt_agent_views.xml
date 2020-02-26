@@ -49,6 +49,7 @@
                 <header>
                     <button name="get_current_agent_target" type="object" string="Calc Target" groups="base.user_admin"/>
                     <button name="generate_va_number" type="object" string="Generate VA" groups="tt_base.group_tt_accounting_supervisor"/>
+                    <button name="dummy_use_pnr_quota" type="object" string="Use PNR Quota"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
@@ -131,6 +132,7 @@
                         </page>
                         <page string="Quota" attrs="{'invisible': [('is_using_pnr_quota','=',False)]}">
                             <group>
+                                <field name="quota_package_id" required="1"/>
                                 <field name="quota_amount"/>
                                 <field name="quota_total_duration"/>
                             </group>
@@ -200,6 +202,9 @@
             </field>
             <field name="payment_acq_ids" position="replace">
                 <field name="payment_acq_ids" readonly="0"/>
+            </field>
+            <field name="quota_package_id" position="replace">
+                <field name="quota_package_id" readonly="0" required="1"/>
             </field>
         </field>
     </record>

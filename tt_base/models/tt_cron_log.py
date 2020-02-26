@@ -1,6 +1,8 @@
 from odoo import api,models,fields
-import os,traceback
+import os,traceback,pytz,logging
 from datetime import datetime,date
+
+_logger = logging.getLogger(__name__)
 
 class TtCronLog(models.Model):
     _name = 'tt.cron.log'
@@ -14,10 +16,14 @@ class TtCronLog(models.Model):
 
     def write_cron_log(self,action_name):
         file = open('%s/%s_%s_error.log' % (
-        '/var/log/odoo/cron_log',action_name, datetime.now().strftime('%Y-%m-%d_%H:%M:%S')),
+            '/var/log/odoo/cron_log',action_name, datetime.now().strftime('%Y-%m-%d_%H:%M:%S')),
                     'w')
         file.write(traceback.format_exc())
         file.close()
+        try:
+            self.env['tt.api.con'].send_cron_error_notification(action_name)
+        except Exception as e:
+            _logger.error("Send Cron Error Notification Telegram Error")
 
     def cron_reset_payment_unique_amount(self):
         try:
@@ -45,3 +51,18 @@ class TtCronLog(models.Model):
         except:
             self.create_cron_log_folder()
             self.write_cron_log('auto-unban users')
+
+    def cron_expire_quota(self):
+        try:
+            pnr_quota_obj = self.env['tt.pnr.quota'].search([('expired_date','<', datetime.now(pytz.timezone('Asia/Jakarta')).date())])
+            for rec in pnr_quota_obj:
+                rec.is_expired = True
+                curr_err_text = traceback.format_exc()
+                _logger.info(curr_err_text)
+        except:
+            self.create_cron_log_folder()
+            self.write_cron_log('auto-expire quota')
+
+    def cron_extend_quota(self):
+        ##auto extend quota jika ada saldo
+        pass

@@ -12,7 +12,7 @@ class TtCronLogInhResv(models.Model):
         try:
             for rec in variables.PROVIDER_TYPE:
                 new_bookings = self.env['tt.reservation.%s' % rec].search(
-                    [('state', 'in', ['draft','booked']),
+                    [('state', 'in', ['draft','booked','partial_booked']),
                      ('create_date','<',str(datetime.now() - timedelta(minutes=5)))])
                 for booking in new_bookings:
                     try:

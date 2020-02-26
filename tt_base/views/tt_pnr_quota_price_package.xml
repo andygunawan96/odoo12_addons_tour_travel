@@ -1,19 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <record id="tt_pnr_quota_price_list_form_view" model="ir.ui.view">
-            <field name="name">tt.pnr.quota.price.list.form.view</field>
-            <field name="model">tt.pnr.quota.price.list</field>
+        <record id="tt_pnr_quota_price_package_form_view" model="ir.ui.view">
+            <field name="name">tt.pnr.quota.price.package.form.view</field>
+            <field name="model">tt.pnr.quota.price.package</field>
             <field name="arch" type="xml">
                 <form string="PNR Quota Price List">
                     <sheet>
                         <group>
-                            <field name="name"/>
-                            <field name="price"/>
-                            <field name="amount"/>
-                            <field name="validity_duration"/>
-                            <field name="used_package_list_ids"/>
-                            <field name="currency_id" invisible="1"/>
+
                         </group>
                     </sheet>
                 </form>

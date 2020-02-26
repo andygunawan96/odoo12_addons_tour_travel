@@ -11,6 +11,8 @@
                             <field name="name"/>
                             <field name="price"/>
                             <field name="amount"/>
+                            <field name="validity_duration"/>
+                            <field name="used_package_list_ids"/>
                             <field name="currency_id" invisible="1"/>
                         </group>
                     </sheet>
@@ -26,6 +28,7 @@
                     <field name="name"/>
                     <field name="price"/>
                     <field name="amount"/>
+                    <field name="validity_duration"/>
                     <field name="currency_id" invisible="1"/>
                 </tree>
             </field>

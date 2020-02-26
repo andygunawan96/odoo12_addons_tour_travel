@@ -12,6 +12,8 @@
                 context="{
                     'form_view_ref': 'tt_reservation_airline.tt_service_charge_airline_inherit_form_view'
                 }"/>
+                <separator string="SSR"/>
+                <field name="fee_ids"/>
                 <separator string="Channel Repricing"/>
                 <field name="channel_service_charge_ids"/>
             </xpath>

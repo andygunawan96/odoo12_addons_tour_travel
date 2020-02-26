@@ -90,3 +90,13 @@ class TtApiCon(models.Model):
         res = self._send_request(url,data,self._get_header(service_name, signature),content_type=content_type,request_type=request_type,timeout=timeout)
         res['signature'] = signature
         return res
+
+    def send_cron_error_notification(self,cron_name):
+        request = {
+            'code': 9903,
+            'message': '{}'.format(cron_name),
+            "title": 'CRON ERROR'
+        }
+        return self.send_request_to_gateway('%s/notification' % (self.url),
+                                            request
+                                            ,'notification_api')
