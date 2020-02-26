@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_byn" model="tt.destinations">
+            <field name="name">Bayankhongor Airport</field>
+            <field name="code">BYN</field>
+            <field name="icao">ZMBH</field>
+            <field name="city">Bayankhongor</field>
+            <field name="country_id" ref="base.mn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.1633</field>
+            <field name="longitude">100.704</field>
+            <field name="altitude">6085</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Ulaanbaatar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_coq" model="tt.destinations">
+            <field name="name">Choibalsan Airport</field>
+            <field name="code">COQ</field>
+            <field name="icao">ZMCD</field>
+            <field name="city">Choibalsan</field>
+            <field name="country_id" ref="base.mn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.1357</field>
+            <field name="longitude">114.646</field>
+            <field name="altitude">2457</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Ulaanbaatar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dlz" model="tt.destinations">
+            <field name="name">Dalanzadgad Airport</field>
+            <field name="code">DLZ</field>
+            <field name="icao">ZMDZ</field>
+            <field name="city">Dalanzadgad</field>
+            <field name="country_id" ref="base.mn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.5917</field>
+            <field name="longitude">104.43</field>
+            <field name="altitude">4787</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Ulaanbaatar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lti" model="tt.destinations">
+            <field name="name">Altai Airport</field>
+            <field name="code">LTI</field>
+            <field name="icao">ZMAT</field>
+            <field name="city">Altai</field>
+            <field name="country_id" ref="base.mn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.3764</field>
+            <field name="longitude">96.2211</field>
+            <field name="altitude">7260</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Ulaanbaatar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mxv" model="tt.destinations">
+            <field name="name">Muren Airport</field>
+            <field name="code">MXV</field>
+            <field name="icao">ZMMN</field>
+            <field name="city">Muren</field>
+            <field name="country_id" ref="base.mn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">49.6633</field>
+            <field name="longitude">100.099</field>
+            <field name="altitude">4272</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Ulaanbaatar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_uga" model="tt.destinations">
+            <field name="name">Bulgan Airport</field>
+            <field name="code">UGA</field>
+            <field name="icao">ZMBN</field>
+            <field name="city">Bulgan</field>
+            <field name="country_id" ref="base.mn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.854167</field>
+            <field name="longitude">103.484167</field>
+            <field name="altitude">3873</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Ulaanbaatar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_uln" model="tt.destinations">
+            <field name="name">Chinggis Khaan Intl</field>
+            <field name="code">ULN</field>
+            <field name="icao">ZMUB</field>
+            <field name="city">Ulan Bator</field>
+            <field name="country_id" ref="base.mn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">47.843056</field>
+            <field name="longitude">106.766639</field>
+            <field name="altitude">4364</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Ulaanbaatar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lpq" model="tt.destinations">
+            <field name="name">Luang Phabang Intl</field>
+            <field name="code">LPQ</field>
+            <field name="icao">VLLB</field>
+            <field name="city">Luang Prabang</field>
+            <field name="country_id" ref="base.la"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">19.897914</field>
+            <field name="longitude">102.160764</field>
+            <field name="altitude">955</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Vientiane</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lxg" model="tt.destinations">
+            <field name="name">Luang Namtha</field>
+            <field name="code">LXG</field>
+            <field name="icao">VLLN</field>
+            <field name="city">Luang Namtha</field>
+            <field name="country_id" ref="base.la"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">20.960556</field>
+            <field name="longitude">101.4025</field>
+            <field name="altitude">1968</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Vientiane</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ody" model="tt.destinations">
+            <field name="name">Oudomxay</field>
+            <field name="code">ODY</field>
+            <field name="icao">VLOS</field>
+            <field name="city">Muang Xay</field>
+            <field name="country_id" ref="base.la"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">20.6827</field>
+            <field name="longitude">101.994</field>
+            <field name="altitude">1380</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Vientiane</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_oui" model="tt.destinations">
+            <field name="name">Ban Huoeisay Airport</field>
+            <field name="code">OUI</field>
+            <field name="icao">VLHS</field>
+            <field name="city">Huay Xai</field>
+            <field name="country_id" ref="base.la"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">20.2573</field>
+            <field name="longitude">100.437</field>
+            <field name="altitude">1380</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Vientiane</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pkz" model="tt.destinations">
+            <field name="name">Pakse</field>
+            <field name="code">PKZ</field>
+            <field name="icao">VLPS</field>
+            <field name="city">Pakse</field>
+            <field name="country_id" ref="base.la"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">15.132053</field>
+            <field name="longitude">105.781417</field>
+            <field name="altitude">351</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Vientiane</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vna" model="tt.destinations">
+            <field name="name">Saravane Airport</field>
+            <field name="code">VNA</field>
+            <field name="icao">VLSV</field>
+            <field name="city">Saravane</field>
+            <field name="country_id" ref="base.la"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">15.709444</field>
+            <field name="longitude">106.411667</field>
+            <field name="altitude">612</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Vientiane</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vte" model="tt.destinations">
+            <field name="name">Wattay Intl</field>
+            <field name="code">VTE</field>
+            <field name="icao">VLVT</field>
+            <field name="city">Vientiane</field>
+            <field name="country_id" ref="base.la"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">17.988322</field>
+            <field name="longitude">102.563256</field>
+            <field name="altitude">564</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Vientiane</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_xkh" model="tt.destinations">
+            <field name="name">Xieng Khouang</field>
+            <field name="code">XKH</field>
+            <field name="icao">VLXK</field>
+            <field name="city">Phon Savan</field>
+            <field name="country_id" ref="base.la"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">19.449997</field>
+            <field name="longitude">103.158333</field>
+            <field name="altitude">3445</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Vientiane</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zvk" model="tt.destinations">
+            <field name="name">Savannakhet</field>
+            <field name="code">ZVK</field>
+            <field name="icao">VLSK</field>
+            <field name="city">Savannakhet</field>
+            <field name="country_id" ref="base.la"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">16.556594</field>
+            <field name="longitude">104.759531</field>
+            <field name="altitude">509</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Vientiane</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bvv" model="tt.destinations">
+            <field name="name">Burevestnik Airport</field>
+            <field name="code">BVV</field>
+            <field name="icao"></field>
+            <field name="city">Iturup Island</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">44.92</field>
+            <field name="longitude">147.621667</field>
+            <field name="altitude">79</field>
+            <field name="timezone_hour">11</field>
+            <field name="tz">Asia/Vladivostok</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_khv" model="tt.destinations">
+            <field name="name">Novy</field>
+            <field name="code">KHV</field>
+            <field name="icao">UHHH</field>
+            <field name="city">Khabarovsk</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.528044</field>
+            <field name="longitude">135.188361</field>
+            <field name="altitude">244</field>
+            <field name="timezone_hour">11</field>
+            <field name="tz">Asia/Vladivostok</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kxk" model="tt.destinations">
+            <field name="name">Komsomolsk-on-Amur Airport</field>
+            <field name="code">KXK</field>
+            <field name="icao">UHKK</field>
+            <field name="city">Komsomolsk-on-Amur</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">50.4094</field>
+            <field name="longitude">136.934</field>
+            <field name="altitude">92</field>
+            <field name="timezone_hour">11</field>
+            <field name="tz">Asia/Vladivostok</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ohh" model="tt.destinations">
+            <field name="name">Okha Airport</field>
+            <field name="code">OHH</field>
+            <field name="icao"></field>
+            <field name="city">Okha</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">53.583333</field>
+            <field name="longitude">142.933333</field>
+            <field name="altitude">100</field>
+            <field name="timezone_hour">11</field>
+            <field name="tz">Asia/Vladivostok</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_oho" model="tt.destinations">
+            <field name="name">Okhotsk Airport</field>
+            <field name="code">OHO</field>
+            <field name="icao">UHOO</field>
+            <field name="city">Okhotsk</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">59.4101</field>
+            <field name="longitude">143.057</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">11</field>
+            <field name="tz">Asia/Vladivostok</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_uus" model="tt.destinations">
+            <field name="name">Khomutovo</field>
+            <field name="code">UUS</field>
+            <field name="icao">UHSS</field>
+            <field name="city">Yuzhno-sakhalinsk</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.888672</field>
+            <field name="longitude">142.717531</field>
+            <field name="altitude">59</field>
+            <field name="timezone_hour">11</field>
+            <field name="tz">Asia/Vladivostok</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vvo" model="tt.destinations">
+            <field name="name">Knevichi</field>
+            <field name="code">VVO</field>
+            <field name="icao">UHWW</field>
+            <field name="city">Vladivostok</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.398953</field>
+            <field name="longitude">132.148017</field>
+            <field name="altitude">46</field>
+            <field name="timezone_hour">11</field>
+            <field name="tz">Asia/Vladivostok</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_adh" model="tt.destinations">
+            <field name="name">Aldan Airport</field>
+            <field name="code">ADH</field>
+            <field name="icao">UEEA</field>
+            <field name="city">Aldan</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">58.603056</field>
+            <field name="longitude">125.407222</field>
+            <field name="altitude">2241</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Asia/Yakutsk</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bqs" model="tt.destinations">
+            <field name="name">Ignatyevo</field>
+            <field name="code">BQS</field>
+            <field name="icao">UHBB</field>
+            <field name="city">Blagoveschensk</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">50.425394</field>
+            <field name="longitude">127.412478</field>
+            <field name="altitude">638</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Asia/Yakutsk</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cnn" model="tt.destinations">
+            <field name="name">Chulman</field>
+            <field name="code">CNN</field>
+            <field name="icao">UELL</field>
+            <field name="city">Neryungri</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">56.9139</field>
+            <field name="longitude">124.914</field>
+            <field name="altitude">2812</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Asia/Yakutsk</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hta" model="tt.destinations">
+            <field name="name">Kadala</field>
+            <field name="code">HTA</field>
+            <field name="icao">UIAA</field>
+            <field name="city">Chita</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">52.026317</field>
+            <field name="longitude">113.305556</field>
+            <field name="altitude">2272</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Asia/Yakutsk</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_iks" model="tt.destinations">
+            <field name="name">Tiksi Airport</field>
+            <field name="code">IKS</field>
+            <field name="icao">UEST</field>
+            <field name="city">Tiksi</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">71.6977</field>
+            <field name="longitude">128.903</field>
+            <field name="altitude">26</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Asia/Yakutsk</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mjz" model="tt.destinations">
+            <field name="name">Mirny</field>
+            <field name="code">MJZ</field>
+            <field name="icao">UERR</field>
+            <field name="city">Mirnyj</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">62.534689</field>
+            <field name="longitude">114.038928</field>
+            <field name="altitude">1156</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Asia/Yakutsk</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pyj" model="tt.destinations">
+            <field name="name">Poliarny Airport</field>
+            <field name="code">PYJ</field>
+            <field name="icao">UERP</field>
+            <field name="city">Yakutia</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">66.400431</field>
+            <field name="longitude">112.030325</field>
+            <field name="altitude">1660</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Asia/Yakutsk</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ulk" model="tt.destinations">
+            <field name="name">Lensk</field>
+            <field name="code">ULK</field>
+            <field name="icao">UERL</field>
+            <field name="city">Lensk</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">60.723</field>
+            <field name="longitude">114.825</field>
+            <field name="altitude">843</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Asia/Yakutsk</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ums" model="tt.destinations">
+            <field name="name">Ust-Maya Airport</field>
+            <field name="code">UMS</field>
+            <field name="icao">UEMU</field>
+            <field name="city">Ust-Maya</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">60.358056</field>
+            <field name="longitude">134.437778</field>
+            <field name="altitude">561</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Asia/Yakutsk</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_yks" model="tt.destinations">
+            <field name="name">Yakutsk</field>
+            <field name="code">YKS</field>
+            <field name="icao">UEEE</field>
+            <field name="city">Yakutsk</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">62.09325</field>
+            <field name="longitude">129.770672</field>
+            <field name="altitude">325</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Asia/Yakutsk</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cek" model="tt.destinations">
+            <field name="name">Balandino</field>
+            <field name="code">CEK</field>
+            <field name="icao">USCC</field>
+            <field name="city">Chelyabinsk</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">55.305836</field>
+            <field name="longitude">61.503333</field>
+            <field name="altitude">769</field>
+            <field name="timezone_hour">6</field>
+            <field name="tz">Asia/Yekaterinburg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_eyk" model="tt.destinations">
+            <field name="name">Beloyarsky</field>
+            <field name="code">EYK</field>
+            <field name="icao">USHQ</field>
+            <field name="city">Beloyarsky</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">63.683056</field>
+            <field name="longitude">66.683056</field>
+            <field name="altitude">25</field>
+            <field name="timezone_hour">6</field>
+            <field name="tz">Asia/Yekaterinburg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hma" model="tt.destinations">
+            <field name="name">Khanty Mansiysk Airport</field>
+            <field name="code">HMA</field>
+            <field name="icao">USHH</field>
+            <field name="city">Khanty-Mansiysk</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">61.028479</field>
+            <field name="longitude">69.086067</field>
+            <field name="altitude">76</field>
+            <field name="timezone_hour">6</field>
+            <field name="tz">Asia/Yekaterinburg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kgp" model="tt.destinations">
+            <field name="name">Kogalym International</field>
+            <field name="code">KGP</field>
+            <field name="icao">USRK</field>
+            <field name="city">Kogalym</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">62.18</field>
+            <field name="longitude">74.53</field>
+            <field name="altitude">220</field>
+            <field name="timezone_hour">6</field>
+            <field name="tz">Asia/Yekaterinburg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kro" model="tt.destinations">
+            <field name="name">Kurgan Airport</field>
+            <field name="code">KRO</field>
+            <field name="icao">USUU</field>
+            <field name="city">Kurgan</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">55.4753</field>
+            <field name="longitude">65.4156</field>
+            <field name="altitude">240</field>
+            <field name="timezone_hour">6</field>
+            <field name="tz">Asia/Yekaterinburg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mqf" model="tt.destinations">
+            <field name="name">Magnitogorsk</field>
+            <field name="code">MQF</field>
+            <field name="icao">USCM</field>
+            <field name="city">Magnetiogorsk</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">53.393131</field>
+            <field name="longitude">58.755661</field>
+            <field name="altitude">1431</field>
+            <field name="timezone_hour">6</field>
+            <field name="tz">Asia/Yekaterinburg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nbb" model="tt.destinations">
+            <field name="name">Berezovo</field>
+            <field name="code">NBB</field>
+            <field name="icao">USHB</field>
+            <field name="city">Berezovo</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">63.9241</field>
+            <field name="longitude">65.0487</field>
+            <field name="altitude">98</field>
+            <field name="timezone_hour">6</field>
+            <field name="tz">Asia/Yekaterinburg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nfg" model="tt.destinations">
+            <field name="name">Nefteyugansk Airport</field>
+            <field name="code">NFG</field>
+            <field name="icao">USRN</field>
+            <field name="city">Nefteyugansk</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">61.1083</field>
+            <field name="longitude">72.65</field>
+            <field name="altitude">115</field>
+            <field name="timezone_hour">6</field>
+            <field name="tz">Asia/Yekaterinburg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_njc" model="tt.destinations">
+            <field name="name">Nizhnevartovsk</field>
+            <field name="code">NJC</field>
+            <field name="icao">USNN</field>
+            <field name="city">Nizhnevartovsk</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">60.949272</field>
+            <field name="longitude">76.483617</field>
+            <field name="altitude">177</field>
+            <field name="timezone_hour">6</field>
+            <field name="tz">Asia/Yekaterinburg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_noj" model="tt.destinations">
+            <field name="name">Noyabrsk</field>
+            <field name="code">NOJ</field>
+            <field name="icao">USRO</field>
+            <field name="city">Noyabrsk</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">63.110079</field>
+            <field name="longitude">75.162243</field>
+            <field name="altitude">20</field>
+            <field name="timezone_hour">6</field>
+            <field name="tz">Asia/Yekaterinburg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nux" model="tt.destinations">
+            <field name="name">Novyi Urengoy</field>
+            <field name="code">NUX</field>
+            <field name="icao">USMU</field>
+            <field name="city">Novy Urengoy</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">66.041811</field>
+            <field name="longitude">76.313938</field>
+            <field name="altitude">20</field>
+            <field name="timezone_hour">6</field>
+            <field name="tz">Asia/Yekaterinburg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nya" model="tt.destinations">
+            <field name="name">Nyagan Airport</field>
+            <field name="code">NYA</field>
+            <field name="icao">USHN</field>
+            <field name="city">Nyagan</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">62.11</field>
+            <field name="longitude">65.615</field>
+            <field name="altitude">361</field>
+            <field name="timezone_hour">6</field>
+            <field name="tz">Asia/Yekaterinburg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nym" model="tt.destinations">
+            <field name="name">Nadym Airport</field>
+            <field name="code">NYM</field>
+            <field name="icao">USMM</field>
+            <field name="city">Nadym</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">65.4809</field>
+            <field name="longitude">72.6989</field>
+            <field name="altitude">49</field>
+            <field name="timezone_hour">6</field>
+            <field name="tz">Asia/Yekaterinburg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_osw" model="tt.destinations">
+            <field name="name">Orsk Airport</field>
+            <field name="code">OSW</field>
+            <field name="icao">UWOR</field>
+            <field name="city">Orsk</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">51.0725</field>
+            <field name="longitude">58.5956</field>
+            <field name="altitude">909</field>
+            <field name="timezone_hour">6</field>
+            <field name="tz">Asia/Yekaterinburg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ovs" model="tt.destinations">
+            <field name="name">Sovetsky Tyumenskaya Airport</field>
+            <field name="code">OVS</field>
+            <field name="icao">USHS</field>
+            <field name="city">Sovetskiy</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">61.32</field>
+            <field name="longitude">63.6044</field>
+            <field name="altitude">351</field>
+            <field name="timezone_hour">6</field>
+            <field name="tz">Asia/Yekaterinburg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pee" model="tt.destinations">
+            <field name="name">Bolshoye Savino</field>
+            <field name="code">PEE</field>
+            <field name="icao">USPP</field>
+            <field name="city">Perm</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">57.914517</field>
+            <field name="longitude">56.021214</field>
+            <field name="altitude">404</field>
+            <field name="timezone_hour">6</field>
+            <field name="tz">Asia/Yekaterinburg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rat" model="tt.destinations">
+            <field name="name">Raduzhny Airport</field>
+            <field name="code">RAT</field>
+            <field name="icao">USNR</field>
+            <field name="city">Raduzhnyi</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">62.1586</field>
+            <field name="longitude">77.3289</field>
+            <field name="altitude">250</field>
+            <field name="timezone_hour">6</field>
+            <field name="tz">Asia/Yekaterinburg</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            

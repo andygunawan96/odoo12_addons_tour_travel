@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_tfm" model="tt.destinations">
+            <field name="name">Telefomin Airport</field>
+            <field name="code">TFM</field>
+            <field name="icao"></field>
+            <field name="city">Telefomin</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-5.117</field>
+            <field name="longitude">141.633</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tiz" model="tt.destinations">
+            <field name="name">Tari Airport</field>
+            <field name="code">TIZ</field>
+            <field name="icao">AYTA</field>
+            <field name="city">Tari</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-5.845</field>
+            <field name="longitude">142.948</field>
+            <field name="altitude">5500</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tpi" model="tt.destinations">
+            <field name="name">Tapini Airport</field>
+            <field name="code">TPI</field>
+            <field name="icao"></field>
+            <field name="city">Tapini</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-8.35</field>
+            <field name="longitude">146.983</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_uku" model="tt.destinations">
+            <field name="name">Nuku Airport</field>
+            <field name="code">UKU</field>
+            <field name="icao"></field>
+            <field name="city">Nuku</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-3.667</field>
+            <field name="longitude">142.483</field>
+            <field name="altitude">750</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ung" model="tt.destinations">
+            <field name="name">Kiunga Airport</field>
+            <field name="code">UNG</field>
+            <field name="icao">AYKI</field>
+            <field name="city">Kiunga</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-6.12571</field>
+            <field name="longitude">141.282</field>
+            <field name="altitude">88</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vai" model="tt.destinations">
+            <field name="name">Vanimo Airport</field>
+            <field name="code">VAI</field>
+            <field name="icao">AYVN</field>
+            <field name="city">Vanimo</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-2.69717</field>
+            <field name="longitude">141.302</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vmu" model="tt.destinations">
+            <field name="name">Baimuru Airport</field>
+            <field name="code">VMU</field>
+            <field name="icao"></field>
+            <field name="city">Baimuru</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-7.49686</field>
+            <field name="longitude">144.82</field>
+            <field name="altitude">27</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wbm" model="tt.destinations">
+            <field name="name">Wapenamanda Airport</field>
+            <field name="code">WBM</field>
+            <field name="icao">AYWD</field>
+            <field name="city">Wapenamanda</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-5.6433</field>
+            <field name="longitude">143.895</field>
+            <field name="altitude">5889</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wpm" model="tt.destinations">
+            <field name="name">Wipim Airport</field>
+            <field name="code">WPM</field>
+            <field name="icao"></field>
+            <field name="city">Wipim</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-8.78822</field>
+            <field name="longitude">142.882</field>
+            <field name="altitude">173</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wtp" model="tt.destinations">
+            <field name="name">Woitape Airport</field>
+            <field name="code">WTP</field>
+            <field name="icao"></field>
+            <field name="city">Woitape</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-8.533</field>
+            <field name="longitude">147.25</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wwk" model="tt.destinations">
+            <field name="name">Wewak Intl</field>
+            <field name="code">WWK</field>
+            <field name="icao">AYWK</field>
+            <field name="city">Wewak</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-3.583828</field>
+            <field name="longitude">143.669186</field>
+            <field name="altitude">19</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ait" model="tt.destinations">
+            <field name="name">Aitutaki</field>
+            <field name="code">AIT</field>
+            <field name="icao">NCAI</field>
+            <field name="city">Aitutaki</field>
+            <field name="country_id" ref="base.ck"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-18.830922</field>
+            <field name="longitude">-159.764233</field>
+            <field name="altitude">14</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Rarotonga</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_aiu" model="tt.destinations">
+            <field name="name">Atiu Island Airport</field>
+            <field name="code">AIU</field>
+            <field name="icao">NCAT</field>
+            <field name="city">Atiu Island</field>
+            <field name="country_id" ref="base.ck"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-19.9678</field>
+            <field name="longitude">-158.119</field>
+            <field name="altitude">36</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Rarotonga</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mgs" model="tt.destinations">
+            <field name="name">Mangaia Island Airport</field>
+            <field name="code">MGS</field>
+            <field name="icao">NCMG</field>
+            <field name="city">Mangaia Island</field>
+            <field name="country_id" ref="base.ck"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-21.8956</field>
+            <field name="longitude">-157.905</field>
+            <field name="altitude">45</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Rarotonga</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mhx" model="tt.destinations">
+            <field name="name">Manihiki Island Airport</field>
+            <field name="code">MHX</field>
+            <field name="icao">NCMH</field>
+            <field name="city">Manihiki Island</field>
+            <field name="country_id" ref="base.ck"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-10.3767</field>
+            <field name="longitude">-161.002</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Rarotonga</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_moi" model="tt.destinations">
+            <field name="name">Mitiaro Island Airport</field>
+            <field name="code">MOI</field>
+            <field name="icao">NCMR</field>
+            <field name="city">Mitiaro Island</field>
+            <field name="country_id" ref="base.ck"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-19.8425</field>
+            <field name="longitude">-157.703</field>
+            <field name="altitude">25</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Rarotonga</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_muk" model="tt.destinations">
+            <field name="name">Mauke Airport</field>
+            <field name="code">MUK</field>
+            <field name="icao">NCMK</field>
+            <field name="city">Mauke Island</field>
+            <field name="country_id" ref="base.ck"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-20.1361</field>
+            <field name="longitude">-157.345</field>
+            <field name="altitude">26</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Rarotonga</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pye" model="tt.destinations">
+            <field name="name">Penrhyn Island Airport</field>
+            <field name="code">PYE</field>
+            <field name="icao">NCPY</field>
+            <field name="city">Penrhyn Island</field>
+            <field name="country_id" ref="base.ck"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-9.00667</field>
+            <field name="longitude">-158.037</field>
+            <field name="altitude">8</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Rarotonga</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rar" model="tt.destinations">
+            <field name="name">Rarotonga Intl</field>
+            <field name="code">RAR</field>
+            <field name="icao">NCRG</field>
+            <field name="city">Avarua</field>
+            <field name="country_id" ref="base.ck"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-21.202739</field>
+            <field name="longitude">-159.805556</field>
+            <field name="altitude">19</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Rarotonga</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rop" model="tt.destinations">
+            <field name="name">Rota Intl</field>
+            <field name="code">ROP</field>
+            <field name="icao">PGRO</field>
+            <field name="city">Rota</field>
+            <field name="country_id" ref="base.mp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">14.174308</field>
+            <field name="longitude">145.242536</field>
+            <field name="altitude">607</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Saipan</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_spn" model="tt.destinations">
+            <field name="name">Francisco C Ada Saipan Intl</field>
+            <field name="code">SPN</field>
+            <field name="icao">PGSN</field>
+            <field name="city">Saipan</field>
+            <field name="country_id" ref="base.mp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">15.119003</field>
+            <field name="longitude">145.729356</field>
+            <field name="altitude">215</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Saipan</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tiq" model="tt.destinations">
+            <field name="name">Tinian Intl</field>
+            <field name="code">TIQ</field>
+            <field name="icao">PGWT</field>
+            <field name="city">West Tinian</field>
+            <field name="country_id" ref="base.mp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">14.999203</field>
+            <field name="longitude">145.61935</field>
+            <field name="altitude">271</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Saipan</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_aaa" model="tt.destinations">
+            <field name="name">Anaa</field>
+            <field name="code">AAA</field>
+            <field name="icao">NTGA</field>
+            <field name="city">Anaa</field>
+            <field name="country_id" ref="base.pf"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-17.352606</field>
+            <field name="longitude">-145.509956</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Tahiti</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ahe" model="tt.destinations">
+            <field name="name">Ahe Airport</field>
+            <field name="code">AHE</field>
+            <field name="icao">NTHE</field>
+            <field name="city">Ahe</field>
+            <field name="country_id" ref="base.pf"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-14.4281</field>
+            <field name="longitude">-146.257</field>
+            <field name="altitude">11</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Tahiti</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_apk" model="tt.destinations">
+            <field name="name">Apataki Airport</field>
+            <field name="code">APK</field>
+            <field name="icao">NTGD</field>
+            <field name="city">Apataki</field>
+            <field name="country_id" ref="base.pf"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-15.5736</field>
+            <field name="longitude">-146.415</field>
+            <field name="altitude">8</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Tahiti</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_axr" model="tt.destinations">
+            <field name="name">Arutua</field>
+            <field name="code">AXR</field>
+            <field name="icao">NTGU</field>
+            <field name="city">Arutua</field>
+            <field name="country_id" ref="base.pf"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-15.248289</field>
+            <field name="longitude">-146.616708</field>
+            <field name="altitude">9</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Tahiti</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bob" model="tt.destinations">
+            <field name="name">Bora Bora</field>
+            <field name="code">BOB</field>
+            <field name="icao">NTTB</field>
+            <field name="city">Bora Bora</field>
+            <field name="country_id" ref="base.pf"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-16.444378</field>
+            <field name="longitude">-151.751286</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Tahiti</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fav" model="tt.destinations">
+            <field name="name">Fakarava</field>
+            <field name="code">FAV</field>
+            <field name="icao">NTGF</field>
+            <field name="city">Fakarava</field>
+            <field name="country_id" ref="base.pf"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-16.05415</field>
+            <field name="longitude">-145.656994</field>
+            <field name="altitude">13</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Tahiti</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_huh" model="tt.destinations">
+            <field name="name">Huahine</field>
+            <field name="code">HUH</field>
+            <field name="icao">NTTH</field>
+            <field name="city">Huahine Island</field>
+            <field name="country_id" ref="base.pf"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-16.687242</field>
+            <field name="longitude">-151.021667</field>
+            <field name="altitude">7</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Tahiti</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kkr" model="tt.destinations">
+            <field name="name">Kaukura</field>
+            <field name="code">KKR</field>
+            <field name="icao">NTGK</field>
+            <field name="city">Kaukura Atoll</field>
+            <field name="country_id" ref="base.pf"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-15.663333</field>
+            <field name="longitude">-146.884769</field>
+            <field name="altitude">11</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Tahiti</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mau" model="tt.destinations">
+            <field name="name">Maupiti</field>
+            <field name="code">MAU</field>
+            <field name="icao">NTTP</field>
+            <field name="city">Maupiti</field>
+            <field name="country_id" ref="base.pf"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-16.426486</field>
+            <field name="longitude">-152.243669</field>
+            <field name="altitude">15</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Tahiti</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mkp" model="tt.destinations">
+            <field name="name">Makemo</field>
+            <field name="code">MKP</field>
+            <field name="icao">NTGM</field>
+            <field name="city">Makemo</field>
+            <field name="country_id" ref="base.pf"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-16.583919</field>
+            <field name="longitude">-143.658369</field>
+            <field name="altitude">3</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Tahiti</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_moz" model="tt.destinations">
+            <field name="name">Moorea</field>
+            <field name="code">MOZ</field>
+            <field name="icao">NTTM</field>
+            <field name="city">Moorea</field>
+            <field name="country_id" ref="base.pf"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-17.489972</field>
+            <field name="longitude">-149.761869</field>
+            <field name="altitude">9</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Tahiti</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mvt" model="tt.destinations">
+            <field name="name">Mataiva</field>
+            <field name="code">MVT</field>
+            <field name="icao">NTGV</field>
+            <field name="city">Mataiva</field>
+            <field name="country_id" ref="base.pf"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-14.868055</field>
+            <field name="longitude">-148.717225</field>
+            <field name="altitude">11</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Tahiti</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_niu" model="tt.destinations">
+            <field name="name">Niau</field>
+            <field name="code">NIU</field>
+            <field name="icao">NTKN</field>
+            <field name="city">Niau</field>
+            <field name="country_id" ref="base.pf"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-16.119037</field>
+            <field name="longitude">-146.368406</field>
+            <field name="altitude">49</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Tahiti</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pkp" model="tt.destinations">
+            <field name="name">Puka Puka</field>
+            <field name="code">PKP</field>
+            <field name="icao">NTGP</field>
+            <field name="city">Puka Puka</field>
+            <field name="country_id" ref="base.pf"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-14.809458</field>
+            <field name="longitude">-138.812811</field>
+            <field name="altitude">5</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Tahiti</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ppt" model="tt.destinations">
+            <field name="name">Faa\\'a International</field>
+            <field name="code">PPT</field>
+            <field name="icao">NTAA</field>
+            <field name="city">Papeete</field>
+            <field name="country_id" ref="base.pf"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-17.556667</field>
+            <field name="longitude">-149.611389</field>
+            <field name="altitude">7</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Tahiti</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rfp" model="tt.destinations">
+            <field name="name">Raiatea</field>
+            <field name="code">RFP</field>
+            <field name="icao">NTTR</field>
+            <field name="city">Raiatea Island</field>
+            <field name="country_id" ref="base.pf"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-16.722861</field>
+            <field name="longitude">-151.465856</field>
+            <field name="altitude">3</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Tahiti</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rgi" model="tt.destinations">
+            <field name="name">Rangiroa</field>
+            <field name="code">RGI</field>
+            <field name="icao">NTTG</field>
+            <field name="city">Rangiroa</field>
+            <field name="country_id" ref="base.pf"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-14.954283</field>
+            <field name="longitude">-147.6608</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Tahiti</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rvv" model="tt.destinations">
+            <field name="name">Raivavae Airport</field>
+            <field name="code">RVV</field>
+            <field name="icao">NTAV</field>
+            <field name="city">Raivavae</field>
+            <field name="country_id" ref="base.pf"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-23.87</field>
+            <field name="longitude">-147.67</field>
+            <field name="altitude">25</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Tahiti</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tih" model="tt.destinations">
+            <field name="name">Tikehau</field>
+            <field name="code">TIH</field>
+            <field name="icao">NTGC</field>
+            <field name="city">Tikehau</field>
+            <field name="country_id" ref="base.pf"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-15.119617</field>
+            <field name="longitude">-148.230697</field>
+            <field name="altitude">6</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Tahiti</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tkp" model="tt.destinations">
+            <field name="name">Takapoto</field>
+            <field name="code">TKP</field>
+            <field name="icao">NTGT</field>
+            <field name="city">Takapoto</field>
+            <field name="country_id" ref="base.pf"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-14.709544</field>
+            <field name="longitude">-145.245814</field>
+            <field name="altitude">12</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Tahiti</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tkx" model="tt.destinations">
+            <field name="name">Takaroa</field>
+            <field name="code">TKX</field>
+            <field name="icao">NTKR</field>
+            <field name="city">Takaroa</field>
+            <field name="country_id" ref="base.pf"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-14.455781</field>
+            <field name="longitude">-145.024542</field>
+            <field name="altitude">13</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Tahiti</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tti" model="tt.destinations">
+            <field name="name">Tetiaroa Airport</field>
+            <field name="code">TTI</field>
+            <field name="icao">NTTE</field>
+            <field name="city">Tetiaroa</field>
+            <field name="country_id" ref="base.pf"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-17.0132999</field>
+            <field name="longitude">-149.5870056</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Tahiti</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tub" model="tt.destinations">
+            <field name="name">Tubuai</field>
+            <field name="code">TUB</field>
+            <field name="icao">NTAT</field>
+            <field name="city">Tubuai</field>
+            <field name="country_id" ref="base.pf"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-23.365353</field>
+            <field name="longitude">-149.524072</field>
+            <field name="altitude">7</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Tahiti</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_xmh" model="tt.destinations">
+            <field name="name">Manihi</field>
+            <field name="code">XMH</field>
+            <field name="icao">NTGI</field>
+            <field name="city">Manihi</field>
+            <field name="country_id" ref="base.pf"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-14.436764</field>
+            <field name="longitude">-146.070056</field>
+            <field name="altitude">14</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Tahiti</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_abf" model="tt.destinations">
+            <field name="name">Abaiang Atoll Airport</field>
+            <field name="code">ABF</field>
+            <field name="icao">NGAB</field>
+            <field name="city">Abaiang Atoll</field>
+            <field name="country_id" ref="base.ki"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">1.8</field>
+            <field name="longitude">173.04</field>
+            <field name="altitude">1</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Tarawa</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_aea" model="tt.destinations">
+            <field name="name">Abemama Atoll Airport</field>
+            <field name="code">AEA</field>
+            <field name="icao">NGTB</field>
+            <field name="city">Abemama</field>
+            <field name="country_id" ref="base.ki"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">0.490833</field>
+            <field name="longitude">173.828611</field>
+            <field name="altitude">8</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Tarawa</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bbg" model="tt.destinations">
+            <field name="name">Butaritari Atoll Airport</field>
+            <field name="code">BBG</field>
+            <field name="icao">NGTU</field>
+            <field name="city">Butaritari</field>
+            <field name="country_id" ref="base.ki"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">3.086521</field>
+            <field name="longitude">172.811465</field>
+            <field name="altitude">5</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Tarawa</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mtk" model="tt.destinations">
+            <field name="name">Makin Airport</field>
+            <field name="code">MTK</field>
+            <field name="icao">NGMN</field>
+            <field name="city">Makin</field>
+            <field name="country_id" ref="base.ki"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">3.383333</field>
+            <field name="longitude">173</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Tarawa</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            

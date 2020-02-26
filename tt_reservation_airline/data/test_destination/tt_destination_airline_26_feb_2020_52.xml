@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_snp" model="tt.destinations">
+            <field name="name">St Paul Island</field>
+            <field name="code">SNP</field>
+            <field name="icao">PASN</field>
+            <field name="city">St. Paul Island</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">57.167333</field>
+            <field name="longitude">-170.220444</field>
+            <field name="altitude">63</field>
+            <field name="timezone_hour">-9</field>
+            <field name="tz">America/Anchorage</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_snu" model="tt.destinations">
+            <field name="name">Abel Santamaria</field>
+            <field name="code">SNU</field>
+            <field name="icao">MUSC</field>
+            <field name="city">Santa Clara</field>
+            <field name="country_id" ref="base.cu"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">22.492192</field>
+            <field name="longitude">-79.943611</field>
+            <field name="altitude">338</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Havana</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_snv" model="tt.destinations">
+            <field name="name">Santa Elena Airport</field>
+            <field name="code">SNV</field>
+            <field name="icao"></field>
+            <field name="city">Santa Elena de Uairen</field>
+            <field name="country_id" ref="base.ve"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">4.554722</field>
+            <field name="longitude">-61.144922</field>
+            <field name="altitude">3585</field>
+            <field name="timezone_hour">-4.5</field>
+            <field name="tz">America/Caracas</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sny" model="tt.destinations">
+            <field name="name">Sidney Muni Airport</field>
+            <field name="code">SNY</field>
+            <field name="icao">KSNY</field>
+            <field name="city">Sidney</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.10167</field>
+            <field name="longitude">-102.985</field>
+            <field name="altitude">4313</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Denver</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sod" model="tt.destinations">
+            <field name="name">Sorocaba Airport</field>
+            <field name="code">SOD</field>
+            <field name="icao">SDCO</field>
+            <field name="city">Sorocaba</field>
+            <field name="country_id" ref="base.br"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-23.478</field>
+            <field name="longitude">-47.49</field>
+            <field name="altitude">2077</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Sao_Paulo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_som" model="tt.destinations">
+            <field name="name">San Tome</field>
+            <field name="code">SOM</field>
+            <field name="icao">SVST</field>
+            <field name="city">San Tome</field>
+            <field name="country_id" ref="base.ve"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">8.945147</field>
+            <field name="longitude">-64.151083</field>
+            <field name="altitude">837</field>
+            <field name="timezone_hour">-4.5</field>
+            <field name="tz">America/Caracas</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sop" model="tt.destinations">
+            <field name="name">Moore County Airport</field>
+            <field name="code">SOP</field>
+            <field name="icao">KSOP</field>
+            <field name="city">Pinehurst-Southern Pines</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.2376111</field>
+            <field name="longitude">-79.3887958</field>
+            <field name="altitude">455</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sow" model="tt.destinations">
+            <field name="name">Show Low Regional Airport</field>
+            <field name="code">SOW</field>
+            <field name="icao">KSOW</field>
+            <field name="city">Show Low</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">34.265556</field>
+            <field name="longitude">-110.005556</field>
+            <field name="altitude">6415</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Phoenix</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_spb" model="tt.destinations">
+            <field name="name">Scappoose Industrial Airpark</field>
+            <field name="code">SPB</field>
+            <field name="icao">KSPB</field>
+            <field name="city">San Luis</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.771028</field>
+            <field name="longitude">-122.861833</field>
+            <field name="altitude">58</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Los_Angeles</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_spf" model="tt.destinations">
+            <field name="name">Black Hills Airport-Clyde Ice Field</field>
+            <field name="code">SPF</field>
+            <field name="icao">KSPF</field>
+            <field name="city">Spearfish-South Dakota</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">44.4811407</field>
+            <field name="longitude">-103.7860053</field>
+            <field name="altitude">3931</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Denver</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_spg" model="tt.destinations">
+            <field name="name">Albert Whitted</field>
+            <field name="code">SPG</field>
+            <field name="icao">KSPG</field>
+            <field name="city">St. Petersburg</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">27.765111</field>
+            <field name="longitude">-82.626972</field>
+            <field name="altitude">7</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_spi" model="tt.destinations">
+            <field name="name">Abraham Lincoln Capital</field>
+            <field name="code">SPI</field>
+            <field name="icao">KSPI</field>
+            <field name="city">Springfield</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.8441</field>
+            <field name="longitude">-89.677889</field>
+            <field name="altitude">597</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_spp" model="tt.destinations">
+            <field name="name">Menongue</field>
+            <field name="code">SPP</field>
+            <field name="icao">FNME</field>
+            <field name="city">Menongue</field>
+            <field name="country_id" ref="base.ao"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-14.657583</field>
+            <field name="longitude">17.719833</field>
+            <field name="altitude">4469</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Africa/Luanda</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_spr" model="tt.destinations">
+            <field name="name">San Pedro</field>
+            <field name="code">SPR</field>
+            <field name="icao">MZ10</field>
+            <field name="city">San Pedro</field>
+            <field name="country_id" ref="base.bz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">17.913936</field>
+            <field name="longitude">-87.971075</field>
+            <field name="altitude">4</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Belize</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sps" model="tt.destinations">
+            <field name="name">Sheppard Afb Wichita Falls Muni</field>
+            <field name="code">SPS</field>
+            <field name="icao">KSPS</field>
+            <field name="city">Wichita Falls</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">33.988797</field>
+            <field name="longitude">-98.491894</field>
+            <field name="altitude">1019</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_spw" model="tt.destinations">
+            <field name="name">Spencer Muni</field>
+            <field name="code">SPW</field>
+            <field name="icao">KSPW</field>
+            <field name="city">Spencer</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.165527</field>
+            <field name="longitude">-95.202805</field>
+            <field name="altitude">1339</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_spy" model="tt.destinations">
+            <field name="name">San Pedro</field>
+            <field name="code">SPY</field>
+            <field name="icao">DISP</field>
+            <field name="city">San Pedro</field>
+            <field name="country_id" ref="base.cf"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">4.746717</field>
+            <field name="longitude">-6.660817</field>
+            <field name="altitude">26</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Africa/Abidjan</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_spz" model="tt.destinations">
+            <field name="name">Silver Springs Airport</field>
+            <field name="code">SPZ</field>
+            <field name="icao">KSPZ</field>
+            <field name="city">Silver Springs</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.4030278</field>
+            <field name="longitude">-119.2511944</field>
+            <field name="altitude">4269</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Los_Angeles</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sql" model="tt.destinations">
+            <field name="name">San Carlos Airport</field>
+            <field name="code">SQL</field>
+            <field name="icao">KSQL</field>
+            <field name="city">San Carlos</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.511944</field>
+            <field name="longitude">-122.249444</field>
+            <field name="altitude">5</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Los_Angeles</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sra" model="tt.destinations">
+            <field name="name">Santa Rosa Airport</field>
+            <field name="code">SRA</field>
+            <field name="icao">SSZR</field>
+            <field name="city">Santa Rosa</field>
+            <field name="country_id" ref="base.br"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-27.9067</field>
+            <field name="longitude">-54.5204</field>
+            <field name="altitude">984</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Sao_Paulo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sre" model="tt.destinations">
+            <field name="name">Juana Azurduy De Padilla</field>
+            <field name="code">SRE</field>
+            <field name="icao">SLSU</field>
+            <field name="city">Sucre</field>
+            <field name="country_id" ref="base.bo"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-19.007083</field>
+            <field name="longitude">-65.288747</field>
+            <field name="altitude">9527</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">America/La_Paz</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_srh" model="tt.destinations">
+            <field name="name">Sarh Airport</field>
+            <field name="code">SRH</field>
+            <field name="icao">FTTA</field>
+            <field name="city">Sarh</field>
+            <field name="country_id" ref="base.td"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">9.14444</field>
+            <field name="longitude">18.3744</field>
+            <field name="altitude">1198</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Africa/Ndjamena</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_srj" model="tt.destinations">
+            <field name="name">Capit谩n Av. German Quiroga G. Airport</field>
+            <field name="code">SRJ</field>
+            <field name="icao">SLSB</field>
+            <field name="city">San Borja</field>
+            <field name="country_id" ref="base.bo"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-14.8592</field>
+            <field name="longitude">-66.7375</field>
+            <field name="altitude">633</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">America/La_Paz</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_srq" model="tt.destinations">
+            <field name="name">Sarasota Bradenton Intl</field>
+            <field name="code">SRQ</field>
+            <field name="icao">KSRQ</field>
+            <field name="city">Sarasota</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">27.395444</field>
+            <field name="longitude">-82.554389</field>
+            <field name="altitude">30</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_srr" model="tt.destinations">
+            <field name="name">Sierra Blanca Regional Airport</field>
+            <field name="code">SRR</field>
+            <field name="icao">KSRR</field>
+            <field name="city">Ruidoso</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">33.46285</field>
+            <field name="longitude">-105.534751</field>
+            <field name="altitude">6814</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Denver</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_srt" model="tt.destinations">
+            <field name="name">Soroti</field>
+            <field name="code">SRT</field>
+            <field name="icao">HUSO</field>
+            <field name="city">Soroti</field>
+            <field name="country_id" ref="base.ug"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">1.727578</field>
+            <field name="longitude">33.622861</field>
+            <field name="altitude">3641</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Africa/Kampala</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_srv" model="tt.destinations">
+            <field name="name">Stony River 2 Airport</field>
+            <field name="code">SRV</field>
+            <field name="icao"></field>
+            <field name="city">Stony River</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">61.7875</field>
+            <field name="longitude">-156.591111</field>
+            <field name="altitude">230</field>
+            <field name="timezone_hour">-9</field>
+            <field name="tz">America/Anchorage</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_srx" model="tt.destinations">
+            <field name="name">Gardabya Airport</field>
+            <field name="code">SRX</field>
+            <field name="icao">HLGD</field>
+            <field name="city">Sirt</field>
+            <field name="country_id" ref="base.ly"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">31.0635</field>
+            <field name="longitude">16.595</field>
+            <field name="altitude">267</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Africa/Tripoli</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_srz" model="tt.destinations">
+            <field name="name">Santa Cruz</field>
+            <field name="code">SRZ</field>
+            <field name="icao"></field>
+            <field name="city">Santa Cruz</field>
+            <field name="country_id" ref="base.bo"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-17.8</field>
+            <field name="longitude">-63.166667</field>
+            <field name="altitude">1224</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">America/La_Paz</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ssa" model="tt.destinations">
+            <field name="name">Deputado Luis Eduardo Magalhaes</field>
+            <field name="code">SSA</field>
+            <field name="icao">SBSV</field>
+            <field name="city">Salvador</field>
+            <field name="country_id" ref="base.br"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-12.910994</field>
+            <field name="longitude">-38.331044</field>
+            <field name="altitude">64</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Fortaleza</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ssb" model="tt.destinations">
+            <field name="name">Christiansted Harbor Seaplane Base</field>
+            <field name="code">SSB</field>
+            <field name="icao"></field>
+            <field name="city">Christiansted</field>
+            <field name="country_id" ref="base.vi"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">17.747222</field>
+            <field name="longitude">-64.705</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">America/St_Thomas</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ssc" model="tt.destinations">
+            <field name="name">Shaw Afb</field>
+            <field name="code">SSC</field>
+            <field name="icao">KSSC</field>
+            <field name="city">Sumter</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">33.972719</field>
+            <field name="longitude">-80.470564</field>
+            <field name="altitude">242</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sse" model="tt.destinations">
+            <field name="name">Sholapur</field>
+            <field name="code">SSE</field>
+            <field name="icao">VASL</field>
+            <field name="city">Sholapur</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">17.627958</field>
+            <field name="longitude">75.934842</field>
+            <field name="altitude">1584</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ssg" model="tt.destinations">
+            <field name="name">Malabo</field>
+            <field name="code">SSG</field>
+            <field name="icao">FGSL</field>
+            <field name="city">Malabo</field>
+            <field name="country_id" ref="base.gq"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">3.755267</field>
+            <field name="longitude">8.708717</field>
+            <field name="altitude">76</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Africa/Malabo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ssh" model="tt.destinations">
+            <field name="name">Sharm El Sheikh Intl</field>
+            <field name="code">SSH</field>
+            <field name="icao">HESH</field>
+            <field name="city">Sharm El Sheikh</field>
+            <field name="country_id" ref="base.eg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">27.977222</field>
+            <field name="longitude">34.394722</field>
+            <field name="altitude">143</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Africa/Cairo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ssi" model="tt.destinations">
+            <field name="name">McKinnon Airport</field>
+            <field name="code">SSI</field>
+            <field name="icao">KSSI</field>
+            <field name="city">Brunswick</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">31.1519722</field>
+            <field name="longitude">-81.3910556</field>
+            <field name="altitude">19</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sst" model="tt.destinations">
+            <field name="name">Santa Teresita Airport</field>
+            <field name="code">SST</field>
+            <field name="icao">SAZL</field>
+            <field name="city">Santa Teresita</field>
+            <field name="country_id" ref="base.ar"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-36.542317</field>
+            <field name="longitude">-56.721756</field>
+            <field name="altitude">9</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Cordoba</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ssy" model="tt.destinations">
+            <field name="name">Mbanza Congo</field>
+            <field name="code">SSY</field>
+            <field name="icao">FNBC</field>
+            <field name="city">M'banza-congo</field>
+            <field name="country_id" ref="base.ao"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-6.269897</field>
+            <field name="longitude">14.247025</field>
+            <field name="altitude">1860</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Africa/Luanda</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ssz" model="tt.destinations">
+            <field name="name">Base Aerea De Santos</field>
+            <field name="code">SSZ</field>
+            <field name="icao">SBST</field>
+            <field name="city">Santos</field>
+            <field name="country_id" ref="base.br"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-23.925206</field>
+            <field name="longitude">-46.2875</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Sao_Paulo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_stb" model="tt.destinations">
+            <field name="name">Santa Barbara Del Zulia</field>
+            <field name="code">STB</field>
+            <field name="icao">SVSZ</field>
+            <field name="city">Santa Barbara</field>
+            <field name="country_id" ref="base.ve"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">8.974425</field>
+            <field name="longitude">-71.943014</field>
+            <field name="altitude">32</field>
+            <field name="timezone_hour">-4.5</field>
+            <field name="tz">America/Caracas</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_stc" model="tt.destinations">
+            <field name="name">Saint Cloud Regional Airport</field>
+            <field name="code">STC</field>
+            <field name="icao">KSTC</field>
+            <field name="city">Saint Cloud</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.546556</field>
+            <field name="longitude">-94.059889</field>
+            <field name="altitude">1031</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_std" model="tt.destinations">
+            <field name="name">Mayor Buenaventura Vivas</field>
+            <field name="code">STD</field>
+            <field name="icao">SVSO</field>
+            <field name="city">Santo Domingo</field>
+            <field name="country_id" ref="base.ve"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">7.565111</field>
+            <field name="longitude">-72.035125</field>
+            <field name="altitude">1083</field>
+            <field name="timezone_hour">-4.5</field>
+            <field name="tz">America/Caracas</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ste" model="tt.destinations">
+            <field name="name">Stevens Point Municipal Airport</field>
+            <field name="code">STE</field>
+            <field name="icao">KSTE</field>
+            <field name="city">Stevens Point</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">44.5451356</field>
+            <field name="longitude">-89.5302844</field>
+            <field name="altitude">1110</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_stg" model="tt.destinations">
+            <field name="name">St. George Airport</field>
+            <field name="code">STG</field>
+            <field name="icao"></field>
+            <field name="city">St. George</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">56.577222</field>
+            <field name="longitude">-169.663611</field>
+            <field name="altitude">125</field>
+            <field name="timezone_hour">-9</field>
+            <field name="tz">America/Anchorage</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sti" model="tt.destinations">
+            <field name="name">Cibao Intl</field>
+            <field name="code">STI</field>
+            <field name="icao">MDST</field>
+            <field name="city">Santiago</field>
+            <field name="country_id" ref="base.do"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">19.406092</field>
+            <field name="longitude">-70.604689</field>
+            <field name="altitude">565</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">America/Santo_Domingo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_stj" model="tt.destinations">
+            <field name="name">Rosecrans Mem</field>
+            <field name="code">STJ</field>
+            <field name="icao">KSTJ</field>
+            <field name="city">Rosecrans</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.771944</field>
+            <field name="longitude">-94.909706</field>
+            <field name="altitude">826</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_stk" model="tt.destinations">
+            <field name="name">Sterling Municipal Airport</field>
+            <field name="code">STK</field>
+            <field name="icao">KSTK</field>
+            <field name="city">Sterling</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.6153136</field>
+            <field name="longitude">-103.2648454</field>
+            <field name="altitude">4040</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Denver</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_stl" model="tt.destinations">
+            <field name="name">Lambert St Louis Intl</field>
+            <field name="code">STL</field>
+            <field name="icao">KSTL</field>
+            <field name="city">St. Louis</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.748697</field>
+            <field name="longitude">-90.370028</field>
+            <field name="altitude">618</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_stm" model="tt.destinations">
+            <field name="name">Santarem</field>
+            <field name="code">STM</field>
+            <field name="icao">SBSN</field>
+            <field name="city">Santarem</field>
+            <field name="country_id" ref="base.br"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-2.422431</field>
+            <field name="longitude">-54.792789</field>
+            <field name="altitude">198</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">America/Boa_Vista</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sts" model="tt.destinations">
+            <field name="name">Charles M Schulz Sonoma Co</field>
+            <field name="code">STS</field>
+            <field name="icao">KSTS</field>
+            <field name="city">Santa Rosa</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.508978</field>
+            <field name="longitude">-122.81288</field>
+            <field name="altitude">125</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Los_Angeles</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            

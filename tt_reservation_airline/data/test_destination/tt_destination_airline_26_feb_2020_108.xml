@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_mja" model="tt.destinations">
+            <field name="name">Manja Airport</field>
+            <field name="code">MJA</field>
+            <field name="icao">FMSJ</field>
+            <field name="city">Manja</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-21.417</field>
+            <field name="longitude">44.317</field>
+            <field name="altitude">787</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mjn" model="tt.destinations">
+            <field name="name">Philibert Tsiranana</field>
+            <field name="code">MJN</field>
+            <field name="icao">FMNM</field>
+            <field name="city">Mahajanga</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-15.667144</field>
+            <field name="longitude">46.351828</field>
+            <field name="altitude">87</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mnj" model="tt.destinations">
+            <field name="name">Mananjary</field>
+            <field name="code">MNJ</field>
+            <field name="icao">FMSM</field>
+            <field name="city">Mananjary</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-21.201772</field>
+            <field name="longitude">48.358317</field>
+            <field name="altitude">20</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_moq" model="tt.destinations">
+            <field name="name">Morondava</field>
+            <field name="code">MOQ</field>
+            <field name="icao">FMMV</field>
+            <field name="city">Morondava</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-20.28475</field>
+            <field name="longitude">44.317614</field>
+            <field name="altitude">30</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mxm" model="tt.destinations">
+            <field name="name">Morombe</field>
+            <field name="code">MXM</field>
+            <field name="icao">FMSR</field>
+            <field name="city">Morombe</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-21.753867</field>
+            <field name="longitude">43.375533</field>
+            <field name="altitude">16</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mxt" model="tt.destinations">
+            <field name="name">Maintirano Airport</field>
+            <field name="code">MXT</field>
+            <field name="icao">FMMO</field>
+            <field name="city">Maintirano</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-18.05</field>
+            <field name="longitude">44.033</field>
+            <field name="altitude">95</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nos" model="tt.destinations">
+            <field name="name">Fascene</field>
+            <field name="code">NOS</field>
+            <field name="icao">FMNN</field>
+            <field name="city">Nosy-be</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-13.312067</field>
+            <field name="longitude">48.314822</field>
+            <field name="altitude">36</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ova" model="tt.destinations">
+            <field name="name">Bekily</field>
+            <field name="code">OVA</field>
+            <field name="icao">FMSL</field>
+            <field name="city">Bekily</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-24.236111</field>
+            <field name="longitude">45.305</field>
+            <field name="altitude">1259</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rva" model="tt.destinations">
+            <field name="name">Farafangana</field>
+            <field name="code">RVA</field>
+            <field name="icao">FMSG</field>
+            <field name="city">Farafangana</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-22.805286</field>
+            <field name="longitude">47.820614</field>
+            <field name="altitude">26</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sms" model="tt.destinations">
+            <field name="name">Sainte Marie</field>
+            <field name="code">SMS</field>
+            <field name="icao">FMMS</field>
+            <field name="city">Sainte Marie</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-17.093889</field>
+            <field name="longitude">49.815834</field>
+            <field name="altitude">7</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_svb" model="tt.destinations">
+            <field name="name">Sambava</field>
+            <field name="code">SVB</field>
+            <field name="icao">FMNS</field>
+            <field name="city">Sambava</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-14.278611</field>
+            <field name="longitude">50.174721</field>
+            <field name="altitude">20</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tle" model="tt.destinations">
+            <field name="name">Toliara</field>
+            <field name="code">TLE</field>
+            <field name="icao">FMST</field>
+            <field name="city">Toliara</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-23.383369</field>
+            <field name="longitude">43.728453</field>
+            <field name="altitude">29</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tmm" model="tt.destinations">
+            <field name="name">Toamasina</field>
+            <field name="code">TMM</field>
+            <field name="icao">FMMT</field>
+            <field name="city">Toamasina</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-18.109517</field>
+            <field name="longitude">49.392536</field>
+            <field name="altitude">22</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tnr" model="tt.destinations">
+            <field name="name">Ivato</field>
+            <field name="code">TNR</field>
+            <field name="icao">FMMI</field>
+            <field name="city">Antananarivo</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-18.79695</field>
+            <field name="longitude">47.478806</field>
+            <field name="altitude">4198</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tts" model="tt.destinations">
+            <field name="name">Tsaratanana Airport</field>
+            <field name="code">TTS</field>
+            <field name="icao">FMNT</field>
+            <field name="city">Tsaratanana</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-16.75</field>
+            <field name="longitude">47.617</field>
+            <field name="altitude">1073</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tva" model="tt.destinations">
+            <field name="name">Morafenobe Airport</field>
+            <field name="code">TVA</field>
+            <field name="icao">FMMR</field>
+            <field name="city">Morafenobe</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-17.85</field>
+            <field name="longitude">44.917</field>
+            <field name="altitude">748</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_voh" model="tt.destinations">
+            <field name="name">Vohimarina</field>
+            <field name="code">VOH</field>
+            <field name="icao">FMNV</field>
+            <field name="city">Vohemar</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-13.375834</field>
+            <field name="longitude">50.002777</field>
+            <field name="altitude">19</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wai" model="tt.destinations">
+            <field name="name">Ambalabe</field>
+            <field name="code">WAI</field>
+            <field name="icao">FMNW</field>
+            <field name="city">Antsohihy</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-14.89875</field>
+            <field name="longitude">47.993894</field>
+            <field name="altitude">92</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wam" model="tt.destinations">
+            <field name="name">Ambatondrazaka Airport</field>
+            <field name="code">WAM</field>
+            <field name="icao">FMMZ</field>
+            <field name="city">Ambatondrazaka</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-17.8</field>
+            <field name="longitude">48.433</field>
+            <field name="altitude">2513</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_waq" model="tt.destinations">
+            <field name="name">Antsalova Airport</field>
+            <field name="code">WAQ</field>
+            <field name="icao">FMMG</field>
+            <field name="city">Antsalova</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-18.7</field>
+            <field name="longitude">44.617</field>
+            <field name="altitude">551</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wfi" model="tt.destinations">
+            <field name="name">Fianarantsoa</field>
+            <field name="code">WFI</field>
+            <field name="icao">FMSF</field>
+            <field name="city">Fianarantsoa</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-21.441558</field>
+            <field name="longitude">47.111736</field>
+            <field name="altitude">3658</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wma" model="tt.destinations">
+            <field name="name">Mandritsara Airport</field>
+            <field name="code">WMA</field>
+            <field name="icao">FMNX</field>
+            <field name="city">Mandritsara</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-15.817</field>
+            <field name="longitude">48.833</field>
+            <field name="altitude">1007</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wmn" model="tt.destinations">
+            <field name="name">Maroantsetra</field>
+            <field name="code">WMN</field>
+            <field name="icao">FMNR</field>
+            <field name="city">Maroantsetra</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-15.436666</field>
+            <field name="longitude">49.688332</field>
+            <field name="altitude">13</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wmp" model="tt.destinations">
+            <field name="name">Mampikony Airport</field>
+            <field name="code">WMP</field>
+            <field name="icao">FMNP</field>
+            <field name="city">Mampikony</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-16.049</field>
+            <field name="longitude">47.622</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wmr" model="tt.destinations">
+            <field name="name">Avaratra</field>
+            <field name="code">WMR</field>
+            <field name="icao">FMNC</field>
+            <field name="city">Mananara</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-16.1639</field>
+            <field name="longitude">49.773753</field>
+            <field name="altitude">9</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wpb" model="tt.destinations">
+            <field name="name">Port Berg茅 Airport</field>
+            <field name="code">WPB</field>
+            <field name="icao">FMNG</field>
+            <field name="city">Port Berg茅</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-15.583</field>
+            <field name="longitude">47.617</field>
+            <field name="altitude">213</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wta" model="tt.destinations">
+            <field name="name">Tambohorano Airport</field>
+            <field name="code">WTA</field>
+            <field name="icao">FMMU</field>
+            <field name="city">Tambohorano</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-17.4761</field>
+            <field name="longitude">43.9728</field>
+            <field name="altitude">23</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wts" model="tt.destinations">
+            <field name="name">Tsiroanomandidy Airport</field>
+            <field name="code">WTS</field>
+            <field name="icao">FMMX</field>
+            <field name="city">Tsiroanomandidy</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-18.75</field>
+            <field name="longitude">46.05</field>
+            <field name="altitude">2776</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wvk" model="tt.destinations">
+            <field name="name">Manakara</field>
+            <field name="code">WVK</field>
+            <field name="icao">FMSK</field>
+            <field name="city">Manakara</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-22.119722</field>
+            <field name="longitude">48.021667</field>
+            <field name="altitude">33</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zva" model="tt.destinations">
+            <field name="name">Miandrivazo</field>
+            <field name="code">ZVA</field>
+            <field name="icao">FMMN</field>
+            <field name="city">Miandrivazo</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-19.562778</field>
+            <field name="longitude">45.450832</field>
+            <field name="altitude">203</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zwa" model="tt.destinations">
+            <field name="name">Andapa</field>
+            <field name="code">ZWA</field>
+            <field name="icao">FMND</field>
+            <field name="city">Andapa</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-14.651667</field>
+            <field name="longitude">49.620556</field>
+            <field name="altitude">1552</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_xch" model="tt.destinations">
+            <field name="name">Christmas Island</field>
+            <field name="code">XCH</field>
+            <field name="icao">YPXM</field>
+            <field name="city">Christmas Island</field>
+            <field name="country_id" ref="base.cx"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-10.450556</field>
+            <field name="longitude">105.690278</field>
+            <field name="altitude">916</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Indian/Christmas</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cck" model="tt.destinations">
+            <field name="name">Cocos Keeling Island Airport</field>
+            <field name="code">CCK</field>
+            <field name="icao">YPCC</field>
+            <field name="city">Cocos Keeling Island</field>
+            <field name="country_id" ref="base.cc"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-12.1883</field>
+            <field name="longitude">96.8339</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">6.5</field>
+            <field name="tz">Indian/Cocos</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ajn" model="tt.destinations">
+            <field name="name">Ouani</field>
+            <field name="code">AJN</field>
+            <field name="icao">FMCV</field>
+            <field name="city">Anjouan</field>
+            <field name="country_id" ref="base.km"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-12.131667</field>
+            <field name="longitude">44.430279</field>
+            <field name="altitude">62</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Comoro</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hah" model="tt.destinations">
+            <field name="name">Prince Said Ibrahim</field>
+            <field name="code">HAH</field>
+            <field name="icao">FMCH</field>
+            <field name="city">Moroni</field>
+            <field name="country_id" ref="base.km"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-11.533661</field>
+            <field name="longitude">43.27185</field>
+            <field name="altitude">93</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Comoro</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nwa" model="tt.destinations">
+            <field name="name">Bandaressalam</field>
+            <field name="code">NWA</field>
+            <field name="icao">FMCI</field>
+            <field name="city">Moheli</field>
+            <field name="country_id" ref="base.km"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-12.298108</field>
+            <field name="longitude">43.7664</field>
+            <field name="altitude">46</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Comoro</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_yva" model="tt.destinations">
+            <field name="name">Iconi Airport</field>
+            <field name="code">YVA</field>
+            <field name="icao">FMCN</field>
+            <field name="city">Moroni</field>
+            <field name="country_id" ref="base.km"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-11.7108</field>
+            <field name="longitude">43.2439</field>
+            <field name="altitude">33</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Comoro</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_des" model="tt.destinations">
+            <field name="name">Desroches</field>
+            <field name="code">DES</field>
+            <field name="icao">FSDR</field>
+            <field name="city">Desroches</field>
+            <field name="country_id" ref="base.sc"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-5.696697</field>
+            <field name="longitude">53.655844</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">4</field>
+            <field name="tz">Indian/Mahe</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pri" model="tt.destinations">
+            <field name="name">Praslin</field>
+            <field name="code">PRI</field>
+            <field name="icao">FSPP</field>
+            <field name="city">Praslin</field>
+            <field name="country_id" ref="base.sc"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-4.319292</field>
+            <field name="longitude">55.691417</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">4</field>
+            <field name="tz">Indian/Mahe</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sez" model="tt.destinations">
+            <field name="name">Seychelles Intl</field>
+            <field name="code">SEZ</field>
+            <field name="icao">FSIA</field>
+            <field name="city">Mahe</field>
+            <field name="country_id" ref="base.sc"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-4.674342</field>
+            <field name="longitude">55.521839</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">4</field>
+            <field name="tz">Indian/Mahe</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dhg" model="tt.destinations">
+            <field name="name">Dhigurah Centara Grand Maldives</field>
+            <field name="code">DHG</field>
+            <field name="icao">DHGU</field>
+            <field name="city">Dhigurah</field>
+            <field name="country_id" ref="base.mv"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">3.5939</field>
+            <field name="longitude">72.8834</field>
+            <field name="altitude">6</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Indian/Maldives</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gan" model="tt.destinations">
+            <field name="name">Gan Island Airport</field>
+            <field name="code">GAN</field>
+            <field name="icao">VRMG</field>
+            <field name="city">Gan Island</field>
+            <field name="country_id" ref="base.mv"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-0.693342</field>
+            <field name="longitude">73.1556</field>
+            <field name="altitude">6</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Indian/Maldives</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gkk" model="tt.destinations">
+            <field name="name">Kooddoo</field>
+            <field name="code">GKK</field>
+            <field name="icao">VRMO</field>
+            <field name="city">Kooddoo</field>
+            <field name="country_id" ref="base.mv"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">0.7308</field>
+            <field name="longitude">73.433</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Indian/Maldives</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_haq" model="tt.destinations">
+            <field name="name">Hanimaadhoo Airport</field>
+            <field name="code">HAQ</field>
+            <field name="icao">VRMH</field>
+            <field name="city">Haa Dhaalu Atoll</field>
+            <field name="country_id" ref="base.mv"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">6.74423</field>
+            <field name="longitude">73.1705</field>
+            <field name="altitude">4</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Indian/Maldives</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_iru" model="tt.destinations">
+            <field name="name">Hilton Iru fushi</field>
+            <field name="code">IRU</field>
+            <field name="icao">IRUF</field>
+            <field name="city">Maldives Hilton Iru fushi</field>
+            <field name="country_id" ref="base.mv"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">5.7435</field>
+            <field name="longitude">73.3249</field>
+            <field name="altitude">6</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Indian/Maldives</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kdm" model="tt.destinations">
+            <field name="name">Kaadedhdhoo</field>
+            <field name="code">KDM</field>
+            <field name="icao"></field>
+            <field name="city">Kaadedhdhoo</field>
+            <field name="country_id" ref="base.mv"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">0.4880555</field>
+            <field name="longitude">72.995556</field>
+            <field name="altitude">3</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Indian/Maldives</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kdo" model="tt.destinations">
+            <field name="name">Kadhdhoo Airport</field>
+            <field name="code">KDO</field>
+            <field name="icao">VRMK</field>
+            <field name="city">Laamu Atoll</field>
+            <field name="country_id" ref="base.mv"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">1.85917</field>
+            <field name="longitude">73.5219</field>
+            <field name="altitude">4</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Indian/Maldives</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mle" model="tt.destinations">
+            <field name="name">Male Intl</field>
+            <field name="code">MLE</field>
+            <field name="icao">VRMM</field>
+            <field name="city">Male</field>
+            <field name="country_id" ref="base.mv"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">4.191833</field>
+            <field name="longitude">73.529128</field>
+            <field name="altitude">6</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Indian/Maldives</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_msi" model="tt.destinations">
+            <field name="name">Sun Island Airport</field>
+            <field name="code">MSI</field>
+            <field name="icao">SIAM</field>
+            <field name="city">South Aari Atoll</field>
+            <field name="country_id" ref="base.mv"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">3.295</field>
+            <field name="longitude">72.4814</field>
+            <field name="altitude">2</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Indian/Maldives</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vam" model="tt.destinations">
+            <field name="name">Maamigili Airport</field>
+            <field name="code">VAM</field>
+            <field name="icao">VRMV</field>
+            <field name="city">Maamigili</field>
+            <field name="country_id" ref="base.mv"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">3.4702</field>
+            <field name="longitude">72.8344</field>
+            <field name="altitude">6</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Indian/Maldives</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            

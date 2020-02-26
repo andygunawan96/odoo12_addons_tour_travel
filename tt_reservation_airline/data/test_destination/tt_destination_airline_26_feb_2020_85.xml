@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_jab" model="tt.destinations">
+            <field name="name">Jabiru</field>
+            <field name="code">JAB</field>
+            <field name="icao">YJAB</field>
+            <field name="city">Jabiru</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-12.6571</field>
+            <field name="longitude">132.893</field>
+            <field name="altitude">52</field>
+            <field name="timezone_hour">9.5</field>
+            <field name="tz">Australia/Darwin</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kfg" model="tt.destinations">
+            <field name="name">Kalkgurung Airport</field>
+            <field name="code">KFG</field>
+            <field name="icao">YKKG</field>
+            <field name="city">Kalkgurung</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-17.4319</field>
+            <field name="longitude">130.808</field>
+            <field name="altitude">646</field>
+            <field name="timezone_hour">9.5</field>
+            <field name="tz">Australia/Darwin</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ktr" model="tt.destinations">
+            <field name="name">Tindal Airport</field>
+            <field name="code">KTR</field>
+            <field name="icao">YPTN</field>
+            <field name="city">Katherine</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-14.5211</field>
+            <field name="longitude">132.378</field>
+            <field name="altitude">443</field>
+            <field name="timezone_hour">9.5</field>
+            <field name="tz">Australia/Darwin</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lel" model="tt.destinations">
+            <field name="name">Lake Evella Airport</field>
+            <field name="code">LEL</field>
+            <field name="icao">YLEV</field>
+            <field name="city">Lake Evella</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-12.4989</field>
+            <field name="longitude">135.806</field>
+            <field name="altitude">256</field>
+            <field name="timezone_hour">9.5</field>
+            <field name="tz">Australia/Darwin</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mcv" model="tt.destinations">
+            <field name="name">McArthur River Mine Airport</field>
+            <field name="code">MCV</field>
+            <field name="icao">YMHU</field>
+            <field name="city">McArthur River Mine</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-16.4425</field>
+            <field name="longitude">136.084</field>
+            <field name="altitude">131</field>
+            <field name="timezone_hour">9.5</field>
+            <field name="tz">Australia/Darwin</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mgt" model="tt.destinations">
+            <field name="name">Milingimbi Airport</field>
+            <field name="code">MGT</field>
+            <field name="icao">YMGB</field>
+            <field name="city">Milingimbi</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-12.0944</field>
+            <field name="longitude">134.894</field>
+            <field name="altitude">53</field>
+            <field name="timezone_hour">9.5</field>
+            <field name="tz">Australia/Darwin</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mng" model="tt.destinations">
+            <field name="name">Maningrida Airport</field>
+            <field name="code">MNG</field>
+            <field name="icao">YMGD</field>
+            <field name="city">Maningrida</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-12.0561</field>
+            <field name="longitude">134.234</field>
+            <field name="altitude">123</field>
+            <field name="timezone_hour">9.5</field>
+            <field name="tz">Australia/Darwin</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ram" model="tt.destinations">
+            <field name="name">Ramingining Airport</field>
+            <field name="code">RAM</field>
+            <field name="icao">YRNG</field>
+            <field name="city">Ramingining</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-12.3564</field>
+            <field name="longitude">134.898</field>
+            <field name="altitude">206</field>
+            <field name="timezone_hour">9.5</field>
+            <field name="tz">Australia/Darwin</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rpb" model="tt.destinations">
+            <field name="name">Roper Bar</field>
+            <field name="code">RPB</field>
+            <field name="icao">YRRB</field>
+            <field name="city">Roper Bar</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-14.73457</field>
+            <field name="longitude">134.5252</field>
+            <field name="altitude">70</field>
+            <field name="timezone_hour">9.5</field>
+            <field name="tz">Australia/Darwin</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tca" model="tt.destinations">
+            <field name="name">Tennant Creek Airport</field>
+            <field name="code">TCA</field>
+            <field name="icao">YTNK</field>
+            <field name="city">Tennant Creek</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-19.6344</field>
+            <field name="longitude">134.183</field>
+            <field name="altitude">1236</field>
+            <field name="timezone_hour">9.5</field>
+            <field name="tz">Australia/Darwin</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vcd" model="tt.destinations">
+            <field name="name">Victoria River Downs Airport</field>
+            <field name="code">VCD</field>
+            <field name="icao">YVRD</field>
+            <field name="city">Victoria River Downs</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-16.4033</field>
+            <field name="longitude">131.002</field>
+            <field name="altitude">89</field>
+            <field name="timezone_hour">9.5</field>
+            <field name="tz">Australia/Darwin</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_yue" model="tt.destinations">
+            <field name="name">Yuendumu</field>
+            <field name="code">YUE</field>
+            <field name="icao">YYND</field>
+            <field name="city">Yuendumu</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-22.254167</field>
+            <field name="longitude">131.781944</field>
+            <field name="altitude">2205</field>
+            <field name="timezone_hour">9.5</field>
+            <field name="tz">Australia/Darwin</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_avv" model="tt.destinations">
+            <field name="name">Avalon</field>
+            <field name="code">AVV</field>
+            <field name="icao">YMAV</field>
+            <field name="city">Avalon</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-38.039444</field>
+            <field name="longitude">144.469444</field>
+            <field name="altitude">35</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Australia/Hobart</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bsj" model="tt.destinations">
+            <field name="name">Bairnsdale Airport</field>
+            <field name="code">BSJ</field>
+            <field name="icao">YBNS</field>
+            <field name="city">Bairnsdale</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-37.8875</field>
+            <field name="longitude">147.567778</field>
+            <field name="altitude">165</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Australia/Hobart</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gex" model="tt.destinations">
+            <field name="name">Geelong Airport</field>
+            <field name="code">GEX</field>
+            <field name="icao">YGLG</field>
+            <field name="city">Geelong</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-38.225</field>
+            <field name="longitude">144.333</field>
+            <field name="altitude">43</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Australia/Hobart</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hlt" model="tt.destinations">
+            <field name="name">Hamilton Airport</field>
+            <field name="code">HLT</field>
+            <field name="icao">YHML</field>
+            <field name="city">Hamilton</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-37.648889</field>
+            <field name="longitude">142.065278</field>
+            <field name="altitude">803</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Australia/Hobart</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mbw" model="tt.destinations">
+            <field name="name">Melbourne Moorabbin</field>
+            <field name="code">MBW</field>
+            <field name="icao">YMMB</field>
+            <field name="city">Melbourne</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-37.975833</field>
+            <field name="longitude">145.102222</field>
+            <field name="altitude">50</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Australia/Hobart</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_meb" model="tt.destinations">
+            <field name="name">Melbourne Essendon</field>
+            <field name="code">MEB</field>
+            <field name="icao">YMEN</field>
+            <field name="city">Melbourne</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-37.728056</field>
+            <field name="longitude">144.901944</field>
+            <field name="altitude">282</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Australia/Hobart</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mel" model="tt.destinations">
+            <field name="name">Melbourne Intl</field>
+            <field name="code">MEL</field>
+            <field name="icao">YMML</field>
+            <field name="city">Melbourne</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-37.673333</field>
+            <field name="longitude">144.843333</field>
+            <field name="altitude">434</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Australia/Hobart</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mhu" model="tt.destinations">
+            <field name="name">Mount Hotham Airport</field>
+            <field name="code">MHU</field>
+            <field name="icao">YHOT</field>
+            <field name="city">Mount Hotham</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-37.0475</field>
+            <field name="longitude">147.334</field>
+            <field name="altitude">4260</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Australia/Hobart</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mql" model="tt.destinations">
+            <field name="name">Mildura Airport</field>
+            <field name="code">MQL</field>
+            <field name="icao">YMIA</field>
+            <field name="city">Mildura</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-34.2292</field>
+            <field name="longitude">142.086</field>
+            <field name="altitude">167</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Australia/Hobart</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ptj" model="tt.destinations">
+            <field name="name">Portland Airport</field>
+            <field name="code">PTJ</field>
+            <field name="icao">YPOD</field>
+            <field name="city">Portland</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-38.3181</field>
+            <field name="longitude">141.471</field>
+            <field name="altitude">265</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Australia/Hobart</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sht" model="tt.destinations">
+            <field name="name">Shepparton</field>
+            <field name="code">SHT</field>
+            <field name="icao">YSHT</field>
+            <field name="city">Shepparton</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-36.428902</field>
+            <field name="longitude">145.393005</field>
+            <field name="altitude">374</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Australia/Hobart</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_xmc" model="tt.destinations">
+            <field name="name">Mallacoota Airport</field>
+            <field name="code">XMC</field>
+            <field name="icao">YMCO</field>
+            <field name="city">Mallacoota</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-37.598301</field>
+            <field name="longitude">149.720001</field>
+            <field name="altitude">31</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Australia/Hobart</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bwt" model="tt.destinations">
+            <field name="name">Wynyard Airport</field>
+            <field name="code">BWT</field>
+            <field name="icao">YWYY</field>
+            <field name="city">Burnie</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-40.9989</field>
+            <field name="longitude">145.731</field>
+            <field name="altitude">62</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Australia/Melbourne</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dpo" model="tt.destinations">
+            <field name="name">Devonport Airport</field>
+            <field name="code">DPO</field>
+            <field name="icao">YDPO</field>
+            <field name="city">Devonport</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-41.1697</field>
+            <field name="longitude">146.43</field>
+            <field name="altitude">33</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Australia/Melbourne</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fls" model="tt.destinations">
+            <field name="name">Flinders Island Airport</field>
+            <field name="code">FLS</field>
+            <field name="icao">YFLI</field>
+            <field name="city">Flinders Island</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-40.0917</field>
+            <field name="longitude">147.993</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Australia/Melbourne</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hba" model="tt.destinations">
+            <field name="name">Hobart</field>
+            <field name="code">HBA</field>
+            <field name="icao">YMHB</field>
+            <field name="city">Hobart</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-42.836111</field>
+            <field name="longitude">147.510278</field>
+            <field name="altitude">13</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Australia/Melbourne</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kns" model="tt.destinations">
+            <field name="name">King Island Airport</field>
+            <field name="code">KNS</field>
+            <field name="icao">YKII</field>
+            <field name="city">King Island</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-39.8775</field>
+            <field name="longitude">143.878</field>
+            <field name="altitude">132</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Australia/Melbourne</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lst" model="tt.destinations">
+            <field name="name">Launceston</field>
+            <field name="code">LST</field>
+            <field name="icao">YMLT</field>
+            <field name="city">Launceston</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-41.545278</field>
+            <field name="longitude">147.214167</field>
+            <field name="altitude">562</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Australia/Melbourne</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_srn" model="tt.destinations">
+            <field name="name">Strahan Airport</field>
+            <field name="code">SRN</field>
+            <field name="icao">YSRN</field>
+            <field name="city">Strahan</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-42.155</field>
+            <field name="longitude">145.292</field>
+            <field name="altitude">20</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Australia/Melbourne</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_alh" model="tt.destinations">
+            <field name="name">Albany Airport</field>
+            <field name="code">ALH</field>
+            <field name="icao">YABA</field>
+            <field name="city">Albany</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-34.9433</field>
+            <field name="longitude">117.809</field>
+            <field name="altitude">233</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Australia/Perth</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bme" model="tt.destinations">
+            <field name="name">Broome</field>
+            <field name="code">BME</field>
+            <field name="icao">YPBR</field>
+            <field name="city">Broome</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-17.8</field>
+            <field name="longitude">122.2</field>
+            <field name="altitude">56</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Australia/Perth</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bqb" model="tt.destinations">
+            <field name="name">Brusselton</field>
+            <field name="code">BQB</field>
+            <field name="icao">YBLN</field>
+            <field name="city">Brusselton</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-33.687222</field>
+            <field name="longitude">115.400278</field>
+            <field name="altitude">55</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Australia/Perth</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bwb" model="tt.destinations">
+            <field name="name">Barrow Island Airport</field>
+            <field name="code">BWB</field>
+            <field name="icao">YBWX</field>
+            <field name="city">Barrow Island</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-20.798</field>
+            <field name="longitude">115.406</field>
+            <field name="altitude">25</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Australia/Perth</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cvq" model="tt.destinations">
+            <field name="name">Carnarvon Airport</field>
+            <field name="code">CVQ</field>
+            <field name="icao">YCAR</field>
+            <field name="city">Carnarvon</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-24.8806</field>
+            <field name="longitude">113.672</field>
+            <field name="altitude">13</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Australia/Perth</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_drb" model="tt.destinations">
+            <field name="name">Derby Airport</field>
+            <field name="code">DRB</field>
+            <field name="icao">YDBY</field>
+            <field name="city">Derby</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-17.39</field>
+            <field name="longitude">123.68</field>
+            <field name="altitude">26</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Australia/Perth</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_epr" model="tt.destinations">
+            <field name="name">Esperance Airport</field>
+            <field name="code">EPR</field>
+            <field name="icao">YESP</field>
+            <field name="city">Esperance</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-33.6844</field>
+            <field name="longitude">121.823</field>
+            <field name="altitude">470</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Australia/Perth</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_exm" model="tt.destinations">
+            <field name="name">Exmouth Airport</field>
+            <field name="code">EXM</field>
+            <field name="icao"></field>
+            <field name="city">Exmouth</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-21.933</field>
+            <field name="longitude">114.128</field>
+            <field name="altitude">50</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Australia/Perth</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fiz" model="tt.destinations">
+            <field name="name">Fitzroy Crossing Airport</field>
+            <field name="code">FIZ</field>
+            <field name="icao">YFTZ</field>
+            <field name="city">Fitzroy Crossing</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-18.178</field>
+            <field name="longitude">125.591</field>
+            <field name="altitude">374</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Australia/Perth</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_get" model="tt.destinations">
+            <field name="name">Geraldton Airport</field>
+            <field name="code">GET</field>
+            <field name="icao">YGEL</field>
+            <field name="city">Geraldton</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-28.7961</field>
+            <field name="longitude">114.707</field>
+            <field name="altitude">121</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Australia/Perth</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gyl" model="tt.destinations">
+            <field name="name">Argyle Airport</field>
+            <field name="code">GYL</field>
+            <field name="icao">YARG</field>
+            <field name="city">Argyle</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-16.6369</field>
+            <field name="longitude">128.451</field>
+            <field name="altitude">522</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Australia/Perth</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hcq" model="tt.destinations">
+            <field name="name">Halls Creek Airport</field>
+            <field name="code">HCQ</field>
+            <field name="icao">YHLC</field>
+            <field name="city">Halls Creek</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-18.233889</field>
+            <field name="longitude">127.669722</field>
+            <field name="altitude">1346</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Australia/Perth</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jad" model="tt.destinations">
+            <field name="name">Perth Jandakot</field>
+            <field name="code">JAD</field>
+            <field name="icao">YPJT</field>
+            <field name="city">Perth</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-32.0975</field>
+            <field name="longitude">115.881111</field>
+            <field name="altitude">99</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Australia/Perth</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kax" model="tt.destinations">
+            <field name="name">Kalbarri Airport</field>
+            <field name="code">KAX</field>
+            <field name="icao">YKBR</field>
+            <field name="city">Kalbarri</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-27.69</field>
+            <field name="longitude">114.262</field>
+            <field name="altitude">157</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Australia/Perth</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kfe" model="tt.destinations">
+            <field name="name">Dave Forest Airport</field>
+            <field name="code">KFE</field>
+            <field name="icao">YFDF</field>
+            <field name="city">Cloudbreak</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-22.291945</field>
+            <field name="longitude">119.437225</field>
+            <field name="altitude">1555</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Australia/Perth</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kgi" model="tt.destinations">
+            <field name="name">Kalgoorlie Boulder</field>
+            <field name="code">KGI</field>
+            <field name="icao">YPKG</field>
+            <field name="city">Kalgoorlie</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-30.789444</field>
+            <field name="longitude">121.461667</field>
+            <field name="altitude">1203</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Australia/Perth</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_knx" model="tt.destinations">
+            <field name="name">Kununurra</field>
+            <field name="code">KNX</field>
+            <field name="icao">YPKU</field>
+            <field name="city">Kununurra</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-15.778056</field>
+            <field name="longitude">128.7075</field>
+            <field name="altitude">145</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Australia/Perth</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kta" model="tt.destinations">
+            <field name="name">Karratha</field>
+            <field name="code">KTA</field>
+            <field name="icao">YPKA</field>
+            <field name="city">Karratha</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-20.712222</field>
+            <field name="longitude">116.773333</field>
+            <field name="altitude">29</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Australia/Perth</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lea" model="tt.destinations">
+            <field name="name">Learmonth</field>
+            <field name="code">LEA</field>
+            <field name="icao">YPLM</field>
+            <field name="city">Learmonth</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-22.235556</field>
+            <field name="longitude">114.088611</field>
+            <field name="altitude">19</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Australia/Perth</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            

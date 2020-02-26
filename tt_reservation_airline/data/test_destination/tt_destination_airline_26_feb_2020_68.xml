@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_zum" model="tt.destinations">
+            <field name="name">Churchill Falls Airport</field>
+            <field name="code">ZUM</field>
+            <field name="icao">CZUM</field>
+            <field name="city">Churchill Falls</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">53.5619</field>
+            <field name="longitude">-64.1064</field>
+            <field name="altitude">1442</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">America/Halifax</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zun" model="tt.destinations">
+            <field name="name">Black Rock</field>
+            <field name="code">ZUN</field>
+            <field name="icao">KZUN</field>
+            <field name="city">Zuni Pueblo</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.083228</field>
+            <field name="longitude">-108.791778</field>
+            <field name="altitude">6454</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Denver</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zve" model="tt.destinations">
+            <field name="name">New Haven Rail Station</field>
+            <field name="code">ZVE</field>
+            <field name="icao"></field>
+            <field name="city">New Haven</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.298669</field>
+            <field name="longitude">-72.925992</field>
+            <field name="altitude">7</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zwi" model="tt.destinations">
+            <field name="name">Wilmington Amtrak Station</field>
+            <field name="code">ZWI</field>
+            <field name="icao"></field>
+            <field name="city">Wilmington</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.736667</field>
+            <field name="longitude">-75.551667</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zwl" model="tt.destinations">
+            <field name="name">Wollaston Lake Airport</field>
+            <field name="code">ZWL</field>
+            <field name="icao">CZWL</field>
+            <field name="city">Wollaston Lake</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">58.1069</field>
+            <field name="longitude">-103.172</field>
+            <field name="altitude">1360</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Regina</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zwr" model="tt.destinations">
+            <field name="name">Kota Kinabalu Airport</field>
+            <field name="code">ZWR</field>
+            <field name="icao"></field>
+            <field name="city">Kota Kinabalu</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">11.1111</field>
+            <field name="longitude">11.1111</field>
+            <field name="altitude">1</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Africa/Lagos</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zwu" model="tt.destinations">
+            <field name="name">Washington Union Station</field>
+            <field name="code">ZWU</field>
+            <field name="icao"></field>
+            <field name="city">Washington</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.89746</field>
+            <field name="longitude">-77.00643</field>
+            <field name="altitude">76</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zxb" model="tt.destinations">
+            <field name="name">Jan Mayensfield</field>
+            <field name="code">ZXB</field>
+            <field name="icao">ENJA</field>
+            <field name="city">Jan Mayen</field>
+            <field name="country_id" ref="base.no"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">70.961111</field>
+            <field name="longitude">-8.575833</field>
+            <field name="altitude">33</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Arctic/Longyearbyen</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zyp" model="tt.destinations">
+            <field name="name">Penn Station</field>
+            <field name="code">ZYP</field>
+            <field name="icao"></field>
+            <field name="city">New York</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.7505</field>
+            <field name="longitude">-73.9935</field>
+            <field name="altitude">35</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zzu" model="tt.destinations">
+            <field name="name">Mzuzu</field>
+            <field name="code">ZZU</field>
+            <field name="icao">FWUU</field>
+            <field name="city">Mzuzu</field>
+            <field name="country_id" ref="base.mw"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-11.44475</field>
+            <field name="longitude">34.011776</field>
+            <field name="altitude">4115</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Africa/Blantyre</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pvg" model="tt.destinations">
+            <field name="name">Pudong</field>
+            <field name="code">PVG</field>
+            <field name="icao">ZSPD</field>
+            <field name="city">Shanghai</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">31.143378</field>
+            <field name="longitude">121.805214</field>
+            <field name="altitude">13</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pzi" model="tt.destinations">
+            <field name="name">Panzhihua</field>
+            <field name="code">PZI</field>
+            <field name="icao">ZUZH</field>
+            <field name="city">Panzhihua</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">26.54</field>
+            <field name="longitude">101.799</field>
+            <field name="altitude">9186</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rkz" model="tt.destinations">
+            <field name="name">Shigatse Peace Airport</field>
+            <field name="code">RKZ</field>
+            <field name="icao">ZURK</field>
+            <field name="city">Shigatse</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">29.351667</field>
+            <field name="longitude">89.306944</field>
+            <field name="altitude">12408</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rlk" model="tt.destinations">
+            <field name="name">Bayannur</field>
+            <field name="code">RLK</field>
+            <field name="icao"></field>
+            <field name="city">Bayannur</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.926389</field>
+            <field name="longitude">107.738889</field>
+            <field name="altitude">3389</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sha" model="tt.destinations">
+            <field name="name">Hongqiao Intl</field>
+            <field name="code">SHA</field>
+            <field name="icao">ZSSS</field>
+            <field name="city">Shanghai</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">31.197875</field>
+            <field name="longitude">121.336319</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_she" model="tt.destinations">
+            <field name="name">Shenyang Taoxian International Airport</field>
+            <field name="code">SHE</field>
+            <field name="icao">ZYTX</field>
+            <field name="city">Shenyang</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.3824</field>
+            <field name="longitude">123.2901</field>
+            <field name="altitude">198</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_shp" model="tt.destinations">
+            <field name="name">Shanhaiguan Airport</field>
+            <field name="code">SHP</field>
+            <field name="icao">ZBSH</field>
+            <field name="city">Qinhuangdao</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.9681</field>
+            <field name="longitude">119.731</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sia" model="tt.destinations">
+            <field name="name">Xi\\'An Xiguan</field>
+            <field name="code">SIA</field>
+            <field name="icao">ZLSN</field>
+            <field name="city">Xi\\'AN</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">34.3767</field>
+            <field name="longitude">109.12</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sjw" model="tt.destinations">
+            <field name="name">Shijiazhuang Daguocun International Airport</field>
+            <field name="code">SJW</field>
+            <field name="icao">ZBSJ</field>
+            <field name="city">Shijiazhuang</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.280686</field>
+            <field name="longitude">114.6973</field>
+            <field name="altitude">233</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_swa" model="tt.destinations">
+            <field name="name">Wai Sha Airport</field>
+            <field name="code">SWA</field>
+            <field name="icao">ZGOW</field>
+            <field name="city">Shantou</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">23.4</field>
+            <field name="longitude">116.683</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sym" model="tt.destinations">
+            <field name="name">Simao Airport</field>
+            <field name="code">SYM</field>
+            <field name="icao">ZPSM</field>
+            <field name="city">Simao</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">22.7933</field>
+            <field name="longitude">100.959</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_syx" model="tt.destinations">
+            <field name="name">Phoenix International</field>
+            <field name="code">SYX</field>
+            <field name="icao">ZJSY</field>
+            <field name="city">Sanya</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">18.302897</field>
+            <field name="longitude">109.412272</field>
+            <field name="altitude">92</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_szx" model="tt.destinations">
+            <field name="name">Baoan Intl</field>
+            <field name="code">SZX</field>
+            <field name="icao">ZGSZ</field>
+            <field name="city">Shenzhen</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">22.639258</field>
+            <field name="longitude">113.810664</field>
+            <field name="altitude">13</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tao" model="tt.destinations">
+            <field name="name">Liuting</field>
+            <field name="code">TAO</field>
+            <field name="icao">ZSQD</field>
+            <field name="city">Qingdao</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.266108</field>
+            <field name="longitude">120.374436</field>
+            <field name="altitude">33</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tcg" model="tt.destinations">
+            <field name="name">Tacheng Airport</field>
+            <field name="code">TCG</field>
+            <field name="icao">ZWTC</field>
+            <field name="city">Tacheng</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.6725</field>
+            <field name="longitude">83.3408</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tcz" model="tt.destinations">
+            <field name="name">Tengchong Tuofeng Airport</field>
+            <field name="code">TCZ</field>
+            <field name="icao">ZUTC</field>
+            <field name="city">Tengchong</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">24.938651</field>
+            <field name="longitude">98.483591</field>
+            <field name="altitude">5500</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ten" model="tt.destinations">
+            <field name="name">Tongren</field>
+            <field name="code">TEN</field>
+            <field name="icao">ZUTR</field>
+            <field name="city">Tongren</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">27.884</field>
+            <field name="longitude">109.31</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tgo" model="tt.destinations">
+            <field name="name">Tongliao Airport</field>
+            <field name="code">TGO</field>
+            <field name="icao">ZBTL</field>
+            <field name="city">Tongliao</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.5567</field>
+            <field name="longitude">122.2</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_thq" model="tt.destinations">
+            <field name="name">Tianshui Airport</field>
+            <field name="code">THQ</field>
+            <field name="icao">ZLTS</field>
+            <field name="city">Tianshui</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">34.333</field>
+            <field name="longitude">105.514</field>
+            <field name="altitude">9186</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tlq" model="tt.destinations">
+            <field name="name">Turpan</field>
+            <field name="code">TLQ</field>
+            <field name="icao">ZWTP</field>
+            <field name="city">Turpan</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">42.942328</field>
+            <field name="longitude">89.185877</field>
+            <field name="altitude">20</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tna" model="tt.destinations">
+            <field name="name">Jinan</field>
+            <field name="code">TNA</field>
+            <field name="icao">ZSJN</field>
+            <field name="city">Jinan</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.857214</field>
+            <field name="longitude">117.215992</field>
+            <field name="altitude">76</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tsn" model="tt.destinations">
+            <field name="name">Binhai</field>
+            <field name="code">TSN</field>
+            <field name="icao">ZBTJ</field>
+            <field name="city">Tianjin</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.124353</field>
+            <field name="longitude">117.346183</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tvs" model="tt.destinations">
+            <field name="name">Sannvhe</field>
+            <field name="code">TVS</field>
+            <field name="icao">ZBSN</field>
+            <field name="city">Tangshan</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.717444</field>
+            <field name="longitude">118.002389</field>
+            <field name="altitude">25</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_txn" model="tt.destinations">
+            <field name="name">Tunxi International Airport</field>
+            <field name="code">TXN</field>
+            <field name="icao">ZSTX</field>
+            <field name="city">Huangshan</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">29.7333</field>
+            <field name="longitude">118.256</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tyn" model="tt.destinations">
+            <field name="name">Wusu</field>
+            <field name="code">TYN</field>
+            <field name="icao">ZBYN</field>
+            <field name="city">Taiyuan</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.746897</field>
+            <field name="longitude">112.628428</field>
+            <field name="altitude">2575</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_urc" model="tt.destinations">
+            <field name="name">Diwopu</field>
+            <field name="code">URC</field>
+            <field name="icao">ZWWW</field>
+            <field name="city">Urumqi</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.907106</field>
+            <field name="longitude">87.474244</field>
+            <field name="altitude">2125</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_uyn" model="tt.destinations">
+            <field name="name">Yulin Airport</field>
+            <field name="code">UYN</field>
+            <field name="icao">ZLYL</field>
+            <field name="city">Yulin</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.2692</field>
+            <field name="longitude">109.731</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wef" model="tt.destinations">
+            <field name="name">Weifang Airport</field>
+            <field name="code">WEF</field>
+            <field name="icao">ZSWF</field>
+            <field name="city">Weifang</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.6467</field>
+            <field name="longitude">119.119</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_weh" model="tt.destinations">
+            <field name="name">Weihai Airport</field>
+            <field name="code">WEH</field>
+            <field name="icao">ZSWH</field>
+            <field name="city">Weihai</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.1871</field>
+            <field name="longitude">122.229</field>
+            <field name="altitude">145</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wnh" model="tt.destinations">
+            <field name="name">Wenshan Airport</field>
+            <field name="code">WNH</field>
+            <field name="icao"></field>
+            <field name="city">Wenshan</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">23.375833</field>
+            <field name="longitude">104.243056</field>
+            <field name="altitude">1000</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wnz" model="tt.destinations">
+            <field name="name">Wenzhou Yongqiang Airport</field>
+            <field name="code">WNZ</field>
+            <field name="icao">ZSWZ</field>
+            <field name="city">Wenzhou</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">27.9122</field>
+            <field name="longitude">120.852</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wua" model="tt.destinations">
+            <field name="name">Wuhai</field>
+            <field name="code">WUA</field>
+            <field name="icao">ZBUH</field>
+            <field name="city">Wuhai</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.794444</field>
+            <field name="longitude">106.799444</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wuh" model="tt.destinations">
+            <field name="name">Tianhe</field>
+            <field name="code">WUH</field>
+            <field name="icao">ZHHH</field>
+            <field name="city">Wuhan</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">30.783758</field>
+            <field name="longitude">114.2081</field>
+            <field name="altitude">113</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wus" model="tt.destinations">
+            <field name="name">Nanping Wuyishan Airport</field>
+            <field name="code">WUS</field>
+            <field name="icao">ZSWY</field>
+            <field name="city">Wuyishan</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">27.7019</field>
+            <field name="longitude">118.001</field>
+            <field name="altitude">614</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wux" model="tt.destinations">
+            <field name="name">Wuxi Airport</field>
+            <field name="code">WUX</field>
+            <field name="icao">ZSWX</field>
+            <field name="city">Wuxi</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">31.4944</field>
+            <field name="longitude">120.429</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wuz" model="tt.destinations">
+            <field name="name">Changzhoudao Airport</field>
+            <field name="code">WUZ</field>
+            <field name="icao">ZGWZ</field>
+            <field name="city">Wuzhou</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">23.4567</field>
+            <field name="longitude">111.248</field>
+            <field name="altitude">89</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wxn" model="tt.destinations">
+            <field name="name">Wanxian Airport</field>
+            <field name="code">WXN</field>
+            <field name="icao">ZUWX</field>
+            <field name="city">Wanxian</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">30.8361</field>
+            <field name="longitude">108.406</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_xfn" model="tt.destinations">
+            <field name="name">Xiangfan Airport</field>
+            <field name="code">XFN</field>
+            <field name="icao">ZHXF</field>
+            <field name="city">Xiangfan</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">32.1506</field>
+            <field name="longitude">112.291</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_xic" model="tt.destinations">
+            <field name="name">Qingshan</field>
+            <field name="code">XIC</field>
+            <field name="icao">ZUXC</field>
+            <field name="city">Xichang</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">27.989083</field>
+            <field name="longitude">102.184361</field>
+            <field name="altitude">5112</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_xil" model="tt.destinations">
+            <field name="name">Xilinhot Airport</field>
+            <field name="code">XIL</field>
+            <field name="icao">ZBXH</field>
+            <field name="city">Xilinhot</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.9156</field>
+            <field name="longitude">115.964</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            

@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_sdg" model="tt.destinations">
+            <field name="name">Sanandaj</field>
+            <field name="code">SDG</field>
+            <field name="icao">OICS</field>
+            <field name="city">Sanandaj</field>
+            <field name="country_id" ref="base.ir"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.245856</field>
+            <field name="longitude">47.009247</field>
+            <field name="altitude">4522</field>
+            <field name="timezone_hour">3.5</field>
+            <field name="tz">Asia/Tehran</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sry" model="tt.destinations">
+            <field name="name">Sari Dasht E Naz Airport</field>
+            <field name="code">SRY</field>
+            <field name="icao">OINZ</field>
+            <field name="city">Dasht-e-naz</field>
+            <field name="country_id" ref="base.ir"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.635833</field>
+            <field name="longitude">53.193611</field>
+            <field name="altitude">35</field>
+            <field name="timezone_hour">3.5</field>
+            <field name="tz">Asia/Tehran</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_syz" model="tt.destinations">
+            <field name="name">Shiraz Shahid Dastghaib Intl</field>
+            <field name="code">SYZ</field>
+            <field name="icao">OISS</field>
+            <field name="city">Shiraz</field>
+            <field name="country_id" ref="base.ir"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">29.539242</field>
+            <field name="longitude">52.589786</field>
+            <field name="altitude">4920</field>
+            <field name="timezone_hour">3.5</field>
+            <field name="tz">Asia/Tehran</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tbz" model="tt.destinations">
+            <field name="name">Tabriz Intl</field>
+            <field name="code">TBZ</field>
+            <field name="icao">OITT</field>
+            <field name="city">Tabriz</field>
+            <field name="country_id" ref="base.ir"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.133889</field>
+            <field name="longitude">46.235</field>
+            <field name="altitude">4459</field>
+            <field name="timezone_hour">3.5</field>
+            <field name="tz">Asia/Tehran</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_thr" model="tt.destinations">
+            <field name="name">Mehrabad Intl</field>
+            <field name="code">THR</field>
+            <field name="icao">OIII</field>
+            <field name="city">Teheran</field>
+            <field name="country_id" ref="base.ir"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.689167</field>
+            <field name="longitude">51.313416</field>
+            <field name="altitude">3962</field>
+            <field name="timezone_hour">3.5</field>
+            <field name="tz">Asia/Tehran</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_xbj" model="tt.destinations">
+            <field name="name">Birjand</field>
+            <field name="code">XBJ</field>
+            <field name="icao">OIMB</field>
+            <field name="city">Birjand</field>
+            <field name="country_id" ref="base.ir"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">32.898056</field>
+            <field name="longitude">59.266111</field>
+            <field name="altitude">4952</field>
+            <field name="timezone_hour">3.5</field>
+            <field name="tz">Asia/Tehran</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_yes" model="tt.destinations">
+            <field name="name">Yasuj Airport</field>
+            <field name="code">YES</field>
+            <field name="icao">OISY</field>
+            <field name="city">Yasuj</field>
+            <field name="country_id" ref="base.ir"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">30.700556</field>
+            <field name="longitude">51.545</field>
+            <field name="altitude">5939</field>
+            <field name="timezone_hour">3.5</field>
+            <field name="tz">Asia/Tehran</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zah" model="tt.destinations">
+            <field name="name">Zahedan Intl</field>
+            <field name="code">ZAH</field>
+            <field name="icao">OIZH</field>
+            <field name="city">Zahedan</field>
+            <field name="country_id" ref="base.ir"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">29.475686</field>
+            <field name="longitude">60.906189</field>
+            <field name="altitude">4564</field>
+            <field name="timezone_hour">3.5</field>
+            <field name="tz">Asia/Tehran</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zbr" model="tt.destinations">
+            <field name="name">Chah Bahar</field>
+            <field name="code">ZBR</field>
+            <field name="icao">OIZC</field>
+            <field name="city">Chah Bahar</field>
+            <field name="country_id" ref="base.ir"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">25.44335</field>
+            <field name="longitude">60.382114</field>
+            <field name="altitude">43</field>
+            <field name="timezone_hour">3.5</field>
+            <field name="tz">Asia/Tehran</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pbh" model="tt.destinations">
+            <field name="name">Paro</field>
+            <field name="code">PBH</field>
+            <field name="icao">VQPR</field>
+            <field name="city">Thimphu</field>
+            <field name="country_id" ref="base.bt"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">27.403192</field>
+            <field name="longitude">89.424606</field>
+            <field name="altitude">7332</field>
+            <field name="timezone_hour">6</field>
+            <field name="tz">Asia/Thimphu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_agj" model="tt.destinations">
+            <field name="name">Aguni Airport</field>
+            <field name="code">AGJ</field>
+            <field name="icao">RORA</field>
+            <field name="city">Aguni</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">26.592778</field>
+            <field name="longitude">127.240278</field>
+            <field name="altitude">38</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_akj" model="tt.destinations">
+            <field name="name">Asahikawa</field>
+            <field name="code">AKJ</field>
+            <field name="icao">RJEC</field>
+            <field name="city">Asahikawa</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.670833</field>
+            <field name="longitude">142.4475</field>
+            <field name="altitude">721</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_aoj" model="tt.destinations">
+            <field name="name">Aomori</field>
+            <field name="code">AOJ</field>
+            <field name="icao">RJSA</field>
+            <field name="city">Aomori</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.734722</field>
+            <field name="longitude">140.690833</field>
+            <field name="altitude">664</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_asj" model="tt.destinations">
+            <field name="name">Amami</field>
+            <field name="code">ASJ</field>
+            <field name="icao">RJKA</field>
+            <field name="city">Amami</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">28.430633</field>
+            <field name="longitude">129.712542</field>
+            <field name="altitude">27</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_axj" model="tt.destinations">
+            <field name="name">Amakusa Airfield</field>
+            <field name="code">AXJ</field>
+            <field name="icao">RJDA</field>
+            <field name="city">Amakusa</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">32.482222</field>
+            <field name="longitude">130.158889</field>
+            <field name="altitude">340</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_axt" model="tt.destinations">
+            <field name="name">Akita</field>
+            <field name="code">AXT</field>
+            <field name="icao">RJSK</field>
+            <field name="city">Akita</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.615556</field>
+            <field name="longitude">140.218611</field>
+            <field name="altitude">313</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bpu" model="tt.destinations">
+            <field name="name">Beppu Airport</field>
+            <field name="code">BPU</field>
+            <field name="icao"></field>
+            <field name="city">Beppu</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">33.3</field>
+            <field name="longitude">131.5333</field>
+            <field name="altitude">197</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cts" model="tt.destinations">
+            <field name="name">New Chitose</field>
+            <field name="code">CTS</field>
+            <field name="icao">RJCC</field>
+            <field name="city">Sapporo</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">42.7752</field>
+            <field name="longitude">141.692283</field>
+            <field name="altitude">82</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dna" model="tt.destinations">
+            <field name="name">Kadena Ab</field>
+            <field name="code">DNA</field>
+            <field name="icao">RODN</field>
+            <field name="city">Kadena</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">26.355612</field>
+            <field name="longitude">127.767633</field>
+            <field name="altitude">143</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fks" model="tt.destinations">
+            <field name="name">Fukushima Airport</field>
+            <field name="code">FKS</field>
+            <field name="icao">RJSF</field>
+            <field name="city">Fukushima</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.2274</field>
+            <field name="longitude">140.431</field>
+            <field name="altitude">1221</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fsz" model="tt.destinations">
+            <field name="name">Mt. Fuji Shizuoka Airport</field>
+            <field name="code">FSZ</field>
+            <field name="icao">RJNS</field>
+            <field name="city">Shizuoka</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">34.796111</field>
+            <field name="longitude">138.189444</field>
+            <field name="altitude">433</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fuj" model="tt.destinations">
+            <field name="name">Fukue</field>
+            <field name="code">FUJ</field>
+            <field name="icao">RJFE</field>
+            <field name="city">Fukue</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">32.666269</field>
+            <field name="longitude">128.832808</field>
+            <field name="altitude">273</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fuk" model="tt.destinations">
+            <field name="name">Fukuoka</field>
+            <field name="code">FUK</field>
+            <field name="icao">RJFF</field>
+            <field name="city">Fukuoka</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">33.585942</field>
+            <field name="longitude">130.450686</field>
+            <field name="altitude">32</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gaj" model="tt.destinations">
+            <field name="name">Yamagata</field>
+            <field name="code">GAJ</field>
+            <field name="icao">RJSC</field>
+            <field name="city">Yamagata</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.411894</field>
+            <field name="longitude">140.371331</field>
+            <field name="altitude">353</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hac" model="tt.destinations">
+            <field name="name">Hachijojima</field>
+            <field name="code">HAC</field>
+            <field name="icao">RJTH</field>
+            <field name="city">Hachijojima</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">33.115</field>
+            <field name="longitude">139.785833</field>
+            <field name="altitude">303</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hij" model="tt.destinations">
+            <field name="name">Hiroshima</field>
+            <field name="code">HIJ</field>
+            <field name="icao">RJOA</field>
+            <field name="city">Hiroshima</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">34.436111</field>
+            <field name="longitude">132.919444</field>
+            <field name="altitude">1088</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hiw" model="tt.destinations">
+            <field name="name">Hiroshima-Nishi</field>
+            <field name="code">HIW</field>
+            <field name="icao">RJBH</field>
+            <field name="city">Hiroshima</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">34.367</field>
+            <field name="longitude">132.408</field>
+            <field name="altitude">9</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hkd" model="tt.destinations">
+            <field name="name">Hakodate</field>
+            <field name="code">HKD</field>
+            <field name="icao">RJCH</field>
+            <field name="city">Hakodate</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.77</field>
+            <field name="longitude">140.821944</field>
+            <field name="altitude">151</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hna" model="tt.destinations">
+            <field name="name">Hanamaki</field>
+            <field name="code">HNA</field>
+            <field name="icao">RJSI</field>
+            <field name="city">Hanamaki</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.428611</field>
+            <field name="longitude">141.135278</field>
+            <field name="altitude">297</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hnd" model="tt.destinations">
+            <field name="name">Tokyo Intl</field>
+            <field name="code">HND</field>
+            <field name="icao">RJTT</field>
+            <field name="city">Tokyo</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.552258</field>
+            <field name="longitude">139.779694</field>
+            <field name="altitude">35</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hsg" model="tt.destinations">
+            <field name="name">Saga Airport</field>
+            <field name="code">HSG</field>
+            <field name="icao">RJFS</field>
+            <field name="city">Saga</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">33.1497</field>
+            <field name="longitude">130.302</field>
+            <field name="altitude">6</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ibr" model="tt.destinations">
+            <field name="name">Hyakuri</field>
+            <field name="code">IBR</field>
+            <field name="icao">RJAH</field>
+            <field name="city">Ibaraki</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.181083</field>
+            <field name="longitude">140.415444</field>
+            <field name="altitude">105</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_iki" model="tt.destinations">
+            <field name="name">Iki</field>
+            <field name="code">IKI</field>
+            <field name="icao">RJDB</field>
+            <field name="city">Iki</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">33.749027</field>
+            <field name="longitude">129.785417</field>
+            <field name="altitude">41</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_isg" model="tt.destinations">
+            <field name="name">Ishigaki</field>
+            <field name="code">ISG</field>
+            <field name="icao">ROIG</field>
+            <field name="city">Ishigaki</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">24.344525</field>
+            <field name="longitude">124.186983</field>
+            <field name="altitude">93</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_itm" model="tt.destinations">
+            <field name="name">Osaka Intl</field>
+            <field name="code">ITM</field>
+            <field name="icao">RJOO</field>
+            <field name="city">Osaka</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">34.785528</field>
+            <field name="longitude">135.438222</field>
+            <field name="altitude">50</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_iwj" model="tt.destinations">
+            <field name="name">Iwami Airport</field>
+            <field name="code">IWJ</field>
+            <field name="icao">RJOW</field>
+            <field name="city">Iwami</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">34.6764</field>
+            <field name="longitude">131.79</field>
+            <field name="altitude">184</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_iwo" model="tt.destinations">
+            <field name="name">Iwo Jima</field>
+            <field name="code">IWO</field>
+            <field name="icao">RJAW</field>
+            <field name="city">Iwojima</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">24.784</field>
+            <field name="longitude">141.322722</field>
+            <field name="altitude">384</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_izo" model="tt.destinations">
+            <field name="name">Izumo</field>
+            <field name="code">IZO</field>
+            <field name="icao">RJOC</field>
+            <field name="city">Izumo</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.413611</field>
+            <field name="longitude">132.89</field>
+            <field name="altitude">15</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kcz" model="tt.destinations">
+            <field name="name">Kochi</field>
+            <field name="code">KCZ</field>
+            <field name="icao">RJOK</field>
+            <field name="city">Kochi</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">33.546111</field>
+            <field name="longitude">133.669444</field>
+            <field name="altitude">42</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kij" model="tt.destinations">
+            <field name="name">Niigata</field>
+            <field name="code">KIJ</field>
+            <field name="icao">RJSN</field>
+            <field name="city">Niigata</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.5711</field>
+            <field name="longitude">139.0646</field>
+            <field name="altitude">1</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kix" model="tt.destinations">
+            <field name="name">Kansai</field>
+            <field name="code">KIX</field>
+            <field name="icao">RJBB</field>
+            <field name="city">Osaka</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">34.4347222</field>
+            <field name="longitude">135.244167</field>
+            <field name="altitude">49</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kjp" model="tt.destinations">
+            <field name="name">Kerama Airport</field>
+            <field name="code">KJP</field>
+            <field name="icao">ROKR</field>
+            <field name="city">Kerama</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">26.168333</field>
+            <field name="longitude">127.293333</field>
+            <field name="altitude">156</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kkj" model="tt.destinations">
+            <field name="name">New Kitakyushu</field>
+            <field name="code">KKJ</field>
+            <field name="icao">RJFR</field>
+            <field name="city">Kitakyushu</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">33.845942</field>
+            <field name="longitude">131.034689</field>
+            <field name="altitude">21</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kkx" model="tt.destinations">
+            <field name="name">Kikai Airport</field>
+            <field name="code">KKX</field>
+            <field name="icao">RJKI</field>
+            <field name="city">Kikai</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">28.321389</field>
+            <field name="longitude">129.928056</field>
+            <field name="altitude">15</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kmi" model="tt.destinations">
+            <field name="name">Miyazaki</field>
+            <field name="code">KMI</field>
+            <field name="icao">RJFM</field>
+            <field name="city">Miyazaki</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">31.877222</field>
+            <field name="longitude">131.448611</field>
+            <field name="altitude">20</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kmj" model="tt.destinations">
+            <field name="name">Kumamoto</field>
+            <field name="code">KMJ</field>
+            <field name="icao">RJFT</field>
+            <field name="city">Kumamoto</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">32.837319</field>
+            <field name="longitude">130.85505</field>
+            <field name="altitude">642</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kmq" model="tt.destinations">
+            <field name="name">Komatsu</field>
+            <field name="code">KMQ</field>
+            <field name="icao">RJNK</field>
+            <field name="city">Kanazawa</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.394611</field>
+            <field name="longitude">136.406544</field>
+            <field name="altitude">36</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_koj" model="tt.destinations">
+            <field name="name">Kagoshima</field>
+            <field name="code">KOJ</field>
+            <field name="icao">RJFK</field>
+            <field name="city">Kagoshima</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">31.803397</field>
+            <field name="longitude">130.719408</field>
+            <field name="altitude">906</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ktd" model="tt.destinations">
+            <field name="name">Kitadaito</field>
+            <field name="code">KTD</field>
+            <field name="icao">RORK</field>
+            <field name="city">Kitadaito</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">25.944722</field>
+            <field name="longitude">131.326944</field>
+            <field name="altitude">80</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kuh" model="tt.destinations">
+            <field name="name">Kushiro Airport</field>
+            <field name="code">KUH</field>
+            <field name="icao">RJCK</field>
+            <field name="city">Kushiro</field>
+            <field name="country_id" ref="base.jp"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.041</field>
+            <field name="longitude">144.193</field>
+            <field name="altitude">327</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Tokyo</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            

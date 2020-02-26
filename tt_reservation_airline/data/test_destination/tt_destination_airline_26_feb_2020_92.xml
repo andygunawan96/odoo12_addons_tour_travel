@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_ebj" model="tt.destinations">
+            <field name="name">Esbjerg</field>
+            <field name="code">EBJ</field>
+            <field name="icao">EKEB</field>
+            <field name="city">Esbjerg</field>
+            <field name="country_id" ref="base.dk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">55.525942</field>
+            <field name="longitude">8.553403</field>
+            <field name="altitude">97</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Copenhagen</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_krp" model="tt.destinations">
+            <field name="name">Karup</field>
+            <field name="code">KRP</field>
+            <field name="icao">EKKA</field>
+            <field name="city">Karup</field>
+            <field name="country_id" ref="base.dk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">56.297458</field>
+            <field name="longitude">9.124628</field>
+            <field name="altitude">170</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Copenhagen</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ode" model="tt.destinations">
+            <field name="name">Odense</field>
+            <field name="code">ODE</field>
+            <field name="icao">EKOD</field>
+            <field name="city">Odense</field>
+            <field name="country_id" ref="base.dk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">55.476664</field>
+            <field name="longitude">10.330933</field>
+            <field name="altitude">56</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Copenhagen</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rke" model="tt.destinations">
+            <field name="name">Roskilde</field>
+            <field name="code">RKE</field>
+            <field name="icao">EKRK</field>
+            <field name="city">Copenhagen</field>
+            <field name="country_id" ref="base.dk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">55.585567</field>
+            <field name="longitude">12.131428</field>
+            <field name="altitude">146</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Copenhagen</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rnn" model="tt.destinations">
+            <field name="name">Bornholm Ronne</field>
+            <field name="code">RNN</field>
+            <field name="icao">EKRN</field>
+            <field name="city">Ronne</field>
+            <field name="country_id" ref="base.dk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">55.063267</field>
+            <field name="longitude">14.759558</field>
+            <field name="altitude">52</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Copenhagen</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rod" model="tt.destinations">
+            <field name="name">Rodby Port</field>
+            <field name="code">ROD</field>
+            <field name="icao"></field>
+            <field name="city">Rodby</field>
+            <field name="country_id" ref="base.dk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">54.65</field>
+            <field name="longitude">11.35</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Copenhagen</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sgd" model="tt.destinations">
+            <field name="name">Sonderborg</field>
+            <field name="code">SGD</field>
+            <field name="icao">EKSB</field>
+            <field name="city">Soenderborg</field>
+            <field name="country_id" ref="base.dk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">54.964367</field>
+            <field name="longitude">9.791731</field>
+            <field name="altitude">24</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Copenhagen</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sks" model="tt.destinations">
+            <field name="name">Skrydstrup</field>
+            <field name="code">SKS</field>
+            <field name="icao">EKSP</field>
+            <field name="city">Skrydstrup</field>
+            <field name="country_id" ref="base.dk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">55.225553</field>
+            <field name="longitude">9.263931</field>
+            <field name="altitude">141</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Copenhagen</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sta" model="tt.destinations">
+            <field name="name">Stauning</field>
+            <field name="code">STA</field>
+            <field name="icao">EKVJ</field>
+            <field name="city">Stauning</field>
+            <field name="country_id" ref="base.dk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">55.990122</field>
+            <field name="longitude">8.353906</field>
+            <field name="altitude">17</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Copenhagen</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ted" model="tt.destinations">
+            <field name="name">Thisted</field>
+            <field name="code">TED</field>
+            <field name="icao">EKTS</field>
+            <field name="city">Thisted</field>
+            <field name="country_id" ref="base.dk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">57.0688</field>
+            <field name="longitude">8.705225</field>
+            <field name="altitude">23</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Copenhagen</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zgh" model="tt.destinations">
+            <field name="name">Central</field>
+            <field name="code">ZGH</field>
+            <field name="icao"></field>
+            <field name="city">Copenhagen</field>
+            <field name="country_id" ref="base.dk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">55.672778</field>
+            <field name="longitude">12.564444</field>
+            <field name="altitude">16</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Copenhagen</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_byt" model="tt.destinations">
+            <field name="name">Bantry Aerodrome</field>
+            <field name="code">BYT</field>
+            <field name="icao">EIBN</field>
+            <field name="city">Bantry</field>
+            <field name="country_id" ref="base.ie"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">51.668598</field>
+            <field name="longitude">-9.48417</field>
+            <field name="altitude">7</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/Dublin</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cfn" model="tt.destinations">
+            <field name="name">Donegal Airport</field>
+            <field name="code">CFN</field>
+            <field name="icao">EIDL</field>
+            <field name="city">Dongloe</field>
+            <field name="country_id" ref="base.ie"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">55.044192</field>
+            <field name="longitude">-8.341</field>
+            <field name="altitude">30</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/Dublin</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_che" model="tt.destinations">
+            <field name="name">Reeroe Airport</field>
+            <field name="code">CHE</field>
+            <field name="icao"></field>
+            <field name="city">Caherciveen</field>
+            <field name="country_id" ref="base.ie"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">51.933334</field>
+            <field name="longitude">-10.233333</field>
+            <field name="altitude">314</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/Dublin</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dub" model="tt.destinations">
+            <field name="name">Dublin</field>
+            <field name="code">DUB</field>
+            <field name="icao">EIDW</field>
+            <field name="city">Dublin</field>
+            <field name="country_id" ref="base.ie"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">53.421333</field>
+            <field name="longitude">-6.270075</field>
+            <field name="altitude">242</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/Dublin</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gwy" model="tt.destinations">
+            <field name="name">Galway</field>
+            <field name="code">GWY</field>
+            <field name="icao">EICM</field>
+            <field name="city">Galway</field>
+            <field name="country_id" ref="base.ie"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">53.300175</field>
+            <field name="longitude">-8.941592</field>
+            <field name="altitude">81</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/Dublin</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_iia" model="tt.destinations">
+            <field name="name">Inishmaan Aerodrome</field>
+            <field name="code">IIA</field>
+            <field name="icao">EIMN</field>
+            <field name="city">Inishmaan</field>
+            <field name="country_id" ref="base.ie"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">53.091944</field>
+            <field name="longitude">-9.57</field>
+            <field name="altitude">13</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/Dublin</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_inq" model="tt.destinations">
+            <field name="name">Inisheer</field>
+            <field name="code">INQ</field>
+            <field name="icao">EIIR</field>
+            <field name="city">Inisheer</field>
+            <field name="country_id" ref="base.ie"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">53.0647</field>
+            <field name="longitude">-9.5109</field>
+            <field name="altitude">40</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/Dublin</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ior" model="tt.destinations">
+            <field name="name">Inishmore Airport</field>
+            <field name="code">IOR</field>
+            <field name="icao">EIIM</field>
+            <field name="city">Inis Mor</field>
+            <field name="country_id" ref="base.ie"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">53.1067</field>
+            <field name="longitude">-9.65361</field>
+            <field name="altitude">24</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/Dublin</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kir" model="tt.destinations">
+            <field name="name">Kerry</field>
+            <field name="code">KIR</field>
+            <field name="icao">EIKY</field>
+            <field name="city">Kerry</field>
+            <field name="country_id" ref="base.ie"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">52.180878</field>
+            <field name="longitude">-9.523783</field>
+            <field name="altitude">112</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/Dublin</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nnr" model="tt.destinations">
+            <field name="name">Connemara Regional Airport</field>
+            <field name="code">NNR</field>
+            <field name="icao">EICA</field>
+            <field name="city">Indreabhan</field>
+            <field name="country_id" ref="base.ie"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">53.2303</field>
+            <field name="longitude">-9.46778</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/Dublin</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_noc" model="tt.destinations">
+            <field name="name">Ireland West Knock</field>
+            <field name="code">NOC</field>
+            <field name="icao">EIKN</field>
+            <field name="city">Connaught</field>
+            <field name="country_id" ref="base.ie"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">53.910297</field>
+            <field name="longitude">-8.818492</field>
+            <field name="altitude">665</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/Dublin</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ork" model="tt.destinations">
+            <field name="name">Cork</field>
+            <field name="code">ORK</field>
+            <field name="icao">EICK</field>
+            <field name="city">Cork</field>
+            <field name="country_id" ref="base.ie"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">51.841269</field>
+            <field name="longitude">-8.491111</field>
+            <field name="altitude">502</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/Dublin</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_snn" model="tt.destinations">
+            <field name="name">Shannon</field>
+            <field name="code">SNN</field>
+            <field name="icao">EINN</field>
+            <field name="city">Shannon</field>
+            <field name="country_id" ref="base.ie"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">52.701978</field>
+            <field name="longitude">-8.924817</field>
+            <field name="altitude">46</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/Dublin</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sxl" model="tt.destinations">
+            <field name="name">Sligo</field>
+            <field name="code">SXL</field>
+            <field name="icao">EISG</field>
+            <field name="city">Sligo</field>
+            <field name="country_id" ref="base.ie"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">54.280214</field>
+            <field name="longitude">-8.599206</field>
+            <field name="altitude">11</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/Dublin</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wat" model="tt.destinations">
+            <field name="name">Waterford</field>
+            <field name="code">WAT</field>
+            <field name="icao">EIWF</field>
+            <field name="city">Waterford</field>
+            <field name="country_id" ref="base.ie"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">52.1872</field>
+            <field name="longitude">-7.086964</field>
+            <field name="altitude">119</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/Dublin</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gib" model="tt.destinations">
+            <field name="name">Gibraltar</field>
+            <field name="code">GIB</field>
+            <field name="icao">LXGB</field>
+            <field name="city">Gibraltar</field>
+            <field name="country_id" ref="base.gi"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.151219</field>
+            <field name="longitude">-5.349664</field>
+            <field name="altitude">15</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Gibraltar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_aci" model="tt.destinations">
+            <field name="name">Alderney</field>
+            <field name="code">ACI</field>
+            <field name="icao">EGJA</field>
+            <field name="city">Alderney</field>
+            <field name="country_id" ref="base.gg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">49.706111</field>
+            <field name="longitude">-2.214722</field>
+            <field name="altitude">290</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/Guernsey</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gci" model="tt.destinations">
+            <field name="name">Guernsey</field>
+            <field name="code">GCI</field>
+            <field name="icao">EGJB</field>
+            <field name="city">Guernsey</field>
+            <field name="country_id" ref="base.gg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">49.434956</field>
+            <field name="longitude">-2.601969</field>
+            <field name="altitude">336</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/Guernsey</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_enf" model="tt.destinations">
+            <field name="name">Enontekio</field>
+            <field name="code">ENF</field>
+            <field name="icao">EFET</field>
+            <field name="city">Enontekio</field>
+            <field name="country_id" ref="base.fi"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">68.362586</field>
+            <field name="longitude">23.424322</field>
+            <field name="altitude">1005</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Helsinki</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hel" model="tt.destinations">
+            <field name="name">Helsinki Vantaa</field>
+            <field name="code">HEL</field>
+            <field name="icao">EFHK</field>
+            <field name="city">Helsinki</field>
+            <field name="country_id" ref="base.fi"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">60.317222</field>
+            <field name="longitude">24.963333</field>
+            <field name="altitude">179</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Helsinki</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hem" model="tt.destinations">
+            <field name="name">Helsinki Malmi</field>
+            <field name="code">HEM</field>
+            <field name="icao">EFHF</field>
+            <field name="city">Helsinki</field>
+            <field name="country_id" ref="base.fi"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">60.254558</field>
+            <field name="longitude">25.042828</field>
+            <field name="altitude">57</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Helsinki</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hen" model="tt.destinations">
+            <field name="name">Hernesaari Heliport</field>
+            <field name="code">HEN</field>
+            <field name="icao">EFHE</field>
+            <field name="city">Helsinki</field>
+            <field name="country_id" ref="base.fi"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">60.1478</field>
+            <field name="longitude">24.9244</field>
+            <field name="altitude">7</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Helsinki</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hyv" model="tt.destinations">
+            <field name="name">Hyvinkaa</field>
+            <field name="code">HYV</field>
+            <field name="icao">EFHV</field>
+            <field name="city">Hyvinkaa</field>
+            <field name="country_id" ref="base.fi"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">60.654444</field>
+            <field name="longitude">24.881111</field>
+            <field name="altitude">430</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Helsinki</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ivl" model="tt.destinations">
+            <field name="name">Ivalo</field>
+            <field name="code">IVL</field>
+            <field name="icao">EFIV</field>
+            <field name="city">Ivalo</field>
+            <field name="country_id" ref="base.fi"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">68.607269</field>
+            <field name="longitude">27.405328</field>
+            <field name="altitude">481</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Helsinki</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_joe" model="tt.destinations">
+            <field name="name">Joensuu</field>
+            <field name="code">JOE</field>
+            <field name="icao">EFJO</field>
+            <field name="city">Joensuu</field>
+            <field name="country_id" ref="base.fi"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">62.662906</field>
+            <field name="longitude">29.60755</field>
+            <field name="altitude">398</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Helsinki</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jyv" model="tt.destinations">
+            <field name="name">Jyvaskyla</field>
+            <field name="code">JYV</field>
+            <field name="icao">EFJY</field>
+            <field name="city">Jyvaskyla</field>
+            <field name="country_id" ref="base.fi"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">62.399453</field>
+            <field name="longitude">25.678253</field>
+            <field name="altitude">459</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Helsinki</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kaj" model="tt.destinations">
+            <field name="name">Kajaani</field>
+            <field name="code">KAJ</field>
+            <field name="icao">EFKI</field>
+            <field name="city">Kajaani</field>
+            <field name="country_id" ref="base.fi"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">64.285472</field>
+            <field name="longitude">27.692414</field>
+            <field name="altitude">483</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Helsinki</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kao" model="tt.destinations">
+            <field name="name">Kuusamo</field>
+            <field name="code">KAO</field>
+            <field name="icao">EFKS</field>
+            <field name="city">Kuusamo</field>
+            <field name="country_id" ref="base.fi"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">65.987575</field>
+            <field name="longitude">29.239381</field>
+            <field name="altitude">866</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Helsinki</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kau" model="tt.destinations">
+            <field name="name">Kauhava</field>
+            <field name="code">KAU</field>
+            <field name="icao">EFKA</field>
+            <field name="city">Kauhava</field>
+            <field name="country_id" ref="base.fi"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">63.127078</field>
+            <field name="longitude">23.051442</field>
+            <field name="altitude">151</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Helsinki</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kem" model="tt.destinations">
+            <field name="name">Kemi Tornio</field>
+            <field name="code">KEM</field>
+            <field name="icao">EFKE</field>
+            <field name="city">Kemi</field>
+            <field name="country_id" ref="base.fi"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">65.781889</field>
+            <field name="longitude">24.5991</field>
+            <field name="altitude">61</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Helsinki</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kev" model="tt.destinations">
+            <field name="name">Halli</field>
+            <field name="code">KEV</field>
+            <field name="icao">EFHA</field>
+            <field name="city">Halli</field>
+            <field name="country_id" ref="base.fi"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">61.85605</field>
+            <field name="longitude">24.7866</field>
+            <field name="altitude">479</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Helsinki</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kok" model="tt.destinations">
+            <field name="name">Kruunupyy</field>
+            <field name="code">KOK</field>
+            <field name="icao">EFKK</field>
+            <field name="city">Kruunupyy</field>
+            <field name="country_id" ref="base.fi"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">63.721172</field>
+            <field name="longitude">23.143131</field>
+            <field name="altitude">84</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Helsinki</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ktt" model="tt.destinations">
+            <field name="name">Kittila</field>
+            <field name="code">KTT</field>
+            <field name="icao">EFKT</field>
+            <field name="city">Kittila</field>
+            <field name="country_id" ref="base.fi"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">67.701022</field>
+            <field name="longitude">24.84685</field>
+            <field name="altitude">644</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Helsinki</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kuo" model="tt.destinations">
+            <field name="name">Kuopio</field>
+            <field name="code">KUO</field>
+            <field name="icao">EFKU</field>
+            <field name="city">Kuopio</field>
+            <field name="country_id" ref="base.fi"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">63.00715</field>
+            <field name="longitude">27.797756</field>
+            <field name="altitude">323</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Helsinki</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lpp" model="tt.destinations">
+            <field name="name">Lappeenranta</field>
+            <field name="code">LPP</field>
+            <field name="icao">EFLP</field>
+            <field name="city">Lappeenranta</field>
+            <field name="country_id" ref="base.fi"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">61.044553</field>
+            <field name="longitude">28.144397</field>
+            <field name="altitude">349</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Helsinki</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mik" model="tt.destinations">
+            <field name="name">Mikkeli</field>
+            <field name="code">MIK</field>
+            <field name="icao">EFMI</field>
+            <field name="city">Mikkeli</field>
+            <field name="country_id" ref="base.fi"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">61.6866</field>
+            <field name="longitude">27.201794</field>
+            <field name="altitude">329</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Helsinki</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_oul" model="tt.destinations">
+            <field name="name">Oulu</field>
+            <field name="code">OUL</field>
+            <field name="icao">EFOU</field>
+            <field name="city">Oulu</field>
+            <field name="country_id" ref="base.fi"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">64.930061</field>
+            <field name="longitude">25.354564</field>
+            <field name="altitude">47</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Helsinki</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_por" model="tt.destinations">
+            <field name="name">Pori</field>
+            <field name="code">POR</field>
+            <field name="icao">EFPO</field>
+            <field name="city">Pori</field>
+            <field name="country_id" ref="base.fi"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">61.461686</field>
+            <field name="longitude">21.799983</field>
+            <field name="altitude">44</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Helsinki</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_qvy" model="tt.destinations">
+            <field name="name">Utti</field>
+            <field name="code">QVY</field>
+            <field name="icao">EFUT</field>
+            <field name="city">Utti</field>
+            <field name="country_id" ref="base.fi"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">60.896394</field>
+            <field name="longitude">26.938353</field>
+            <field name="altitude">339</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Helsinki</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            

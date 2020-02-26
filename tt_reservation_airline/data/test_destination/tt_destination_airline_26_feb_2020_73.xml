@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_odn" model="tt.destinations">
+            <field name="name">Long Seridan Airport</field>
+            <field name="code">ODN</field>
+            <field name="icao">WBGI</field>
+            <field name="city">Long Seridan</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">3.967</field>
+            <field name="longitude">115.05</field>
+            <field name="altitude">607</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pen" model="tt.destinations">
+            <field name="name">Penang Intl</field>
+            <field name="code">PEN</field>
+            <field name="icao">WMKP</field>
+            <field name="city">Penang</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">5.297139</field>
+            <field name="longitude">100.276864</field>
+            <field name="altitude">11</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pkg" model="tt.destinations">
+            <field name="name">Pulau Pangkor Airport</field>
+            <field name="code">PKG</field>
+            <field name="icao">WMPA</field>
+            <field name="city">Pangkor Island</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">4.24472</field>
+            <field name="longitude">100.553</field>
+            <field name="altitude">19</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rdn" model="tt.destinations">
+            <field name="name">Redang</field>
+            <field name="code">RDN</field>
+            <field name="icao">WMPR</field>
+            <field name="city">Redang</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">5.76528</field>
+            <field name="longitude">103.007</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sbw" model="tt.destinations">
+            <field name="name">Sibu</field>
+            <field name="code">SBW</field>
+            <field name="icao">WBGS</field>
+            <field name="city">Sibu</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">2.261603</field>
+            <field name="longitude">111.985322</field>
+            <field name="altitude">122</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sdk" model="tt.destinations">
+            <field name="name">Sandakan</field>
+            <field name="code">SDK</field>
+            <field name="icao">WBKS</field>
+            <field name="city">Sandakan</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">5.900897</field>
+            <field name="longitude">118.059486</field>
+            <field name="altitude">46</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_szb" model="tt.destinations">
+            <field name="name">Subang-Sultan Abdul Aziz Shah Intl</field>
+            <field name="code">SZB</field>
+            <field name="icao">WMSA</field>
+            <field name="city">Kuala Lumpur</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">3.130583</field>
+            <field name="longitude">101.549333</field>
+            <field name="altitude">90</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tgc" model="tt.destinations">
+            <field name="name">Tanjung Manis Airport</field>
+            <field name="code">TGC</field>
+            <field name="icao">WBTM</field>
+            <field name="city">Tanjung Manis</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">2.17784</field>
+            <field name="longitude">111.202</field>
+            <field name="altitude">15</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tgg" model="tt.destinations">
+            <field name="name">Sultan Mahmud</field>
+            <field name="code">TGG</field>
+            <field name="icao">WMKN</field>
+            <field name="city">Kuala Terengganu</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">5.382639</field>
+            <field name="longitude">103.10336</field>
+            <field name="altitude">21</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tmg" model="tt.destinations">
+            <field name="name">Tomanggong Airport</field>
+            <field name="code">TMG</field>
+            <field name="icao">WBKM</field>
+            <field name="city">Tomanggong</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">5.4</field>
+            <field name="longitude">118.65</field>
+            <field name="altitude">26</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tod" model="tt.destinations">
+            <field name="name">Pulau Tioman</field>
+            <field name="code">TOD</field>
+            <field name="icao">WMBT</field>
+            <field name="city">Tioman</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">2.818183</field>
+            <field name="longitude">104.160019</field>
+            <field name="altitude">15</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_twu" model="tt.destinations">
+            <field name="name">Tawau</field>
+            <field name="code">TWU</field>
+            <field name="icao">WBKW</field>
+            <field name="city">Tawau</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">4.313369</field>
+            <field name="longitude">118.121953</field>
+            <field name="altitude">57</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_xkl" model="tt.destinations">
+            <field name="name">Sentral</field>
+            <field name="code">XKL</field>
+            <field name="icao"></field>
+            <field name="city">Kuala Lumpur</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">3.134</field>
+            <field name="longitude">101.686</field>
+            <field name="altitude">126</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kwi" model="tt.destinations">
+            <field name="name">Kuwait Intl</field>
+            <field name="code">KWI</field>
+            <field name="icao">OKBK</field>
+            <field name="city">Kuwait</field>
+            <field name="country_id" ref="base.kw"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">29.226567</field>
+            <field name="longitude">47.968928</field>
+            <field name="altitude">206</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Asia/Kuwait</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mfm" model="tt.destinations">
+            <field name="name">Macau Intl</field>
+            <field name="code">MFM</field>
+            <field name="icao">VMMC</field>
+            <field name="city">Macau</field>
+            <field name="country_id" ref="base.mo"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">22.149556</field>
+            <field name="longitude">113.591558</field>
+            <field name="altitude">20</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Macau</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_xzm" model="tt.destinations">
+            <field name="name">Macau Ferry Pier</field>
+            <field name="code">XZM</field>
+            <field name="icao"></field>
+            <field name="city">Macau</field>
+            <field name="country_id" ref="base.mo"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">22.197075</field>
+            <field name="longitude">113.558911</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Macau</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ckh" model="tt.destinations">
+            <field name="name">Chokurdakh Airport</field>
+            <field name="code">CKH</field>
+            <field name="icao">UESO</field>
+            <field name="city">Chokurdah</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">70.6231</field>
+            <field name="longitude">147.902</field>
+            <field name="altitude">151</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Asia/Magadan</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cyx" model="tt.destinations">
+            <field name="name">Cherskiy Airport</field>
+            <field name="code">CYX</field>
+            <field name="icao">UESS</field>
+            <field name="city">Cherskiy</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">68.7406</field>
+            <field name="longitude">161.338</field>
+            <field name="altitude">20</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Asia/Magadan</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dyr" model="tt.destinations">
+            <field name="name">Ugolny Airport</field>
+            <field name="code">DYR</field>
+            <field name="icao">UHMA</field>
+            <field name="city">Anadyr</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">64.73495</field>
+            <field name="longitude">177.741483</field>
+            <field name="altitude">194</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Asia/Magadan</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gdx" model="tt.destinations">
+            <field name="name">Sokol</field>
+            <field name="code">GDX</field>
+            <field name="icao">UHMM</field>
+            <field name="city">Magadan</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">59.910989</field>
+            <field name="longitude">150.720439</field>
+            <field name="altitude">574</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Asia/Magadan</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kvm" model="tt.destinations">
+            <field name="name">Markovo Airport</field>
+            <field name="code">KVM</field>
+            <field name="icao">UHMO</field>
+            <field name="city">Markovo</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">64.665278</field>
+            <field name="longitude">170.414167</field>
+            <field name="altitude">89</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Asia/Magadan</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pkc" model="tt.destinations">
+            <field name="name">Yelizovo</field>
+            <field name="code">PKC</field>
+            <field name="icao">UHPP</field>
+            <field name="city">Petropavlovsk</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">53.167889</field>
+            <field name="longitude">158.453669</field>
+            <field name="altitude">131</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Asia/Magadan</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pvs" model="tt.destinations">
+            <field name="name">Provideniya Bay</field>
+            <field name="code">PVS</field>
+            <field name="icao">UHMD</field>
+            <field name="city">Provideniya Bay</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">64.378139</field>
+            <field name="longitude">-173.243306</field>
+            <field name="altitude">71</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Asia/Magadan</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zkp" model="tt.destinations">
+            <field name="name">Zyryanka West Airport</field>
+            <field name="code">ZKP</field>
+            <field name="icao">UESU</field>
+            <field name="city">Zyryanka</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">65.736389</field>
+            <field name="longitude">150.700278</field>
+            <field name="altitude">118</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Asia/Magadan</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bag" model="tt.destinations">
+            <field name="name">Baguio</field>
+            <field name="code">BAG</field>
+            <field name="icao">RPUB</field>
+            <field name="city">Baguio</field>
+            <field name="country_id" ref="base.ph"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">16.375103</field>
+            <field name="longitude">120.619636</field>
+            <field name="altitude">4251</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Manila</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bcd" model="tt.destinations">
+            <field name="name">Bacolod</field>
+            <field name="code">BCD</field>
+            <field name="icao">RPVB</field>
+            <field name="city">Bacolod</field>
+            <field name="country_id" ref="base.ph"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">10.642511</field>
+            <field name="longitude">122.929617</field>
+            <field name="altitude">25</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Manila</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bpr" model="tt.destinations">
+            <field name="name">Borongan Airport</field>
+            <field name="code">BPR</field>
+            <field name="icao">RPVW</field>
+            <field name="city">Borongan</field>
+            <field name="country_id" ref="base.ph"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">11.674167</field>
+            <field name="longitude">125.478611</field>
+            <field name="altitude">7</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Manila</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bxu" model="tt.destinations">
+            <field name="name">Butuan</field>
+            <field name="code">BXU</field>
+            <field name="icao">RPME</field>
+            <field name="city">Butuan</field>
+            <field name="country_id" ref="base.ph"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">8.951322</field>
+            <field name="longitude">125.477972</field>
+            <field name="altitude">141</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Manila</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cbo" model="tt.destinations">
+            <field name="name">Cotabato</field>
+            <field name="code">CBO</field>
+            <field name="icao">RPMC</field>
+            <field name="city">Cotabato</field>
+            <field name="country_id" ref="base.ph"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">7.165242</field>
+            <field name="longitude">124.209619</field>
+            <field name="altitude">189</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Manila</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ceb" model="tt.destinations">
+            <field name="name">Mactan Cebu Intl</field>
+            <field name="code">CEB</field>
+            <field name="icao">RPVM</field>
+            <field name="city">Cebu</field>
+            <field name="country_id" ref="base.ph"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">10.307542</field>
+            <field name="longitude">123.979439</field>
+            <field name="altitude">31</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Manila</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cgm" model="tt.destinations">
+            <field name="name">Camiguin Airport</field>
+            <field name="code">CGM</field>
+            <field name="icao">RPMH</field>
+            <field name="city">Camiguin</field>
+            <field name="country_id" ref="base.ph"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">9.25352</field>
+            <field name="longitude">124.707</field>
+            <field name="altitude">53</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Manila</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cgy" model="tt.destinations">
+            <field name="name">Cagayan De Oro</field>
+            <field name="code">CGY</field>
+            <field name="icao">RPML</field>
+            <field name="city">Ladag</field>
+            <field name="country_id" ref="base.ph"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">8.415619</field>
+            <field name="longitude">124.611219</field>
+            <field name="altitude">601</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Manila</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_crk" model="tt.destinations">
+            <field name="name">Diosdado Macapagal International</field>
+            <field name="code">CRK</field>
+            <field name="icao">RPLC</field>
+            <field name="city">Angeles City</field>
+            <field name="country_id" ref="base.ph"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">15.185833</field>
+            <field name="longitude">120.560278</field>
+            <field name="altitude">484</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Manila</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_crm" model="tt.destinations">
+            <field name="name">Catarman National Airport</field>
+            <field name="code">CRM</field>
+            <field name="icao">RPVF</field>
+            <field name="city">Catarman</field>
+            <field name="country_id" ref="base.ph"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">12.502417</field>
+            <field name="longitude">124.635778</field>
+            <field name="altitude">6</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Manila</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cyp" model="tt.destinations">
+            <field name="name">Calbayog Airport</field>
+            <field name="code">CYP</field>
+            <field name="icao">RPVC</field>
+            <field name="city">Calbayog City</field>
+            <field name="country_id" ref="base.ph"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">12.072706</field>
+            <field name="longitude">124.545092</field>
+            <field name="altitude">12</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Manila</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cyu" model="tt.destinations">
+            <field name="name">Cuyo Airport</field>
+            <field name="code">CYU</field>
+            <field name="icao">RPLO</field>
+            <field name="city">Cuyo</field>
+            <field name="country_id" ref="base.ph"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">10.8581</field>
+            <field name="longitude">121.069</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Manila</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cyz" model="tt.destinations">
+            <field name="name">Cauayan Airport</field>
+            <field name="code">CYZ</field>
+            <field name="icao">RPUY</field>
+            <field name="city">Cauayan</field>
+            <field name="country_id" ref="base.ph"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">16.929861</field>
+            <field name="longitude">121.753036</field>
+            <field name="altitude">200</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Manila</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dgt" model="tt.destinations">
+            <field name="name">Dumaguete</field>
+            <field name="code">DGT</field>
+            <field name="icao">RPVD</field>
+            <field name="city">Dumaguete</field>
+            <field name="country_id" ref="base.ph"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">9.333714</field>
+            <field name="longitude">123.300472</field>
+            <field name="altitude">15</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Manila</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dpl" model="tt.destinations">
+            <field name="name">Dipolog</field>
+            <field name="code">DPL</field>
+            <field name="icao">RPMG</field>
+            <field name="city">Dipolog</field>
+            <field name="country_id" ref="base.ph"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">8.601261</field>
+            <field name="longitude">123.334481</field>
+            <field name="altitude">12</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Manila</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dvo" model="tt.destinations">
+            <field name="name">Francisco Bangoy International</field>
+            <field name="code">DVO</field>
+            <field name="icao">RPMD</field>
+            <field name="city">Davao</field>
+            <field name="country_id" ref="base.ph"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">7.125522</field>
+            <field name="longitude">125.645778</field>
+            <field name="altitude">59</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Manila</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_eni" model="tt.destinations">
+            <field name="name">El Nido Airport</field>
+            <field name="code">ENI</field>
+            <field name="icao"></field>
+            <field name="city">El Nido</field>
+            <field name="country_id" ref="base.ph"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">11.202</field>
+            <field name="longitude">119.417</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Manila</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ges" model="tt.destinations">
+            <field name="name">General Santos International Airport</field>
+            <field name="code">GES</field>
+            <field name="icao">RPMB</field>
+            <field name="city">General Santos City</field>
+            <field name="country_id" ref="base.ph"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">6.106439</field>
+            <field name="longitude">125.2353</field>
+            <field name="altitude">28</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Manila</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ilo" model="tt.destinations">
+            <field name="name">Iloilo</field>
+            <field name="code">ILO</field>
+            <field name="icao">RPVI</field>
+            <field name="city">Iloilo</field>
+            <field name="country_id" ref="base.ph"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">10.713044</field>
+            <field name="longitude">122.545297</field>
+            <field name="altitude">27</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Manila</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jol" model="tt.destinations">
+            <field name="name">Jolo Airport</field>
+            <field name="code">JOL</field>
+            <field name="icao">RPMJ</field>
+            <field name="city">Jolo</field>
+            <field name="country_id" ref="base.ph"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">6.05367</field>
+            <field name="longitude">121.011</field>
+            <field name="altitude">118</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Manila</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_klo" model="tt.destinations">
+            <field name="name">Kalibo</field>
+            <field name="code">KLO</field>
+            <field name="icao">RPVK</field>
+            <field name="city">Kalibo</field>
+            <field name="country_id" ref="base.ph"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">11.679431</field>
+            <field name="longitude">122.376294</field>
+            <field name="altitude">14</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Manila</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lao" model="tt.destinations">
+            <field name="name">Laoag Intl</field>
+            <field name="code">LAO</field>
+            <field name="icao">RPLI</field>
+            <field name="city">Laoag</field>
+            <field name="country_id" ref="base.ph"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">18.178092</field>
+            <field name="longitude">120.531522</field>
+            <field name="altitude">25</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Manila</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lbx" model="tt.destinations">
+            <field name="name">Lubang Community Airport</field>
+            <field name="code">LBX</field>
+            <field name="icao">RPLU</field>
+            <field name="city">Lubang</field>
+            <field name="country_id" ref="base.ph"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">13.855833</field>
+            <field name="longitude">121.105833</field>
+            <field name="altitude">25</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Manila</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lgp" model="tt.destinations">
+            <field name="name">Legazpi</field>
+            <field name="code">LGP</field>
+            <field name="icao">RPLP</field>
+            <field name="city">Legazpi</field>
+            <field name="country_id" ref="base.ph"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">13.157064</field>
+            <field name="longitude">123.746247</field>
+            <field name="altitude">66</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Manila</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mbt" model="tt.destinations">
+            <field name="name">Masbate Airport</field>
+            <field name="code">MBT</field>
+            <field name="icao">RPVJ</field>
+            <field name="city">Masbate</field>
+            <field name="country_id" ref="base.ph"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">12.3694</field>
+            <field name="longitude">123.629</field>
+            <field name="altitude">26</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Manila</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mnl" model="tt.destinations">
+            <field name="name">Ninoy Aquino Intl</field>
+            <field name="code">MNL</field>
+            <field name="icao">RPLL</field>
+            <field name="city">Manila</field>
+            <field name="country_id" ref="base.ph"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">14.508647</field>
+            <field name="longitude">121.019581</field>
+            <field name="altitude">75</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Manila</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            

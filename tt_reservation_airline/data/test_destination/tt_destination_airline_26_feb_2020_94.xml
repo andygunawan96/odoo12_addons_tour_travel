@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_msr" model="tt.destinations">
+            <field name="name">Mus Airport</field>
+            <field name="code">MSR</field>
+            <field name="icao">LTCK</field>
+            <field name="city">Mus</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.747769</field>
+            <field name="longitude">41.661236</field>
+            <field name="altitude">4157</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mzh" model="tt.destinations">
+            <field name="name">Merzifon</field>
+            <field name="code">MZH</field>
+            <field name="icao">LTAP</field>
+            <field name="city">Merzifon</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.829375</field>
+            <field name="longitude">35.521992</field>
+            <field name="altitude">1758</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nav" model="tt.destinations">
+            <field name="name">Kapadokya</field>
+            <field name="code">NAV</field>
+            <field name="icao">LTAZ</field>
+            <field name="city">Nevsehir</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.771867</field>
+            <field name="longitude">34.53455</field>
+            <field name="altitude">3100</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_onq" model="tt.destinations">
+            <field name="name">Zonguldak</field>
+            <field name="code">ONQ</field>
+            <field name="icao">LTAS</field>
+            <field name="city">Zonguldak</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.506111</field>
+            <field name="longitude">32.088611</field>
+            <field name="altitude">44</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_saw" model="tt.destinations">
+            <field name="name">Sabiha Gokcen</field>
+            <field name="code">SAW</field>
+            <field name="icao">LTFJ</field>
+            <field name="city">Istanbul</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.898553</field>
+            <field name="longitude">29.309219</field>
+            <field name="altitude">312</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sfq" model="tt.destinations">
+            <field name="name">Sanliurfa Airport</field>
+            <field name="code">SFQ</field>
+            <field name="icao">LTCH</field>
+            <field name="city">Sanliurfa</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.094261</field>
+            <field name="longitude">38.847103</field>
+            <field name="altitude">1483</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sic" model="tt.destinations">
+            <field name="name">Sinop Airport</field>
+            <field name="code">SIC</field>
+            <field name="icao">LTCM</field>
+            <field name="city">Sinop</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">42.0158</field>
+            <field name="longitude">35.0664</field>
+            <field name="altitude">20</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ssx" model="tt.destinations">
+            <field name="name">Samsun</field>
+            <field name="code">SSX</field>
+            <field name="icao"></field>
+            <field name="city">Samsun</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.1641</field>
+            <field name="longitude">36.1814</field>
+            <field name="altitude">521</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_szf" model="tt.destinations">
+            <field name="name">Samsun-脟ar艧amba Airport</field>
+            <field name="code">SZF</field>
+            <field name="icao">LTFH</field>
+            <field name="city">Samsun</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.2545</field>
+            <field name="longitude">36.5671</field>
+            <field name="altitude">18</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_teq" model="tt.destinations">
+            <field name="name">Tekirda臒 脟orlu Airport</field>
+            <field name="code">TEQ</field>
+            <field name="icao">LTBU</field>
+            <field name="city">脟orlu</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.13825</field>
+            <field name="longitude">27.919094</field>
+            <field name="altitude">574</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tzx" model="tt.destinations">
+            <field name="name">Trabzon</field>
+            <field name="code">TZX</field>
+            <field name="icao">LTCG</field>
+            <field name="city">Trabzon</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.995108</field>
+            <field name="longitude">39.789728</field>
+            <field name="altitude">104</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_uab" model="tt.destinations">
+            <field name="name">Adana-Incirlik Airbase</field>
+            <field name="code">UAB</field>
+            <field name="icao">KUAB</field>
+            <field name="city">Adana</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.00028</field>
+            <field name="longitude">35.41833</field>
+            <field name="altitude">500</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_usq" model="tt.destinations">
+            <field name="name">Usak Airport</field>
+            <field name="code">USQ</field>
+            <field name="icao">LTBO</field>
+            <field name="city">Usak</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.681478</field>
+            <field name="longitude">29.471675</field>
+            <field name="altitude">2897</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_van" model="tt.destinations">
+            <field name="name">Van</field>
+            <field name="code">VAN</field>
+            <field name="icao">LTCI</field>
+            <field name="city">Van</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.468219</field>
+            <field name="longitude">43.3323</field>
+            <field name="altitude">5480</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vas" model="tt.destinations">
+            <field name="name">Sivas</field>
+            <field name="code">VAS</field>
+            <field name="icao">LTAR</field>
+            <field name="city">Sivas</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.813828</field>
+            <field name="longitude">36.903497</field>
+            <field name="altitude">5236</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_yei" model="tt.destinations">
+            <field name="name">Yenisehir Airport</field>
+            <field name="code">YEI</field>
+            <field name="icao">LTBR</field>
+            <field name="city">Yenisehir</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.255208</field>
+            <field name="longitude">29.562569</field>
+            <field name="altitude">764</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jer" model="tt.destinations">
+            <field name="name">Jersey</field>
+            <field name="code">JER</field>
+            <field name="icao">EGJJ</field>
+            <field name="city">Jersey</field>
+            <field name="country_id" ref="base.je"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">49.207947</field>
+            <field name="longitude">-2.195508</field>
+            <field name="altitude">277</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/Jersey</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kgd" model="tt.destinations">
+            <field name="name">Khrabrovo</field>
+            <field name="code">KGD</field>
+            <field name="icao">UMKK</field>
+            <field name="city">Kaliningrad</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">54.89005</field>
+            <field name="longitude">20.592633</field>
+            <field name="altitude">42</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Europe/Kaliningrad</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cej" model="tt.destinations">
+            <field name="name">Chernigov</field>
+            <field name="code">CEJ</field>
+            <field name="icao">UKRR</field>
+            <field name="city">Chernigov</field>
+            <field name="country_id" ref="base.ua"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">51.24</field>
+            <field name="longitude">31.09</field>
+            <field name="altitude">446</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Kiev</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ckc" model="tt.destinations">
+            <field name="name">Cherkassy</field>
+            <field name="code">CKC</field>
+            <field name="icao">UKKE</field>
+            <field name="city">Cherkassy</field>
+            <field name="country_id" ref="base.ua"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">49.416666</field>
+            <field name="longitude">32.1333</field>
+            <field name="altitude">114</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Kiev</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cwc" model="tt.destinations">
+            <field name="name">Chernivtsi International Airport</field>
+            <field name="code">CWC</field>
+            <field name="icao">UKLN</field>
+            <field name="city">Chernovtsk</field>
+            <field name="country_id" ref="base.ua"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.259322</field>
+            <field name="longitude">25.980831</field>
+            <field name="altitude">826</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Kiev</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dnk" model="tt.destinations">
+            <field name="name">Dnipropetrovsk Intl</field>
+            <field name="code">DNK</field>
+            <field name="icao">UKDD</field>
+            <field name="city">Dnepropetrovsk</field>
+            <field name="country_id" ref="base.ua"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.357222</field>
+            <field name="longitude">35.100556</field>
+            <field name="altitude">481</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Kiev</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dok" model="tt.destinations">
+            <field name="name">Donetsk Intl</field>
+            <field name="code">DOK</field>
+            <field name="icao">UKCC</field>
+            <field name="city">Donetsk</field>
+            <field name="country_id" ref="base.ua"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.073611</field>
+            <field name="longitude">37.739722</field>
+            <field name="altitude">791</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Kiev</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gml" model="tt.destinations">
+            <field name="name">Gostomel Antonov</field>
+            <field name="code">GML</field>
+            <field name="icao">UKKM</field>
+            <field name="city">Kiev</field>
+            <field name="country_id" ref="base.ua"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">50.603611</field>
+            <field name="longitude">30.191944</field>
+            <field name="altitude">517</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Kiev</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hmj" model="tt.destinations">
+            <field name="name">Khmeinitskiy</field>
+            <field name="code">HMJ</field>
+            <field name="icao">UKLH</field>
+            <field name="city">Khmeinitskiy</field>
+            <field name="country_id" ref="base.ua"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">49.366</field>
+            <field name="longitude">26.933</field>
+            <field name="altitude">351</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Kiev</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hrk" model="tt.destinations">
+            <field name="name">Osnova International Airport</field>
+            <field name="code">HRK</field>
+            <field name="icao">UKHH</field>
+            <field name="city">Kharkov</field>
+            <field name="country_id" ref="base.ua"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">49.924786</field>
+            <field name="longitude">36.289986</field>
+            <field name="altitude">508</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Kiev</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_iev" model="tt.destinations">
+            <field name="name">Zhuliany Intl</field>
+            <field name="code">IEV</field>
+            <field name="icao">UKKK</field>
+            <field name="city">Kiev</field>
+            <field name="country_id" ref="base.ua"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">50.401694</field>
+            <field name="longitude">30.449697</field>
+            <field name="altitude">586</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Kiev</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ifo" model="tt.destinations">
+            <field name="name">Ivano Frankivsk International Airport</field>
+            <field name="code">IFO</field>
+            <field name="icao">UKLI</field>
+            <field name="city">Ivano-Frankivsk</field>
+            <field name="country_id" ref="base.ua"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.884167</field>
+            <field name="longitude">24.686111</field>
+            <field name="altitude">919</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Kiev</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kbp" model="tt.destinations">
+            <field name="name">Boryspil Intl</field>
+            <field name="code">KBP</field>
+            <field name="icao">UKBB</field>
+            <field name="city">Kiev</field>
+            <field name="country_id" ref="base.ua"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">50.345</field>
+            <field name="longitude">30.894722</field>
+            <field name="altitude">427</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Kiev</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kgo" model="tt.destinations">
+            <field name="name">Kirovograd</field>
+            <field name="code">KGO</field>
+            <field name="icao">UKKG</field>
+            <field name="city">Kirovograd</field>
+            <field name="country_id" ref="base.ua"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.54</field>
+            <field name="longitude">32.29</field>
+            <field name="altitude">510</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Kiev</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_khc" model="tt.destinations">
+            <field name="name">Kerch Intl</field>
+            <field name="code">KHC</field>
+            <field name="icao">UKFK</field>
+            <field name="city">Kerch</field>
+            <field name="country_id" ref="base.ua"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.372869</field>
+            <field name="longitude">36.402761</field>
+            <field name="altitude">152</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Kiev</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_khe" model="tt.destinations">
+            <field name="name">Chernobayevka Airport</field>
+            <field name="code">KHE</field>
+            <field name="icao">UKOH</field>
+            <field name="city">Kherson</field>
+            <field name="country_id" ref="base.ua"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.6758</field>
+            <field name="longitude">32.5064</field>
+            <field name="altitude">148</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Kiev</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kip" model="tt.destinations">
+            <field name="name">KIEV  INTERNATIONAL AIRPORT</field>
+            <field name="code">KIP</field>
+            <field name="icao">KIEV</field>
+            <field name="city">KIEV</field>
+            <field name="country_id" ref="base.ua"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">50.1403</field>
+            <field name="longitude">30.1808</field>
+            <field name="altitude">250</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Kiev</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kwg" model="tt.destinations">
+            <field name="name">Lozuvatka International Airport</field>
+            <field name="code">KWG</field>
+            <field name="icao">UKDR</field>
+            <field name="city">Krivoy Rog</field>
+            <field name="country_id" ref="base.ua"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.0433</field>
+            <field name="longitude">33.21</field>
+            <field name="altitude">408</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Kiev</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lwo" model="tt.destinations">
+            <field name="name">Lviv Intl</field>
+            <field name="code">LWO</field>
+            <field name="icao">UKLL</field>
+            <field name="city">Lvov</field>
+            <field name="country_id" ref="base.ua"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">49.8125</field>
+            <field name="longitude">23.956111</field>
+            <field name="altitude">1071</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Kiev</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mpw" model="tt.destinations">
+            <field name="name">Mariupol International Airport</field>
+            <field name="code">MPW</field>
+            <field name="icao">UKCM</field>
+            <field name="city">Mariupol International</field>
+            <field name="country_id" ref="base.ua"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">47.0761</field>
+            <field name="longitude">37.4496</field>
+            <field name="altitude">251</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Kiev</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nlv" model="tt.destinations">
+            <field name="name">Mykolaiv International Airport</field>
+            <field name="code">NLV</field>
+            <field name="icao">UKON</field>
+            <field name="city">Nikolayev</field>
+            <field name="country_id" ref="base.ua"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">47.0579</field>
+            <field name="longitude">31.9198</field>
+            <field name="altitude">184</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Kiev</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ods" model="tt.destinations">
+            <field name="name">Odesa Intl</field>
+            <field name="code">ODS</field>
+            <field name="icao">UKOO</field>
+            <field name="city">Odessa</field>
+            <field name="country_id" ref="base.ua"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.426767</field>
+            <field name="longitude">30.676464</field>
+            <field name="altitude">172</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Kiev</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ozh" model="tt.destinations">
+            <field name="name">Zaporizhzhia International Airport</field>
+            <field name="code">OZH</field>
+            <field name="icao">UKDE</field>
+            <field name="city">Zaporozhye</field>
+            <field name="country_id" ref="base.ua"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">47.867</field>
+            <field name="longitude">35.3157</field>
+            <field name="altitude">373</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Kiev</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_plv" model="tt.destinations">
+            <field name="name">Poltava</field>
+            <field name="code">PLV</field>
+            <field name="icao">UKHP</field>
+            <field name="city">Poltava</field>
+            <field name="country_id" ref="base.ua"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">49.34261</field>
+            <field name="longitude">34.23551</field>
+            <field name="altitude">333</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Kiev</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rwn" model="tt.destinations">
+            <field name="name">Rivne International Airport</field>
+            <field name="code">RWN</field>
+            <field name="icao">UKLR</field>
+            <field name="city">Rivne</field>
+            <field name="country_id" ref="base.ua"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">50.6071</field>
+            <field name="longitude">26.1416</field>
+            <field name="altitude">755</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Kiev</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sip" model="tt.destinations">
+            <field name="name">Simferopol Intl</field>
+            <field name="code">SIP</field>
+            <field name="icao">UKFF</field>
+            <field name="city">Simferopol</field>
+            <field name="country_id" ref="base.ua"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.052222</field>
+            <field name="longitude">33.975139</field>
+            <field name="altitude">639</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Kiev</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tnl" model="tt.destinations">
+            <field name="name">Ternopol</field>
+            <field name="code">TNL</field>
+            <field name="icao">UKLT</field>
+            <field name="city">Ternopol</field>
+            <field name="country_id" ref="base.ua"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">49.31</field>
+            <field name="longitude">25.42</field>
+            <field name="altitude">1073</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Kiev</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_udj" model="tt.destinations">
+            <field name="name">Uzhhorod International Airport</field>
+            <field name="code">UDJ</field>
+            <field name="icao">UKLU</field>
+            <field name="city">Uzhgorod</field>
+            <field name="country_id" ref="base.ua"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.634278</field>
+            <field name="longitude">22.263356</field>
+            <field name="altitude">383</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Kiev</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ukc" model="tt.destinations">
+            <field name="name">Lutsk</field>
+            <field name="code">UKC</field>
+            <field name="icao">UKLC</field>
+            <field name="city">Lutsk</field>
+            <field name="country_id" ref="base.ua"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">50.6833</field>
+            <field name="longitude">25.4833</field>
+            <field name="altitude">774</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Kiev</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_uks" model="tt.destinations">
+            <field name="name">Belbek Sevastopol International Airport</field>
+            <field name="code">UKS</field>
+            <field name="icao">UKFB</field>
+            <field name="city">Sevastopol</field>
+            <field name="country_id" ref="base.ua"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">44.691431</field>
+            <field name="longitude">33.57567</field>
+            <field name="altitude">344</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Kiev</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vin" model="tt.destinations">
+            <field name="name">Vinnitsa</field>
+            <field name="code">VIN</field>
+            <field name="icao">UKWW</field>
+            <field name="city">Vinnitsa</field>
+            <field name="country_id" ref="base.ua"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">49.2433</field>
+            <field name="longitude">28.6063</field>
+            <field name="altitude">900</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Kiev</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vsg" model="tt.destinations">
+            <field name="name">Luhansk International Airport</field>
+            <field name="code">VSG</field>
+            <field name="icao">UKCW</field>
+            <field name="city">Lugansk</field>
+            <field name="country_id" ref="base.ua"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.4174</field>
+            <field name="longitude">39.3741</field>
+            <field name="altitude">636</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Kiev</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ztr" model="tt.destinations">
+            <field name="name">Zhytomyr</field>
+            <field name="code">ZTR</field>
+            <field name="icao">UKKV</field>
+            <field name="city">Zhytomyr</field>
+            <field name="country_id" ref="base.ua"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">50.270556</field>
+            <field name="longitude">28.738611</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Kiev</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bgc" model="tt.destinations">
+            <field name="name">Braganca</field>
+            <field name="code">BGC</field>
+            <field name="icao">LPBG</field>
+            <field name="city">Braganca</field>
+            <field name="country_id" ref="base.pt"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.8578</field>
+            <field name="longitude">-6.707125</field>
+            <field name="altitude">2241</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/Lisbon</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            

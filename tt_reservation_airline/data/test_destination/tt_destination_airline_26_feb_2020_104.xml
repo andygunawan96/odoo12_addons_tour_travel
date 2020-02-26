@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_xyg" model="tt.destinations">
+            <field name="name">Praha hlavni nadrazi</field>
+            <field name="code">XYG</field>
+            <field name="icao"></field>
+            <field name="city">Prague</field>
+            <field name="country_id" ref="base.cz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">50.08268921</field>
+            <field name="longitude">14.43502976</field>
+            <field name="altitude">691</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Prague</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_xyj" model="tt.destinations">
+            <field name="name">Holesovice</field>
+            <field name="code">XYJ</field>
+            <field name="icao"></field>
+            <field name="city">Praha</field>
+            <field name="country_id" ref="base.cz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">50.11</field>
+            <field name="longitude">14.439444</field>
+            <field name="altitude">616</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Prague</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lpx" model="tt.destinations">
+            <field name="name">Liepaja Intl</field>
+            <field name="code">LPX</field>
+            <field name="icao">EVLA</field>
+            <field name="city">Liepaja</field>
+            <field name="country_id" ref="base.lv"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">56.5175</field>
+            <field name="longitude">21.096944</field>
+            <field name="altitude">16</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Riga</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rix" model="tt.destinations">
+            <field name="name">Riga Intl</field>
+            <field name="code">RIX</field>
+            <field name="icao">EVRA</field>
+            <field name="city">Riga</field>
+            <field name="country_id" ref="base.lv"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">56.923611</field>
+            <field name="longitude">23.971111</field>
+            <field name="altitude">34</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Riga</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vts" model="tt.destinations">
+            <field name="name">Ventspils International Airport</field>
+            <field name="code">VTS</field>
+            <field name="icao">EVVA</field>
+            <field name="city">Ventspils</field>
+            <field name="country_id" ref="base.lv"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">57.357778</field>
+            <field name="longitude">21.544167</field>
+            <field name="altitude">19</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Riga</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_aho" model="tt.destinations">
+            <field name="name">Alghero</field>
+            <field name="code">AHO</field>
+            <field name="icao">LIEA</field>
+            <field name="city">Alghero</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.632133</field>
+            <field name="longitude">8.290772</field>
+            <field name="altitude">87</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_all" model="tt.destinations">
+            <field name="name">Albenga</field>
+            <field name="code">ALL</field>
+            <field name="icao">LIMG</field>
+            <field name="city">Albenga</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">44.050608</field>
+            <field name="longitude">8.127428</field>
+            <field name="altitude">148</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_aoi" model="tt.destinations">
+            <field name="name">Falconara</field>
+            <field name="code">AOI</field>
+            <field name="icao">LIPY</field>
+            <field name="city">Ancona</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.616389</field>
+            <field name="longitude">13.362222</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_aot" model="tt.destinations">
+            <field name="name">Aosta Airport</field>
+            <field name="code">AOT</field>
+            <field name="icao">LIMW</field>
+            <field name="city">Aosta</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.738456</field>
+            <field name="longitude">7.368719</field>
+            <field name="altitude">1791</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_avb" model="tt.destinations">
+            <field name="name">Aviano Ab</field>
+            <field name="code">AVB</field>
+            <field name="icao">LIPA</field>
+            <field name="city">Aviano</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.031889</field>
+            <field name="longitude">12.596472</field>
+            <field name="altitude">410</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bds" model="tt.destinations">
+            <field name="name">Casale</field>
+            <field name="code">BDS</field>
+            <field name="icao">LIBR</field>
+            <field name="city">Brindisi</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.657633</field>
+            <field name="longitude">17.947033</field>
+            <field name="altitude">47</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bgy" model="tt.destinations">
+            <field name="name">Bergamo Orio Al Serio</field>
+            <field name="code">BGY</field>
+            <field name="icao">LIME</field>
+            <field name="city">Bergamo</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.673889</field>
+            <field name="longitude">9.704166</field>
+            <field name="altitude">782</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_blq" model="tt.destinations">
+            <field name="name">Bologna</field>
+            <field name="code">BLQ</field>
+            <field name="icao">LIPE</field>
+            <field name="city">Bologna</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">44.535444</field>
+            <field name="longitude">11.288667</field>
+            <field name="altitude">123</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bri" model="tt.destinations">
+            <field name="name">Bari</field>
+            <field name="code">BRI</field>
+            <field name="icao">LIBD</field>
+            <field name="city">Bari</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.138856</field>
+            <field name="longitude">16.760594</field>
+            <field name="altitude">177</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bzo" model="tt.destinations">
+            <field name="name">Bolzano</field>
+            <field name="code">BZO</field>
+            <field name="icao">LIPB</field>
+            <field name="city">Bolzano</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.460194</field>
+            <field name="longitude">11.326383</field>
+            <field name="altitude">789</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cag" model="tt.destinations">
+            <field name="name">Elmas</field>
+            <field name="code">CAG</field>
+            <field name="icao">LIEE</field>
+            <field name="city">Cagliari</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.251469</field>
+            <field name="longitude">9.054283</field>
+            <field name="altitude">13</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cia" model="tt.destinations">
+            <field name="name">Ciampino</field>
+            <field name="code">CIA</field>
+            <field name="icao">LIRA</field>
+            <field name="city">Rome</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.799361</field>
+            <field name="longitude">12.594936</field>
+            <field name="altitude">427</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ciy" model="tt.destinations">
+            <field name="name">Comiso</field>
+            <field name="code">CIY</field>
+            <field name="icao">LICB</field>
+            <field name="city">Comiso</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37</field>
+            <field name="longitude">14.6144</field>
+            <field name="altitude">756</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_crv" model="tt.destinations">
+            <field name="name">Crotone</field>
+            <field name="code">CRV</field>
+            <field name="icao">LIBC</field>
+            <field name="city">Crotone</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.997225</field>
+            <field name="longitude">17.080169</field>
+            <field name="altitude">521</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cta" model="tt.destinations">
+            <field name="name">Catania Fontanarossa</field>
+            <field name="code">CTA</field>
+            <field name="icao">LICC</field>
+            <field name="city">Catania</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.466781</field>
+            <field name="longitude">15.0664</field>
+            <field name="altitude">39</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cuf" model="tt.destinations">
+            <field name="name">Levaldigi</field>
+            <field name="code">CUF</field>
+            <field name="icao">LIMZ</field>
+            <field name="city">Cuneo</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">44.547019</field>
+            <field name="longitude">7.623217</field>
+            <field name="altitude">1267</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dci" model="tt.destinations">
+            <field name="name">Decimomannu</field>
+            <field name="code">DCI</field>
+            <field name="icao">LIED</field>
+            <field name="city">Decimomannu</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.354222</field>
+            <field name="longitude">8.972481</field>
+            <field name="altitude">100</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_eba" model="tt.destinations">
+            <field name="name">Marina Di Campo</field>
+            <field name="code">EBA</field>
+            <field name="icao">LIRJ</field>
+            <field name="city">Marina Di Campo</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">42.760277</field>
+            <field name="longitude">10.239445</field>
+            <field name="altitude">31</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fco" model="tt.destinations">
+            <field name="name">Fiumicino</field>
+            <field name="code">FCO</field>
+            <field name="icao">LIRF</field>
+            <field name="city">Rome</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.804475</field>
+            <field name="longitude">12.250797</field>
+            <field name="altitude">15</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_flr" model="tt.destinations">
+            <field name="name">Firenze</field>
+            <field name="code">FLR</field>
+            <field name="icao">LIRQ</field>
+            <field name="city">Florence</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.809953</field>
+            <field name="longitude">11.2051</field>
+            <field name="altitude">142</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fnu" model="tt.destinations">
+            <field name="name">Fenosu</field>
+            <field name="code">FNU</field>
+            <field name="icao">LIER</field>
+            <field name="city">Oristano</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.895</field>
+            <field name="longitude">8.6383</field>
+            <field name="altitude">36</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fog" model="tt.destinations">
+            <field name="name">Gino Lisa</field>
+            <field name="code">FOG</field>
+            <field name="icao">LIBF</field>
+            <field name="city">Foggia</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.432917</field>
+            <field name="longitude">15.535028</field>
+            <field name="altitude">266</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_frl" model="tt.destinations">
+            <field name="name">Forli</field>
+            <field name="code">FRL</field>
+            <field name="icao">LIPK</field>
+            <field name="city">Forli</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">44.194753</field>
+            <field name="longitude">12.070094</field>
+            <field name="altitude">97</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_goa" model="tt.destinations">
+            <field name="name">Genova Sestri</field>
+            <field name="code">GOA</field>
+            <field name="icao">LIMJ</field>
+            <field name="city">Genoa</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">44.413333</field>
+            <field name="longitude">8.8375</field>
+            <field name="altitude">13</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_grs" model="tt.destinations">
+            <field name="name">Grosseto</field>
+            <field name="code">GRS</field>
+            <field name="icao">LIRS</field>
+            <field name="city">Grosseto</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">42.759747</field>
+            <field name="longitude">11.071897</field>
+            <field name="altitude">15</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lcc" model="tt.destinations">
+            <field name="name">Lecce</field>
+            <field name="code">LCC</field>
+            <field name="icao">LIBN</field>
+            <field name="city">Lecce</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.239228</field>
+            <field name="longitude">18.133325</field>
+            <field name="altitude">156</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lin" model="tt.destinations">
+            <field name="name">Linate</field>
+            <field name="code">LIN</field>
+            <field name="icao">LIML</field>
+            <field name="city">Milan</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.445103</field>
+            <field name="longitude">9.276739</field>
+            <field name="altitude">353</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lmp" model="tt.destinations">
+            <field name="name">Lampedusa</field>
+            <field name="code">LMP</field>
+            <field name="icao">LICD</field>
+            <field name="city">Lampedusa</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.497914</field>
+            <field name="longitude">12.618083</field>
+            <field name="altitude">70</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mil" model="tt.destinations">
+            <field name="name">All Airports</field>
+            <field name="code">MIL</field>
+            <field name="icao"></field>
+            <field name="city">Milan</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.463611</field>
+            <field name="longitude">9.188056</field>
+            <field name="altitude">402</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mxp" model="tt.destinations">
+            <field name="name">Malpensa</field>
+            <field name="code">MXP</field>
+            <field name="icao">LIMC</field>
+            <field name="city">Milano</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.630606</field>
+            <field name="longitude">8.728111</field>
+            <field name="altitude">767</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nap" model="tt.destinations">
+            <field name="name">Capodichino</field>
+            <field name="code">NAP</field>
+            <field name="icao">LIRN</field>
+            <field name="city">Naples</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.886033</field>
+            <field name="longitude">14.290781</field>
+            <field name="altitude">294</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nsy" model="tt.destinations">
+            <field name="name">Sigonella</field>
+            <field name="code">NSY</field>
+            <field name="icao">LICZ</field>
+            <field name="city">Sigonella</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.401664</field>
+            <field name="longitude">14.922358</field>
+            <field name="altitude">79</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_olb" model="tt.destinations">
+            <field name="name">Olbia Costa Smeralda</field>
+            <field name="code">OLB</field>
+            <field name="icao">LIEO</field>
+            <field name="city">Olbia</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.898661</field>
+            <field name="longitude">9.517628</field>
+            <field name="altitude">37</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_peg" model="tt.destinations">
+            <field name="name">Perugia</field>
+            <field name="code">PEG</field>
+            <field name="icao">LIRZ</field>
+            <field name="city">Perugia</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.095906</field>
+            <field name="longitude">12.513222</field>
+            <field name="altitude">693</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pmf" model="tt.destinations">
+            <field name="name">Parma</field>
+            <field name="code">PMF</field>
+            <field name="icao">LIMP</field>
+            <field name="city">Parma</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">44.824483</field>
+            <field name="longitude">10.296367</field>
+            <field name="altitude">161</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pmo" model="tt.destinations">
+            <field name="name">Palermo</field>
+            <field name="code">PMO</field>
+            <field name="icao">LICJ</field>
+            <field name="city">Palermo</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.175958</field>
+            <field name="longitude">13.091019</field>
+            <field name="altitude">65</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pnl" model="tt.destinations">
+            <field name="name">Pantelleria</field>
+            <field name="code">PNL</field>
+            <field name="icao">LICG</field>
+            <field name="city">Pantelleria</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.816519</field>
+            <field name="longitude">11.968864</field>
+            <field name="altitude">635</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_psa" model="tt.destinations">
+            <field name="name">Pisa</field>
+            <field name="code">PSA</field>
+            <field name="icao">LIRP</field>
+            <field name="city">Pisa</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.683917</field>
+            <field name="longitude">10.39275</field>
+            <field name="altitude">6</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_psr" model="tt.destinations">
+            <field name="name">Pescara</field>
+            <field name="code">PSR</field>
+            <field name="icao">LIBP</field>
+            <field name="city">Pescara</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">42.431656</field>
+            <field name="longitude">14.181067</field>
+            <field name="altitude">48</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_qlt" model="tt.destinations">
+            <field name="name">Latina</field>
+            <field name="code">QLT</field>
+            <field name="icao">LIRL</field>
+            <field name="city">Latina</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.542436</field>
+            <field name="longitude">12.909019</field>
+            <field name="altitude">93</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_qpa" model="tt.destinations">
+            <field name="name">Padova</field>
+            <field name="code">QPA</field>
+            <field name="icao">LIPU</field>
+            <field name="city">Padova</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.395767</field>
+            <field name="longitude">11.847903</field>
+            <field name="altitude">44</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_qpz" model="tt.destinations">
+            <field name="name">Piacenza</field>
+            <field name="code">QPZ</field>
+            <field name="icao">LIMS</field>
+            <field name="city">Piacenza</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">44.913055</field>
+            <field name="longitude">9.723333</field>
+            <field name="altitude">456</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_qsr" model="tt.destinations">
+            <field name="name">Salerno Pontecagnano Airport</field>
+            <field name="code">QSR</field>
+            <field name="icao">LIRI</field>
+            <field name="city">Salerno</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.6204</field>
+            <field name="longitude">14.911294</field>
+            <field name="altitude">123</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_reg" model="tt.destinations">
+            <field name="name">Reggio Calabria</field>
+            <field name="code">REG</field>
+            <field name="icao">LICR</field>
+            <field name="city">Reggio Calabria</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.071206</field>
+            <field name="longitude">15.651556</field>
+            <field name="altitude">96</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rmi" model="tt.destinations">
+            <field name="name">Rimini</field>
+            <field name="code">RMI</field>
+            <field name="icao">LIPR</field>
+            <field name="city">Rimini</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">44.020292</field>
+            <field name="longitude">12.611747</field>
+            <field name="altitude">41</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            

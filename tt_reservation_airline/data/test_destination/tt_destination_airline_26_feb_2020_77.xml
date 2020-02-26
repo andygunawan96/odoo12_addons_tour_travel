@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_vca" model="tt.destinations">
+            <field name="name">Tr脿 N贸c Airport</field>
+            <field name="code">VCA</field>
+            <field name="icao">VVCT</field>
+            <field name="city">Can Tho</field>
+            <field name="country_id" ref="base.vn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">10.085119</field>
+            <field name="longitude">105.711922</field>
+            <field name="altitude">9</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Saigon</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vcl" model="tt.destinations">
+            <field name="name">Chu Lai</field>
+            <field name="code">VCL</field>
+            <field name="icao">VVCA</field>
+            <field name="city">Chu Lai</field>
+            <field name="country_id" ref="base.vn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">15.405944</field>
+            <field name="longitude">108.705889</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Saigon</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vcs" model="tt.destinations">
+            <field name="name">Co Ong Airport</field>
+            <field name="code">VCS</field>
+            <field name="icao">VVCS</field>
+            <field name="city">Conson</field>
+            <field name="country_id" ref="base.vn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">8.731831</field>
+            <field name="longitude">106.632589</field>
+            <field name="altitude">20</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Saigon</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vdh" model="tt.destinations">
+            <field name="name">Dong Hoi</field>
+            <field name="code">VDH</field>
+            <field name="icao"></field>
+            <field name="city">Dong Hoi</field>
+            <field name="country_id" ref="base.vn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">17.515</field>
+            <field name="longitude">106.590556</field>
+            <field name="altitude">50</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Saigon</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vii" model="tt.destinations">
+            <field name="name">Vinh Airport</field>
+            <field name="code">VII</field>
+            <field name="icao">VVVH</field>
+            <field name="city">Vinh</field>
+            <field name="country_id" ref="base.vn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">18.737569</field>
+            <field name="longitude">105.670764</field>
+            <field name="altitude">23</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Saigon</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vkg" model="tt.destinations">
+            <field name="name">Rach Gia</field>
+            <field name="code">VKG</field>
+            <field name="icao">VVRG</field>
+            <field name="city">Rach Gia</field>
+            <field name="country_id" ref="base.vn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">9.949676</field>
+            <field name="longitude">105.133659</field>
+            <field name="altitude">7</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Saigon</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_afs" model="tt.destinations">
+            <field name="name">Sugraly Airport</field>
+            <field name="code">AFS</field>
+            <field name="icao">UTSN</field>
+            <field name="city">Zarafshan</field>
+            <field name="country_id" ref="base.uz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.6139</field>
+            <field name="longitude">64.2332</field>
+            <field name="altitude">1396</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Samarkand</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_azn" model="tt.destinations">
+            <field name="name">Andizhan Airport</field>
+            <field name="code">AZN</field>
+            <field name="icao">UTKA</field>
+            <field name="city">Andizhan</field>
+            <field name="country_id" ref="base.uz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.7277</field>
+            <field name="longitude">72.294</field>
+            <field name="altitude">1515</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Samarkand</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bhk" model="tt.destinations">
+            <field name="name">Bukhara</field>
+            <field name="code">BHK</field>
+            <field name="icao">UTSB</field>
+            <field name="city">Bukhara</field>
+            <field name="country_id" ref="base.uz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.775</field>
+            <field name="longitude">64.483333</field>
+            <field name="altitude">751</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Samarkand</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_feg" model="tt.destinations">
+            <field name="name">Fergana Airport</field>
+            <field name="code">FEG</field>
+            <field name="icao">UTKF</field>
+            <field name="city">Fergana</field>
+            <field name="country_id" ref="base.uz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.3588</field>
+            <field name="longitude">71.745</field>
+            <field name="altitude">1980</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Samarkand</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ksq" model="tt.destinations">
+            <field name="name">Karshi Khanabad Airport</field>
+            <field name="code">KSQ</field>
+            <field name="icao">UTSL</field>
+            <field name="city">Khanabad</field>
+            <field name="country_id" ref="base.uz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.8336</field>
+            <field name="longitude">65.9215</field>
+            <field name="altitude">1365</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Samarkand</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ncu" model="tt.destinations">
+            <field name="name">Nukus Airport</field>
+            <field name="code">NCU</field>
+            <field name="icao">UTNN</field>
+            <field name="city">Nukus</field>
+            <field name="country_id" ref="base.uz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">42.4884</field>
+            <field name="longitude">59.6233</field>
+            <field name="altitude">246</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Samarkand</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nma" model="tt.destinations">
+            <field name="name">Namangan Airport</field>
+            <field name="code">NMA</field>
+            <field name="icao">UTKN</field>
+            <field name="city">Namangan</field>
+            <field name="country_id" ref="base.uz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.9846</field>
+            <field name="longitude">71.5567</field>
+            <field name="altitude">1555</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Samarkand</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nvi" model="tt.destinations">
+            <field name="name">Navoi Airport</field>
+            <field name="code">NVI</field>
+            <field name="icao">UTSA</field>
+            <field name="city">Navoi</field>
+            <field name="country_id" ref="base.uz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.1172</field>
+            <field name="longitude">65.1708</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Samarkand</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_skd" model="tt.destinations">
+            <field name="name">Samarkand</field>
+            <field name="code">SKD</field>
+            <field name="icao">UTSS</field>
+            <field name="city">Samarkand</field>
+            <field name="country_id" ref="base.uz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.700547</field>
+            <field name="longitude">66.983829</field>
+            <field name="altitude">2224</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Samarkand</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tas" model="tt.destinations">
+            <field name="name">Yuzhny</field>
+            <field name="code">TAS</field>
+            <field name="icao">UTTT</field>
+            <field name="city">Tashkent</field>
+            <field name="country_id" ref="base.uz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.257861</field>
+            <field name="longitude">69.281186</field>
+            <field name="altitude">1417</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Samarkand</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tmj" model="tt.destinations">
+            <field name="name">Termez Airport</field>
+            <field name="code">TMJ</field>
+            <field name="icao">UTST</field>
+            <field name="city">Termez</field>
+            <field name="country_id" ref="base.uz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.286667</field>
+            <field name="longitude">67.31</field>
+            <field name="altitude">1027</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Samarkand</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ugc" model="tt.destinations">
+            <field name="name">Urgench Airport</field>
+            <field name="code">UGC</field>
+            <field name="icao">UTNU</field>
+            <field name="city">Urgench</field>
+            <field name="country_id" ref="base.uz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.5843</field>
+            <field name="longitude">60.6417</field>
+            <field name="altitude">320</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Samarkand</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cjj" model="tt.destinations">
+            <field name="name">Cheongju International Airport</field>
+            <field name="code">CJJ</field>
+            <field name="icao">RKTU</field>
+            <field name="city">Chongju</field>
+            <field name="country_id" ref="base.kr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.7166</field>
+            <field name="longitude">127.499119</field>
+            <field name="altitude">191</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Seoul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cju" model="tt.destinations">
+            <field name="name">Jeju Intl</field>
+            <field name="code">CJU</field>
+            <field name="icao">RKPC</field>
+            <field name="city">Cheju</field>
+            <field name="country_id" ref="base.kr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">33.511306</field>
+            <field name="longitude">126.493028</field>
+            <field name="altitude">118</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Seoul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gmp" model="tt.destinations">
+            <field name="name">Gimpo</field>
+            <field name="code">GMP</field>
+            <field name="icao">RKSS</field>
+            <field name="city">Seoul</field>
+            <field name="country_id" ref="base.kr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.558311</field>
+            <field name="longitude">126.790586</field>
+            <field name="altitude">58</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Seoul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hin" model="tt.destinations">
+            <field name="name">Sacheon Air Base</field>
+            <field name="code">HIN</field>
+            <field name="icao">RKPS</field>
+            <field name="city">Sacheon</field>
+            <field name="country_id" ref="base.kr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.088543</field>
+            <field name="longitude">128.07037</field>
+            <field name="altitude">25</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Seoul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_icn" model="tt.destinations">
+            <field name="name">Incheon Intl</field>
+            <field name="code">ICN</field>
+            <field name="icao">RKSI</field>
+            <field name="city">Seoul</field>
+            <field name="country_id" ref="base.kr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.469075</field>
+            <field name="longitude">126.450517</field>
+            <field name="altitude">23</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Seoul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kag" model="tt.destinations">
+            <field name="name">Gangneung</field>
+            <field name="code">KAG</field>
+            <field name="icao">RKNN</field>
+            <field name="city">Kangnung</field>
+            <field name="country_id" ref="base.kr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.753561</field>
+            <field name="longitude">128.943625</field>
+            <field name="altitude">35</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Seoul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kpo" model="tt.destinations">
+            <field name="name">Pohang</field>
+            <field name="code">KPO</field>
+            <field name="icao">RKTH</field>
+            <field name="city">Pohang</field>
+            <field name="country_id" ref="base.kr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.987858</field>
+            <field name="longitude">129.420486</field>
+            <field name="altitude">70</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Seoul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kuv" model="tt.destinations">
+            <field name="name">Kunsan Air Base</field>
+            <field name="code">KUV</field>
+            <field name="icao">RKJK</field>
+            <field name="city">Kunsan</field>
+            <field name="country_id" ref="base.kr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.903756</field>
+            <field name="longitude">126.615906</field>
+            <field name="altitude">29</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Seoul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kwj" model="tt.destinations">
+            <field name="name">Gwangju</field>
+            <field name="code">KWJ</field>
+            <field name="icao">RKJJ</field>
+            <field name="city">Kwangju</field>
+            <field name="country_id" ref="base.kr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.126389</field>
+            <field name="longitude">126.808889</field>
+            <field name="altitude">39</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Seoul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mpk" model="tt.destinations">
+            <field name="name">Mokpo Airport</field>
+            <field name="code">MPK</field>
+            <field name="icao">RKJM</field>
+            <field name="city">Mokpo</field>
+            <field name="country_id" ref="base.kr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">34.758906</field>
+            <field name="longitude">126.379872</field>
+            <field name="altitude">23</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Seoul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mwx" model="tt.destinations">
+            <field name="name">Muan</field>
+            <field name="code">MWX</field>
+            <field name="icao">RKJB</field>
+            <field name="city">Muan</field>
+            <field name="country_id" ref="base.kr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">34.991389</field>
+            <field name="longitude">126.382778</field>
+            <field name="altitude">51</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Seoul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_osn" model="tt.destinations">
+            <field name="name">Osan Ab</field>
+            <field name="code">OSN</field>
+            <field name="icao">RKSO</field>
+            <field name="city">Osan</field>
+            <field name="country_id" ref="base.kr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.090617</field>
+            <field name="longitude">127.029594</field>
+            <field name="altitude">40</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Seoul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pus" model="tt.destinations">
+            <field name="name">Gimhae Intl</field>
+            <field name="code">PUS</field>
+            <field name="icao">RKPK</field>
+            <field name="city">Busan</field>
+            <field name="country_id" ref="base.kr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.179528</field>
+            <field name="longitude">128.938222</field>
+            <field name="altitude">6</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Seoul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rsu" model="tt.destinations">
+            <field name="name">Yeosu</field>
+            <field name="code">RSU</field>
+            <field name="icao">RKJY</field>
+            <field name="city">Yeosu</field>
+            <field name="country_id" ref="base.kr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">34.842328</field>
+            <field name="longitude">127.61685</field>
+            <field name="altitude">53</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Seoul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sel" model="tt.destinations">
+            <field name="name">Gimpo International Airpot</field>
+            <field name="code">SEL</field>
+            <field name="icao"></field>
+            <field name="city">Seoul</field>
+            <field name="country_id" ref="base.kr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.558311</field>
+            <field name="longitude">126.790586</field>
+            <field name="altitude">58</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Seoul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sho" model="tt.destinations">
+            <field name="name">Sokcho</field>
+            <field name="code">SHO</field>
+            <field name="icao">RKND</field>
+            <field name="city">Sokch'o</field>
+            <field name="country_id" ref="base.kr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.142614</field>
+            <field name="longitude">128.598556</field>
+            <field name="altitude">92</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Seoul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ssn" model="tt.destinations">
+            <field name="name">Seoul Ab</field>
+            <field name="code">SSN</field>
+            <field name="icao">RKSM</field>
+            <field name="city">Seoul East</field>
+            <field name="country_id" ref="base.kr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.445833</field>
+            <field name="longitude">127.113889</field>
+            <field name="altitude">92</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Seoul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tae" model="tt.destinations">
+            <field name="name">Daegu Ab</field>
+            <field name="code">TAE</field>
+            <field name="icao">RKTN</field>
+            <field name="city">Taegu</field>
+            <field name="country_id" ref="base.kr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.894108</field>
+            <field name="longitude">128.658856</field>
+            <field name="altitude">116</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Seoul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_usn" model="tt.destinations">
+            <field name="name">Ulsan</field>
+            <field name="code">USN</field>
+            <field name="icao">RKPU</field>
+            <field name="city">Ulsan</field>
+            <field name="country_id" ref="base.kr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.593494</field>
+            <field name="longitude">129.351722</field>
+            <field name="altitude">45</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Seoul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wju" model="tt.destinations">
+            <field name="name">Wonju Airport</field>
+            <field name="code">WJU</field>
+            <field name="icao">RKNW</field>
+            <field name="city">Wonju</field>
+            <field name="country_id" ref="base.kr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.438081</field>
+            <field name="longitude">127.960383</field>
+            <field name="altitude">329</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Seoul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_yec" model="tt.destinations">
+            <field name="name">Yecheon</field>
+            <field name="code">YEC</field>
+            <field name="icao">RKTY</field>
+            <field name="city">Yechon</field>
+            <field name="country_id" ref="base.kr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.631933</field>
+            <field name="longitude">128.35485</field>
+            <field name="altitude">354</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Seoul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_yny" model="tt.destinations">
+            <field name="name">Yangyang International Airport</field>
+            <field name="code">YNY</field>
+            <field name="icao">RKNY</field>
+            <field name="city">Sokcho / Gangneung</field>
+            <field name="country_id" ref="base.kr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.061311</field>
+            <field name="longitude">128.669164</field>
+            <field name="altitude">241</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Asia/Seoul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_qpg" model="tt.destinations">
+            <field name="name">Paya Lebar</field>
+            <field name="code">QPG</field>
+            <field name="icao">WSAP</field>
+            <field name="city">Paya Lebar</field>
+            <field name="country_id" ref="base.sg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">1.360417</field>
+            <field name="longitude">103.90953</field>
+            <field name="altitude">65</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Singapore</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sin" model="tt.destinations">
+            <field name="name">Changi Intl</field>
+            <field name="code">SIN</field>
+            <field name="icao">WSSS</field>
+            <field name="city">Singapore</field>
+            <field name="country_id" ref="base.sg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">1.350189</field>
+            <field name="longitude">103.994433</field>
+            <field name="altitude">22</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Singapore</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_xsp" model="tt.destinations">
+            <field name="name">Seletar</field>
+            <field name="code">XSP</field>
+            <field name="icao">WSSL</field>
+            <field name="city">Singapore</field>
+            <field name="country_id" ref="base.sg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">1.41695</field>
+            <field name="longitude">103.867653</field>
+            <field name="altitude">36</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Singapore</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cmj" model="tt.destinations">
+            <field name="name">Cimei Airport</field>
+            <field name="code">CMJ</field>
+            <field name="icao">RCCM</field>
+            <field name="city">Cimei</field>
+            <field name="country_id" ref="base.tw"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">23.266667</field>
+            <field name="longitude">119.666667</field>
+            <field name="altitude">63</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Taipei</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cyi" model="tt.destinations">
+            <field name="name">Chiayi</field>
+            <field name="code">CYI</field>
+            <field name="icao">RCKU</field>
+            <field name="city">Chiayi</field>
+            <field name="country_id" ref="base.tw"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">23.461779</field>
+            <field name="longitude">120.39283</field>
+            <field name="altitude">85</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Taipei</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gni" model="tt.destinations">
+            <field name="name">Lyudao</field>
+            <field name="code">GNI</field>
+            <field name="icao">RCGI</field>
+            <field name="city">Green Island</field>
+            <field name="country_id" ref="base.tw"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">22.673853</field>
+            <field name="longitude">121.466481</field>
+            <field name="altitude">28</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Taipei</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hcn" model="tt.destinations">
+            <field name="name">Hengchun Airport</field>
+            <field name="code">HCN</field>
+            <field name="icao">RCKW</field>
+            <field name="city">Hengchun</field>
+            <field name="country_id" ref="base.tw"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">22.041075</field>
+            <field name="longitude">120.730208</field>
+            <field name="altitude">46</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Taipei</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hun" model="tt.destinations">
+            <field name="name">Hualien</field>
+            <field name="code">HUN</field>
+            <field name="icao">RCYU</field>
+            <field name="city">Hualien</field>
+            <field name="country_id" ref="base.tw"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">24.023725</field>
+            <field name="longitude">121.616906</field>
+            <field name="altitude">52</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Taipei</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_khh" model="tt.destinations">
+            <field name="name">Kaohsiung Intl</field>
+            <field name="code">KHH</field>
+            <field name="icao">RCKH</field>
+            <field name="city">Kaohsiung</field>
+            <field name="country_id" ref="base.tw"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">22.577094</field>
+            <field name="longitude">120.350006</field>
+            <field name="altitude">31</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Taipei</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_knh" model="tt.destinations">
+            <field name="name">Shang Yi</field>
+            <field name="code">KNH</field>
+            <field name="icao">RCBS</field>
+            <field name="city">Kinmen</field>
+            <field name="country_id" ref="base.tw"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">24.427892</field>
+            <field name="longitude">118.359197</field>
+            <field name="altitude">93</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Taipei</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            

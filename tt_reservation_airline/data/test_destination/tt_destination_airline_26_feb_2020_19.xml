@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_fbs" model="tt.destinations">
+            <field name="name">Friday Harbor Seaplane Base</field>
+            <field name="code">FBS</field>
+            <field name="icao"></field>
+            <field name="city">Friday Harbor</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.537222</field>
+            <field name="longitude">-123.009722</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Los_Angeles</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fca" model="tt.destinations">
+            <field name="name">Glacier Park Intl</field>
+            <field name="code">FCA</field>
+            <field name="icao">KFCA</field>
+            <field name="city">Kalispell</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.310472</field>
+            <field name="longitude">-114.256</field>
+            <field name="altitude">2977</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Denver</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fcm" model="tt.destinations">
+            <field name="name">Flying Cloud Airport</field>
+            <field name="code">FCM</field>
+            <field name="icao">KFCM</field>
+            <field name="city">Eden Prairie</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">44.4938</field>
+            <field name="longitude">-93.2726</field>
+            <field name="altitude">906</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fcs" model="tt.destinations">
+            <field name="name">Butts Aaf</field>
+            <field name="code">FCS</field>
+            <field name="icao">KFCS</field>
+            <field name="city">Fort Carson</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.678394</field>
+            <field name="longitude">-104.756581</field>
+            <field name="altitude">5838</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Denver</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fdf" model="tt.destinations">
+            <field name="name">Le Lamentin</field>
+            <field name="code">FDF</field>
+            <field name="icao">TFFF</field>
+            <field name="city">Fort-de-france</field>
+            <field name="country_id" ref="base.mq"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">14.591033</field>
+            <field name="longitude">-61.003175</field>
+            <field name="altitude">16</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">America/Martinique</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fdu" model="tt.destinations">
+            <field name="name">Bandundu</field>
+            <field name="code">FDU</field>
+            <field name="icao">FZBO</field>
+            <field name="city">Bandoundu</field>
+            <field name="country_id" ref="base.cg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-3.311319</field>
+            <field name="longitude">17.381683</field>
+            <field name="altitude">1053</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Africa/Kinshasa</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fdw" model="tt.destinations">
+            <field name="name">Fairfield County Airport</field>
+            <field name="code">FDW</field>
+            <field name="icao">KFDW</field>
+            <field name="city">Winnsboro</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">34.315472</field>
+            <field name="longitude">-81.108806</field>
+            <field name="altitude">577</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fdy" model="tt.destinations">
+            <field name="name">Findlay Airport</field>
+            <field name="code">FDY</field>
+            <field name="icao">KFDY</field>
+            <field name="city">Findley</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.0120278</field>
+            <field name="longitude">-83.6686111</field>
+            <field name="altitude">819</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fen" model="tt.destinations">
+            <field name="name">Fernando De Noronha</field>
+            <field name="code">FEN</field>
+            <field name="icao">SBFN</field>
+            <field name="city">Fernando Do Noronha</field>
+            <field name="country_id" ref="base.br"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-3.854928</field>
+            <field name="longitude">-32.423336</field>
+            <field name="altitude">193</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Fortaleza</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fez" model="tt.destinations">
+            <field name="name">Saiss</field>
+            <field name="code">FEZ</field>
+            <field name="icao">GMFF</field>
+            <field name="city">Fes</field>
+            <field name="country_id" ref="base.ma"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">33.927261</field>
+            <field name="longitude">-4.977958</field>
+            <field name="altitude">1900</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Africa/Casablanca</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ffa" model="tt.destinations">
+            <field name="name">First Flight Airport</field>
+            <field name="code">FFA</field>
+            <field name="icao">KFFA</field>
+            <field name="city">Kill Devil Hills</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.02</field>
+            <field name="longitude">-75.67</field>
+            <field name="altitude">13</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ffc" model="tt.destinations">
+            <field name="name">Atlanta Regional Airport - Falcon Field</field>
+            <field name="code">FFC</field>
+            <field name="icao">KFFC</field>
+            <field name="city">Atlanta</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">33.35725</field>
+            <field name="longitude">-84.5718333</field>
+            <field name="altitude">808</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ffo" model="tt.destinations">
+            <field name="name">Wright Patterson Afb</field>
+            <field name="code">FFO</field>
+            <field name="icao">KFFO</field>
+            <field name="city">Dayton</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.826111</field>
+            <field name="longitude">-84.048332</field>
+            <field name="altitude">823</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fft" model="tt.destinations">
+            <field name="name">Capital City Airport</field>
+            <field name="code">FFT</field>
+            <field name="icao">KFFT</field>
+            <field name="city">Frankfort</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.1819722</field>
+            <field name="longitude">-84.9061389</field>
+            <field name="altitude">812</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ffz" model="tt.destinations">
+            <field name="name">Mesa Falcon Field</field>
+            <field name="code">FFZ</field>
+            <field name="icao">KFFZ</field>
+            <field name="city">Mesa</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">33.46080017</field>
+            <field name="longitude">-111.7279968</field>
+            <field name="altitude">1394</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Phoenix</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fhu" model="tt.destinations">
+            <field name="name">Sierra Vista Muni Libby Aaf</field>
+            <field name="code">FHU</field>
+            <field name="icao">KFHU</field>
+            <field name="city">Fort Huachuca</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">31.588472</field>
+            <field name="longitude">-110.344389</field>
+            <field name="altitude">4719</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Phoenix</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fig" model="tt.destinations">
+            <field name="name">Fria</field>
+            <field name="code">FIG</field>
+            <field name="icao">GUFA</field>
+            <field name="city">Fira</field>
+            <field name="country_id" ref="base.gn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">10.350556</field>
+            <field name="longitude">-13.569167</field>
+            <field name="altitude">499</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Africa/Conakry</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fih" model="tt.destinations">
+            <field name="name">Ndjili Intl</field>
+            <field name="code">FIH</field>
+            <field name="icao">FZAA</field>
+            <field name="city">Kinshasa</field>
+            <field name="country_id" ref="base.cg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-4.38575</field>
+            <field name="longitude">15.444569</field>
+            <field name="altitude">1027</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Africa/Kinshasa</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fit" model="tt.destinations">
+            <field name="name">Fitchburg Municipal Airport</field>
+            <field name="code">FIT</field>
+            <field name="icao">KFIT</field>
+            <field name="city">Fitchburg</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">42.5541111</field>
+            <field name="longitude">-71.7589722</field>
+            <field name="altitude">348</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fki" model="tt.destinations">
+            <field name="name">Kisangani Simisini</field>
+            <field name="code">FKI</field>
+            <field name="icao">FZIA</field>
+            <field name="city">Kisangani</field>
+            <field name="country_id" ref="base.cg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">0.5175</field>
+            <field name="longitude">25.155014</field>
+            <field name="altitude">1289</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Africa/Lubumbashi</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fkl" model="tt.destinations">
+            <field name="name">Franklin</field>
+            <field name="code">FKL</field>
+            <field name="icao">KFKL</field>
+            <field name="city">Franklin</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.377874</field>
+            <field name="longitude">-79.860362</field>
+            <field name="altitude">1540</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fla" model="tt.destinations">
+            <field name="name">Gustavo Artunduaga Paredes</field>
+            <field name="code">FLA</field>
+            <field name="icao">SKFL</field>
+            <field name="city">Florencia</field>
+            <field name="country_id" ref="base.co"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">1.589189</field>
+            <field name="longitude">-75.564372</field>
+            <field name="altitude">803</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Bogota</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fld" model="tt.destinations">
+            <field name="name">Fond Du Lac County Airport</field>
+            <field name="code">FLD</field>
+            <field name="icao">KFLD</field>
+            <field name="city">Fond du Lac</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.7711667</field>
+            <field name="longitude">-88.4884167</field>
+            <field name="altitude">808</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_flg" model="tt.destinations">
+            <field name="name">Flagstaff Pulliam Airport</field>
+            <field name="code">FLG</field>
+            <field name="icao">KFLG</field>
+            <field name="city">Flagstaff</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.140318</field>
+            <field name="longitude">-111.6692392</field>
+            <field name="altitude">7015</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Phoenix</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fll" model="tt.destinations">
+            <field name="name">Fort Lauderdale Hollywood Intl</field>
+            <field name="code">FLL</field>
+            <field name="icao">KFLL</field>
+            <field name="city">Fort Lauderdale</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">26.072583</field>
+            <field name="longitude">-80.15275</field>
+            <field name="altitude">9</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fln" model="tt.destinations">
+            <field name="name">Hercilio Luz</field>
+            <field name="code">FLN</field>
+            <field name="icao">SBFL</field>
+            <field name="city">Florianopolis</field>
+            <field name="country_id" ref="base.br"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-27.670489</field>
+            <field name="longitude">-48.547181</field>
+            <field name="altitude">20</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Sao_Paulo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_flo" model="tt.destinations">
+            <field name="name">Florence Rgnl</field>
+            <field name="code">FLO</field>
+            <field name="icao">KFLO</field>
+            <field name="city">Florence</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">34.185361</field>
+            <field name="longitude">-79.723889</field>
+            <field name="altitude">146</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_flv" model="tt.destinations">
+            <field name="name">Sherman Aaf</field>
+            <field name="code">FLV</field>
+            <field name="icao">KFLV</field>
+            <field name="city">Fort Leavenworth</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.368332</field>
+            <field name="longitude">-94.914686</field>
+            <field name="altitude">772</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fma" model="tt.destinations">
+            <field name="name">Formosa</field>
+            <field name="code">FMA</field>
+            <field name="icao">SARF</field>
+            <field name="city">Formosa</field>
+            <field name="country_id" ref="base.ar"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-26.212722</field>
+            <field name="longitude">-58.228111</field>
+            <field name="altitude">194</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Cordoba</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fme" model="tt.destinations">
+            <field name="name">Tipton</field>
+            <field name="code">FME</field>
+            <field name="icao">KFME</field>
+            <field name="city">Fort Meade</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.085386</field>
+            <field name="longitude">-76.759414</field>
+            <field name="altitude">150</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fmh" model="tt.destinations">
+            <field name="name">Otis Angb</field>
+            <field name="code">FMH</field>
+            <field name="icao">KFMH</field>
+            <field name="city">Falmouth</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.658439</field>
+            <field name="longitude">-70.521417</field>
+            <field name="altitude">131</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fmi" model="tt.destinations">
+            <field name="name">Kalemie</field>
+            <field name="code">FMI</field>
+            <field name="icao">FZRF</field>
+            <field name="city">Kalemie</field>
+            <field name="country_id" ref="base.cg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-5.875556</field>
+            <field name="longitude">29.25</field>
+            <field name="altitude">2569</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Africa/Lubumbashi</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fmn" model="tt.destinations">
+            <field name="name">Four Corners Rgnl</field>
+            <field name="code">FMN</field>
+            <field name="icao">KFMN</field>
+            <field name="city">Farmington</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.74125</field>
+            <field name="longitude">-108.229944</field>
+            <field name="altitude">5506</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Denver</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fmy" model="tt.destinations">
+            <field name="name">Page Fld</field>
+            <field name="code">FMY</field>
+            <field name="icao">KFMY</field>
+            <field name="city">Fort Myers</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">26.586611</field>
+            <field name="longitude">-81.86325</field>
+            <field name="altitude">17</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fna" model="tt.destinations">
+            <field name="name">Freetown Lungi</field>
+            <field name="code">FNA</field>
+            <field name="icao">GFLL</field>
+            <field name="city">Freetown</field>
+            <field name="country_id" ref="base.sl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">8.616444</field>
+            <field name="longitude">-13.195489</field>
+            <field name="altitude">84</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Africa/Freetown</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fnl" model="tt.destinations">
+            <field name="name">Fort Collins Loveland Muni</field>
+            <field name="code">FNL</field>
+            <field name="icao">KFNL</field>
+            <field name="city">Fort Collins</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.451828</field>
+            <field name="longitude">-105.011336</field>
+            <field name="altitude">5016</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Denver</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fnr" model="tt.destinations">
+            <field name="name">Funter Bay Seaplane Base</field>
+            <field name="code">FNR</field>
+            <field name="icao">PANR</field>
+            <field name="city">Funter Bay</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">58.254444</field>
+            <field name="longitude">-134.897778</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">-9</field>
+            <field name="tz">America/Anchorage</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fnt" model="tt.destinations">
+            <field name="name">Bishop International</field>
+            <field name="code">FNT</field>
+            <field name="icao">KFNT</field>
+            <field name="city">Flint</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">42.965424</field>
+            <field name="longitude">-83.743629</field>
+            <field name="altitude">782</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_foc" model="tt.destinations">
+            <field name="name">Changle</field>
+            <field name="code">FOC</field>
+            <field name="icao">ZSFZ</field>
+            <field name="city">Fuzhou</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">25.935064</field>
+            <field name="longitude">119.663272</field>
+            <field name="altitude">46</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fod" model="tt.destinations">
+            <field name="name">Fort Dodge Rgnl</field>
+            <field name="code">FOD</field>
+            <field name="icao">KFOD</field>
+            <field name="city">Fort Dodge</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">42.5512</field>
+            <field name="longitude">-94.191842</field>
+            <field name="altitude">1157</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_foe" model="tt.destinations">
+            <field name="name">Forbes Fld</field>
+            <field name="code">FOE</field>
+            <field name="icao">KFOE</field>
+            <field name="city">Topeka</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.950944</field>
+            <field name="longitude">-95.663611</field>
+            <field name="altitude">1078</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fok" model="tt.destinations">
+            <field name="name">Francis S Gabreski</field>
+            <field name="code">FOK</field>
+            <field name="icao">KFOK</field>
+            <field name="city">West Hampton Beach</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.843656</field>
+            <field name="longitude">-72.631789</field>
+            <field name="altitude">67</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fom" model="tt.destinations">
+            <field name="name">Foumban Nkounja</field>
+            <field name="code">FOM</field>
+            <field name="icao">FKKM</field>
+            <field name="city">Foumban</field>
+            <field name="country_id" ref="base.cm"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">5.636919</field>
+            <field name="longitude">10.750817</field>
+            <field name="altitude">3963</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Africa/Douala</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fon" model="tt.destinations">
+            <field name="name">Arenal Airport</field>
+            <field name="code">FON</field>
+            <field name="icao">MRAN</field>
+            <field name="city">La Fortuna/San Carlos</field>
+            <field name="country_id" ref="base.cr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">10.478</field>
+            <field name="longitude">-84.6345</field>
+            <field name="altitude">342</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Costa_Rica</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_for" model="tt.destinations">
+            <field name="name">Pinto Martins Intl</field>
+            <field name="code">FOR</field>
+            <field name="icao">SBFZ</field>
+            <field name="city">Fortaleza</field>
+            <field name="country_id" ref="base.br"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-3.776283</field>
+            <field name="longitude">-38.532556</field>
+            <field name="altitude">82</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Fortaleza</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fpo" model="tt.destinations">
+            <field name="name">Grand Bahama Intl</field>
+            <field name="code">FPO</field>
+            <field name="icao">MYGF</field>
+            <field name="city">Freeport</field>
+            <field name="country_id" ref="base.bs"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">26.558686</field>
+            <field name="longitude">-78.695553</field>
+            <field name="altitude">7</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Nassau</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_frc" model="tt.destinations">
+            <field name="name">Franca Airport</field>
+            <field name="code">FRC</field>
+            <field name="icao">SIMK</field>
+            <field name="city">Franca</field>
+            <field name="country_id" ref="base.br"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-20.538611</field>
+            <field name="longitude">-47.400833</field>
+            <field name="altitude">1040</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Sao_Paulo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_frd" model="tt.destinations">
+            <field name="name">Friday Harbor Airport</field>
+            <field name="code">FRD</field>
+            <field name="icao">KFHR</field>
+            <field name="city">Friday Harbor</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.521944</field>
+            <field name="longitude">-123.024444</field>
+            <field name="altitude">113</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Los_Angeles</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fri" model="tt.destinations">
+            <field name="name">Marshall Aaf</field>
+            <field name="code">FRI</field>
+            <field name="icao">KFRI</field>
+            <field name="city">Fort Riley</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.055275</field>
+            <field name="longitude">-96.764453</field>
+            <field name="altitude">1063</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_frn" model="tt.destinations">
+            <field name="name">Bryant Ahp</field>
+            <field name="code">FRN</field>
+            <field name="icao">PAFR</field>
+            <field name="city">Fort Richardson</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">61.266381</field>
+            <field name="longitude">-149.653119</field>
+            <field name="altitude">378</field>
+            <field name="timezone_hour">-9</field>
+            <field name="tz">America/Anchorage</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            

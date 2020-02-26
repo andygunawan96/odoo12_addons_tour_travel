@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_qla" model="tt.destinations">
+            <field name="name">Lasham</field>
+            <field name="code">QLA</field>
+            <field name="icao">EGHL</field>
+            <field name="city">Lasham</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">51.187167</field>
+            <field name="longitude">-1.0335</field>
+            <field name="altitude">618</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/London</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_qqk" model="tt.destinations">
+            <field name="name">London - Kings Cross</field>
+            <field name="code">QQK</field>
+            <field name="icao"></field>
+            <field name="city">London</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">51.5326</field>
+            <field name="longitude">0.1233</field>
+            <field name="altitude">72</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/London</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_qqp" model="tt.destinations">
+            <field name="name">Paddington Station</field>
+            <field name="code">QQP</field>
+            <field name="icao"></field>
+            <field name="city">London</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">51.515833</field>
+            <field name="longitude">-0.176111</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/London</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_qqs" model="tt.destinations">
+            <field name="name">St Pancras Railway Station</field>
+            <field name="code">QQS</field>
+            <field name="icao"></field>
+            <field name="city">London</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">51.53251949</field>
+            <field name="longitude">-0.126300373</field>
+            <field name="altitude">80</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/London</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_qqu" model="tt.destinations">
+            <field name="name">Euston Station</field>
+            <field name="code">QQU</field>
+            <field name="icao"></field>
+            <field name="city">London</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">51.5284</field>
+            <field name="longitude">-0.1331</field>
+            <field name="altitude">89</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/London</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_qqw" model="tt.destinations">
+            <field name="name">Waterloo International</field>
+            <field name="code">QQW</field>
+            <field name="icao"></field>
+            <field name="city">London</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">51.5031</field>
+            <field name="longitude">-0.1147</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/London</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rcs" model="tt.destinations">
+            <field name="name">Rochester Airport</field>
+            <field name="code">RCS</field>
+            <field name="icao">EGTO</field>
+            <field name="city">Rochester</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">51.351944</field>
+            <field name="longitude">0.502778</field>
+            <field name="altitude">426</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/London</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_scs" model="tt.destinations">
+            <field name="name">Scatsta Airport</field>
+            <field name="code">SCS</field>
+            <field name="icao"></field>
+            <field name="city">Scatsta</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">60.433</field>
+            <field name="longitude">-1.3</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/London</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sdz" model="tt.destinations">
+            <field name="name">Scatsta</field>
+            <field name="code">SDZ</field>
+            <field name="icao">EGPM</field>
+            <field name="city">Scatsta</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">60.432778</field>
+            <field name="longitude">-1.296111</field>
+            <field name="altitude">81</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/London</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sen" model="tt.destinations">
+            <field name="name">Southend</field>
+            <field name="code">SEN</field>
+            <field name="icao">EGMC</field>
+            <field name="city">Southend</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">51.571389</field>
+            <field name="longitude">0.695556</field>
+            <field name="altitude">49</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/London</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sou" model="tt.destinations">
+            <field name="name">Southampton</field>
+            <field name="code">SOU</field>
+            <field name="icao">EGHI</field>
+            <field name="city">Southampton</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">50.950261</field>
+            <field name="longitude">-1.356803</field>
+            <field name="altitude">44</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/London</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_soy" model="tt.destinations">
+            <field name="name">Stronsay Airport</field>
+            <field name="code">SOY</field>
+            <field name="icao">EGER</field>
+            <field name="city">Stronsay</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">59.1553</field>
+            <field name="longitude">-2.64139</field>
+            <field name="altitude">39</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/London</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sr2" model="tt.destinations">
+            <field name="name">Stranraer Ferry Port</field>
+            <field name="code">SR2</field>
+            <field name="icao"></field>
+            <field name="city">Stranraer</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">54.902</field>
+            <field name="longitude">-5.027</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/London</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_stn" model="tt.destinations">
+            <field name="name">Stansted</field>
+            <field name="code">STN</field>
+            <field name="icao">EGSS</field>
+            <field name="city">London</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">51.885</field>
+            <field name="longitude">0.235</field>
+            <field name="altitude">348</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/London</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_stp" model="tt.destinations">
+            <field name="name">London St Pancras</field>
+            <field name="code">STP</field>
+            <field name="icao"></field>
+            <field name="city">London</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">51.53</field>
+            <field name="longitude">-0.125</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/London</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sws" model="tt.destinations">
+            <field name="name">Swansea</field>
+            <field name="code">SWS</field>
+            <field name="icao">EGFH</field>
+            <field name="city">Swansea</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">51.605333</field>
+            <field name="longitude">-4.067833</field>
+            <field name="altitude">299</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/London</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_syy" model="tt.destinations">
+            <field name="name">Stornoway</field>
+            <field name="code">SYY</field>
+            <field name="icao">EGPO</field>
+            <field name="city">Stornoway</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">58.215556</field>
+            <field name="longitude">-6.331111</field>
+            <field name="altitude">26</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/London</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tre" model="tt.destinations">
+            <field name="name">Tiree</field>
+            <field name="code">TRE</field>
+            <field name="icao">EGPU</field>
+            <field name="city">Tiree</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">56.499167</field>
+            <field name="longitude">-6.869167</field>
+            <field name="altitude">38</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/London</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tso" model="tt.destinations">
+            <field name="name">Tresco Heliport</field>
+            <field name="code">TSO</field>
+            <field name="icao">EGHT</field>
+            <field name="city">Tresco</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">49.945556</field>
+            <field name="longitude">-6.331389</field>
+            <field name="altitude">20</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/London</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_unt" model="tt.destinations">
+            <field name="name">Unst Airport</field>
+            <field name="code">UNT</field>
+            <field name="icao">EGPW</field>
+            <field name="city">Unst</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">60.7472</field>
+            <field name="longitude">-0.85385</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/London</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wic" model="tt.destinations">
+            <field name="name">Wick</field>
+            <field name="code">WIC</field>
+            <field name="icao">EGPC</field>
+            <field name="city">Wick</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">58.458889</field>
+            <field name="longitude">-3.093056</field>
+            <field name="altitude">126</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/London</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wlf" model="tt.destinations">
+            <field name="name">Whittlesford Parkway Rail Station</field>
+            <field name="code">WLF</field>
+            <field name="icao"></field>
+            <field name="city">Whittlesford</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">52.104</field>
+            <field name="longitude">0.166</field>
+            <field name="altitude">95</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/London</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wry" model="tt.destinations">
+            <field name="name">Westray Airport</field>
+            <field name="code">WRY</field>
+            <field name="icao">EGEW</field>
+            <field name="city">Westray</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">59.3503</field>
+            <field name="longitude">-2.95</field>
+            <field name="altitude">29</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/London</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wtn" model="tt.destinations">
+            <field name="name">Waddington</field>
+            <field name="code">WTN</field>
+            <field name="icao">EGXW</field>
+            <field name="city">Waddington</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">53.166167</field>
+            <field name="longitude">-0.523811</field>
+            <field name="altitude">231</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/London</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_xvh" model="tt.destinations">
+            <field name="name">Peterborough Railway Station</field>
+            <field name="code">XVH</field>
+            <field name="icao"></field>
+            <field name="city">Peterborough</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">52.5748</field>
+            <field name="longitude">-0.2502</field>
+            <field name="altitude">91</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/London</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_xvj" model="tt.destinations">
+            <field name="name">Stevenage Railway Station</field>
+            <field name="code">XVJ</field>
+            <field name="icao"></field>
+            <field name="city">Stevenage</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">51.902</field>
+            <field name="longitude">0.207</field>
+            <field name="altitude">262</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/London</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_yeo" model="tt.destinations">
+            <field name="name">Yeovilton</field>
+            <field name="code">YEO</field>
+            <field name="icao">EGDY</field>
+            <field name="city">Yeovilton</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">51.009358</field>
+            <field name="longitude">-2.638819</field>
+            <field name="altitude">75</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/London</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zgg" model="tt.destinations">
+            <field name="name">Central Station</field>
+            <field name="code">ZGG</field>
+            <field name="icao"></field>
+            <field name="city">Glasgow</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">55.858</field>
+            <field name="longitude">-4.258</field>
+            <field name="altitude">25</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/London</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zxe" model="tt.destinations">
+            <field name="name">Edinburgh Waverly Station</field>
+            <field name="code">ZXE</field>
+            <field name="icao"></field>
+            <field name="city">Edinburgh</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">55.952</field>
+            <field name="longitude">-3.189</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/London</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lux" model="tt.destinations">
+            <field name="name">Luxembourg</field>
+            <field name="code">LUX</field>
+            <field name="icao">ELLX</field>
+            <field name="city">Luxemburg</field>
+            <field name="country_id" ref="base.lu"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">49.626575</field>
+            <field name="longitude">6.211517</field>
+            <field name="altitude">1234</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Luxembourg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_agp" model="tt.destinations">
+            <field name="name">Malaga</field>
+            <field name="code">AGP</field>
+            <field name="icao">LEMG</field>
+            <field name="city">Malaga</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.6749</field>
+            <field name="longitude">-4.499106</field>
+            <field name="altitude">52</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_alc" model="tt.destinations">
+            <field name="name">Alicante</field>
+            <field name="code">ALC</field>
+            <field name="icao">LEAL</field>
+            <field name="city">Alicante</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.282169</field>
+            <field name="longitude">-0.558156</field>
+            <field name="altitude">142</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bcn" model="tt.destinations">
+            <field name="name">Barcelona</field>
+            <field name="code">BCN</field>
+            <field name="icao">LEBL</field>
+            <field name="city">Barcelona</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.297078</field>
+            <field name="longitude">2.078464</field>
+            <field name="altitude">12</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bio" model="tt.destinations">
+            <field name="name">Bilbao</field>
+            <field name="code">BIO</field>
+            <field name="icao">LEBB</field>
+            <field name="city">Bilbao</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.301097</field>
+            <field name="longitude">-2.910608</field>
+            <field name="altitude">138</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bjz" model="tt.destinations">
+            <field name="name">Talavera La Real</field>
+            <field name="code">BJZ</field>
+            <field name="icao">LEBZ</field>
+            <field name="city">Badajoz</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.89125</field>
+            <field name="longitude">-6.821333</field>
+            <field name="altitude">609</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cqm" model="tt.destinations">
+            <field name="name">Ciudad Real Central Airport</field>
+            <field name="code">CQM</field>
+            <field name="icao">LERL</field>
+            <field name="city">Ciudad Real</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.856389</field>
+            <field name="longitude">-3.97</field>
+            <field name="altitude">636</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_eas" model="tt.destinations">
+            <field name="name">San Sebastian</field>
+            <field name="code">EAS</field>
+            <field name="icao">LESO</field>
+            <field name="city">San Sebastian</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.356519</field>
+            <field name="longitude">-1.790611</field>
+            <field name="altitude">15</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gro" model="tt.destinations">
+            <field name="name">Girona</field>
+            <field name="code">GRO</field>
+            <field name="icao">LEGE</field>
+            <field name="city">Gerona</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.900969</field>
+            <field name="longitude">2.760547</field>
+            <field name="altitude">468</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_grx" model="tt.destinations">
+            <field name="name">Granada</field>
+            <field name="code">GRX</field>
+            <field name="icao">LEGR</field>
+            <field name="city">Granada</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.188731</field>
+            <field name="longitude">-3.777356</field>
+            <field name="altitude">1860</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hsk" model="tt.destinations">
+            <field name="name">Huesca-Pirineos Airport</field>
+            <field name="code">HSK</field>
+            <field name="icao">LEHC</field>
+            <field name="city">Huesca</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">42.080833</field>
+            <field name="longitude">-0.323333</field>
+            <field name="altitude">1768</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ibz" model="tt.destinations">
+            <field name="name">Ibiza</field>
+            <field name="code">IBZ</field>
+            <field name="icao">LEIB</field>
+            <field name="city">Ibiza</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.872858</field>
+            <field name="longitude">1.373117</field>
+            <field name="altitude">20</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ild" model="tt.destinations">
+            <field name="name">Lleida-Alguaire Airport</field>
+            <field name="code">ILD</field>
+            <field name="icao">LEDA</field>
+            <field name="city">Lleida</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.727778</field>
+            <field name="longitude">0.535833</field>
+            <field name="altitude">1148</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jcu" model="tt.destinations">
+            <field name="name">Ceuta Heliport</field>
+            <field name="code">JCU</field>
+            <field name="icao">GECT</field>
+            <field name="city">Ceuta</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.8969</field>
+            <field name="longitude">-5.29908</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lcg" model="tt.destinations">
+            <field name="name">A Coruna</field>
+            <field name="code">LCG</field>
+            <field name="icao">LECO</field>
+            <field name="city">La Coruna</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.302061</field>
+            <field name="longitude">-8.377256</field>
+            <field name="altitude">326</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lei" model="tt.destinations">
+            <field name="name">Almeria</field>
+            <field name="code">LEI</field>
+            <field name="icao">LEAM</field>
+            <field name="city">Almeria</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.843936</field>
+            <field name="longitude">-2.370097</field>
+            <field name="altitude">70</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_len" model="tt.destinations">
+            <field name="name">Leon Airport</field>
+            <field name="code">LEN</field>
+            <field name="icao">LELN</field>
+            <field name="city">Leon</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">42.589</field>
+            <field name="longitude">-5.655556</field>
+            <field name="altitude">3006</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_leu" model="tt.destinations">
+            <field name="name">Seo De Urgel</field>
+            <field name="code">LEU</field>
+            <field name="icao">LESU</field>
+            <field name="city">Seo De Urgel</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">42.338611</field>
+            <field name="longitude">1.409167</field>
+            <field name="altitude">2625</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mad" model="tt.destinations">
+            <field name="name">Barajas</field>
+            <field name="code">MAD</field>
+            <field name="icao">LEMD</field>
+            <field name="city">Madrid</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.493556</field>
+            <field name="longitude">-3.566764</field>
+            <field name="altitude">2000</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mah" model="tt.destinations">
+            <field name="name">Menorca</field>
+            <field name="code">MAH</field>
+            <field name="icao">LEMH</field>
+            <field name="city">Menorca</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.862597</field>
+            <field name="longitude">4.218647</field>
+            <field name="altitude">298</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mjv" model="tt.destinations">
+            <field name="name">Murcia San Javier</field>
+            <field name="code">MJV</field>
+            <field name="icao">LELC</field>
+            <field name="city">Murcia</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.774972</field>
+            <field name="longitude">-0.812389</field>
+            <field name="altitude">11</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            

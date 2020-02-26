@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_mln" model="tt.destinations">
+            <field name="name">Melilla</field>
+            <field name="code">MLN</field>
+            <field name="icao">GEML</field>
+            <field name="city">Melilla</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.279817</field>
+            <field name="longitude">-2.956256</field>
+            <field name="altitude">156</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_odb" model="tt.destinations">
+            <field name="name">Cordoba</field>
+            <field name="code">ODB</field>
+            <field name="icao">LEBA</field>
+            <field name="city">Cordoba</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.842006</field>
+            <field name="longitude">-4.848878</field>
+            <field name="altitude">297</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ovd" model="tt.destinations">
+            <field name="name">Asturias</field>
+            <field name="code">OVD</field>
+            <field name="icao">LEAS</field>
+            <field name="city">Aviles</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.563567</field>
+            <field name="longitude">-6.034622</field>
+            <field name="altitude">416</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ozp" model="tt.destinations">
+            <field name="name">Moron Ab</field>
+            <field name="code">OZP</field>
+            <field name="icao">LEMO</field>
+            <field name="city">Sevilla</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.174917</field>
+            <field name="longitude">-5.615944</field>
+            <field name="altitude">285</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pmi" model="tt.destinations">
+            <field name="name">Son Sant Joan</field>
+            <field name="code">PMI</field>
+            <field name="icao">LEPA</field>
+            <field name="city">Palma de Mallorca</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.55361</field>
+            <field name="longitude">2.727778</field>
+            <field name="altitude">24</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pna" model="tt.destinations">
+            <field name="name">Pamplona</field>
+            <field name="code">PNA</field>
+            <field name="icao">LEPP</field>
+            <field name="city">Pamplona</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">42.770039</field>
+            <field name="longitude">-1.646331</field>
+            <field name="altitude">1504</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_qsa" model="tt.destinations">
+            <field name="name">Sabadell Airport</field>
+            <field name="code">QSA</field>
+            <field name="icao">LELL</field>
+            <field name="city">Sabadell</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.5209</field>
+            <field name="longitude">2.10508</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_reu" model="tt.destinations">
+            <field name="name">Reus</field>
+            <field name="code">REU</field>
+            <field name="icao">LERS</field>
+            <field name="city">Reus</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.147392</field>
+            <field name="longitude">1.167172</field>
+            <field name="altitude">234</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rgs" model="tt.destinations">
+            <field name="name">Burgos Airport</field>
+            <field name="code">RGS</field>
+            <field name="icao">LEBG</field>
+            <field name="city">Burgos</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">42.357628</field>
+            <field name="longitude">-3.620764</field>
+            <field name="altitude">2945</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rjl" model="tt.destinations">
+            <field name="name">Logro帽o-Agoncillo Airport</field>
+            <field name="code">RJL</field>
+            <field name="icao">LELO</field>
+            <field name="city">Logro帽o-Agoncillo</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">42.4542</field>
+            <field name="longitude">-2.32083</field>
+            <field name="altitude">1161</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rra" model="tt.destinations">
+            <field name="name">Ronda Airport</field>
+            <field name="code">RRA</field>
+            <field name="icao"></field>
+            <field name="city">Ronda</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.75</field>
+            <field name="longitude">-5.166667</field>
+            <field name="altitude">2500</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_scq" model="tt.destinations">
+            <field name="name">Santiago</field>
+            <field name="code">SCQ</field>
+            <field name="icao">LEST</field>
+            <field name="city">Santiago</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">42.896333</field>
+            <field name="longitude">-8.415144</field>
+            <field name="altitude">1213</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sdr" model="tt.destinations">
+            <field name="name">Santander</field>
+            <field name="code">SDR</field>
+            <field name="icao">LEXJ</field>
+            <field name="city">Santander</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.427064</field>
+            <field name="longitude">-3.820006</field>
+            <field name="altitude">16</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_slm" model="tt.destinations">
+            <field name="name">Salamanca</field>
+            <field name="code">SLM</field>
+            <field name="icao">LESA</field>
+            <field name="city">Salamanca</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.952117</field>
+            <field name="longitude">-5.501986</field>
+            <field name="altitude">2595</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_svq" model="tt.destinations">
+            <field name="name">Sevilla</field>
+            <field name="code">SVQ</field>
+            <field name="icao">LEZL</field>
+            <field name="city">Sevilla</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.418</field>
+            <field name="longitude">-5.893106</field>
+            <field name="altitude">111</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_toj" model="tt.destinations">
+            <field name="name">Torrejon</field>
+            <field name="code">TOJ</field>
+            <field name="icao">LETO</field>
+            <field name="city">Madrid</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.496747</field>
+            <field name="longitude">-3.445872</field>
+            <field name="altitude">2026</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vgo" model="tt.destinations">
+            <field name="name">Vigo</field>
+            <field name="code">VGO</field>
+            <field name="icao">LEVX</field>
+            <field name="city">Vigo</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">42.2318</field>
+            <field name="longitude">-8.626775</field>
+            <field name="altitude">855</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vit" model="tt.destinations">
+            <field name="name">Vitoria</field>
+            <field name="code">VIT</field>
+            <field name="icao">LEVT</field>
+            <field name="city">Vitoria</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">42.882836</field>
+            <field name="longitude">-2.724469</field>
+            <field name="altitude">1682</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vlc" model="tt.destinations">
+            <field name="name">Valencia</field>
+            <field name="code">VLC</field>
+            <field name="icao">LEVC</field>
+            <field name="city">Valencia</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.489314</field>
+            <field name="longitude">-0.481625</field>
+            <field name="altitude">225</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vll" model="tt.destinations">
+            <field name="name">Valladolid</field>
+            <field name="code">VLL</field>
+            <field name="icao">LEVD</field>
+            <field name="city">Valladolid</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.706111</field>
+            <field name="longitude">-4.851944</field>
+            <field name="altitude">2775</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_xry" model="tt.destinations">
+            <field name="name">Jerez</field>
+            <field name="code">XRY</field>
+            <field name="icao">LEJR</field>
+            <field name="city">Jerez</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.744622</field>
+            <field name="longitude">-6.060111</field>
+            <field name="altitude">93</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zaz" model="tt.destinations">
+            <field name="name">Zaragoza Ab</field>
+            <field name="code">ZAZ</field>
+            <field name="icao">LEZG</field>
+            <field name="city">Zaragoza</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.666242</field>
+            <field name="longitude">-1.041553</field>
+            <field name="altitude">863</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Madrid</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gzm" model="tt.destinations">
+            <field name="name">Xewkija Heliport</field>
+            <field name="code">GZM</field>
+            <field name="icao">LMMG</field>
+            <field name="city">Gozo</field>
+            <field name="country_id" ref="base.mt"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.027222</field>
+            <field name="longitude">14.272778</field>
+            <field name="altitude">300</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Malta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jco" model="tt.destinations">
+            <field name="name">Comino Airport</field>
+            <field name="code">JCO</field>
+            <field name="icao"></field>
+            <field name="city">Comino</field>
+            <field name="country_id" ref="base.mt"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.016</field>
+            <field name="longitude">14.333</field>
+            <field name="altitude">201</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Malta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mla" model="tt.destinations">
+            <field name="name">Luqa</field>
+            <field name="code">MLA</field>
+            <field name="icao">LMML</field>
+            <field name="city">Malta</field>
+            <field name="country_id" ref="base.mt"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.857497</field>
+            <field name="longitude">14.4775</field>
+            <field name="altitude">300</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Malta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mhq" model="tt.destinations">
+            <field name="name">Mariehamn</field>
+            <field name="code">MHQ</field>
+            <field name="icao">EFMA</field>
+            <field name="city">Mariehamn</field>
+            <field name="country_id" ref="base.fi"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">60.122203</field>
+            <field name="longitude">19.898156</field>
+            <field name="altitude">17</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Mariehamn</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gme" model="tt.destinations">
+            <field name="name">Gomel</field>
+            <field name="code">GME</field>
+            <field name="icao">UMGG</field>
+            <field name="city">Gomel</field>
+            <field name="country_id" ref="base.by"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">52.527022</field>
+            <field name="longitude">31.016692</field>
+            <field name="altitude">471</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Europe/Minsk</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gna" model="tt.destinations">
+            <field name="name">Hrodno Airport</field>
+            <field name="code">GNA</field>
+            <field name="icao">UMMG</field>
+            <field name="city">Hrodna</field>
+            <field name="country_id" ref="base.by"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">53.602</field>
+            <field name="longitude">24.0538</field>
+            <field name="altitude">443</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Europe/Minsk</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mhp" model="tt.destinations">
+            <field name="name">Minsk 1</field>
+            <field name="code">MHP</field>
+            <field name="icao">UMMM</field>
+            <field name="city">Minsk</field>
+            <field name="country_id" ref="base.by"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">53.864472</field>
+            <field name="longitude">27.539683</field>
+            <field name="altitude">748</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Europe/Minsk</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_msq" model="tt.destinations">
+            <field name="name">Minsk 2</field>
+            <field name="code">MSQ</field>
+            <field name="icao">UMMS</field>
+            <field name="city">Minsk 2</field>
+            <field name="country_id" ref="base.by"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">53.882469</field>
+            <field name="longitude">28.030731</field>
+            <field name="altitude">670</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Europe/Minsk</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mvq" model="tt.destinations">
+            <field name="name">Mogilev Airport</field>
+            <field name="code">MVQ</field>
+            <field name="icao">UMOO</field>
+            <field name="city">Mogilev</field>
+            <field name="country_id" ref="base.by"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">53.9549</field>
+            <field name="longitude">30.0951</field>
+            <field name="altitude">637</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Europe/Minsk</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vtb" model="tt.destinations">
+            <field name="name">Vitebsk</field>
+            <field name="code">VTB</field>
+            <field name="icao">UMII</field>
+            <field name="city">Vitebsk</field>
+            <field name="country_id" ref="base.by"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">55.1265</field>
+            <field name="longitude">30.349639</field>
+            <field name="altitude">683</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Europe/Minsk</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mcm" model="tt.destinations">
+            <field name="name">Monaco</field>
+            <field name="code">MCM</field>
+            <field name="icao"></field>
+            <field name="city">Monaco</field>
+            <field name="country_id" ref="base.mc"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.73333333</field>
+            <field name="longitude">7.41666666</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Monaco</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_aaq" model="tt.destinations">
+            <field name="name">Vityazevo</field>
+            <field name="code">AAQ</field>
+            <field name="icao">URKA</field>
+            <field name="city">Anapa</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.002097</field>
+            <field name="longitude">37.347272</field>
+            <field name="altitude">174</field>
+            <field name="timezone_hour">4</field>
+            <field name="tz">Europe/Moscow</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_aer" model="tt.destinations">
+            <field name="name">Sochi</field>
+            <field name="code">AER</field>
+            <field name="icao">URSS</field>
+            <field name="city">Sochi</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.449928</field>
+            <field name="longitude">39.956589</field>
+            <field name="altitude">89</field>
+            <field name="timezone_hour">4</field>
+            <field name="tz">Europe/Moscow</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_amv" model="tt.destinations">
+            <field name="name">Amderma Airport</field>
+            <field name="code">AMV</field>
+            <field name="icao">ULDD</field>
+            <field name="city">Amderma</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">69.7633</field>
+            <field name="longitude">61.5564</field>
+            <field name="altitude">13</field>
+            <field name="timezone_hour">4</field>
+            <field name="tz">Europe/Moscow</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_arh" model="tt.destinations">
+            <field name="name">Talagi</field>
+            <field name="code">ARH</field>
+            <field name="icao">ULAA</field>
+            <field name="city">Arkhangelsk</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">64.360281</field>
+            <field name="longitude">40.430167</field>
+            <field name="altitude">19</field>
+            <field name="timezone_hour">4</field>
+            <field name="tz">Europe/Moscow</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_asf" model="tt.destinations">
+            <field name="name">Astrakhan</field>
+            <field name="code">ASF</field>
+            <field name="icao">URWA</field>
+            <field name="city">Astrakhan</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.283333</field>
+            <field name="longitude">48.006278</field>
+            <field name="altitude">-65</field>
+            <field name="timezone_hour">4</field>
+            <field name="tz">Europe/Moscow</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bka" model="tt.destinations">
+            <field name="name">Bykovo</field>
+            <field name="code">BKA</field>
+            <field name="icao">UUBB</field>
+            <field name="city">Moscow</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">55.617222</field>
+            <field name="longitude">38.059999</field>
+            <field name="altitude">427</field>
+            <field name="timezone_hour">4</field>
+            <field name="tz">Europe/Moscow</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bwo" model="tt.destinations">
+            <field name="name">Balakovo Airport</field>
+            <field name="code">BWO</field>
+            <field name="icao">UWSB</field>
+            <field name="city">Balakovo</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">51.8583</field>
+            <field name="longitude">47.7456</field>
+            <field name="altitude">95</field>
+            <field name="timezone_hour">4</field>
+            <field name="tz">Europe/Moscow</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bzk" model="tt.destinations">
+            <field name="name">Bryansk</field>
+            <field name="code">BZK</field>
+            <field name="icao">UUBP</field>
+            <field name="city">Bryansk</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">53.214194</field>
+            <field name="longitude">34.176447</field>
+            <field name="altitude">663</field>
+            <field name="timezone_hour">4</field>
+            <field name="tz">Europe/Moscow</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cee" model="tt.destinations">
+            <field name="name">Cherepovets Airport</field>
+            <field name="code">CEE</field>
+            <field name="icao">ULBC</field>
+            <field name="city">Cherepovets</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">59.2736</field>
+            <field name="longitude">38.0158</field>
+            <field name="altitude">377</field>
+            <field name="timezone_hour">4</field>
+            <field name="tz">Europe/Moscow</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ckl" model="tt.destinations">
+            <field name="name">Chkalovsky Airport</field>
+            <field name="code">CKL</field>
+            <field name="icao">UUMU</field>
+            <field name="city">Shchyolkovo</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">55.878333</field>
+            <field name="longitude">38.061667</field>
+            <field name="altitude">152</field>
+            <field name="timezone_hour">4</field>
+            <field name="tz">Europe/Moscow</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_csh" model="tt.destinations">
+            <field name="name">Solovki Airport</field>
+            <field name="code">CSH</field>
+            <field name="icao">ULAS</field>
+            <field name="city">Solovetsky Islands</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">65.03</field>
+            <field name="longitude">35.7333</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">4</field>
+            <field name="tz">Europe/Moscow</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_csy" model="tt.destinations">
+            <field name="name">Cheboksary Airport</field>
+            <field name="code">CSY</field>
+            <field name="icao">UWKS</field>
+            <field name="city">Cheboksary</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">56.0903</field>
+            <field name="longitude">47.3473</field>
+            <field name="altitude">558</field>
+            <field name="timezone_hour">4</field>
+            <field name="tz">Europe/Moscow</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dme" model="tt.destinations">
+            <field name="name">Domododevo</field>
+            <field name="code">DME</field>
+            <field name="icao">UUDD</field>
+            <field name="city">Moscow</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">55.408611</field>
+            <field name="longitude">37.906111</field>
+            <field name="altitude">588</field>
+            <field name="timezone_hour">4</field>
+            <field name="tz">Europe/Moscow</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ego" model="tt.destinations">
+            <field name="name">Belgorod International Airport</field>
+            <field name="code">EGO</field>
+            <field name="icao">UUOB</field>
+            <field name="city">Belgorod</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">50.6438</field>
+            <field name="longitude">36.5901</field>
+            <field name="altitude">735</field>
+            <field name="timezone_hour">4</field>
+            <field name="tz">Europe/Moscow</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_esl" model="tt.destinations">
+            <field name="name">Elista Airport</field>
+            <field name="code">ESL</field>
+            <field name="icao">URWI</field>
+            <field name="city">Elista</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.3739</field>
+            <field name="longitude">44.3309</field>
+            <field name="altitude">501</field>
+            <field name="timezone_hour">4</field>
+            <field name="tz">Europe/Moscow</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gdz" model="tt.destinations">
+            <field name="name">Gelendzik</field>
+            <field name="code">GDZ</field>
+            <field name="icao"></field>
+            <field name="city">Gelendzik</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">44.56666667</field>
+            <field name="longitude">38.01666667</field>
+            <field name="altitude">50</field>
+            <field name="timezone_hour">4</field>
+            <field name="tz">Europe/Moscow</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_goj" model="tt.destinations">
+            <field name="name">Nizhny Novgorod</field>
+            <field name="code">GOJ</field>
+            <field name="icao">UWGG</field>
+            <field name="city">Nizhniy Novgorod</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">56.230119</field>
+            <field name="longitude">43.784042</field>
+            <field name="altitude">256</field>
+            <field name="timezone_hour">4</field>
+            <field name="tz">Europe/Moscow</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            

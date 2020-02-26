@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_zws" model="tt.destinations">
+            <field name="name">Stuttgart Railway Station</field>
+            <field name="code">ZWS</field>
+            <field name="icao"></field>
+            <field name="city">Stuttgart</field>
+            <field name="country_id" ref="base.de"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.783611</field>
+            <field name="longitude">9.181667</field>
+            <field name="altitude">200</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Berlin</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bts" model="tt.destinations">
+            <field name="name">M R Stefanik</field>
+            <field name="code">BTS</field>
+            <field name="icao">LZIB</field>
+            <field name="city">Bratislava</field>
+            <field name="country_id" ref="base.sk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.170167</field>
+            <field name="longitude">17.212667</field>
+            <field name="altitude">436</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Bratislava</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ilz" model="tt.destinations">
+            <field name="name">沤ilina Airport</field>
+            <field name="code">ILZ</field>
+            <field name="icao">LZZI</field>
+            <field name="city">沤ilina</field>
+            <field name="country_id" ref="base.sk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">49.231528</field>
+            <field name="longitude">18.6135</field>
+            <field name="altitude">1020</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Bratislava</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ksc" model="tt.destinations">
+            <field name="name">Kosice</field>
+            <field name="code">KSC</field>
+            <field name="icao">LZKZ</field>
+            <field name="city">Kosice</field>
+            <field name="country_id" ref="base.sk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.663055</field>
+            <field name="longitude">21.241112</field>
+            <field name="altitude">755</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Bratislava</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pzy" model="tt.destinations">
+            <field name="name">Piestany</field>
+            <field name="code">PZY</field>
+            <field name="icao">LZPP</field>
+            <field name="city">Piestany</field>
+            <field name="country_id" ref="base.sk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.625247</field>
+            <field name="longitude">17.828444</field>
+            <field name="altitude">545</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Bratislava</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sld" model="tt.destinations">
+            <field name="name">Sliac</field>
+            <field name="code">SLD</field>
+            <field name="icao">LZSL</field>
+            <field name="city">Sliac</field>
+            <field name="country_id" ref="base.sk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.637839</field>
+            <field name="longitude">19.134108</field>
+            <field name="altitude">1043</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Bratislava</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tat" model="tt.destinations">
+            <field name="name">Tatry</field>
+            <field name="code">TAT</field>
+            <field name="icao">LZTT</field>
+            <field name="city">Poprad</field>
+            <field name="country_id" ref="base.sk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">49.073594</field>
+            <field name="longitude">20.241142</field>
+            <field name="altitude">2356</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Bratislava</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_anr" model="tt.destinations">
+            <field name="name">Deurne</field>
+            <field name="code">ANR</field>
+            <field name="icao">EBAW</field>
+            <field name="city">Antwerp</field>
+            <field name="country_id" ref="base.be"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">51.189444</field>
+            <field name="longitude">4.460278</field>
+            <field name="altitude">39</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Brussels</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bru" model="tt.destinations">
+            <field name="name">Brussels Natl</field>
+            <field name="code">BRU</field>
+            <field name="icao">EBBR</field>
+            <field name="city">Brussels</field>
+            <field name="country_id" ref="base.be"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">50.901389</field>
+            <field name="longitude">4.484444</field>
+            <field name="altitude">184</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Brussels</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_crl" model="tt.destinations">
+            <field name="name">Brussels South</field>
+            <field name="code">CRL</field>
+            <field name="icao">EBCI</field>
+            <field name="city">Charleroi</field>
+            <field name="country_id" ref="base.be"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">50.459197</field>
+            <field name="longitude">4.453817</field>
+            <field name="altitude">614</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Brussels</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lgg" model="tt.destinations">
+            <field name="name">Liege</field>
+            <field name="code">LGG</field>
+            <field name="icao">EBLG</field>
+            <field name="city">Liege</field>
+            <field name="country_id" ref="base.be"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">50.637417</field>
+            <field name="longitude">5.443222</field>
+            <field name="altitude">659</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Brussels</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ost" model="tt.destinations">
+            <field name="name">Oostende</field>
+            <field name="code">OST</field>
+            <field name="icao">EBOS</field>
+            <field name="city">Ostend</field>
+            <field name="country_id" ref="base.be"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">51.198889</field>
+            <field name="longitude">2.862222</field>
+            <field name="altitude">13</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Brussels</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_qkt" model="tt.destinations">
+            <field name="name">Wevelgem</field>
+            <field name="code">QKT</field>
+            <field name="icao">EBKT</field>
+            <field name="city">Kortrijk-vevelgem</field>
+            <field name="country_id" ref="base.be"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">50.817222</field>
+            <field name="longitude">3.204722</field>
+            <field name="altitude">64</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Brussels</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_xhn" model="tt.destinations">
+            <field name="name">Liege-Guillemins Railway Station</field>
+            <field name="code">XHN</field>
+            <field name="icao"></field>
+            <field name="city">Liege</field>
+            <field name="country_id" ref="base.be"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">50.6333</field>
+            <field name="longitude">5.56667</field>
+            <field name="altitude">659</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Brussels</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zwe" model="tt.destinations">
+            <field name="name">Centraal</field>
+            <field name="code">ZWE</field>
+            <field name="icao"></field>
+            <field name="city">Antwerp</field>
+            <field name="country_id" ref="base.be"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">51.217222</field>
+            <field name="longitude">4.421111</field>
+            <field name="altitude">51</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Brussels</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zyr" model="tt.destinations">
+            <field name="name">Brussels Gare du Midi</field>
+            <field name="code">ZYR</field>
+            <field name="icao"></field>
+            <field name="city">Brussels</field>
+            <field name="country_id" ref="base.be"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">50.8</field>
+            <field name="longitude">4.4</field>
+            <field name="altitude">180</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Brussels</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_arw" model="tt.destinations">
+            <field name="name">Arad</field>
+            <field name="code">ARW</field>
+            <field name="icao">LRAR</field>
+            <field name="city">Arad</field>
+            <field name="country_id" ref="base.ro"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.17655</field>
+            <field name="longitude">21.262022</field>
+            <field name="altitude">352</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Bucharest</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bay" model="tt.destinations">
+            <field name="name">Tautii Magheraus</field>
+            <field name="code">BAY</field>
+            <field name="icao">LRBM</field>
+            <field name="city">Baia Mare</field>
+            <field name="country_id" ref="base.ro"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">47.658389</field>
+            <field name="longitude">23.470022</field>
+            <field name="altitude">605</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Bucharest</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bbu" model="tt.destinations">
+            <field name="name">Aurel Vlaicu</field>
+            <field name="code">BBU</field>
+            <field name="icao">LRBS</field>
+            <field name="city">Bucharest</field>
+            <field name="country_id" ref="base.ro"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">44.503194</field>
+            <field name="longitude">26.102111</field>
+            <field name="altitude">297</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Bucharest</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bcm" model="tt.destinations">
+            <field name="name">Bacau</field>
+            <field name="code">BCM</field>
+            <field name="icao">LRBC</field>
+            <field name="city">Bacau</field>
+            <field name="country_id" ref="base.ro"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.521946</field>
+            <field name="longitude">26.910278</field>
+            <field name="altitude">607</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Bucharest</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cio" model="tt.destinations">
+            <field name="name">Aeroclub Cioca</field>
+            <field name="code">CIO</field>
+            <field name="icao">LRT2</field>
+            <field name="city">Timisoara</field>
+            <field name="country_id" ref="base.ro"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.471009</field>
+            <field name="longitude">21.111967</field>
+            <field name="altitude">280</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Bucharest</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_clj" model="tt.destinations">
+            <field name="name">Cluj Napoca</field>
+            <field name="code">CLJ</field>
+            <field name="icao">LRCL</field>
+            <field name="city">Cluj-napoca</field>
+            <field name="country_id" ref="base.ro"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.785167</field>
+            <field name="longitude">23.686167</field>
+            <field name="altitude">1036</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Bucharest</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cnd" model="tt.destinations">
+            <field name="name">Mihail Kogalniceanu</field>
+            <field name="code">CND</field>
+            <field name="icao">LRCK</field>
+            <field name="city">Constanta</field>
+            <field name="country_id" ref="base.ro"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">44.362222</field>
+            <field name="longitude">28.488333</field>
+            <field name="altitude">353</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Bucharest</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cra" model="tt.destinations">
+            <field name="name">Craiova</field>
+            <field name="code">CRA</field>
+            <field name="icao">LRCV</field>
+            <field name="city">Craiova</field>
+            <field name="country_id" ref="base.ro"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">44.318139</field>
+            <field name="longitude">23.888611</field>
+            <field name="altitude">626</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Bucharest</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_csb" model="tt.destinations">
+            <field name="name">Caransebes</field>
+            <field name="code">CSB</field>
+            <field name="icao">LRCS</field>
+            <field name="city">Caransebes</field>
+            <field name="country_id" ref="base.ro"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.42</field>
+            <field name="longitude">22.253333</field>
+            <field name="altitude">866</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Bucharest</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dva" model="tt.destinations">
+            <field name="name">Aeroclub Deva</field>
+            <field name="code">DVA</field>
+            <field name="icao"></field>
+            <field name="city">Deva</field>
+            <field name="country_id" ref="base.ro"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.5153</field>
+            <field name="longitude">22.5813</field>
+            <field name="altitude">615</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Bucharest</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dzm" model="tt.destinations">
+            <field name="name">Aeroclub Cluj</field>
+            <field name="code">DZM</field>
+            <field name="icao"></field>
+            <field name="city">Dezmir</field>
+            <field name="country_id" ref="base.ro"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.4643</field>
+            <field name="longitude">23.4258</field>
+            <field name="altitude">1019</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Bucharest</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ias" model="tt.destinations">
+            <field name="name">Iasi</field>
+            <field name="code">IAS</field>
+            <field name="icao">LRIA</field>
+            <field name="city">Iasi</field>
+            <field name="country_id" ref="base.ro"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">47.178492</field>
+            <field name="longitude">27.620631</field>
+            <field name="altitude">397</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Bucharest</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_omr" model="tt.destinations">
+            <field name="name">Oradea</field>
+            <field name="code">OMR</field>
+            <field name="icao">LROD</field>
+            <field name="city">Oradea</field>
+            <field name="country_id" ref="base.ro"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">47.025278</field>
+            <field name="longitude">21.9025</field>
+            <field name="altitude">465</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Bucharest</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_otp" model="tt.destinations">
+            <field name="name">Henri Coanda</field>
+            <field name="code">OTP</field>
+            <field name="icao">LROP</field>
+            <field name="city">Bucharest</field>
+            <field name="country_id" ref="base.ro"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">44.572161</field>
+            <field name="longitude">26.102178</field>
+            <field name="altitude">314</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Bucharest</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sbz" model="tt.destinations">
+            <field name="name">Sibiu</field>
+            <field name="code">SBZ</field>
+            <field name="icao">LRSB</field>
+            <field name="city">Sibiu</field>
+            <field name="country_id" ref="base.ro"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.785597</field>
+            <field name="longitude">24.091342</field>
+            <field name="altitude">1496</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Bucharest</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_scv" model="tt.destinations">
+            <field name="name">Stefan Cel Mare</field>
+            <field name="code">SCV</field>
+            <field name="icao">LRSV</field>
+            <field name="city">Suceava</field>
+            <field name="country_id" ref="base.ro"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">47.6875</field>
+            <field name="longitude">26.354056</field>
+            <field name="altitude">1375</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Bucharest</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sib" model="tt.destinations">
+            <field name="name">Aeroclub Sibiu</field>
+            <field name="code">SIB</field>
+            <field name="icao"></field>
+            <field name="city">Sibiu</field>
+            <field name="country_id" ref="base.ro"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.4649</field>
+            <field name="longitude">24.053</field>
+            <field name="altitude">1451</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Bucharest</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_suj" model="tt.destinations">
+            <field name="name">Satu Mare</field>
+            <field name="code">SUJ</field>
+            <field name="icao">LRSM</field>
+            <field name="city">Satu Mare</field>
+            <field name="country_id" ref="base.ro"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">47.703275</field>
+            <field name="longitude">22.8857</field>
+            <field name="altitude">405</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Bucharest</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tce" model="tt.destinations">
+            <field name="name">Cataloi</field>
+            <field name="code">TCE</field>
+            <field name="icao">LRTC</field>
+            <field name="city">Tulcea</field>
+            <field name="country_id" ref="base.ro"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.062486</field>
+            <field name="longitude">28.714311</field>
+            <field name="altitude">200</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Bucharest</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tgm" model="tt.destinations">
+            <field name="name">Transilvania Targu Mures</field>
+            <field name="code">TGM</field>
+            <field name="icao">LRTM</field>
+            <field name="city">Tirgu Mures</field>
+            <field name="country_id" ref="base.ro"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.467714</field>
+            <field name="longitude">24.412525</field>
+            <field name="altitude">963</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Bucharest</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tsr" model="tt.destinations">
+            <field name="name">Traian Vuia</field>
+            <field name="code">TSR</field>
+            <field name="icao">LRTR</field>
+            <field name="city">Timisoara</field>
+            <field name="country_id" ref="base.ro"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.809861</field>
+            <field name="longitude">21.337861</field>
+            <field name="altitude">348</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Bucharest</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bud" model="tt.destinations">
+            <field name="name">Ferihegy</field>
+            <field name="code">BUD</field>
+            <field name="icao">LHBP</field>
+            <field name="city">Budapest</field>
+            <field name="country_id" ref="base.hu"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">47.436933</field>
+            <field name="longitude">19.255592</field>
+            <field name="altitude">495</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Budapest</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_deb" model="tt.destinations">
+            <field name="name">Debrecen</field>
+            <field name="code">DEB</field>
+            <field name="icao">LHDC</field>
+            <field name="city">Debrecen</field>
+            <field name="country_id" ref="base.hu"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">47.488917</field>
+            <field name="longitude">21.615333</field>
+            <field name="altitude">359</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Budapest</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pev" model="tt.destinations">
+            <field name="name">P茅cs-Pog谩ny Airport</field>
+            <field name="code">PEV</field>
+            <field name="icao">LHPP</field>
+            <field name="city">P茅cs-Pog谩ny</field>
+            <field name="country_id" ref="base.hu"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.990928</field>
+            <field name="longitude">18.240983</field>
+            <field name="altitude">1000</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Budapest</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_qgy" model="tt.destinations">
+            <field name="name">Gy艖r-P茅r International Airport</field>
+            <field name="code">QGY</field>
+            <field name="icao">LHPR</field>
+            <field name="city">Gy艖r</field>
+            <field name="country_id" ref="base.hu"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">47.627097</field>
+            <field name="longitude">17.808347</field>
+            <field name="altitude">424</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Budapest</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_qpj" model="tt.destinations">
+            <field name="name">Pecs</field>
+            <field name="code">QPJ</field>
+            <field name="icao"></field>
+            <field name="city">Pecs</field>
+            <field name="country_id" ref="base.hu"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.070833</field>
+            <field name="longitude">18.233056</field>
+            <field name="altitude">1000</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Budapest</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sob" model="tt.destinations">
+            <field name="name">S谩rmell茅k International Airport</field>
+            <field name="code">SOB</field>
+            <field name="icao">LHSM</field>
+            <field name="city">S谩rmell茅k</field>
+            <field name="country_id" ref="base.hu"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.686389</field>
+            <field name="longitude">17.159056</field>
+            <field name="altitude">408</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Budapest</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bzy" model="tt.destinations">
+            <field name="name">Balti International Airport</field>
+            <field name="code">BZY</field>
+            <field name="icao"></field>
+            <field name="city">Strymba</field>
+            <field name="country_id" ref="base.md"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">47.8381</field>
+            <field name="longitude">27.7815</field>
+            <field name="altitude">758</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Chisinau</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kiv" model="tt.destinations">
+            <field name="name">Chisinau Intl</field>
+            <field name="code">KIV</field>
+            <field name="icao">LUKK</field>
+            <field name="city">Chisinau</field>
+            <field name="country_id" ref="base.md"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.927744</field>
+            <field name="longitude">28.930978</field>
+            <field name="altitude">399</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Chisinau</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_aal" model="tt.destinations">
+            <field name="name">Aalborg</field>
+            <field name="code">AAL</field>
+            <field name="icao">EKYT</field>
+            <field name="city">Aalborg</field>
+            <field name="country_id" ref="base.dk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">57.092789</field>
+            <field name="longitude">9.849164</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Copenhagen</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_aar" model="tt.destinations">
+            <field name="name">Aarhus</field>
+            <field name="code">AAR</field>
+            <field name="icao">EKAH</field>
+            <field name="city">Aarhus</field>
+            <field name="country_id" ref="base.dk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">56.300017</field>
+            <field name="longitude">10.619008</field>
+            <field name="altitude">82</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Copenhagen</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bll" model="tt.destinations">
+            <field name="name">Billund</field>
+            <field name="code">BLL</field>
+            <field name="icao">EKBI</field>
+            <field name="city">Billund</field>
+            <field name="country_id" ref="base.dk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">55.740322</field>
+            <field name="longitude">9.151778</field>
+            <field name="altitude">247</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Copenhagen</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cnl" model="tt.destinations">
+            <field name="name">Sindal Airport</field>
+            <field name="code">CNL</field>
+            <field name="icao">EKSN</field>
+            <field name="city">Sindal</field>
+            <field name="country_id" ref="base.dk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">57.503525</field>
+            <field name="longitude">10.229372</field>
+            <field name="altitude">92</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Copenhagen</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cph" model="tt.destinations">
+            <field name="name">Kastrup</field>
+            <field name="code">CPH</field>
+            <field name="icao">EKCH</field>
+            <field name="city">Copenhagen</field>
+            <field name="country_id" ref="base.dk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">55.617917</field>
+            <field name="longitude">12.655972</field>
+            <field name="altitude">17</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Copenhagen</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            

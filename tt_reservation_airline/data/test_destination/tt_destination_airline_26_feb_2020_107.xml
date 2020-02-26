@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_bqt" model="tt.destinations">
+            <field name="name">Brest</field>
+            <field name="code">BQT</field>
+            <field name="icao">UMBB</field>
+            <field name="city">Brest</field>
+            <field name="country_id" ref="base.by"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">52.06</field>
+            <field name="longitude">23.53</field>
+            <field name="altitude">468</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Warsaw</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bzg" model="tt.destinations">
+            <field name="name">Bydgoszcz Ignacy Jan Paderewski Airport</field>
+            <field name="code">BZG</field>
+            <field name="icao">EPBY</field>
+            <field name="city">Bydgoszcz</field>
+            <field name="country_id" ref="base.pl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">53.0968</field>
+            <field name="longitude">17.9777</field>
+            <field name="altitude">235</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Warsaw</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_czw" model="tt.destinations">
+            <field name="name">RUDNIKI</field>
+            <field name="code">CZW</field>
+            <field name="icao">EPRU</field>
+            <field name="city">RUDNIKI</field>
+            <field name="country_id" ref="base.pl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">50.884722</field>
+            <field name="longitude">19.202222</field>
+            <field name="altitude">262</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Warsaw</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gdn" model="tt.destinations">
+            <field name="name">Lech Walesa</field>
+            <field name="code">GDN</field>
+            <field name="icao">EPGD</field>
+            <field name="city">Gdansk</field>
+            <field name="country_id" ref="base.pl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">54.377569</field>
+            <field name="longitude">18.466222</field>
+            <field name="altitude">489</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Warsaw</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ieg" model="tt.destinations">
+            <field name="name">Babimost</field>
+            <field name="code">IEG</field>
+            <field name="icao">EPZG</field>
+            <field name="city">Zielona Gora</field>
+            <field name="country_id" ref="base.pl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">52.138517</field>
+            <field name="longitude">15.798556</field>
+            <field name="altitude">194</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Warsaw</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_krk" model="tt.destinations">
+            <field name="name">Balice</field>
+            <field name="code">KRK</field>
+            <field name="icao">EPKK</field>
+            <field name="city">Krakow</field>
+            <field name="country_id" ref="base.pl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">50.077731</field>
+            <field name="longitude">19.784836</field>
+            <field name="altitude">791</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Warsaw</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ktw" model="tt.destinations">
+            <field name="name">Pyrzowice</field>
+            <field name="code">KTW</field>
+            <field name="icao">EPKT</field>
+            <field name="city">Katowice</field>
+            <field name="country_id" ref="base.pl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">50.474253</field>
+            <field name="longitude">19.080019</field>
+            <field name="altitude">995</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Warsaw</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lcj" model="tt.destinations">
+            <field name="name">艁贸d藕 W艂adys艂aw Reymont Airport</field>
+            <field name="code">LCJ</field>
+            <field name="icao">EPLL</field>
+            <field name="city">Lodz</field>
+            <field name="country_id" ref="base.pl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">51.721881</field>
+            <field name="longitude">19.398133</field>
+            <field name="altitude">604</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Warsaw</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_luz" model="tt.destinations">
+            <field name="name">Lublin</field>
+            <field name="code">LUZ</field>
+            <field name="icao">EPLB</field>
+            <field name="city">Lublin</field>
+            <field name="country_id" ref="base.pl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">51.239333</field>
+            <field name="longitude">22.714083</field>
+            <field name="altitude">203</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Warsaw</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_osp" model="tt.destinations">
+            <field name="name">Redzikowo</field>
+            <field name="code">OSP</field>
+            <field name="icao">EPSK</field>
+            <field name="city">Slupsk</field>
+            <field name="country_id" ref="base.pl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">54.478889</field>
+            <field name="longitude">17.1075</field>
+            <field name="altitude">217</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Warsaw</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_osz" model="tt.destinations">
+            <field name="name">Koszalin - Zegrze Pomorskie Airport</field>
+            <field name="code">OSZ</field>
+            <field name="icao">EPKO</field>
+            <field name="city">Koszalin</field>
+            <field name="country_id" ref="base.pl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">54.041</field>
+            <field name="longitude">16.266</field>
+            <field name="altitude">111</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Warsaw</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_poz" model="tt.destinations">
+            <field name="name">Lawica</field>
+            <field name="code">POZ</field>
+            <field name="icao">EPPO</field>
+            <field name="city">Poznan</field>
+            <field name="country_id" ref="base.pl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">52.421031</field>
+            <field name="longitude">16.826325</field>
+            <field name="altitude">308</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Warsaw</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_qxr" model="tt.destinations">
+            <field name="name">RADOM</field>
+            <field name="code">QXR</field>
+            <field name="icao">EPRA</field>
+            <field name="city">RADOM</field>
+            <field name="country_id" ref="base.pl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">51.231978</field>
+            <field name="longitude">21.124183</field>
+            <field name="altitude">479</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Warsaw</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_qyd" model="tt.destinations">
+            <field name="name">Gdynia</field>
+            <field name="code">QYD</field>
+            <field name="icao">EPOK</field>
+            <field name="city">Gdynia</field>
+            <field name="country_id" ref="base.pl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">54.5797</field>
+            <field name="longitude">18.5172</field>
+            <field name="altitude">144</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Warsaw</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rze" model="tt.destinations">
+            <field name="name">Jasionka</field>
+            <field name="code">RZE</field>
+            <field name="icao">EPRZ</field>
+            <field name="city">Rzeszow</field>
+            <field name="country_id" ref="base.pl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">50.109958</field>
+            <field name="longitude">22.019</field>
+            <field name="altitude">675</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Warsaw</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_szz" model="tt.destinations">
+            <field name="name">Goleniow</field>
+            <field name="code">SZZ</field>
+            <field name="icao">EPSC</field>
+            <field name="city">Szczecin</field>
+            <field name="country_id" ref="base.pl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">53.584731</field>
+            <field name="longitude">14.902206</field>
+            <field name="altitude">154</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Warsaw</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_waw" model="tt.destinations">
+            <field name="name">Okecie</field>
+            <field name="code">WAW</field>
+            <field name="icao">EPWA</field>
+            <field name="city">Warsaw</field>
+            <field name="country_id" ref="base.pl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">52.16575</field>
+            <field name="longitude">20.967122</field>
+            <field name="altitude">362</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Warsaw</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wmi" model="tt.destinations">
+            <field name="name">Warsaw Modlin</field>
+            <field name="code">WMI</field>
+            <field name="icao">EPMO</field>
+            <field name="city">Warsaw</field>
+            <field name="country_id" ref="base.pl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">52.451111</field>
+            <field name="longitude">20.651667</field>
+            <field name="altitude">341</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Warsaw</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wro" model="tt.destinations">
+            <field name="name">Strachowice</field>
+            <field name="code">WRO</field>
+            <field name="icao">EPWR</field>
+            <field name="city">Wroclaw</field>
+            <field name="country_id" ref="base.pl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">51.102683</field>
+            <field name="longitude">16.885836</field>
+            <field name="altitude">404</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Warsaw</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bwk" model="tt.destinations">
+            <field name="name">Brac</field>
+            <field name="code">BWK</field>
+            <field name="icao">LDSB</field>
+            <field name="city">Brac</field>
+            <field name="country_id" ref="base.hr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.285719</field>
+            <field name="longitude">16.679719</field>
+            <field name="altitude">1776</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Zagreb</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dbv" model="tt.destinations">
+            <field name="name">Dubrovnik</field>
+            <field name="code">DBV</field>
+            <field name="icao">LDDU</field>
+            <field name="city">Dubrovnik</field>
+            <field name="country_id" ref="base.hr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">42.561353</field>
+            <field name="longitude">18.268244</field>
+            <field name="altitude">527</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Zagreb</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_osi" model="tt.destinations">
+            <field name="name">Osijek</field>
+            <field name="code">OSI</field>
+            <field name="icao">LDOS</field>
+            <field name="city">Osijek</field>
+            <field name="country_id" ref="base.hr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.462667</field>
+            <field name="longitude">18.810156</field>
+            <field name="altitude">290</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Zagreb</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_puy" model="tt.destinations">
+            <field name="name">Pula</field>
+            <field name="code">PUY</field>
+            <field name="icao">LDPL</field>
+            <field name="city">Pula</field>
+            <field name="country_id" ref="base.hr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">44.893533</field>
+            <field name="longitude">13.922192</field>
+            <field name="altitude">274</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Zagreb</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rjk" model="tt.destinations">
+            <field name="name">Rijeka</field>
+            <field name="code">RJK</field>
+            <field name="icao">LDRI</field>
+            <field name="city">Rijeka</field>
+            <field name="country_id" ref="base.hr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.216889</field>
+            <field name="longitude">14.570267</field>
+            <field name="altitude">278</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Zagreb</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_spu" model="tt.destinations">
+            <field name="name">Split</field>
+            <field name="code">SPU</field>
+            <field name="icao">LDSP</field>
+            <field name="city">Split</field>
+            <field name="country_id" ref="base.hr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.538944</field>
+            <field name="longitude">16.297964</field>
+            <field name="altitude">79</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Zagreb</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zad" model="tt.destinations">
+            <field name="name">Zadar</field>
+            <field name="code">ZAD</field>
+            <field name="icao">LDZD</field>
+            <field name="city">Zadar</field>
+            <field name="country_id" ref="base.hr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">44.108269</field>
+            <field name="longitude">15.346697</field>
+            <field name="altitude">289</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Zagreb</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zag" model="tt.destinations">
+            <field name="name">Zagreb</field>
+            <field name="code">ZAG</field>
+            <field name="icao">LDZA</field>
+            <field name="city">Zagreb</field>
+            <field name="country_id" ref="base.hr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.742931</field>
+            <field name="longitude">16.068778</field>
+            <field name="altitude">353</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Zagreb</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ach" model="tt.destinations">
+            <field name="name">St Gallen Altenrhein</field>
+            <field name="code">ACH</field>
+            <field name="icao">LSZR</field>
+            <field name="city">Altenrhein</field>
+            <field name="country_id" ref="base.ch"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">47.485033</field>
+            <field name="longitude">9.560775</field>
+            <field name="altitude">1306</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Zurich</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_brn" model="tt.destinations">
+            <field name="name">Bern Belp</field>
+            <field name="code">BRN</field>
+            <field name="icao">LSZB</field>
+            <field name="city">Bern</field>
+            <field name="country_id" ref="base.ch"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.9141</field>
+            <field name="longitude">7.497153</field>
+            <field name="altitude">1674</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Zurich</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bxo" model="tt.destinations">
+            <field name="name">Buochs Airport</field>
+            <field name="code">BXO</field>
+            <field name="icao">LSZC</field>
+            <field name="city">Buochs</field>
+            <field name="country_id" ref="base.ch"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.9725</field>
+            <field name="longitude">8.398611</field>
+            <field name="altitude">1464</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Zurich</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lug" model="tt.destinations">
+            <field name="name">Lugano</field>
+            <field name="code">LUG</field>
+            <field name="icao">LSZA</field>
+            <field name="city">Lugano</field>
+            <field name="country_id" ref="base.ch"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.004275</field>
+            <field name="longitude">8.910578</field>
+            <field name="altitude">915</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Zurich</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_qnc" model="tt.destinations">
+            <field name="name">Neuchatel Airport</field>
+            <field name="code">QNC</field>
+            <field name="icao">LSGN</field>
+            <field name="city">Neuchatel</field>
+            <field name="country_id" ref="base.ch"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.9575</field>
+            <field name="longitude">6.86472</field>
+            <field name="altitude">1427</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Zurich</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sir" model="tt.destinations">
+            <field name="name">Sion</field>
+            <field name="code">SIR</field>
+            <field name="icao">LSGS</field>
+            <field name="city">Sion</field>
+            <field name="country_id" ref="base.ch"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.219592</field>
+            <field name="longitude">7.326764</field>
+            <field name="altitude">1585</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Zurich</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_smv" model="tt.destinations">
+            <field name="name">Samedan</field>
+            <field name="code">SMV</field>
+            <field name="icao">LSZS</field>
+            <field name="city">Samedan</field>
+            <field name="country_id" ref="base.ch"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.534075</field>
+            <field name="longitude">9.884106</field>
+            <field name="altitude">5600</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Zurich</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zin" model="tt.destinations">
+            <field name="name">Air Base</field>
+            <field name="code">ZIN</field>
+            <field name="icao">LSMI</field>
+            <field name="city">Interlaken</field>
+            <field name="country_id" ref="base.ch"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.6766</field>
+            <field name="longitude">7.87908</field>
+            <field name="altitude">1893</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Zurich</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zji" model="tt.destinations">
+            <field name="name">Locarno Airport</field>
+            <field name="code">ZJI</field>
+            <field name="icao">LSZL</field>
+            <field name="city">Locarno</field>
+            <field name="country_id" ref="base.ch"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.1608</field>
+            <field name="longitude">8.87861</field>
+            <field name="altitude">650</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Zurich</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zrh" model="tt.destinations">
+            <field name="name">Zurich</field>
+            <field name="code">ZRH</field>
+            <field name="icao">LSZH</field>
+            <field name="city">Zurich</field>
+            <field name="country_id" ref="base.ch"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">47.464722</field>
+            <field name="longitude">8.549167</field>
+            <field name="altitude">1416</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Zurich</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_amb" model="tt.destinations">
+            <field name="name">Ambilobe</field>
+            <field name="code">AMB</field>
+            <field name="icao">FMNE</field>
+            <field name="city">Ambilobe</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-13.188431</field>
+            <field name="longitude">48.987978</field>
+            <field name="altitude">72</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_amy" model="tt.destinations">
+            <field name="name">Ambatomainty Airport</field>
+            <field name="code">AMY</field>
+            <field name="icao"></field>
+            <field name="city">Ambatomainty</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-17.1667</field>
+            <field name="longitude">47.1833</field>
+            <field name="altitude">500</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_anm" model="tt.destinations">
+            <field name="name">Antsirabato</field>
+            <field name="code">ANM</field>
+            <field name="icao">FMNH</field>
+            <field name="city">Antalaha</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-14.999411</field>
+            <field name="longitude">50.320233</field>
+            <field name="altitude">20</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_atj" model="tt.destinations">
+            <field name="name">Antsirabe</field>
+            <field name="code">ATJ</field>
+            <field name="icao">FMME</field>
+            <field name="city">Antsirabe</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-19.836944</field>
+            <field name="longitude">47.065278</field>
+            <field name="altitude">4913</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bmd" model="tt.destinations">
+            <field name="name">Belo sur Tsiribihina Airport</field>
+            <field name="code">BMD</field>
+            <field name="icao">FMML</field>
+            <field name="city">Belo sur Tsiribihina</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-19.6867</field>
+            <field name="longitude">44.5419</field>
+            <field name="altitude">154</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bpy" model="tt.destinations">
+            <field name="name">Besalampy</field>
+            <field name="code">BPY</field>
+            <field name="icao">FMNQ</field>
+            <field name="city">Besalampy</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-16.741945</field>
+            <field name="longitude">44.481388</field>
+            <field name="altitude">125</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_die" model="tt.destinations">
+            <field name="name">Arrachart</field>
+            <field name="code">DIE</field>
+            <field name="icao">FMNA</field>
+            <field name="city">Antsiranana</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-12.3494</field>
+            <field name="longitude">49.291747</field>
+            <field name="altitude">374</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dvd" model="tt.destinations">
+            <field name="name">Andavadoaka</field>
+            <field name="code">DVD</field>
+            <field name="icao"></field>
+            <field name="city">Andavadoaka</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-22.111111</field>
+            <field name="longitude">43.270556</field>
+            <field name="altitude">27</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dwb" model="tt.destinations">
+            <field name="name">Soalala Airport</field>
+            <field name="code">DWB</field>
+            <field name="icao">FMNO</field>
+            <field name="city">Soalala</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-16.083</field>
+            <field name="longitude">45.367</field>
+            <field name="altitude">141</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ftu" model="tt.destinations">
+            <field name="name">Tolagnaro</field>
+            <field name="code">FTU</field>
+            <field name="icao">FMSD</field>
+            <field name="city">Tolagnaro</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-25.038056</field>
+            <field name="longitude">46.956111</field>
+            <field name="altitude">29</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hva" model="tt.destinations">
+            <field name="name">Analalava</field>
+            <field name="code">HVA</field>
+            <field name="icao">FMNL</field>
+            <field name="city">Analalava</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-14.629694</field>
+            <field name="longitude">47.763783</field>
+            <field name="altitude">345</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_iva" model="tt.destinations">
+            <field name="name">Ambanja Airport</field>
+            <field name="code">IVA</field>
+            <field name="icao">FMNJ</field>
+            <field name="city">Ambanja</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-13.65</field>
+            <field name="longitude">48.467</field>
+            <field name="altitude">36</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jva" model="tt.destinations">
+            <field name="name">Ankavandra Airport</field>
+            <field name="code">JVA</field>
+            <field name="icao">FMMK</field>
+            <field name="city">Ankavandra</field>
+            <field name="country_id" ref="base.mg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-18.8</field>
+            <field name="longitude">45.283</field>
+            <field name="altitude">427</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Antananarivo</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            

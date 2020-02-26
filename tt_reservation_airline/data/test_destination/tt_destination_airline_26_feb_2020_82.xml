@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_ren" model="tt.destinations">
+            <field name="name">Orenburg</field>
+            <field name="code">REN</field>
+            <field name="icao">UWOO</field>
+            <field name="city">Orenburg</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">51.795786</field>
+            <field name="longitude">55.456744</field>
+            <field name="altitude">387</field>
+            <field name="timezone_hour">6</field>
+            <field name="tz">Asia/Yekaterinburg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sgc" model="tt.destinations">
+            <field name="name">Surgut</field>
+            <field name="code">SGC</field>
+            <field name="icao">USRR</field>
+            <field name="city">Surgut</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">61.343694</field>
+            <field name="longitude">73.401842</field>
+            <field name="altitude">200</field>
+            <field name="timezone_hour">6</field>
+            <field name="tz">Asia/Yekaterinburg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sly" model="tt.destinations">
+            <field name="name">Salekhard Airport</field>
+            <field name="code">SLY</field>
+            <field name="icao">USDD</field>
+            <field name="city">Salekhard</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">66.590753</field>
+            <field name="longitude">66.611042</field>
+            <field name="altitude">218</field>
+            <field name="timezone_hour">6</field>
+            <field name="tz">Asia/Yekaterinburg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_svx" model="tt.destinations">
+            <field name="name">Koltsovo</field>
+            <field name="code">SVX</field>
+            <field name="icao">USSS</field>
+            <field name="city">Yekaterinburg</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">56.743108</field>
+            <field name="longitude">60.802728</field>
+            <field name="altitude">764</field>
+            <field name="timezone_hour">6</field>
+            <field name="tz">Asia/Yekaterinburg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tjm" model="tt.destinations">
+            <field name="name">Roschino</field>
+            <field name="code">TJM</field>
+            <field name="icao">USTR</field>
+            <field name="city">Tyumen</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">57.189567</field>
+            <field name="longitude">65.3243</field>
+            <field name="altitude">378</field>
+            <field name="timezone_hour">6</field>
+            <field name="tz">Asia/Yekaterinburg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ufa" model="tt.destinations">
+            <field name="name">Ufa</field>
+            <field name="code">UFA</field>
+            <field name="icao">UWUU</field>
+            <field name="city">Ufa</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">54.557511</field>
+            <field name="longitude">55.874417</field>
+            <field name="altitude">449</field>
+            <field name="timezone_hour">6</field>
+            <field name="tz">Asia/Yekaterinburg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_urj" model="tt.destinations">
+            <field name="name">Uraj</field>
+            <field name="code">URJ</field>
+            <field name="icao">USHU</field>
+            <field name="city">Uraj</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">60.1</field>
+            <field name="longitude">64.83</field>
+            <field name="altitude">186</field>
+            <field name="timezone_hour">6</field>
+            <field name="tz">Asia/Yekaterinburg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_evn" model="tt.destinations">
+            <field name="name">Zvartnots</field>
+            <field name="code">EVN</field>
+            <field name="icao">UDYZ</field>
+            <field name="city">Yerevan</field>
+            <field name="country_id" ref="base.am"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.147275</field>
+            <field name="longitude">44.395881</field>
+            <field name="altitude">2838</field>
+            <field name="timezone_hour">4</field>
+            <field name="tz">Asia/Yerevan</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lwn" model="tt.destinations">
+            <field name="name">Gyumri</field>
+            <field name="code">LWN</field>
+            <field name="icao">UDSG</field>
+            <field name="city">Gyumri</field>
+            <field name="country_id" ref="base.am"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.750369</field>
+            <field name="longitude">43.859342</field>
+            <field name="altitude">5000</field>
+            <field name="timezone_hour">4</field>
+            <field name="tz">Asia/Yerevan</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cvu" model="tt.destinations">
+            <field name="name">Corvo Airport</field>
+            <field name="code">CVU</field>
+            <field name="icao">LPCR</field>
+            <field name="city">Corvo</field>
+            <field name="country_id" ref="base.pt"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.6715</field>
+            <field name="longitude">-31.1136</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">-1</field>
+            <field name="tz">Atlantic/Azores</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_flw" model="tt.destinations">
+            <field name="name">Flores</field>
+            <field name="code">FLW</field>
+            <field name="icao">LPFL</field>
+            <field name="city">Flores</field>
+            <field name="country_id" ref="base.pt"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.455272</field>
+            <field name="longitude">-31.131361</field>
+            <field name="altitude">112</field>
+            <field name="timezone_hour">-1</field>
+            <field name="tz">Atlantic/Azores</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_grw" model="tt.destinations">
+            <field name="name">Graciosa</field>
+            <field name="code">GRW</field>
+            <field name="icao">LPGR</field>
+            <field name="city">Graciosa Island</field>
+            <field name="country_id" ref="base.pt"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.092169</field>
+            <field name="longitude">-28.029847</field>
+            <field name="altitude">86</field>
+            <field name="timezone_hour">-1</field>
+            <field name="tz">Atlantic/Azores</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hor" model="tt.destinations">
+            <field name="name">Horta</field>
+            <field name="code">HOR</field>
+            <field name="icao">LPHR</field>
+            <field name="city">Horta</field>
+            <field name="country_id" ref="base.pt"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.519894</field>
+            <field name="longitude">-28.715872</field>
+            <field name="altitude">118</field>
+            <field name="timezone_hour">-1</field>
+            <field name="tz">Atlantic/Azores</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pdl" model="tt.destinations">
+            <field name="name">Ponta Delgada</field>
+            <field name="code">PDL</field>
+            <field name="icao">LPPD</field>
+            <field name="city">Ponta Delgada</field>
+            <field name="country_id" ref="base.pt"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.741184</field>
+            <field name="longitude">-25.69787</field>
+            <field name="altitude">259</field>
+            <field name="timezone_hour">-1</field>
+            <field name="tz">Atlantic/Azores</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pix" model="tt.destinations">
+            <field name="name">Pico</field>
+            <field name="code">PIX</field>
+            <field name="icao">LPPI</field>
+            <field name="city">Pico</field>
+            <field name="country_id" ref="base.pt"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.554333</field>
+            <field name="longitude">-28.441333</field>
+            <field name="altitude">109</field>
+            <field name="timezone_hour">-1</field>
+            <field name="tz">Atlantic/Azores</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sjz" model="tt.destinations">
+            <field name="name">Sao Jorge</field>
+            <field name="code">SJZ</field>
+            <field name="icao">LPSJ</field>
+            <field name="city">Sao Jorge Island</field>
+            <field name="country_id" ref="base.pt"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.6655</field>
+            <field name="longitude">-28.175817</field>
+            <field name="altitude">311</field>
+            <field name="timezone_hour">-1</field>
+            <field name="tz">Atlantic/Azores</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sma" model="tt.destinations">
+            <field name="name">Santa Maria</field>
+            <field name="code">SMA</field>
+            <field name="icao">LPAZ</field>
+            <field name="city">Santa Maria (island)</field>
+            <field name="country_id" ref="base.pt"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.97139</field>
+            <field name="longitude">-25.170639</field>
+            <field name="altitude">308</field>
+            <field name="timezone_hour">-1</field>
+            <field name="tz">Atlantic/Azores</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ter" model="tt.destinations">
+            <field name="name">Lajes</field>
+            <field name="code">TER</field>
+            <field name="icao">LPLA</field>
+            <field name="city">Lajes (terceira Island)</field>
+            <field name="country_id" ref="base.pt"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.761842</field>
+            <field name="longitude">-27.090797</field>
+            <field name="altitude">180</field>
+            <field name="timezone_hour">-1</field>
+            <field name="tz">Atlantic/Azores</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bda" model="tt.destinations">
+            <field name="name">Bermuda Intl</field>
+            <field name="code">BDA</field>
+            <field name="icao">TXKF</field>
+            <field name="city">Bermuda</field>
+            <field name="country_id" ref="base.bm"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">32.364042</field>
+            <field name="longitude">-64.678703</field>
+            <field name="altitude">12</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">Atlantic/Bermuda</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ace" model="tt.destinations">
+            <field name="name">Lanzarote</field>
+            <field name="code">ACE</field>
+            <field name="icao">GCRR</field>
+            <field name="city">Las Palmas</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">28.945464</field>
+            <field name="longitude">-13.605225</field>
+            <field name="altitude">47</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Atlantic/Canary</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fue" model="tt.destinations">
+            <field name="name">Fuerteventura</field>
+            <field name="code">FUE</field>
+            <field name="icao">GCFV</field>
+            <field name="city">Fuerteventura</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">28.452717</field>
+            <field name="longitude">-13.863761</field>
+            <field name="altitude">83</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Atlantic/Canary</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gmz" model="tt.destinations">
+            <field name="name">La Gomera Airport</field>
+            <field name="code">GMZ</field>
+            <field name="icao">GCGM</field>
+            <field name="city">La Gomera</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">28.0296</field>
+            <field name="longitude">-17.2146</field>
+            <field name="altitude">718</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Atlantic/Canary</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lpa" model="tt.destinations">
+            <field name="name">Gran Canaria</field>
+            <field name="code">LPA</field>
+            <field name="icao">GCLP</field>
+            <field name="city">Gran Canaria</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">27.931886</field>
+            <field name="longitude">-15.386586</field>
+            <field name="altitude">78</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Atlantic/Canary</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_spc" model="tt.destinations">
+            <field name="name">La Palma</field>
+            <field name="code">SPC</field>
+            <field name="icao">GCLA</field>
+            <field name="city">Santa Cruz De La Palma</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">28.626478</field>
+            <field name="longitude">-17.755611</field>
+            <field name="altitude">107</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Atlantic/Canary</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tfn" model="tt.destinations">
+            <field name="name">Tenerife Norte</field>
+            <field name="code">TFN</field>
+            <field name="icao">GCXO</field>
+            <field name="city">Tenerife</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">28.482653</field>
+            <field name="longitude">-16.341536</field>
+            <field name="altitude">2073</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Atlantic/Canary</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tfs" model="tt.destinations">
+            <field name="name">Tenerife Sur</field>
+            <field name="code">TFS</field>
+            <field name="icao">GCTS</field>
+            <field name="city">Tenerife</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">28.044475</field>
+            <field name="longitude">-16.572489</field>
+            <field name="altitude">209</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Atlantic/Canary</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vde" model="tt.destinations">
+            <field name="name">Hierro</field>
+            <field name="code">VDE</field>
+            <field name="icao">GCHI</field>
+            <field name="city">Hierro</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">27.814847</field>
+            <field name="longitude">-17.887056</field>
+            <field name="altitude">103</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Atlantic/Canary</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bvc" model="tt.destinations">
+            <field name="name">Rabil</field>
+            <field name="code">BVC</field>
+            <field name="icao">GVBA</field>
+            <field name="city">Boa Vista</field>
+            <field name="country_id" ref="base.cv"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">16.136531</field>
+            <field name="longitude">-22.888897</field>
+            <field name="altitude">69</field>
+            <field name="timezone_hour">-1</field>
+            <field name="tz">Atlantic/Cape_Verde</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mmo" model="tt.destinations">
+            <field name="name">Maio</field>
+            <field name="code">MMO</field>
+            <field name="icao">GVMA</field>
+            <field name="city">Maio</field>
+            <field name="country_id" ref="base.cv"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">15.155928</field>
+            <field name="longitude">-23.213703</field>
+            <field name="altitude">36</field>
+            <field name="timezone_hour">-1</field>
+            <field name="tz">Atlantic/Cape_Verde</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rai" model="tt.destinations">
+            <field name="name">Praia International Airport</field>
+            <field name="code">RAI</field>
+            <field name="icao">GVNP</field>
+            <field name="city">Santiago Island</field>
+            <field name="country_id" ref="base.cv"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">14.9245</field>
+            <field name="longitude">-23.4935</field>
+            <field name="altitude">230</field>
+            <field name="timezone_hour">-1</field>
+            <field name="tz">Atlantic/Cape_Verde</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sfl" model="tt.destinations">
+            <field name="name">Sao Filipe Airport</field>
+            <field name="code">SFL</field>
+            <field name="icao">GVSF</field>
+            <field name="city">Sao Filipe Fogo Island</field>
+            <field name="country_id" ref="base.cv"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">14.885</field>
+            <field name="longitude">-24.48</field>
+            <field name="altitude">617</field>
+            <field name="timezone_hour">-1</field>
+            <field name="tz">Atlantic/Cape_Verde</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sid" model="tt.destinations">
+            <field name="name">Amilcar Cabral Intl</field>
+            <field name="code">SID</field>
+            <field name="icao">GVAC</field>
+            <field name="city">Amilcar Cabral</field>
+            <field name="country_id" ref="base.cv"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">16.741389</field>
+            <field name="longitude">-22.949444</field>
+            <field name="altitude">177</field>
+            <field name="timezone_hour">-1</field>
+            <field name="tz">Atlantic/Cape_Verde</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sne" model="tt.destinations">
+            <field name="name">Preguica</field>
+            <field name="code">SNE</field>
+            <field name="icao">GVSN</field>
+            <field name="city">Sao Nocolau Island</field>
+            <field name="country_id" ref="base.cv"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">16.588356</field>
+            <field name="longitude">-24.284656</field>
+            <field name="altitude">669</field>
+            <field name="timezone_hour">-1</field>
+            <field name="tz">Atlantic/Cape_Verde</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vxe" model="tt.destinations">
+            <field name="name">Sao Pedro</field>
+            <field name="code">VXE</field>
+            <field name="icao">GVSV</field>
+            <field name="city">Sao Vicente Island</field>
+            <field name="country_id" ref="base.cv"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">16.833689</field>
+            <field name="longitude">-25.054661</field>
+            <field name="altitude">66</field>
+            <field name="timezone_hour">-1</field>
+            <field name="tz">Atlantic/Cape_Verde</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fae" model="tt.destinations">
+            <field name="name">Vagar</field>
+            <field name="code">FAE</field>
+            <field name="icao">EKVG</field>
+            <field name="city">Vagar</field>
+            <field name="country_id" ref="base.fo"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">62.063628</field>
+            <field name="longitude">-7.277219</field>
+            <field name="altitude">280</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Atlantic/Faeroe</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_aey" model="tt.destinations">
+            <field name="name">Akureyri</field>
+            <field name="code">AEY</field>
+            <field name="icao">BIAR</field>
+            <field name="city">Akureyri</field>
+            <field name="country_id" ref="base.is"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">65.659994</field>
+            <field name="longitude">-18.072703</field>
+            <field name="altitude">6</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Atlantic/Reykjavik</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_biu" model="tt.destinations">
+            <field name="name">Bildudalur Airport</field>
+            <field name="code">BIU</field>
+            <field name="icao">BIBD</field>
+            <field name="city">Bildudalur</field>
+            <field name="country_id" ref="base.is"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">65.641389</field>
+            <field name="longitude">-23.546111</field>
+            <field name="altitude">26</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Atlantic/Reykjavik</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_egs" model="tt.destinations">
+            <field name="name">Egilsstadir</field>
+            <field name="code">EGS</field>
+            <field name="icao">BIEG</field>
+            <field name="city">Egilsstadir</field>
+            <field name="country_id" ref="base.is"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">65.283333</field>
+            <field name="longitude">-14.401389</field>
+            <field name="altitude">76</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Atlantic/Reykjavik</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gjr" model="tt.destinations">
+            <field name="name">Gjogur Airport</field>
+            <field name="code">GJR</field>
+            <field name="icao">BIGJ</field>
+            <field name="city">Gjogur</field>
+            <field name="country_id" ref="base.is"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">65.995278</field>
+            <field name="longitude">-21.326944</field>
+            <field name="altitude">98</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Atlantic/Reykjavik</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gry" model="tt.destinations">
+            <field name="name">Gr铆msey Airport</field>
+            <field name="code">GRY</field>
+            <field name="icao">BIGR</field>
+            <field name="city">Gr铆msey</field>
+            <field name="country_id" ref="base.is"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">66.5547</field>
+            <field name="longitude">-18.0175</field>
+            <field name="altitude">66</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Atlantic/Reykjavik</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hfn" model="tt.destinations">
+            <field name="name">Hornafjordur</field>
+            <field name="code">HFN</field>
+            <field name="icao">BIHN</field>
+            <field name="city">Hofn</field>
+            <field name="country_id" ref="base.is"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">64.295556</field>
+            <field name="longitude">-15.227222</field>
+            <field name="altitude">24</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Atlantic/Reykjavik</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hzk" model="tt.destinations">
+            <field name="name">Husavik</field>
+            <field name="code">HZK</field>
+            <field name="icao">BIHU</field>
+            <field name="city">Husavik</field>
+            <field name="country_id" ref="base.is"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">65.952328</field>
+            <field name="longitude">-17.425978</field>
+            <field name="altitude">48</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Atlantic/Reykjavik</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ifj" model="tt.destinations">
+            <field name="name">Isafjordur</field>
+            <field name="code">IFJ</field>
+            <field name="icao">BIIS</field>
+            <field name="city">Isafjordur</field>
+            <field name="country_id" ref="base.is"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">66.058056</field>
+            <field name="longitude">-23.135278</field>
+            <field name="altitude">8</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Atlantic/Reykjavik</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kef" model="tt.destinations">
+            <field name="name">Keflavik International Airport</field>
+            <field name="code">KEF</field>
+            <field name="icao">BIKF</field>
+            <field name="city">Keflavik</field>
+            <field name="country_id" ref="base.is"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">63.985</field>
+            <field name="longitude">-22.605556</field>
+            <field name="altitude">171</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Atlantic/Reykjavik</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mva" model="tt.destinations">
+            <field name="name">Reykjahlid Airport</field>
+            <field name="code">MVA</field>
+            <field name="icao">BIRL</field>
+            <field name="city">Myvatn</field>
+            <field name="country_id" ref="base.is"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">65.6558</field>
+            <field name="longitude">-16.9181</field>
+            <field name="altitude">1030</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Atlantic/Reykjavik</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nor" model="tt.destinations">
+            <field name="name">Nordfjordur Airport</field>
+            <field name="code">NOR</field>
+            <field name="icao">BINF</field>
+            <field name="city">Nordfjordur</field>
+            <field name="country_id" ref="base.is"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">65.131897</field>
+            <field name="longitude">-13.7463999</field>
+            <field name="altitude">3648</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Atlantic/Reykjavik</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pfj" model="tt.destinations">
+            <field name="name">Patreksfjordur</field>
+            <field name="code">PFJ</field>
+            <field name="icao">BIPA</field>
+            <field name="city">Patreksfjordur</field>
+            <field name="country_id" ref="base.is"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">65.555833</field>
+            <field name="longitude">-23.965</field>
+            <field name="altitude">11</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Atlantic/Reykjavik</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rkv" model="tt.destinations">
+            <field name="name">Reykjavik</field>
+            <field name="code">RKV</field>
+            <field name="icao">BIRK</field>
+            <field name="city">Reykjavik</field>
+            <field name="country_id" ref="base.is"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">64.13</field>
+            <field name="longitude">-21.940556</field>
+            <field name="altitude">48</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Atlantic/Reykjavik</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sak" model="tt.destinations">
+            <field name="name">Saudarkrokur</field>
+            <field name="code">SAK</field>
+            <field name="icao">BIKR</field>
+            <field name="city">Saudarkrokur</field>
+            <field name="country_id" ref="base.is"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">65.731667</field>
+            <field name="longitude">-19.572778</field>
+            <field name="altitude">8</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Atlantic/Reykjavik</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sij" model="tt.destinations">
+            <field name="name">Siglufjordur</field>
+            <field name="code">SIJ</field>
+            <field name="icao">BISI</field>
+            <field name="city">Siglufjordur</field>
+            <field name="country_id" ref="base.is"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">66.133333</field>
+            <field name="longitude">-18.916667</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Atlantic/Reykjavik</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            

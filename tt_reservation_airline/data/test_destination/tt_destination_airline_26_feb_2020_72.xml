@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_lua" model="tt.destinations">
+            <field name="name">Lukla</field>
+            <field name="code">LUA</field>
+            <field name="icao">VNLK</field>
+            <field name="city">Lukla</field>
+            <field name="country_id" ref="base.np"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">27.687778</field>
+            <field name="longitude">86.731389</field>
+            <field name="altitude">9100</field>
+            <field name="timezone_hour">5.75</field>
+            <field name="tz">Asia/Katmandu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mey" model="tt.destinations">
+            <field name="name">Meghauli Airport</field>
+            <field name="code">MEY</field>
+            <field name="icao">VNMG</field>
+            <field name="city">Meghauli</field>
+            <field name="country_id" ref="base.np"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">27.583</field>
+            <field name="longitude">84.233</field>
+            <field name="altitude">600</field>
+            <field name="timezone_hour">5.75</field>
+            <field name="tz">Asia/Katmandu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mwp" model="tt.destinations">
+            <field name="name">Mountain Airport</field>
+            <field name="code">MWP</field>
+            <field name="icao"></field>
+            <field name="city">Mountain</field>
+            <field name="country_id" ref="base.np"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">28</field>
+            <field name="longitude">85.333</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">5.75</field>
+            <field name="tz">Asia/Katmandu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ngx" model="tt.destinations">
+            <field name="name">Manang</field>
+            <field name="code">NGX</field>
+            <field name="icao">VNMA</field>
+            <field name="city">Manang</field>
+            <field name="country_id" ref="base.np"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">28.633</field>
+            <field name="longitude">84</field>
+            <field name="altitude">11000</field>
+            <field name="timezone_hour">5.75</field>
+            <field name="tz">Asia/Katmandu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pkr" model="tt.destinations">
+            <field name="name">Pokhara</field>
+            <field name="code">PKR</field>
+            <field name="icao">VNPK</field>
+            <field name="city">Pokhara</field>
+            <field name="country_id" ref="base.np"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">28.200881</field>
+            <field name="longitude">83.982056</field>
+            <field name="altitude">2712</field>
+            <field name="timezone_hour">5.75</field>
+            <field name="tz">Asia/Katmandu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ppl" model="tt.destinations">
+            <field name="name">Phaplu</field>
+            <field name="code">PPL</field>
+            <field name="icao">VNPL</field>
+            <field name="city">Phaplu</field>
+            <field name="country_id" ref="base.np"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">27.517</field>
+            <field name="longitude">86.6</field>
+            <field name="altitude">7918</field>
+            <field name="timezone_hour">5.75</field>
+            <field name="tz">Asia/Katmandu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rhp" model="tt.destinations">
+            <field name="name">Ramechhap</field>
+            <field name="code">RHP</field>
+            <field name="icao">VNRC</field>
+            <field name="city">Ramechhap</field>
+            <field name="country_id" ref="base.np"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">27.394005</field>
+            <field name="longitude">86.06144</field>
+            <field name="altitude">1555</field>
+            <field name="timezone_hour">5.75</field>
+            <field name="tz">Asia/Katmandu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ruk" model="tt.destinations">
+            <field name="name">Rukumkot</field>
+            <field name="code">RUK</field>
+            <field name="icao">VNRK</field>
+            <field name="city">Rukumkot</field>
+            <field name="country_id" ref="base.np"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">28.627</field>
+            <field name="longitude">82.195</field>
+            <field name="altitude">2500</field>
+            <field name="timezone_hour">5.75</field>
+            <field name="tz">Asia/Katmandu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rum" model="tt.destinations">
+            <field name="name">Rumjatar</field>
+            <field name="code">RUM</field>
+            <field name="icao">VNRT</field>
+            <field name="city">Rumjatar</field>
+            <field name="country_id" ref="base.np"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">27.303509</field>
+            <field name="longitude">86.55043</field>
+            <field name="altitude">4500</field>
+            <field name="timezone_hour">5.75</field>
+            <field name="tz">Asia/Katmandu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sif" model="tt.destinations">
+            <field name="name">Simara</field>
+            <field name="code">SIF</field>
+            <field name="icao">VNSI</field>
+            <field name="city">Simara</field>
+            <field name="country_id" ref="base.np"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">27.159456</field>
+            <field name="longitude">84.980122</field>
+            <field name="altitude">450</field>
+            <field name="timezone_hour">5.75</field>
+            <field name="tz">Asia/Katmandu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_skh" model="tt.destinations">
+            <field name="name">Surkhet</field>
+            <field name="code">SKH</field>
+            <field name="icao">VNSK</field>
+            <field name="city">Surkhet</field>
+            <field name="country_id" ref="base.np"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">28.586</field>
+            <field name="longitude">81.636</field>
+            <field name="altitude">2400</field>
+            <field name="timezone_hour">5.75</field>
+            <field name="tz">Asia/Katmandu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_syh" model="tt.destinations">
+            <field name="name">Syangboche</field>
+            <field name="code">SYH</field>
+            <field name="icao">VNSB</field>
+            <field name="city">Syangboche</field>
+            <field name="country_id" ref="base.np"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">27.811187</field>
+            <field name="longitude">86.712661</field>
+            <field name="altitude">12309</field>
+            <field name="timezone_hour">5.75</field>
+            <field name="tz">Asia/Katmandu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tmi" model="tt.destinations">
+            <field name="name">Tumling Tar</field>
+            <field name="code">TMI</field>
+            <field name="icao">VNTR</field>
+            <field name="city">Tumling Tar</field>
+            <field name="country_id" ref="base.np"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">27.315</field>
+            <field name="longitude">87.193333</field>
+            <field name="altitude">1700</field>
+            <field name="timezone_hour">5.75</field>
+            <field name="tz">Asia/Katmandu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tmk" model="tt.destinations">
+            <field name="name">Thamkharka</field>
+            <field name="code">TMK</field>
+            <field name="icao"></field>
+            <field name="city">Thamkharka</field>
+            <field name="country_id" ref="base.np"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">27.052222</field>
+            <field name="longitude">86.861944</field>
+            <field name="altitude">6000</field>
+            <field name="timezone_hour">5.75</field>
+            <field name="tz">Asia/Katmandu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tpj" model="tt.destinations">
+            <field name="name">Taplejung</field>
+            <field name="code">TPJ</field>
+            <field name="icao">VNTJ</field>
+            <field name="city">Taplejung</field>
+            <field name="country_id" ref="base.np"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">27.35</field>
+            <field name="longitude">84.667</field>
+            <field name="altitude">4000</field>
+            <field name="timezone_hour">5.75</field>
+            <field name="tz">Asia/Katmandu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_aba" model="tt.destinations">
+            <field name="name">Abakan</field>
+            <field name="code">ABA</field>
+            <field name="icao">UNAA</field>
+            <field name="city">Abakan</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">53.74</field>
+            <field name="longitude">91.385</field>
+            <field name="altitude">831</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Krasnoyarsk</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dks" model="tt.destinations">
+            <field name="name">Dikson Airport</field>
+            <field name="code">DKS</field>
+            <field name="icao">UODD</field>
+            <field name="city">Dikson</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">73.517807</field>
+            <field name="longitude">80.379669</field>
+            <field name="altitude">47</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Krasnoyarsk</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_eie" model="tt.destinations">
+            <field name="name">Yeniseysk Airport</field>
+            <field name="code">EIE</field>
+            <field name="icao">UNII</field>
+            <field name="city">Yeniseysk</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">58.4742</field>
+            <field name="longitude">92.1125</field>
+            <field name="altitude">253</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Krasnoyarsk</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_htg" model="tt.destinations">
+            <field name="name">Khatanga Airport</field>
+            <field name="code">HTG</field>
+            <field name="icao">UOHH</field>
+            <field name="city">Khatanga</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">71.978058</field>
+            <field name="longitude">102.490514</field>
+            <field name="altitude">95</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Krasnoyarsk</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_iaa" model="tt.destinations">
+            <field name="name">Igarka Airport</field>
+            <field name="code">IAA</field>
+            <field name="icao">UOII</field>
+            <field name="city">Igarka</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">67.4372</field>
+            <field name="longitude">86.6219</field>
+            <field name="altitude">82</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Krasnoyarsk</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kja" model="tt.destinations">
+            <field name="name">Emelyanovo</field>
+            <field name="code">KJA</field>
+            <field name="icao">UNKL</field>
+            <field name="city">Krasnoyarsk</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">56.18</field>
+            <field name="longitude">92.475</field>
+            <field name="altitude">940</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Krasnoyarsk</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kyz" model="tt.destinations">
+            <field name="name">Kyzyl Airport</field>
+            <field name="code">KYZ</field>
+            <field name="icao">UNKY</field>
+            <field name="city">Kyzyl</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">51.6694</field>
+            <field name="longitude">94.4006</field>
+            <field name="altitude">2123</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Krasnoyarsk</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nsk" model="tt.destinations">
+            <field name="name">Alykel</field>
+            <field name="code">NSK</field>
+            <field name="icao">UOOO</field>
+            <field name="city">Norilsk</field>
+            <field name="country_id" ref="base.ru"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">69.311053</field>
+            <field name="longitude">87.332183</field>
+            <field name="altitude">595</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Krasnoyarsk</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_aor" model="tt.destinations">
+            <field name="name">Sultan Abdul Halim</field>
+            <field name="code">AOR</field>
+            <field name="icao">WMKA</field>
+            <field name="city">Alor Setar</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">6.189667</field>
+            <field name="longitude">100.398183</field>
+            <field name="altitude">15</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bbn" model="tt.destinations">
+            <field name="name">Bario Airport</field>
+            <field name="code">BBN</field>
+            <field name="icao">WBGZ</field>
+            <field name="city">Bario</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">3.73389</field>
+            <field name="longitude">115.479</field>
+            <field name="altitude">3350</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bki" model="tt.destinations">
+            <field name="name">Kota Kinabalu Intl</field>
+            <field name="code">BKI</field>
+            <field name="icao">WBKK</field>
+            <field name="city">Kota Kinabalu</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">5.937208</field>
+            <field name="longitude">116.051181</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bkm" model="tt.destinations">
+            <field name="name">Bakalalan Airport</field>
+            <field name="code">BKM</field>
+            <field name="icao">WBGQ</field>
+            <field name="city">Bakalalan</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">3.974</field>
+            <field name="longitude">115.618</field>
+            <field name="altitude">2900</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_blg" model="tt.destinations">
+            <field name="name">Belaga Airport</field>
+            <field name="code">BLG</field>
+            <field name="icao">WBGC</field>
+            <field name="city">Belaga</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">2.65</field>
+            <field name="longitude">113.767</field>
+            <field name="altitude">200</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_btu" model="tt.destinations">
+            <field name="name">Bintulu</field>
+            <field name="code">BTU</field>
+            <field name="icao">WBGB</field>
+            <field name="city">Bintulu</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">3.12385</field>
+            <field name="longitude">113.020472</field>
+            <field name="altitude">74</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_iph" model="tt.destinations">
+            <field name="name">Sultan Azlan Shah</field>
+            <field name="code">IPH</field>
+            <field name="icao">WMKI</field>
+            <field name="city">Ipoh</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">4.567972</field>
+            <field name="longitude">101.092194</field>
+            <field name="altitude">130</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jhb" model="tt.destinations">
+            <field name="name">Sultan Ismail</field>
+            <field name="code">JHB</field>
+            <field name="icao">WMKJ</field>
+            <field name="city">Johor Bahru</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">1.641308</field>
+            <field name="longitude">103.669619</field>
+            <field name="altitude">135</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kbr" model="tt.destinations">
+            <field name="name">Sultan Ismail Petra</field>
+            <field name="code">KBR</field>
+            <field name="icao">WMKC</field>
+            <field name="city">Kota Bahru</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">6.16685</field>
+            <field name="longitude">102.293014</field>
+            <field name="altitude">16</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kch" model="tt.destinations">
+            <field name="name">Kuching Intl</field>
+            <field name="code">KCH</field>
+            <field name="icao">WBGG</field>
+            <field name="city">Kuching</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">1.484697</field>
+            <field name="longitude">110.346933</field>
+            <field name="altitude">89</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kte" model="tt.destinations">
+            <field name="name">Kerteh</field>
+            <field name="code">KTE</field>
+            <field name="icao">WMKE</field>
+            <field name="city">Kerteh</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">4.537222</field>
+            <field name="longitude">103.426756</field>
+            <field name="altitude">18</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kua" model="tt.destinations">
+            <field name="name">Kuantan</field>
+            <field name="code">KUA</field>
+            <field name="icao">WMKD</field>
+            <field name="city">Kuantan</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">3.775389</field>
+            <field name="longitude">103.209056</field>
+            <field name="altitude">58</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kud" model="tt.destinations">
+            <field name="name">Kudat Airport</field>
+            <field name="code">KUD</field>
+            <field name="icao">WBKT</field>
+            <field name="city">Kudat</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">6.9225</field>
+            <field name="longitude">116.836</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kul" model="tt.destinations">
+            <field name="name">Kuala Lumpur Intl</field>
+            <field name="code">KUL</field>
+            <field name="icao">WMKK</field>
+            <field name="city">Kuala Lumpur</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">2.745578</field>
+            <field name="longitude">101.709917</field>
+            <field name="altitude">69</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lbp" model="tt.destinations">
+            <field name="name">Long Banga Airport</field>
+            <field name="code">LBP</field>
+            <field name="icao"></field>
+            <field name="city">Long Banga</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">3.18495</field>
+            <field name="longitude">115.454</field>
+            <field name="altitude">750</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lbu" model="tt.destinations">
+            <field name="name">Labuan</field>
+            <field name="code">LBU</field>
+            <field name="icao">WBKL</field>
+            <field name="city">Labuan</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">5.300683</field>
+            <field name="longitude">115.250181</field>
+            <field name="altitude">101</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ldu" model="tt.destinations">
+            <field name="name">Lahad Datu</field>
+            <field name="code">LDU</field>
+            <field name="icao">WBKD</field>
+            <field name="city">Lahad Datu</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">5.032247</field>
+            <field name="longitude">118.324036</field>
+            <field name="altitude">45</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lgk" model="tt.destinations">
+            <field name="name">Langkawi Intl</field>
+            <field name="code">LGK</field>
+            <field name="icao">WMKL</field>
+            <field name="city">Pulau</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">6.329728</field>
+            <field name="longitude">99.728667</field>
+            <field name="altitude">29</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lgl" model="tt.destinations">
+            <field name="name">Long Lellang Airport</field>
+            <field name="code">LGL</field>
+            <field name="icao">WBGF</field>
+            <field name="city">Long Datih</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">3.421</field>
+            <field name="longitude">115.154</field>
+            <field name="altitude">1400</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lkh" model="tt.destinations">
+            <field name="name">Long Akah Airport</field>
+            <field name="code">LKH</field>
+            <field name="icao">WBGL</field>
+            <field name="city">Long Akah</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">3.3</field>
+            <field name="longitude">114.783</field>
+            <field name="altitude">289</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lmn" model="tt.destinations">
+            <field name="name">Limbang</field>
+            <field name="code">LMN</field>
+            <field name="icao">WBGJ</field>
+            <field name="city">Limbang</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">4.808303</field>
+            <field name="longitude">115.010439</field>
+            <field name="altitude">14</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lwy" model="tt.destinations">
+            <field name="name">Lawas Airport</field>
+            <field name="code">LWY</field>
+            <field name="icao">WBGW</field>
+            <field name="city">Lawas</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">4.84917</field>
+            <field name="longitude">115.408</field>
+            <field name="altitude">5</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mkm" model="tt.destinations">
+            <field name="name">Mukah Airport</field>
+            <field name="code">MKM</field>
+            <field name="icao">WBGK</field>
+            <field name="city">Mukah</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">2.90639</field>
+            <field name="longitude">112.08</field>
+            <field name="altitude">13</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mkz" model="tt.destinations">
+            <field name="name">Malacca</field>
+            <field name="code">MKZ</field>
+            <field name="icao">WMKM</field>
+            <field name="city">Malacca</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">2.263361</field>
+            <field name="longitude">102.251553</field>
+            <field name="altitude">35</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mur" model="tt.destinations">
+            <field name="name">Marudi</field>
+            <field name="code">MUR</field>
+            <field name="icao">WBGM</field>
+            <field name="city">Marudi</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">4.1775</field>
+            <field name="longitude">114.321944</field>
+            <field name="altitude">103</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_myy" model="tt.destinations">
+            <field name="name">Miri</field>
+            <field name="code">MYY</field>
+            <field name="icao">WBGR</field>
+            <field name="city">Miri</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">4.322014</field>
+            <field name="longitude">113.986806</field>
+            <field name="altitude">59</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mzv" model="tt.destinations">
+            <field name="name">Mulu</field>
+            <field name="code">MZV</field>
+            <field name="icao"></field>
+            <field name="city">Mulu</field>
+            <field name="country_id" ref="base.my"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">4.048333</field>
+            <field name="longitude">114.805</field>
+            <field name="altitude">80</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Kuala_Lumpur</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            

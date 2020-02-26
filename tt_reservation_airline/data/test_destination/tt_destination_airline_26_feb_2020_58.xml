@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_vdm" model="tt.destinations">
+            <field name="name">Gobernador Castello</field>
+            <field name="code">VDM</field>
+            <field name="icao">SAVV</field>
+            <field name="city">Viedma</field>
+            <field name="country_id" ref="base.ar"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-40.869222</field>
+            <field name="longitude">-63.000389</field>
+            <field name="altitude">20</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Cordoba</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vdp" model="tt.destinations">
+            <field name="name">Valle De La Pascua</field>
+            <field name="code">VDP</field>
+            <field name="icao">SVVP</field>
+            <field name="city">Valle De La Pascua</field>
+            <field name="country_id" ref="base.ve"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">9.222028</field>
+            <field name="longitude">-65.993583</field>
+            <field name="altitude">410</field>
+            <field name="timezone_hour">-4.5</field>
+            <field name="tz">America/Caracas</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vdr" model="tt.destinations">
+            <field name="name">Villa Dolores</field>
+            <field name="code">VDR</field>
+            <field name="icao">SAOD</field>
+            <field name="city">Villa Dolores</field>
+            <field name="country_id" ref="base.ar"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-31.945183</field>
+            <field name="longitude">-65.146283</field>
+            <field name="altitude">1915</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Cordoba</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vdz" model="tt.destinations">
+            <field name="name">Valdez Pioneer Fld</field>
+            <field name="code">VDZ</field>
+            <field name="icao">PAVD</field>
+            <field name="city">Valdez</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">61.133949</field>
+            <field name="longitude">-146.248342</field>
+            <field name="altitude">118</field>
+            <field name="timezone_hour">-9</field>
+            <field name="tz">America/Anchorage</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vee" model="tt.destinations">
+            <field name="name">Venetie Airport</field>
+            <field name="code">VEE</field>
+            <field name="icao">PAVE</field>
+            <field name="city">Venetie</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">67.008611</field>
+            <field name="longitude">-146.366389</field>
+            <field name="altitude">574</field>
+            <field name="timezone_hour">-9</field>
+            <field name="tz">America/Anchorage</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vel" model="tt.destinations">
+            <field name="name">Vernal Regional Airport</field>
+            <field name="code">VEL</field>
+            <field name="icao">KVEL</field>
+            <field name="city">Vernal</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.440833</field>
+            <field name="longitude">-109.51</field>
+            <field name="altitude">5278</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Denver</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ver" model="tt.destinations">
+            <field name="name">General Heriberto Jara Intl</field>
+            <field name="code">VER</field>
+            <field name="icao">MMVR</field>
+            <field name="city">Vera Cruz</field>
+            <field name="country_id" ref="base.mx"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">19.145931</field>
+            <field name="longitude">-96.187267</field>
+            <field name="altitude">90</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Mexico_City</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vfa" model="tt.destinations">
+            <field name="name">Victoria Falls Intl</field>
+            <field name="code">VFA</field>
+            <field name="icao">FVFA</field>
+            <field name="city">Victoria Falls</field>
+            <field name="country_id" ref="base.zw"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-18.095881</field>
+            <field name="longitude">25.839006</field>
+            <field name="altitude">3490</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Africa/Harare</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vga" model="tt.destinations">
+            <field name="name">Vijayawada</field>
+            <field name="code">VGA</field>
+            <field name="icao">VOBZ</field>
+            <field name="city">Vijayawada</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">16.530433</field>
+            <field name="longitude">80.796847</field>
+            <field name="altitude">82</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vgt" model="tt.destinations">
+            <field name="name">North Las Vegas Airport</field>
+            <field name="code">VGT</field>
+            <field name="icao"></field>
+            <field name="city">Las Vegas</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.2106944</field>
+            <field name="longitude">-115.1944444</field>
+            <field name="altitude">2205</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Los_Angeles</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vgz" model="tt.destinations">
+            <field name="name">Villa Garzon Airport</field>
+            <field name="code">VGZ</field>
+            <field name="icao">SKVG</field>
+            <field name="city">Villa Garzon</field>
+            <field name="country_id" ref="base.co"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">0.978889</field>
+            <field name="longitude">-76.605556</field>
+            <field name="altitude">1248</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Bogota</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vhc" model="tt.destinations">
+            <field name="name">Saurimo</field>
+            <field name="code">VHC</field>
+            <field name="icao">FNSA</field>
+            <field name="city">Saurimo</field>
+            <field name="country_id" ref="base.ao"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-9.689067</field>
+            <field name="longitude">20.431875</field>
+            <field name="altitude">3584</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Africa/Luanda</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vig" model="tt.destinations">
+            <field name="name">Juan Pablo P茅rez Alfonso Airport</field>
+            <field name="code">VIG</field>
+            <field name="icao">SVVG</field>
+            <field name="city">El Vig铆a</field>
+            <field name="country_id" ref="base.ve"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">8.6241</field>
+            <field name="longitude">-71.672819</field>
+            <field name="altitude">250</field>
+            <field name="timezone_hour">-4.5</field>
+            <field name="tz">America/Caracas</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vij" model="tt.destinations">
+            <field name="name">Virgin Gorda Airport</field>
+            <field name="code">VIJ</field>
+            <field name="icao">TUPW</field>
+            <field name="city">Spanish Town</field>
+            <field name="country_id" ref="base.vg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">18.4464</field>
+            <field name="longitude">-64.4275</field>
+            <field name="altitude">9</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">America/Tortola</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vil" model="tt.destinations">
+            <field name="name">Dakhla Airport</field>
+            <field name="code">VIL</field>
+            <field name="icao">GMMH</field>
+            <field name="city">Dakhla</field>
+            <field name="country_id" ref="base.eh"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">23.7183</field>
+            <field name="longitude">-15.932</field>
+            <field name="altitude">36</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Africa/El_Aaiun</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vir" model="tt.destinations">
+            <field name="name">Virginia</field>
+            <field name="code">VIR</field>
+            <field name="icao">FAVG</field>
+            <field name="city">Durban</field>
+            <field name="country_id" ref="base.za"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-29.770606</field>
+            <field name="longitude">31.058406</field>
+            <field name="altitude">20</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Africa/Johannesburg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vis" model="tt.destinations">
+            <field name="name">Visalia Municipal Airport</field>
+            <field name="code">VIS</field>
+            <field name="icao">KVIS</field>
+            <field name="city">Visalia</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.318611</field>
+            <field name="longitude">-119.392778</field>
+            <field name="altitude">295</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Los_Angeles</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vix" model="tt.destinations">
+            <field name="name">Goiabeiras</field>
+            <field name="code">VIX</field>
+            <field name="icao">SBVT</field>
+            <field name="city">Vitoria</field>
+            <field name="country_id" ref="base.br"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-20.258056</field>
+            <field name="longitude">-40.286389</field>
+            <field name="altitude">11</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Sao_Paulo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vld" model="tt.destinations">
+            <field name="name">Valdosta Regional Airport</field>
+            <field name="code">VLD</field>
+            <field name="icao">KVLD</field>
+            <field name="city">Valdosta</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">30.7825</field>
+            <field name="longitude">-83.2767</field>
+            <field name="altitude">203</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vlg" model="tt.destinations">
+            <field name="name">Villa Gesell</field>
+            <field name="code">VLG</field>
+            <field name="icao">SAZV</field>
+            <field name="city">Villa Gesell</field>
+            <field name="country_id" ref="base.ar"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-37.235408</field>
+            <field name="longitude">-57.029239</field>
+            <field name="altitude">32</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Cordoba</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vln" model="tt.destinations">
+            <field name="name">Arturo Michelena Intl</field>
+            <field name="code">VLN</field>
+            <field name="icao">SVVA</field>
+            <field name="city">Valencia</field>
+            <field name="country_id" ref="base.ve"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">10.149733</field>
+            <field name="longitude">-67.9284</field>
+            <field name="altitude">1417</field>
+            <field name="timezone_hour">-4.5</field>
+            <field name="tz">America/Caracas</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vlv" model="tt.destinations">
+            <field name="name">Dr Antonio Nicolas Briceno</field>
+            <field name="code">VLV</field>
+            <field name="icao">SVVL</field>
+            <field name="city">Valera</field>
+            <field name="country_id" ref="base.ve"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">9.340797</field>
+            <field name="longitude">-70.584089</field>
+            <field name="altitude">1893</field>
+            <field name="timezone_hour">-4.5</field>
+            <field name="tz">America/Caracas</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vns" model="tt.destinations">
+            <field name="name">Varanasi</field>
+            <field name="code">VNS</field>
+            <field name="icao">VIBN</field>
+            <field name="city">Varanasi</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">25.452358</field>
+            <field name="longitude">82.859342</field>
+            <field name="altitude">266</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vnw" model="tt.destinations">
+            <field name="name">Van Wert County Airport</field>
+            <field name="code">VNW</field>
+            <field name="icao">KVNW</field>
+            <field name="city">Van Wert</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.8638295</field>
+            <field name="longitude">-84.606358</field>
+            <field name="altitude">787</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vnx" model="tt.destinations">
+            <field name="name">Vilankulo</field>
+            <field name="code">VNX</field>
+            <field name="icao">FQVL</field>
+            <field name="city">Vilankulu</field>
+            <field name="country_id" ref="base.mz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-22.018431</field>
+            <field name="longitude">35.313297</field>
+            <field name="altitude">46</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Africa/Maputo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vny" model="tt.destinations">
+            <field name="name">Van Nuys</field>
+            <field name="code">VNY</field>
+            <field name="icao">KVNY</field>
+            <field name="city">Van Nuys</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">34.209811</field>
+            <field name="longitude">-118.489972</field>
+            <field name="altitude">802</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Los_Angeles</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vok" model="tt.destinations">
+            <field name="name">Volk Fld</field>
+            <field name="code">VOK</field>
+            <field name="icao">KVOK</field>
+            <field name="city">Camp Douglas</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.938956</field>
+            <field name="longitude">-90.253433</field>
+            <field name="altitude">912</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vpc" model="tt.destinations">
+            <field name="name">Cartersville Airport</field>
+            <field name="code">VPC</field>
+            <field name="icao">KVPC</field>
+            <field name="city">Cartersville</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">34.1231475</field>
+            <field name="longitude">-84.8487067</field>
+            <field name="altitude">759</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vpe" model="tt.destinations">
+            <field name="name">Ondjiva Pereira Airport</field>
+            <field name="code">VPE</field>
+            <field name="icao">FNGI</field>
+            <field name="city">Ondjiva</field>
+            <field name="country_id" ref="base.ao"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-17.043464</field>
+            <field name="longitude">15.683822</field>
+            <field name="altitude">3566</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Africa/Luanda</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vps" model="tt.destinations">
+            <field name="name">Eglin Afb</field>
+            <field name="code">VPS</field>
+            <field name="icao">KVPS</field>
+            <field name="city">Valparaiso</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">30.48325</field>
+            <field name="longitude">-86.5254</field>
+            <field name="altitude">87</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vpy" model="tt.destinations">
+            <field name="name">Chimoio Airport</field>
+            <field name="code">VPY</field>
+            <field name="icao">FQCH</field>
+            <field name="city">Chimoio</field>
+            <field name="country_id" ref="base.mz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-19.151267</field>
+            <field name="longitude">33.428958</field>
+            <field name="altitude">2287</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Africa/Maputo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vqs" model="tt.destinations">
+            <field name="name">Vieques Airport</field>
+            <field name="code">VQS</field>
+            <field name="icao">TJCG</field>
+            <field name="city">Vieques Island</field>
+            <field name="country_id" ref="base.pr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">18.1158</field>
+            <field name="longitude">-65.4227</field>
+            <field name="altitude">19</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">America/Puerto_Rico</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vra" model="tt.destinations">
+            <field name="name">Juan Gualberto Gomez Intl</field>
+            <field name="code">VRA</field>
+            <field name="icao">MUVR</field>
+            <field name="city">Varadero</field>
+            <field name="country_id" ref="base.cu"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">23.034445</field>
+            <field name="longitude">-81.435278</field>
+            <field name="altitude">210</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Havana</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vrb" model="tt.destinations">
+            <field name="name">Vero Beach Muni</field>
+            <field name="code">VRB</field>
+            <field name="icao">KVRB</field>
+            <field name="city">Vero Beach</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">27.655556</field>
+            <field name="longitude">-80.417944</field>
+            <field name="altitude">24</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vru" model="tt.destinations">
+            <field name="name">Vryburg</field>
+            <field name="code">VRU</field>
+            <field name="icao">FAVB</field>
+            <field name="city">Vryburg</field>
+            <field name="country_id" ref="base.za"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-26.982408</field>
+            <field name="longitude">24.728756</field>
+            <field name="altitude">3920</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Africa/Johannesburg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vsa" model="tt.destinations">
+            <field name="name">C P A Carlos Rovirosa Intl</field>
+            <field name="code">VSA</field>
+            <field name="icao">MMVA</field>
+            <field name="city">Villahermosa</field>
+            <field name="country_id" ref="base.mx"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">17.997</field>
+            <field name="longitude">-92.817361</field>
+            <field name="altitude">46</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Mexico_City</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vsf" model="tt.destinations">
+            <field name="name">Hartness State</field>
+            <field name="code">VSF</field>
+            <field name="icao"></field>
+            <field name="city">Springfield VT</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.343333</field>
+            <field name="longitude">-72.517222</field>
+            <field name="altitude">577</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vtu" model="tt.destinations">
+            <field name="name">Hermanos Ameijeiras</field>
+            <field name="code">VTU</field>
+            <field name="icao">MUVT</field>
+            <field name="city">Las Tunas</field>
+            <field name="country_id" ref="base.cu"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">20.987642</field>
+            <field name="longitude">-76.9358</field>
+            <field name="altitude">328</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Havana</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vtz" model="tt.destinations">
+            <field name="name">Vishakhapatnam</field>
+            <field name="code">VTZ</field>
+            <field name="icao">VEVZ</field>
+            <field name="city">Vishakhapatnam</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">17.721167</field>
+            <field name="longitude">83.224483</field>
+            <field name="altitude">15</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vup" model="tt.destinations">
+            <field name="name">Alfonso Lopez Pumarejo</field>
+            <field name="code">VUP</field>
+            <field name="icao">SKVP</field>
+            <field name="city">Valledupar</field>
+            <field name="country_id" ref="base.co"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">10.435042</field>
+            <field name="longitude">-73.249506</field>
+            <field name="altitude">456</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Bogota</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vvc" model="tt.destinations">
+            <field name="name">Vanguardia</field>
+            <field name="code">VVC</field>
+            <field name="icao">SKVV</field>
+            <field name="city">Villavicencio</field>
+            <field name="country_id" ref="base.co"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">4.167875</field>
+            <field name="longitude">-73.613761</field>
+            <field name="altitude">1394</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Bogota</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vvi" model="tt.destinations">
+            <field name="name">Viru Viru Intl</field>
+            <field name="code">VVI</field>
+            <field name="icao">SLVR</field>
+            <field name="city">Santa Cruz</field>
+            <field name="country_id" ref="base.bo"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-17.644756</field>
+            <field name="longitude">-63.135364</field>
+            <field name="altitude">1225</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">America/La_Paz</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vvz" model="tt.destinations">
+            <field name="name">Illizi Takhamalt</field>
+            <field name="code">VVZ</field>
+            <field name="icao">DAAP</field>
+            <field name="city">Illizi</field>
+            <field name="country_id" ref="base.dz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">26.723536</field>
+            <field name="longitude">8.622653</field>
+            <field name="altitude">1778</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Africa/Algiers</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vxc" model="tt.destinations">
+            <field name="name">Lichinga</field>
+            <field name="code">VXC</field>
+            <field name="icao">FQLC</field>
+            <field name="city">Lichinga</field>
+            <field name="country_id" ref="base.mz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-13.273986</field>
+            <field name="longitude">35.266262</field>
+            <field name="altitude">4505</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Africa/Maputo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vys" model="tt.destinations">
+            <field name="name">Illinois Valley Regional</field>
+            <field name="code">VYS</field>
+            <field name="icao">KVYS</field>
+            <field name="city">Peru</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.351944</field>
+            <field name="longitude">-89.153056</field>
+            <field name="altitude">654</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_w04" model="tt.destinations">
+            <field name="name">Ocean Shores Municipal</field>
+            <field name="code">W04</field>
+            <field name="icao">KW04</field>
+            <field name="city">Ocean Shores</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.5995</field>
+            <field name="longitude">-124.0854</field>
+            <field name="altitude">15</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Los_Angeles</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_w13" model="tt.destinations">
+            <field name="name">Eagle's Nest Airport</field>
+            <field name="code">W13</field>
+            <field name="icao"></field>
+            <field name="city">Waynesboro</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.076944</field>
+            <field name="longitude">-78.944167</field>
+            <field name="altitude">1437</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_waa" model="tt.destinations">
+            <field name="name">Wales Airport</field>
+            <field name="code">WAA</field>
+            <field name="icao">PAIW</field>
+            <field name="city">Wales</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">65.6225</field>
+            <field name="longitude">-168.095</field>
+            <field name="altitude">22</field>
+            <field name="timezone_hour">-9</field>
+            <field name="tz">America/Anchorage</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wal" model="tt.destinations">
+            <field name="name">Wallops Flight Facility</field>
+            <field name="code">WAL</field>
+            <field name="icao">KWAL</field>
+            <field name="city">Wallops Island</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.940194</field>
+            <field name="longitude">-75.466389</field>
+            <field name="altitude">40</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_was" model="tt.destinations">
+            <field name="name">All Airports</field>
+            <field name="code">WAS</field>
+            <field name="icao"></field>
+            <field name="city">Washington</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.889444</field>
+            <field name="longitude">-77.035278</field>
+            <field name="altitude">25</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            

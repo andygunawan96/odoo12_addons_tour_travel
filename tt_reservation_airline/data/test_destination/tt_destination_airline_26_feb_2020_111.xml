@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_gps" model="tt.destinations">
+            <field name="name">Seymour</field>
+            <field name="code">GPS</field>
+            <field name="icao">SEGS</field>
+            <field name="city">Galapagos</field>
+            <field name="country_id" ref="base.ec"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-0.453758</field>
+            <field name="longitude">-90.265914</field>
+            <field name="altitude">207</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">Pacific/Galapagos</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_scy" model="tt.destinations">
+            <field name="name">San Crist贸bal Airport</field>
+            <field name="code">SCY</field>
+            <field name="icao">SEST</field>
+            <field name="city">San Crist贸bal</field>
+            <field name="country_id" ref="base.ec"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-0.910206</field>
+            <field name="longitude">-89.61745</field>
+            <field name="altitude">62</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">Pacific/Galapagos</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gmr" model="tt.destinations">
+            <field name="name">Totegegie</field>
+            <field name="code">GMR</field>
+            <field name="icao">NTGJ</field>
+            <field name="city">Totegegie</field>
+            <field name="country_id" ref="base.pf"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-23.079861</field>
+            <field name="longitude">-134.890333</field>
+            <field name="altitude">7</field>
+            <field name="timezone_hour">-9</field>
+            <field name="tz">Pacific/Gambier</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_aft" model="tt.destinations">
+            <field name="name">Afutara Airport</field>
+            <field name="code">AFT</field>
+            <field name="icao">AGAF</field>
+            <field name="city">Afutara</field>
+            <field name="country_id" ref="base.sb"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-9.183056</field>
+            <field name="longitude">160.949722</field>
+            <field name="altitude">5</field>
+            <field name="timezone_hour">11</field>
+            <field name="tz">Pacific/Guadalcanal</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_aks" model="tt.destinations">
+            <field name="name">Auki Airport</field>
+            <field name="code">AKS</field>
+            <field name="icao">AGGA</field>
+            <field name="city">Auki</field>
+            <field name="country_id" ref="base.sb"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-8.70257</field>
+            <field name="longitude">160.682</field>
+            <field name="altitude">5</field>
+            <field name="timezone_hour">11</field>
+            <field name="tz">Pacific/Guadalcanal</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_atd" model="tt.destinations">
+            <field name="name">Uru Harbour Airport</field>
+            <field name="code">ATD</field>
+            <field name="icao">AGAT</field>
+            <field name="city">Atoifi</field>
+            <field name="country_id" ref="base.sb"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-8.87333</field>
+            <field name="longitude">161.011</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">11</field>
+            <field name="tz">Pacific/Guadalcanal</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bas" model="tt.destinations">
+            <field name="name">Ballalae Airport</field>
+            <field name="code">BAS</field>
+            <field name="icao">AGGE</field>
+            <field name="city">Ballalae</field>
+            <field name="country_id" ref="base.sb"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-6.967</field>
+            <field name="longitude">155.883</field>
+            <field name="altitude">5</field>
+            <field name="timezone_hour">11</field>
+            <field name="tz">Pacific/Guadalcanal</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bny" model="tt.destinations">
+            <field name="name">Bellona</field>
+            <field name="code">BNY</field>
+            <field name="icao"></field>
+            <field name="city">Bellona</field>
+            <field name="country_id" ref="base.sb"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-11.302</field>
+            <field name="longitude">159.8</field>
+            <field name="altitude">3</field>
+            <field name="timezone_hour">11</field>
+            <field name="tz">Pacific/Guadalcanal</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bpf" model="tt.destinations">
+            <field name="name">Batuna Airport</field>
+            <field name="code">BPF</field>
+            <field name="icao">AGBT</field>
+            <field name="city">Batuna</field>
+            <field name="country_id" ref="base.sb"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-8.63</field>
+            <field name="longitude">158</field>
+            <field name="altitude">5</field>
+            <field name="timezone_hour">11</field>
+            <field name="tz">Pacific/Guadalcanal</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_chy" model="tt.destinations">
+            <field name="name">Choiseul Bay Airport</field>
+            <field name="code">CHY</field>
+            <field name="icao">AGGC</field>
+            <field name="city">Choiseul Bay</field>
+            <field name="country_id" ref="base.sb"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-6.711944</field>
+            <field name="longitude">156.396111</field>
+            <field name="altitude">5</field>
+            <field name="timezone_hour">11</field>
+            <field name="tz">Pacific/Guadalcanal</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_egm" model="tt.destinations">
+            <field name="name">Sege Airport</field>
+            <field name="code">EGM</field>
+            <field name="icao">AGGS</field>
+            <field name="city">Sege</field>
+            <field name="country_id" ref="base.sb"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-8.57889</field>
+            <field name="longitude">157.876</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">11</field>
+            <field name="tz">Pacific/Guadalcanal</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fre" model="tt.destinations">
+            <field name="name">Fera/Maringe Airport</field>
+            <field name="code">FRE</field>
+            <field name="icao">AGGF</field>
+            <field name="city">Fera Island</field>
+            <field name="country_id" ref="base.sb"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-8.1075</field>
+            <field name="longitude">159.577</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">11</field>
+            <field name="tz">Pacific/Guadalcanal</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gta" model="tt.destinations">
+            <field name="name">Gatokae Airport</field>
+            <field name="code">GTA</field>
+            <field name="icao"></field>
+            <field name="city">Gatokae</field>
+            <field name="country_id" ref="base.sb"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-8.75</field>
+            <field name="longitude">158.2</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">11</field>
+            <field name="tz">Pacific/Guadalcanal</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gzo" model="tt.destinations">
+            <field name="name">Nusatupe Airport</field>
+            <field name="code">GZO</field>
+            <field name="icao">AGGN</field>
+            <field name="city">Gizo</field>
+            <field name="country_id" ref="base.sb"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-8.09778</field>
+            <field name="longitude">156.864</field>
+            <field name="altitude">13</field>
+            <field name="timezone_hour">11</field>
+            <field name="tz">Pacific/Guadalcanal</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hir" model="tt.destinations">
+            <field name="name">Honiara International</field>
+            <field name="code">HIR</field>
+            <field name="icao">AGGH</field>
+            <field name="city">Honiara</field>
+            <field name="country_id" ref="base.sb"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-9.428</field>
+            <field name="longitude">160.054789</field>
+            <field name="altitude">28</field>
+            <field name="timezone_hour">11</field>
+            <field name="tz">Pacific/Guadalcanal</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ira" model="tt.destinations">
+            <field name="name">Ngorangora Airport</field>
+            <field name="code">IRA</field>
+            <field name="icao">AGGK</field>
+            <field name="city">Kirakira</field>
+            <field name="country_id" ref="base.sb"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-10.4497</field>
+            <field name="longitude">161.898</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">11</field>
+            <field name="tz">Pacific/Guadalcanal</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kge" model="tt.destinations">
+            <field name="name">Kagau Island Airport</field>
+            <field name="code">KGE</field>
+            <field name="icao">AGKG</field>
+            <field name="city">Kagau Island</field>
+            <field name="country_id" ref="base.sb"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-7.333</field>
+            <field name="longitude">157.583</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">11</field>
+            <field name="tz">Pacific/Guadalcanal</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mbu" model="tt.destinations">
+            <field name="name">Babanakira Airport</field>
+            <field name="code">MBU</field>
+            <field name="icao">AGGI</field>
+            <field name="city">Mbambanakira</field>
+            <field name="country_id" ref="base.sb"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-9.7475</field>
+            <field name="longitude">159.839</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">11</field>
+            <field name="tz">Pacific/Guadalcanal</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mny" model="tt.destinations">
+            <field name="name">Mono Airport</field>
+            <field name="code">MNY</field>
+            <field name="icao">AGGO</field>
+            <field name="city">Stirling Island</field>
+            <field name="country_id" ref="base.sb"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-7.41694</field>
+            <field name="longitude">155.565</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">11</field>
+            <field name="tz">Pacific/Guadalcanal</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mua" model="tt.destinations">
+            <field name="name">Munda Airport</field>
+            <field name="code">MUA</field>
+            <field name="icao">AGGM</field>
+            <field name="city">Munda</field>
+            <field name="country_id" ref="base.sb"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-8.32797</field>
+            <field name="longitude">157.263</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">11</field>
+            <field name="tz">Pacific/Guadalcanal</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nnb" model="tt.destinations">
+            <field name="name">Santa Ana Airport</field>
+            <field name="code">NNB</field>
+            <field name="icao">AGGT</field>
+            <field name="city">Santa Ana</field>
+            <field name="country_id" ref="base.sb"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-10.848056</field>
+            <field name="longitude">162.454167</field>
+            <field name="altitude">6</field>
+            <field name="timezone_hour">11</field>
+            <field name="tz">Pacific/Guadalcanal</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rbv" model="tt.destinations">
+            <field name="name">Ramata Airport</field>
+            <field name="code">RBV</field>
+            <field name="icao">AGRM</field>
+            <field name="city">Ramata</field>
+            <field name="country_id" ref="base.sb"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-8.16806</field>
+            <field name="longitude">157.643</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">11</field>
+            <field name="tz">Pacific/Guadalcanal</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rin" model="tt.destinations">
+            <field name="name">Ringi Cove Airport</field>
+            <field name="code">RIN</field>
+            <field name="icao">AGRC</field>
+            <field name="city">Ringi Cove</field>
+            <field name="country_id" ref="base.sb"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-8.12639</field>
+            <field name="longitude">157.143</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">11</field>
+            <field name="tz">Pacific/Guadalcanal</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rna" model="tt.destinations">
+            <field name="name">Ulawa Airport</field>
+            <field name="code">RNA</field>
+            <field name="icao">AGAR</field>
+            <field name="city">Ulawa</field>
+            <field name="country_id" ref="base.sb"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-9.854722</field>
+            <field name="longitude">161.979167</field>
+            <field name="altitude">5</field>
+            <field name="timezone_hour">11</field>
+            <field name="tz">Pacific/Guadalcanal</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rnl" model="tt.destinations">
+            <field name="name">Rennell/Tingoa Airport</field>
+            <field name="code">RNL</field>
+            <field name="icao">AGGR</field>
+            <field name="city">Rennell Island</field>
+            <field name="country_id" ref="base.sb"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-11.5339</field>
+            <field name="longitude">160.063</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">11</field>
+            <field name="tz">Pacific/Guadalcanal</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rus" model="tt.destinations">
+            <field name="name">Marau Airport</field>
+            <field name="code">RUS</field>
+            <field name="icao">AGGU</field>
+            <field name="city">Marau</field>
+            <field name="country_id" ref="base.sb"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-9.86167</field>
+            <field name="longitude">160.825</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">11</field>
+            <field name="tz">Pacific/Guadalcanal</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_scz" model="tt.destinations">
+            <field name="name">Santa Cruz/Graciosa Bay/Luova Airport</field>
+            <field name="code">SCZ</field>
+            <field name="icao">AGGL</field>
+            <field name="city">Santa Cruz/Graciosa Bay/Luova</field>
+            <field name="country_id" ref="base.sb"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-10.7203</field>
+            <field name="longitude">165.795</field>
+            <field name="altitude">18</field>
+            <field name="timezone_hour">11</field>
+            <field name="tz">Pacific/Guadalcanal</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vao" model="tt.destinations">
+            <field name="name">Suavanao Airport</field>
+            <field name="code">VAO</field>
+            <field name="icao">AGGV</field>
+            <field name="city">Suavanao</field>
+            <field name="country_id" ref="base.sb"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-7.58556</field>
+            <field name="longitude">158.731</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">11</field>
+            <field name="tz">Pacific/Guadalcanal</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_xya" model="tt.destinations">
+            <field name="name">Yandina Airport</field>
+            <field name="code">XYA</field>
+            <field name="icao">AGGY</field>
+            <field name="city">Yandina</field>
+            <field name="country_id" ref="base.sb"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-9.086111</field>
+            <field name="longitude">159.218889</field>
+            <field name="altitude">6</field>
+            <field name="timezone_hour">11</field>
+            <field name="tz">Pacific/Guadalcanal</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gum" model="tt.destinations">
+            <field name="name">Guam Intl</field>
+            <field name="code">GUM</field>
+            <field name="icao">PGUM</field>
+            <field name="city">Agana</field>
+            <field name="country_id" ref="base.gu"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">13.48345</field>
+            <field name="longitude">144.795983</field>
+            <field name="altitude">298</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Guam</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_uam" model="tt.destinations">
+            <field name="name">Andersen Afb</field>
+            <field name="code">UAM</field>
+            <field name="icao">PGUA</field>
+            <field name="city">Andersen</field>
+            <field name="country_id" ref="base.gu"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">13.583953</field>
+            <field name="longitude">144.930025</field>
+            <field name="altitude">627</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Guam</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bkh" model="tt.destinations">
+            <field name="name">Barking Sands Pmrf</field>
+            <field name="code">BKH</field>
+            <field name="icao">PHBK</field>
+            <field name="city">Barking Sands</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">22.022833</field>
+            <field name="longitude">-159.785</field>
+            <field name="altitude">23</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Honolulu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bsf" model="tt.destinations">
+            <field name="name">Bradshaw Aaf</field>
+            <field name="code">BSF</field>
+            <field name="icao">PHSF</field>
+            <field name="city">Bradshaw Field</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">19.760056</field>
+            <field name="longitude">-155.553717</field>
+            <field name="altitude">6190</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Honolulu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hdh" model="tt.destinations">
+            <field name="name">Dillingham</field>
+            <field name="code">HDH</field>
+            <field name="icao">PHDH</field>
+            <field name="city">Dillingham</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">21.579475</field>
+            <field name="longitude">-158.197281</field>
+            <field name="altitude">14</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Honolulu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hhi" model="tt.destinations">
+            <field name="name">Wheeler Aaf</field>
+            <field name="code">HHI</field>
+            <field name="icao">PHHI</field>
+            <field name="city">Wahiawa</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">21.4835</field>
+            <field name="longitude">-158.039667</field>
+            <field name="altitude">837</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Honolulu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hnl" model="tt.destinations">
+            <field name="name">Honolulu Intl</field>
+            <field name="code">HNL</field>
+            <field name="icao">PHNL</field>
+            <field name="city">Honolulu</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">21.318681</field>
+            <field name="longitude">-157.922428</field>
+            <field name="altitude">13</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Honolulu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hnm" model="tt.destinations">
+            <field name="name">Hana</field>
+            <field name="code">HNM</field>
+            <field name="icao">PHHN</field>
+            <field name="city">Hana</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">20.795636</field>
+            <field name="longitude">-156.014439</field>
+            <field name="altitude">78</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Honolulu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ito" model="tt.destinations">
+            <field name="name">Hilo Intl</field>
+            <field name="code">ITO</field>
+            <field name="icao">PHTO</field>
+            <field name="city">Hilo</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">19.721375</field>
+            <field name="longitude">-155.048469</field>
+            <field name="altitude">38</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Honolulu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jhm" model="tt.destinations">
+            <field name="name">Kapalua</field>
+            <field name="code">JHM</field>
+            <field name="icao">PHJH</field>
+            <field name="city">Lahania-kapalua</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">20.962936</field>
+            <field name="longitude">-156.673031</field>
+            <field name="altitude">256</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Honolulu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_koa" model="tt.destinations">
+            <field name="name">Kona Intl At Keahole</field>
+            <field name="code">KOA</field>
+            <field name="icao">PHKO</field>
+            <field name="city">Kona</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">19.738767</field>
+            <field name="longitude">-156.045631</field>
+            <field name="altitude">47</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Honolulu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lih" model="tt.destinations">
+            <field name="name">Lihue</field>
+            <field name="code">LIH</field>
+            <field name="icao">PHLI</field>
+            <field name="city">Lihue</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">21.975983</field>
+            <field name="longitude">-159.338958</field>
+            <field name="altitude">153</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Honolulu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lny" model="tt.destinations">
+            <field name="name">Lanai</field>
+            <field name="code">LNY</field>
+            <field name="icao">PHNY</field>
+            <field name="city">Lanai</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">20.785611</field>
+            <field name="longitude">-156.951419</field>
+            <field name="altitude">1308</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Honolulu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lup" model="tt.destinations">
+            <field name="name">Kalaupapa Airport</field>
+            <field name="code">LUP</field>
+            <field name="icao">PHLU</field>
+            <field name="city">Molokai</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">21.211</field>
+            <field name="longitude">-156.974</field>
+            <field name="altitude">24</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Honolulu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mkk" model="tt.destinations">
+            <field name="name">Molokai</field>
+            <field name="code">MKK</field>
+            <field name="icao">PHMK</field>
+            <field name="city">Molokai</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">21.152886</field>
+            <field name="longitude">-157.096256</field>
+            <field name="altitude">454</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Honolulu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mue" model="tt.destinations">
+            <field name="name">Waimea Kohala</field>
+            <field name="code">MUE</field>
+            <field name="icao">PHMU</field>
+            <field name="city">Kamuela</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">20.001328</field>
+            <field name="longitude">-155.668108</field>
+            <field name="altitude">2671</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Honolulu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ngf" model="tt.destinations">
+            <field name="name">Kaneohe Bay Mcaf</field>
+            <field name="code">NGF</field>
+            <field name="icao">PHNG</field>
+            <field name="city">Kaneohe Bay</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">21.450453</field>
+            <field name="longitude">-157.768</field>
+            <field name="altitude">24</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Honolulu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ogg" model="tt.destinations">
+            <field name="name">Kahului</field>
+            <field name="code">OGG</field>
+            <field name="icao">PHOG</field>
+            <field name="city">Kahului</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">20.89865</field>
+            <field name="longitude">-156.430458</field>
+            <field name="altitude">54</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Honolulu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_upp" model="tt.destinations">
+            <field name="name">Upolu</field>
+            <field name="code">UPP</field>
+            <field name="icao">PHUP</field>
+            <field name="city">Opolu</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">20.265256</field>
+            <field name="longitude">-155.859989</field>
+            <field name="altitude">96</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Honolulu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wkl" model="tt.destinations">
+            <field name="name">Waikoloa Heliport</field>
+            <field name="code">WKL</field>
+            <field name="icao">HI07</field>
+            <field name="city">Waikoloa Village</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">19.9136</field>
+            <field name="longitude">-155.864</field>
+            <field name="altitude">109</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Honolulu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jon" model="tt.destinations">
+            <field name="name">Johnston Atoll</field>
+            <field name="code">JON</field>
+            <field name="icao">PJON</field>
+            <field name="city">Johnston Island</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">16.7286</field>
+            <field name="longitude">-169.534</field>
+            <field name="altitude">7</field>
+            <field name="timezone_hour">-10</field>
+            <field name="tz">Pacific/Johnston</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            
