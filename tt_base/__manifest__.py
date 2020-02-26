@@ -78,9 +78,9 @@ Key Features
         # 'views/tt_fare_rules_views.xml',
         'views/tt_frontend_security.xml',
         'views/tt_ban_user.xml',
-        'views/tt_pnr_quota.xml',
-        'views/tt_pnr_quota_price_list.xml',
-        'views/tt_pnr_quota_usage.xml',
+        'views/tt_pnr_quota_views.xml',
+        'views/tt_pnr_quota_price_list_views..xml',
+        'views/tt_pnr_quota_usage_views.xml',
 
         'wizard/tt_upload_center_wizard_view.xml',
         'wizard/create_user_wizard_view.xml',
