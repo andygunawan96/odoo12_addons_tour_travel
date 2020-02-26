@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_mru" model="tt.destinations">
+            <field name="name">Sir Seewoosagur Ramgoolam Intl</field>
+            <field name="code">MRU</field>
+            <field name="icao">FIMP</field>
+            <field name="city">Plaisance</field>
+            <field name="country_id" ref="base.mu"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-20.430235</field>
+            <field name="longitude">57.6836</field>
+            <field name="altitude">186</field>
+            <field name="timezone_hour">4</field>
+            <field name="tz">Indian/Mauritius</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rrg" model="tt.destinations">
+            <field name="name">Plaine Corail</field>
+            <field name="code">RRG</field>
+            <field name="icao">FIMR</field>
+            <field name="city">Rodriguez Island</field>
+            <field name="country_id" ref="base.mu"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-19.757658</field>
+            <field name="longitude">63.360983</field>
+            <field name="altitude">95</field>
+            <field name="timezone_hour">4</field>
+            <field name="tz">Indian/Mauritius</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dza" model="tt.destinations">
+            <field name="name">Dzaoudzi Pamandzi</field>
+            <field name="code">DZA</field>
+            <field name="icao">FMCZ</field>
+            <field name="city">Dzaoudzi</field>
+            <field name="country_id" ref="base.yt"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-12.804722</field>
+            <field name="longitude">45.281113</field>
+            <field name="altitude">23</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Indian/Mayotte</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_run" model="tt.destinations">
+            <field name="name">St Denis Gillot</field>
+            <field name="code">RUN</field>
+            <field name="icao">FMEE</field>
+            <field name="city">St.-denis</field>
+            <field name="country_id" ref="base.re"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-20.8871</field>
+            <field name="longitude">55.510308</field>
+            <field name="altitude">66</field>
+            <field name="timezone_hour">4</field>
+            <field name="tz">Indian/Reunion</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zse" model="tt.destinations">
+            <field name="name">St Pierre Pierrefonds</field>
+            <field name="code">ZSE</field>
+            <field name="icao">FMEP</field>
+            <field name="city">St.-pierre</field>
+            <field name="country_id" ref="base.re"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-21.320039</field>
+            <field name="longitude">55.423581</field>
+            <field name="altitude">56</field>
+            <field name="timezone_hour">4</field>
+            <field name="tz">Indian/Reunion</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_aau" model="tt.destinations">
+            <field name="name">Asau Airport</field>
+            <field name="code">AAU</field>
+            <field name="icao"></field>
+            <field name="city">Savai\\'i</field>
+            <field name="country_id" ref="base.ws"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-13.505</field>
+            <field name="longitude">-172.627778</field>
+            <field name="altitude">6</field>
+            <field name="timezone_hour">13</field>
+            <field name="tz">Pacific/Apia</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_apw" model="tt.destinations">
+            <field name="name">Faleolo Intl</field>
+            <field name="code">APW</field>
+            <field name="icao">NSFA</field>
+            <field name="city">Faleolo</field>
+            <field name="country_id" ref="base.ws"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-13.829969</field>
+            <field name="longitude">-172.008336</field>
+            <field name="altitude">58</field>
+            <field name="timezone_hour">13</field>
+            <field name="tz">Pacific/Apia</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fgi" model="tt.destinations">
+            <field name="name">Fagali\\'i</field>
+            <field name="code">FGI</field>
+            <field name="icao">NSFI</field>
+            <field name="city">Apia</field>
+            <field name="country_id" ref="base.ws"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-13.84861111</field>
+            <field name="longitude">-171.7408333</field>
+            <field name="altitude">25</field>
+            <field name="timezone_hour">13</field>
+            <field name="tz">Pacific/Apia</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mxs" model="tt.destinations">
+            <field name="name">Maota Airport</field>
+            <field name="code">MXS</field>
+            <field name="icao">NSMA</field>
+            <field name="city">Savaii Island</field>
+            <field name="country_id" ref="base.ws"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-13.733</field>
+            <field name="longitude">-172.3</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">13</field>
+            <field name="tz">Pacific/Apia</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_akl" model="tt.destinations">
+            <field name="name">Auckland Intl</field>
+            <field name="code">AKL</field>
+            <field name="icao">NZAA</field>
+            <field name="city">Auckland</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-37.008056</field>
+            <field name="longitude">174.791667</field>
+            <field name="altitude">23</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_alr" model="tt.destinations">
+            <field name="name">Alexandra</field>
+            <field name="code">ALR</field>
+            <field name="icao">NZLX</field>
+            <field name="city">Alexandra</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-45.211666</field>
+            <field name="longitude">169.373333</field>
+            <field name="altitude">752</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_amz" model="tt.destinations">
+            <field name="name">Ardmore</field>
+            <field name="code">AMZ</field>
+            <field name="icao">NZAR</field>
+            <field name="city">Ardmore</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-37.029722</field>
+            <field name="longitude">174.973333</field>
+            <field name="altitude">111</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bhe" model="tt.destinations">
+            <field name="name">Woodbourne</field>
+            <field name="code">BHE</field>
+            <field name="icao">NZWB</field>
+            <field name="city">Woodbourne</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-41.518333</field>
+            <field name="longitude">173.870278</field>
+            <field name="altitude">109</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_chc" model="tt.destinations">
+            <field name="name">Christchurch Intl</field>
+            <field name="code">CHC</field>
+            <field name="icao">NZCH</field>
+            <field name="city">Christchurch</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-43.489358</field>
+            <field name="longitude">172.532225</field>
+            <field name="altitude">123</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dud" model="tt.destinations">
+            <field name="name">Dunedin</field>
+            <field name="code">DUD</field>
+            <field name="icao">NZDN</field>
+            <field name="city">Dunedin</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-45.928055</field>
+            <field name="longitude">170.198333</field>
+            <field name="altitude">4</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fgl" model="tt.destinations">
+            <field name="name">Fox Glacier Airstrip</field>
+            <field name="code">FGL</field>
+            <field name="icao"></field>
+            <field name="city">Fox Glacier</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-43.4</field>
+            <field name="longitude">170.033</field>
+            <field name="altitude">475</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gbz" model="tt.destinations">
+            <field name="name">Great Barrier Island</field>
+            <field name="code">GBZ</field>
+            <field name="icao">NZGB</field>
+            <field name="city">Claris</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-36.1429</field>
+            <field name="longitude">175.2819</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gis" model="tt.destinations">
+            <field name="name">Gisborne</field>
+            <field name="code">GIS</field>
+            <field name="icao">NZGS</field>
+            <field name="city">Gisborne</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-38.663333</field>
+            <field name="longitude">177.978333</field>
+            <field name="altitude">15</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gtn" model="tt.destinations">
+            <field name="name">Mount Cook</field>
+            <field name="code">GTN</field>
+            <field name="icao">NZMC</field>
+            <field name="city">Mount Cook</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-43.764999</field>
+            <field name="longitude">170.133333</field>
+            <field name="altitude">2153</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hkk" model="tt.destinations">
+            <field name="name">Hokitika</field>
+            <field name="code">HKK</field>
+            <field name="icao">NZHK</field>
+            <field name="city">Hokitika</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-42.713611</field>
+            <field name="longitude">170.985278</field>
+            <field name="altitude">146</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hlz" model="tt.destinations">
+            <field name="name">Hamilton</field>
+            <field name="code">HLZ</field>
+            <field name="icao">NZHN</field>
+            <field name="city">Hamilton</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-37.866661</field>
+            <field name="longitude">175.332056</field>
+            <field name="altitude">172</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ivc" model="tt.destinations">
+            <field name="name">Invercargill</field>
+            <field name="code">IVC</field>
+            <field name="icao">NZNV</field>
+            <field name="city">Invercargill</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-46.412408</field>
+            <field name="longitude">168.312992</field>
+            <field name="altitude">5</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kat" model="tt.destinations">
+            <field name="name">Kaitaia</field>
+            <field name="code">KAT</field>
+            <field name="icao">NZKT</field>
+            <field name="city">Kaitaia</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-35.07</field>
+            <field name="longitude">173.285278</field>
+            <field name="altitude">270</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kbz" model="tt.destinations">
+            <field name="name">Kaikoura</field>
+            <field name="code">KBZ</field>
+            <field name="icao">NZKI</field>
+            <field name="city">Kaikoura</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-42.416668</field>
+            <field name="longitude">173.68333</field>
+            <field name="altitude">19</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kke" model="tt.destinations">
+            <field name="name">Kerikeri</field>
+            <field name="code">KKE</field>
+            <field name="icao">NZKK</field>
+            <field name="city">Kerikeri</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-35.262779</field>
+            <field name="longitude">173.911944</field>
+            <field name="altitude">492</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ktf" model="tt.destinations">
+            <field name="name">Takaka Aerodrome</field>
+            <field name="code">KTF</field>
+            <field name="icao">NZTK</field>
+            <field name="city">Takaka</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-40.85</field>
+            <field name="longitude">172.8</field>
+            <field name="altitude">500</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mfn" model="tt.destinations">
+            <field name="name">Milford Sound Airport</field>
+            <field name="code">MFN</field>
+            <field name="icao">NZMF</field>
+            <field name="city">Milford Sound</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-44.67333</field>
+            <field name="longitude">167.92333</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mon" model="tt.destinations">
+            <field name="name">Glentanner</field>
+            <field name="code">MON</field>
+            <field name="icao">NZGT</field>
+            <field name="city">Glentanner</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-43.906666</field>
+            <field name="longitude">170.128333</field>
+            <field name="altitude">1824</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mro" model="tt.destinations">
+            <field name="name">Masterton</field>
+            <field name="code">MRO</field>
+            <field name="icao">NZMS</field>
+            <field name="city">Masterton</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-40.973333</field>
+            <field name="longitude">175.633611</field>
+            <field name="altitude">364</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mzp" model="tt.destinations">
+            <field name="name">Motueka</field>
+            <field name="code">MZP</field>
+            <field name="icao">NZMK</field>
+            <field name="city">Motueka</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-41.123299</field>
+            <field name="longitude">172.988998</field>
+            <field name="altitude">39</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_npe" model="tt.destinations">
+            <field name="name">Napier</field>
+            <field name="code">NPE</field>
+            <field name="icao">NZNR</field>
+            <field name="city">NAPIER</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-39.465833</field>
+            <field name="longitude">176.87</field>
+            <field name="altitude">6</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_npl" model="tt.destinations">
+            <field name="name">New Plymouth</field>
+            <field name="code">NPL</field>
+            <field name="icao">NZNP</field>
+            <field name="city">New Plymouth</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-39.008611</field>
+            <field name="longitude">174.179167</field>
+            <field name="altitude">97</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nsn" model="tt.destinations">
+            <field name="name">Nelson</field>
+            <field name="code">NSN</field>
+            <field name="icao">NZNS</field>
+            <field name="city">Nelson</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-41.298333</field>
+            <field name="longitude">173.221111</field>
+            <field name="altitude">17</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_oam" model="tt.destinations">
+            <field name="name">Oamaru</field>
+            <field name="code">OAM</field>
+            <field name="icao">NZOU</field>
+            <field name="city">Oamaru</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-44.97</field>
+            <field name="longitude">171.081667</field>
+            <field name="altitude">99</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pcn" model="tt.destinations">
+            <field name="name">Koromiko</field>
+            <field name="code">PCN</field>
+            <field name="icao">NZPN</field>
+            <field name="city">Picton</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-41.348333</field>
+            <field name="longitude">173.955278</field>
+            <field name="altitude">60</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pmr" model="tt.destinations">
+            <field name="name">Palmerston North</field>
+            <field name="code">PMR</field>
+            <field name="icao">NZPM</field>
+            <field name="city">Palmerston North</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-40.320556</field>
+            <field name="longitude">175.616944</field>
+            <field name="altitude">151</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ppq" model="tt.destinations">
+            <field name="name">Paraparaumu</field>
+            <field name="code">PPQ</field>
+            <field name="icao">NZPP</field>
+            <field name="city">Paraparaumu</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-40.904722</field>
+            <field name="longitude">174.989167</field>
+            <field name="altitude">22</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rot" model="tt.destinations">
+            <field name="name">Rotorua</field>
+            <field name="code">ROT</field>
+            <field name="icao">NZRO</field>
+            <field name="city">Rotorua</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-38.109167</field>
+            <field name="longitude">176.317222</field>
+            <field name="altitude">935</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_szs" model="tt.destinations">
+            <field name="name">Ryans Creek Aerodrome</field>
+            <field name="code">SZS</field>
+            <field name="icao">NZRC</field>
+            <field name="city">Stewart Island</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-46.899693</field>
+            <field name="longitude">168.101592</field>
+            <field name="altitude">100</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_teu" model="tt.destinations">
+            <field name="name">Manapouri</field>
+            <field name="code">TEU</field>
+            <field name="icao">NZMO</field>
+            <field name="city">Manapouri</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-45.533056</field>
+            <field name="longitude">167.65</field>
+            <field name="altitude">687</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tiu" model="tt.destinations">
+            <field name="name">Timaru</field>
+            <field name="code">TIU</field>
+            <field name="icao">NZTU</field>
+            <field name="city">Timaru</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-44.302778</field>
+            <field name="longitude">171.225278</field>
+            <field name="altitude">89</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_trg" model="tt.destinations">
+            <field name="name">Tauranga</field>
+            <field name="code">TRG</field>
+            <field name="icao">NZTG</field>
+            <field name="city">Tauranga</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-37.671944</field>
+            <field name="longitude">176.19611</field>
+            <field name="altitude">13</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tuo" model="tt.destinations">
+            <field name="name">Taupo</field>
+            <field name="code">TUO</field>
+            <field name="icao">NZAP</field>
+            <field name="city">Taupo</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-38.739723</field>
+            <field name="longitude">176.084444</field>
+            <field name="altitude">1335</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wag" model="tt.destinations">
+            <field name="name">Wanganui</field>
+            <field name="code">WAG</field>
+            <field name="icao">NZWU</field>
+            <field name="city">Wanganui</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-39.962222</field>
+            <field name="longitude">175.025278</field>
+            <field name="altitude">27</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_whk" model="tt.destinations">
+            <field name="name">Whakatane</field>
+            <field name="code">WHK</field>
+            <field name="icao">NZWK</field>
+            <field name="city">Whakatane</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-37.920556</field>
+            <field name="longitude">176.914167</field>
+            <field name="altitude">20</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wka" model="tt.destinations">
+            <field name="name">Wanaka</field>
+            <field name="code">WKA</field>
+            <field name="icao">NZWF</field>
+            <field name="city">Wanaka</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-44.722222</field>
+            <field name="longitude">169.245556</field>
+            <field name="altitude">1142</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wlg" model="tt.destinations">
+            <field name="name">Wellington Intl</field>
+            <field name="code">WLG</field>
+            <field name="icao">NZWN</field>
+            <field name="city">Wellington</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-41.327221</field>
+            <field name="longitude">174.805278</field>
+            <field name="altitude">41</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wre" model="tt.destinations">
+            <field name="name">Whangarei</field>
+            <field name="code">WRE</field>
+            <field name="icao">NZWR</field>
+            <field name="city">Whangarei</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-35.768333</field>
+            <field name="longitude">174.365</field>
+            <field name="altitude">133</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wsz" model="tt.destinations">
+            <field name="name">Westport</field>
+            <field name="code">WSZ</field>
+            <field name="icao">NZWS</field>
+            <field name="city">Westport</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-41.738056</field>
+            <field name="longitude">171.580833</field>
+            <field name="altitude">13</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wtz" model="tt.destinations">
+            <field name="name">Whitianga Airport</field>
+            <field name="code">WTZ</field>
+            <field name="icao">NZWT</field>
+            <field name="city">Whitianga</field>
+            <field name="country_id" ref="base.nz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-36.835833</field>
+            <field name="longitude">175.700278</field>
+            <field name="altitude">500</field>
+            <field name="timezone_hour">12</field>
+            <field name="tz">Pacific/Auckland</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            

@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_rvn" model="tt.destinations">
+            <field name="name">Rovaniemi</field>
+            <field name="code">RVN</field>
+            <field name="icao">EFRO</field>
+            <field name="city">Rovaniemi</field>
+            <field name="country_id" ref="base.fi"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">66.564822</field>
+            <field name="longitude">25.830411</field>
+            <field name="altitude">642</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Helsinki</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sjy" model="tt.destinations">
+            <field name="name">Sein盲joki Airport</field>
+            <field name="code">SJY</field>
+            <field name="icao">EFSI</field>
+            <field name="city">Sein盲joki / Ilmajoki</field>
+            <field name="country_id" ref="base.fi"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">62.6921</field>
+            <field name="longitude">22.8323</field>
+            <field name="altitude">302</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Helsinki</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sot" model="tt.destinations">
+            <field name="name">Sodankyla</field>
+            <field name="code">SOT</field>
+            <field name="icao">EFSO</field>
+            <field name="city">Sodankyla</field>
+            <field name="country_id" ref="base.fi"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">67.395033</field>
+            <field name="longitude">26.619133</field>
+            <field name="altitude">602</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Helsinki</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_svl" model="tt.destinations">
+            <field name="name">Savonlinna</field>
+            <field name="code">SVL</field>
+            <field name="icao">EFSA</field>
+            <field name="city">Savonlinna</field>
+            <field name="country_id" ref="base.fi"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">61.943064</field>
+            <field name="longitude">28.945136</field>
+            <field name="altitude">311</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Helsinki</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tku" model="tt.destinations">
+            <field name="name">Turku</field>
+            <field name="code">TKU</field>
+            <field name="icao">EFTU</field>
+            <field name="city">Turku</field>
+            <field name="country_id" ref="base.fi"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">60.514142</field>
+            <field name="longitude">22.262808</field>
+            <field name="altitude">161</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Helsinki</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tmp" model="tt.destinations">
+            <field name="name">Tampere Pirkkala</field>
+            <field name="code">TMP</field>
+            <field name="icao">EFTP</field>
+            <field name="city">Tampere</field>
+            <field name="country_id" ref="base.fi"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">61.414147</field>
+            <field name="longitude">23.604392</field>
+            <field name="altitude">390</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Helsinki</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vaa" model="tt.destinations">
+            <field name="name">Vaasa</field>
+            <field name="code">VAA</field>
+            <field name="icao">EFVA</field>
+            <field name="city">Vaasa</field>
+            <field name="country_id" ref="base.fi"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">63.05065</field>
+            <field name="longitude">21.762175</field>
+            <field name="altitude">19</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Helsinki</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vrk" model="tt.destinations">
+            <field name="name">Varkaus</field>
+            <field name="code">VRK</field>
+            <field name="icao">EFVR</field>
+            <field name="city">Varkaus</field>
+            <field name="country_id" ref="base.fi"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">62.171111</field>
+            <field name="longitude">27.868611</field>
+            <field name="altitude">286</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Helsinki</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_iom" model="tt.destinations">
+            <field name="name">Isle Of Man</field>
+            <field name="code">IOM</field>
+            <field name="icao">EGNS</field>
+            <field name="city">Isle Of Man</field>
+            <field name="country_id" ref="base.im"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">54.083333</field>
+            <field name="longitude">-4.623889</field>
+            <field name="altitude">52</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Europe/Isle_of_Man</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ada" model="tt.destinations">
+            <field name="name">Adana</field>
+            <field name="code">ADA</field>
+            <field name="icao">LTAF</field>
+            <field name="city">Adana</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.982166</field>
+            <field name="longitude">35.280388</field>
+            <field name="altitude">65</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_adb" model="tt.destinations">
+            <field name="name">Adnan Menderes</field>
+            <field name="code">ADB</field>
+            <field name="icao">LTBJ</field>
+            <field name="city">Izmir</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.292392</field>
+            <field name="longitude">27.156953</field>
+            <field name="altitude">412</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_adf" model="tt.destinations">
+            <field name="name">Adiyaman Airport</field>
+            <field name="code">ADF</field>
+            <field name="icao">LTCP</field>
+            <field name="city">Adiyaman</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.7314</field>
+            <field name="longitude">38.4689</field>
+            <field name="altitude">2216</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_afy" model="tt.destinations">
+            <field name="name">Afyon</field>
+            <field name="code">AFY</field>
+            <field name="icao">LTAH</field>
+            <field name="city">Afyon</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.726425</field>
+            <field name="longitude">30.601114</field>
+            <field name="altitude">3310</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_aji" model="tt.destinations">
+            <field name="name">Agri Airport</field>
+            <field name="code">AJI</field>
+            <field name="icao">LTCO</field>
+            <field name="city">Agri</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.6546</field>
+            <field name="longitude">43.0271</field>
+            <field name="altitude">5462</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ank" model="tt.destinations">
+            <field name="name">Etimesgut</field>
+            <field name="code">ANK</field>
+            <field name="icao">LTAD</field>
+            <field name="city">Ankara</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.949831</field>
+            <field name="longitude">32.688622</field>
+            <field name="altitude">2653</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_aoe" model="tt.destinations">
+            <field name="name">Anadolu Airport</field>
+            <field name="code">AOE</field>
+            <field name="icao">LTBY</field>
+            <field name="city">Eskissehir</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.809858</field>
+            <field name="longitude">30.519378</field>
+            <field name="altitude">2588</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_asr" model="tt.destinations">
+            <field name="name">Erkilet</field>
+            <field name="code">ASR</field>
+            <field name="icao">LTAU</field>
+            <field name="city">Kayseri</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.770386</field>
+            <field name="longitude">35.495428</field>
+            <field name="altitude">3463</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ayt" model="tt.destinations">
+            <field name="name">Antalya</field>
+            <field name="code">AYT</field>
+            <field name="icao">LTAI</field>
+            <field name="city">Antalya</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.898731</field>
+            <field name="longitude">30.800461</field>
+            <field name="altitude">177</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bal" model="tt.destinations">
+            <field name="name">Batman</field>
+            <field name="code">BAL</field>
+            <field name="icao">LTCJ</field>
+            <field name="city">Batman</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.928969</field>
+            <field name="longitude">41.116583</field>
+            <field name="altitude">1822</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bdm" model="tt.destinations">
+            <field name="name">Bandirma</field>
+            <field name="code">BDM</field>
+            <field name="icao">LTBG</field>
+            <field name="city">Bandirma</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.317972</field>
+            <field name="longitude">27.977694</field>
+            <field name="altitude">170</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bgg" model="tt.destinations">
+            <field name="name">Bingol</field>
+            <field name="code">BGG</field>
+            <field name="icao">LTCU</field>
+            <field name="city">Bingol</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.86111</field>
+            <field name="longitude">40.5925</field>
+            <field name="altitude">3490</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bjv" model="tt.destinations">
+            <field name="name">Bodrum - Milas</field>
+            <field name="code">BJV</field>
+            <field name="icao">LTFE</field>
+            <field name="city">Bodrum</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.249</field>
+            <field name="longitude">27.667</field>
+            <field name="altitude">19</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_btz" model="tt.destinations">
+            <field name="name">Bursa Airport</field>
+            <field name="code">BTZ</field>
+            <field name="icao">LTBE</field>
+            <field name="city">Bursa</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.2332993</field>
+            <field name="longitude">29.0091991</field>
+            <field name="altitude">772</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bxn" model="tt.destinations">
+            <field name="name">Imsik</field>
+            <field name="code">BXN</field>
+            <field name="icao">LTBV</field>
+            <field name="city">Bodrum</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.140144</field>
+            <field name="longitude">27.669717</field>
+            <field name="altitude">202</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bzi" model="tt.destinations">
+            <field name="name">Balikesir</field>
+            <field name="code">BZI</field>
+            <field name="icao">LTBF</field>
+            <field name="city">Balikesir</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.619258</field>
+            <field name="longitude">27.925958</field>
+            <field name="altitude">340</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ckz" model="tt.destinations">
+            <field name="name">Canakkale Airport</field>
+            <field name="code">CKZ</field>
+            <field name="icao">LTBH</field>
+            <field name="city">Canakkale</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.137722</field>
+            <field name="longitude">26.426777</field>
+            <field name="altitude">23</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_diy" model="tt.destinations">
+            <field name="name">Diyarbakir</field>
+            <field name="code">DIY</field>
+            <field name="icao">LTCC</field>
+            <field name="city">Diyabakir</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.893897</field>
+            <field name="longitude">40.201019</field>
+            <field name="altitude">2251</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dlm" model="tt.destinations">
+            <field name="name">Dalaman</field>
+            <field name="code">DLM</field>
+            <field name="icao">LTBS</field>
+            <field name="city">Dalaman</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.713056</field>
+            <field name="longitude">28.7925</field>
+            <field name="altitude">20</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dnz" model="tt.destinations">
+            <field name="name">Cardak</field>
+            <field name="code">DNZ</field>
+            <field name="icao">LTAY</field>
+            <field name="city">Denizli</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.785567</field>
+            <field name="longitude">29.701297</field>
+            <field name="altitude">2795</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_edo" model="tt.destinations">
+            <field name="name">Balikesir Korfez Airport</field>
+            <field name="code">EDO</field>
+            <field name="icao">LTFD</field>
+            <field name="city">Balikesir Korfez</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.5546</field>
+            <field name="longitude">27.0138</field>
+            <field name="altitude">50</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_erc" model="tt.destinations">
+            <field name="name">Erzincan</field>
+            <field name="code">ERC</field>
+            <field name="icao">LTCD</field>
+            <field name="city">Erzincan</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.710203</field>
+            <field name="longitude">39.527003</field>
+            <field name="altitude">3783</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_erz" model="tt.destinations">
+            <field name="name">Erzurum</field>
+            <field name="code">ERZ</field>
+            <field name="icao">LTCE</field>
+            <field name="city">Erzurum</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.956501</field>
+            <field name="longitude">41.170166</field>
+            <field name="altitude">5763</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_esb" model="tt.destinations">
+            <field name="name">Esenboga</field>
+            <field name="code">ESB</field>
+            <field name="icao">LTAC</field>
+            <field name="city">Ankara</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.128082</field>
+            <field name="longitude">32.995083</field>
+            <field name="altitude">3125</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_esk" model="tt.destinations">
+            <field name="name">Eskisehir</field>
+            <field name="code">ESK</field>
+            <field name="icao">LTBI</field>
+            <field name="city">Eskisehir</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.784138</field>
+            <field name="longitude">30.582111</field>
+            <field name="altitude">2581</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ezs" model="tt.destinations">
+            <field name="name">Elazig</field>
+            <field name="code">EZS</field>
+            <field name="icao">LTCA</field>
+            <field name="city">Elazig</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.606925</field>
+            <field name="longitude">39.291417</field>
+            <field name="altitude">2927</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gny" model="tt.destinations">
+            <field name="name">Sanliurfa GAP</field>
+            <field name="code">GNY</field>
+            <field name="icao">LTCS</field>
+            <field name="city">Sanliurfa</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.45</field>
+            <field name="longitude">38.9</field>
+            <field name="altitude">2700</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gzp" model="tt.destinations">
+            <field name="name">Gazipasa Airport</field>
+            <field name="code">GZP</field>
+            <field name="icao">LTFG</field>
+            <field name="city">Alanya</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.2993</field>
+            <field name="longitude">32.3014</field>
+            <field name="altitude">92</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gzt" model="tt.destinations">
+            <field name="name">Oguzeli</field>
+            <field name="code">GZT</field>
+            <field name="icao">LTAJ</field>
+            <field name="city">Gaziantep</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.947183</field>
+            <field name="longitude">37.478683</field>
+            <field name="altitude">2315</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hty" model="tt.destinations">
+            <field name="name">Hatay Airport</field>
+            <field name="code">HTY</field>
+            <field name="icao">LTDA</field>
+            <field name="city">Hatay</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.362778</field>
+            <field name="longitude">36.282222</field>
+            <field name="altitude">25</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_igd" model="tt.destinations">
+            <field name="name">Igdir</field>
+            <field name="code">IGD</field>
+            <field name="icao">LTCT</field>
+            <field name="city">Igdir</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.983056</field>
+            <field name="longitude">43.866389</field>
+            <field name="altitude">3100</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_igl" model="tt.destinations">
+            <field name="name">Cigli</field>
+            <field name="code">IGL</field>
+            <field name="icao">LTBL</field>
+            <field name="city">Izmir</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.513022</field>
+            <field name="longitude">27.010053</field>
+            <field name="altitude">16</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ise" model="tt.destinations">
+            <field name="name">Isparta S眉leyman Demirel Airport</field>
+            <field name="code">ISE</field>
+            <field name="icao">LTFC</field>
+            <field name="city">Isparta</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.8554</field>
+            <field name="longitude">30.3684</field>
+            <field name="altitude">2835</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ist" model="tt.destinations">
+            <field name="name">Ataturk</field>
+            <field name="code">IST</field>
+            <field name="icao">LTBA</field>
+            <field name="city">Istanbul</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.976922</field>
+            <field name="longitude">28.814606</field>
+            <field name="altitude">163</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kcm" model="tt.destinations">
+            <field name="name">Kahramanmaras Airport</field>
+            <field name="code">KCM</field>
+            <field name="icao">LTCN</field>
+            <field name="city">Kahramanmaras</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.539</field>
+            <field name="longitude">36.9534</field>
+            <field name="altitude">1723</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kfs" model="tt.destinations">
+            <field name="name">Uzunyazi</field>
+            <field name="code">KFS</field>
+            <field name="icao">LTAL</field>
+            <field name="city">Kastamonu</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.316944</field>
+            <field name="longitude">33.796111</field>
+            <field name="altitude">3520</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ksy" model="tt.destinations">
+            <field name="name">Kars Airport</field>
+            <field name="code">KSY</field>
+            <field name="icao">LTCF</field>
+            <field name="city">Kars</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.562222</field>
+            <field name="longitude">43.115002</field>
+            <field name="altitude">5889</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kya" model="tt.destinations">
+            <field name="name">Konya</field>
+            <field name="code">KYA</field>
+            <field name="icao">LTAN</field>
+            <field name="city">Konya</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.979</field>
+            <field name="longitude">32.561861</field>
+            <field name="altitude">3381</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kzr" model="tt.destinations">
+            <field name="name">Zafer</field>
+            <field name="code">KZR</field>
+            <field name="icao">LTBZ</field>
+            <field name="city">Kutahya</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.111389</field>
+            <field name="longitude">30.13</field>
+            <field name="altitude">3327</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mlx" model="tt.destinations">
+            <field name="name">Erhac</field>
+            <field name="code">MLX</field>
+            <field name="icao">LTAT</field>
+            <field name="city">Malatya</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.435347</field>
+            <field name="longitude">38.091006</field>
+            <field name="altitude">2828</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mqm" model="tt.destinations">
+            <field name="name">Mardin Airport</field>
+            <field name="code">MQM</field>
+            <field name="icao">LTCR</field>
+            <field name="city">Mardin</field>
+            <field name="country_id" ref="base.tr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.2233</field>
+            <field name="longitude">40.6317</field>
+            <field name="altitude">1729</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Istanbul</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            

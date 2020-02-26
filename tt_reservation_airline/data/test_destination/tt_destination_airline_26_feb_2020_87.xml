@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_oom" model="tt.destinations">
+            <field name="name">Cooma Snowy Mountains Airport</field>
+            <field name="code">OOM</field>
+            <field name="icao">YCOM</field>
+            <field name="city">Cooma</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-36.3006</field>
+            <field name="longitude">148.974</field>
+            <field name="altitude">3088</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Australia/Sydney</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pke" model="tt.destinations">
+            <field name="name">Parkes Airport</field>
+            <field name="code">PKE</field>
+            <field name="icao">YPKS</field>
+            <field name="city">Parkes</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-33.1314</field>
+            <field name="longitude">148.239</field>
+            <field name="altitude">1069</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Australia/Sydney</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pqq" model="tt.destinations">
+            <field name="name">Port Macquarie Airport</field>
+            <field name="code">PQQ</field>
+            <field name="icao">YPMQ</field>
+            <field name="city">Port Macquarie</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-31.4358</field>
+            <field name="longitude">152.863</field>
+            <field name="altitude">12</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Australia/Sydney</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rcm" model="tt.destinations">
+            <field name="name">Richmond</field>
+            <field name="code">RCM</field>
+            <field name="icao">YSRI</field>
+            <field name="city">Richmond</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-33.600556</field>
+            <field name="longitude">150.780833</field>
+            <field name="altitude">67</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Australia/Sydney</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_syd" model="tt.destinations">
+            <field name="name">Sydney Intl</field>
+            <field name="code">SYD</field>
+            <field name="icao">YSSY</field>
+            <field name="city">Sydney</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-33.946111</field>
+            <field name="longitude">151.177222</field>
+            <field name="altitude">21</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Australia/Sydney</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tem" model="tt.destinations">
+            <field name="name">Temora</field>
+            <field name="code">TEM</field>
+            <field name="icao">YTEM</field>
+            <field name="city">Temora</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-34.4248</field>
+            <field name="longitude">147.5104</field>
+            <field name="altitude">921</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Australia/Sydney</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tmw" model="tt.destinations">
+            <field name="name">Tamworth</field>
+            <field name="code">TMW</field>
+            <field name="icao">YSTW</field>
+            <field name="city">Tamworth</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-31.083889</field>
+            <field name="longitude">150.846667</field>
+            <field name="altitude">1334</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Australia/Sydney</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tro" model="tt.destinations">
+            <field name="name">Taree Airport</field>
+            <field name="code">TRO</field>
+            <field name="icao">YTRE</field>
+            <field name="city">Taree</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-31.8886</field>
+            <field name="longitude">152.514</field>
+            <field name="altitude">38</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Australia/Sydney</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wga" model="tt.destinations">
+            <field name="name">Wagga Wagga</field>
+            <field name="code">WGA</field>
+            <field name="icao">YSWG</field>
+            <field name="city">Wagga Wagga</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-35.165278</field>
+            <field name="longitude">147.466389</field>
+            <field name="altitude">724</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Australia/Sydney</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wge" model="tt.destinations">
+            <field name="name">Walgett Airport</field>
+            <field name="code">WGE</field>
+            <field name="icao">YWLG</field>
+            <field name="city">Walgett</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-30.0318</field>
+            <field name="longitude">148.1222</field>
+            <field name="altitude">439</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Australia/Sydney</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wio" model="tt.destinations">
+            <field name="name">Wilcannia</field>
+            <field name="code">WIO</field>
+            <field name="icao">YWCA</field>
+            <field name="city">Wilcannia</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-31.51749992</field>
+            <field name="longitude">143.3789978</field>
+            <field name="altitude">250</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Australia/Sydney</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wol" model="tt.destinations">
+            <field name="name">Wollongong Airport</field>
+            <field name="code">WOL</field>
+            <field name="icao">YWOL</field>
+            <field name="city">Wollongong</field>
+            <field name="country_id" ref="base.au"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-34.5611</field>
+            <field name="longitude">150.789</field>
+            <field name="altitude">31</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Australia/Sydney</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ams" model="tt.destinations">
+            <field name="name">Schiphol</field>
+            <field name="code">AMS</field>
+            <field name="icao">EHAM</field>
+            <field name="city">Amsterdam</field>
+            <field name="country_id" ref="base.nl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">52.308613</field>
+            <field name="longitude">4.763889</field>
+            <field name="altitude">-11</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Amsterdam</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dhr" model="tt.destinations">
+            <field name="name">De Kooy</field>
+            <field name="code">DHR</field>
+            <field name="icao">EHKD</field>
+            <field name="city">De Kooy</field>
+            <field name="country_id" ref="base.nl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">52.923353</field>
+            <field name="longitude">4.780625</field>
+            <field name="altitude">3</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Amsterdam</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ein" model="tt.destinations">
+            <field name="name">Eindhoven</field>
+            <field name="code">EIN</field>
+            <field name="icao">EHEH</field>
+            <field name="city">Eindhoven</field>
+            <field name="country_id" ref="base.nl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">51.450139</field>
+            <field name="longitude">5.374528</field>
+            <field name="altitude">74</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Amsterdam</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ens" model="tt.destinations">
+            <field name="name">Twenthe</field>
+            <field name="code">ENS</field>
+            <field name="icao">EHTW</field>
+            <field name="city">Enschede</field>
+            <field name="country_id" ref="base.nl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">52.27</field>
+            <field name="longitude">6.874167</field>
+            <field name="altitude">114</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Amsterdam</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_grq" model="tt.destinations">
+            <field name="name">Eelde</field>
+            <field name="code">GRQ</field>
+            <field name="icao">EHGG</field>
+            <field name="city">Groningen</field>
+            <field name="country_id" ref="base.nl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">53.11972</field>
+            <field name="longitude">6.579444</field>
+            <field name="altitude">17</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Amsterdam</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ley" model="tt.destinations">
+            <field name="name">Lelystad Airport</field>
+            <field name="code">LEY</field>
+            <field name="icao"></field>
+            <field name="city">Lelystad</field>
+            <field name="country_id" ref="base.nl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">52.4603</field>
+            <field name="longitude">5.52722</field>
+            <field name="altitude">12</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Amsterdam</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lid" model="tt.destinations">
+            <field name="name">Valkenburg</field>
+            <field name="code">LID</field>
+            <field name="icao">EHVB</field>
+            <field name="city">Valkenburg</field>
+            <field name="country_id" ref="base.nl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">52.166139</field>
+            <field name="longitude">4.417944</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Amsterdam</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lwr" model="tt.destinations">
+            <field name="name">Leeuwarden</field>
+            <field name="code">LWR</field>
+            <field name="icao">EHLW</field>
+            <field name="city">Leeuwarden</field>
+            <field name="country_id" ref="base.nl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">53.228611</field>
+            <field name="longitude">5.760556</field>
+            <field name="altitude">3</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Amsterdam</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mst" model="tt.destinations">
+            <field name="name">Maastricht</field>
+            <field name="code">MST</field>
+            <field name="icao">EHBK</field>
+            <field name="city">Maastricht</field>
+            <field name="country_id" ref="base.nl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">50.911658</field>
+            <field name="longitude">5.770144</field>
+            <field name="altitude">375</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Amsterdam</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_qrh" model="tt.destinations">
+            <field name="name">Central</field>
+            <field name="code">QRH</field>
+            <field name="icao"></field>
+            <field name="city">Rotterdam</field>
+            <field name="country_id" ref="base.nl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">51.924444</field>
+            <field name="longitude">4.469444</field>
+            <field name="altitude">7</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Amsterdam</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_qyi" model="tt.destinations">
+            <field name="name">Hilversum Railway Station</field>
+            <field name="code">QYI</field>
+            <field name="icao"></field>
+            <field name="city">Hilversum</field>
+            <field name="country_id" ref="base.nl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">52.226389</field>
+            <field name="longitude">5.181667</field>
+            <field name="altitude">3</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Amsterdam</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rtm" model="tt.destinations">
+            <field name="name">Rotterdam</field>
+            <field name="code">RTM</field>
+            <field name="icao">EHRD</field>
+            <field name="city">Rotterdam</field>
+            <field name="country_id" ref="base.nl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">51.956944</field>
+            <field name="longitude">4.437222</field>
+            <field name="altitude">-15</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Amsterdam</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ude" model="tt.destinations">
+            <field name="name">Volkel AB</field>
+            <field name="code">UDE</field>
+            <field name="icao"></field>
+            <field name="city">Volkel</field>
+            <field name="country_id" ref="base.nl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">51.656389</field>
+            <field name="longitude">5.708611</field>
+            <field name="altitude">72</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Amsterdam</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_utc" model="tt.destinations">
+            <field name="name">Soesterberg</field>
+            <field name="code">UTC</field>
+            <field name="icao">EHSB</field>
+            <field name="city">Soesterberg</field>
+            <field name="country_id" ref="base.nl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">52.1273</field>
+            <field name="longitude">5.27619</field>
+            <field name="altitude">66</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Amsterdam</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_woe" model="tt.destinations">
+            <field name="name">Woensdrecht</field>
+            <field name="code">WOE</field>
+            <field name="icao">EHWO</field>
+            <field name="city">Woensdrecht</field>
+            <field name="country_id" ref="base.nl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">51.449092</field>
+            <field name="longitude">4.342031</field>
+            <field name="altitude">63</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Amsterdam</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zya" model="tt.destinations">
+            <field name="name">Amsterdam Central</field>
+            <field name="code">ZYA</field>
+            <field name="icao"></field>
+            <field name="city">Amsterdam</field>
+            <field name="country_id" ref="base.nl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">52.378333</field>
+            <field name="longitude">4.9</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Amsterdam</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_agq" model="tt.destinations">
+            <field name="name">Agrinion</field>
+            <field name="code">AGQ</field>
+            <field name="icao">LGAG</field>
+            <field name="city">Agrinion</field>
+            <field name="country_id" ref="base.gr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.602022</field>
+            <field name="longitude">21.351208</field>
+            <field name="altitude">154</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Athens</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_aok" model="tt.destinations">
+            <field name="name">Karpathos</field>
+            <field name="code">AOK</field>
+            <field name="icao">LGKP</field>
+            <field name="city">Karpathos</field>
+            <field name="country_id" ref="base.gr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.421408</field>
+            <field name="longitude">27.146008</field>
+            <field name="altitude">66</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Athens</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ath" model="tt.destinations">
+            <field name="name">Eleftherios Venizelos Intl</field>
+            <field name="code">ATH</field>
+            <field name="icao">LGAV</field>
+            <field name="city">Athens</field>
+            <field name="country_id" ref="base.gr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.936358</field>
+            <field name="longitude">23.944467</field>
+            <field name="altitude">308</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Athens</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_axd" model="tt.destinations">
+            <field name="name">Dimokritos</field>
+            <field name="code">AXD</field>
+            <field name="icao">LGAL</field>
+            <field name="city">Alexandroupolis</field>
+            <field name="country_id" ref="base.gr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.855869</field>
+            <field name="longitude">25.956264</field>
+            <field name="altitude">24</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Athens</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cfu" model="tt.destinations">
+            <field name="name">Ioannis Kapodistrias Intl</field>
+            <field name="code">CFU</field>
+            <field name="icao">LGKR</field>
+            <field name="city">Kerkyra/corfu</field>
+            <field name="country_id" ref="base.gr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.601944</field>
+            <field name="longitude">19.911667</field>
+            <field name="altitude">6</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Athens</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_chq" model="tt.destinations">
+            <field name="name">Souda</field>
+            <field name="code">CHQ</field>
+            <field name="icao">LGSA</field>
+            <field name="city">Chania</field>
+            <field name="country_id" ref="base.gr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.531747</field>
+            <field name="longitude">24.149678</field>
+            <field name="altitude">490</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Athens</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_efl" model="tt.destinations">
+            <field name="name">Kefallinia</field>
+            <field name="code">EFL</field>
+            <field name="icao">LGKF</field>
+            <field name="city">Keffallinia</field>
+            <field name="country_id" ref="base.gr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.120069</field>
+            <field name="longitude">20.500481</field>
+            <field name="altitude">59</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Athens</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gpa" model="tt.destinations">
+            <field name="name">Araxos</field>
+            <field name="code">GPA</field>
+            <field name="icao">LGRX</field>
+            <field name="city">Patras</field>
+            <field name="country_id" ref="base.gr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.151111</field>
+            <field name="longitude">21.425556</field>
+            <field name="altitude">46</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Athens</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_her" model="tt.destinations">
+            <field name="name">Nikos Kazantzakis</field>
+            <field name="code">HER</field>
+            <field name="icao">LGIR</field>
+            <field name="city">Heraklion</field>
+            <field name="country_id" ref="base.gr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.339719</field>
+            <field name="longitude">25.180297</field>
+            <field name="altitude">115</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Athens</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hew" model="tt.destinations">
+            <field name="name">Athen Helenikon Airport</field>
+            <field name="code">HEW</field>
+            <field name="icao"></field>
+            <field name="city">Athens</field>
+            <field name="country_id" ref="base.gr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.8933</field>
+            <field name="longitude">23.7261</field>
+            <field name="altitude">69</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Athens</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ioa" model="tt.destinations">
+            <field name="name">Ioannina</field>
+            <field name="code">IOA</field>
+            <field name="icao">LGIO</field>
+            <field name="city">Ioannina</field>
+            <field name="country_id" ref="base.gr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.696388</field>
+            <field name="longitude">20.8225</field>
+            <field name="altitude">1558</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Athens</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jik" model="tt.destinations">
+            <field name="name">Ikaria</field>
+            <field name="code">JIK</field>
+            <field name="icao">LGIK</field>
+            <field name="city">Ikaria</field>
+            <field name="country_id" ref="base.gr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.682717</field>
+            <field name="longitude">26.347061</field>
+            <field name="altitude">79</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Athens</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jkh" model="tt.destinations">
+            <field name="name">Chios</field>
+            <field name="code">JKH</field>
+            <field name="icao">LGHI</field>
+            <field name="city">Chios</field>
+            <field name="country_id" ref="base.gr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.343175</field>
+            <field name="longitude">26.140572</field>
+            <field name="altitude">15</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Athens</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jkl" model="tt.destinations">
+            <field name="name">Kalymnos Island</field>
+            <field name="code">JKL</field>
+            <field name="icao">LGKY</field>
+            <field name="city">Kalymnos</field>
+            <field name="country_id" ref="base.gr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.963333</field>
+            <field name="longitude">26.940556</field>
+            <field name="altitude">771</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Athens</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jmk" model="tt.destinations">
+            <field name="name">Mikonos</field>
+            <field name="code">JMK</field>
+            <field name="icao">LGMK</field>
+            <field name="city">Mykonos</field>
+            <field name="country_id" ref="base.gr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.435128</field>
+            <field name="longitude">25.348103</field>
+            <field name="altitude">405</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Athens</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jnx" model="tt.destinations">
+            <field name="name">Naxos</field>
+            <field name="code">JNX</field>
+            <field name="icao">LGNX</field>
+            <field name="city">Cyclades Islands</field>
+            <field name="country_id" ref="base.gr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.080556</field>
+            <field name="longitude">25.368056</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Athens</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jsh" model="tt.destinations">
+            <field name="name">Sitia</field>
+            <field name="code">JSH</field>
+            <field name="icao">LGST</field>
+            <field name="city">Sitia</field>
+            <field name="country_id" ref="base.gr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.216108</field>
+            <field name="longitude">26.101325</field>
+            <field name="altitude">376</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Athens</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jsi" model="tt.destinations">
+            <field name="name">Alexandros Papadiamantis</field>
+            <field name="code">JSI</field>
+            <field name="icao">LGSK</field>
+            <field name="city">Skiathos</field>
+            <field name="country_id" ref="base.gr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.1771</field>
+            <field name="longitude">23.503675</field>
+            <field name="altitude">54</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Athens</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jsy" model="tt.destinations">
+            <field name="name">Syros Airport</field>
+            <field name="code">JSY</field>
+            <field name="icao">LGSO</field>
+            <field name="city">Syros Island</field>
+            <field name="country_id" ref="base.gr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.422792</field>
+            <field name="longitude">24.950936</field>
+            <field name="altitude">236</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Athens</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jtr" model="tt.destinations">
+            <field name="name">Santorini</field>
+            <field name="code">JTR</field>
+            <field name="icao">LGSR</field>
+            <field name="city">Thira</field>
+            <field name="country_id" ref="base.gr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.399169</field>
+            <field name="longitude">25.479333</field>
+            <field name="altitude">127</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Athens</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jty" model="tt.destinations">
+            <field name="name">Astypalaia</field>
+            <field name="code">JTY</field>
+            <field name="icao">LGPL</field>
+            <field name="city">Astypalaia</field>
+            <field name="country_id" ref="base.gr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.579886</field>
+            <field name="longitude">26.375822</field>
+            <field name="altitude">165</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Athens</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kgs" model="tt.destinations">
+            <field name="name">Kos</field>
+            <field name="code">KGS</field>
+            <field name="icao">LGKO</field>
+            <field name="city">Kos</field>
+            <field name="country_id" ref="base.gr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.793335</field>
+            <field name="longitude">27.091667</field>
+            <field name="altitude">412</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Athens</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            

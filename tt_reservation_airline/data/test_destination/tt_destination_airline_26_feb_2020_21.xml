@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_gdl" model="tt.destinations">
+            <field name="name">Don Miguel Hidalgo Y Costilla Intl</field>
+            <field name="code">GDL</field>
+            <field name="icao">MMGL</field>
+            <field name="city">Guadalajara</field>
+            <field name="country_id" ref="base.mx"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">20.5218</field>
+            <field name="longitude">-103.311167</field>
+            <field name="altitude">5016</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Mexico_City</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gdq" model="tt.destinations">
+            <field name="name">Gondar</field>
+            <field name="code">GDQ</field>
+            <field name="icao">HAGN</field>
+            <field name="city">Gondar</field>
+            <field name="country_id" ref="base.et"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">12.5199</field>
+            <field name="longitude">37.434047</field>
+            <field name="altitude">6541</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Africa/Addis_Ababa</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gdt" model="tt.destinations">
+            <field name="name">JAGS McCartney International Airport</field>
+            <field name="code">GDT</field>
+            <field name="icao">MBGT</field>
+            <field name="city">Cockburn Town</field>
+            <field name="country_id" ref="base.tc"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">21.4445</field>
+            <field name="longitude">-71.1423</field>
+            <field name="altitude">13</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Grand_Turk</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gdv" model="tt.destinations">
+            <field name="name">Dawson Community Airport</field>
+            <field name="code">GDV</field>
+            <field name="icao">KGDV</field>
+            <field name="city">Glendive</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">47.138611</field>
+            <field name="longitude">-104.807222</field>
+            <field name="altitude">749</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Denver</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gdw" model="tt.destinations">
+            <field name="name">Gladwin Zettel Memorial Airport</field>
+            <field name="code">GDW</field>
+            <field name="icao">KGDW</field>
+            <field name="city">Gladwin</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.9705893</field>
+            <field name="longitude">-84.47502</field>
+            <field name="altitude">774</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ged" model="tt.destinations">
+            <field name="name">Sussex Co</field>
+            <field name="code">GED</field>
+            <field name="icao">KGED</field>
+            <field name="city">Georgetown</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.689194</field>
+            <field name="longitude">-75.358889</field>
+            <field name="altitude">50</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_geg" model="tt.destinations">
+            <field name="name">Spokane Intl</field>
+            <field name="code">GEG</field>
+            <field name="icao">KGEG</field>
+            <field name="city">Spokane</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">47.619861</field>
+            <field name="longitude">-117.533833</field>
+            <field name="altitude">2376</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Los_Angeles</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gel" model="tt.destinations">
+            <field name="name">Santo Angelo</field>
+            <field name="code">GEL</field>
+            <field name="icao">SBNM</field>
+            <field name="city">Santo Angelo</field>
+            <field name="country_id" ref="base.br"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-28.281683</field>
+            <field name="longitude">-54.169139</field>
+            <field name="altitude">1056</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Sao_Paulo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_geo" model="tt.destinations">
+            <field name="name">Cheddi Jagan Intl</field>
+            <field name="code">GEO</field>
+            <field name="icao">SYCJ</field>
+            <field name="city">Georgetown</field>
+            <field name="country_id" ref="base.gy"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">6.498553</field>
+            <field name="longitude">-58.254119</field>
+            <field name="altitude">95</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">America/Guyana</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ger" model="tt.destinations">
+            <field name="name">Rafael Cabrera</field>
+            <field name="code">GER</field>
+            <field name="icao">MUNG</field>
+            <field name="city">Nueva Gerona</field>
+            <field name="country_id" ref="base.cu"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">21.834689</field>
+            <field name="longitude">-82.783819</field>
+            <field name="altitude">79</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Havana</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_geu" model="tt.destinations">
+            <field name="name">Glendale Municipal Airport</field>
+            <field name="code">GEU</field>
+            <field name="icao">KGEU</field>
+            <field name="city">Glendale</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">33.5269167</field>
+            <field name="longitude">-112.2951389</field>
+            <field name="altitude">1071</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Phoenix</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gfk" model="tt.destinations">
+            <field name="name">Grand Forks Intl</field>
+            <field name="code">GFK</field>
+            <field name="icao">KGFK</field>
+            <field name="city">Grand Forks</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">47.949256</field>
+            <field name="longitude">-97.176111</field>
+            <field name="altitude">845</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gfl" model="tt.destinations">
+            <field name="name">Floyd Bennett Memorial Airport</field>
+            <field name="code">GFL</field>
+            <field name="icao">KGFL</field>
+            <field name="city">Queensbury</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.341222</field>
+            <field name="longitude">-73.610305</field>
+            <field name="altitude">328</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gfy" model="tt.destinations">
+            <field name="name">Grootfontein</field>
+            <field name="code">GFY</field>
+            <field name="icao">FYGF</field>
+            <field name="city">Grootfontein</field>
+            <field name="country_id" ref="base.na"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-19.602167</field>
+            <field name="longitude">18.122667</field>
+            <field name="altitude">4636</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Africa/Windhoek</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gge" model="tt.destinations">
+            <field name="name">Georgetown County Airport</field>
+            <field name="code">GGE</field>
+            <field name="icao">KGGE</field>
+            <field name="city">Georgetown</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">33.3114018</field>
+            <field name="longitude">-79.3203139</field>
+            <field name="altitude">40</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ggg" model="tt.destinations">
+            <field name="name">East Texas Rgnl</field>
+            <field name="code">GGG</field>
+            <field name="icao">KGGG</field>
+            <field name="city">Longview</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">32.384014</field>
+            <field name="longitude">-94.711486</field>
+            <field name="altitude">365</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ggr" model="tt.destinations">
+            <field name="name">Garowe - International</field>
+            <field name="code">GGR</field>
+            <field name="icao"></field>
+            <field name="city">Garowe</field>
+            <field name="country_id" ref="base.so"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">8.24</field>
+            <field name="longitude">48.29</field>
+            <field name="altitude">553</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Africa/Mogadishu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ggs" model="tt.destinations">
+            <field name="name">Gobernador Gregores Airport</field>
+            <field name="code">GGS</field>
+            <field name="icao">SAWR</field>
+            <field name="city">Gobernador Gregores</field>
+            <field name="country_id" ref="base.ar"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-48.7831</field>
+            <field name="longitude">-70.15</field>
+            <field name="altitude">356</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Cordoba</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ggt" model="tt.destinations">
+            <field name="name">Exuma Intl</field>
+            <field name="code">GGT</field>
+            <field name="icao">MYEF</field>
+            <field name="city">Great Exuma</field>
+            <field name="country_id" ref="base.bs"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">23.562631</field>
+            <field name="longitude">-75.877958</field>
+            <field name="altitude">9</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Nassau</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ggw" model="tt.destinations">
+            <field name="name">Wokal Field Glasgow International Airport</field>
+            <field name="code">GGW</field>
+            <field name="icao">KGGW</field>
+            <field name="city">Glasgow</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.2125</field>
+            <field name="longitude">-106.615</field>
+            <field name="altitude">2296</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Denver</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gha" model="tt.destinations">
+            <field name="name">Noumerat</field>
+            <field name="code">GHA</field>
+            <field name="icao">DAUG</field>
+            <field name="city">Ghardaia</field>
+            <field name="country_id" ref="base.dz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">32.384106</field>
+            <field name="longitude">3.794114</field>
+            <field name="altitude">1512</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Africa/Algiers</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ghb" model="tt.destinations">
+            <field name="name">Governors Harbour</field>
+            <field name="code">GHB</field>
+            <field name="icao">MYEM</field>
+            <field name="city">Governor's Harbor</field>
+            <field name="country_id" ref="base.bs"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">25.284706</field>
+            <field name="longitude">-76.331011</field>
+            <field name="altitude">26</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Nassau</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ghe" model="tt.destinations">
+            <field name="name">Garachine Airport</field>
+            <field name="code">GHE</field>
+            <field name="icao"></field>
+            <field name="city">Garachine</field>
+            <field name="country_id" ref="base.pa"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">8.06</field>
+            <field name="longitude">-78.36</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Panama</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ghg" model="tt.destinations">
+            <field name="name">Marshfield Municipal Airport</field>
+            <field name="code">GHG</field>
+            <field name="icao">KGHG</field>
+            <field name="city">Marshfield</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">42.09825</field>
+            <field name="longitude">-70.6721389</field>
+            <field name="altitude">9</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ght" model="tt.destinations">
+            <field name="name">Ghat</field>
+            <field name="code">GHT</field>
+            <field name="icao">HLGT</field>
+            <field name="city">Ghat</field>
+            <field name="country_id" ref="base.ly"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">25.145564</field>
+            <field name="longitude">10.142647</field>
+            <field name="altitude">2296</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Africa/Tripoli</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ghu" model="tt.destinations">
+            <field name="name">Gualeguaychu</field>
+            <field name="code">GHU</field>
+            <field name="icao">SAAG</field>
+            <field name="city">Gualeguaychu</field>
+            <field name="country_id" ref="base.ar"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-33.010278</field>
+            <field name="longitude">-58.613056</field>
+            <field name="altitude">75</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Cordoba</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gif" model="tt.destinations">
+            <field name="name">Gilbert Airport</field>
+            <field name="code">GIF</field>
+            <field name="icao">KGIF</field>
+            <field name="city">Winter Haven</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">28.062778</field>
+            <field name="longitude">-81.753333</field>
+            <field name="altitude">145</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gig" model="tt.destinations">
+            <field name="name">Galeao Antonio Carlos Jobim</field>
+            <field name="code">GIG</field>
+            <field name="icao">SBGL</field>
+            <field name="city">Rio De Janeiro</field>
+            <field name="country_id" ref="base.br"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-22.808903</field>
+            <field name="longitude">-43.243647</field>
+            <field name="altitude">28</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Sao_Paulo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gja" model="tt.destinations">
+            <field name="name">Guanaja</field>
+            <field name="code">GJA</field>
+            <field name="icao">MHNJ</field>
+            <field name="city">Guanaja</field>
+            <field name="country_id" ref="base.hn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">16.445367</field>
+            <field name="longitude">-85.906611</field>
+            <field name="altitude">49</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Tegucigalpa</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gjl" model="tt.destinations">
+            <field name="name">Jijel</field>
+            <field name="code">GJL</field>
+            <field name="icao">DAAV</field>
+            <field name="city">Jijel</field>
+            <field name="country_id" ref="base.dz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.795136</field>
+            <field name="longitude">5.873608</field>
+            <field name="altitude">36</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Africa/Algiers</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gjt" model="tt.destinations">
+            <field name="name">Grand Junction Regional</field>
+            <field name="code">GJT</field>
+            <field name="icao">KGJT</field>
+            <field name="city">Grand Junction</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.122413</field>
+            <field name="longitude">-108.526735</field>
+            <field name="altitude">4858</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Denver</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gkn" model="tt.destinations">
+            <field name="name">Gulkana</field>
+            <field name="code">GKN</field>
+            <field name="icao">PAGK</field>
+            <field name="city">Gulkana</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">62.154888</field>
+            <field name="longitude">-145.456639</field>
+            <field name="altitude">1580</field>
+            <field name="timezone_hour">-9</field>
+            <field name="tz">America/Anchorage</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gky" model="tt.destinations">
+            <field name="name">Arlington Municipal</field>
+            <field name="code">GKY</field>
+            <field name="icao">KGKY</field>
+            <field name="city">Arlington</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">32.6638611</field>
+            <field name="longitude">-97.0942778</field>
+            <field name="altitude">628</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gld" model="tt.destinations">
+            <field name="name">Renner Fld</field>
+            <field name="code">GLD</field>
+            <field name="icao">KGLD</field>
+            <field name="city">Goodland</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.370621</field>
+            <field name="longitude">-101.698992</field>
+            <field name="altitude">3656</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Denver</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_glf" model="tt.destinations">
+            <field name="name">Golfito</field>
+            <field name="code">GLF</field>
+            <field name="icao">MRGF</field>
+            <field name="city">Golfito</field>
+            <field name="country_id" ref="base.cr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">8.653775</field>
+            <field name="longitude">-83.180544</field>
+            <field name="altitude">49</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Costa_Rica</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_glh" model="tt.destinations">
+            <field name="name">Mid Delta Regional Airport</field>
+            <field name="code">GLH</field>
+            <field name="icao">GLH</field>
+            <field name="city">Greenville</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">33.4829</field>
+            <field name="longitude">-90.9856</field>
+            <field name="altitude">131</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_glj" model="tt.destinations">
+            <field name="name">La Jagua Airport</field>
+            <field name="code">GLJ</field>
+            <field name="icao">SKGZ</field>
+            <field name="city">Garz贸n</field>
+            <field name="country_id" ref="base.co"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">2.17</field>
+            <field name="longitude">-75.67</field>
+            <field name="altitude">2620</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Bogota</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_glk" model="tt.destinations">
+            <field name="name">Galcaio Airport</field>
+            <field name="code">GLK</field>
+            <field name="icao">HCMR</field>
+            <field name="city">Galcaio</field>
+            <field name="country_id" ref="base.so"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">6.78083</field>
+            <field name="longitude">47.4547</field>
+            <field name="altitude">975</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Africa/Mogadishu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gls" model="tt.destinations">
+            <field name="name">Scholes Intl At Galveston</field>
+            <field name="code">GLS</field>
+            <field name="icao">KGLS</field>
+            <field name="city">Galveston</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">29.265322</field>
+            <field name="longitude">-94.860406</field>
+            <field name="altitude">6</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_glv" model="tt.destinations">
+            <field name="name">Golovin Airport</field>
+            <field name="code">GLV</field>
+            <field name="icao">PAGL</field>
+            <field name="city">Golovin</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">64.550556</field>
+            <field name="longitude">-163.007222</field>
+            <field name="altitude">59</field>
+            <field name="timezone_hour">-9</field>
+            <field name="tz">America/Anchorage</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gma" model="tt.destinations">
+            <field name="name">Gemena</field>
+            <field name="code">GMA</field>
+            <field name="icao">FZFK</field>
+            <field name="city">Gemena</field>
+            <field name="country_id" ref="base.cg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">3.235369</field>
+            <field name="longitude">19.771258</field>
+            <field name="altitude">1378</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Africa/Kinshasa</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gmb" model="tt.destinations">
+            <field name="name">Gambella</field>
+            <field name="code">GMB</field>
+            <field name="icao">HAGM</field>
+            <field name="city">Gambella</field>
+            <field name="country_id" ref="base.et"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">8.128764</field>
+            <field name="longitude">34.563131</field>
+            <field name="altitude">1771</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Africa/Addis_Ababa</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gnd" model="tt.destinations">
+            <field name="name">Point Salines Intl</field>
+            <field name="code">GND</field>
+            <field name="icao">TGPY</field>
+            <field name="city">Point Salines</field>
+            <field name="country_id" ref="base.gd"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">12.004247</field>
+            <field name="longitude">-61.786192</field>
+            <field name="altitude">41</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">America/Grenada</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gnm" model="tt.destinations">
+            <field name="name">Guanambi Airport</field>
+            <field name="code">GNM</field>
+            <field name="icao">SNGI</field>
+            <field name="city">Guanambi</field>
+            <field name="country_id" ref="base.br"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-14.216667</field>
+            <field name="longitude">-42.783333</field>
+            <field name="altitude">500</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Fortaleza</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gnt" model="tt.destinations">
+            <field name="name">Grants Milan Muni</field>
+            <field name="code">GNT</field>
+            <field name="icao">KGNT</field>
+            <field name="city">Grants</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.167286</field>
+            <field name="longitude">-107.901989</field>
+            <field name="altitude">6537</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Denver</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gnu" model="tt.destinations">
+            <field name="name">Goodnews Airport</field>
+            <field name="code">GNU</field>
+            <field name="icao"></field>
+            <field name="city">Goodnews Bay</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">59.1175</field>
+            <field name="longitude">-161.5775</field>
+            <field name="altitude">15</field>
+            <field name="timezone_hour">-9</field>
+            <field name="tz">America/Anchorage</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gnv" model="tt.destinations">
+            <field name="name">Gainesville Rgnl</field>
+            <field name="code">GNV</field>
+            <field name="icao">KGNV</field>
+            <field name="city">Gainesville</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">29.690056</field>
+            <field name="longitude">-82.271778</field>
+            <field name="altitude">152</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gnz" model="tt.destinations">
+            <field name="name">Ghanzi Airport</field>
+            <field name="code">GNZ</field>
+            <field name="icao">FBGZ</field>
+            <field name="city">Ghanzi</field>
+            <field name="country_id" ref="base.bw"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-21.6925</field>
+            <field name="longitude">21.6581</field>
+            <field name="altitude">3730</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Africa/Gaborone</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gob" model="tt.destinations">
+            <field name="name">Robe Airport</field>
+            <field name="code">GOB</field>
+            <field name="icao">HAGB</field>
+            <field name="city">Goba</field>
+            <field name="country_id" ref="base.et"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">6.733333</field>
+            <field name="longitude">44.266667</field>
+            <field name="altitude">4000</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Africa/Addis_Ababa</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_goh" model="tt.destinations">
+            <field name="name">Nuuk</field>
+            <field name="code">GOH</field>
+            <field name="icao">BGGH</field>
+            <field name="city">Godthaab</field>
+            <field name="country_id" ref="base.gl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">64.190922</field>
+            <field name="longitude">-51.678064</field>
+            <field name="altitude">283</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Godthab</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            

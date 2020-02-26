@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_tvy" model="tt.destinations">
+            <field name="name">Dawei Airport</field>
+            <field name="code">TVY</field>
+            <field name="icao">VYDW</field>
+            <field name="city">Dawei</field>
+            <field name="country_id" ref="base.mm"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">14.103886</field>
+            <field name="longitude">98.203636</field>
+            <field name="altitude">84</field>
+            <field name="timezone_hour">6.5</field>
+            <field name="tz">Asia/Rangoon</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_xye" model="tt.destinations">
+            <field name="name">Ye</field>
+            <field name="code">XYE</field>
+            <field name="icao">VYYE</field>
+            <field name="city">Ye</field>
+            <field name="country_id" ref="base.mm"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">15.25</field>
+            <field name="longitude">97.85</field>
+            <field name="altitude">25</field>
+            <field name="timezone_hour">6.5</field>
+            <field name="tz">Asia/Rangoon</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_abt" model="tt.destinations">
+            <field name="name">Al Baha</field>
+            <field name="code">ABT</field>
+            <field name="icao">OEBA</field>
+            <field name="city">El-baha</field>
+            <field name="country_id" ref="base.sa"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">20.296139</field>
+            <field name="longitude">41.634277</field>
+            <field name="altitude">5486</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Asia/Riyadh</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ahb" model="tt.destinations">
+            <field name="name">Abha</field>
+            <field name="code">AHB</field>
+            <field name="icao">OEAB</field>
+            <field name="city">Abha</field>
+            <field name="country_id" ref="base.sa"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">18.240367</field>
+            <field name="longitude">42.656625</field>
+            <field name="altitude">6858</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Asia/Riyadh</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ajf" model="tt.destinations">
+            <field name="name">Al-Jawf Domestic Airport</field>
+            <field name="code">AJF</field>
+            <field name="icao">OESK</field>
+            <field name="city">Al-Jawf</field>
+            <field name="country_id" ref="base.sa"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">29.785133</field>
+            <field name="longitude">40.100006</field>
+            <field name="altitude">2261</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Asia/Riyadh</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_aqi" model="tt.destinations">
+            <field name="name">Qaisumah</field>
+            <field name="code">AQI</field>
+            <field name="icao">OEPA</field>
+            <field name="city">Hafr Al-batin</field>
+            <field name="country_id" ref="base.sa"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">28.335192</field>
+            <field name="longitude">46.125069</field>
+            <field name="altitude">1174</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Asia/Riyadh</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bhh" model="tt.destinations">
+            <field name="name">Bisha</field>
+            <field name="code">BHH</field>
+            <field name="icao">OEBH</field>
+            <field name="city">Bisha</field>
+            <field name="country_id" ref="base.sa"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">19.98435</field>
+            <field name="longitude">42.620881</field>
+            <field name="altitude">3887</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Asia/Riyadh</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dha" model="tt.destinations">
+            <field name="name">King Abdulaziz Ab</field>
+            <field name="code">DHA</field>
+            <field name="icao">OEDR</field>
+            <field name="city">Dhahran</field>
+            <field name="country_id" ref="base.sa"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">26.265417</field>
+            <field name="longitude">50.152027</field>
+            <field name="altitude">84</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Asia/Riyadh</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dmm" model="tt.destinations">
+            <field name="name">King Fahd Intl</field>
+            <field name="code">DMM</field>
+            <field name="icao">OEDF</field>
+            <field name="city">Dammam</field>
+            <field name="country_id" ref="base.sa"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">26.471161</field>
+            <field name="longitude">49.79789</field>
+            <field name="altitude">72</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Asia/Riyadh</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dwd" model="tt.destinations">
+            <field name="name">Dawadmi Domestic Airport</field>
+            <field name="code">DWD</field>
+            <field name="icao">OEDW</field>
+            <field name="city">Dawadmi</field>
+            <field name="country_id" ref="base.sa"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">24.5</field>
+            <field name="longitude">44.4</field>
+            <field name="altitude">3429</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Asia/Riyadh</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_eam" model="tt.destinations">
+            <field name="name">Nejran</field>
+            <field name="code">EAM</field>
+            <field name="icao">OENG</field>
+            <field name="city">Nejran</field>
+            <field name="country_id" ref="base.sa"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">17.611436</field>
+            <field name="longitude">44.419169</field>
+            <field name="altitude">3982</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Asia/Riyadh</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ejh" model="tt.destinations">
+            <field name="name">Wejh</field>
+            <field name="code">EJH</field>
+            <field name="icao">OEWJ</field>
+            <field name="city">Wejh</field>
+            <field name="country_id" ref="base.sa"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">26.198553</field>
+            <field name="longitude">36.476381</field>
+            <field name="altitude">66</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Asia/Riyadh</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_elq" model="tt.destinations">
+            <field name="name">Gassim</field>
+            <field name="code">ELQ</field>
+            <field name="icao">OEGS</field>
+            <field name="city">Gassim</field>
+            <field name="country_id" ref="base.sa"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">26.302822</field>
+            <field name="longitude">43.773911</field>
+            <field name="altitude">2126</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Asia/Riyadh</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ewd" model="tt.destinations">
+            <field name="name">Wadi Al Dawasir Airport</field>
+            <field name="code">EWD</field>
+            <field name="icao">OEWD</field>
+            <field name="city">Wadi-al-dawasir</field>
+            <field name="country_id" ref="base.sa"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">20.504275</field>
+            <field name="longitude">45.199556</field>
+            <field name="altitude">2062</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Asia/Riyadh</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_giz" model="tt.destinations">
+            <field name="name">King Abdullah Bin Abdulaziz</field>
+            <field name="code">GIZ</field>
+            <field name="icao">OEGN</field>
+            <field name="city">Gizan</field>
+            <field name="country_id" ref="base.sa"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">16.901111</field>
+            <field name="longitude">42.585833</field>
+            <field name="altitude">20</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Asia/Riyadh</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_has" model="tt.destinations">
+            <field name="name">Hail</field>
+            <field name="code">HAS</field>
+            <field name="icao">OEHL</field>
+            <field name="city">Hail</field>
+            <field name="country_id" ref="base.sa"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">27.437917</field>
+            <field name="longitude">41.686292</field>
+            <field name="altitude">3331</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Asia/Riyadh</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hbt" model="tt.destinations">
+            <field name="name">King Khaled Military City</field>
+            <field name="code">HBT</field>
+            <field name="icao">OEKK</field>
+            <field name="city">King Khalid Mil.city</field>
+            <field name="country_id" ref="base.sa"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">27.900917</field>
+            <field name="longitude">45.528194</field>
+            <field name="altitude">1352</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Asia/Riyadh</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hof" model="tt.destinations">
+            <field name="name">Al Ahsa</field>
+            <field name="code">HOF</field>
+            <field name="icao">OEAH</field>
+            <field name="city">Al-ahsa</field>
+            <field name="country_id" ref="base.sa"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">25.285306</field>
+            <field name="longitude">49.485189</field>
+            <field name="altitude">588</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Asia/Riyadh</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jed" model="tt.destinations">
+            <field name="name">King Abdulaziz Intl</field>
+            <field name="code">JED</field>
+            <field name="icao">OEJN</field>
+            <field name="city">Jeddah</field>
+            <field name="country_id" ref="base.sa"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">21.679564</field>
+            <field name="longitude">39.156536</field>
+            <field name="altitude">48</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Asia/Riyadh</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_med" model="tt.destinations">
+            <field name="name">Prince Mohammad Bin Abdulaziz</field>
+            <field name="code">MED</field>
+            <field name="icao">OEMA</field>
+            <field name="city">Madinah</field>
+            <field name="country_id" ref="base.sa"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">24.553422</field>
+            <field name="longitude">39.705061</field>
+            <field name="altitude">2151</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Asia/Riyadh</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rae" model="tt.destinations">
+            <field name="name">Arar</field>
+            <field name="code">RAE</field>
+            <field name="icao">OERR</field>
+            <field name="city">Arar</field>
+            <field name="country_id" ref="base.sa"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">30.906589</field>
+            <field name="longitude">41.138217</field>
+            <field name="altitude">1813</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Asia/Riyadh</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rah" model="tt.destinations">
+            <field name="name">Rafha</field>
+            <field name="code">RAH</field>
+            <field name="icao">OERF</field>
+            <field name="city">Rafha</field>
+            <field name="country_id" ref="base.sa"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">29.626419</field>
+            <field name="longitude">43.490614</field>
+            <field name="altitude">1474</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Asia/Riyadh</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ruh" model="tt.destinations">
+            <field name="name">King Khaled Intl</field>
+            <field name="code">RUH</field>
+            <field name="icao">OERK</field>
+            <field name="city">Riyadh</field>
+            <field name="country_id" ref="base.sa"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">24.95764</field>
+            <field name="longitude">46.698776</field>
+            <field name="altitude">2049</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Asia/Riyadh</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_shw" model="tt.destinations">
+            <field name="name">Sharurah</field>
+            <field name="code">SHW</field>
+            <field name="icao">OESH</field>
+            <field name="city">Sharurah</field>
+            <field name="country_id" ref="base.sa"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">17.466875</field>
+            <field name="longitude">47.121431</field>
+            <field name="altitude">2363</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Asia/Riyadh</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_slf" model="tt.destinations">
+            <field name="name">Sulayel</field>
+            <field name="code">SLF</field>
+            <field name="icao">OESL</field>
+            <field name="city">Sulayel</field>
+            <field name="country_id" ref="base.sa"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">20.464744</field>
+            <field name="longitude">45.619644</field>
+            <field name="altitude">2021</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Asia/Riyadh</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tif" model="tt.destinations">
+            <field name="name">Taif</field>
+            <field name="code">TIF</field>
+            <field name="icao">OETF</field>
+            <field name="city">Taif</field>
+            <field name="country_id" ref="base.sa"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">21.483418</field>
+            <field name="longitude">40.544334</field>
+            <field name="altitude">4848</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Asia/Riyadh</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tui" model="tt.destinations">
+            <field name="name">Turaif</field>
+            <field name="code">TUI</field>
+            <field name="icao">OETR</field>
+            <field name="city">Turaif</field>
+            <field name="country_id" ref="base.sa"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">31.692683</field>
+            <field name="longitude">38.7312</field>
+            <field name="altitude">2803</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Asia/Riyadh</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tuu" model="tt.destinations">
+            <field name="name">Tabuk</field>
+            <field name="code">TUU</field>
+            <field name="icao">OETB</field>
+            <field name="city">Tabuk</field>
+            <field name="country_id" ref="base.sa"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">28.365417</field>
+            <field name="longitude">36.618889</field>
+            <field name="altitude">2551</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Asia/Riyadh</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ulh" model="tt.destinations">
+            <field name="name">Prince Abdul Majeed Airport</field>
+            <field name="code">ULH</field>
+            <field name="icao">OEAO</field>
+            <field name="city">Al-Ula</field>
+            <field name="country_id" ref="base.sa"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">26.636718</field>
+            <field name="longitude">37.908018</field>
+            <field name="altitude">2047</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Asia/Riyadh</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ury" model="tt.destinations">
+            <field name="name">Guriat</field>
+            <field name="code">URY</field>
+            <field name="icao">OEGT</field>
+            <field name="city">Guriat</field>
+            <field name="country_id" ref="base.sa"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">31.411942</field>
+            <field name="longitude">37.279469</field>
+            <field name="altitude">1672</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Asia/Riyadh</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ynb" model="tt.destinations">
+            <field name="name">Yenbo</field>
+            <field name="code">YNB</field>
+            <field name="icao">OEYN</field>
+            <field name="city">Yenbo</field>
+            <field name="country_id" ref="base.sa"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">24.144244</field>
+            <field name="longitude">38.06335</field>
+            <field name="altitude">26</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Asia/Riyadh</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bmv" model="tt.destinations">
+            <field name="name">Buon Ma Thuot Airport</field>
+            <field name="code">BMV</field>
+            <field name="icao">VVBM</field>
+            <field name="city">Buonmethuot</field>
+            <field name="country_id" ref="base.vn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">12.668311</field>
+            <field name="longitude">108.120272</field>
+            <field name="altitude">1729</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Saigon</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cah" model="tt.destinations">
+            <field name="name">Ca Mau</field>
+            <field name="code">CAH</field>
+            <field name="icao">VVCM</field>
+            <field name="city">Ca Mau</field>
+            <field name="country_id" ref="base.vn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">9.188049</field>
+            <field name="longitude">105.174721</field>
+            <field name="altitude">50</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Saigon</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cxr" model="tt.destinations">
+            <field name="name">Cam Ranh Airport</field>
+            <field name="code">CXR</field>
+            <field name="icao">VVCR</field>
+            <field name="city">Nha Trang</field>
+            <field name="country_id" ref="base.vn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">11.998153</field>
+            <field name="longitude">109.219372</field>
+            <field name="altitude">40</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Saigon</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dad" model="tt.destinations">
+            <field name="name">Danang Intl</field>
+            <field name="code">DAD</field>
+            <field name="icao">VVDN</field>
+            <field name="city">Danang</field>
+            <field name="country_id" ref="base.vn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">16.043917</field>
+            <field name="longitude">108.19937</field>
+            <field name="altitude">33</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Saigon</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_din" model="tt.destinations">
+            <field name="name">Dien Bien Phu Airport</field>
+            <field name="code">DIN</field>
+            <field name="icao">VVDB</field>
+            <field name="city">Dienbienphu</field>
+            <field name="country_id" ref="base.vn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">21.397481</field>
+            <field name="longitude">103.007831</field>
+            <field name="altitude">1611</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Saigon</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dli" model="tt.destinations">
+            <field name="name">Dalat</field>
+            <field name="code">DLI</field>
+            <field name="icao">VVDL</field>
+            <field name="city">Dalat</field>
+            <field name="country_id" ref="base.vn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">11.75</field>
+            <field name="longitude">108.367</field>
+            <field name="altitude">3156</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Saigon</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_han" model="tt.destinations">
+            <field name="name">Noibai Intl</field>
+            <field name="code">HAN</field>
+            <field name="icao">VVNB</field>
+            <field name="city">Hanoi</field>
+            <field name="country_id" ref="base.vn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">21.221192</field>
+            <field name="longitude">105.807178</field>
+            <field name="altitude">39</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Saigon</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hph" model="tt.destinations">
+            <field name="name">Cat Bi International Airport</field>
+            <field name="code">HPH</field>
+            <field name="icao">VVCI</field>
+            <field name="city">Haiphong</field>
+            <field name="country_id" ref="base.vn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">20.819386</field>
+            <field name="longitude">106.724989</field>
+            <field name="altitude">6</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Saigon</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hui" model="tt.destinations">
+            <field name="name">Phu Bai</field>
+            <field name="code">HUI</field>
+            <field name="icao"></field>
+            <field name="city">Hue</field>
+            <field name="country_id" ref="base.vn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">16.401499</field>
+            <field name="longitude">107.702614</field>
+            <field name="altitude">48</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Saigon</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kon" model="tt.destinations">
+            <field name="name">Kontum Airport</field>
+            <field name="code">KON</field>
+            <field name="icao"></field>
+            <field name="city">Kontum</field>
+            <field name="country_id" ref="base.vn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">14.35</field>
+            <field name="longitude">108.017</field>
+            <field name="altitude">1804</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Saigon</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nha" model="tt.destinations">
+            <field name="name">Nhatrang</field>
+            <field name="code">NHA</field>
+            <field name="icao">VVNT</field>
+            <field name="city">Nhatrang</field>
+            <field name="country_id" ref="base.vn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">12.227467</field>
+            <field name="longitude">109.192322</field>
+            <field name="altitude">20</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Saigon</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pha" model="tt.destinations">
+            <field name="name">Phan Rang Airport</field>
+            <field name="code">PHA</field>
+            <field name="icao">VVPR</field>
+            <field name="city">Phan Rang</field>
+            <field name="country_id" ref="base.vn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">11.6335</field>
+            <field name="longitude">108.952</field>
+            <field name="altitude">101</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Saigon</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pqc" model="tt.destinations">
+            <field name="name">Duong Dong Airport</field>
+            <field name="code">PQC</field>
+            <field name="icao"></field>
+            <field name="city">Phu Quoc</field>
+            <field name="country_id" ref="base.vn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">10.227025</field>
+            <field name="longitude">103.967169</field>
+            <field name="altitude">23</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Saigon</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pxu" model="tt.destinations">
+            <field name="name">Pleiku Airport</field>
+            <field name="code">PXU</field>
+            <field name="icao">VVPK</field>
+            <field name="city">Pleiku</field>
+            <field name="country_id" ref="base.vn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">14.004522</field>
+            <field name="longitude">108.017158</field>
+            <field name="altitude">2434</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Saigon</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sgn" model="tt.destinations">
+            <field name="name">Tansonnhat Intl</field>
+            <field name="code">SGN</field>
+            <field name="icao">VVTS</field>
+            <field name="city">Ho Chi Minh City</field>
+            <field name="country_id" ref="base.vn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">10.818797</field>
+            <field name="longitude">106.651856</field>
+            <field name="altitude">33</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Saigon</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sqh" model="tt.destinations">
+            <field name="name">Na-San Airport</field>
+            <field name="code">SQH</field>
+            <field name="icao">VVNS</field>
+            <field name="city">Son-La</field>
+            <field name="country_id" ref="base.vn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">21.217</field>
+            <field name="longitude">104.033</field>
+            <field name="altitude">2133</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Saigon</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tbb" model="tt.destinations">
+            <field name="name">Dong Tac</field>
+            <field name="code">TBB</field>
+            <field name="icao">VVTH</field>
+            <field name="city">Tuy Hoa</field>
+            <field name="country_id" ref="base.vn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">13.04955</field>
+            <field name="longitude">109.333706</field>
+            <field name="altitude">20</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Saigon</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_thd" model="tt.destinations">
+            <field name="name">Tho Xuan Airport</field>
+            <field name="code">THD</field>
+            <field name="icao"></field>
+            <field name="city">Thanh Hoa</field>
+            <field name="country_id" ref="base.vn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">19.90167</field>
+            <field name="longitude">105.46778</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Saigon</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_uih" model="tt.destinations">
+            <field name="name">Phu Cat Airport</field>
+            <field name="code">UIH</field>
+            <field name="icao">VVPC</field>
+            <field name="city">Phucat</field>
+            <field name="country_id" ref="base.vn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">13.954986</field>
+            <field name="longitude">109.042267</field>
+            <field name="altitude">80</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Saigon</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            

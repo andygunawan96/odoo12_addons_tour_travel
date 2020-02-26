@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_bfn" model="tt.destinations">
+            <field name="name">Bloemfontein Intl</field>
+            <field name="code">BFN</field>
+            <field name="icao">FABL</field>
+            <field name="city">Bloemfontein</field>
+            <field name="country_id" ref="base.za"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-29.092722</field>
+            <field name="longitude">26.302444</field>
+            <field name="altitude">4458</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Africa/Johannesburg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bfo" model="tt.destinations">
+            <field name="name">Buffalo Range</field>
+            <field name="code">BFO</field>
+            <field name="icao">FVCZ</field>
+            <field name="city">Chiredzi</field>
+            <field name="country_id" ref="base.zw"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-21.008083</field>
+            <field name="longitude">31.57855</field>
+            <field name="altitude">1421</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Africa/Harare</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bfp" model="tt.destinations">
+            <field name="name">Beaver Falls</field>
+            <field name="code">BFP</field>
+            <field name="icao">KBFP</field>
+            <field name="city">Beaver Falls</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.7724722</field>
+            <field name="longitude">-80.3914444</field>
+            <field name="altitude">1253</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bfq" model="tt.destinations">
+            <field name="name">Bahia Pi帽a Airport</field>
+            <field name="code">BFQ</field>
+            <field name="icao"></field>
+            <field name="city">Bahia Pi帽a</field>
+            <field name="country_id" ref="base.pa"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">7.583</field>
+            <field name="longitude">-78.2</field>
+            <field name="altitude">14</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Panama</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bft" model="tt.destinations">
+            <field name="name">Beaufort Country Airport</field>
+            <field name="code">BFT</field>
+            <field name="icao">KNBC</field>
+            <field name="city">Beaufort</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">32.477411</field>
+            <field name="longitude">-80.723161</field>
+            <field name="altitude">37</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bfv" model="tt.destinations">
+            <field name="name">Buri Ram</field>
+            <field name="code">BFV</field>
+            <field name="icao">VTUO</field>
+            <field name="city">Buri Ram</field>
+            <field name="country_id" ref="base.th"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">15.229539</field>
+            <field name="longitude">103.253231</field>
+            <field name="altitude">590</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Bangkok</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bfx" model="tt.destinations">
+            <field name="name">Bafoussam</field>
+            <field name="code">BFX</field>
+            <field name="icao">FKKU</field>
+            <field name="city">Bafoussam</field>
+            <field name="country_id" ref="base.cm"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">5.536919</field>
+            <field name="longitude">10.354583</field>
+            <field name="altitude">4347</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Africa/Douala</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bga" model="tt.destinations">
+            <field name="name">Palonegro</field>
+            <field name="code">BGA</field>
+            <field name="icao">SKBG</field>
+            <field name="city">Bucaramanga</field>
+            <field name="country_id" ref="base.co"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">7.1265</field>
+            <field name="longitude">-73.184778</field>
+            <field name="altitude">3897</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Bogota</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bge" model="tt.destinations">
+            <field name="name">Decatur County Industrial Air Park</field>
+            <field name="code">BGE</field>
+            <field name="icao">KBGE</field>
+            <field name="city">Bainbridge</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">30.9715981</field>
+            <field name="longitude">-84.6369278</field>
+            <field name="altitude">141</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bgf" model="tt.destinations">
+            <field name="name">Bangui M Poko</field>
+            <field name="code">BGF</field>
+            <field name="icao">FEFF</field>
+            <field name="city">Bangui</field>
+            <field name="country_id" ref="base.cf"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">4.398475</field>
+            <field name="longitude">18.518786</field>
+            <field name="altitude">1208</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Africa/Bangui</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bgi" model="tt.destinations">
+            <field name="name">Grantley Adams Intl</field>
+            <field name="code">BGI</field>
+            <field name="icao">TBPB</field>
+            <field name="city">Bridgetown</field>
+            <field name="country_id" ref="base.bb"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">13.074603</field>
+            <field name="longitude">-59.492456</field>
+            <field name="altitude">169</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">America/Barbados</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bgk" model="tt.destinations">
+            <field name="name">Big Creek Airport</field>
+            <field name="code">BGK</field>
+            <field name="icao"></field>
+            <field name="city">Big Creek</field>
+            <field name="country_id" ref="base.bz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">16.516667</field>
+            <field name="longitude">-88.416667</field>
+            <field name="altitude">16</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Belize</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bgm" model="tt.destinations">
+            <field name="name">Greater Binghamton Edwin A Link Fld</field>
+            <field name="code">BGM</field>
+            <field name="icao">KBGM</field>
+            <field name="city">Binghamton</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">42.208689</field>
+            <field name="longitude">-75.979839</field>
+            <field name="altitude">1636</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bgr" model="tt.destinations">
+            <field name="name">Bangor Intl</field>
+            <field name="code">BGR</field>
+            <field name="icao">KBGR</field>
+            <field name="city">Bangor</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">44.807444</field>
+            <field name="longitude">-68.828139</field>
+            <field name="altitude">192</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bgw" model="tt.destinations">
+            <field name="name">Baghdad International Airport</field>
+            <field name="code">BGW</field>
+            <field name="icao">ORBI</field>
+            <field name="city">Baghdad</field>
+            <field name="country_id" ref="base.iq"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">33.262539</field>
+            <field name="longitude">44.234578</field>
+            <field name="altitude">114</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Asia/Baghdad</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bgx" model="tt.destinations">
+            <field name="name">Comandante Gustavo Kraemer</field>
+            <field name="code">BGX</field>
+            <field name="icao">SBBG</field>
+            <field name="city">Bage</field>
+            <field name="country_id" ref="base.br"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-31.390528</field>
+            <field name="longitude">-54.112244</field>
+            <field name="altitude">600</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Sao_Paulo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bhb" model="tt.destinations">
+            <field name="name">Hancock County - Bar Harbor</field>
+            <field name="code">BHB</field>
+            <field name="icao">KBHB</field>
+            <field name="city">Bar Harbor</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">44.4497689</field>
+            <field name="longitude">-68.3615653</field>
+            <field name="altitude">83</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bhg" model="tt.destinations">
+            <field name="name">Brus Laguna Airport</field>
+            <field name="code">BHG</field>
+            <field name="icao">MHBL</field>
+            <field name="city">Brus Laguna</field>
+            <field name="country_id" ref="base.hn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">15.7631</field>
+            <field name="longitude">-84.5436</field>
+            <field name="altitude">2</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Tegucigalpa</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bhi" model="tt.destinations">
+            <field name="name">Comandante Espora</field>
+            <field name="code">BHI</field>
+            <field name="icao">SAZB</field>
+            <field name="city">Bahia Blanca</field>
+            <field name="country_id" ref="base.ar"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-38.724967</field>
+            <field name="longitude">-62.169317</field>
+            <field name="altitude">246</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Cordoba</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bhj" model="tt.destinations">
+            <field name="name">Bhuj</field>
+            <field name="code">BHJ</field>
+            <field name="icao">VABJ</field>
+            <field name="city">Bhuj</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">23.287828</field>
+            <field name="longitude">69.670147</field>
+            <field name="altitude">268</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bhm" model="tt.destinations">
+            <field name="name">Birmingham Intl</field>
+            <field name="code">BHM</field>
+            <field name="icao">KBHM</field>
+            <field name="city">Birmingham</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">33.562942</field>
+            <field name="longitude">-86.75355</field>
+            <field name="altitude">644</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bhn" model="tt.destinations">
+            <field name="name">Beihan</field>
+            <field name="code">BHN</field>
+            <field name="icao">OYBN</field>
+            <field name="city">Beihan</field>
+            <field name="country_id" ref="base.ye"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">14.781972</field>
+            <field name="longitude">45.720083</field>
+            <field name="altitude">3800</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Asia/Aden</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bho" model="tt.destinations">
+            <field name="name">Bhopal</field>
+            <field name="code">BHO</field>
+            <field name="icao">VABP</field>
+            <field name="city">Bhopal</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">23.287467</field>
+            <field name="longitude">77.337375</field>
+            <field name="altitude">1719</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bhu" model="tt.destinations">
+            <field name="name">Bhavnagar</field>
+            <field name="code">BHU</field>
+            <field name="icao">VABV</field>
+            <field name="city">Bhaunagar</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">21.752206</field>
+            <field name="longitude">72.185181</field>
+            <field name="altitude">44</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bhy" model="tt.destinations">
+            <field name="name">Beihai Airport</field>
+            <field name="code">BHY</field>
+            <field name="icao">ZGBH</field>
+            <field name="city">Beihai</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">21.5394</field>
+            <field name="longitude">109.294</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bhz" model="tt.destinations">
+            <field name="name">Pampulha</field>
+            <field name="code">BHZ</field>
+            <field name="icao"></field>
+            <field name="city">Belo Horizonte</field>
+            <field name="country_id" ref="base.br"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-19.8517</field>
+            <field name="longitude">-43.9508</field>
+            <field name="altitude">8708</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Sao_Paulo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bid" model="tt.destinations">
+            <field name="name">Block Island State Airport</field>
+            <field name="code">BID</field>
+            <field name="icao">KBID</field>
+            <field name="city">Block Island</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.168056</field>
+            <field name="longitude">-71.577778</field>
+            <field name="altitude">108</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bif" model="tt.destinations">
+            <field name="name">Biggs Aaf</field>
+            <field name="code">BIF</field>
+            <field name="icao">KBIF</field>
+            <field name="city">El Paso</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">31.849528</field>
+            <field name="longitude">-106.380039</field>
+            <field name="altitude">3948</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Denver</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_big" model="tt.destinations">
+            <field name="name">Allen Aaf</field>
+            <field name="code">BIG</field>
+            <field name="icao">PABI</field>
+            <field name="city">Delta Junction</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">63.994547</field>
+            <field name="longitude">-145.721642</field>
+            <field name="altitude">1291</field>
+            <field name="timezone_hour">-9</field>
+            <field name="tz">America/Anchorage</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bil" model="tt.destinations">
+            <field name="name">Billings Logan International Airport</field>
+            <field name="code">BIL</field>
+            <field name="icao">KBIL</field>
+            <field name="city">Billings</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.80921</field>
+            <field name="longitude">-108.537654</field>
+            <field name="altitude">3652</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Denver</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bim" model="tt.destinations">
+            <field name="name">South Bimini</field>
+            <field name="code">BIM</field>
+            <field name="icao">MYBS</field>
+            <field name="city">Alice Town</field>
+            <field name="country_id" ref="base.bs"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">25.699881</field>
+            <field name="longitude">-79.264656</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Nassau</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bis" model="tt.destinations">
+            <field name="name">Bismarck Municipal Airport</field>
+            <field name="code">BIS</field>
+            <field name="icao">KBIS</field>
+            <field name="city">Bismarck</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.775842</field>
+            <field name="longitude">-100.757931</field>
+            <field name="altitude">1661</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_biv" model="tt.destinations">
+            <field name="name">Tulip City Airport</field>
+            <field name="code">BIV</field>
+            <field name="icao">KBIV</field>
+            <field name="city">Holland</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">42.7427778</field>
+            <field name="longitude">-86.1078333</field>
+            <field name="altitude">698</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bix" model="tt.destinations">
+            <field name="name">Keesler Afb</field>
+            <field name="code">BIX</field>
+            <field name="icao">KBIX</field>
+            <field name="city">Biloxi</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">30.410425</field>
+            <field name="longitude">-88.924433</field>
+            <field name="altitude">33</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_biy" model="tt.destinations">
+            <field name="name">Bhisho</field>
+            <field name="code">BIY</field>
+            <field name="icao">FABE</field>
+            <field name="city">Bisho</field>
+            <field name="country_id" ref="base.za"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-32.89715</field>
+            <field name="longitude">27.279111</field>
+            <field name="altitude">1950</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Africa/Johannesburg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bja" model="tt.destinations">
+            <field name="name">Soummam</field>
+            <field name="code">BJA</field>
+            <field name="icao">DAAE</field>
+            <field name="city">Bejaja</field>
+            <field name="country_id" ref="base.dz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.711997</field>
+            <field name="longitude">5.069922</field>
+            <field name="altitude">20</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Africa/Algiers</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bjc" model="tt.destinations">
+            <field name="name">Rocky Mountain Metropolitan Airport</field>
+            <field name="code">BJC</field>
+            <field name="icao">KBJC</field>
+            <field name="city">Broomfield-CO</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.90888888</field>
+            <field name="longitude">-105.1172222</field>
+            <field name="altitude">5670</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Denver</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bji" model="tt.destinations">
+            <field name="name">Bemidji Regional Airport</field>
+            <field name="code">BJI</field>
+            <field name="icao">KBJI</field>
+            <field name="city">Bemidji</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">47.510722</field>
+            <field name="longitude">-94.934722</field>
+            <field name="altitude">1391</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bjl" model="tt.destinations">
+            <field name="name">Banjul Intl</field>
+            <field name="code">BJL</field>
+            <field name="icao">GBYD</field>
+            <field name="city">Banjul</field>
+            <field name="country_id" ref="base.gm"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">13.337961</field>
+            <field name="longitude">-16.652206</field>
+            <field name="altitude">95</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Africa/Banjul</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bjm" model="tt.destinations">
+            <field name="name">Bujumbura Intl</field>
+            <field name="code">BJM</field>
+            <field name="icao">HBBA</field>
+            <field name="city">Bujumbura</field>
+            <field name="country_id" ref="base.bi"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-3.324019</field>
+            <field name="longitude">29.318519</field>
+            <field name="altitude">2582</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Africa/Bujumbura</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bjo" model="tt.destinations">
+            <field name="name">Bermejo</field>
+            <field name="code">BJO</field>
+            <field name="icao">SLBJ</field>
+            <field name="city">Bermejo</field>
+            <field name="country_id" ref="base.bo"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-22.773336</field>
+            <field name="longitude">-64.312881</field>
+            <field name="altitude">1250</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">America/La_Paz</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bjp" model="tt.destinations">
+            <field name="name">Aeroporto Estadual Arthur Siqueira</field>
+            <field name="code">BJP</field>
+            <field name="icao">SBBP</field>
+            <field name="city">Braganca Paulista</field>
+            <field name="country_id" ref="base.br"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-22.979167</field>
+            <field name="longitude">-46.5375</field>
+            <field name="altitude">3</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Sao_Paulo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bjr" model="tt.destinations">
+            <field name="name">Bahir Dar</field>
+            <field name="code">BJR</field>
+            <field name="icao">HABD</field>
+            <field name="city">Bahar Dar</field>
+            <field name="country_id" ref="base.et"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">11.608075</field>
+            <field name="longitude">37.321644</field>
+            <field name="altitude">5976</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Africa/Addis_Ababa</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bjs" model="tt.destinations">
+            <field name="name">All Airports</field>
+            <field name="code">BJS</field>
+            <field name="icao"></field>
+            <field name="city">Beijing</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.904167</field>
+            <field name="longitude">116.407222</field>
+            <field name="altitude">171</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bjx" model="tt.destinations">
+            <field name="name">Guanajuato Intl</field>
+            <field name="code">BJX</field>
+            <field name="icao">MMLO</field>
+            <field name="city">Del Bajio</field>
+            <field name="country_id" ref="base.mx"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">20.993464</field>
+            <field name="longitude">-101.480847</field>
+            <field name="altitude">5956</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Mexico_City</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bkc" model="tt.destinations">
+            <field name="name">Buckland Airport</field>
+            <field name="code">BKC</field>
+            <field name="icao">PABL</field>
+            <field name="city">Buckland</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">65.981667</field>
+            <field name="longitude">-161.149167</field>
+            <field name="altitude">31</field>
+            <field name="timezone_hour">-9</field>
+            <field name="tz">America/Anchorage</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bkd" model="tt.destinations">
+            <field name="name">Stephens Co</field>
+            <field name="code">BKD</field>
+            <field name="icao">KBKD</field>
+            <field name="city">Breckenridge</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">32.719047</field>
+            <field name="longitude">-98.891</field>
+            <field name="altitude">1284</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bkf" model="tt.destinations">
+            <field name="name">Buckley Afb</field>
+            <field name="code">BKF</field>
+            <field name="icao">KBKF</field>
+            <field name="city">Buckley</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.701668</field>
+            <field name="longitude">-104.75166</field>
+            <field name="altitude">5662</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Denver</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bkg" model="tt.destinations">
+            <field name="name">Branson LLC</field>
+            <field name="code">BKG</field>
+            <field name="icao">KBBG</field>
+            <field name="city">Branson</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.531994</field>
+            <field name="longitude">-93.200556</field>
+            <field name="altitude">1302</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bkk" model="tt.destinations">
+            <field name="name">Suvarnabhumi Intl</field>
+            <field name="code">BKK</field>
+            <field name="icao">VTBS</field>
+            <field name="city">Bangkok</field>
+            <field name="country_id" ref="base.th"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">13.681108</field>
+            <field name="longitude">100.747283</field>
+            <field name="altitude">5</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Bangkok</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            

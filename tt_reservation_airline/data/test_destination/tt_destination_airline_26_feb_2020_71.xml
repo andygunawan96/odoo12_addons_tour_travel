@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_cjl" model="tt.destinations">
+            <field name="name">Chitral Airport</field>
+            <field name="code">CJL</field>
+            <field name="icao">OPCH</field>
+            <field name="city">Chitral</field>
+            <field name="country_id" ref="base.pk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.886592</field>
+            <field name="longitude">71.800578</field>
+            <field name="altitude">4920</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Karachi</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dba" model="tt.destinations">
+            <field name="name">Dalbandin Airport</field>
+            <field name="code">DBA</field>
+            <field name="icao">OPDB</field>
+            <field name="city">Dalbandin</field>
+            <field name="country_id" ref="base.pk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">28.8783</field>
+            <field name="longitude">64.3998</field>
+            <field name="altitude">2800</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Karachi</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dea" model="tt.destinations">
+            <field name="name">Dera Ghazi Khan Airport</field>
+            <field name="code">DEA</field>
+            <field name="icao">OPDG</field>
+            <field name="city">Dera Ghazi Khan</field>
+            <field name="country_id" ref="base.pk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">29.961011</field>
+            <field name="longitude">70.485925</field>
+            <field name="altitude">492</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Karachi</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dsk" model="tt.destinations">
+            <field name="name">Dera Ismael Khan Airport</field>
+            <field name="code">DSK</field>
+            <field name="icao">OPDI</field>
+            <field name="city">Dera Ismael Khan</field>
+            <field name="country_id" ref="base.pk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">31.909422</field>
+            <field name="longitude">70.896639</field>
+            <field name="altitude">594</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Karachi</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gil" model="tt.destinations">
+            <field name="name">Gilgit</field>
+            <field name="code">GIL</field>
+            <field name="icao">OPGT</field>
+            <field name="city">Gilgit</field>
+            <field name="country_id" ref="base.pk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.918786</field>
+            <field name="longitude">74.333644</field>
+            <field name="altitude">4796</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Karachi</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gwd" model="tt.destinations">
+            <field name="name">Gwadar</field>
+            <field name="code">GWD</field>
+            <field name="icao">OPGD</field>
+            <field name="city">Gwadar</field>
+            <field name="country_id" ref="base.pk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">25.233308</field>
+            <field name="longitude">62.329494</field>
+            <field name="altitude">36</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Karachi</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hdd" model="tt.destinations">
+            <field name="name">Hyderabad Airport</field>
+            <field name="code">HDD</field>
+            <field name="icao">OPKD</field>
+            <field name="city">Hyderabad</field>
+            <field name="country_id" ref="base.pk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">25.3181</field>
+            <field name="longitude">68.3661</field>
+            <field name="altitude">130</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Karachi</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_isb" model="tt.destinations">
+            <field name="name">Chaklala</field>
+            <field name="code">ISB</field>
+            <field name="icao">OPRN</field>
+            <field name="city">Islamabad</field>
+            <field name="country_id" ref="base.pk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">33.616653</field>
+            <field name="longitude">73.099233</field>
+            <field name="altitude">1668</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Karachi</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jiw" model="tt.destinations">
+            <field name="name">Jiwani Airport</field>
+            <field name="code">JIW</field>
+            <field name="icao">OPJI</field>
+            <field name="city">Jiwani</field>
+            <field name="country_id" ref="base.pk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">25.0678</field>
+            <field name="longitude">61.8054</field>
+            <field name="altitude">186</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Karachi</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kdd" model="tt.destinations">
+            <field name="name">Khuzdar Airport</field>
+            <field name="code">KDD</field>
+            <field name="icao">OPKH</field>
+            <field name="city">Khuzdar</field>
+            <field name="country_id" ref="base.pk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">27.7906</field>
+            <field name="longitude">66.6473</field>
+            <field name="altitude">4012</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Karachi</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kdu" model="tt.destinations">
+            <field name="name">Skardu Airport</field>
+            <field name="code">KDU</field>
+            <field name="icao">OPSD</field>
+            <field name="city">Skardu</field>
+            <field name="country_id" ref="base.pk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.335508</field>
+            <field name="longitude">75.536047</field>
+            <field name="altitude">7316</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Karachi</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_khi" model="tt.destinations">
+            <field name="name">Jinnah Intl</field>
+            <field name="code">KHI</field>
+            <field name="icao">OPKC</field>
+            <field name="city">Karachi</field>
+            <field name="country_id" ref="base.pk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">24.906547</field>
+            <field name="longitude">67.160797</field>
+            <field name="altitude">100</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Karachi</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lhe" model="tt.destinations">
+            <field name="name">Allama Iqbal Intl</field>
+            <field name="code">LHE</field>
+            <field name="icao">OPLA</field>
+            <field name="city">Lahore</field>
+            <field name="country_id" ref="base.pk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">31.521564</field>
+            <field name="longitude">74.403594</field>
+            <field name="altitude">712</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Karachi</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lyp" model="tt.destinations">
+            <field name="name">Faisalabad Intl</field>
+            <field name="code">LYP</field>
+            <field name="icao">OPFA</field>
+            <field name="city">Faisalabad</field>
+            <field name="country_id" ref="base.pk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">31.365014</field>
+            <field name="longitude">72.994842</field>
+            <field name="altitude">591</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Karachi</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mfg" model="tt.destinations">
+            <field name="name">Muzaffarabad</field>
+            <field name="code">MFG</field>
+            <field name="icao">OPMF</field>
+            <field name="city">Muzaffarabad</field>
+            <field name="country_id" ref="base.pk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">34.339022</field>
+            <field name="longitude">73.508639</field>
+            <field name="altitude">2691</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Karachi</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mjd" model="tt.destinations">
+            <field name="name">Moenjodaro</field>
+            <field name="code">MJD</field>
+            <field name="icao">OPMJ</field>
+            <field name="city">Moenjodaro</field>
+            <field name="country_id" ref="base.pk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">27.335156</field>
+            <field name="longitude">68.143053</field>
+            <field name="altitude">154</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Karachi</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mux" model="tt.destinations">
+            <field name="name">Multan Intl</field>
+            <field name="code">MUX</field>
+            <field name="icao">OPMT</field>
+            <field name="city">Multan</field>
+            <field name="country_id" ref="base.pk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">30.203222</field>
+            <field name="longitude">71.419111</field>
+            <field name="altitude">403</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Karachi</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_orw" model="tt.destinations">
+            <field name="name">Ormara Airport</field>
+            <field name="code">ORW</field>
+            <field name="icao">OPOR</field>
+            <field name="city">Ormara Raik</field>
+            <field name="country_id" ref="base.pk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">25.2747</field>
+            <field name="longitude">64.586</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Karachi</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_paj" model="tt.destinations">
+            <field name="name">Parachinar Airport</field>
+            <field name="code">PAJ</field>
+            <field name="icao">OPPC</field>
+            <field name="city">Parachinar</field>
+            <field name="country_id" ref="base.pk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">33.9021</field>
+            <field name="longitude">70.0716</field>
+            <field name="altitude">5800</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Karachi</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pew" model="tt.destinations">
+            <field name="name">Peshawar Intl</field>
+            <field name="code">PEW</field>
+            <field name="icao">OPPS</field>
+            <field name="city">Peshawar</field>
+            <field name="country_id" ref="base.pk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">33.993911</field>
+            <field name="longitude">71.514581</field>
+            <field name="altitude">1158</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Karachi</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pjg" model="tt.destinations">
+            <field name="name">Panjgur</field>
+            <field name="code">PJG</field>
+            <field name="icao">OPPG</field>
+            <field name="city">Panjgur</field>
+            <field name="country_id" ref="base.pk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">26.954547</field>
+            <field name="longitude">64.132517</field>
+            <field name="altitude">3289</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Karachi</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_psi" model="tt.destinations">
+            <field name="name">Pasni</field>
+            <field name="code">PSI</field>
+            <field name="icao">OPPI</field>
+            <field name="city">Pasni</field>
+            <field name="country_id" ref="base.pk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">25.290487</field>
+            <field name="longitude">63.345083</field>
+            <field name="altitude">33</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Karachi</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pzh" model="tt.destinations">
+            <field name="name">Zhob</field>
+            <field name="code">PZH</field>
+            <field name="icao">OPZB</field>
+            <field name="city">Zhob</field>
+            <field name="country_id" ref="base.pk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">31.358381</field>
+            <field name="longitude">69.463606</field>
+            <field name="altitude">4728</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Karachi</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_raz" model="tt.destinations">
+            <field name="name">Rawalakot</field>
+            <field name="code">RAZ</field>
+            <field name="icao">OPRT</field>
+            <field name="city">Rawala Kot</field>
+            <field name="country_id" ref="base.pk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">33.849658</field>
+            <field name="longitude">73.798147</field>
+            <field name="altitude">5479</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Karachi</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ryk" model="tt.destinations">
+            <field name="name">Sheikh Zayed</field>
+            <field name="code">RYK</field>
+            <field name="icao">OPRK</field>
+            <field name="city">Rahim Yar Khan</field>
+            <field name="country_id" ref="base.pk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">28.3839</field>
+            <field name="longitude">70.279572</field>
+            <field name="altitude">271</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Karachi</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sdt" model="tt.destinations">
+            <field name="name">Saidu Sharif</field>
+            <field name="code">SDT</field>
+            <field name="icao">OPSS</field>
+            <field name="city">Saidu Sharif</field>
+            <field name="country_id" ref="base.pk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">34.813556</field>
+            <field name="longitude">72.352814</field>
+            <field name="altitude">3183</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Karachi</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_skt" model="tt.destinations">
+            <field name="name">Sialkot Airport</field>
+            <field name="code">SKT</field>
+            <field name="icao">OPST</field>
+            <field name="city">Sialkot</field>
+            <field name="country_id" ref="base.pk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">32.5356</field>
+            <field name="longitude">74.3639</field>
+            <field name="altitude">810</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Karachi</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_skz" model="tt.destinations">
+            <field name="name">Sukkur</field>
+            <field name="code">SKZ</field>
+            <field name="icao">OPSK</field>
+            <field name="city">Sukkur</field>
+            <field name="country_id" ref="base.pk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">27.721989</field>
+            <field name="longitude">68.791683</field>
+            <field name="altitude">196</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Karachi</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sul" model="tt.destinations">
+            <field name="name">Sui</field>
+            <field name="code">SUL</field>
+            <field name="icao">OPSU</field>
+            <field name="city">Sui</field>
+            <field name="country_id" ref="base.pk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">28.645142</field>
+            <field name="longitude">69.176917</field>
+            <field name="altitude">763</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Karachi</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_syw" model="tt.destinations">
+            <field name="name">Sehwan Sharif Airport</field>
+            <field name="code">SYW</field>
+            <field name="icao">OPSN</field>
+            <field name="city">Sehwan Sharif</field>
+            <field name="country_id" ref="base.pk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">26.4731</field>
+            <field name="longitude">67.7172</field>
+            <field name="altitude">121</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Karachi</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tuk" model="tt.destinations">
+            <field name="name">Turbat International Airport</field>
+            <field name="code">TUK</field>
+            <field name="icao">OPTU</field>
+            <field name="city">Turbat</field>
+            <field name="country_id" ref="base.pk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">25.986369</field>
+            <field name="longitude">63.030167</field>
+            <field name="altitude">498</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Karachi</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_uet" model="tt.destinations">
+            <field name="name">Quetta</field>
+            <field name="code">UET</field>
+            <field name="icao">OPQT</field>
+            <field name="city">Quetta</field>
+            <field name="country_id" ref="base.pk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">30.251369</field>
+            <field name="longitude">66.937764</field>
+            <field name="altitude">5267</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Karachi</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_wns" model="tt.destinations">
+            <field name="name">Nawabshah</field>
+            <field name="code">WNS</field>
+            <field name="icao">OPNH</field>
+            <field name="city">Nawabshah</field>
+            <field name="country_id" ref="base.pk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">26.219442</field>
+            <field name="longitude">68.390053</field>
+            <field name="altitude">95</field>
+            <field name="timezone_hour">5</field>
+            <field name="tz">Asia/Karachi</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bdp" model="tt.destinations">
+            <field name="name">Chandragadhi Airport</field>
+            <field name="code">BDP</field>
+            <field name="icao">VNCG</field>
+            <field name="city">Chandragarhi</field>
+            <field name="country_id" ref="base.np"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">26.570822</field>
+            <field name="longitude">88.079578</field>
+            <field name="altitude">300</field>
+            <field name="timezone_hour">5.75</field>
+            <field name="tz">Asia/Katmandu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bhp" model="tt.destinations">
+            <field name="name">Bhojpur</field>
+            <field name="code">BHP</field>
+            <field name="icao">VNBJ</field>
+            <field name="city">Bhojpur</field>
+            <field name="country_id" ref="base.np"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">27.14743</field>
+            <field name="longitude">87.050819</field>
+            <field name="altitude">4000</field>
+            <field name="timezone_hour">5.75</field>
+            <field name="tz">Asia/Katmandu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bhr" model="tt.destinations">
+            <field name="name">Bharatpur Airport</field>
+            <field name="code">BHR</field>
+            <field name="icao">VNBP</field>
+            <field name="city">Bharatpur</field>
+            <field name="country_id" ref="base.np"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">27.6781</field>
+            <field name="longitude">84.4294</field>
+            <field name="altitude">600</field>
+            <field name="timezone_hour">5.75</field>
+            <field name="tz">Asia/Katmandu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bir" model="tt.destinations">
+            <field name="name">Biratnagar</field>
+            <field name="code">BIR</field>
+            <field name="icao">VNVT</field>
+            <field name="city">Biratnagar</field>
+            <field name="country_id" ref="base.np"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">26.481453</field>
+            <field name="longitude">87.264036</field>
+            <field name="altitude">236</field>
+            <field name="timezone_hour">5.75</field>
+            <field name="tz">Asia/Katmandu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bjh" model="tt.destinations">
+            <field name="name">Bajhang</field>
+            <field name="code">BJH</field>
+            <field name="icao">VNBG</field>
+            <field name="city">Bajhang</field>
+            <field name="country_id" ref="base.np"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">29.53896</field>
+            <field name="longitude">81.185364</field>
+            <field name="altitude">4100</field>
+            <field name="timezone_hour">5.75</field>
+            <field name="tz">Asia/Katmandu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bju" model="tt.destinations">
+            <field name="name">Bajura Airport</field>
+            <field name="code">BJU</field>
+            <field name="icao">VNBR</field>
+            <field name="city">Bajura</field>
+            <field name="country_id" ref="base.np"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">29.50611</field>
+            <field name="longitude">81.66944</field>
+            <field name="altitude">4606</field>
+            <field name="timezone_hour">5.75</field>
+            <field name="tz">Asia/Katmandu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bwa" model="tt.destinations">
+            <field name="name">Bhairahawa</field>
+            <field name="code">BWA</field>
+            <field name="icao">VNBW</field>
+            <field name="city">Bhairawa</field>
+            <field name="country_id" ref="base.np"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">27.505703</field>
+            <field name="longitude">83.41625</field>
+            <field name="altitude">358</field>
+            <field name="timezone_hour">5.75</field>
+            <field name="tz">Asia/Katmandu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dhi" model="tt.destinations">
+            <field name="name">Dhangarhi</field>
+            <field name="code">DHI</field>
+            <field name="icao">VNDH</field>
+            <field name="city">Dhangarhi</field>
+            <field name="country_id" ref="base.np"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">28.753333</field>
+            <field name="longitude">80.581944</field>
+            <field name="altitude">690</field>
+            <field name="timezone_hour">5.75</field>
+            <field name="tz">Asia/Katmandu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dnp" model="tt.destinations">
+            <field name="name">Tulsipur</field>
+            <field name="code">DNP</field>
+            <field name="icao">VNDG</field>
+            <field name="city">Dang</field>
+            <field name="country_id" ref="base.np"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">28.111111</field>
+            <field name="longitude">82.294167</field>
+            <field name="altitude">2100</field>
+            <field name="timezone_hour">5.75</field>
+            <field name="tz">Asia/Katmandu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dop" model="tt.destinations">
+            <field name="name">Dolpa</field>
+            <field name="code">DOP</field>
+            <field name="icao">VNDP</field>
+            <field name="city">Dolpa</field>
+            <field name="country_id" ref="base.np"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">28.985718</field>
+            <field name="longitude">82.819145</field>
+            <field name="altitude">8200</field>
+            <field name="timezone_hour">5.75</field>
+            <field name="tz">Asia/Katmandu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hrj" model="tt.destinations">
+            <field name="name">Chaurjhari</field>
+            <field name="code">HRJ</field>
+            <field name="icao">VNCJ</field>
+            <field name="city">Chaurjhari</field>
+            <field name="country_id" ref="base.np"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">28</field>
+            <field name="longitude">83.833</field>
+            <field name="altitude">4000</field>
+            <field name="timezone_hour">5.75</field>
+            <field name="tz">Asia/Katmandu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_imk" model="tt.destinations">
+            <field name="name">Simikot</field>
+            <field name="code">IMK</field>
+            <field name="icao">VNST</field>
+            <field name="city">Simikot</field>
+            <field name="country_id" ref="base.np"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">29.971064</field>
+            <field name="longitude">81.818932</field>
+            <field name="altitude">9246</field>
+            <field name="timezone_hour">5.75</field>
+            <field name="tz">Asia/Katmandu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jmo" model="tt.destinations">
+            <field name="name">Jomsom</field>
+            <field name="code">JMO</field>
+            <field name="icao">VNJS</field>
+            <field name="city">Jomsom</field>
+            <field name="country_id" ref="base.np"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">28.782222</field>
+            <field name="longitude">83.7225</field>
+            <field name="altitude">8800</field>
+            <field name="timezone_hour">5.75</field>
+            <field name="tz">Asia/Katmandu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jum" model="tt.destinations">
+            <field name="name">Jumla</field>
+            <field name="code">JUM</field>
+            <field name="icao">VNJL</field>
+            <field name="city">Jumla</field>
+            <field name="country_id" ref="base.np"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">29.274167</field>
+            <field name="longitude">82.193333</field>
+            <field name="altitude">7700</field>
+            <field name="timezone_hour">5.75</field>
+            <field name="tz">Asia/Katmandu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kep" model="tt.destinations">
+            <field name="name">Nepalgunj Airport</field>
+            <field name="code">KEP</field>
+            <field name="icao">VNNG</field>
+            <field name="city">Nepalgunj</field>
+            <field name="country_id" ref="base.np"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">28.103633</field>
+            <field name="longitude">81.667006</field>
+            <field name="altitude">540</field>
+            <field name="timezone_hour">5.75</field>
+            <field name="tz">Asia/Katmandu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ktm" model="tt.destinations">
+            <field name="name">Tribhuvan Intl</field>
+            <field name="code">KTM</field>
+            <field name="icao">VNKT</field>
+            <field name="city">Kathmandu</field>
+            <field name="country_id" ref="base.np"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">27.696583</field>
+            <field name="longitude">85.3591</field>
+            <field name="altitude">4390</field>
+            <field name="timezone_hour">5.75</field>
+            <field name="tz">Asia/Katmandu</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ldn" model="tt.destinations">
+            <field name="name">Lamidanda</field>
+            <field name="code">LDN</field>
+            <field name="icao">VNLD</field>
+            <field name="city">Lamidanda</field>
+            <field name="country_id" ref="base.np"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">27.253117</field>
+            <field name="longitude">86.670044</field>
+            <field name="altitude">4100</field>
+            <field name="timezone_hour">5.75</field>
+            <field name="tz">Asia/Katmandu</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            

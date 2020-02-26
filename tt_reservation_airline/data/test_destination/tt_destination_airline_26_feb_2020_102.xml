@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_edm" model="tt.destinations">
+            <field name="name">Les Ajoncs</field>
+            <field name="code">EDM</field>
+            <field name="icao">LFRI</field>
+            <field name="city">La Roche-sur-yon</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.701944</field>
+            <field name="longitude">-1.378625</field>
+            <field name="altitude">299</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_egc" model="tt.destinations">
+            <field name="name">Roumaniere</field>
+            <field name="code">EGC</field>
+            <field name="icao">LFBE</field>
+            <field name="city">Bergerac</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">44.825279</field>
+            <field name="longitude">0.518611</field>
+            <field name="altitude">171</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_enc" model="tt.destinations">
+            <field name="name">Essey</field>
+            <field name="code">ENC</field>
+            <field name="icao">LFSN</field>
+            <field name="city">Nancy</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.692069</field>
+            <field name="longitude">6.230458</field>
+            <field name="altitude">751</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_epl" model="tt.destinations">
+            <field name="name">Mirecourt</field>
+            <field name="code">EPL</field>
+            <field name="icao">LFSG</field>
+            <field name="city">Epinal</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.324961</field>
+            <field name="longitude">6.069983</field>
+            <field name="altitude">1084</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_etz" model="tt.destinations">
+            <field name="name">Metz Nancy Lorraine</field>
+            <field name="code">ETZ</field>
+            <field name="icao">LFJL</field>
+            <field name="city">Metz</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.982142</field>
+            <field name="longitude">6.251319</field>
+            <field name="altitude">870</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fni" model="tt.destinations">
+            <field name="name">Garons</field>
+            <field name="code">FNI</field>
+            <field name="icao">LFTW</field>
+            <field name="city">Nimes</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.757444</field>
+            <field name="longitude">4.416347</field>
+            <field name="altitude">309</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_frj" model="tt.destinations">
+            <field name="name">Frejus Saint Raphael</field>
+            <field name="code">FRJ</field>
+            <field name="icao">LFTU</field>
+            <field name="city">Frejus</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.416667</field>
+            <field name="longitude">6.733333</field>
+            <field name="altitude">7</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fsc" model="tt.destinations">
+            <field name="name">Sud Corse</field>
+            <field name="code">FSC</field>
+            <field name="icao">LFKF</field>
+            <field name="city">Figari</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.500557</field>
+            <field name="longitude">9.097777</field>
+            <field name="altitude">87</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gfr" model="tt.destinations">
+            <field name="name">Granville</field>
+            <field name="code">GFR</field>
+            <field name="icao">LFRF</field>
+            <field name="city">Granville</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.883057</field>
+            <field name="longitude">-1.564167</field>
+            <field name="altitude">45</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gnb" model="tt.destinations">
+            <field name="name">Saint Geoirs</field>
+            <field name="code">GNB</field>
+            <field name="icao">LFLS</field>
+            <field name="city">Grenoble</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.362944</field>
+            <field name="longitude">5.329375</field>
+            <field name="altitude">1302</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gva" model="tt.destinations">
+            <field name="name">Geneve Cointrin</field>
+            <field name="code">GVA</field>
+            <field name="icao">LSGG</field>
+            <field name="city">Geneva</field>
+            <field name="country_id" ref="base.ch"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.238064</field>
+            <field name="longitude">6.10895</field>
+            <field name="altitude">1411</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_idy" model="tt.destinations">
+            <field name="name">脦le d'Yeu Airport</field>
+            <field name="code">IDY</field>
+            <field name="icao">LFEY</field>
+            <field name="city">脦le d'Yeu</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.718611</field>
+            <field name="longitude">-2.391111</field>
+            <field name="altitude">79</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jca" model="tt.destinations">
+            <field name="name">Croisette Heliport</field>
+            <field name="code">JCA</field>
+            <field name="icao"></field>
+            <field name="city">Cannes</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.536</field>
+            <field name="longitude">7.03736</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jpu" model="tt.destinations">
+            <field name="name">La Defense Heliport</field>
+            <field name="code">JPU</field>
+            <field name="icao"></field>
+            <field name="city">Paris</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.86667</field>
+            <field name="longitude">2.333333</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lai" model="tt.destinations">
+            <field name="name">Lannion</field>
+            <field name="code">LAI</field>
+            <field name="icao">LFRO</field>
+            <field name="city">Lannion</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.754378</field>
+            <field name="longitude">-3.471656</field>
+            <field name="altitude">290</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lbg" model="tt.destinations">
+            <field name="name">Le Bourget</field>
+            <field name="code">LBG</field>
+            <field name="icao">LFPB</field>
+            <field name="city">Paris</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.969444</field>
+            <field name="longitude">2.441389</field>
+            <field name="altitude">218</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lbi" model="tt.destinations">
+            <field name="name">Le Sequestre</field>
+            <field name="code">LBI</field>
+            <field name="icao">LFCI</field>
+            <field name="city">Albi</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.913887</field>
+            <field name="longitude">2.113056</field>
+            <field name="altitude">564</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lde" model="tt.destinations">
+            <field name="name">Lourdes</field>
+            <field name="code">LDE</field>
+            <field name="icao">LFBT</field>
+            <field name="city">Tarbes</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.178675</field>
+            <field name="longitude">-0.006439</field>
+            <field name="altitude">1260</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_leh" model="tt.destinations">
+            <field name="name">Octeville</field>
+            <field name="code">LEH</field>
+            <field name="icao">LFOH</field>
+            <field name="city">Le Havre</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">49.533889</field>
+            <field name="longitude">0.088056</field>
+            <field name="altitude">312</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lig" model="tt.destinations">
+            <field name="name">Bellegarde</field>
+            <field name="code">LIG</field>
+            <field name="icao">LFBL</field>
+            <field name="city">Limoges</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.862778</field>
+            <field name="longitude">1.179444</field>
+            <field name="altitude">1300</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lil" model="tt.destinations">
+            <field name="name">Lesquin</field>
+            <field name="code">LIL</field>
+            <field name="icao">LFQQ</field>
+            <field name="city">Lille</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">50.561942</field>
+            <field name="longitude">3.089444</field>
+            <field name="altitude">157</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lme" model="tt.destinations">
+            <field name="name">Arnage</field>
+            <field name="code">LME</field>
+            <field name="icao">LFRM</field>
+            <field name="city">Le Mans</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">47.948611</field>
+            <field name="longitude">0.201667</field>
+            <field name="altitude">194</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lpy" model="tt.destinations">
+            <field name="name">Loudes</field>
+            <field name="code">LPY</field>
+            <field name="icao">LFHP</field>
+            <field name="city">Le Puy</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.080689</field>
+            <field name="longitude">3.762889</field>
+            <field name="altitude">2731</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lrh" model="tt.destinations">
+            <field name="name">La Rochelle-Ile de Re</field>
+            <field name="code">LRH</field>
+            <field name="icao">LFBH</field>
+            <field name="city">La Rochelle</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.1792</field>
+            <field name="longitude">-1.19528</field>
+            <field name="altitude">74</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lrt" model="tt.destinations">
+            <field name="name">Lann Bihoue</field>
+            <field name="code">LRT</field>
+            <field name="icao">LFRH</field>
+            <field name="city">Lorient</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">47.760555</field>
+            <field name="longitude">-3.44</field>
+            <field name="altitude">160</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ltq" model="tt.destinations">
+            <field name="name">Le Touquet Paris Plage</field>
+            <field name="code">LTQ</field>
+            <field name="icao">LFAT</field>
+            <field name="city">Le Tourquet</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">50.517385</field>
+            <field name="longitude">1.620587</field>
+            <field name="altitude">36</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ltt" model="tt.destinations">
+            <field name="name">La M么le Airport</field>
+            <field name="code">LTT</field>
+            <field name="icao">LFTZ</field>
+            <field name="city">La M么le</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.2054</field>
+            <field name="longitude">6.482</field>
+            <field name="altitude">59</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lva" model="tt.destinations">
+            <field name="name">Entrammes</field>
+            <field name="code">LVA</field>
+            <field name="icao">LFOV</field>
+            <field name="city">Laval</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.031361</field>
+            <field name="longitude">-0.742986</field>
+            <field name="altitude">330</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lyn" model="tt.destinations">
+            <field name="name">Bron</field>
+            <field name="code">LYN</field>
+            <field name="icao">LFLY</field>
+            <field name="city">Lyon</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.727172</field>
+            <field name="longitude">4.944275</field>
+            <field name="altitude">659</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lys" model="tt.destinations">
+            <field name="name">Saint Exupery</field>
+            <field name="code">LYS</field>
+            <field name="icao">LFLL</field>
+            <field name="city">Lyon</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.726387</field>
+            <field name="longitude">5.090833</field>
+            <field name="altitude">821</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mcu" model="tt.destinations">
+            <field name="name">Domerat</field>
+            <field name="code">MCU</field>
+            <field name="icao">LFLT</field>
+            <field name="city">Montlucon</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.352525</field>
+            <field name="longitude">2.570486</field>
+            <field name="altitude">771</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_men" model="tt.destinations">
+            <field name="name">Brenoux</field>
+            <field name="code">MEN</field>
+            <field name="icao">LFNB</field>
+            <field name="city">Mende</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">44.502108</field>
+            <field name="longitude">3.532819</field>
+            <field name="altitude">3362</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mfx" model="tt.destinations">
+            <field name="name">Meribel Airport</field>
+            <field name="code">MFX</field>
+            <field name="icao">LFKX</field>
+            <field name="city">Ajaccio</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.4069</field>
+            <field name="longitude">6.58056</field>
+            <field name="altitude">5636</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mlh" model="tt.destinations">
+            <field name="name">Bale Mulhouse</field>
+            <field name="code">MLH</field>
+            <field name="icao">LFSB</field>
+            <field name="city">Mulhouse</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">47.589583</field>
+            <field name="longitude">7.529914</field>
+            <field name="altitude">885</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mpl" model="tt.destinations">
+            <field name="name">Mediterranee</field>
+            <field name="code">MPL</field>
+            <field name="icao">LFMT</field>
+            <field name="city">Montpellier</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.576194</field>
+            <field name="longitude">3.963014</field>
+            <field name="altitude">17</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mrs" model="tt.destinations">
+            <field name="name">Provence</field>
+            <field name="code">MRS</field>
+            <field name="icao">LFML</field>
+            <field name="city">Marseille</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.435555</field>
+            <field name="longitude">5.213611</field>
+            <field name="altitude">74</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mvv" model="tt.destinations">
+            <field name="name">Megeve Airport</field>
+            <field name="code">MVV</field>
+            <field name="icao">LFHM</field>
+            <field name="city">Verdun</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.8208</field>
+            <field name="longitude">6.65222</field>
+            <field name="altitude">4823</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mxn" model="tt.destinations">
+            <field name="name">Ploujean</field>
+            <field name="code">MXN</field>
+            <field name="icao">LFRU</field>
+            <field name="city">Morlaix</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.603222</field>
+            <field name="longitude">-3.815783</field>
+            <field name="altitude">272</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mzm" model="tt.destinations">
+            <field name="name">Frescaty</field>
+            <field name="code">MZM</field>
+            <field name="icao">LFSF</field>
+            <field name="city">Metz</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">49.071667</field>
+            <field name="longitude">6.131667</field>
+            <field name="altitude">629</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nce" model="tt.destinations">
+            <field name="name">Cote D\\'Azur</field>
+            <field name="code">NCE</field>
+            <field name="icao">LFMN</field>
+            <field name="city">Nice</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.658411</field>
+            <field name="longitude">7.215872</field>
+            <field name="altitude">12</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ncy" model="tt.destinations">
+            <field name="name">Meythet</field>
+            <field name="code">NCY</field>
+            <field name="icao">LFLP</field>
+            <field name="city">Annecy</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.929233</field>
+            <field name="longitude">6.098764</field>
+            <field name="altitude">1521</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nit" model="tt.destinations">
+            <field name="name">Souche</field>
+            <field name="code">NIT</field>
+            <field name="icao">LFBN</field>
+            <field name="city">Niort</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.311303</field>
+            <field name="longitude">-0.401503</field>
+            <field name="altitude">203</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nte" model="tt.destinations">
+            <field name="name">Nantes Atlantique</field>
+            <field name="code">NTE</field>
+            <field name="icao">LFRS</field>
+            <field name="city">Nantes</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">47.153189</field>
+            <field name="longitude">-1.610725</field>
+            <field name="altitude">90</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nvs" model="tt.destinations">
+            <field name="name">Fourchambault</field>
+            <field name="code">NVS</field>
+            <field name="icao">LFQG</field>
+            <field name="city">Nevers</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">47.002625</field>
+            <field name="longitude">3.113333</field>
+            <field name="altitude">602</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_obs" model="tt.destinations">
+            <field name="name">Ardeche Meridionale</field>
+            <field name="code">OBS</field>
+            <field name="icao">LFHO</field>
+            <field name="city">Aubenas-vals-lanas</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">44.544236</field>
+            <field name="longitude">4.372192</field>
+            <field name="altitude">923</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ore" model="tt.destinations">
+            <field name="name">Bricy</field>
+            <field name="code">ORE</field>
+            <field name="icao">LFOJ</field>
+            <field name="city">Orleans</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">47.987778</field>
+            <field name="longitude">1.760556</field>
+            <field name="altitude">412</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ory" model="tt.destinations">
+            <field name="name">Orly</field>
+            <field name="code">ORY</field>
+            <field name="icao">LFPO</field>
+            <field name="city">Paris</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.725278</field>
+            <field name="longitude">2.359444</field>
+            <field name="altitude">291</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_par" model="tt.destinations">
+            <field name="name">All Airports</field>
+            <field name="code">PAR</field>
+            <field name="icao"></field>
+            <field name="city">Paris</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.856389</field>
+            <field name="longitude">2.352222</field>
+            <field name="altitude">107</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pgf" model="tt.destinations">
+            <field name="name">Rivesaltes</field>
+            <field name="code">PGF</field>
+            <field name="icao">LFMP</field>
+            <field name="city">Perpignan</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">42.740442</field>
+            <field name="longitude">2.870667</field>
+            <field name="altitude">144</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pgx" model="tt.destinations">
+            <field name="name">Bassillac</field>
+            <field name="code">PGX</field>
+            <field name="icao">LFBX</field>
+            <field name="city">Perigueux</field>
+            <field name="country_id" ref="base.fr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.198055</field>
+            <field name="longitude">0.815556</field>
+            <field name="altitude">328</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Paris</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            

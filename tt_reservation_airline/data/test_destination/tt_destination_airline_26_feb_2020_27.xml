@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_ixd" model="tt.destinations">
+            <field name="name">Allahabad</field>
+            <field name="code">IXD</field>
+            <field name="icao">VIAL</field>
+            <field name="city">Allahabad</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">25.440064</field>
+            <field name="longitude">81.733872</field>
+            <field name="altitude">322</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ixe" model="tt.destinations">
+            <field name="name">Mangalore</field>
+            <field name="code">IXE</field>
+            <field name="icao">VOML</field>
+            <field name="city">Mangalore</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">12.961267</field>
+            <field name="longitude">74.890069</field>
+            <field name="altitude">337</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ixg" model="tt.destinations">
+            <field name="name">Belgaum</field>
+            <field name="code">IXG</field>
+            <field name="icao">VABM</field>
+            <field name="city">Belgaum</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">15.859286</field>
+            <field name="longitude">74.618292</field>
+            <field name="altitude">2487</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ixh" model="tt.destinations">
+            <field name="name">Kailashahar</field>
+            <field name="code">IXH</field>
+            <field name="icao">VEKR</field>
+            <field name="city">Kailashahar</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">24.308192</field>
+            <field name="longitude">92.007156</field>
+            <field name="altitude">79</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ixi" model="tt.destinations">
+            <field name="name">Lilabari</field>
+            <field name="code">IXI</field>
+            <field name="icao">VELR</field>
+            <field name="city">Lilabari</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">27.295494</field>
+            <field name="longitude">94.09765</field>
+            <field name="altitude">330</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ixj" model="tt.destinations">
+            <field name="name">Jammu</field>
+            <field name="code">IXJ</field>
+            <field name="icao">VIJU</field>
+            <field name="city">Jammu</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">32.689142</field>
+            <field name="longitude">74.837389</field>
+            <field name="altitude">1029</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ixk" model="tt.destinations">
+            <field name="name">Keshod</field>
+            <field name="code">IXK</field>
+            <field name="icao">VAKS</field>
+            <field name="city">Keshod</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">21.317069</field>
+            <field name="longitude">70.270403</field>
+            <field name="altitude">167</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ixl" model="tt.destinations">
+            <field name="name">Leh</field>
+            <field name="code">IXL</field>
+            <field name="icao">VILH</field>
+            <field name="city">Leh</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">34.135872</field>
+            <field name="longitude">77.546514</field>
+            <field name="altitude">10682</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ixm" model="tt.destinations">
+            <field name="name">Madurai</field>
+            <field name="code">IXM</field>
+            <field name="icao">VOMD</field>
+            <field name="city">Madurai</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">9.834508</field>
+            <field name="longitude">78.093378</field>
+            <field name="altitude">459</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ixp" model="tt.destinations">
+            <field name="name">Pathankot</field>
+            <field name="code">IXP</field>
+            <field name="icao">VIPK</field>
+            <field name="city">Pathankot</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">32.233778</field>
+            <field name="longitude">75.634628</field>
+            <field name="altitude">1017</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ixr" model="tt.destinations">
+            <field name="name">Birsa Munda</field>
+            <field name="code">IXR</field>
+            <field name="icao">VERC</field>
+            <field name="city">Ranchi</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">23.31425</field>
+            <field name="longitude">85.321675</field>
+            <field name="altitude">2148</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ixs" model="tt.destinations">
+            <field name="name">Silchar</field>
+            <field name="code">IXS</field>
+            <field name="icao">VEKU</field>
+            <field name="city">Silchar</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">24.912928</field>
+            <field name="longitude">92.978742</field>
+            <field name="altitude">352</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ixu" model="tt.destinations">
+            <field name="name">Aurangabad</field>
+            <field name="code">IXU</field>
+            <field name="icao">VAAU</field>
+            <field name="city">Aurangabad</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">19.862728</field>
+            <field name="longitude">75.398114</field>
+            <field name="altitude">1911</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ixw" model="tt.destinations">
+            <field name="name">Jamshedpur</field>
+            <field name="code">IXW</field>
+            <field name="icao">VEJS</field>
+            <field name="city">Jamshedpur</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">22.813211</field>
+            <field name="longitude">86.168844</field>
+            <field name="altitude">505</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ixy" model="tt.destinations">
+            <field name="name">Kandla</field>
+            <field name="code">IXY</field>
+            <field name="icao">VAKE</field>
+            <field name="city">Kandla</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">23.112719</field>
+            <field name="longitude">70.100289</field>
+            <field name="altitude">96</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ixz" model="tt.destinations">
+            <field name="name">Port Blair</field>
+            <field name="code">IXZ</field>
+            <field name="icao">VOPB</field>
+            <field name="city">Port Blair</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">11.641161</field>
+            <field name="longitude">92.729744</field>
+            <field name="altitude">14</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_iyk" model="tt.destinations">
+            <field name="name">Inyokern Airport</field>
+            <field name="code">IYK</field>
+            <field name="icao">KIYK</field>
+            <field name="city">Inyokern</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.658889</field>
+            <field name="longitude">-117.829444</field>
+            <field name="altitude">2455</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Los_Angeles</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_iza" model="tt.destinations">
+            <field name="name">Zona da Mata Regional Airport</field>
+            <field name="code">IZA</field>
+            <field name="icao">SDZY</field>
+            <field name="city">Juiz de Fora</field>
+            <field name="country_id" ref="base.br"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-21.5130558</field>
+            <field name="longitude">-43.17305756</field>
+            <field name="altitude">1348</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Sao_Paulo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_izg" model="tt.destinations">
+            <field name="name">Eastern Slopes Regional</field>
+            <field name="code">IZG</field>
+            <field name="icao">KIZG</field>
+            <field name="city">Fryeburg</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.9911389</field>
+            <field name="longitude">-70.9478889</field>
+            <field name="altitude">455</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jac" model="tt.destinations">
+            <field name="name">Jackson Hole Airport</field>
+            <field name="code">JAC</field>
+            <field name="icao">KJAC</field>
+            <field name="city">Jacksn Hole</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.60733333</field>
+            <field name="longitude">-110.73775</field>
+            <field name="altitude">6451</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Denver</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jai" model="tt.destinations">
+            <field name="name">Jaipur</field>
+            <field name="code">JAI</field>
+            <field name="icao">VIJP</field>
+            <field name="city">Jaipur</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">26.824192</field>
+            <field name="longitude">75.812161</field>
+            <field name="altitude">1263</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jal" model="tt.destinations">
+            <field name="name">Lencero Airport</field>
+            <field name="code">JAL</field>
+            <field name="icao">MMJA</field>
+            <field name="city">Jalapa</field>
+            <field name="country_id" ref="base.mx"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">19.475083</field>
+            <field name="longitude">-96.797506</field>
+            <field name="altitude">3127</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Mexico_City</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jan" model="tt.destinations">
+            <field name="name">Jackson Evers Intl</field>
+            <field name="code">JAN</field>
+            <field name="icao">KJAN</field>
+            <field name="city">Jackson</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">32.311167</field>
+            <field name="longitude">-90.075889</field>
+            <field name="altitude">346</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jav" model="tt.destinations">
+            <field name="name">Ilulissat</field>
+            <field name="code">JAV</field>
+            <field name="icao">BGJN</field>
+            <field name="city">Ilulissat</field>
+            <field name="country_id" ref="base.gl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">69.23444</field>
+            <field name="longitude">-51.05111</field>
+            <field name="altitude">2</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Godthab</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jax" model="tt.destinations">
+            <field name="name">Jacksonville Intl</field>
+            <field name="code">JAX</field>
+            <field name="icao">KJAX</field>
+            <field name="city">Jacksonville</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">30.494056</field>
+            <field name="longitude">-81.687861</field>
+            <field name="altitude">30</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jbq" model="tt.destinations">
+            <field name="name">Dr Joaquin Balaguer International Airport</field>
+            <field name="code">JBQ</field>
+            <field name="icao">MDJB</field>
+            <field name="city">La Isabela</field>
+            <field name="country_id" ref="base.do"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">18.5725</field>
+            <field name="longitude">-69.9856</field>
+            <field name="altitude">98</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">America/Santo_Domingo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jbr" model="tt.destinations">
+            <field name="name">Jonesboro Muni</field>
+            <field name="code">JBR</field>
+            <field name="icao">KJBR</field>
+            <field name="city">Jonesboro</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.831708</field>
+            <field name="longitude">-90.646417</field>
+            <field name="altitude">262</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jcb" model="tt.destinations">
+            <field name="name">Joacaba Airport</field>
+            <field name="code">JCB</field>
+            <field name="icao">SSJA</field>
+            <field name="city">Joacaba</field>
+            <field name="country_id" ref="base.br"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-27.172778</field>
+            <field name="longitude">-51.500833</field>
+            <field name="altitude">1713</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Sao_Paulo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jch" model="tt.destinations">
+            <field name="name">Qasigiannguit</field>
+            <field name="code">JCH</field>
+            <field name="icao">BGCH</field>
+            <field name="city">Qasigiannguit</field>
+            <field name="country_id" ref="base.gl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">68.833336</field>
+            <field name="longitude">-51</field>
+            <field name="altitude">2</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Godthab</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jci" model="tt.destinations">
+            <field name="name">New Century AirCenter Airport</field>
+            <field name="code">JCI</field>
+            <field name="icao">KIXD</field>
+            <field name="city">Olathe</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.8309167</field>
+            <field name="longitude">-94.8903056</field>
+            <field name="altitude">1087</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jdf" model="tt.destinations">
+            <field name="name">Francisco De Assis</field>
+            <field name="code">JDF</field>
+            <field name="icao">SBJF</field>
+            <field name="city">Juiz De Fora</field>
+            <field name="country_id" ref="base.br"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-21.7915</field>
+            <field name="longitude">-43.386778</field>
+            <field name="altitude">2989</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Sao_Paulo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jdh" model="tt.destinations">
+            <field name="name">Jodhpur</field>
+            <field name="code">JDH</field>
+            <field name="icao">VIJO</field>
+            <field name="city">Jodhpur</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">26.251092</field>
+            <field name="longitude">73.048869</field>
+            <field name="altitude">717</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jdo" model="tt.destinations">
+            <field name="name">Orlando Bezerra de Menezes Airport</field>
+            <field name="code">JDO</field>
+            <field name="icao">SBJU</field>
+            <field name="city">Juazeiro Do Norte</field>
+            <field name="country_id" ref="base.br"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-7.218958</field>
+            <field name="longitude">-39.2701</field>
+            <field name="altitude">1392</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Fortaleza</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jdr" model="tt.destinations">
+            <field name="name">Aeroporto Prefeito Octavio de Almeida Neves</field>
+            <field name="code">JDR</field>
+            <field name="icao"></field>
+            <field name="city">Sao Joao del Rei</field>
+            <field name="country_id" ref="base.br"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-21.0864</field>
+            <field name="longitude">-44.2258</field>
+            <field name="altitude">3120</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Sao_Paulo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jdz" model="tt.destinations">
+            <field name="name">Jingdezhen Airport</field>
+            <field name="code">JDZ</field>
+            <field name="icao">ZSJD</field>
+            <field name="city">Jingdezhen</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">29.3386</field>
+            <field name="longitude">117.176</field>
+            <field name="altitude">112</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jee" model="tt.destinations">
+            <field name="name">Jeremie Airport</field>
+            <field name="code">JEE</field>
+            <field name="icao">MTJE</field>
+            <field name="city">Jeremie</field>
+            <field name="country_id" ref="base.ht"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">18.6631</field>
+            <field name="longitude">-74.1703</field>
+            <field name="altitude">147</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Port-au-Prince</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jef" model="tt.destinations">
+            <field name="name">Jefferson City Memorial Airport</field>
+            <field name="code">JEF</field>
+            <field name="icao">KJEF</field>
+            <field name="city">Jefferson City</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.5912</field>
+            <field name="longitude">-92.1561</field>
+            <field name="altitude">549</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jeg" model="tt.destinations">
+            <field name="name">Aasiaat</field>
+            <field name="code">JEG</field>
+            <field name="icao">BGEM</field>
+            <field name="city">Aasiaat</field>
+            <field name="country_id" ref="base.gl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">68.7</field>
+            <field name="longitude">-52.75</field>
+            <field name="altitude">2</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Godthab</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jes" model="tt.destinations">
+            <field name="name">Jesup-Wayne County Airport</field>
+            <field name="code">JES</field>
+            <field name="icao">KJES</field>
+            <field name="city">Jesup</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">31.553889</field>
+            <field name="longitude">-81.8825</field>
+            <field name="altitude">107</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jfk" model="tt.destinations">
+            <field name="name">John F Kennedy Intl</field>
+            <field name="code">JFK</field>
+            <field name="icao">KJFK</field>
+            <field name="city">New York</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.639751</field>
+            <field name="longitude">-73.778925</field>
+            <field name="altitude">13</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jfr" model="tt.destinations">
+            <field name="name">Paamiut Heliport</field>
+            <field name="code">JFR</field>
+            <field name="icao">BGFH</field>
+            <field name="city">Paamiut</field>
+            <field name="country_id" ref="base.gl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">61.9922</field>
+            <field name="longitude">-49.6625</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Godthab</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jga" model="tt.destinations">
+            <field name="name">Jamnagar</field>
+            <field name="code">JGA</field>
+            <field name="icao">VAJM</field>
+            <field name="city">Jamnagar</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">22.465522</field>
+            <field name="longitude">70.012556</field>
+            <field name="altitude">69</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jgc" model="tt.destinations">
+            <field name="name">Grand Canyon Heliport</field>
+            <field name="code">JGC</field>
+            <field name="icao"></field>
+            <field name="city">Grand Canyon</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.96666666</field>
+            <field name="longitude">-112.1333333</field>
+            <field name="altitude">2500</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Phoenix</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jgd" model="tt.destinations">
+            <field name="name">Jiagedaqi Airport</field>
+            <field name="code">JGD</field>
+            <field name="icao"></field>
+            <field name="city">Jiagedaqi District</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">50.375</field>
+            <field name="longitude">124.117</field>
+            <field name="altitude">1205</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jgn" model="tt.destinations">
+            <field name="name">Jiayuguan Airport</field>
+            <field name="code">JGN</field>
+            <field name="icao">ZLJQ</field>
+            <field name="city">Jiayuguan</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.8569</field>
+            <field name="longitude">98.3414</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jgo" model="tt.destinations">
+            <field name="name">Qeqertarsuaq Heliport</field>
+            <field name="code">JGO</field>
+            <field name="icao">BGGN</field>
+            <field name="city">Qeqertarsuaq Airport</field>
+            <field name="country_id" ref="base.gl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">69.2511</field>
+            <field name="longitude">-53.5381</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Godthab</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jgr" model="tt.destinations">
+            <field name="name">Groennedal Heliport</field>
+            <field name="code">JGR</field>
+            <field name="icao"></field>
+            <field name="city">Groennedal</field>
+            <field name="country_id" ref="base.gl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">61.2333</field>
+            <field name="longitude">-48.1</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Godthab</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jgs" model="tt.destinations">
+            <field name="name">Jing Gang Shan Airport</field>
+            <field name="code">JGS</field>
+            <field name="icao"></field>
+            <field name="city">Ji An</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">26.8997</field>
+            <field name="longitude">114.7375</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jhg" model="tt.destinations">
+            <field name="name">Jinghong</field>
+            <field name="code">JHG</field>
+            <field name="icao"></field>
+            <field name="city">Jinghong</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">21.973914</field>
+            <field name="longitude">100.759611</field>
+            <field name="altitude">1815</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jhl" model="tt.destinations">
+            <field name="name">Albian Aerodrome</field>
+            <field name="code">JHL</field>
+            <field name="icao"></field>
+            <field name="city">Wood Buffalo</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">57.223889</field>
+            <field name="longitude">-111.418889</field>
+            <field name="altitude">1048</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Edmonton</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            

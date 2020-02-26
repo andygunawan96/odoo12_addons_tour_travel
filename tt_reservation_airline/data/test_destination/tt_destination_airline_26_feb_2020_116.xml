@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_lnu" model="tt.destinations">
+            <field name="name">Robert Atty Bessing Airport</field>
+            <field name="code">LNU</field>
+            <field name="icao">WALM</field>
+            <field name="city">Malinau</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">3.575278</field>
+            <field name="longitude">116.619722</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Ujung_Pandang</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mna" model="tt.destinations">
+            <field name="name">Melangguane Airport</field>
+            <field name="code">MNA</field>
+            <field name="icao">WAMN</field>
+            <field name="city">Melangguane</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">4.006944</field>
+            <field name="longitude">126.672778</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Ujung_Pandang</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mkf" model="tt.destinations">
+            <field name="name">Miangas Airport</field>
+            <field name="code">MKF</field>
+            <field name="icao">WAMS</field>
+            <field name="city">Miangas</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">5.562222</field>
+            <field name="longitude">126.581389</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Ujung_Pandang</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mpc" model="tt.destinations">
+            <field name="name">Mukomuko Airport</field>
+            <field name="code">MPC</field>
+            <field name="icao">WIPU</field>
+            <field name="city">Mukomuko</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-2.55</field>
+            <field name="longitude">101.1</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            

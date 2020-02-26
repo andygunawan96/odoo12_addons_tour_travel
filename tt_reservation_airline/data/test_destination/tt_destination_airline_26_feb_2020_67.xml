@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_zal" model="tt.destinations">
+            <field name="name">Pichoy</field>
+            <field name="code">ZAL</field>
+            <field name="icao">SCVD</field>
+            <field name="city">Valdivia</field>
+            <field name="country_id" ref="base.cl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-39.649956</field>
+            <field name="longitude">-73.086111</field>
+            <field name="altitude">59</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">America/Santiago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zar" model="tt.destinations">
+            <field name="name">Zaria</field>
+            <field name="code">ZAR</field>
+            <field name="icao">DNZA</field>
+            <field name="city">Zaria</field>
+            <field name="country_id" ref="base.ng"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">11.130192</field>
+            <field name="longitude">7.685806</field>
+            <field name="altitude">2170</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Africa/Lagos</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zbf" model="tt.destinations">
+            <field name="name">Bathurst Airport</field>
+            <field name="code">ZBF</field>
+            <field name="icao">CZBF</field>
+            <field name="city">Bathurst</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">47.6297</field>
+            <field name="longitude">-65.7389</field>
+            <field name="altitude">193</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">America/Halifax</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zbm" model="tt.destinations">
+            <field name="name">Bromont Airport</field>
+            <field name="code">ZBM</field>
+            <field name="icao">CZBM</field>
+            <field name="city">Bromont</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.290833</field>
+            <field name="longitude">-72.741944</field>
+            <field name="altitude">374</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Toronto</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zbp" model="tt.destinations">
+            <field name="name">Penn Station</field>
+            <field name="code">ZBP</field>
+            <field name="icao"></field>
+            <field name="city">Baltimore</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.307222</field>
+            <field name="longitude">-76.615556</field>
+            <field name="altitude">66</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zcl" model="tt.destinations">
+            <field name="name">General Leobardo C Ruiz Intl</field>
+            <field name="code">ZCL</field>
+            <field name="icao">MMZC</field>
+            <field name="city">Zacatecas</field>
+            <field name="country_id" ref="base.mx"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">22.897112</field>
+            <field name="longitude">-102.68689</field>
+            <field name="altitude">7141</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Mexico_City</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zco" model="tt.destinations">
+            <field name="name">Maquehue</field>
+            <field name="code">ZCO</field>
+            <field name="icao">SCTC</field>
+            <field name="city">Temuco</field>
+            <field name="country_id" ref="base.cl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-38.766819</field>
+            <field name="longitude">-72.637097</field>
+            <field name="altitude">304</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">America/Santiago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zel" model="tt.destinations">
+            <field name="name">Bella Bella Airport</field>
+            <field name="code">ZEL</field>
+            <field name="icao">CYJQ</field>
+            <field name="city">Bella Bella</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">52.139722</field>
+            <field name="longitude">-128.063611</field>
+            <field name="altitude">162</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Vancouver</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zem" model="tt.destinations">
+            <field name="name">Eastmain River Airport</field>
+            <field name="code">ZEM</field>
+            <field name="icao">CZEM</field>
+            <field name="city">Eastmain River</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">52.2264</field>
+            <field name="longitude">-78.5225</field>
+            <field name="altitude">24</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Toronto</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zfa" model="tt.destinations">
+            <field name="name">Faro</field>
+            <field name="code">ZFA</field>
+            <field name="icao">CZFA</field>
+            <field name="city">Faro</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">62.2075</field>
+            <field name="longitude">-133.375833</field>
+            <field name="altitude">2351</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Vancouver</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zfd" model="tt.destinations">
+            <field name="name">Fond-Du-Lac Airport</field>
+            <field name="code">ZFD</field>
+            <field name="icao">CZFD</field>
+            <field name="city">Fond-Du-Lac</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">59.3344</field>
+            <field name="longitude">-107.182</field>
+            <field name="altitude">814</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Regina</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zfm" model="tt.destinations">
+            <field name="name">Fort Mcpherson</field>
+            <field name="code">ZFM</field>
+            <field name="icao">CZFM</field>
+            <field name="city">Fort Mcpherson</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">67.4075</field>
+            <field name="longitude">-134.860556</field>
+            <field name="altitude">116</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Edmonton</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zfn" model="tt.destinations">
+            <field name="name">Tulita</field>
+            <field name="code">ZFN</field>
+            <field name="icao">CZFN</field>
+            <field name="city">Tulita</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">64.0833333</field>
+            <field name="longitude">-125.5833333</field>
+            <field name="altitude">320</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Edmonton</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zfv" model="tt.destinations">
+            <field name="name">Philadelphia 30th St Station</field>
+            <field name="code">ZFV</field>
+            <field name="icao"></field>
+            <field name="city">Philadelphia</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.9557</field>
+            <field name="longitude">-75.182</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zgi" model="tt.destinations">
+            <field name="name">Gods River Airport</field>
+            <field name="code">ZGI</field>
+            <field name="icao">CZGI</field>
+            <field name="city">Gods River</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">54.8397</field>
+            <field name="longitude">-94.0786</field>
+            <field name="altitude">627</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Winnipeg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zgr" model="tt.destinations">
+            <field name="name">Little Grand Rapids Airport</field>
+            <field name="code">ZGR</field>
+            <field name="icao">CZGR</field>
+            <field name="city">Little Grand Rapids</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">52.045</field>
+            <field name="longitude">-95.466111</field>
+            <field name="altitude">1008</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Winnipeg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zig" model="tt.destinations">
+            <field name="name">Ziguinchor</field>
+            <field name="code">ZIG</field>
+            <field name="icao">GOGG</field>
+            <field name="city">Ziguinchor</field>
+            <field name="country_id" ref="base.sn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">12.555617</field>
+            <field name="longitude">-16.281783</field>
+            <field name="altitude">75</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Africa/Dakar</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zih" model="tt.destinations">
+            <field name="name">Ixtapa Zihuatanejo Intl</field>
+            <field name="code">ZIH</field>
+            <field name="icao">MMZH</field>
+            <field name="city">Zihuatanejo</field>
+            <field name="country_id" ref="base.mx"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">17.601569</field>
+            <field name="longitude">-101.460536</field>
+            <field name="altitude">26</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Mexico_City</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zjn" model="tt.destinations">
+            <field name="name">Swan River Airport</field>
+            <field name="code">ZJN</field>
+            <field name="icao">CZJN</field>
+            <field name="city">Swan River</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">52.1206</field>
+            <field name="longitude">-101.236</field>
+            <field name="altitude">1100</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Winnipeg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zkb" model="tt.destinations">
+            <field name="name">Kasaba Bay Airport</field>
+            <field name="code">ZKB</field>
+            <field name="icao">FLKY</field>
+            <field name="city">Kasaba Bay</field>
+            <field name="country_id" ref="base.zm"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-8.525</field>
+            <field name="longitude">30.663</field>
+            <field name="altitude">2780</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Africa/Lusaka</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zke" model="tt.destinations">
+            <field name="name">Kashechewan Airport</field>
+            <field name="code">ZKE</field>
+            <field name="icao">CZKE</field>
+            <field name="city">Kashechewan</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">52.2825</field>
+            <field name="longitude">-81.6778</field>
+            <field name="altitude">35</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Toronto</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zkg" model="tt.destinations">
+            <field name="name">Kegaska Airport</field>
+            <field name="code">ZKG</field>
+            <field name="icao">CTK6</field>
+            <field name="city">Kegaska</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">50.195833</field>
+            <field name="longitude">-61.265833</field>
+            <field name="altitude">32</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">America/Blanc-Sablon</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zlo" model="tt.destinations">
+            <field name="name">Playa De Oro Intl</field>
+            <field name="code">ZLO</field>
+            <field name="icao">MMZO</field>
+            <field name="city">Manzanillo</field>
+            <field name="country_id" ref="base.mx"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">19.144778</field>
+            <field name="longitude">-104.558631</field>
+            <field name="altitude">30</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Mexico_City</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zlt" model="tt.destinations">
+            <field name="name">La Tabati猫re Airport</field>
+            <field name="code">ZLT</field>
+            <field name="icao">CTU5</field>
+            <field name="city">La Tabati猫re</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">50.8308</field>
+            <field name="longitude">-58.9756</field>
+            <field name="altitude">102</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">America/Blanc-Sablon</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zml" model="tt.destinations">
+            <field name="name">South Cariboo Regional Airport</field>
+            <field name="code">ZML</field>
+            <field name="icao">CZML</field>
+            <field name="city">108 Mile Ranch</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">51.4412</field>
+            <field name="longitude">-121.1958</field>
+            <field name="altitude">3129</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Vancouver</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zmm" model="tt.destinations">
+            <field name="name">Zamora</field>
+            <field name="code">ZMM</field>
+            <field name="icao">MMZM</field>
+            <field name="city">Zamora</field>
+            <field name="country_id" ref="base.mx"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">20.045036</field>
+            <field name="longitude">-102.275955</field>
+            <field name="altitude">5141</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Mexico_City</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zmt" model="tt.destinations">
+            <field name="name">Masset Airport</field>
+            <field name="code">ZMT</field>
+            <field name="icao">CZMT</field>
+            <field name="city">Masset</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">54.0275</field>
+            <field name="longitude">-132.125</field>
+            <field name="altitude">25</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Vancouver</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zna" model="tt.destinations">
+            <field name="name">Nanaimo Harbour Water Airport</field>
+            <field name="code">ZNA</field>
+            <field name="icao">CAC8</field>
+            <field name="city">Nanaimo</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">49.183333</field>
+            <field name="longitude">-123.95</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Vancouver</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_znd" model="tt.destinations">
+            <field name="name">Zinder</field>
+            <field name="code">ZND</field>
+            <field name="icao">DRZR</field>
+            <field name="city">Zinder</field>
+            <field name="country_id" ref="base.ne"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">13.778997</field>
+            <field name="longitude">8.983761</field>
+            <field name="altitude">1516</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Africa/Niamey</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_znz" model="tt.destinations">
+            <field name="name">Zanzibar</field>
+            <field name="code">ZNZ</field>
+            <field name="icao">HTZA</field>
+            <field name="city">Zanzibar</field>
+            <field name="country_id" ref="base.tz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-6.222025</field>
+            <field name="longitude">39.224886</field>
+            <field name="altitude">54</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Africa/Dar_es_Salaam</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zos" model="tt.destinations">
+            <field name="name">Canal Bajo Carlos Hott Siebert</field>
+            <field name="code">ZOS</field>
+            <field name="icao">SCJO</field>
+            <field name="city">Osorno</field>
+            <field name="country_id" ref="base.cl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-40.611208</field>
+            <field name="longitude">-73.061042</field>
+            <field name="altitude">187</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">America/Santiago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zpb" model="tt.destinations">
+            <field name="name">Sachigo Lake Airport</field>
+            <field name="code">ZPB</field>
+            <field name="icao">CZPB</field>
+            <field name="city">Sachigo Lake</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">53.8911</field>
+            <field name="longitude">-92.1964</field>
+            <field name="altitude">876</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Winnipeg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zpc" model="tt.destinations">
+            <field name="name">Puc贸n Airport</field>
+            <field name="code">ZPC</field>
+            <field name="icao">SCPC</field>
+            <field name="city">Pucon</field>
+            <field name="country_id" ref="base.cl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-39.2928</field>
+            <field name="longitude">-71.9159</field>
+            <field name="altitude">853</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">America/Santiago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zph" model="tt.destinations">
+            <field name="name">Municipal Airport</field>
+            <field name="code">ZPH</field>
+            <field name="icao">KZPH</field>
+            <field name="city">Zephyrhills</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">28.228056</field>
+            <field name="longitude">-82.155833</field>
+            <field name="altitude">90</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zra" model="tt.destinations">
+            <field name="name">Atlantic City Rail Terminal</field>
+            <field name="code">ZRA</field>
+            <field name="icao"></field>
+            <field name="city">Atlantic City NJ</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.3665</field>
+            <field name="longitude">-74.442</field>
+            <field name="altitude">8</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zrd" model="tt.destinations">
+            <field name="name">Train Station</field>
+            <field name="code">ZRD</field>
+            <field name="icao"></field>
+            <field name="city">Richmond</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.5343</field>
+            <field name="longitude">-77.42945</field>
+            <field name="altitude">26</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zrj" model="tt.destinations">
+            <field name="name">Round Lake (Weagamow Lake) Airport</field>
+            <field name="code">ZRJ</field>
+            <field name="icao">CZRJ</field>
+            <field name="city">Round Lake</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">52.9436</field>
+            <field name="longitude">-91.3128</field>
+            <field name="altitude">974</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Winnipeg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zrp" model="tt.destinations">
+            <field name="name">Newark Penn Station</field>
+            <field name="code">ZRP</field>
+            <field name="icao"></field>
+            <field name="city">Newark</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.734722</field>
+            <field name="longitude">-74.164167</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zrt" model="tt.destinations">
+            <field name="name">Hartford Union Station</field>
+            <field name="code">ZRT</field>
+            <field name="icao"></field>
+            <field name="city">Hartford</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.76888</field>
+            <field name="longitude">-72.6815</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zrz" model="tt.destinations">
+            <field name="name">New Carrollton Rail Station</field>
+            <field name="code">ZRZ</field>
+            <field name="icao"></field>
+            <field name="city">New Carrollton</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.948</field>
+            <field name="longitude">-76.8719</field>
+            <field name="altitude">39</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zsa" model="tt.destinations">
+            <field name="name">San Salvador</field>
+            <field name="code">ZSA</field>
+            <field name="icao">MYSM</field>
+            <field name="city">Cockburn Town</field>
+            <field name="country_id" ref="base.bs"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">24.063275</field>
+            <field name="longitude">-74.523967</field>
+            <field name="altitude">24</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Nassau</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zsf" model="tt.destinations">
+            <field name="name">Springfield Amtrak Station</field>
+            <field name="code">ZSF</field>
+            <field name="icao"></field>
+            <field name="city">Springfield MA</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">42.106</field>
+            <field name="longitude">-72.593054</field>
+            <field name="altitude">65</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zsj" model="tt.destinations">
+            <field name="name">Sandy Lake Airport</field>
+            <field name="code">ZSJ</field>
+            <field name="icao">CZSJ</field>
+            <field name="city">Sandy Lake</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">53.0642</field>
+            <field name="longitude">-93.3444</field>
+            <field name="altitude">951</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Winnipeg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zsw" model="tt.destinations">
+            <field name="name">Seal Cove Seaplane Base</field>
+            <field name="code">ZSW</field>
+            <field name="icao">CZSW</field>
+            <field name="city">Prince Rupert</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">54.3333</field>
+            <field name="longitude">-130.283</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Vancouver</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zsy" model="tt.destinations">
+            <field name="name">Scottsdale Airport</field>
+            <field name="code">ZSY</field>
+            <field name="icao">KSDL</field>
+            <field name="city">Scottsdale</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">33.6228889</field>
+            <field name="longitude">-111.9105278</field>
+            <field name="altitude">1519</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Phoenix</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ztb" model="tt.destinations">
+            <field name="name">T锚te-脿-la-Baleine Airport</field>
+            <field name="code">ZTB</field>
+            <field name="icao">CTB6</field>
+            <field name="city">T锚te-脿-la-Baleine</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">50.6744</field>
+            <field name="longitude">-59.3836</field>
+            <field name="altitude">107</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">America/Blanc-Sablon</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ztf" model="tt.destinations">
+            <field name="name">Stamford Amtrak Station</field>
+            <field name="code">ZTF</field>
+            <field name="icao"></field>
+            <field name="city">Stamford</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.046937</field>
+            <field name="longitude">-73.541493</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ztm" model="tt.destinations">
+            <field name="name">Shamattawa Airport</field>
+            <field name="code">ZTM</field>
+            <field name="icao">CZTM</field>
+            <field name="city">Shamattawa</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">55.8656</field>
+            <field name="longitude">-92.0814</field>
+            <field name="altitude">289</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Winnipeg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ztu" model="tt.destinations">
+            <field name="name">Zaqatala International Airport</field>
+            <field name="code">ZTU</field>
+            <field name="icao">UBBY</field>
+            <field name="city">Zaqatala</field>
+            <field name="country_id" ref="base.az"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.562222</field>
+            <field name="longitude">46.667222</field>
+            <field name="altitude">100</field>
+            <field name="timezone_hour">4</field>
+            <field name="tz">Asia/Baku</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_zty" model="tt.destinations">
+            <field name="name">Boston Back Bay Station</field>
+            <field name="code">ZTY</field>
+            <field name="icao"></field>
+            <field name="city">Boston</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">42.3478</field>
+            <field name="longitude">-71.075</field>
+            <field name="altitude">20</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            

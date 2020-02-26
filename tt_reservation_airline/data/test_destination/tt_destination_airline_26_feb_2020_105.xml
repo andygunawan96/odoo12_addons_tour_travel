@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_say" model="tt.destinations">
+            <field name="name">Ampugnano</field>
+            <field name="code">SAY</field>
+            <field name="icao">LIQS</field>
+            <field name="city">Siena</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.256286</field>
+            <field name="longitude">11.255036</field>
+            <field name="altitude">634</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_suf" model="tt.destinations">
+            <field name="name">Lamezia Terme</field>
+            <field name="code">SUF</field>
+            <field name="icao">LICA</field>
+            <field name="city">Lamezia</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.905394</field>
+            <field name="longitude">16.242269</field>
+            <field name="altitude">39</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tar" model="tt.destinations">
+            <field name="name">Grottaglie</field>
+            <field name="code">TAR</field>
+            <field name="icao">LIBG</field>
+            <field name="city">Grottaglie</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.517514</field>
+            <field name="longitude">17.403212</field>
+            <field name="altitude">215</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tps" model="tt.destinations">
+            <field name="name">Trapani Birgi</field>
+            <field name="code">TPS</field>
+            <field name="icao">LICT</field>
+            <field name="city">Trapani</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.911403</field>
+            <field name="longitude">12.487961</field>
+            <field name="altitude">24</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tqr" model="tt.destinations">
+            <field name="name">San Domino Island Heliport</field>
+            <field name="code">TQR</field>
+            <field name="icao"></field>
+            <field name="city">Tremiti Islands</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">42.1025</field>
+            <field name="longitude">15.488</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_trn" model="tt.destinations">
+            <field name="name">Torino</field>
+            <field name="code">TRN</field>
+            <field name="icao">LIMF</field>
+            <field name="city">Torino</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.200761</field>
+            <field name="longitude">7.649631</field>
+            <field name="altitude">989</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_trs" model="tt.destinations">
+            <field name="name">Ronchi Dei Legionari</field>
+            <field name="code">TRS</field>
+            <field name="icao">LIPQ</field>
+            <field name="city">Ronchi De Legionari</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.8275</field>
+            <field name="longitude">13.472222</field>
+            <field name="altitude">37</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tsf" model="tt.destinations">
+            <field name="name">Treviso</field>
+            <field name="code">TSF</field>
+            <field name="icao">LIPH</field>
+            <field name="city">Treviso</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.6484</field>
+            <field name="longitude">12.194422</field>
+            <field name="altitude">59</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ttb" model="tt.destinations">
+            <field name="name">Tortoli</field>
+            <field name="code">TTB</field>
+            <field name="icao">LIET</field>
+            <field name="city">Tortoli</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.918761</field>
+            <field name="longitude">9.682981</field>
+            <field name="altitude">23</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vbs" model="tt.destinations">
+            <field name="name">Montichiari</field>
+            <field name="code">VBS</field>
+            <field name="icao">LIPO</field>
+            <field name="city">Brescia</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.428889</field>
+            <field name="longitude">10.330556</field>
+            <field name="altitude">356</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vce" model="tt.destinations">
+            <field name="name">Venezia Tessera</field>
+            <field name="code">VCE</field>
+            <field name="icao">LIPZ</field>
+            <field name="city">Venice</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.505278</field>
+            <field name="longitude">12.351944</field>
+            <field name="altitude">7</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vic" model="tt.destinations">
+            <field name="name">Vicenza</field>
+            <field name="code">VIC</field>
+            <field name="icao">LIPT</field>
+            <field name="city">Vicenza</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.573411</field>
+            <field name="longitude">11.52955</field>
+            <field name="altitude">128</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vif" model="tt.destinations">
+            <field name="name">Vieste Heliport</field>
+            <field name="code">VIF</field>
+            <field name="icao"></field>
+            <field name="city">Vieste</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.885277</field>
+            <field name="longitude">16.176945</field>
+            <field name="altitude">46</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_vrn" model="tt.destinations">
+            <field name="name">Villafranca</field>
+            <field name="code">VRN</field>
+            <field name="icao">LIPX</field>
+            <field name="city">Villafranca</field>
+            <field name="country_id" ref="base.it"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.395706</field>
+            <field name="longitude">10.888533</field>
+            <field name="altitude">239</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Rome</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bnx" model="tt.destinations">
+            <field name="name">Banja Luka International Airport</field>
+            <field name="code">BNX</field>
+            <field name="icao">LQBK</field>
+            <field name="city">Banja Luka</field>
+            <field name="country_id" ref="base.ba"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">44.941444</field>
+            <field name="longitude">17.297501</field>
+            <field name="altitude">400</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Sarajevo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_omo" model="tt.destinations">
+            <field name="name">Mostar</field>
+            <field name="code">OMO</field>
+            <field name="icao">LQMO</field>
+            <field name="city">Mostar</field>
+            <field name="country_id" ref="base.ba"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.2829</field>
+            <field name="longitude">17.845878</field>
+            <field name="altitude">156</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Sarajevo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sjj" model="tt.destinations">
+            <field name="name">Sarajevo</field>
+            <field name="code">SJJ</field>
+            <field name="icao">LQSA</field>
+            <field name="city">Sarajevo</field>
+            <field name="country_id" ref="base.ba"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.824583</field>
+            <field name="longitude">18.331467</field>
+            <field name="altitude">1708</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Sarajevo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ohd" model="tt.destinations">
+            <field name="name">Ohrid</field>
+            <field name="code">OHD</field>
+            <field name="icao">LWOH</field>
+            <field name="city">Ohrid</field>
+            <field name="country_id" ref="base.mk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.179956</field>
+            <field name="longitude">20.742325</field>
+            <field name="altitude">2313</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Skopje</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_skp" model="tt.destinations">
+            <field name="name">Skopje</field>
+            <field name="code">SKP</field>
+            <field name="icao">LWSK</field>
+            <field name="city">Skopje</field>
+            <field name="country_id" ref="base.mk"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.961622</field>
+            <field name="longitude">21.621381</field>
+            <field name="altitude">781</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Skopje</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_boj" model="tt.destinations">
+            <field name="name">Burgas</field>
+            <field name="code">BOJ</field>
+            <field name="icao">LBBG</field>
+            <field name="city">Bourgas</field>
+            <field name="country_id" ref="base.bg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">42.569583</field>
+            <field name="longitude">27.515236</field>
+            <field name="altitude">135</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Sofia</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_goz" model="tt.destinations">
+            <field name="name">Gorna Oryahovitsa</field>
+            <field name="code">GOZ</field>
+            <field name="icao">LBGO</field>
+            <field name="city">Gorna Orechovica</field>
+            <field name="country_id" ref="base.bg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.151444</field>
+            <field name="longitude">25.712889</field>
+            <field name="altitude">285</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Sofia</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hkv" model="tt.destinations">
+            <field name="name">Uzundzhovo</field>
+            <field name="code">HKV</field>
+            <field name="icao">LB14</field>
+            <field name="city">Haskovo</field>
+            <field name="country_id" ref="base.bg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.976375</field>
+            <field name="longitude">25.589817</field>
+            <field name="altitude">160</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Sofia</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pdv" model="tt.destinations">
+            <field name="name">Plovdiv</field>
+            <field name="code">PDV</field>
+            <field name="icao">LBPD</field>
+            <field name="city">Plovdiv</field>
+            <field name="country_id" ref="base.bg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">42.067806</field>
+            <field name="longitude">24.850833</field>
+            <field name="altitude">597</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Sofia</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sof" model="tt.destinations">
+            <field name="name">Sofia</field>
+            <field name="code">SOF</field>
+            <field name="icao">LBSF</field>
+            <field name="city">Sofia</field>
+            <field name="country_id" ref="base.bg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">42.695194</field>
+            <field name="longitude">23.406167</field>
+            <field name="altitude">1742</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Sofia</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_var" model="tt.destinations">
+            <field name="name">Varna</field>
+            <field name="code">VAR</field>
+            <field name="icao">LBWN</field>
+            <field name="city">Varna</field>
+            <field name="country_id" ref="base.bg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.232072</field>
+            <field name="longitude">27.825106</field>
+            <field name="altitude">230</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Europe/Sofia</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_agh" model="tt.destinations">
+            <field name="name">脛ngelholm-Helsingborg Airport</field>
+            <field name="code">AGH</field>
+            <field name="icao">ESTA</field>
+            <field name="city">脛ngelholm</field>
+            <field name="country_id" ref="base.se"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">56.2961</field>
+            <field name="longitude">12.8471</field>
+            <field name="altitude">68</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Stockholm</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ajr" model="tt.destinations">
+            <field name="name">Arvidsjaur</field>
+            <field name="code">AJR</field>
+            <field name="icao">ESNX</field>
+            <field name="city">Arvidsjaur</field>
+            <field name="country_id" ref="base.se"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">65.590278</field>
+            <field name="longitude">19.281944</field>
+            <field name="altitude">1245</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Stockholm</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_arn" model="tt.destinations">
+            <field name="name">Arlanda</field>
+            <field name="code">ARN</field>
+            <field name="icao">ESSA</field>
+            <field name="city">Stockholm</field>
+            <field name="country_id" ref="base.se"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">59.651944</field>
+            <field name="longitude">17.918611</field>
+            <field name="altitude">137</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Stockholm</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ble" model="tt.destinations">
+            <field name="name">Borlange</field>
+            <field name="code">BLE</field>
+            <field name="icao">ESSD</field>
+            <field name="city">Borlange</field>
+            <field name="country_id" ref="base.se"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">60.422017</field>
+            <field name="longitude">15.515211</field>
+            <field name="altitude">503</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Stockholm</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bma" model="tt.destinations">
+            <field name="name">Bromma</field>
+            <field name="code">BMA</field>
+            <field name="icao">ESSB</field>
+            <field name="city">Stockholm</field>
+            <field name="country_id" ref="base.se"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">59.354372</field>
+            <field name="longitude">17.94165</field>
+            <field name="altitude">47</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Stockholm</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_evg" model="tt.destinations">
+            <field name="name">Sveg</field>
+            <field name="code">EVG</field>
+            <field name="icao">ESND</field>
+            <field name="city">Sveg</field>
+            <field name="country_id" ref="base.se"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">62.047811</field>
+            <field name="longitude">14.42295</field>
+            <field name="altitude">1178</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Stockholm</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gev" model="tt.destinations">
+            <field name="name">Gallivare</field>
+            <field name="code">GEV</field>
+            <field name="icao">ESNG</field>
+            <field name="city">Gallivare</field>
+            <field name="country_id" ref="base.se"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">67.132408</field>
+            <field name="longitude">20.814636</field>
+            <field name="altitude">1027</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Stockholm</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_got" model="tt.destinations">
+            <field name="name">Landvetter</field>
+            <field name="code">GOT</field>
+            <field name="icao">ESGG</field>
+            <field name="city">Gothenborg</field>
+            <field name="country_id" ref="base.se"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">57.662836</field>
+            <field name="longitude">12.279819</field>
+            <field name="altitude">506</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Stockholm</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gse" model="tt.destinations">
+            <field name="name">Save</field>
+            <field name="code">GSE</field>
+            <field name="icao">ESGP</field>
+            <field name="city">Gothenborg</field>
+            <field name="country_id" ref="base.se"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">57.774722</field>
+            <field name="longitude">11.870372</field>
+            <field name="altitude">59</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Stockholm</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gvx" model="tt.destinations">
+            <field name="name">Gavle</field>
+            <field name="code">GVX</field>
+            <field name="icao">ESSK</field>
+            <field name="city">Gavle</field>
+            <field name="country_id" ref="base.se"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">60.593333</field>
+            <field name="longitude">16.951389</field>
+            <field name="altitude">224</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Stockholm</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_had" model="tt.destinations">
+            <field name="name">Halmstad</field>
+            <field name="code">HAD</field>
+            <field name="icao">ESMT</field>
+            <field name="city">Halmstad</field>
+            <field name="country_id" ref="base.se"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">56.691128</field>
+            <field name="longitude">12.820211</field>
+            <field name="altitude">101</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Stockholm</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hfs" model="tt.destinations">
+            <field name="name">Hagfors Airport</field>
+            <field name="code">HFS</field>
+            <field name="icao">ESOH</field>
+            <field name="city">Hagfors</field>
+            <field name="country_id" ref="base.se"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">60.020064</field>
+            <field name="longitude">13.578908</field>
+            <field name="altitude">474</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Stockholm</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hlf" model="tt.destinations">
+            <field name="name">Hultsfred</field>
+            <field name="code">HLF</field>
+            <field name="icao">ESSF</field>
+            <field name="city">Hultsfred</field>
+            <field name="country_id" ref="base.se"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">57.525833</field>
+            <field name="longitude">15.823333</field>
+            <field name="altitude">366</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Stockholm</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hmv" model="tt.destinations">
+            <field name="name">Hemavan Airport</field>
+            <field name="code">HMV</field>
+            <field name="icao">ESUT</field>
+            <field name="city">Hemavan</field>
+            <field name="country_id" ref="base.se"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">65.806111</field>
+            <field name="longitude">15.082778</field>
+            <field name="altitude">1503</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Stockholm</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_huv" model="tt.destinations">
+            <field name="name">Hudiksvall</field>
+            <field name="code">HUV</field>
+            <field name="icao">ESNH</field>
+            <field name="city">Hudiksvall</field>
+            <field name="country_id" ref="base.se"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">61.768092</field>
+            <field name="longitude">17.080719</field>
+            <field name="altitude">95</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Stockholm</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jhe" model="tt.destinations">
+            <field name="name">Helsingborg Cruise Port</field>
+            <field name="code">JHE</field>
+            <field name="icao"></field>
+            <field name="city">Helsingborg</field>
+            <field name="country_id" ref="base.se"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">56.0419</field>
+            <field name="longitude">12.6912</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Stockholm</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jkg" model="tt.destinations">
+            <field name="name">Jonkoping</field>
+            <field name="code">JKG</field>
+            <field name="icao">ESGJ</field>
+            <field name="city">Joenkoeping</field>
+            <field name="country_id" ref="base.se"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">57.757594</field>
+            <field name="longitude">14.068731</field>
+            <field name="altitude">741</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Stockholm</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jld" model="tt.destinations">
+            <field name="name">Landskrona</field>
+            <field name="code">JLD</field>
+            <field name="icao">ESML</field>
+            <field name="city">Landskrona</field>
+            <field name="country_id" ref="base.se"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">55.944444</field>
+            <field name="longitude">12.869444</field>
+            <field name="altitude">194</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Stockholm</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kid" model="tt.destinations">
+            <field name="name">Kristianstad</field>
+            <field name="code">KID</field>
+            <field name="icao">ESMK</field>
+            <field name="city">Kristianstad</field>
+            <field name="country_id" ref="base.se"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">55.921686</field>
+            <field name="longitude">14.085536</field>
+            <field name="altitude">76</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Stockholm</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_klr" model="tt.destinations">
+            <field name="name">Kalmar</field>
+            <field name="code">KLR</field>
+            <field name="icao">ESMQ</field>
+            <field name="city">Kalkmar</field>
+            <field name="country_id" ref="base.se"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">56.685531</field>
+            <field name="longitude">16.287578</field>
+            <field name="altitude">17</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Stockholm</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_krf" model="tt.destinations">
+            <field name="name">Kramfors Solleftea</field>
+            <field name="code">KRF</field>
+            <field name="icao">ESNK</field>
+            <field name="city">Kramfors</field>
+            <field name="country_id" ref="base.se"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">63.048597</field>
+            <field name="longitude">17.768856</field>
+            <field name="altitude">34</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Stockholm</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_krn" model="tt.destinations">
+            <field name="name">Kiruna</field>
+            <field name="code">KRN</field>
+            <field name="icao">ESNQ</field>
+            <field name="city">Kiruna</field>
+            <field name="country_id" ref="base.se"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">67.821986</field>
+            <field name="longitude">20.336764</field>
+            <field name="altitude">1508</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Stockholm</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ksd" model="tt.destinations">
+            <field name="name">Karlstad Airport</field>
+            <field name="code">KSD</field>
+            <field name="icao">ESOK</field>
+            <field name="city">Karlstad</field>
+            <field name="country_id" ref="base.se"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">59.4447</field>
+            <field name="longitude">13.3374</field>
+            <field name="altitude">352</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Stockholm</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ksk" model="tt.destinations">
+            <field name="name">Karlskoga</field>
+            <field name="code">KSK</field>
+            <field name="icao">ESKK</field>
+            <field name="city">Karlskoga</field>
+            <field name="country_id" ref="base.se"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">59.345867</field>
+            <field name="longitude">14.495922</field>
+            <field name="altitude">400</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Stockholm</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kvb" model="tt.destinations">
+            <field name="name">Skovde</field>
+            <field name="code">KVB</field>
+            <field name="icao">ESGR</field>
+            <field name="city">Skovde</field>
+            <field name="country_id" ref="base.se"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">58.4564</field>
+            <field name="longitude">13.972672</field>
+            <field name="altitude">324</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Europe/Stockholm</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            

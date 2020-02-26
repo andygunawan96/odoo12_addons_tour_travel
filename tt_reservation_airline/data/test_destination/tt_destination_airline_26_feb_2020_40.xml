@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_ngz" model="tt.destinations">
+            <field name="name">NAS Alameda</field>
+            <field name="code">NGZ</field>
+            <field name="icao">KNGZ</field>
+            <field name="city">Alameda</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.7861</field>
+            <field name="longitude">-122.3186</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Los_Angeles</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nhk" model="tt.destinations">
+            <field name="name">Patuxent River Nas</field>
+            <field name="code">NHK</field>
+            <field name="icao">KNHK</field>
+            <field name="city">Patuxent River</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">38.285981</field>
+            <field name="longitude">-76.411781</field>
+            <field name="altitude">39</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nib" model="tt.destinations">
+            <field name="name">Nikolai Airport</field>
+            <field name="code">NIB</field>
+            <field name="icao">PAFS</field>
+            <field name="city">Nikolai</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">63.010833</field>
+            <field name="longitude">-154.383889</field>
+            <field name="altitude">427</field>
+            <field name="timezone_hour">-9</field>
+            <field name="tz">America/Anchorage</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nid" model="tt.destinations">
+            <field name="name">China Lake Naws</field>
+            <field name="code">NID</field>
+            <field name="icao">KNID</field>
+            <field name="city">China</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.685422</field>
+            <field name="longitude">-117.692039</field>
+            <field name="altitude">2283</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Los_Angeles</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nim" model="tt.destinations">
+            <field name="name">Diori Hamani</field>
+            <field name="code">NIM</field>
+            <field name="icao">DRRN</field>
+            <field name="city">Niamey</field>
+            <field name="country_id" ref="base.ne"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">13.481547</field>
+            <field name="longitude">2.183614</field>
+            <field name="altitude">732</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Africa/Niamey</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nio" model="tt.destinations">
+            <field name="name">Nioki Airport</field>
+            <field name="code">NIO</field>
+            <field name="icao">FZBI</field>
+            <field name="city">Nioki</field>
+            <field name="country_id" ref="base.cg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-2.7175</field>
+            <field name="longitude">17.6847</field>
+            <field name="altitude">1043</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Africa/Kinshasa</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nip" model="tt.destinations">
+            <field name="name">Jacksonville Nas</field>
+            <field name="code">NIP</field>
+            <field name="icao">KNIP</field>
+            <field name="city">Jacksonville</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">30.235834</field>
+            <field name="longitude">-81.680556</field>
+            <field name="altitude">22</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_njf" model="tt.destinations">
+            <field name="name">Al Najaf International Airport</field>
+            <field name="code">NJF</field>
+            <field name="icao">ORNI</field>
+            <field name="city">Najaf</field>
+            <field name="country_id" ref="base.iq"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">31.991667</field>
+            <field name="longitude">44.404167</field>
+            <field name="altitude">500</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Asia/Baghdad</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_njk" model="tt.destinations">
+            <field name="name">El Centro Naf</field>
+            <field name="code">NJK</field>
+            <field name="icao">KNJK</field>
+            <field name="city">El Centro</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">32.829222</field>
+            <field name="longitude">-115.671667</field>
+            <field name="altitude">-42</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Los_Angeles</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nkc" model="tt.destinations">
+            <field name="name">Nouakchott</field>
+            <field name="code">NKC</field>
+            <field name="icao">GQNN</field>
+            <field name="city">Nouakschott</field>
+            <field name="country_id" ref="base.mr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">18.097856</field>
+            <field name="longitude">-15.947956</field>
+            <field name="altitude">7</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Africa/Nouakchott</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nkg" model="tt.destinations">
+            <field name="name">Lukou</field>
+            <field name="code">NKG</field>
+            <field name="icao">ZSNJ</field>
+            <field name="city">Nanjing</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">31.742042</field>
+            <field name="longitude">118.862025</field>
+            <field name="altitude">49</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nkt" model="tt.destinations">
+            <field name="name">Cherry Point Mcas</field>
+            <field name="code">NKT</field>
+            <field name="icao">KNKT</field>
+            <field name="city">Cherry Point</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">34.900872</field>
+            <field name="longitude">-76.880733</field>
+            <field name="altitude">29</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nkx" model="tt.destinations">
+            <field name="name">Miramar Mcas</field>
+            <field name="code">NKX</field>
+            <field name="icao">KNKX</field>
+            <field name="city">Miramar</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">32.867694</field>
+            <field name="longitude">-117.14175</field>
+            <field name="altitude">478</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Los_Angeles</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nla" model="tt.destinations">
+            <field name="name">Ndola</field>
+            <field name="code">NLA</field>
+            <field name="icao">FLND</field>
+            <field name="city">Ndola</field>
+            <field name="country_id" ref="base.zm"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-12.998139</field>
+            <field name="longitude">28.664944</field>
+            <field name="altitude">4167</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Africa/Lusaka</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nlc" model="tt.destinations">
+            <field name="name">Lemoore Nas</field>
+            <field name="code">NLC</field>
+            <field name="icao">KNLC</field>
+            <field name="city">Lemoore</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.333012</field>
+            <field name="longitude">-119.95208</field>
+            <field name="altitude">234</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Los_Angeles</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nld" model="tt.destinations">
+            <field name="name">Quetzalcoatl Intl</field>
+            <field name="code">NLD</field>
+            <field name="icao">MMNL</field>
+            <field name="city">Nuevo Laredo</field>
+            <field name="country_id" ref="base.mx"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">27.443918</field>
+            <field name="longitude">-99.57046</field>
+            <field name="altitude">484</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Mexico_City</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nlg" model="tt.destinations">
+            <field name="name">Nelson Lagoon</field>
+            <field name="code">NLG</field>
+            <field name="icao">PAOU</field>
+            <field name="city">Nelson Lagoon</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">56.0075</field>
+            <field name="longitude">-161.160278</field>
+            <field name="altitude">14</field>
+            <field name="timezone_hour">-9</field>
+            <field name="tz">America/Anchorage</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nlo" model="tt.destinations">
+            <field name="name">Ndolo</field>
+            <field name="code">NLO</field>
+            <field name="icao">FZAB</field>
+            <field name="city">Kinshasa</field>
+            <field name="country_id" ref="base.cg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-4.326689</field>
+            <field name="longitude">15.327342</field>
+            <field name="altitude">915</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Africa/Kinshasa</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nlp" model="tt.destinations">
+            <field name="name">Nelspruit Airport</field>
+            <field name="code">NLP</field>
+            <field name="icao">FANS</field>
+            <field name="city">Nelspruit</field>
+            <field name="country_id" ref="base.za"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-25.5</field>
+            <field name="longitude">30.9138</field>
+            <field name="altitude">2875</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Africa/Johannesburg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nlt" model="tt.destinations">
+            <field name="name">Nalati</field>
+            <field name="code">NLT</field>
+            <field name="icao">ZWNL</field>
+            <field name="city">Xinyuan</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.433056</field>
+            <field name="longitude">83.380278</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nmb" model="tt.destinations">
+            <field name="name">Daman</field>
+            <field name="code">NMB</field>
+            <field name="icao">VADN</field>
+            <field name="city">Daman</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">20.434364</field>
+            <field name="longitude">72.843206</field>
+            <field name="altitude">33</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nme" model="tt.destinations">
+            <field name="name">Nightmute Airport</field>
+            <field name="code">NME</field>
+            <field name="icao">PAGT</field>
+            <field name="city">Nightmute</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">60.471111</field>
+            <field name="longitude">-164.700833</field>
+            <field name="altitude">4</field>
+            <field name="timezone_hour">-9</field>
+            <field name="tz">America/Anchorage</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nml" model="tt.destinations">
+            <field name="name">Fort McMurray - Mildred Lake Airport</field>
+            <field name="code">NML</field>
+            <field name="icao"></field>
+            <field name="city">Fort McMurray</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">57.055599</field>
+            <field name="longitude">-111.573997</field>
+            <field name="altitude">1046</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Edmonton</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nmm" model="tt.destinations">
+            <field name="name">Meridian Nas</field>
+            <field name="code">NMM</field>
+            <field name="icao">KNMM</field>
+            <field name="city">Meridian</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">32.552083</field>
+            <field name="longitude">-88.555557</field>
+            <field name="altitude">317</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nna" model="tt.destinations">
+            <field name="name">Kenitra</field>
+            <field name="code">NNA</field>
+            <field name="icao">GMMY</field>
+            <field name="city">Kentira</field>
+            <field name="country_id" ref="base.ma"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">34.298864</field>
+            <field name="longitude">-6.595878</field>
+            <field name="altitude">16</field>
+            <field name="timezone_hour">0</field>
+            <field name="tz">Africa/Casablanca</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nng" model="tt.destinations">
+            <field name="name">Wuxu</field>
+            <field name="code">NNG</field>
+            <field name="icao">ZGNN</field>
+            <field name="city">Nanning</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">22.608267</field>
+            <field name="longitude">108.172442</field>
+            <field name="altitude">421</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nnl" model="tt.destinations">
+            <field name="name">Nondalton Airport</field>
+            <field name="code">NNL</field>
+            <field name="icao">PANO</field>
+            <field name="city">Nondalton</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">59.966944</field>
+            <field name="longitude">-154.851667</field>
+            <field name="altitude">262</field>
+            <field name="timezone_hour">-9</field>
+            <field name="tz">America/Anchorage</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nnt" model="tt.destinations">
+            <field name="name">Nan</field>
+            <field name="code">NNT</field>
+            <field name="icao">VTCN</field>
+            <field name="city">Nan</field>
+            <field name="country_id" ref="base.th"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">18.807914</field>
+            <field name="longitude">100.783419</field>
+            <field name="altitude">685</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Bangkok</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nny" model="tt.destinations">
+            <field name="name">Nanyang Airport</field>
+            <field name="code">NNY</field>
+            <field name="icao">ZHNY</field>
+            <field name="city">Nanyang</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">32.9808</field>
+            <field name="longitude">112.615</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nob" model="tt.destinations">
+            <field name="name">Nosara</field>
+            <field name="code">NOB</field>
+            <field name="icao">MRNS</field>
+            <field name="city">Nosara Beach</field>
+            <field name="country_id" ref="base.cr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">9.97649</field>
+            <field name="longitude">-85.653</field>
+            <field name="altitude">33</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Costa_Rica</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nog" model="tt.destinations">
+            <field name="name">Nogales Intl</field>
+            <field name="code">NOG</field>
+            <field name="icao">MMNG</field>
+            <field name="city">Nogales</field>
+            <field name="country_id" ref="base.mx"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">31.226083</field>
+            <field name="longitude">-110.975831</field>
+            <field name="altitude">3990</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Hermosillo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nov" model="tt.destinations">
+            <field name="name">Huambo</field>
+            <field name="code">NOV</field>
+            <field name="icao">FNHU</field>
+            <field name="city">Huambo</field>
+            <field name="country_id" ref="base.ao"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-12.808878</field>
+            <field name="longitude">15.760547</field>
+            <field name="altitude">5587</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Africa/Luanda</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_now" model="tt.destinations">
+            <field name="name">Port Angeles Cgas</field>
+            <field name="code">NOW</field>
+            <field name="icao">KNOW</field>
+            <field name="city">Port Angeles</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.141481</field>
+            <field name="longitude">-123.414075</field>
+            <field name="altitude">13</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Los_Angeles</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_npa" model="tt.destinations">
+            <field name="name">Pensacola Nas</field>
+            <field name="code">NPA</field>
+            <field name="icao">KNPA</field>
+            <field name="city">Pensacola</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">30.352656</field>
+            <field name="longitude">-87.318647</field>
+            <field name="altitude">28</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_npz" model="tt.destinations">
+            <field name="name">Porter County Municipal Airport</field>
+            <field name="code">NPZ</field>
+            <field name="icao"></field>
+            <field name="city">Valparaiso</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">41.4539722</field>
+            <field name="longitude">-87.0070833</field>
+            <field name="altitude">770</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nqa" model="tt.destinations">
+            <field name="name">Millington Rgnl Jetport</field>
+            <field name="code">NQA</field>
+            <field name="icao">KNQA</field>
+            <field name="city">Millington</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.356667</field>
+            <field name="longitude">-89.870278</field>
+            <field name="altitude">320</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nqi" model="tt.destinations">
+            <field name="name">Kingsville Nas</field>
+            <field name="code">NQI</field>
+            <field name="icao">KNQI</field>
+            <field name="city">Kingsville</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">27.507223</field>
+            <field name="longitude">-97.809723</field>
+            <field name="altitude">50</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nqn" model="tt.destinations">
+            <field name="name">Presidente Peron</field>
+            <field name="code">NQN</field>
+            <field name="icao">SAZN</field>
+            <field name="city">Neuquen</field>
+            <field name="country_id" ref="base.ar"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-38.949</field>
+            <field name="longitude">-68.155711</field>
+            <field name="altitude">895</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Cordoba</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nqu" model="tt.destinations">
+            <field name="name">Reyes Murillo Airport</field>
+            <field name="code">NQU</field>
+            <field name="icao">SKNQ</field>
+            <field name="city">Nuqu铆</field>
+            <field name="country_id" ref="base.co"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">5.7</field>
+            <field name="longitude">-77.28</field>
+            <field name="altitude">12</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Bogota</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nqx" model="tt.destinations">
+            <field name="name">Key West Nas</field>
+            <field name="code">NQX</field>
+            <field name="icao">KNQX</field>
+            <field name="city">Key West</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">24.575834</field>
+            <field name="longitude">-81.688889</field>
+            <field name="altitude">6</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nsb" model="tt.destinations">
+            <field name="name">Bimini North Seaplane Base</field>
+            <field name="code">NSB</field>
+            <field name="icao"></field>
+            <field name="city">Bimini</field>
+            <field name="country_id" ref="base.bs"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">25.767</field>
+            <field name="longitude">-79.25</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Nassau</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nse" model="tt.destinations">
+            <field name="name">Whiting Fld Nas North</field>
+            <field name="code">NSE</field>
+            <field name="icao">KNSE</field>
+            <field name="city">Milton</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">30.724167</field>
+            <field name="longitude">-87.021944</field>
+            <field name="altitude">199</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nsi" model="tt.destinations">
+            <field name="name">Yaounde Nsimalen</field>
+            <field name="code">NSI</field>
+            <field name="icao">FKYS</field>
+            <field name="city">Yaounde</field>
+            <field name="country_id" ref="base.cm"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">3.722556</field>
+            <field name="longitude">11.553269</field>
+            <field name="altitude">2278</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Africa/Douala</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nst" model="tt.destinations">
+            <field name="name">Nakhon Si Thammarat</field>
+            <field name="code">NST</field>
+            <field name="icao">VTSF</field>
+            <field name="city">Nakhon Si Thammarat</field>
+            <field name="country_id" ref="base.th"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">8.539617</field>
+            <field name="longitude">99.944725</field>
+            <field name="altitude">13</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Bangkok</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ntd" model="tt.destinations">
+            <field name="name">Point Mugu Nas</field>
+            <field name="code">NTD</field>
+            <field name="icao">KNTD</field>
+            <field name="city">Point Mugu</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">34.120285</field>
+            <field name="longitude">-119.12094</field>
+            <field name="altitude">13</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Los_Angeles</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ntg" model="tt.destinations">
+            <field name="name">Nantong Airport</field>
+            <field name="code">NTG</field>
+            <field name="icao"></field>
+            <field name="city">Nantong</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">32.0708</field>
+            <field name="longitude">120.976</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ntr" model="tt.destinations">
+            <field name="name">Del Norte Intl</field>
+            <field name="code">NTR</field>
+            <field name="icao">MMAN</field>
+            <field name="city">Monterrey</field>
+            <field name="country_id" ref="base.mx"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">25.865572</field>
+            <field name="longitude">-100.237239</field>
+            <field name="altitude">1476</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Mexico_City</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ntu" model="tt.destinations">
+            <field name="name">Oceana Nas</field>
+            <field name="code">NTU</field>
+            <field name="icao">KNTU</field>
+            <field name="city">Oceana</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.820703</field>
+            <field name="longitude">-76.033542</field>
+            <field name="altitude">22</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nty" model="tt.destinations">
+            <field name="name">Pilanesberg Intl</field>
+            <field name="code">NTY</field>
+            <field name="icao">FAPN</field>
+            <field name="city">Pilanesberg</field>
+            <field name="country_id" ref="base.za"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-25.333822</field>
+            <field name="longitude">27.173358</field>
+            <field name="altitude">3412</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Africa/Johannesburg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_nu8" model="tt.destinations">
+            <field name="name">Markham</field>
+            <field name="code">NU8</field>
+            <field name="icao">CNU8</field>
+            <field name="city">Markham</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.935278</field>
+            <field name="longitude">-79.263333</field>
+            <field name="altitude">807</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Toronto</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            

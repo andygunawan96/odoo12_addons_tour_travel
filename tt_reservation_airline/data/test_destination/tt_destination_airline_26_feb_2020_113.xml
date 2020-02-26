@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_ofu" model="tt.destinations">
+            <field name="name">Ofu Airport</field>
+            <field name="code">OFU</field>
+            <field name="icao"></field>
+            <field name="city">Ofu</field>
+            <field name="country_id" ref="base.ws"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-14.184444</field>
+            <field name="longitude">-169.67</field>
+            <field name="altitude">9</field>
+            <field name="timezone_hour">-11</field>
+            <field name="tz">Pacific/Pago_Pago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ppg" model="tt.destinations">
+            <field name="name">Pago Pago Intl</field>
+            <field name="code">PPG</field>
+            <field name="icao">NSTU</field>
+            <field name="city">Pago Pago</field>
+            <field name="country_id" ref="base.ws"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-14.331</field>
+            <field name="longitude">-170.7105</field>
+            <field name="altitude">32</field>
+            <field name="timezone_hour">-11</field>
+            <field name="tz">Pacific/Pago_Pago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_c23" model="tt.destinations">
+            <field name="name">Peleliu Airfield</field>
+            <field name="code">C23</field>
+            <field name="icao"></field>
+            <field name="city">Peleliu</field>
+            <field name="country_id" ref="base.pw"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">6.998333</field>
+            <field name="longitude">134.232778</field>
+            <field name="altitude">9</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Pacific/Palau</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ror" model="tt.destinations">
+            <field name="name">Babelthuap</field>
+            <field name="code">ROR</field>
+            <field name="icao">PTRO</field>
+            <field name="city">Babelthuap</field>
+            <field name="country_id" ref="base.pw"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">7.367303</field>
+            <field name="longitude">134.544278</field>
+            <field name="altitude">176</field>
+            <field name="timezone_hour">9</field>
+            <field name="tz">Pacific/Palau</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pni" model="tt.destinations">
+            <field name="name">Pohnpei Intl</field>
+            <field name="code">PNI</field>
+            <field name="icao">PTPN</field>
+            <field name="city">Pohnpei</field>
+            <field name="country_id" ref="base.fm"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">6.9851</field>
+            <field name="longitude">158.208989</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">11</field>
+            <field name="tz">Pacific/Ponape</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_agl" model="tt.destinations">
+            <field name="name">Wanigela Airport</field>
+            <field name="code">AGL</field>
+            <field name="icao"></field>
+            <field name="city">Wanigela</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-9.333</field>
+            <field name="longitude">149.15</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_aie" model="tt.destinations">
+            <field name="name">Aiome</field>
+            <field name="code">AIE</field>
+            <field name="icao"></field>
+            <field name="city">Aiome</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-5.8</field>
+            <field name="longitude">144.44</field>
+            <field name="altitude">350</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_atp" model="tt.destinations">
+            <field name="name">Tadji Airport</field>
+            <field name="code">ATP</field>
+            <field name="icao"></field>
+            <field name="city">Aitape</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-3.18985</field>
+            <field name="longitude">142.43</field>
+            <field name="altitude">48</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_auj" model="tt.destinations">
+            <field name="name">Ambunti</field>
+            <field name="code">AUJ</field>
+            <field name="icao"></field>
+            <field name="city">Ambunti</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-4.15</field>
+            <field name="longitude">142.51</field>
+            <field name="altitude">160</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_awb" model="tt.destinations">
+            <field name="name">Awaba Airport</field>
+            <field name="code">AWB</field>
+            <field name="icao"></field>
+            <field name="city">Awaba</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-8.014</field>
+            <field name="longitude">142.75</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bot" model="tt.destinations">
+            <field name="name">Bosset Airport</field>
+            <field name="code">BOT</field>
+            <field name="icao"></field>
+            <field name="city">Bosset</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-7.240833</field>
+            <field name="longitude">141.092333</field>
+            <field name="altitude">60</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_bua" model="tt.destinations">
+            <field name="name">Buka Airport</field>
+            <field name="code">BUA</field>
+            <field name="icao">AYBK</field>
+            <field name="city">Buka Island</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-5.42232</field>
+            <field name="longitude">154.673</field>
+            <field name="altitude">11</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_cmu" model="tt.destinations">
+            <field name="name">Chimbu Airport</field>
+            <field name="code">CMU</field>
+            <field name="icao">AYCH</field>
+            <field name="city">Kundiawa</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-6.02429</field>
+            <field name="longitude">144.971</field>
+            <field name="altitude">4974</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_dau" model="tt.destinations">
+            <field name="name">Daru Airport</field>
+            <field name="code">DAU</field>
+            <field name="icao">AYDU</field>
+            <field name="city">Daru</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-9.08676</field>
+            <field name="longitude">143.208</field>
+            <field name="altitude">20</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_eia" model="tt.destinations">
+            <field name="name">Popondetta</field>
+            <field name="code">EIA</field>
+            <field name="icao"></field>
+            <field name="city">Popondetta</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-8.199999809</field>
+            <field name="longitude">147.8500061</field>
+            <field name="altitude">311</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_fne" model="tt.destinations">
+            <field name="name">Fane Airport</field>
+            <field name="code">FNE</field>
+            <field name="icao"></field>
+            <field name="city">Fane</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-8.55</field>
+            <field name="longitude">147.083</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gka" model="tt.destinations">
+            <field name="name">Goroka</field>
+            <field name="code">GKA</field>
+            <field name="icao">AYGA</field>
+            <field name="city">Goroka</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-6.081689</field>
+            <field name="longitude">145.391881</field>
+            <field name="altitude">5282</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gmi" model="tt.destinations">
+            <field name="name">Gasmata Island Airport</field>
+            <field name="code">GMI</field>
+            <field name="icao"></field>
+            <field name="city">Gasmata Island</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-6.27111</field>
+            <field name="longitude">150.331</field>
+            <field name="altitude">23</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_gur" model="tt.destinations">
+            <field name="name">Gurney Airport</field>
+            <field name="code">GUR</field>
+            <field name="icao">AYGN</field>
+            <field name="city">Gurney</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-10.3115</field>
+            <field name="longitude">150.334</field>
+            <field name="altitude">88</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hgu" model="tt.destinations">
+            <field name="name">Mount Hagen</field>
+            <field name="code">HGU</field>
+            <field name="icao">AYMH</field>
+            <field name="city">Mount Hagen</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-5.826789</field>
+            <field name="longitude">144.295861</field>
+            <field name="altitude">5388</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_hkn" model="tt.destinations">
+            <field name="name">Kimbe Airport</field>
+            <field name="code">HKN</field>
+            <field name="icao">AYHK</field>
+            <field name="city">Hoskins</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-5.46217</field>
+            <field name="longitude">150.405</field>
+            <field name="altitude">66</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ihu" model="tt.destinations">
+            <field name="name">Ihu Airport</field>
+            <field name="code">IHU</field>
+            <field name="icao"></field>
+            <field name="city">Ihu</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-7.89756</field>
+            <field name="longitude">145.396</field>
+            <field name="altitude">47</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_iis" model="tt.destinations">
+            <field name="name">Nissan Island Airport</field>
+            <field name="code">IIS</field>
+            <field name="icao"></field>
+            <field name="city">Nissan Island</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-4.49972</field>
+            <field name="longitude">154.226</field>
+            <field name="altitude">52</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_itk" model="tt.destinations">
+            <field name="name">Itokama Airport</field>
+            <field name="code">ITK</field>
+            <field name="icao"></field>
+            <field name="city">Itokama</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-9.2</field>
+            <field name="longitude">148.25</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_jaq" model="tt.destinations">
+            <field name="name">Jacquinot Bay Airport</field>
+            <field name="code">JAQ</field>
+            <field name="icao"></field>
+            <field name="city">Jacquinot Bay</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-5.6525</field>
+            <field name="longitude">151.507</field>
+            <field name="altitude">136</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kdr" model="tt.destinations">
+            <field name="name">Kandrian Airport</field>
+            <field name="code">KDR</field>
+            <field name="icao"></field>
+            <field name="city">Kandrian</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-6.183</field>
+            <field name="longitude">149.533</field>
+            <field name="altitude">280</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kkd" model="tt.destinations">
+            <field name="name">Kokoda Airport</field>
+            <field name="code">KKD</field>
+            <field name="icao"></field>
+            <field name="city">Kokoda</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-8.88468</field>
+            <field name="longitude">147.731</field>
+            <field name="altitude">1240</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kma" model="tt.destinations">
+            <field name="name">Kerema Airport</field>
+            <field name="code">KMA</field>
+            <field name="icao">AYKM</field>
+            <field name="city">Kerema</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-7.96361</field>
+            <field name="longitude">145.771</field>
+            <field name="altitude">10</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kri" model="tt.destinations">
+            <field name="name">Kikori Airport</field>
+            <field name="code">KRI</field>
+            <field name="icao">AYKK</field>
+            <field name="city">Kikori</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-7.42438</field>
+            <field name="longitude">144.25</field>
+            <field name="altitude">50</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kuy" model="tt.destinations">
+            <field name="name">Kamusi Airport</field>
+            <field name="code">KUY</field>
+            <field name="icao"></field>
+            <field name="city">Kamusi</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-7.42035</field>
+            <field name="longitude">143.122</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_kvg" model="tt.destinations">
+            <field name="name">Kavieng Airport</field>
+            <field name="code">KVG</field>
+            <field name="icao">AYKV</field>
+            <field name="city">Kavieng</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-2.5794</field>
+            <field name="longitude">150.808</field>
+            <field name="altitude">7</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lae" model="tt.destinations">
+            <field name="name">Nadzab</field>
+            <field name="code">LAE</field>
+            <field name="icao">AYNZ</field>
+            <field name="city">Nadzab</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-6.569828</field>
+            <field name="longitude">146.726242</field>
+            <field name="altitude">239</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lmy" model="tt.destinations">
+            <field name="name">Lake Murray Airport</field>
+            <field name="code">LMY</field>
+            <field name="icao"></field>
+            <field name="city">Lake Murray</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-7.00992</field>
+            <field name="longitude">141.494</field>
+            <field name="altitude">52</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lnv" model="tt.destinations">
+            <field name="name">Londolovit Airport</field>
+            <field name="code">LNV</field>
+            <field name="icao"></field>
+            <field name="city">Londolovit</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-3.04361</field>
+            <field name="longitude">152.629</field>
+            <field name="altitude">167</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lsa" model="tt.destinations">
+            <field name="name">Losuia Airport</field>
+            <field name="code">LSA</field>
+            <field name="icao"></field>
+            <field name="city">Losuia</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-8.50582</field>
+            <field name="longitude">151.081</field>
+            <field name="altitude">27</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mag" model="tt.destinations">
+            <field name="name">Madang</field>
+            <field name="code">MAG</field>
+            <field name="icao">AYMD</field>
+            <field name="city">Madang</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-5.207083</field>
+            <field name="longitude">145.7887</field>
+            <field name="altitude">20</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mas" model="tt.destinations">
+            <field name="name">Momote Airport</field>
+            <field name="code">MAS</field>
+            <field name="icao">AYMO</field>
+            <field name="city">Momote</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-2.06189</field>
+            <field name="longitude">147.424</field>
+            <field name="altitude">12</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mdu" model="tt.destinations">
+            <field name="name">Mendi Airport</field>
+            <field name="code">MDU</field>
+            <field name="icao">AYMN</field>
+            <field name="city">Mendi</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-6.14774</field>
+            <field name="longitude">143.657</field>
+            <field name="altitude">5680</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mis" model="tt.destinations">
+            <field name="name">Misima Island Airport</field>
+            <field name="code">MIS</field>
+            <field name="icao">AYMS</field>
+            <field name="city">Misima Island</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-10.6892</field>
+            <field name="longitude">152.838</field>
+            <field name="altitude">26</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mxh" model="tt.destinations">
+            <field name="name">Moro Airport</field>
+            <field name="code">MXH</field>
+            <field name="icao">AYMR</field>
+            <field name="city">Moro</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-6.36333</field>
+            <field name="longitude">143.238</field>
+            <field name="altitude">2740</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_obx" model="tt.destinations">
+            <field name="name">Obo Airport</field>
+            <field name="code">OBX</field>
+            <field name="icao"></field>
+            <field name="city">Obo</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-7.583</field>
+            <field name="longitude">141.317</field>
+            <field name="altitude">29</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_onb" model="tt.destinations">
+            <field name="name">Ononge Airport</field>
+            <field name="code">ONB</field>
+            <field name="icao"></field>
+            <field name="city">Ononge</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-8.583</field>
+            <field name="longitude">147.2</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_opu" model="tt.destinations">
+            <field name="name">Balimo Airport</field>
+            <field name="code">OPU</field>
+            <field name="icao"></field>
+            <field name="city">Balimo</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-8.05</field>
+            <field name="longitude">142.933</field>
+            <field name="altitude">51</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pnp" model="tt.destinations">
+            <field name="name">Girua Airport</field>
+            <field name="code">PNP</field>
+            <field name="icao">AYGR</field>
+            <field name="city">Girua</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-8.80454</field>
+            <field name="longitude">148.309</field>
+            <field name="altitude">311</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pom" model="tt.destinations">
+            <field name="name">Port Moresby Jacksons Intl</field>
+            <field name="code">POM</field>
+            <field name="icao">AYPY</field>
+            <field name="city">Port Moresby</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-9.443383</field>
+            <field name="longitude">147.22005</field>
+            <field name="altitude">146</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_rab" model="tt.destinations">
+            <field name="name">Tokua Airport</field>
+            <field name="code">RAB</field>
+            <field name="icao">AYTK</field>
+            <field name="city">Tokua</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-4.34046</field>
+            <field name="longitude">152.38</field>
+            <field name="altitude">32</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_sim" model="tt.destinations">
+            <field name="name">Simbai</field>
+            <field name="code">SIM</field>
+            <field name="icao"></field>
+            <field name="city">Simbai</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-4</field>
+            <field name="longitude">144</field>
+            <field name="altitude">5450</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_skc" model="tt.destinations">
+            <field name="name">Suki Airport</field>
+            <field name="code">SKC</field>
+            <field name="icao"></field>
+            <field name="city">Suki</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-8.033</field>
+            <field name="longitude">141.717</field>
+            <field name="altitude">24</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tbg" model="tt.destinations">
+            <field name="name">Tabubil Airport</field>
+            <field name="code">TBG</field>
+            <field name="icao">AYTB</field>
+            <field name="city">Tabubil</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-5.27861</field>
+            <field name="longitude">141.226</field>
+            <field name="altitude">1570</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_tfi" model="tt.destinations">
+            <field name="name">Tufi Airport</field>
+            <field name="code">TFI</field>
+            <field name="icao"></field>
+            <field name="city">Tufi</field>
+            <field name="country_id" ref="base.pg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-9.07595</field>
+            <field name="longitude">149.32</field>
+            <field name="altitude">85</field>
+            <field name="timezone_hour">10</field>
+            <field name="tz">Pacific/Port_Moresby</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            

@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_plp" model="tt.destinations">
+            <field name="name">Captain Ramon Xatruch Airport</field>
+            <field name="code">PLP</field>
+            <field name="icao">MPLP</field>
+            <field name="city">La Palma</field>
+            <field name="country_id" ref="base.pa"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">8.40667</field>
+            <field name="longitude">-78.1417</field>
+            <field name="altitude">30</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Panama</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pls" model="tt.destinations">
+            <field name="name">Providenciales</field>
+            <field name="code">PLS</field>
+            <field name="icao">MBPV</field>
+            <field name="city">Providenciales</field>
+            <field name="country_id" ref="base.tc"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">21.773625</field>
+            <field name="longitude">-72.265886</field>
+            <field name="altitude">15</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Grand_Turk</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_plu" model="tt.destinations">
+            <field name="name">Pampulha Carlos Drummond De Andrade</field>
+            <field name="code">PLU</field>
+            <field name="icao">SBBH</field>
+            <field name="city">Belo Horizonte</field>
+            <field name="country_id" ref="base.br"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-19.851181</field>
+            <field name="longitude">-43.950628</field>
+            <field name="altitude">2589</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Sao_Paulo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_plz" model="tt.destinations">
+            <field name="name">Port Elizabeth Intl</field>
+            <field name="code">PLZ</field>
+            <field name="icao">FAPE</field>
+            <field name="city">Port Elizabeth</field>
+            <field name="country_id" ref="base.za"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-33.984919</field>
+            <field name="longitude">25.617275</field>
+            <field name="altitude">226</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Africa/Johannesburg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pma" model="tt.destinations">
+            <field name="name">Pemba</field>
+            <field name="code">PMA</field>
+            <field name="icao">HTPE</field>
+            <field name="city">Pemba</field>
+            <field name="country_id" ref="base.tz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-5.257264</field>
+            <field name="longitude">39.811417</field>
+            <field name="altitude">80</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Africa/Dar_es_Salaam</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pmb" model="tt.destinations">
+            <field name="name">Pembina Muni</field>
+            <field name="code">PMB</field>
+            <field name="icao">KPMB</field>
+            <field name="city">Pembina</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.942501</field>
+            <field name="longitude">-97.240833</field>
+            <field name="altitude">795</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pmc" model="tt.destinations">
+            <field name="name">El Tepual Intl</field>
+            <field name="code">PMC</field>
+            <field name="icao">SCTE</field>
+            <field name="city">Puerto Montt</field>
+            <field name="country_id" ref="base.cl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-41.438886</field>
+            <field name="longitude">-73.093953</field>
+            <field name="altitude">294</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">America/Santiago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pmd" model="tt.destinations">
+            <field name="name">Palmdale Rgnl Usaf Plt 42</field>
+            <field name="code">PMD</field>
+            <field name="icao">KPMD</field>
+            <field name="city">Palmdale</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">34.629391</field>
+            <field name="longitude">-118.08456</field>
+            <field name="altitude">2543</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Los_Angeles</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pmg" model="tt.destinations">
+            <field name="name">Ponta Pora</field>
+            <field name="code">PMG</field>
+            <field name="icao">SBPP</field>
+            <field name="city">Ponta Pora</field>
+            <field name="country_id" ref="base.br"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-22.549639</field>
+            <field name="longitude">-55.702614</field>
+            <field name="altitude">2156</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">America/Campo_Grande</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pml" model="tt.destinations">
+            <field name="name">Port Moller Airport</field>
+            <field name="code">PML</field>
+            <field name="icao">PAAL</field>
+            <field name="city">Cold Bay</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">56.006111</field>
+            <field name="longitude">-160.560833</field>
+            <field name="altitude">20</field>
+            <field name="timezone_hour">-9</field>
+            <field name="tz">America/Anchorage</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pmp" model="tt.destinations">
+            <field name="name">Pompano Beach Airpark</field>
+            <field name="code">PMP</field>
+            <field name="icao">KPMP</field>
+            <field name="city">Pompano Beach</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">26.2471389</field>
+            <field name="longitude">-80.1110556</field>
+            <field name="altitude">19</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pmq" model="tt.destinations">
+            <field name="name">Perito Moreno</field>
+            <field name="code">PMQ</field>
+            <field name="icao">SAWP</field>
+            <field name="city">Perito Moreno</field>
+            <field name="country_id" ref="base.ar"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-46.537911</field>
+            <field name="longitude">-70.978689</field>
+            <field name="altitude">1410</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Cordoba</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pmv" model="tt.destinations">
+            <field name="name">Del Caribe Intl Gen Santiago Marino</field>
+            <field name="code">PMV</field>
+            <field name="icao">SVMG</field>
+            <field name="city">Porlamar</field>
+            <field name="country_id" ref="base.ve"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">10.912926</field>
+            <field name="longitude">-63.967581</field>
+            <field name="altitude">74</field>
+            <field name="timezone_hour">-4.5</field>
+            <field name="tz">America/Caracas</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pmw" model="tt.destinations">
+            <field name="name">Palmas</field>
+            <field name="code">PMW</field>
+            <field name="icao">SBPJ</field>
+            <field name="city">Palmas</field>
+            <field name="country_id" ref="base.br"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-10.241667</field>
+            <field name="longitude">-48.35278</field>
+            <field name="altitude">774</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Fortaleza</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pmy" model="tt.destinations">
+            <field name="name">El Tehuelche</field>
+            <field name="code">PMY</field>
+            <field name="icao">SAVY</field>
+            <field name="city">Puerto Madryn</field>
+            <field name="country_id" ref="base.ar"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-42.759161</field>
+            <field name="longitude">-65.102725</field>
+            <field name="altitude">426</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Cordoba</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pmz" model="tt.destinations">
+            <field name="name">Palmar Sur</field>
+            <field name="code">PMZ</field>
+            <field name="icao">MRPM</field>
+            <field name="city">Palmar Sur</field>
+            <field name="country_id" ref="base.cr"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">8.951025</field>
+            <field name="longitude">-83.468583</field>
+            <field name="altitude">49</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Costa_Rica</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pnb" model="tt.destinations">
+            <field name="name">Porto Nacional</field>
+            <field name="code">PNB</field>
+            <field name="icao">SBPN</field>
+            <field name="city">Porto Nacional</field>
+            <field name="country_id" ref="base.br"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-10.719417</field>
+            <field name="longitude">-48.399736</field>
+            <field name="altitude">870</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Fortaleza</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pnc" model="tt.destinations">
+            <field name="name">Ponca City Rgnl</field>
+            <field name="code">PNC</field>
+            <field name="icao">KPNC</field>
+            <field name="city">Ponca City</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.731958</field>
+            <field name="longitude">-97.099781</field>
+            <field name="altitude">1007</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pnd" model="tt.destinations">
+            <field name="name">Punta Gorda Airport</field>
+            <field name="code">PND</field>
+            <field name="icao"></field>
+            <field name="city">Punta Gorda</field>
+            <field name="country_id" ref="base.bz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">16.1024</field>
+            <field name="longitude">-88.8083</field>
+            <field name="altitude">7</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Belize</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pne" model="tt.destinations">
+            <field name="name">Northeast Philadelphia</field>
+            <field name="code">PNE</field>
+            <field name="icao">KPNE</field>
+            <field name="city">Philadelphia</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">40.081944</field>
+            <field name="longitude">-75.010586</field>
+            <field name="altitude">121</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pnm" model="tt.destinations">
+            <field name="name">Princeton Muni</field>
+            <field name="code">PNM</field>
+            <field name="icao">KPNM</field>
+            <field name="city">Princeton</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.559868</field>
+            <field name="longitude">-93.608217</field>
+            <field name="altitude">979</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pnq" model="tt.destinations">
+            <field name="name">Pune</field>
+            <field name="code">PNQ</field>
+            <field name="icao">VAPO</field>
+            <field name="city">Pune</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">18.582111</field>
+            <field name="longitude">73.919697</field>
+            <field name="altitude">1942</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pnr" model="tt.destinations">
+            <field name="name">Pointe Noire</field>
+            <field name="code">PNR</field>
+            <field name="icao">FCPP</field>
+            <field name="city">Pointe-noire</field>
+            <field name="country_id" ref="base.cg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-4.816028</field>
+            <field name="longitude">11.886597</field>
+            <field name="altitude">55</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Africa/Brazzaville</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pns" model="tt.destinations">
+            <field name="name">Pensacola Rgnl</field>
+            <field name="code">PNS</field>
+            <field name="icao">KPNS</field>
+            <field name="city">Pensacola</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">30.473425</field>
+            <field name="longitude">-87.186611</field>
+            <field name="altitude">121</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pnt" model="tt.destinations">
+            <field name="name">Puerto Natales</field>
+            <field name="code">PNT</field>
+            <field name="icao">SCNT</field>
+            <field name="city">Puerto Natales</field>
+            <field name="country_id" ref="base.cl"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-51.733333</field>
+            <field name="longitude">-72.516667</field>
+            <field name="altitude">9</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">America/Santiago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pny" model="tt.destinations">
+            <field name="name">Pondicherry</field>
+            <field name="code">PNY</field>
+            <field name="icao">VOPC</field>
+            <field name="city">Pendicherry</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">11.968722</field>
+            <field name="longitude">79.810058</field>
+            <field name="altitude">118</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pnz" model="tt.destinations">
+            <field name="name">Senador Nilo Coelho</field>
+            <field name="code">PNZ</field>
+            <field name="icao">SBPL</field>
+            <field name="city">Petrolina</field>
+            <field name="country_id" ref="base.br"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-9.362411</field>
+            <field name="longitude">-40.569097</field>
+            <field name="altitude">1263</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Fortaleza</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_poa" model="tt.destinations">
+            <field name="name">Salgado Filho</field>
+            <field name="code">POA</field>
+            <field name="icao">SBPA</field>
+            <field name="city">Porto Alegre</field>
+            <field name="country_id" ref="base.br"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-29.994428</field>
+            <field name="longitude">-51.171428</field>
+            <field name="altitude">11</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Sao_Paulo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pob" model="tt.destinations">
+            <field name="name">Pope Field</field>
+            <field name="code">POB</field>
+            <field name="icao">KPOB</field>
+            <field name="city">Fort Bragg</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.170883</field>
+            <field name="longitude">-79.014472</field>
+            <field name="altitude">217</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_poc" model="tt.destinations">
+            <field name="name">Brackett Field</field>
+            <field name="code">POC</field>
+            <field name="icao">KPOC</field>
+            <field name="city">La Verne</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">34.0916667</field>
+            <field name="longitude">-117.7817778</field>
+            <field name="altitude">1014</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Los_Angeles</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_poe" model="tt.destinations">
+            <field name="name">Polk Aaf</field>
+            <field name="code">POE</field>
+            <field name="icao">KPOE</field>
+            <field name="city">Fort Polk</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">31.044833</field>
+            <field name="longitude">-93.191667</field>
+            <field name="altitude">330</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pof" model="tt.destinations">
+            <field name="name">Poplar Bluff Municipal Airport</field>
+            <field name="code">POF</field>
+            <field name="icao">KPOF</field>
+            <field name="city">Poplar Bluff</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.77394444</field>
+            <field name="longitude">-90.3248611</field>
+            <field name="altitude">331</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pog" model="tt.destinations">
+            <field name="name">Port Gentil</field>
+            <field name="code">POG</field>
+            <field name="icao">FOOG</field>
+            <field name="city">Port Gentil</field>
+            <field name="country_id" ref="base.ga"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-0.711739</field>
+            <field name="longitude">8.754383</field>
+            <field name="altitude">13</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Africa/Libreville</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_poi" model="tt.destinations">
+            <field name="name">Capitan Nicolas Rojas</field>
+            <field name="code">POI</field>
+            <field name="icao">SLPO</field>
+            <field name="city">Potosi</field>
+            <field name="country_id" ref="base.bo"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-19.543069</field>
+            <field name="longitude">-65.723706</field>
+            <field name="altitude">12913</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">America/La_Paz</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_poj" model="tt.destinations">
+            <field name="name">Patos de Minas Airport</field>
+            <field name="code">POJ</field>
+            <field name="icao">SNPD</field>
+            <field name="city">Patos de Minas</field>
+            <field name="country_id" ref="base.br"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-18.672778</field>
+            <field name="longitude">-46.491111</field>
+            <field name="altitude">851</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Sao_Paulo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pol" model="tt.destinations">
+            <field name="name">Pemba</field>
+            <field name="code">POL</field>
+            <field name="icao">FQPB</field>
+            <field name="city">Pemba</field>
+            <field name="country_id" ref="base.mz"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-12.986753</field>
+            <field name="longitude">40.522492</field>
+            <field name="altitude">331</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Africa/Maputo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_poo" model="tt.destinations">
+            <field name="name">Pocos De Caldas</field>
+            <field name="code">POO</field>
+            <field name="icao">SBPC</field>
+            <field name="city">Pocos De Caldas</field>
+            <field name="country_id" ref="base.br"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-21.843014</field>
+            <field name="longitude">-46.567917</field>
+            <field name="altitude">4135</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Sao_Paulo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pop" model="tt.destinations">
+            <field name="name">Gregorio Luperon Intl</field>
+            <field name="code">POP</field>
+            <field name="icao">MDPP</field>
+            <field name="city">Puerto Plata</field>
+            <field name="country_id" ref="base.do"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">19.7579</field>
+            <field name="longitude">-70.570033</field>
+            <field name="altitude">15</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">America/Santo_Domingo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pos" model="tt.destinations">
+            <field name="name">Piarco</field>
+            <field name="code">POS</field>
+            <field name="icao">TTPP</field>
+            <field name="city">Port-of-spain</field>
+            <field name="country_id" ref="base.tt"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">10.595369</field>
+            <field name="longitude">-61.337242</field>
+            <field name="altitude">58</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">America/Port_of_Spain</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pot" model="tt.destinations">
+            <field name="name">Ken Jones</field>
+            <field name="code">POT</field>
+            <field name="icao">MKKJ</field>
+            <field name="city">Port Antonio</field>
+            <field name="country_id" ref="base.jm"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">18.198806</field>
+            <field name="longitude">-76.534528</field>
+            <field name="altitude">20</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Jamaica</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ppb" model="tt.destinations">
+            <field name="name">Presidente Prudente</field>
+            <field name="code">PPB</field>
+            <field name="icao">SBDN</field>
+            <field name="city">President Prudente</field>
+            <field name="country_id" ref="base.br"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-22.175056</field>
+            <field name="longitude">-51.424639</field>
+            <field name="altitude">1477</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Sao_Paulo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ppc" model="tt.destinations">
+            <field name="name">Prospect Creek Airport</field>
+            <field name="code">PPC</field>
+            <field name="icao">PAPR</field>
+            <field name="city">Prospect Creek</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">66.814167</field>
+            <field name="longitude">-150.643611</field>
+            <field name="altitude">1095</field>
+            <field name="timezone_hour">-9</field>
+            <field name="tz">America/Anchorage</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ppe" model="tt.destinations">
+            <field name="name">Puerto Penasco</field>
+            <field name="code">PPE</field>
+            <field name="icao">MMPE</field>
+            <field name="city">Punta Penasco</field>
+            <field name="country_id" ref="base.mx"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">31.351878</field>
+            <field name="longitude">-113.525728</field>
+            <field name="altitude">30</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Hermosillo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ppn" model="tt.destinations">
+            <field name="name">Guillermo Leon Valencia</field>
+            <field name="code">PPN</field>
+            <field name="icao">SKPP</field>
+            <field name="city">Popayan</field>
+            <field name="country_id" ref="base.co"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">2.4544</field>
+            <field name="longitude">-76.609319</field>
+            <field name="altitude">5687</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Bogota</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ppv" model="tt.destinations">
+            <field name="name">Port Protection Seaplane Base</field>
+            <field name="code">PPV</field>
+            <field name="icao"></field>
+            <field name="city">Port Protection</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">56.328889</field>
+            <field name="longitude">-133.61</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">-9</field>
+            <field name="tz">America/Anchorage</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pqi" model="tt.destinations">
+            <field name="name">Northern Maine Rgnl At Presque Isle</field>
+            <field name="code">PQI</field>
+            <field name="icao">KPQI</field>
+            <field name="city">Presque Isle</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.688958</field>
+            <field name="longitude">-68.044797</field>
+            <field name="altitude">534</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pqs" model="tt.destinations">
+            <field name="name">Pilot Station Airport</field>
+            <field name="code">PQS</field>
+            <field name="icao"></field>
+            <field name="city">Pilot Station</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">61.934444</field>
+            <field name="longitude">-162.899444</field>
+            <field name="altitude">305</field>
+            <field name="timezone_hour">-9</field>
+            <field name="tz">America/Anchorage</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_pra" model="tt.destinations">
+            <field name="name">General Urquiza</field>
+            <field name="code">PRA</field>
+            <field name="icao">SAAP</field>
+            <field name="city">Parana</field>
+            <field name="country_id" ref="base.ar"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-31.794778</field>
+            <field name="longitude">-60.480361</field>
+            <field name="altitude">243</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Cordoba</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_prc" model="tt.destinations">
+            <field name="name">Ernest A Love Fld</field>
+            <field name="code">PRC</field>
+            <field name="icao">KPRC</field>
+            <field name="city">Prescott</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">34.654472</field>
+            <field name="longitude">-112.419583</field>
+            <field name="altitude">5045</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Phoenix</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_prh" model="tt.destinations">
+            <field name="name">Phrae</field>
+            <field name="code">PRH</field>
+            <field name="icao">VTCP</field>
+            <field name="city">Phrae</field>
+            <field name="country_id" ref="base.th"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">18.132169</field>
+            <field name="longitude">100.164664</field>
+            <field name="altitude">538</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Bangkok</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            

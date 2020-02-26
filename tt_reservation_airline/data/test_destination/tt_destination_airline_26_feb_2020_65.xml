@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_ysg" model="tt.destinations">
+            <field name="name">Lutselk'e Airport</field>
+            <field name="code">YSG</field>
+            <field name="icao">CYLK</field>
+            <field name="city">Lutselk'e</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">62.4183</field>
+            <field name="longitude">-110.682</field>
+            <field name="altitude">596</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Edmonton</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ysj" model="tt.destinations">
+            <field name="name">Saint John</field>
+            <field name="code">YSJ</field>
+            <field name="icao">CYSJ</field>
+            <field name="city">St. John</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.316111</field>
+            <field name="longitude">-65.890278</field>
+            <field name="altitude">357</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">America/Halifax</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ysm" model="tt.destinations">
+            <field name="name">Fort Smith</field>
+            <field name="code">YSM</field>
+            <field name="icao">CYSM</field>
+            <field name="city">Fort Smith</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">60.020278</field>
+            <field name="longitude">-111.961944</field>
+            <field name="altitude">671</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Edmonton</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_yso" model="tt.destinations">
+            <field name="name">Postville Airport</field>
+            <field name="code">YSO</field>
+            <field name="icao">CCD4</field>
+            <field name="city">Postville</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">54.910278</field>
+            <field name="longitude">-59.785278</field>
+            <field name="altitude">223</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">America/Halifax</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ysp" model="tt.destinations">
+            <field name="name">Marathon</field>
+            <field name="code">YSP</field>
+            <field name="icao">CYSP</field>
+            <field name="city">Marathon</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.755278</field>
+            <field name="longitude">-86.344444</field>
+            <field name="altitude">1035</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Toronto</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ysr" model="tt.destinations">
+            <field name="name">Nanisivik</field>
+            <field name="code">YSR</field>
+            <field name="icao">CYSR</field>
+            <field name="city">Nanisivik</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">72.982222</field>
+            <field name="longitude">-84.613611</field>
+            <field name="altitude">2106</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Toronto</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_yst" model="tt.destinations">
+            <field name="name">St. Theresa Point Airport</field>
+            <field name="code">YST</field>
+            <field name="icao">CYST</field>
+            <field name="city">St. Theresa Point</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">53.8456</field>
+            <field name="longitude">-94.8519</field>
+            <field name="altitude">773</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Winnipeg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ysu" model="tt.destinations">
+            <field name="name">Summerside</field>
+            <field name="code">YSU</field>
+            <field name="icao">CYSU</field>
+            <field name="city">Summerside</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.440556</field>
+            <field name="longitude">-63.833611</field>
+            <field name="altitude">56</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">America/Halifax</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ysy" model="tt.destinations">
+            <field name="name">Sachs Harbour</field>
+            <field name="code">YSY</field>
+            <field name="icao">CYSY</field>
+            <field name="city">Sachs Harbour</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">71.993889</field>
+            <field name="longitude">-125.2425</field>
+            <field name="altitude">282</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Edmonton</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_yta" model="tt.destinations">
+            <field name="name">Pembroke Airport</field>
+            <field name="code">YTA</field>
+            <field name="icao">CYTA</field>
+            <field name="city">Pembroke</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.864399</field>
+            <field name="longitude">-77.251701</field>
+            <field name="altitude">529</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Toronto</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_yte" model="tt.destinations">
+            <field name="name">Cape Dorset</field>
+            <field name="code">YTE</field>
+            <field name="icao">CYTE</field>
+            <field name="city">Cape Dorset</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">64.23</field>
+            <field name="longitude">-76.526667</field>
+            <field name="altitude">164</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Toronto</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ytf" model="tt.destinations">
+            <field name="name">Alma Airport</field>
+            <field name="code">YTF</field>
+            <field name="icao">CYTF</field>
+            <field name="city">Alma</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.508611</field>
+            <field name="longitude">-71.641389</field>
+            <field name="altitude">449</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Toronto</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ytg" model="tt.destinations">
+            <field name="name">Sullivan Bay Water Aerodrome</field>
+            <field name="code">YTG</field>
+            <field name="icao"></field>
+            <field name="city">Sullivan Bay</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">50.883333</field>
+            <field name="longitude">-126.833333</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Vancouver</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_yth" model="tt.destinations">
+            <field name="name">Thompson</field>
+            <field name="code">YTH</field>
+            <field name="icao">CYTH</field>
+            <field name="city">Thompson</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">55.801111</field>
+            <field name="longitude">-97.864166</field>
+            <field name="altitude">729</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Winnipeg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ytl" model="tt.destinations">
+            <field name="name">Big Trout Lake Airport</field>
+            <field name="code">YTL</field>
+            <field name="icao">CYTL</field>
+            <field name="city">Big Trout Lake</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">53.8178</field>
+            <field name="longitude">-89.8969</field>
+            <field name="altitude">729</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Winnipeg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ytm" model="tt.destinations">
+            <field name="name">Riviere Rouge - Mont-Tremblant International Inc. Airport</field>
+            <field name="code">YTM</field>
+            <field name="icao">CYFJ</field>
+            <field name="city">Mont-Tremblant</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.409444</field>
+            <field name="longitude">-74.78</field>
+            <field name="altitude">827</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Toronto</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_yto" model="tt.destinations">
+            <field name="name">All Airports</field>
+            <field name="code">YTO</field>
+            <field name="icao"></field>
+            <field name="city">Toronto</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.653056</field>
+            <field name="longitude">-79.383056</field>
+            <field name="altitude">302</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Toronto</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ytq" model="tt.destinations">
+            <field name="name">Tasiujaq Airport</field>
+            <field name="code">YTQ</field>
+            <field name="icao">CYTQ</field>
+            <field name="city">Tasiujaq</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">58.6678</field>
+            <field name="longitude">-69.9558</field>
+            <field name="altitude">122</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Toronto</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ytr" model="tt.destinations">
+            <field name="name">Trenton</field>
+            <field name="code">YTR</field>
+            <field name="icao">CYTR</field>
+            <field name="city">Trenton</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">44.118889</field>
+            <field name="longitude">-77.528056</field>
+            <field name="altitude">283</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Toronto</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_yts" model="tt.destinations">
+            <field name="name">Timmins</field>
+            <field name="code">YTS</field>
+            <field name="icao">CYTS</field>
+            <field name="city">Timmins</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.569721</field>
+            <field name="longitude">-81.376667</field>
+            <field name="altitude">967</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Toronto</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ytz" model="tt.destinations">
+            <field name="name">City Centre</field>
+            <field name="code">YTZ</field>
+            <field name="icao">CYTZ</field>
+            <field name="city">Toronto</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">43.627499</field>
+            <field name="longitude">-79.396167</field>
+            <field name="altitude">251</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Toronto</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_yub" model="tt.destinations">
+            <field name="name">Tuktoyaktuk</field>
+            <field name="code">YUB</field>
+            <field name="icao">CYUB</field>
+            <field name="city">Tuktoyaktuk</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">69.433334</field>
+            <field name="longitude">-133.026389</field>
+            <field name="altitude">15</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Edmonton</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_yud" model="tt.destinations">
+            <field name="name">Umiujaq Airport</field>
+            <field name="code">YUD</field>
+            <field name="icao">CYMU</field>
+            <field name="city">Umiujaq</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">56.5361</field>
+            <field name="longitude">-76.5183</field>
+            <field name="altitude">250</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Toronto</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_yul" model="tt.destinations">
+            <field name="name">Pierre Elliott Trudeau Intl</field>
+            <field name="code">YUL</field>
+            <field name="icao">CYUL</field>
+            <field name="city">Montreal</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.470556</field>
+            <field name="longitude">-73.740833</field>
+            <field name="altitude">118</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Toronto</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_yum" model="tt.destinations">
+            <field name="name">Yuma Mcas Yuma Intl</field>
+            <field name="code">YUM</field>
+            <field name="icao">KYUM</field>
+            <field name="city">Yuma</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">32.656578</field>
+            <field name="longitude">-114.60598</field>
+            <field name="altitude">216</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Phoenix</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_yut" model="tt.destinations">
+            <field name="name">Repulse Bay</field>
+            <field name="code">YUT</field>
+            <field name="icao">CYUT</field>
+            <field name="city">Repulse Bay</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">66.521389</field>
+            <field name="longitude">-86.224722</field>
+            <field name="altitude">80</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Winnipeg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_yux" model="tt.destinations">
+            <field name="name">Hall Beach</field>
+            <field name="code">YUX</field>
+            <field name="icao">CYUX</field>
+            <field name="city">Hall Beach</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">68.776111</field>
+            <field name="longitude">-81.243611</field>
+            <field name="altitude">27</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Toronto</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_yuy" model="tt.destinations">
+            <field name="name">Rouyn Noranda</field>
+            <field name="code">YUY</field>
+            <field name="icao">CYUY</field>
+            <field name="city">Rouyn</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.206111</field>
+            <field name="longitude">-78.835556</field>
+            <field name="altitude">988</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Toronto</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_yvb" model="tt.destinations">
+            <field name="name">Bonaventure Airport</field>
+            <field name="code">YVB</field>
+            <field name="icao">CYVB</field>
+            <field name="city">Bonaventure</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.0711</field>
+            <field name="longitude">-65.4603</field>
+            <field name="altitude">123</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Toronto</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_yvc" model="tt.destinations">
+            <field name="name">La Ronge</field>
+            <field name="code">YVC</field>
+            <field name="icao">CYVC</field>
+            <field name="city">La Ronge</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">55.15139</field>
+            <field name="longitude">-105.261944</field>
+            <field name="altitude">1242</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Regina</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_yvg" model="tt.destinations">
+            <field name="name">Vermilion</field>
+            <field name="code">YVG</field>
+            <field name="icao">CYVG</field>
+            <field name="city">Vermillion</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">53.355833</field>
+            <field name="longitude">-110.82389</field>
+            <field name="altitude">2025</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Edmonton</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_yvm" model="tt.destinations">
+            <field name="name">Qikiqtarjuaq</field>
+            <field name="code">YVM</field>
+            <field name="icao">CYVM</field>
+            <field name="city">Broughton Island</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">67.545833</field>
+            <field name="longitude">-64.031389</field>
+            <field name="altitude">21</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Toronto</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_yvo" model="tt.destinations">
+            <field name="name">Val D Or</field>
+            <field name="code">YVO</field>
+            <field name="icao">CYVO</field>
+            <field name="city">Val D'or</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.053333</field>
+            <field name="longitude">-77.782778</field>
+            <field name="altitude">1107</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Toronto</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_yvp" model="tt.destinations">
+            <field name="name">Kuujjuaq</field>
+            <field name="code">YVP</field>
+            <field name="icao">CYVP</field>
+            <field name="city">Quujjuaq</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">58.096111</field>
+            <field name="longitude">-68.426944</field>
+            <field name="altitude">129</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Toronto</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_yvq" model="tt.destinations">
+            <field name="name">Norman Wells</field>
+            <field name="code">YVQ</field>
+            <field name="icao">CYVQ</field>
+            <field name="city">Norman Wells</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">65.281617</field>
+            <field name="longitude">-126.798219</field>
+            <field name="altitude">238</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Edmonton</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_yvr" model="tt.destinations">
+            <field name="name">Vancouver Intl</field>
+            <field name="code">YVR</field>
+            <field name="icao">CYVR</field>
+            <field name="city">Vancouver</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">49.193889</field>
+            <field name="longitude">-123.184444</field>
+            <field name="altitude">14</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Vancouver</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_yvt" model="tt.destinations">
+            <field name="name">Buffalo Narrows</field>
+            <field name="code">YVT</field>
+            <field name="icao">CYVT</field>
+            <field name="city">Buffalo Narrows</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">55.841944</field>
+            <field name="longitude">-108.4175</field>
+            <field name="altitude">1444</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Regina</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_yvv" model="tt.destinations">
+            <field name="name">Wiarton</field>
+            <field name="code">YVV</field>
+            <field name="icao">CYVV</field>
+            <field name="city">Wiarton</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">44.745834</field>
+            <field name="longitude">-81.107222</field>
+            <field name="altitude">729</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Toronto</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_yvz" model="tt.destinations">
+            <field name="name">Deer Lake Airport</field>
+            <field name="code">YVZ</field>
+            <field name="icao">CYVZ</field>
+            <field name="city">Deer Lake</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">52.6558</field>
+            <field name="longitude">-94.0614</field>
+            <field name="altitude">1092</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Winnipeg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ywa" model="tt.destinations">
+            <field name="name">Petawawa</field>
+            <field name="code">YWA</field>
+            <field name="icao">CYWA</field>
+            <field name="city">Petawawa</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.952221</field>
+            <field name="longitude">-77.319168</field>
+            <field name="altitude">427</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Toronto</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ywb" model="tt.destinations">
+            <field name="name">Kangiqsujuaq - Wakeham Bay Airport</field>
+            <field name="code">YWB</field>
+            <field name="icao">CYKG</field>
+            <field name="city">Kangiqsujuaq</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">61.588611</field>
+            <field name="longitude">-71.929444</field>
+            <field name="altitude">501</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Toronto</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ywg" model="tt.destinations">
+            <field name="name">Winnipeg Intl</field>
+            <field name="code">YWG</field>
+            <field name="icao">CYWG</field>
+            <field name="city">Winnipeg</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">49.910036</field>
+            <field name="longitude">-97.239886</field>
+            <field name="altitude">783</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Winnipeg</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ywh" model="tt.destinations">
+            <field name="name">Victoria Inner Harbour Airport</field>
+            <field name="code">YWH</field>
+            <field name="icao">CYWH</field>
+            <field name="city">Victoria</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">48.422778</field>
+            <field name="longitude">-123.3875</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Vancouver</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ywj" model="tt.destinations">
+            <field name="name">Deline</field>
+            <field name="code">YWJ</field>
+            <field name="icao">CYWJ</field>
+            <field name="city">Deline</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">65.1833333</field>
+            <field name="longitude">-125.4166667</field>
+            <field name="altitude">550</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Edmonton</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ywk" model="tt.destinations">
+            <field name="name">Wabush</field>
+            <field name="code">YWK</field>
+            <field name="icao">CYWK</field>
+            <field name="city">Wabush</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">52.921944</field>
+            <field name="longitude">-66.864444</field>
+            <field name="altitude">1808</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">America/Halifax</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ywl" model="tt.destinations">
+            <field name="name">Williams Lake</field>
+            <field name="code">YWL</field>
+            <field name="icao">CYWL</field>
+            <field name="city">Williams Lake</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">52.183056</field>
+            <field name="longitude">-122.054167</field>
+            <field name="altitude">3085</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Vancouver</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ywm" model="tt.destinations">
+            <field name="name">Williams Harbour Airport</field>
+            <field name="code">YWM</field>
+            <field name="icao">CCA6</field>
+            <field name="city">Williams Harbour</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">52.5669</field>
+            <field name="longitude">-55.7847</field>
+            <field name="altitude">70</field>
+            <field name="timezone_hour">-3.5</field>
+            <field name="tz">America/St_Johns</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ywp" model="tt.destinations">
+            <field name="name">Webequie Airport</field>
+            <field name="code">YWP</field>
+            <field name="icao">CYWP</field>
+            <field name="city">Webequie</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">52.9597</field>
+            <field name="longitude">-87.3689</field>
+            <field name="altitude">685</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Toronto</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_yws" model="tt.destinations">
+            <field name="name">Whistler/Green Lake Water Aerodrome</field>
+            <field name="code">YWS</field>
+            <field name="icao">CAE5</field>
+            <field name="city">Whistler</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">50.1436</field>
+            <field name="longitude">-122.949</field>
+            <field name="altitude">2100</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Vancouver</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ywy" model="tt.destinations">
+            <field name="name">Wrigley</field>
+            <field name="code">YWY</field>
+            <field name="icao">CYWY</field>
+            <field name="city">Wrigley</field>
+            <field name="country_id" ref="base.ca"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">63.209444</field>
+            <field name="longitude">-123.436667</field>
+            <field name="altitude">489</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Edmonton</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            

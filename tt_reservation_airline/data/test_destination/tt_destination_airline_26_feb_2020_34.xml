@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <odoo>
+            <data noupdate="0">
+            
+        <record id="tt_destination_airline_lto" model="tt.destinations">
+            <field name="name">Loreto Intl</field>
+            <field name="code">LTO</field>
+            <field name="icao">MMLT</field>
+            <field name="city">Loreto</field>
+            <field name="country_id" ref="base.mx"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">25.989194</field>
+            <field name="longitude">-111.348361</field>
+            <field name="altitude">34</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Mazatlan</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lts" model="tt.destinations">
+            <field name="name">Altus Afb</field>
+            <field name="code">LTS</field>
+            <field name="icao">KLTS</field>
+            <field name="city">Altus</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">34.667067</field>
+            <field name="longitude">-99.266681</field>
+            <field name="altitude">1382</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ltu" model="tt.destinations">
+            <field name="name">Latur Airport</field>
+            <field name="code">LTU</field>
+            <field name="icao"></field>
+            <field name="city">Latur</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">18.411944</field>
+            <field name="longitude">76.465</field>
+            <field name="altitude">1584</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_ltx" model="tt.destinations">
+            <field name="name">Cotopaxi International Airport</field>
+            <field name="code">LTX</field>
+            <field name="icao"></field>
+            <field name="city">Latacunga</field>
+            <field name="country_id" ref="base.ec"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-0.5425</field>
+            <field name="longitude">-78.3657</field>
+            <field name="altitude">9205</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Guayaquil</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lud" model="tt.destinations">
+            <field name="name">Luderitz Airport</field>
+            <field name="code">LUD</field>
+            <field name="icao">FYLZ</field>
+            <field name="city">Luderitz</field>
+            <field name="country_id" ref="base.na"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-26.6874</field>
+            <field name="longitude">15.2429</field>
+            <field name="altitude">457</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Africa/Windhoek</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_luf" model="tt.destinations">
+            <field name="name">Luke Afb</field>
+            <field name="code">LUF</field>
+            <field name="icao">KLUF</field>
+            <field name="city">Phoenix</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">33.535</field>
+            <field name="longitude">-112.38306</field>
+            <field name="altitude">1085</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Phoenix</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_luh" model="tt.destinations">
+            <field name="name">Ludhiana</field>
+            <field name="code">LUH</field>
+            <field name="icao">VILD</field>
+            <field name="city">Ludhiaha</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">30.854681</field>
+            <field name="longitude">75.952592</field>
+            <field name="altitude">834</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_luk" model="tt.destinations">
+            <field name="name">Cincinnati Muni Lunken Fld</field>
+            <field name="code">LUK</field>
+            <field name="icao">KLUK</field>
+            <field name="city">Cincinnati</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.103333</field>
+            <field name="longitude">-84.418611</field>
+            <field name="altitude">483</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lum" model="tt.destinations">
+            <field name="name">Mangshi Airport</field>
+            <field name="code">LUM</field>
+            <field name="icao">ZPLX</field>
+            <field name="city">Luxi</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">24.4011</field>
+            <field name="longitude">98.5317</field>
+            <field name="altitude">2890</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lun" model="tt.destinations">
+            <field name="name">Lusaka Intl</field>
+            <field name="code">LUN</field>
+            <field name="icao">FLLS</field>
+            <field name="city">Lusaka</field>
+            <field name="country_id" ref="base.zm"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-15.330817</field>
+            <field name="longitude">28.452628</field>
+            <field name="altitude">3779</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Africa/Lusaka</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_luo" model="tt.destinations">
+            <field name="name">Luena</field>
+            <field name="code">LUO</field>
+            <field name="icao">FNUE</field>
+            <field name="city">Luena</field>
+            <field name="country_id" ref="base.ao"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-11.768086</field>
+            <field name="longitude">19.897672</field>
+            <field name="altitude">4360</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Africa/Luanda</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_luq" model="tt.destinations">
+            <field name="name">San Luis</field>
+            <field name="code">LUQ</field>
+            <field name="icao">SAOU</field>
+            <field name="city">San Luis</field>
+            <field name="country_id" ref="base.ar"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-33.273192</field>
+            <field name="longitude">-66.356422</field>
+            <field name="altitude">2329</field>
+            <field name="timezone_hour">-3</field>
+            <field name="tz">America/Cordoba</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lur" model="tt.destinations">
+            <field name="name">Cape Lisburne Lrrs</field>
+            <field name="code">LUR</field>
+            <field name="icao">PALU</field>
+            <field name="city">Cape Lisburne</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">68.875133</field>
+            <field name="longitude">-166.110022</field>
+            <field name="altitude">12</field>
+            <field name="timezone_hour">-9</field>
+            <field name="tz">America/Anchorage</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lvi" model="tt.destinations">
+            <field name="name">Livingstone</field>
+            <field name="code">LVI</field>
+            <field name="icao">FLLI</field>
+            <field name="city">Livingstone</field>
+            <field name="country_id" ref="base.zm"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-17.821756</field>
+            <field name="longitude">25.822692</field>
+            <field name="altitude">3302</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Africa/Lusaka</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lvk" model="tt.destinations">
+            <field name="name">Livermore Municipal</field>
+            <field name="code">LVK</field>
+            <field name="icao">KLVK</field>
+            <field name="city">Livermore</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.41362</field>
+            <field name="longitude">-121.49133</field>
+            <field name="altitude">400</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Los_Angeles</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lvm" model="tt.destinations">
+            <field name="name">Mission Field Airport</field>
+            <field name="code">LVM</field>
+            <field name="icao">KLVM</field>
+            <field name="city">Livingston-Montana</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">45.6993889</field>
+            <field name="longitude">-110.4483056</field>
+            <field name="altitude">4660</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Denver</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lvr" model="tt.destinations">
+            <field name="name">Bom Futuro Airport</field>
+            <field name="code">LVR</field>
+            <field name="icao">SWFE</field>
+            <field name="city">Lucas do Rio Verde</field>
+            <field name="country_id" ref="base.br"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-13.05</field>
+            <field name="longitude">-55.910833</field>
+            <field name="altitude">500</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">America/Campo_Grande</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lvs" model="tt.destinations">
+            <field name="name">Las Vegas Muni</field>
+            <field name="code">LVS</field>
+            <field name="icao">KLVS</field>
+            <field name="city">Las Vegas</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.654222</field>
+            <field name="longitude">-105.142389</field>
+            <field name="altitude">6877</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Denver</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lwa" model="tt.destinations">
+            <field name="name">South Haven Area Regional Airport</field>
+            <field name="code">LWA</field>
+            <field name="icao">KLWA</field>
+            <field name="city">South Haven</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">42.3511944</field>
+            <field name="longitude">-86.2556389</field>
+            <field name="altitude">666</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lwb" model="tt.destinations">
+            <field name="name">Greenbrier Valley Airport</field>
+            <field name="code">LWB</field>
+            <field name="icao">KLWB</field>
+            <field name="city">Lewisburg</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.858333</field>
+            <field name="longitude">-80.399444</field>
+            <field name="altitude">2302</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lwc" model="tt.destinations">
+            <field name="name">Lawrence Municipal</field>
+            <field name="code">LWC</field>
+            <field name="icao">KLWC</field>
+            <field name="city">Lawrence</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">39.009167</field>
+            <field name="longitude">-95.2175</field>
+            <field name="altitude">833</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lwm" model="tt.destinations">
+            <field name="name">Lawrence Municipal Airport</field>
+            <field name="code">LWM</field>
+            <field name="icao">KLWM</field>
+            <field name="city">Lawrence</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">42.7171944</field>
+            <field name="longitude">-71.1234167</field>
+            <field name="altitude">148</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lws" model="tt.destinations">
+            <field name="name">Lewiston Nez Perce Co</field>
+            <field name="code">LWS</field>
+            <field name="icao">KLWS</field>
+            <field name="city">Lewiston</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.3745</field>
+            <field name="longitude">-117.015389</field>
+            <field name="altitude">1442</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Los_Angeles</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lwt" model="tt.destinations">
+            <field name="name">Lewistown Municipal Airport</field>
+            <field name="code">LWT</field>
+            <field name="icao">KLWT</field>
+            <field name="city">Lewistown</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">47.0493</field>
+            <field name="longitude">-109.467</field>
+            <field name="altitude">4170</field>
+            <field name="timezone_hour">-7</field>
+            <field name="tz">America/Denver</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lxa" model="tt.destinations">
+            <field name="name">Lhasa-Gonggar</field>
+            <field name="code">LXA</field>
+            <field name="icao">ZULS</field>
+            <field name="city">Lhasa</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">29.297778</field>
+            <field name="longitude">90.911944</field>
+            <field name="altitude">13136</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lxr" model="tt.destinations">
+            <field name="name">Luxor Intl</field>
+            <field name="code">LXR</field>
+            <field name="icao">HELX</field>
+            <field name="city">Luxor</field>
+            <field name="country_id" ref="base.eg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">25.671028</field>
+            <field name="longitude">32.706583</field>
+            <field name="altitude">294</field>
+            <field name="timezone_hour">2</field>
+            <field name="tz">Africa/Cairo</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lxy" model="tt.destinations">
+            <field name="name">Mexia - Limestone County Airport</field>
+            <field name="code">LXY</field>
+            <field name="icao"></field>
+            <field name="city">Mexia</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">31.6411783</field>
+            <field name="longitude">-96.5144594</field>
+            <field name="altitude">544</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lya" model="tt.destinations">
+            <field name="name">Luoyang Airport</field>
+            <field name="code">LYA</field>
+            <field name="icao">ZHLY</field>
+            <field name="city">Luoyang</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">34.41</field>
+            <field name="longitude">112.28</field>
+            <field name="altitude">210</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lyb" model="tt.destinations">
+            <field name="name">Edward Bodden Airfield</field>
+            <field name="code">LYB</field>
+            <field name="icao">MWCL</field>
+            <field name="city">Little Cayman</field>
+            <field name="country_id" ref="base.ky"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">19.65916667</field>
+            <field name="longitude">-80.09083333</field>
+            <field name="altitude">1</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/Cayman</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lyg" model="tt.destinations">
+            <field name="name">Lianyungang Airport</field>
+            <field name="code">LYG</field>
+            <field name="icao">ZSLG</field>
+            <field name="city">Lianyungang</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">34.55</field>
+            <field name="longitude">119.25</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lyh" model="tt.destinations">
+            <field name="name">Lynchburg Regional Preston Glenn Field</field>
+            <field name="code">LYH</field>
+            <field name="icao">KLYH</field>
+            <field name="city">Lynchburg</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">37.3267</field>
+            <field name="longitude">-79.2004</field>
+            <field name="altitude">938</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lyi" model="tt.destinations">
+            <field name="name">Shubuling Airport</field>
+            <field name="code">LYI</field>
+            <field name="icao">ZSLY</field>
+            <field name="city">Linyi</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">35.0461</field>
+            <field name="longitude">118.412</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lyr" model="tt.destinations">
+            <field name="name">Longyear</field>
+            <field name="code">LYR</field>
+            <field name="icao">ENSB</field>
+            <field name="city">Svalbard</field>
+            <field name="country_id" ref="base.no"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">78.246111</field>
+            <field name="longitude">15.465556</field>
+            <field name="altitude">88</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Arctic/Longyearbyen</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lyu" model="tt.destinations">
+            <field name="name">Ely Municipal</field>
+            <field name="code">LYU</field>
+            <field name="icao">KELO</field>
+            <field name="city">Ely</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">47.824444</field>
+            <field name="longitude">-91.830833</field>
+            <field name="altitude">1456</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lzc" model="tt.destinations">
+            <field name="name">Lazaro Cardenas</field>
+            <field name="code">LZC</field>
+            <field name="icao">MMLC</field>
+            <field name="city">Lazard Cardenas</field>
+            <field name="country_id" ref="base.mx"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">18.001731</field>
+            <field name="longitude">-102.220525</field>
+            <field name="altitude">39</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Mexico_City</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lzh" model="tt.destinations">
+            <field name="name">Bailian Airport</field>
+            <field name="code">LZH</field>
+            <field name="icao">ZGZH</field>
+            <field name="city">Liuzhou</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">24.2075</field>
+            <field name="longitude">109.391</field>
+            <field name="altitude">295</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lzo" model="tt.destinations">
+            <field name="name">Luzhou Airport</field>
+            <field name="code">LZO</field>
+            <field name="icao">ZULZ</field>
+            <field name="city">Luzhou</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">28.8522</field>
+            <field name="longitude">105.393</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lzu" model="tt.destinations">
+            <field name="name">Gwinnett County Airport-Briscoe Field</field>
+            <field name="code">LZU</field>
+            <field name="icao">KLZU</field>
+            <field name="city">Lawrenceville</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">33.9780761</field>
+            <field name="longitude">-83.9623772</field>
+            <field name="altitude">1061</field>
+            <field name="timezone_hour">-5</field>
+            <field name="tz">America/New_York</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_lzy" model="tt.destinations">
+            <field name="name">Nyingchi Airport</field>
+            <field name="code">LZY</field>
+            <field name="icao">ZUNZ</field>
+            <field name="city">Nyingchi</field>
+            <field name="country_id" ref="base.cn"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">29.3033</field>
+            <field name="longitude">94.3353</field>
+            <field name="altitude">9675</field>
+            <field name="timezone_hour">8</field>
+            <field name="tz">Asia/Chongqing</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_m94" model="tt.destinations">
+            <field name="name">Desert Aire</field>
+            <field name="code">M94</field>
+            <field name="icao">KM94</field>
+            <field name="city">Mattawa</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">46.4124</field>
+            <field name="longitude">-119.5518</field>
+            <field name="altitude">586</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Los_Angeles</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_maa" model="tt.destinations">
+            <field name="name">Chennai Intl</field>
+            <field name="code">MAA</field>
+            <field name="icao">VOMM</field>
+            <field name="city">Madras</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">12.994414</field>
+            <field name="longitude">80.180517</field>
+            <field name="altitude">52</field>
+            <field name="timezone_hour">5.5</field>
+            <field name="tz">Asia/Calcutta</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mab" model="tt.destinations">
+            <field name="name">Maraba</field>
+            <field name="code">MAB</field>
+            <field name="icao">SBMA</field>
+            <field name="city">Maraba</field>
+            <field name="country_id" ref="base.br"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-5.368589</field>
+            <field name="longitude">-49.138025</field>
+            <field name="altitude">357</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">America/Boa_Vista</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mae" model="tt.destinations">
+            <field name="name">Madera Municipal Airport</field>
+            <field name="code">MAE</field>
+            <field name="icao">KMAE</field>
+            <field name="city">Madera</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">36.9886111</field>
+            <field name="longitude">-120.1124444</field>
+            <field name="altitude">255</field>
+            <field name="timezone_hour">-8</field>
+            <field name="tz">America/Los_Angeles</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_maf" model="tt.destinations">
+            <field name="name">Midland Intl</field>
+            <field name="code">MAF</field>
+            <field name="icao">KMAF</field>
+            <field name="city">Midland</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">31.942528</field>
+            <field name="longitude">-102.201914</field>
+            <field name="altitude">2871</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Chicago</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mak" model="tt.destinations">
+            <field name="name">Malakal</field>
+            <field name="code">MAK</field>
+            <field name="icao">HSSM</field>
+            <field name="city">Malakal</field>
+            <field name="country_id" ref="base.sd"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">9.558969</field>
+            <field name="longitude">31.652242</field>
+            <field name="altitude">1291</field>
+            <field name="timezone_hour">3</field>
+            <field name="tz">Africa/Juba</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mam" model="tt.destinations">
+            <field name="name">General Servando Canales Intl</field>
+            <field name="code">MAM</field>
+            <field name="icao">MMMA</field>
+            <field name="city">Matamoros</field>
+            <field name="country_id" ref="base.mx"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">25.769894</field>
+            <field name="longitude">-97.525311</field>
+            <field name="altitude">25</field>
+            <field name="timezone_hour">-6</field>
+            <field name="tz">America/Mexico_City</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mao" model="tt.destinations">
+            <field name="name">Eduardo Gomes Intl</field>
+            <field name="code">MAO</field>
+            <field name="icao">SBEG</field>
+            <field name="city">Manaus</field>
+            <field name="country_id" ref="base.br"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-3.038611</field>
+            <field name="longitude">-60.049721</field>
+            <field name="altitude">264</field>
+            <field name="timezone_hour">-4</field>
+            <field name="tz">America/Boa_Vista</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_maq" model="tt.destinations">
+            <field name="name">Mae Sot Airport</field>
+            <field name="code">MAQ</field>
+            <field name="icao">VTPM</field>
+            <field name="city">Tak</field>
+            <field name="country_id" ref="base.th"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">16.699856</field>
+            <field name="longitude">98.545056</field>
+            <field name="altitude">690</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Bangkok</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mar" model="tt.destinations">
+            <field name="name">La Chinita Intl</field>
+            <field name="code">MAR</field>
+            <field name="icao">SVMC</field>
+            <field name="city">Maracaibo</field>
+            <field name="country_id" ref="base.ve"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">10.558208</field>
+            <field name="longitude">-71.727856</field>
+            <field name="altitude">235</field>
+            <field name="timezone_hour">-4.5</field>
+            <field name="tz">America/Caracas</field>
+            <field name="active">1</field>
+        </record>
+
+
+        <record id="tt_destination_airline_mat" model="tt.destinations">
+            <field name="name">Tshimpi Airport</field>
+            <field name="code">MAT</field>
+            <field name="icao">FZAM</field>
+            <field name="city">Matadi</field>
+            <field name="country_id" ref="base.cg"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+            <field name="latitude">-5.79961</field>
+            <field name="longitude">13.4404</field>
+            <field name="altitude">1115</field>
+            <field name="timezone_hour">1</field>
+            <field name="tz">Africa/Kinshasa</field>
+            <field name="active">1</field>
+        </record>
+
+            </data>
+        </odoo>
+            
