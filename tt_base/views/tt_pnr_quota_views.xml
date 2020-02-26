@@ -12,7 +12,9 @@
                     <sheet>
                         <group>
                             <group>
-                                <field name="name"/>
+                                <h3>
+                                    <field name="name"/>
+                                </h3>
                                 <field name="amount"/>
                                 <field name="used_amount"/>
                                 <field name="available_amount"/>

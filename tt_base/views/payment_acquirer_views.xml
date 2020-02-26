@@ -19,8 +19,10 @@
                         <div class="oe_title">
                             <h1>
                                 <field name="name" placeholder="Name"/><br/>
-                                <field name="seq_id"/>
                             </h1>
+                            <h3>
+                                <field name="seq_id"/>
+                            </h3>
                         </div>
                         <div attrs="{'invisible': ['|', ('module_state', '=', 'installed'), ('module_id', '=', False)]}">
                             <button type="object" class="btn btn-primary" name="button_immediate_install" string="Install"/>

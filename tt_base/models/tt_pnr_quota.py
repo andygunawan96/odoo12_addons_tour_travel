@@ -12,7 +12,7 @@ class TtPnrQuota(models.Model):
     _description = 'Rodex Model PNR Quota'
     _order = 'expired_date,available_amount'
 
-    name = fields.Char('Name', related='price_list_id.name')
+    name = fields.Char('Name')
     used_amount = fields.Integer('Used Amount', compute='_compute_used_amount',store=True)
     available_amount = fields.Integer('Available Amount', compute='_compute_used_amount',store=True)
     amount = fields.Integer('Amount', compute='_compute_amount', store=True)
@@ -22,6 +22,10 @@ class TtPnrQuota(models.Model):
     agent_id = fields.Many2one('tt.agent','Agent', domain="[('is_using_pnr_quota','=',True)]")
     is_expired = fields.Boolean('Expired')
     state = fields.Selection([('active','Active'),('expired','Expired')],'State',compute="_compute_state",store=True)
+
+    def create(self, vals_list):
+        vals_list['name'] = self.env['ir.sequence'].next_by_code('tt.pnr.quota')
+        return super(TtPnrQuota, self).create(vals_list)
 
     @api.depends('price_list_id')
     def _compute_amount(self):
