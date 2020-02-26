@@ -5,7 +5,6 @@ class TtTopUpInh(models.Model):
 
     payment_id = fields.Many2one('tt.payment','Payment',readonly=True)
     acquirer_id = fields.Many2one('payment.acquirer','Acquirer', related="payment_id.acquirer_id")
-    validated_amount = fields.Monetary('Validated Amount',readonly=True)
 
     def get_total_amount(self):
         return self.validated_amount - self.fees

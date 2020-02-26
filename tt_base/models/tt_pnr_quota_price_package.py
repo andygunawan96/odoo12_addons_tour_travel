@@ -14,3 +14,15 @@ class TtPnrQuotaMasterPackage(models.Model):
     excess_quota_fee = fields.Monetary('Excess Quota Fee')
     currency_id = fields.Many2one('res.currency', default=lambda self:self.env.user.company_id.currency_id.id)
     active = fields.Boolean('Active', default=True)
+
+    def to_dict(self):
+        price_list = []
+        for rec in self.available_price_list_ids:
+            price_list.append(rec.to_dict())
+
+        return {
+            'name': self.name,
+            'excess_quota_fee': self.excess_quota_fee,
+            'currency': self.currency_id.name,
+            'price_list': price_list
+        }

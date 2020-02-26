@@ -57,6 +57,7 @@ class TtTopUp(models.Model):
                                     states={'draft': [('readonly', False)]},
                                     help='''Unique amount for identification agent top-up via wire transfer''')
     fees = fields.Monetary('Fees',  default=0, help='Fees amount; set by the system because depends on the acquirer',readonly=True, states={'draft': [('readonly', False)]})
+    validated_amount = fields.Monetary('Validated Amount', readonly=True)
     total = fields.Monetary('Total', compute='_compute_amount', store=True, readonly=True)
     total_with_fees = fields.Monetary('Total + fees', compute='_compute_amount', store=False)
     ledger_id = fields.Many2one('tt.ledger', string='Ledger', readonly=True, copy=False)
@@ -156,7 +157,8 @@ class TtTopUp(models.Model):
         })
 
         try:
-            self.env['tt.top.up.api.con'].send_approve_notification(self.name,self.env.user.name,self.get_total_amount())
+            self.env['tt.top.up.api.con'].send_approve_notification(self.name,self.env.user.name,
+                                                                    self.validated_amount,self.agent_id.name)
         except Exception as e:
             _logger.error("Send TOP UP Approve Notification Telegram Error")
 
@@ -182,8 +184,8 @@ class TtTopUp(models.Model):
         })
 
         try:
-            self.env['tt.top.up.api.con'].send_approve_notification(top_up.name, top_up.env.user.name,
-                                                                    top_up.get_total_amount())
+            self.env['tt.top.up.api.con'].send_approve_notification(self.name,self.env.user.name,
+                                                                    self.validated_amount,self.agent_id.name)
         except Exception as e:
             _logger.error("Send TOP UP Approve Notification Telegram Error")
 

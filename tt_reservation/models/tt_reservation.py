@@ -587,19 +587,20 @@ class TtReservation(models.Model):
             total_discount = 0
             try:
                 book_obj.create_date
+                agent_obj = book_obj.agent_id
             except:
                 raise RequestException(1001)
-            if book_obj.agent_id.id == context.get('co_agent_id',-1):
+            if agent_obj.id == context.get('co_agent_id',-1):
                 start_time = time.time()
                 cur_time = 0
-                new_waiting_list = self.env['tt.reservation.waiting.list'].create({'agent_id':book_obj.agent_id.id,
+                new_waiting_list = self.env['tt.reservation.waiting.list'].create({'agent_id': agent_obj.id,
                                                                                    'reference': self.name})
                 self.env.cr.commit()
 
                 # waiting_list = self.env['tt.reservation.waiting.list'].search([('agent_id', '=', book_obj.agent_id.id),
                 #                                                 ('is_in_transaction', '=', True),
                 #                                                                ('id','<',new_waiting_list.id)])
-                waiting_list = self.get_waiting_list(book_obj.agent_id.id, new_waiting_list.id)
+                waiting_list = self.get_waiting_list(agent_obj.id, new_waiting_list.id)
 
                 while (waiting_list and cur_time - start_time < 60):
                     # waiting_list = self.env['tt.reservation.waiting.list'].search([('agent_id', '=', book_obj.agent_id.id),
@@ -693,6 +694,15 @@ class TtReservation(models.Model):
 
                 for provider in book_obj.provider_booking_ids:
                     provider.action_create_ledger(context['co_uid'], payment_method)
+                    if agent_obj.is_using_pnr_quota:
+                        quota_used = agent_obj.use_pnr_quota({
+                            'res_model_resv': book_obj._name,
+                            'res_id_resv': book_obj.id,
+                            'res_model_prov': provider._name,
+                            'res_id_prov': provider.id
+                        })
+                        if not quota_used:
+                            print("5k woi")
 
                 new_waiting_list.is_in_transaction = False
                 self.env.cr.commit()

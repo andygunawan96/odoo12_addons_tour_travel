@@ -6,34 +6,59 @@
             <field name="model">tt.pnr.quota</field>
             <field name="arch" type="xml">
                 <form string="PNR Quota">
+                    <header>
+                        <field name="state" widget="statusbar" statusbar_visible="active,expired"/>
+                    </header>
                     <sheet>
                         <group>
-                            <field name="name"/>
-                            <field name="amount"/>
-                            <field name="used_amount"/>
-                            <field name="available_amount"/>
-                            <field name="price_list_id"/>
-                            <field name="expired_date"/>
-                            <field name="agent_id"/>
-                            <field name="usage_ids"/>
+                            <group>
+                                <field name="name"/>
+                                <field name="amount"/>
+                                <field name="used_amount"/>
+                                <field name="available_amount"/>
+                            </group>
+                            <group>
+                                <field name="agent_id"/>
+                                <field name="price_list_id"/>
+                                <field name="expired_date"/>
+                            </group>
+                            <notebook>
+                                <page name="usage" string="Usage">
+                                    <field name="usage_ids"/>
+                                </page>
+                            </notebook>
+
                         </group>
                     </sheet>
                 </form>
             </field>
         </record>
 
-        <record id="tt_pnr_quota_tree_view" model="ir.ui.view">
+        <record id="tt_pnr_quota_tree_agent_view" model="ir.ui.view">
             <field name="name">tt.pnr.quota.tree.view</field>
             <field name="model">tt.pnr.quota</field>
+            <field name="priority">16</field>
             <field name="arch" type="xml">
                 <tree string="PNR Quota">
                     <field name="name"/>
-                    <field name="amount"/>
-                    <field name="price_list_id"/>
+                    <field name="used_amount"/>
+                    <field name="available_amount"/>
                     <field name="expired_date"/>
-                    <field name="agent_id"/>
-                    <field name="usage_ids"/>
+                    <field name="state"/>
                 </tree>
+            </field>
+        </record>
+
+        <record id="tt_pnr_quota_tree_ho_view" model="ir.ui.view">
+            <field name="name">tt.pnr.quota.tree.ho.view</field>
+            <field name="model">tt.pnr.quota</field>
+            <field name="inherit_id" ref="tt_base.tt_pnr_quota_tree_agent_view"/>
+            <field name="priority">20</field>
+            <field name="mode">primary</field>
+            <field name="arch" type="xml">
+                <field name="expired_date" position="after">
+                    <field name="agent_id"/>
+                </field>
             </field>
         </record>
 
@@ -45,7 +70,7 @@
             <field name="context">
                 {
                 'form_view_ref': 'tt_base.tt_pnr_quota_form_view',
-                'tree_view_ref': 'tt_base.tt_pnr_quota_tree_view'
+                'tree_view_ref': 'tt_base.tt_pnr_quota_tree_ho_view'
                 }
             </field>
         </record>

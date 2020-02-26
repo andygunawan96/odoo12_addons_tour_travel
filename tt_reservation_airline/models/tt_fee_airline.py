@@ -3,7 +3,7 @@ import json
 
 class TtSsrAirline(models.Model):
     _name = 'tt.fee.airline'
-    _description = 'Feee Airline Model'
+    _description = 'Fee Airline Model'
 
     name = fields.Char("Name")
     type = fields.Char("Type")
@@ -11,7 +11,7 @@ class TtSsrAirline(models.Model):
     value = fields.Char("Value")
     description = fields.Text("Description")
     amount = fields.Monetary("Amount")
-    currency_id = fields.Many2one("res.currency","Currency")
+    currency_id = fields.Many2one("res.currency","Currency",default=lambda self:self.env.user.company_id.currency_id)
     passenger_id = fields.Many2one("tt.reservation.passenger.airline","Currency")
 
     def to_dict(self):
@@ -22,5 +22,5 @@ class TtSsrAirline(models.Model):
             'fee_value': self.value,
             'description': json.loads(self.description),
             'amount': self.amount,
-            'currency_id': self.currency_id.name
+            'currency': self.currency_id.name
         }

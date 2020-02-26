@@ -23,10 +23,10 @@ class TtAirlineApiCon(models.Model):
             raise RequestException(999)
         return res
 
-    def send_approve_notification(self,document_number,approve_uid,amount):
+    def send_approve_notification(self,document_number,approve_uid,amount,agent_name):
         request = {
             'code': 9907,
-            'message': 'Top Up Approved by {} Rp {:,}'.format(approve_uid,amount),
+            'message': 'Top Up from {} has been Approved by {} Rp {:,}'.format(agent_name,approve_uid,amount),
             "title": 'APPROVED <b>%s</b>' % (document_number)
         }
         return self.send_request_to_gateway('%s/notification' % (self.url),

@@ -2,8 +2,8 @@ from odoo import models, fields, api, _
 import logging, traceback
 from ...tools import ERR,variables,util
 from odoo.exceptions import UserError
-from datetime import date
-
+from datetime import date,datetime
+from ...tools.ERR import RequestException
 _logger = logging.getLogger(__name__)
 
 
@@ -54,10 +54,11 @@ class TtAgent(models.Model):
                                  context={'active_test': False, 'form_view_ref': 'tt_base.tt_upload_center_form_view'})
     payment_acq_ids = fields.One2many('payment.acquirer.number', 'agent_id', 'Payment Acquirer Number')
 
-    is_using_pnr_quota = fields.Boolean('Using PNR Quota', related="agent_type_id.is_using_pnr_quota")
-    quota_ids = fields.One2many('tt.pnr.quota','agent_id','Quota')
-    quota_amount = fields.Integer('Quota', compute='_compute_quota_amount',store = True)
-    quota_total_duration = fields.Date('Max Duration', _compute='_compute_quota_duration',store=True)
+    is_using_pnr_quota = fields.Boolean('Using PNR Quota', related='agent_type_id.is_using_pnr_quota', store=True)
+    quota_package_id = fields.Many2one('tt.pnr.quota.price.package', 'Package', readonly=True)
+    quota_ids = fields.One2many('tt.pnr.quota','agent_id','Quota', readonly=False)
+    quota_amount = fields.Integer('Quota', compute='_compute_quota_amount', store=True, readonly=True)
+    quota_total_duration = fields.Date('Max Duration', compute='_compute_quota_duration',store=True, readonly=True)
 
     # TODO VIN:tnyakan creator
     # 1. Image ckup 1 ae (logo)
@@ -153,23 +154,23 @@ class TtAgent(models.Model):
     #
     #     return vals
 
-    @api.depends('quota_ids','quota_ids.available_amount')
+    @api.depends('quota_ids','quota_ids.available_amount','quota_ids.state')
     def _compute_quota_amount(self):
         for rec in self:
             quota_amount = 0
-            for quota_id in rec.quota_ids:
+            for quota_id in rec.quota_ids.filtered(lambda x: x.state == 'active'):
                 quota_amount += quota_id.available_amount
             rec.quota_amount = quota_amount
 
-    @api.depends('quota_ids')
+    @api.depends('quota_ids','quota_ids.is_expired','quota_ids.state')
     def _compute_quota_duration(self):
         for rec in self:
-            expiry_date = date.today()
-            for quota_id in rec.quota_ids:
-                if expiry_date < quota_id.expired_date:
-                    expiry_date = quota_id.expired_date
-            rec.quota_total_duration = expiry_date
-
+            # expiry_date = date.today()
+            # for quota_id in rec.quota_ids:
+            #     if expiry_date < quota_id.expired_date:
+            #         expiry_date = quota_id.expired_date
+            if rec.quota_ids.filtered(lambda x: x.state == 'active'):
+                rec.quota_total_duration = rec.quota_ids[-1].expired_date
 
     def _compute_balance_agent(self):
         for rec in self:
@@ -237,7 +238,6 @@ class TtAgent(models.Model):
         if not self.ensure_one():
             raise UserError('Can only check 1 agent each time got ' + str(len(self._ids)) + ' Records instead')
         return self.balance >= amount
-
 
     def check_balance_limit_api(self, agent_id, amount):
         partner_obj = self.env['tt.agent']
@@ -374,7 +374,6 @@ class TtAgent(models.Model):
         else:
             UserError(_("Already set VA number for this agent!"))
 
-
     def action_show_agent_target_history(self):
         tree_view_id = self.env.ref('tt_base.view_agent_target_tree').id
         form_view_id = self.env.ref('tt_base.view_agent_target_form').id
@@ -488,6 +487,63 @@ class TtAgent(models.Model):
             'domain': ['|', ('parent_agent_id', '=', self.env.user.agent_id.id), ('id', '=', self.env.user.agent_id.id)]
         }
 
+    def dummy_use_pnr_quota(self):
+        self.use_pnr_quota({
+            'res_model': 'tt.reservation.airline',
+            'res_id': 856
+        })
+
+    def use_pnr_quota(self, req):
+        if self.is_using_pnr_quota:
+            if self.quota_total_duration:
+                if self.quota_amount > 0:
+                    self.env['tt.pnr.quota.usage'].create({
+                        'res_model_resv': req.get('res_model_resv'),
+                        'res_id_resv': req.get('res_id_resv'),
+                        'res_model_prov': req.get('res_model_prov'),
+                        'res_id_prov': req.get('res_id_prov'),
+                        'pnr_quota_id': self.quota_ids.filtered(lambda x: x.state == 'active' and x.available_amount > 0 )[0].id
+                    })
+                    return True
+                else:
+                    resv_obj = self.env[req.get('res_model_resv')].browse(int(req.get('res_id_resv')))
+                    self.env['tt.ledger'].create_ledger_vanilla(resv_obj._name,
+                                                                resv_obj.id,
+                                                                'Excess Quota Penalty: %s' % (resv_obj._name),
+                                                                resv_obj.name,
+                                                                date,
+                                                                2,
+                                                                self.quota_package_id.currency_id.id,
+                                                                self.env.ref('base.user_root').id,
+                                                                self.id,
+                                                                False,
+                                                                debit=0,
+                                                                credit=self.quota_package_id.excess_quota_fee,
+                                                                description='Excess Quota Penalty for %s' % (resv_obj.name)
+                                                                )
+                    ##potong saldo minimum fee di sini
+                    return True
+            else:
+                return False
+
+    def get_available_pnr_price_list_api(self,data,context):
+        try:
+            agent_obj = self.browse(context['co_agent_id'])
+            if not agent_obj:
+                raise RequestException(1008)
+
+            if not agent_obj.is_using_pnr_quota or not agent_obj.quota_package_id:
+                raise RequestException(1012,additional_message="Agent not allowed.")
+
+            package_res = agent_obj.quota_package_id.to_dict()
+
+            return ERR.get_no_error(package_res)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1012,additional_message="PNR Price List")
 
 class AgentTarget(models.Model):
     _inherit = ['tt.history']

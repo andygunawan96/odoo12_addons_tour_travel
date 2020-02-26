@@ -34,8 +34,10 @@ class TtReservationCustomer(models.Model):
         ssr_list = []
         for ssr in ssr_param:
             amount = 0
+            currency_id = False
             for sc in ssr['service_charges']:
-                sc['currency_id'] = currency_obj.search([('name','=',sc.pop('currency'))],limit=1).id
+                currency_id = currency_obj.search([('name', '=', sc.pop('currency'))], limit=1).id
+                sc['currency_id'] = currency_id
                 sc['foreign_currency_id'] = currency_obj.search([('name','=',sc.pop('foreign_currency'))],limit=1).id
                 sc['description'] = pnr
                 sc['passenger_airline_ids'] = [(4,self.id)]
@@ -43,8 +45,7 @@ class TtReservationCustomer(models.Model):
                 sc['is_extra_fees'] = True
                 amount += sc['amount']
                 service_chg_obj.create(sc)
-
-            ssr_list.append((0,0,{
+            ssr_values = {
                 'name': ssr['fee_name'],
                 'type': ssr['fee_type'],
                 'code': ssr['fee_code'],
@@ -52,7 +53,10 @@ class TtReservationCustomer(models.Model):
                 'description': json.dumps(ssr['description']),
                 'amount': amount,
                 'passenger_id': self.id,
-            }))
+            }
+            if currency_id:
+                ssr_values['currency_id'] = currency_id
+            ssr_list.append((0,0,ssr_values))
 
         self.write({'fee_ids': ssr_list})
 
