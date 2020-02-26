@@ -56,13 +56,13 @@
                             attrs="{'invisible':[('state','!=','confirm')]}"/>
                     <button string="Approve" name="action_approve_from_button"
                             type="object" groups="tt_base.group_tt_accounting_operator"
-                            attrs="{'invisible':[('state','!=','validated')]}"/>
+                            attrs="{'invisible':[('state','!=','validated')]}" confirm="Are you sure you want to approve?"/>
                     <button string="Reject" name="action_reject_from_button"
                             type="object" groups="tt_base.group_tt_accounting_operator"
                             attrs="{'invisible':[('state','not in',['confirm','validated'])]}"/>
                     <button string="Cancel Payment" name="action_cancel_from_button"
                             type="object" groups="tt_base.group_tt_accounting_operator"
-                            attrs="{'invisible':[('state','!=','approved')]}"/>
+                            attrs="{'invisible':[('state','!=','approved')]}" confirm="Are you sure you want to cancel?"/>
                     <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action"
                             groups="tt_base.group_tt_accounting_operator"
                             context="{

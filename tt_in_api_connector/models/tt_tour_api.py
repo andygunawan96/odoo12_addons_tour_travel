@@ -31,6 +31,14 @@ class TtTourApiCon(models.Model):
 
         return res
 
+    def send_tour_payment_expired_notification(self,data,context):
+        request = {
+            'code': 9901,
+            'message': 'Tour Payment Expired: {}\n\nOrder Number : {}\nTour : {}\nDue Date : {}'.format(data['url'], data['tour_name'],data['order_number'],data['due_date']),
+            "title": 'TOUR PAYMENT EXPIRED'
+        }
+        return self.send_request_to_gateway('%s/notification' % (self.url), request, 'notification_api')
+
 
 class TtMasterTourApiCon(models.Model):
     _name = 'tt.master.tour.api.con'
@@ -56,5 +64,13 @@ class TtMasterTourApiCon(models.Model):
             raise RequestException(999)
 
         return res
+
+    def send_tour_request_notification(self,data,context):
+        request = {
+            'code': 9908,
+            'message': 'New Tour Request: {}\n\nCo User Name : {}\nCo User Agent : {}\n\nRequest Number : {}'.format(data['url'], context['co_user_name'],context['co_agent_name'],data['req_number']),
+            "title": 'TOUR PACKAGE REQUEST'
+        }
+        return self.send_request_to_gateway('%s/notification' % (self.url), request, 'notification_api')
 
 

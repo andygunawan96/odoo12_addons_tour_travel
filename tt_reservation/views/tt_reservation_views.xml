@@ -10,8 +10,8 @@
                     <button string="Set to Draft" name="action_set_as_draft" groups="base.user_admin" type="object"/>
                     <button string="Set to Booked" name="action_set_as_booked" groups="base.user_admin" type="object"/>
                     <button string="Set to Issued" name="action_set_as_issued" groups="base.user_admin" type="object"/>
-                    <button string="Set Booking State" name="action_check_provider_state" groups="base.user_admin" type="object"/>
-                    <button string="Cancel" name="action_cancel" states="booked,issued" groups="tt_base.group_tt_tour_travel_operator" type="object"/>
+                    <button string="Set Booking State" name="action_check_provider_state" groups="base.user_admin" type="object" confirm="Are you sure you want to set booking state?"/>
+                    <button string="Cancel" name="action_cancel" states="booked,issued" groups="tt_base.group_tt_tour_travel_operator" type="object" confirm="Are you sure you want to cancel?"/>
                     <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action"
                             groups="tt_base.group_tt_accounting_operator"
                             context="{
