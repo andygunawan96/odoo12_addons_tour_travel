@@ -159,7 +159,7 @@ class TtProviderVisa(models.Model):
         return ledger_created
 
     def action_create_ledger(self, issued_uid, pay_method=None):
-        self.env['tt.ledger'].action_create_ledger(self, issued_uid)
+        return self.env['tt.ledger'].action_create_ledger(self, issued_uid)
 
     def action_create_expenses_invoice(self):
         datas = {

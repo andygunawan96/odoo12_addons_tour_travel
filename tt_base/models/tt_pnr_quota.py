@@ -10,7 +10,7 @@ class TtPnrQuota(models.Model):
     _name = 'tt.pnr.quota'
     _rec_name = 'name'
     _description = 'Rodex Model PNR Quota'
-    _order = 'expired_date,available_amount'
+    _order = 'state,expired_date,available_amount'
 
     name = fields.Char('Name')
     used_amount = fields.Integer('Used Amount', compute='_compute_used_amount',store=True)
@@ -41,7 +41,7 @@ class TtPnrQuota(models.Model):
             else:
                 rec.state = 'active'
 
-    @api.depends('usage_ids')
+    @api.depends('usage_ids','usage_ids.active')
     def _compute_used_amount(self):
         for rec in self:
             rec.used_amount = len(rec.usage_ids.ids)

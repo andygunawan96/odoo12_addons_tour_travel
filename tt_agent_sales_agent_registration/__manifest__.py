@@ -20,7 +20,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'tt_agent_sales,', 'tt_agent_registration'],
+    'depends': ['base', 'tt_agent_sales', 'tt_agent_registration'],
 
     # always loaded
     'data': [

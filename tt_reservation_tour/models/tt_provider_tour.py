@@ -316,10 +316,10 @@ class TtProviderTour(models.Model):
                 'provider_type_id': self.provider_id.provider_type_id.id,
             }
 
-            self.env['tt.ledger'].create_ledger_vanilla(res_model, res_id, name, ref, date, ledger_type, currency_id,
+            return self.env['tt.ledger'].create_ledger_vanilla(res_model, res_id, name, ref, date, ledger_type, currency_id,
                                                         ledger_issued_uid, agent_id, customer_parent_id, debit, credit, description, **additional_vals)
         else:
-            self.env['tt.ledger'].action_create_ledger(self, issued_uid)
+            return self.env['tt.ledger'].action_create_ledger(self, issued_uid)
 
     def action_create_installment_ledger(self, issued_uid, payment_rules_id, commission_ledger=False):
         try:
