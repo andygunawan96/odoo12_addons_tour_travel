@@ -280,6 +280,11 @@ class TtTopUp(models.Model):
 
             for rec in self.search(dom):
                 res.append(rec.to_dict())
+            quota = [rec.to_dict() for rec in self.env['tt.pnr.quota'].search([('agent_id', '=', context['co_agent_id'])])]
+            res = {
+                'top up': res,
+                'quota': quota
+            }
 
             return ERR.get_no_error(res)
         except RequestException as e:

@@ -1,7 +1,7 @@
 from odoo import api,models,fields
 from ...tools.ERR import RequestException
 
-class TtAirlineApiCon(models.Model):
+class TtFrontendBannerApiCon(models.Model):
     _name = 'tt.frontend.banner.api.con'
     _inherit = 'tt.api.con'
 
