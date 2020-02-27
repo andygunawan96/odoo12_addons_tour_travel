@@ -24,9 +24,10 @@ class TtPnrQuotaMasterData(models.Model):
 
     def to_dict(self):
         return {
+            'seq_id': self.seq_id,
             'name': self.name,
             'amount': self.amount,
             'currency': self.currency_id.name,
             'price': self.price,
-            'validity_duration': self.validity_durations
+            'validity_duration': self.validity_duration
         }
