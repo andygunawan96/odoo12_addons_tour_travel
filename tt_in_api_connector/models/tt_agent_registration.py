@@ -1,7 +1,7 @@
 from odoo import api,models,fields
 from ...tools.ERR import RequestException
 
-class TtOfflineApiCon(models.Model):
+class TtAgentRegisApiCon(models.Model):
     _name = 'tt.agent.registration.api.con'
     _inherit = 'tt.api.con'
 

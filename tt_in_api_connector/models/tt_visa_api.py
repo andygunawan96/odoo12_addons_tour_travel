@@ -1,7 +1,7 @@
 from odoo import api,models,fields
 from ...tools.ERR import RequestException
 
-class TtOfflineApiCon(models.Model):
+class TtVisaApiCon(models.Model):
     _name = 'tt.visa.api.con'
     _inherit = 'tt.api.con'
 
