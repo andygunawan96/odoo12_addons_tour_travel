@@ -4,7 +4,7 @@ from odoo.exceptions import UserError
 from ...tools.api import Response
 import base64
 import copy
-import logging
+import logging,pytz
 import traceback
 from ...tools.api import Response
 from ...tools.ERR import RequestException
@@ -354,7 +354,7 @@ class AgentRegistration(models.Model):
                     self.id,
                     'Recruit Comm. : ' + self.name,
                     'Recruit Comm. : ' + self.name,
-                    datetime.now(),
+                    datetime.now(pytz.timezone('Asia/Jakarta')).date(),
                     3,
                     self.currency_id.id,
                     self.env.user.id,
@@ -372,7 +372,7 @@ class AgentRegistration(models.Model):
                     self.id,
                     'Recruit Comm. Parent : ' + self.name,
                     'Recruit Comm. Parent : ' + self.name,
-                    datetime.now(),
+                    datetime.now(pytz.timezone('Asia/Jakarta')).date(),
                     3,
                     self.currency_id.id,
                     self.env.user.id,
@@ -390,7 +390,7 @@ class AgentRegistration(models.Model):
                 self.id,
                 'Recruit Comm. Parent : ' + self.name,
                 'Recruit Comm. Parent : ' + self.name,
-                datetime.now(),
+                datetime.now(pytz.timezone('Asia/Jakarta')).date(),
                 3,
                 self.currency_id.id,
                 self.env.user.id,
@@ -409,7 +409,7 @@ class AgentRegistration(models.Model):
             self.id,
             'Recruit Fee : ' + self.name,
             'Recruit Fee : ' + self.name,
-            datetime.now(),
+            datetime.now(pytz.timezone('Asia/Jakarta')).date(),
             2,
             self.currency_id.id,
             self.env.user.id,

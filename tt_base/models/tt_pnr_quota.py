@@ -45,7 +45,7 @@ class TtPnrQuota(models.Model):
     def _compute_used_amount(self):
         for rec in self:
             rec.used_amount = len(rec.usage_ids.ids)
-            rec.available_amount = rec.amount - rec.used_amount
+            rec.available_amount = max(rec.amount - rec.used_amount,0)
 
     @api.depends('price_list_id')
     def _compute_expired_date(self):
@@ -109,10 +109,29 @@ class TtPnrQuota(models.Model):
             except:
                 raise RequestException(1032)
 
-            self.create({
+            if agent_obj.balance < price_list_obj.price:
+                raise RequestException(1007,additional_message='agent balance')
+
+            new_pnr_quota = self.create({
                 'agent_id': agent_obj.id,
                 'price_list_id': price_list_obj.id
             })
+
+            self.env['tt.ledger'].create_ledger_vanilla(new_pnr_quota._name,
+                                                        new_pnr_quota.id,
+                                                        'Order: %s' % (new_pnr_quota.name),
+                                                        new_pnr_quota.name,
+                                                        datetime.now(pytz.timezone('Asia/Jakarta')).date(),
+                                                        2,
+                                                        price_list_obj.currency_id.id,
+                                                        self.env.user.id,
+                                                        agent_obj.id,
+                                                        False,
+                                                        debit=0,
+                                                        credit=price_list_obj.price,
+                                                        description='Buying PNR Quota for %s' % (agent_obj.name)
+                                                        )
+
             return ERR.get_no_error()
         except RequestException as e:
             _logger.error(traceback.format_exc())

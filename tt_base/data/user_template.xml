@@ -156,7 +156,8 @@
             <field name="password">tCBttKJ52_ts3/^#Cyr_</field>
             <field name="groups_id" eval="[(4,ref('tt_base.group_tt_billing_statement_manager')),
                                             (4,ref('tt_base.group_tt_agent_invoice_manager')),
-                                            (4,ref('tt_base.group_tt_agent_user_manager'))]"/>
+                                            (4,ref('tt_base.group_tt_agent_user_manager')),
+                                            (4,ref('tt_base.group_tt_agent_finance_manager'))]"/>
             <field name="frontend_security_ids"
                    eval="[(4,ref('tt_base.able_to_ticketing')),
                     (4,ref('tt_base.able_to_book')),
@@ -291,7 +292,8 @@
             <field name="password">es!cR-!+Q#p256sKPKzs</field>
             <field name="groups_id" eval="[(4,ref('tt_base.group_tt_billing_statement_manager')),
                                             (4,ref('tt_base.group_tt_agent_invoice_manager')),
-                                            (4,ref('tt_base.group_tt_agent_user_manager'))]"/>
+                                            (4,ref('tt_base.group_tt_agent_user_manager')),
+                                            (4,ref('tt_base.group_tt_agent_finance_manager'))]"/>
             <field name="frontend_security_ids"
                    eval="[(4,ref('tt_base.able_to_ticketing')),
                     (4,ref('tt_base.able_to_book')),
@@ -426,7 +428,8 @@
             <field name="password">frdC~ypYs9@*BQ/EPzS\</field>
             <field name="groups_id" eval="[(4,ref('tt_base.group_tt_billing_statement_manager')),
                                             (4,ref('tt_base.group_tt_agent_invoice_manager')),
-                                            (4,ref('tt_base.group_tt_agent_user_manager'))]"/>
+                                            (4,ref('tt_base.group_tt_agent_user_manager')),
+                                            (4,ref('tt_base.group_tt_agent_finance_manager'))]"/>
             <field name="frontend_security_ids"
                    eval="[(4,ref('tt_base.able_to_ticketing')),
                     (4,ref('tt_base.able_to_book')),
@@ -458,7 +461,8 @@
                     (4,ref('tt_base.able_to_psg_cache_1')),
                     (4,ref('tt_base.able_to_psg_cache_2')),
                     (4,ref('tt_base.able_to_book')),
-                    (4,ref('tt_base.able_to_issued'))
+                    (4,ref('tt_base.able_to_issued')),
+                    (4,ref('tt_base.able_to_use_pnr_quota'))
                     ]"/>
         </record>
 
@@ -480,7 +484,8 @@
                     (4,ref('tt_base.able_to_psg_cache_1')),
                     (4,ref('tt_base.able_to_psg_cache_2')),
                     (4,ref('tt_base.able_to_book')),
-                    (4,ref('tt_base.able_to_issued'))
+                    (4,ref('tt_base.able_to_issued')),
+                    (4,ref('tt_base.able_to_use_pnr_quota'))
                     ]"/>
         </record>
 
@@ -492,7 +497,8 @@
             <field name="password">frdC~ypYs9@*BQ/EPzS\</field>
             <field name="groups_id" eval="[(4,ref('tt_base.group_tt_billing_statement_manager')),
                                             (4,ref('tt_base.group_tt_agent_invoice_manager')),
-                                            (4,ref('tt_base.group_tt_agent_user_manager'))]"/>
+                                            (4,ref('tt_base.group_tt_agent_user_manager')),
+                                            (4,ref('tt_base.group_tt_agent_finance_manager'))]"/>
             <field name="frontend_security_ids"
                    eval="[(4,ref('tt_base.able_to_ticketing')),
                     (4,ref('tt_base.able_to_book')),
@@ -502,7 +508,8 @@
                     (4,ref('tt_base.able_to_psg_cache_1')),
                     (4,ref('tt_base.able_to_psg_cache_2')),
                     (4,ref('tt_base.able_to_book')),
-                    (4,ref('tt_base.able_to_issued'))
+                    (4,ref('tt_base.able_to_issued')),
+                    (4,ref('tt_base.able_to_use_pnr_quota'))
                     ]"/>
         </record>
 
@@ -558,7 +565,8 @@
             <field name="password">x\#T6M"rCR}v`"XWx^V"</field>
             <field name="groups_id" eval="[(4,ref('tt_base.group_tt_billing_statement_manager')),
                                             (4,ref('tt_base.group_tt_agent_invoice_manager')),
-                                            (4,ref('tt_base.group_tt_agent_user_manager'))]"/>
+                                            (4,ref('tt_base.group_tt_agent_user_manager')),
+                                            (4,ref('tt_base.group_tt_agent_finance_manager'))]"/>
             <field name="frontend_security_ids"
                    eval="[(4,ref('tt_base.able_to_ticketing')),
                     (4,ref('tt_base.able_to_book')),

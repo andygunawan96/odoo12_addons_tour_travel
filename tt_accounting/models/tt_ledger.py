@@ -85,14 +85,14 @@ class Ledger(models.Model):
         #     return 0
         return (balance + vals['debit']) - vals['credit']
 
-    def prepare_vals(self, res_model,res_id,name, ref, date, ledger_type, currency_id, issued_uid, debit=0, credit=0,description = ''):
+    def prepare_vals(self, res_model,res_id,name, ref, ledger_date, ledger_type, currency_id, issued_uid, debit=0, credit=0,description = ''):
         return {
                 'name': name,
                 'debit': debit,
                 'credit': credit,
                 'ref': ref,
                 'currency_id': currency_id,
-                'date': date,
+                'date': ledger_date,
                 'transaction_type': ledger_type,
                 'res_model': res_model,
                 'res_id': res_id,
@@ -100,10 +100,10 @@ class Ledger(models.Model):
                 'issued_uid': issued_uid
             }
 
-    def create_ledger_vanilla(self, res_model,res_id,name, ref, date, ledger_type, currency_id, issued_uid,agent_id,customer_parent_id, debit=0, credit=0,description = '',**kwargs):
+    def create_ledger_vanilla(self, res_model,res_id,name, ref, ledger_date, ledger_type, currency_id, issued_uid,agent_id,customer_parent_id, debit=0, credit=0,description = '',**kwargs):
         vals = self.prepare_vals(res_model,
                           res_id,name, ref,
-                          date, ledger_type,
+                          ledger_date, ledger_type,
                           currency_id, issued_uid,
                           debit, credit,description)
         if customer_parent_id:
