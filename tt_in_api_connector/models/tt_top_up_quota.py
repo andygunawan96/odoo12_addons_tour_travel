@@ -1,24 +1,18 @@
 from odoo import api,models,fields
 from ...tools.ERR import RequestException
 
-class TtTopUpApiCon(models.Model):
-    _name = 'tt.top.up.api.con'
+class TtTopUpQuotaApiCon(models.Model):
+    _name = 'tt.top.up.quota.api.con'
     _inherit = 'tt.api.con'
 
-    table_name = 'tt.top.up'
+    table_name = 'tt.pnr.quota'
 
     def action_call(self,table_obj,action,data,context):
 
-        if action == 'create_top_up':
-            res = table_obj.create_top_up_api(data,context)
-        elif action == 'request_top_up':
-            res = table_obj.request_top_up_api(data,context)
-        elif action == 'get_top_up':
-            res = table_obj.get_top_up_api(data,context)
-        elif action == 'cancel_top_up':
-            res = table_obj.cancel_top_up_api(data,context)
-        elif action == 'get_top_up_amount':
-            res = self.env['tt.top.up.amount'].get_top_up_amount_api()
+        if action == 'get_top_up_quota':
+            res = self.env['tt.agent'].get_available_pnr_price_list_api(data, context)
+        elif action == 'buy_quota_pnr':
+            res = table_obj.create_pnr_quota_api(data, context)
         else:
             raise RequestException(999)
         return res

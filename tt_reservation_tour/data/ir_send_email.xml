@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record model="mail.template" id="template_mail_tour_request">
+			<field name="name">Template Mail Tour Request</field>
+			<field name="email_from">${user.email}</field>
+			<field name="subject">[Sent By System] Tour Request: ${object.name}</field>
+			<field name="email_to">tour@rodextravel.tours</field>
+            <field name="email_cc"/>
+			<field name="model_id" ref="tt_reservation_tour.model_tt_request_tour"/>
+			<field name="auto_delete" eval="False"/>
+			<field name="lang"/>
+			<field name="copyvalue"/>
+			<field name="body_html">
+<![CDATA[
+<p>Dear Rodex Tour Division,</p>
+<br/>
+<br/>
+<p>Please kindly check our new Tour Package Request with the following name: ${object.name}</p>
+<p>Request Created By: ${user.name} (${user.agent_id.name})</p>
+<p>Request Created On: ${object.create_date} (GMT +0)</p>
+<br/>
+Thank you for your cooperation.
+<br/>
+<br/>
+<p>Regards,</p>
+<br/>
+<p>${user.name}</p>
+<p>(${user.agent_id.name})</p>
+]]>
+			</field>
+		</record>
+
+    </data>
+</odoo>

@@ -388,6 +388,9 @@ class TtProviderTour(models.Model):
 
         return res
 
+    def get_carrier_name(self):
+        return []
+
     # def get_cost_service_charges(self):
     #     sc_value = {}
     #     for p_sc in self.cost_service_charge_ids:

@@ -3,7 +3,7 @@ from odoo.exceptions import UserError
 from dateutil.relativedelta import relativedelta
 from datetime import datetime
 from ...tools import variables
-import logging
+import logging,pytz
 
 _logger = logging.getLogger(__name__)
 
@@ -151,7 +151,7 @@ class TtAdjustment(models.Model):
             self.res_id,
             'Adjustment : for %s' % (self.name),
             self.referenced_document,
-            datetime.now() + relativedelta(hours=7),
+            datetime.now(pytz.timezone('Asia/Jakarta')).date(),
             ledger_type,
             self.currency_id.id,
             self.env.user.id,

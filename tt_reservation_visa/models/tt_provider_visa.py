@@ -193,3 +193,6 @@ class TtProviderVisa(models.Model):
             'vendors': vendor_list
         }
         return res
+
+    def get_carrier_name(self):
+        return []

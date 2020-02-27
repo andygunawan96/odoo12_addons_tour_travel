@@ -2,7 +2,7 @@ from odoo import api,models,fields
 from ...tools import ERR
 from ...tools.ERR import RequestException
 
-class TtAirlineApiCon(models.Model):
+class TtCustomerApiCon(models.Model):
     _name = 'tt.customer.api.con'
     _inherit = 'tt.api.con'
 

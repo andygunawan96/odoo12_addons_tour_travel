@@ -209,7 +209,9 @@ class TtTopUp(models.Model):
     def create_top_up_api(self,data,context, admin=False):
         try:
             agent_obj = self.browse(context['co_agent_id'])
-            if not agent_obj:
+            try:
+                agent_obj.create_date
+            except:
                 raise RequestException(1008)
             print(json.dumps(data))
 
@@ -259,7 +261,9 @@ class TtTopUp(models.Model):
         try:
             print(json.dumps(data))
             agent_obj = self.browse(context['co_agent_id'])
-            if not agent_obj:
+            try:
+                agent_obj.create_date
+            except:
                 raise RequestException(1008)
 
             res = []
@@ -276,6 +280,11 @@ class TtTopUp(models.Model):
 
             for rec in self.search(dom):
                 res.append(rec.to_dict())
+            quota = [rec.to_dict() for rec in self.env['tt.pnr.quota'].search([('agent_id', '=', context['co_agent_id'])])]
+            res = {
+                'top up': res,
+                'quota': quota
+            }
 
             return ERR.get_no_error(res)
         except RequestException as e:
@@ -288,7 +297,9 @@ class TtTopUp(models.Model):
     def request_top_up_api(self,data,context):
         try:
             agent_obj = self.browse(context['co_agent_id'])
-            if not agent_obj:
+            try:
+                agent_obj.create_date
+            except:
                 raise RequestException(1008)
 
             top_up_obj = self.search([('name','=',data['name'])])
@@ -322,7 +333,9 @@ class TtTopUp(models.Model):
     def cancel_top_up_api(self,data,context):
         try:
             agent_obj = self.browse(context['co_agent_id'])
-            if not agent_obj:
+            try:
+                agent_obj.create_date
+            except:
                 raise RequestException(1008)
 
             top_up_obj = self.search([('name','=',data['name'])])

@@ -2,28 +2,28 @@
 <odoo>
     <data>
         <record id="tt_pnr_quota_price_1000a" model="tt.pnr.quota.price.list">
-            <field name="name">1000 PNR</field>
+            <field name="name">1000 PNR Combo A</field>
             <field name="amount">1000</field>
             <field name="price">1500000</field>
             <field name="currency_id" ref="base.IDR"/>
         </record>
 
         <record id="tt_pnr_quota_price_500a" model="tt.pnr.quota.price.list">
-            <field name="name">500 PNR</field>
+            <field name="name">500 PNR Combo A</field>
             <field name="amount">500</field>
             <field name="price">800000</field>
             <field name="currency_id" ref="base.IDR"/>
         </record>
 
         <record id="tt_pnr_quota_price_1000b" model="tt.pnr.quota.price.list">
-            <field name="name">1000 PNR</field>
+            <field name="name">1000 PNR Combo B</field>
             <field name="amount">1000</field>
             <field name="price">2500000</field>
             <field name="currency_id" ref="base.IDR"/>
         </record>
 
         <record id="tt_pnr_quota_price_500b" model="tt.pnr.quota.price.list">
-            <field name="name">500 PNR</field>
+            <field name="name">500 PNR Combo B</field>
             <field name="amount">500</field>
             <field name="price">2000000</field>
             <field name="currency_id" ref="base.IDR"/>

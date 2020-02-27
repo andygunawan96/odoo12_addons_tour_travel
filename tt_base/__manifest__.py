@@ -81,6 +81,7 @@ Key Features
         'views/tt_pnr_quota_views.xml',
         'views/tt_pnr_quota_price_list_views..xml',
         'views/tt_pnr_quota_usage_views.xml',
+        'views/tt_pnr_quota_price_package_views.xml',
 
         'wizard/tt_upload_center_wizard_view.xml',
         'wizard/create_user_wizard_view.xml',

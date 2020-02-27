@@ -30,9 +30,9 @@
                                     <span color="white"><![CDATA[&nbsp;]]></span>
                                     <field name="last_name" placeholder="Last Name" class="oe_inline"/>
                                 </h1>
-                                <h2>
+                                <h3>
                                     <field name="seq_id"/>
-                                </h2>
+                                </h3>
                             </div>
                             <group>
                                 <!--                                <field name="user_agent_id" readonly="True" invisible="0"/>-->

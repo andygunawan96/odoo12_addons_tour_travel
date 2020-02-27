@@ -23,8 +23,10 @@
                         <label for="name" class="oe_edit_only"/>
                         <h1>
                             <field name="name" placeholder="Agent's Name" required="True"/><br/>
-                            <field name="seq_id"/>
                         </h1>
+                        <h3>
+                            <field name="seq_id"/>
+                        </h3>
                     </div>
                     <group>
                         <group name="ctp_info">

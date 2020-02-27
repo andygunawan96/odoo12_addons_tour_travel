@@ -3,7 +3,7 @@ from odoo.exceptions import UserError
 from dateutil.relativedelta import relativedelta
 from datetime import datetime, date, timedelta
 from ...tools import variables
-import base64
+import base64,pytz
 
 
 class TtRefundLine(models.Model):
@@ -330,7 +330,7 @@ class TtRefund(models.Model):
             self.res_id,
             'Refund : %s' % (self.name),
             self.name,
-            datetime.now() + relativedelta(hours=7),
+            datetime.now(pytz.timezone('Asia/Jakarta')).date(),
             ledger_type,
             self.currency_id.id,
             self.env.user.id,
@@ -351,7 +351,7 @@ class TtRefund(models.Model):
                 self.res_id,
                 'Refund Admin Fee: %s' % (self.name),
                 self.name,
-                datetime.now() + relativedelta(hours=7),
+                datetime.now(pytz.timezone('Asia/Jakarta')).date(),
                 ledger_type,
                 self.currency_id.id,
                 self.env.user.id,
@@ -372,7 +372,7 @@ class TtRefund(models.Model):
                 self.res_id,
                 'Refund Admin Fee: %s' % (self.name),
                 self.name,
-                datetime.now() + relativedelta(hours=7),
+                datetime.now(pytz.timezone('Asia/Jakarta')).date(),
                 ledger_type,
                 self.currency_id.id,
                 self.env.user.id,
@@ -405,7 +405,7 @@ class TtRefund(models.Model):
                 self.res_id,
                 'Profit&Loss : %s' % (self.name),
                 self.name,
-                datetime.now() + relativedelta(hours=7),
+                datetime.now(pytz.timezone('Asia/Jakarta')).date(),
                 ledger_type,
                 self.currency_id.id,
                 self.env.user.id,
@@ -481,7 +481,7 @@ class TtRefund(models.Model):
                 self.res_id,
                 'Refund Agent Admin Fee : %s' % (self.name),
                 self.name,
-                datetime.now() + relativedelta(hours=7),
+                datetime.now(pytz.timezone('Asia/Jakarta')).date(),
                 ledger_type,
                 self.currency_id.id,
                 self.env.user.id,
@@ -501,7 +501,7 @@ class TtRefund(models.Model):
                 self.res_id,
                 'Refund Agent Admin Fee : %s' % (self.name),
                 self.name,
-                datetime.now() + relativedelta(hours=7),
+                datetime.now(pytz.timezone('Asia/Jakarta')).date(),
                 ledger_type,
                 self.currency_id.id,
                 self.env.user.id,

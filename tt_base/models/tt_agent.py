@@ -1,8 +1,8 @@
 from odoo import models, fields, api, _
-import logging, traceback
+import logging, traceback,pytz
 from ...tools import ERR,variables,util
 from odoo.exceptions import UserError
-from datetime import date,datetime
+from datetime import datetime
 from ...tools.ERR import RequestException
 _logger = logging.getLogger(__name__)
 
@@ -256,10 +256,10 @@ class TtAgent(models.Model):
     def get_mmf_rule(self, agent_id):
         # Cari di rule
         rule = self.env['tt.monthly.fee.rule'].search([('agent_id', '=', agent_id.id),
-                                                    ('state', 'in', ['confirm', 'done']),
-                                                    ('start_date', '<=', fields.Date.today()),
-                                                    ('end_date', '>', fields.Date.today()),
-                                                    ('active', '=', True)], limit=1)
+                                                       ('state', 'in', ['confirm', 'done']),
+                                                       ('start_date', '<=', fields.Date.today()),
+                                                       ('end_date', '>', fields.Date.today()),
+                                                       ('active', '=', True)], limit=1)
         percentage = rule and rule.perc or agent_id.agent_type_id.roy_percentage
         min_val = rule and rule.min_amount or agent_id.agent_type_id.min_value
         max_val = rule and rule.max_amount or agent_id.agent_type_id.max_value
@@ -439,8 +439,8 @@ class TtAgent(models.Model):
                     list_obj = self.env['tt.reservation.%s'% (type)].search(dom,order='create_date desc')
                 else:
                     list_obj = self.env['tt.reservation.%s'% (type)].search(dom,order='create_date desc',
-                                                                        offset=req['minimum'],
-                                                                        limit=req['maximum']-req['minimum'])
+                                                                            offset=req['minimum'],
+                                                                            limit=req['maximum']-req['minimum'])
                 if len(list_obj.ids)>0:
                     res_dict[type] = []
                 for rec in list_obj:
@@ -451,9 +451,9 @@ class TtAgent(models.Model):
                         # 'provider': {
                         'provider_type': rec.provider_type_id and rec.provider_type_id.code or '',
                         'carrier_names': rec.carrier_name and rec.carrier_name or '',
-                            # 'airline_carrier_codes':
-                            # 'airline_carrier_codes': list(set([seg.carrier_code for seg in rec.segment_ids]))
-                            # if hasattr(rec,'segment_ids') else [],
+                        # 'airline_carrier_codes':
+                        # 'airline_carrier_codes': list(set([seg.carrier_code for seg in rec.segment_ids]))
+                        # if hasattr(rec,'segment_ids') else [],
                         # },
                         'hold_date': rec.hold_date and rec.hold_date.strftime('%Y-%m-%d %H:%M:%S') or '',
                         'booker': rec.booker_id and rec.booker_id.to_dict() or '',
@@ -487,31 +487,36 @@ class TtAgent(models.Model):
             'domain': ['|', ('parent_agent_id', '=', self.env.user.agent_id.id), ('id', '=', self.env.user.agent_id.id)]
         }
 
+    def dummy_buy_pnr_quota(self):
+        self.env['tt.pnr.quota'].create_pnr_quota_api(
+            {
+                'quota_seq_id': 'PQL.2628004'
+            },
+            {
+                'co_agent_id': self.id
+            }
+        )
+
     def dummy_use_pnr_quota(self):
         self.use_pnr_quota({
-            'res_model': 'tt.reservation.airline',
-            'res_id': 856
+            'res_model_resv': 'tt.reservation.airline',
+            'res_id_resv': 874,
+            'res_model_prov': 'tt.provider.airline',
+            'res_id_prov': 1022
         })
 
     def use_pnr_quota(self, req):
         if self.is_using_pnr_quota:
             if self.quota_total_duration:
-                if self.quota_amount > 0:
-                    self.env['tt.pnr.quota.usage'].create({
-                        'res_model_resv': req.get('res_model_resv'),
-                        'res_id_resv': req.get('res_id_resv'),
-                        'res_model_prov': req.get('res_model_prov'),
-                        'res_id_prov': req.get('res_id_prov'),
-                        'pnr_quota_id': self.quota_ids.filtered(lambda x: x.state == 'active' and x.available_amount > 0 )[0].id
-                    })
-                    return True
-                else:
+                if self.quota_amount <= 0:
+                    ##potong saldo minimum fee di sini
                     resv_obj = self.env[req.get('res_model_resv')].browse(int(req.get('res_id_resv')))
-                    self.env['tt.ledger'].create_ledger_vanilla(resv_obj._name,
-                                                                resv_obj.id,
-                                                                'Excess Quota Penalty: %s' % (resv_obj._name),
+                    pnr_quota_obj = self.quota_ids.filtered(lambda x: x.state == 'active')[0]
+                    self.env['tt.ledger'].create_ledger_vanilla(pnr_quota_obj._name,
+                                                                pnr_quota_obj.id,
+                                                                'Excess Quota Penalty: %s' % (resv_obj.name),
                                                                 resv_obj.name,
-                                                                date,
+                                                                datetime.now(pytz.timezone('Asia/Jakarta')).date(),
                                                                 2,
                                                                 self.quota_package_id.currency_id.id,
                                                                 self.env.ref('base.user_root').id,
@@ -521,15 +526,26 @@ class TtAgent(models.Model):
                                                                 credit=self.quota_package_id.excess_quota_fee,
                                                                 description='Excess Quota Penalty for %s' % (resv_obj.name)
                                                                 )
-                    ##potong saldo minimum fee di sini
-                    return True
+                    price_list_id = pnr_quota_obj.id
+                else:
+                    price_list_id = self.quota_ids.filtered(lambda x: x.state == 'active' and x.available_amount > 0)[0].id
+                self.env['tt.pnr.quota.usage'].create({
+                    'res_model_resv': req.get('res_model_resv'),
+                    'res_id_resv': req.get('res_id_resv'),
+                    'res_model_prov': req.get('res_model_prov'),
+                    'res_id_prov': req.get('res_id_prov'),
+                    'pnr_quota_id': price_list_id
+                })
+                return True
             else:
                 return False
 
-    def get_available_pnr_price_list_api(self,data,context):
+    def get_available_pnr_price_list_api(self,context):
         try:
             agent_obj = self.browse(context['co_agent_id'])
-            if not agent_obj:
+            try:
+                agent_obj.create_date
+            except:
                 raise RequestException(1008)
 
             if not agent_obj.is_using_pnr_quota or not agent_obj.quota_package_id:
@@ -560,7 +576,6 @@ class AgentTarget(models.Model):
     annual_profit_target = fields.Monetary("Annual Profit Target")
 
     currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.user.company_id.currency_id.id)
-
 
 class AgentMOU(models.Model):
     _inherit = ['tt.history']

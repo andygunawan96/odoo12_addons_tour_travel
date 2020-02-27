@@ -383,6 +383,14 @@ class TtProviderAirline(models.Model):
 
         return res
 
+    def get_carrier_name(self):
+        carrier_names = set([])
+        for journey in self.journey_ids:
+            for segment in journey.segment_ids:
+                if segment.carrier_id:
+                    carrier_names.add(segment.carrier_id.name)
+        return carrier_names
+
     # def get_cost_service_charges(self):
     #     sc_value = {}
     #     for p_sc in self.cost_service_charge_ids:

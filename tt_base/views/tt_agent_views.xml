@@ -49,7 +49,8 @@
                 <header>
                     <button name="get_current_agent_target" type="object" string="Calc Target" groups="base.user_admin"/>
                     <button name="generate_va_number" type="object" string="Generate VA" groups="tt_base.group_tt_accounting_supervisor"/>
-                    <button name="dummy_use_pnr_quota" type="object" string="Use PNR Quota"/>
+                    <button name="dummy_use_pnr_quota" type="object" string="Use PNR Quota" groups="base.user_admin"/>
+                    <button name="dummy_buy_pnr_quota" type="object" string="Buy PNR Quota" groups="base.user_admin"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
@@ -78,14 +79,16 @@
                         <label for="name" class="oe_edit_only"/>
                         <h1>
                             <field name="name" placeholder="Agent's Name" required="True" readonly="1"/><br/>
-                            <field name="seq_id"/>
                         </h1>
+                        <h3>
+                            <field name="seq_id"/>
+                        </h3>
                     </div>
                     <group>
                         <group>
                             <field name="currency_id" readonly="1"/>
                             <field name="is_using_pnr_quota" groups="tt_base.group_tt_agent_management_operator"
-                            invisible="1"/>
+                                   invisible="1"/>
                             <!--                            <field name="actual_balance"/>-->
                             <!--                            <field name="annual_revenue_target"/>-->
                             <!--                            <field name="annual_profit_target"/>-->
@@ -132,7 +135,7 @@
                         </page>
                         <page string="Quota" attrs="{'invisible': [('is_using_pnr_quota','=',False)]}">
                             <group>
-                                <field name="quota_package_id" required="1"/>
+                                <field name="quota_package_id" attrs="{'required': [('is_using_pnr_quota','=',True)]}"/>
                                 <field name="quota_amount"/>
                                 <field name="quota_total_duration"/>
                             </group>
@@ -204,7 +207,7 @@
                 <field name="payment_acq_ids" readonly="0"/>
             </field>
             <field name="quota_package_id" position="replace">
-                <field name="quota_package_id" readonly="0" required="1"/>
+                <field name="quota_package_id" readonly="0" attrs="{'required': [('is_using_pnr_quota','=',True)]}"/>
             </field>
         </field>
     </record>

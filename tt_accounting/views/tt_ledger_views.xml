@@ -46,7 +46,7 @@
                 <header>
                     <!-- JNGAN di SYNC -->
                     <!-- Trial Reverse -->
-                    <button string="Reverse Ledger" name="reverse_ledger" type="object" groups="tt_base.group_tt_tour_travel_manager" attrs="{'invisible':[('is_reversed','=',True)]}"/>
+                    <button string="Reverse Ledger" name="reverse_ledger" type="object" groups="tt_base.group_tt_tour_travel_manager" attrs="{'invisible':[('is_reversed','=',True)]}" confirm="Are you sure you want to reverse this ledger?"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
