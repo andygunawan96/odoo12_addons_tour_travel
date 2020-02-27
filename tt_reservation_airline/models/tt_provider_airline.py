@@ -298,16 +298,19 @@ class TtProviderAirline(models.Model):
         currency_obj = self.env['res.currency']
 
         for scs in service_charge_vals:
-            scs['pax_count'] = 0
+            # update 19 Feb 2020 maximum per pax sesuai dengan pax_count dari service charge
+            # scs['pax_count'] = 0
+            scs_pax_count = 0
             scs['passenger_airline_ids'] = []
             scs['total'] = 0
             scs['currency_id'] = currency_obj.get_id(scs.get('currency'),default_param_idr=True)
             scs['foreign_currency_id'] = currency_obj.get_id(scs.get('foreign_currency'),default_param_idr=True)
             scs['provider_airline_booking_id'] = self.id
             for psg in self.ticket_ids:
-                if scs['pax_type'] == psg.pax_type:
+                if scs['pax_type'] == psg.pax_type and scs_pax_count < scs['pax_count']:
                     scs['passenger_airline_ids'].append(psg.passenger_id.id)
-                    scs['pax_count'] += 1
+                    # scs['pax_count'] += 1
+                    scs_pax_count += 1
                     scs['total'] += scs['amount']
             scs.pop('currency')
             scs.pop('foreign_currency')
