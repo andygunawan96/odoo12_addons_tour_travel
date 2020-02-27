@@ -10,7 +10,7 @@ class TtTopUpQuotaApiCon(models.Model):
     def action_call(self,table_obj,action,data,context):
 
         if action == 'get_top_up_quota':
-            res = self.env['tt.agent'].get_available_pnr_price_list_api(data, context)
+            res = self.env['tt.agent'].get_available_pnr_price_list_api(context)
         elif action == 'buy_quota_pnr':
             res = table_obj.create_pnr_quota_api(data, context)
         else:
