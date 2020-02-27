@@ -28,6 +28,7 @@ class PricingAgent(models.Model):
     is_per_segment = fields.Boolean('Is per Segment', default=False)
     is_per_pax = fields.Boolean('is per Pax', default=0)
     loop_level = fields.Integer('Loop Level', default=0)
+    is_compute_infant_fee = fields.Boolean('Compute Inf Fee Amount', default=False)
     line_ids = fields.One2many('tt.pricing.agent.line', 'pricing_id', 'Pricing')
     active = fields.Boolean('Active', default=True)
 
@@ -110,6 +111,7 @@ class PricingAgent(models.Model):
             'is_per_pax': self.is_per_pax,
             'is_per_pnr': self.is_per_pnr,
             'loop_level': self.loop_level,
+            'is_compute_infant_fee': self.is_compute_infant_fee,
             # 'line_ids': line_ids,
             'line_dict': line_dict,
         }
