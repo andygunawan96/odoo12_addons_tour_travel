@@ -29,6 +29,7 @@
                             <field name="is_per_route"/>
                             <field name="is_per_segment"/>
                             <field name="is_per_pax"/>
+                            <field name="is_compute_infant_fee"/>
                         </group>
                     </group>
                     <separator string="Providers"/>
