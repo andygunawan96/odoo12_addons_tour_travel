@@ -134,7 +134,7 @@ class TtSplitReservationWizard(models.TransientModel):
             'provider_type_id': booking_id.provider_type_id.id,
         }
 
-        self.env['tt.ledger'].create_ledger_vanilla(res_model, res_id, name, ref, date, ledger_type,
+        return self.env['tt.ledger'].create_ledger_vanilla(res_model, res_id, name, ref, date, ledger_type,
                                                     currency_id, ledger_issued_uid, agent_id, customer_parent_id, debit,
                                                     credit, description, **additional_vals)
 

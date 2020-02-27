@@ -114,7 +114,7 @@ class Ledger(models.Model):
         if kwargs:
             vals.update(kwargs)
         self.create(vals)
-
+        return True
 
     def reverse_ledger(self):
         reverse_id = self.env['tt.ledger'].create({
@@ -194,6 +194,7 @@ class Ledger(models.Model):
     # API START #####################################################################
     def create_ledger(self, provider_obj,issued_uid):
         amount = 0
+        ledger_created = False
 
         for sc in provider_obj.cost_service_charge_ids:
             if sc.charge_type != 'RAC' and not sc.is_ledger_created:
@@ -208,10 +209,12 @@ class Ledger(models.Model):
 
         ledger_values = self.prepare_vals_for_resv(booking_obj,provider_obj.pnr,ledger_values,provider_obj.provider_id.code)
         self.create(ledger_values)
+        ledger_created = True
+        return ledger_created
 
     def create_commission_ledger(self, provider_obj,issued_uid):
         booking_obj = provider_obj.booking_id
-
+        ledger_created = False
         agent_commission = {}
         for sc in provider_obj.cost_service_charge_ids:
             amount = 0
@@ -236,10 +239,13 @@ class Ledger(models.Model):
             values = self.prepare_vals_for_resv(booking_obj,provider_obj.pnr,ledger_values,provider_obj.provider_id.code)
             _logger.info('Create Ledger Commission\n')
             self.sudo().create(values)
+            ledger_created = True
+        return ledger_created
 
     def action_create_ledger(self, provider_obj,issued_uid):
-        self.create_commission_ledger(provider_obj,issued_uid)
-        self.create_ledger(provider_obj,issued_uid)
+        commission_created = self.create_commission_ledger(provider_obj,issued_uid)
+        ledger_created = self.create_ledger(provider_obj,issued_uid)
+        return commission_created or ledger_created
 
     # api_context : ['type', 'agent_id', 'amount', 'pnr', 'ref_name', 'order']
     # def get_agent_ledger(self, start_date=False, end_date=False, limit=10, offset=1, api_context=None):

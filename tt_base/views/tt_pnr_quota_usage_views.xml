@@ -36,15 +36,12 @@
             <field name="name">tt.pnr.quota.usage.tree.view</field>
             <field name="model">tt.pnr.quota.usage</field>
             <field name="arch" type="xml">
-                <tree string="PNR Quota Usage">
-                    <field name="res_model_resv" groups="base.user_admin"/>
-                    <field name="res_id_resv" groups="base.user_admin"/>
-                    <field name="res_model_prov" groups="base.user_admin"/>
-                    <field name="res_id_prov" groups="base.user_admin"/>
+                <tree string="PNR Quota Usage" decoration-muted="active == False">
                     <field name="ref_name"/>
                     <field name="ref_pnrs"/>
                     <field name="ref_carriers"/>
                     <field name="pnr_quota_id"/>
+                    <field name="active" invisible="1"/>
                     <button name="open_reservation" string="Go to reference" type="object"/>
                 </tree>
             </field>

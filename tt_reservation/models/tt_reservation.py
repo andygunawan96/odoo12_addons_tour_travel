@@ -693,8 +693,9 @@ class TtReservation(models.Model):
                     book_obj.calculate_service_charge()
 
                 for provider in book_obj.provider_booking_ids:
-                    provider.action_create_ledger(context['co_uid'], payment_method)
-                    if agent_obj.is_using_pnr_quota:
+                    ledger_created = provider.action_create_ledger(context['co_uid'], payment_method)
+                    # if agent_obj.is_using_pnr_quota: ##selalu potong quota setiap  attemp payment
+                    if agent_obj.is_using_pnr_quota and ledger_created: #tidak potong quota jika tidak membuat ledger
                         quota_used = agent_obj.use_pnr_quota({
                             'res_model_resv': book_obj._name,
                             'res_id_resv': book_obj.id,

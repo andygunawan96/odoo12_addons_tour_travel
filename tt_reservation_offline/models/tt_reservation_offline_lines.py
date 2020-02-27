@@ -134,8 +134,7 @@ class IssuedOfflineLines(models.Model):
             self.write({
                 'is_ledger_created': True
             })
-            self.env['tt.ledger'].action_create_ledger(self)
-            self.env.cr.commit()
+            return self.env['tt.ledger'].action_create_ledger(self)
 
     def get_pnr_list(self):
         pnr_seen = set()

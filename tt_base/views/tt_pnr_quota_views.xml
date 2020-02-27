@@ -29,7 +29,10 @@
                         </group>
                         <notebook>
                             <page name="usage" string="Usage">
-                                <field name="usage_ids"/>
+                                <field name="usage_ids"
+                                       context="{
+                                       'active_test':False
+                                       }"/>
                             </page>
                         </notebook>
                     </sheet>
