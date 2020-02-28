@@ -105,7 +105,7 @@ class TtRefund(models.Model):
     refund_date = fields.Date('Expected Refund Date', default=date.today(), required=True, readonly=True, related='refund_date_ho')
     refund_date_ho = fields.Date('Expected Refund Date', default=date.today(), required=False, readonly=True, states={'confirm': [('readonly', False), ('required', True)]})
     real_refund_date = fields.Date('Real Refund Date from Vendor', default=date.today(), required=True, readonly=False, states={'done': [('readonly', True)], 'approve': [('readonly', True)], 'draft': [('readonly', True)]})
-    cust_refund_date = fields.Datetime('Expected Cust. Refund Date', readonly=False, states={'done': [('readonly', True)]})
+    cust_refund_date = fields.Date('Expected Cust. Refund Date', readonly=False, states={'done': [('readonly', True)]})
 
     service_type = fields.Selection(lambda self: self.get_service_type(), 'Service Type', required=True, readonly=True)
 
