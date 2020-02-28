@@ -30,12 +30,6 @@ class AgentRegistrationPromotion(models.Model):
         else:
             return self.name
 
-    def write(self, values):
-        res = super(AgentRegistrationPromotion, self).write(values)
-        if not values.get('name'):
-            self.write({'name': self.get_name()})
-        return res
-
     def get_agent_hierarchy(self, agent_id, hierarchy=[]):
         hierarchy.append({
             'agent_id': agent_id.id,
@@ -86,7 +80,7 @@ class AgentRegistrationPromotionAgentType(models.Model):
     currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.user.company_id.currency_id)
     discount_amount_type = fields.Selection(AMOUNT_TYPE, 'Discount Amount Type')
     discount_amount = fields.Float('Discount Amount')
-    preview_price = fields.Monetary('Preview Price', default=0, compute='set_preview_price')
+    preview_price = fields.Monetary('Preview Price', compute='set_preview_price')  # default=0,
     line_ids = fields.One2many('tt.agent.registration.promotion.line', 'res_id', 'Lines')
 
     @api.depends('agent_type_id', 'discount_amount', 'discount_amount_type')
@@ -99,6 +93,8 @@ class AgentRegistrationPromotionAgentType(models.Model):
                         rec.preview_price = rec.agent_type_id.registration_fee - rec.discount_amount
                     elif rec.discount_amount_type == 'percentage':
                         rec.preview_price = rec.agent_type_id.registration_fee - (rec.agent_type_id.registration_fee / 100 * rec.discount_amount)
+            elif rec.discount_amount == 0:
+                rec.preview_price = rec.agent_type_id.registration_fee
 
 
 class AgentRegistrationPromotionLine(models.Model):
