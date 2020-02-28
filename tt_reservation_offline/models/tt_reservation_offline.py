@@ -1193,9 +1193,9 @@ class IssuedOffline(models.Model):
             if create_line_res['error_code'] == 0:
                 booking_line_ids = create_line_res['response']
             else:
-                raise RequestException(create_line_res['error_msg'])
+                raise RequestException(1004, additional_message=create_line_res['error_msg'])
             if not passengers:
-                raise RequestException('Passengers can\'t be empty.')
+                raise RequestException(1004, additional_message='Passengers can\'t be empty.')
             create_psg_res = self._create_reservation_offline_order(passengers, passenger_ids, context)
             if create_psg_res['error_code'] == 0:
                 iss_off_psg_ids = create_psg_res['response']
@@ -1312,7 +1312,7 @@ class IssuedOffline(models.Model):
                         "hotel_name": line.get('name'),
                         "room": line.get('room'),
                         "meal_type": line.get('meal_type'),
-                        "qty": int(line.get('qty')),
+                        "obj_qty": line.get('qty'),
                         "description": line.get('description'),
                         "check_in": check_in.strftime('%Y-%m-%d'),
                         "check_out": check_out.strftime('%Y-%m-%d'),
