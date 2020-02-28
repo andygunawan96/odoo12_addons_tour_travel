@@ -683,34 +683,35 @@ class IssuedOffline(models.Model):
                 provider_type_id = self.env['tt.provider.type'].sudo().search([('code', '=', rec.offline_provider_type)], limit=1)
                 commission_list = pricing_obj.sudo().get_commission(rec.total_commission_amount, rec.agent_id,
                                                                     provider_type_id)
-                rec.agent_commission = 0
-                rec.parent_agent_commission = 0
-                rec.ho_commission = 0
+                if rec.total_commission_amount != 0:
+                    rec.agent_commission = 0
+                    rec.parent_agent_commission = 0
+                    rec.ho_commission = 0
 
-                for comm in commission_list:
-                    if comm.get('code') == 'rac':
-                        rec.agent_commission += comm.get('amount')
-                    elif comm.get('agent_type_id') == rec.env.ref('tt_base.rodex_ho').sudo().agent_type_id.id:
-                        rec.ho_commission += comm.get('amount')
-                    else:
-                        rec.parent_agent_commission += comm.get('amount')
+                    for comm in commission_list:
+                        if comm.get('code') == 'rac':
+                            rec.agent_commission += comm.get('amount')
+                        elif comm.get('agent_type_id') == rec.env.ref('tt_base.rodex_ho').sudo().agent_type_id.id:
+                            rec.ho_commission += comm.get('amount')
+                        else:
+                            rec.parent_agent_commission += comm.get('amount')
             elif rec.offline_provider_type and rec.offline_provider_type == 'other':
                 pricing_obj = rec.env['tt.pricing.agent'].sudo()
-                provider_type_id = self.env['tt.provider.type'].sudo().search([('code', '=', 'offline')],
-                                                                       limit=1)
+                provider_type_id = self.env['tt.provider.type'].sudo().search([('code', '=', 'offline')], limit=1)
                 commission_list = pricing_obj.sudo().get_commission(rec.total_commission_amount, rec.agent_id,
                                                                     provider_type_id)
-                rec.agent_commission = 0
-                rec.parent_agent_commission = 0
-                rec.ho_commission = 0
+                if rec.total_commission_amount != 0:
+                    rec.agent_commission = 0
+                    rec.parent_agent_commission = 0
+                    rec.ho_commission = 0
 
-                for comm in commission_list:
-                    if comm.get('code') == 'rac':
-                        rec.agent_commission += comm.get('amount')
-                    elif comm.get('agent_type_id') == rec.env.ref('tt_base.rodex_ho').sudo().agent_type_id.id:
-                        rec.ho_commission += comm.get('amount')
-                    else:
-                        rec.parent_agent_commission += comm.get('amount')
+                    for comm in commission_list:
+                        if comm.get('code') == 'rac':
+                            rec.agent_commission += comm.get('amount')
+                        elif comm.get('agent_type_id') == rec.env.ref('tt_base.rodex_ho').sudo().agent_type_id.id:
+                            rec.ho_commission += comm.get('amount')
+                        else:
+                            rec.parent_agent_commission += comm.get('amount')
 
     # Hitung harga final / Agent NTA Price
     @api.onchange('vendor_amount', 'nta_price')
