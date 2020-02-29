@@ -63,6 +63,8 @@
                         'default_res_id': id,
                         'default_referenced_document': name,
                    }"/>
+                <button name="sync_booking_with_vendor" type="object" string="Sync Reservation"
+                        groups="base.user_admin"/>
                 <!--                <button name="CR8" string="CR8" type="object" groups="base.user_admin"/>-->
             </xpath>
             <xpath expr="//div[hasclass('oe_button_box')]" position="inside">

@@ -9,10 +9,20 @@ class TtSsrAirline(models.Model):
     type = fields.Char("Type")
     code = fields.Char("Code")
     value = fields.Char("Value")
+    category = fields.Char("Category")
+    category_icon = fields.Char("Category Icon", compute="_compute_category_icon",store=True)
     description = fields.Text("Description")
     amount = fields.Monetary("Amount")
     currency_id = fields.Many2one("res.currency","Currency",default=lambda self:self.env.user.company_id.currency_id)
     passenger_id = fields.Many2one("tt.reservation.passenger.airline","Currency")
+
+    @api.depends('category')
+    def _compute_category_icon(self):
+        for rec in self:
+            try:
+                rec.category_icon = self.env['tt.ssr.category'].search([('key','=',rec.category)],limit=1).icon
+            except:
+                rec.category_icon = 'fa fa-suitcase'
 
     def to_dict(self):
         return {
@@ -20,6 +30,7 @@ class TtSsrAirline(models.Model):
             'fee_type': self.type,
             'fee_code': self.code,
             'fee_value': self.value,
+            'fee_category': self.category,
             'description': json.loads(self.description),
             'amount': self.amount,
             'currency': self.currency_id.name

@@ -55,3 +55,13 @@ class TtAirlineApiCon(models.Model):
                                             request,
                                             'retrieve_booking',
                                             timeout=120)
+
+    def send_get_booking_for_sync(self, req):
+        request = {
+            'order_number': req.get('order_number'),
+            'proxy_co_uid': req.get('user_id', False),
+        }
+        return self.send_request_to_gateway('%s/booking/airline' % (self.url),
+                                            request,
+                                            'get_booking',
+                                            timeout=180)

@@ -53,6 +53,7 @@ class PrintoutTicketForm(models.AbstractModel):
                     ssr_obj['ssr'].append({
                         'name': rec2.name,
                         'amount': rec2.amount,
+                        'category_icon': rec2.category_icon,
                         'currency': rec2.currency_id.name,
                         'description': isinstance(rec2.description, list) and ', '.join(rec2.description) or rec2.description,
                     })
