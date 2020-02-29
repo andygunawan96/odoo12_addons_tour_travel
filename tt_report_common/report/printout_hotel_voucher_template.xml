@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="reservation_hotel_content_view">
+    <template id="reservation_hotel_content_view_1">
         <!-- Main Params -->
         <div class="row mt32">
             <div class="col-6">
@@ -44,7 +44,6 @@
                         <th>Room Name</th>
                         <th class="text-right">Qty</th>
                         <th class="text-right">Amount</th>
-                        <th class="text-right">Disc</th>
                         <th class="text-right">Total</th>
                         <th>Spc. Request</th>
                     </tr>
@@ -55,7 +54,6 @@
                         <td><span t-field="line.room_name"/></td>
                         <td class="text-right">1</td>
                         <td class="text-right"><span t-field="line.sale_price" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/></td>
-                        <td class="text-center"><t t-set="zero" t-value="0"/><span t-esc="zero" t-esc-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/></td>
                         <td class="text-right"><span t-field="line.sale_price" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/></td>
                         <td>
                             <t t-if="line.special_request">
@@ -68,6 +66,117 @@
                     </tr>
                 </tbody>
             </table>
+        </div>
+
+        <!-- Passengers -->
+        <div class="row mt32 mb32">
+            <table class="table table-condensed">
+                <thead>
+                    <tr>
+                        <th>Passenger</th>
+                        <th>Nationality</th>
+                        <th>Special Request</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="doc.passenger_ids" t-as="pax">
+                        <td><span t-field="pax.title"/>. <span t-field="pax.first_name"/> <span t-field="pax.last_name"/></td>
+                        <td><span t-field="pax.nationality_id"/></td>
+                        <td>-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </template>
+
+    <!-- Content Version 2 -->
+    <template id="reservation_hotel_content_view">
+        <div class="box" style="margin: 0px 20px 20px 20px">
+            <!-- Hotel Description -->
+            <div class="title" style="background-color: #DC5413; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px">
+                <span style="padding-left: 20px; color: white; font-weight: 600; font-size: 18px">Hotel name: <span t-field="doc.hotel_name"/></span><br/>
+                <span style="padding-left: 20px; color: white; font-weight: 600; font-size: 16px">Address: <span t-field="doc.hotel_address"/></span>
+            </div>
+            <div class="row" style="margin: 0px; margin-bottom: 40px; font-size: 14px;">
+                <div class="col-6" style="border-radius: 0 0 0px 20px; border: 1px solid #BBB; padding: 10px 2px;">
+                    <div class="row" style="margin: 0px; padding:0px;">
+                        <div class="col-4">
+                            <b>
+                                <span>Phone</span><br/>
+                                <span>Agent Ref. #</span><br/>
+                                <span>Check In Date</span><br/>
+                                <span>Number Night(s)</span><br/>
+                                <span>Room Info</span><br/>
+                            </b>
+                        </div>
+                        <div class="col-1">
+                            <span>:</span>
+                            <span>:</span>
+                            <span>:</span>
+                            <span>:</span>
+                            <span>:</span>
+                        </div>
+                        <div class="col-6">
+                            <t t-if="doc.hotel_phone"><span t-field="doc.hotel_phone"/></t><t t-else="">-</t><br/>
+                            <span t-field="doc.room_detail_ids[0].name"/><br/>
+                            <span t-field="doc.checkin_date"/><br/>
+                            <span t-field="doc.nights"/><br/>
+                            <span t-field="doc.room_detail_ids[0].room_name"/><br/>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6" style="border-radius: 0 0 20px 0px; border: 1px solid #BBB; padding: 10px 2px;">
+                    <div class="row" style="margin: 0px; padding:0px;">
+                        <div class="col-4">
+                            <b>
+                                <span>Fax</span><br/>
+                                <span>Hotel Confirm #</span><br/>
+                                <span>Check Out Date</span><br/>
+                                <span>Room Name</span><br/>
+                                <span>Num. of Room</span><br/>
+                            </b>
+                        </div>
+                        <div class="col-1">
+                            <span>:</span>
+                            <span>:</span>
+                            <span>:</span>
+                            <span>:</span>
+                            <span>:</span>
+                        </div>
+                        <div class="col-6">
+                            <span>-</span><br/>
+                            <span t-field="doc.room_detail_ids[0].issued_name"/><br/>
+                            <span t-field="doc.checkout_date"/><br/>
+                            <span t-field="doc.room_detail_ids[0].room_name"/><br/>
+                            <span t-field="doc.room_count"/><br/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Guest Description -->
+            <div class="box" style="margin: 0 20px; border: 1px solid #BBB; border-radius: 20px">
+                <div class="row" style="margin: 5px 0;">
+                    <div class="col-2" style="text-align: center; font-size:17px;">No.</div>
+                    <div class="col-8" style="text-align: left; font-size:17px;">Name</div>
+                    <div class="col-2" style="text-align: center; font-size:17px;">Type</div>
+                </div>
+                <div style="border: 1px solid #BBB; margin-bottom: 5px; margin-left: 15px; margin-right: 15px"/>
+                <t t-foreach="doc.passenger_ids" t-as="psg">
+                    <div class="row" style="margin-left: 0px; margin-right: 0px">
+                        <div class="col-2" style="text-align: center">
+                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg_index+1"/>.</label>
+                        </div>
+                        <div class="col-8" style="text-align: left">
+                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><t t-if="psg.title"><span t-field="psg.title"/>. </t><span t-field="psg.first_name"/> <span t-field="psg.last_name"/></label>
+                        </div>
+                        <div class="col-2" style="text-align: center">
+                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-</label>
+                        </div>
+                    </div>
+                </t>
+                <div style="margin-bottom: 5px"/>
+            </div>
         </div>
     </template>
 

@@ -2177,7 +2177,8 @@ class HotelInformation(models.Model):
         # provider_list = ['hotelspro', 'hotelspro_file', 'fitruums', 'webbeds_pool', 'webbeds_excel_pool',
         #                  'itank', 'quantum', 'quantum_pool', 'mgholiday', 'mg_pool', 'miki_api', 'miki_scrap', 'miki_pool',
         #                  'dida_pool', 'tbo', 'oyo']
-        provider_list = ['webbeds_pool', 'webbeds_excel_pool', 'dida_pool']
+        provider_list = ['webbeds_pool', 'webbeds_excel_pool', 'miki_api', 'miki_scrap', 'miki_pool', 'dida_pool', 'oyo',
+                         'quantum', 'quantum_pool']
 
         new_to_add_list2 = [['Type', '#1:Name', '#1:address', '#1:provider', '#2:Similar Name', '#2:address', '#2:provider']]
         if not rendered_city:
@@ -2419,24 +2420,28 @@ class HotelInformation(models.Model):
         file = open(filename, 'w')
         file.write(json.dumps(file_content))
         file.close()
+
     # Ambil Master record yg telah terbentuk
     # Masukan source yg di mau ke master record
     # On Progress
     def merge_record_for_some_source(self):
-        # Baca City CSV
-        target_city_index = 0
-        with open('/var/log/cache_hotel/res_country_city.csv', 'r') as f:
-            city_ids = csv.reader(f)
-            for target_city in city_ids:
-                if target_city_index == 0:
-                    target_city_index += 1
-                    continue
-                cache_content = []
-
-        f.close()
-        # Cari nomer file untuk city tsb
+        provider_list = ['hotelspro_file_partial',]
+        file_number = 'last'
+        for rec in provider_list:
+            # Baca City CSV
+            with open('/var/log/cache_hotel/res_country_city.csv', 'r') as f:
+                city_ids = csv.reader(f)
+                for target_city in city_ids:
+                    if target_city.lower() == 'surabaya':
+                        # Cari nomer file untuk city tsb
+                        file_number = target_city
+                        break
+            f.close()
         # Baca File + merge data source untuk city tsb
-        # Updata CSV Result merger (Nice to have)
+        with open('/var/log/cache_hotel/cache_hotel_' + str(file_number) + '.txt', 'r') as f:
+            cache_file = f.read()
+        f.close()
+        # Update CSV Result merger (Nice to have)
         return True
 
     # ====================== Correction after mapping ============================================
