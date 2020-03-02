@@ -1046,7 +1046,7 @@ class ReservationActivity(models.Model):
                 'visit_date': str(activity_booking.visit_date)[:10],
                 'timeslot': activity_booking.timeslot and activity_booking.timeslot or False,
                 'passengers': passengers,
-                'name': order_number,
+                'order_number': order_number,
                 'activity_details': activity_details,
                 'voucher_detail': voucher_detail,
                 'uuid': res.get('uuid') and res['uuid'] or '',

@@ -24,6 +24,7 @@
                             <group>
                                 <field name="code"/>
                                 <field name="key"/>
+                                <field name="icon"/>
                             </group>
                         </group>
                     </sheet>

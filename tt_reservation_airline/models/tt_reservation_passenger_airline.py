@@ -50,6 +50,7 @@ class TtReservationCustomer(models.Model):
                 'type': ssr['fee_type'],
                 'code': ssr['fee_code'],
                 'value': ssr['fee_value'],
+                'category': ssr.get('fee_category', False),
                 'description': json.dumps(ssr['description']),
                 'amount': amount,
                 'passenger_id': self.id,

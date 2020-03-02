@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data noupdate="1">
+        <record id="tt_ssr_category_baggage" model="tt.ssr.category">
+            <field name="name">Baggage</field>
+            <field name="code">BG</field>
+            <field name="key">baggage</field>
+            <field name="icon">fa fa-suitcase</field>
+        </record>
+
+        <record id="tt_ssr_category_meal" model="tt.ssr.category">
+            <field name="name">Meal</field>
+            <field name="code">ML</field>
+            <field name="key">meal</field>
+            <field name="icon">fa fa-cutlery</field>
+        </record>
+
+        <record id="tt_ssr_category_seat" model="tt.ssr.category">
+            <field name="name">Seat</field>
+            <field name="code">ST</field>
+            <field name="key">seat</field>
+            <field name="icon">fa fa-desktop</field>
+        </record>
+    </data>
+</odoo>

@@ -40,6 +40,37 @@
                 </t>
             </t>
         </table>
+        <t t-if="ssr_list">
+            <br/>
+            <span style="font-size: 28px; font-weight: 730">Addons Detail(s)</span><br/>
+            <table width="100%">
+                <thead style="border-bottom: 1px solid black; font-size:18px; text-align:center;">
+                    <td><b>Passenger(s)</b></td>
+                    <td><b>Description</b></td>
+                    <td><b>Price</b></td>
+                </thead>
+                <t t-foreach="ssr_list" t-as="ssr_obj">
+                    <tr>
+                        <td><t t-esc="ssr_obj['name']"/></td>
+                        <td>
+                            <ul>
+                                <t t-foreach="ssr_obj['ssr']" t-as="ssr_obj1">
+                                    <li><t t-esc="ssr_obj1['description']"/></li>
+                                </t>
+                            </ul>
+                        </td>
+                        <td>
+                            <ul>
+                                <t t-foreach="ssr_obj['ssr']" t-as="ssr_obj2">
+                                    <li><t t-esc="ssr_obj2['currency']"/> <t t-esc="ssr_obj2['amount']"/></li>
+                                </t>
+                            </ul>
+                        </td>
+                        <td></td>
+                    </tr>
+                </t>
+            </table>
+        </t>
     </template>
 
     <template id="price_ticket">
@@ -65,7 +96,8 @@
         <t t-set="data_pax" t-value="psg.passenger_id"/>
         <t t-if="data_pax.fee_ids">
             <t t-foreach="data_pax.fee_ids" t-as="fee_id">
-                <i style="margin-right:3px;" class="fa fa-suitcase"> <span t-field="fee_id.name"/></i><br/>
+<!--                <i style="margin-right:3px;" class="fa fa-suitcase"> <span t-field="fee_id.name"/></i><br/>-->
+                <i style="margin-right:3px;" t-att-class="fee_id.category_icon"> <span t-field="fee_id.name"/></i><br/>
                 <!--<i style="margin-right:3px;" class="fa fa-cutlery"/>-->
                 <!--<i style="margin-right:3px;" class="fa fa-wheelchair"/>-->
             </t>
@@ -241,14 +273,14 @@
                         <div class="col-1" style="text-align: center; font-size:17px;">
                             No.
                         </div>
-                        <div class="col-4" style="text-align: center; font-size:17px;">
+                        <div class="col-4" style="text-align: left; font-size:17px;">
                             Name
                         </div>
-                        <div class="col-2" style="text-align: center; font-size:17px;">
+                        <div class="col-3" style="text-align: center; font-size:17px;">
                             Facility(s)
                         </div>
-                        <div class="col-2" style="text-align: center; font-size:17px;">
-                            Pax Type
+                        <div class="col-1" style="text-align: center; font-size:17px;">
+                            Type
                         </div>
                         <div class="col-3" style="text-align: right; font-size:17px; padding-right: 30px;">
                             Ticket Number
@@ -264,10 +296,10 @@
                             <div class="col-4" style="text-align: left">
                                 <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.passenger_id.title"/> <span t-field="psg.passenger_id.name"/></label>
                             </div>
-                            <div class="col-2" style="text-align: center">
+                            <div class="col-3" style="text-align: center">
                                 <t t-call="tt_report_common.airline_pax_ssr"/>
                             </div>
-                            <div class="col-2" style="text-align: center">
+                            <div class="col-1" style="text-align: center">
                                 <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.pax_type"/></label>
                             </div>
                             <div class="col-3" style="text-align: right">

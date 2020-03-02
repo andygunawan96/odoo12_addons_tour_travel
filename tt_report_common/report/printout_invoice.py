@@ -25,6 +25,7 @@ class PrintoutTicketForm(models.AbstractModel):
                 data['context']['active_model'] = 'tt.reservation.tour'
             data['context']['active_ids'] = docids
         values = {}
+        ssr_list = []
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
             a = {}
@@ -42,12 +43,28 @@ class PrintoutTicketForm(models.AbstractModel):
                     a[rec2.pax_type]['qty'] = rec2.pax_count
                 elif rec2.charge_type.lower() in ['roc', 'tax']:
                     a[rec2.pax_type]['tax'] += rec2.amount
+
+            for ssr_per_pax in rec.passenger_ids:
+                ssr_obj = {
+                    'name': ssr_per_pax.title + '. ' + ssr_per_pax.name,
+                    'ssr': [],
+                }
+                for rec2 in ssr_per_pax.fee_ids:
+                    ssr_obj['ssr'].append({
+                        'name': rec2.name,
+                        'amount': rec2.amount,
+                        'category_icon': rec2.category_icon,
+                        'currency': rec2.currency_id.name,
+                        'description': isinstance(rec2.description, list) and ', '.join(rec2.description) or rec2.description,
+                    })
+                ssr_list.append(ssr_obj)
             values[rec.id] = [a[new_a] for new_a in a]
         vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
             'price_lines': values,
+            'ssr_list': ssr_list,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
         }
         if 'is_with_price' in data:
