@@ -15,6 +15,7 @@ TT_RESCHEDULE
     'data': [
         'data/ir_sequence_data.xml',
         'wizard/tt_reschedule_wizard_views.xml',
+        'wizard/set_real_amount_wizard_views.xml',
         'views/tt_segment_addons_views.xml',
         'views/tt_segment_views.xml',
         'views/tt_reschedule_views.xml',
