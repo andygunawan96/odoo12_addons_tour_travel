@@ -53,7 +53,8 @@
                             <field name="name" groups="tt_base.group_tt_tour_travel_operator"/>
                             <field name="issued_name"/>
                             <field name="room_name"/>
-                            <field name="room_type"/>
+                            <!--<field name="room_type"/>-->
+                            <field name="meal_type"/>
                             <field name="provider_id"/>
                             <!--<field name="date"/>-->
                             <!--<field name="date_end"/>-->
@@ -83,7 +84,7 @@
                                     <field name="date"/>
                                     <field name="sale_price"/>
                                     <field name="commission_amount"/>
-                                    <field name="meal_type"/>
+                                    <!--<field name="meal_type"/>-->
                                 </tree>
                             </field>
                         </page>
@@ -171,6 +172,18 @@
                         'default_currency_id': currency_id,
                         'default_adj_type': provider_type_id
                    }"/>
+                    <button string="Refund Request" name="%(tt_accounting.tt_refund_wizard_action_view)d" type="action" groups="tt_base.group_tt_agent_user_operator"
+                                       context="{
+                        'default_res_model': res_model,
+                        'default_res_id': id,
+                        'default_agent_id': agent_id,
+                        'default_customer_parent_id': customer_parent_id,
+                        'default_referenced_document': name,
+                        'default_referenced_pnr': name,
+                        'default_booker_id': booker_id,
+                        'default_currency_id': currency_id,
+                        'default_service_type': provider_type_id
+                    }" attrs="{'invisible':[('refundable','=',False)]}"/>
 
 <!--                    <button class="oe_highlight" string="Send Email" groups="tt_base.group_tt_agent_user_operator" name="action_send_email" states="approved" type="object"/>-->
 <!--                    <button string="Force Send Email" groups="tt_base.group_tt_agent_user_operator" name="action_force_send_email" states="approved" type="object"/>-->
@@ -181,7 +194,10 @@
                     <button string="Check Booking Status" name="check_booking_status" type="object" states="confirm,issued,fail,cancel" />
                     <button string="Cancel Booking (Policy Applied)" groups="base.group_no_one" name="cancel_booking" states="issued" type="object"/>
                     <button string="Booking Policy" groups="base.group_no_one" name="check_booking_policy" type="object"/>
+                    <!-- Button buat revisi data only -->
+                    <!-- Remove latter -->
                     <button string="Calc Passenger Data" groups="base.group_no_one" name="action_calc_passenger_data" type="object"/>
+                    <button string="Calc PNR + Provider" groups="base.group_no_one" name="action_calc_pnr" type="object"/>
 
                     <!--<field name="state" widget="statusbar" statusbar_visible="draft,confirm,issued,done" clickable='1' groups="tt_base.group_no_one"/>-->
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,issued"/>
@@ -203,16 +219,18 @@
                     </div>
                     <group>
                         <group>
-                            <field name="agent_id" readonly="1"/>
-                            <field name="booker_id"/>
-                            <field name="customer_parent_id"/>
-                            <field name="res_model" invisible="1"/>
                             <field name="id" invisible="1"/>
+                            <field name="pnr"/>
+                            <field name="agent_id" readonly="1"/>
+                            <field name="agent_type_id"/>
+                            <field name="customer_parent_id"/>
+                            <field name="customer_parent_type_id"/>
+                            <field name="booker_id"/>
+                            <field name="res_model" invisible="1"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="provider_type_id" invisible="1"/>
-                            <!--<field name="sub_agent_id"/>-->
-                            <!--<field name="pnr"/>-->
-                            <!--<field name="provider_name" groups="tt_base.group_tt_tour_travel_operator"/>-->
+                            <field name="provider_name" groups="tt_base.group_tt_tour_travel_operator"/>
+                            <!--<field name="carrier_name"/>-->
                         </group>
                         <group>
                             <label for="booked_uid" string="Confirm by" attrs="{'invisible': [('booked_uid', '=', False)]}"/>
@@ -245,6 +263,7 @@
                             <field name="checkin_date" required="1" options="{'datepicker': {'minDate': 'now'}}"/>
                             <field name="checkout_date" required="1"/>
                             <field name="nights"/>
+                            <field name="refundable" string="Internal Refund" help=""/>
                         </group>
                         <group string="Paxs">
                             <field name="adult"/>
@@ -276,8 +295,7 @@
                                     <field name="sale_price"/>
                                     <!--<field name="commission_amount" groups="tt_base.group_tt_agent_user_operator, tt_base.group_tt_tour_travel_operator"/>-->
                                     <!--<field name="payment_method" groups="tt_base.group_tt_tour_travel_operator"/>-->
-                                    <button name="open_record" type="object" class="oe_highlight"
-                                            icon="fa-asterisk text-success"/>
+                                    <field name="meal_type"/>
                                 </tree>
                             </field>
                             <group>
@@ -285,24 +303,24 @@
                                 <field name="cancellation_policy_str"/>
                             </group>
                         </page>
-                        <page string="Service on Request">
-                            <field name="supplementary_ids">
-                                <tree>
-                                    <field name="resv_detail_id"/>
-                                    <field name="name"/>
-                                    <field name="facility_id"/>
-                                    <field name="req_date"/>
-                                    <field name="sale_price"/>
-                                    <field name="qty"/>
-                                    <field name="total_sale_price" readonly="1"/>
-                                    <field name="commission_amount" invisible="1"/>
-                                    <field name="currency_id" invisible="1"/>
-                                </tree>
-                            </field>
-                            <group>
-                                <field name="special_req" string="Additional Notes"/>
-                            </group>
-                        </page>
+<!--                        <page string="Service on Request">-->
+<!--                            <field name="supplementary_ids">-->
+<!--                                <tree>-->
+<!--                                    <field name="resv_detail_id"/>-->
+<!--                                    <field name="name"/>-->
+<!--                                    <field name="facility_id"/>-->
+<!--                                    <field name="req_date"/>-->
+<!--                                    <field name="sale_price"/>-->
+<!--                                    <field name="qty"/>-->
+<!--                                    <field name="total_sale_price" readonly="1"/>-->
+<!--                                    <field name="commission_amount" invisible="1"/>-->
+<!--                                    <field name="currency_id" invisible="1"/>-->
+<!--                                </tree>-->
+<!--                            </field>-->
+<!--                            <group>-->
+<!--                                <field name="special_req" string="Additional Notes"/>-->
+<!--                            </group>-->
+<!--                        </page>-->
                         <page string="Guest Detail">
                             <field name="passenger_ids" readonly="1">
                                 <tree>
@@ -358,6 +376,9 @@
                                 </tree>
                             </field>
                         </page>
+                        <page string="Refund" name="refund_page" attrs="{'invisible':[('refund_ids','=', [])]}">
+                            <field name="refund_ids"/>
+                        </page>
                     </notebook>
                     <group>
                         <group string="Price Information" class="oe_subtotal_footer oe_right">
@@ -382,14 +403,15 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="name"/>
-                <field name="create_date"/>
                 <field name="agent_id"/>
-                <field name="contact_id"/>
+                <field name="customer_parent_id"/>
                 <field name="customer_parent_type_id"/>
+                <field name="pnr"/>
+                <field name="provider_name" groups="tt_base.group_tt_tour_travel_operator"/>
                 <field name="checkin_date"/>
                 <field name="checkout_date"/>
                 <field name="room_count"/>
-                <field name="nights"/>
+                <!--<field name="nights"/>-->
                 <field name="state"/>
             </tree>
         </field>
