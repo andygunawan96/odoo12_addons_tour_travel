@@ -291,9 +291,14 @@
                                 </tree>
                                 <form>
                                     <header>
-                                        <button name="set_to_draft" string="Set to Draft" type="object" groups="base.user_admin" attrs="{'invisible':[('state','=', 'draft')]}"/>
-                                        <button name="set_to_confirm" string="Set to Confirm" type="object" groups="base.user_admin" attrs="{'invisible':[('state','=', 'confirm')]}"/>
-                                        <button name="set_to_done" string="Set to Done" type="object" groups="base.user_admin" attrs="{'invisible':[('state','=', 'done')]}"/>
+<!--                                        <button name="set_to_draft" string="Set to Draft" type="object" groups="base.user_admin" attrs="{'invisible':[('state','=', 'draft')]}"/>-->
+<!--                                        <button name="set_to_confirm" string="Set to Confirm" type="object" groups="base.user_admin" attrs="{'invisible':[('state','=', 'confirm')]}"/>-->
+<!--                                        <button name="set_to_done" string="Set to Done" type="object" groups="base.user_admin" attrs="{'invisible':[('state','=', 'done')]}"/>-->
+                                        <button string="Set Real Amount" name="%(tt_reschedule.set_real_amount_wizard_action_view)d" type="action" groups="tt_base.group_tt_ticketing_operator"
+                                                context="{
+                                        'default_reschedule_line_id': id,
+                                        'default_real_reschedule_amount': real_reschedule_amount,
+                                        }" attrs="{'invisible':[('state','=','draft')]}"/>
                                         <field name="state" invisible="1"/>
                                     </header>
                                     <sheet>
