@@ -208,7 +208,7 @@ class TtTopUp(models.Model):
 
     def create_top_up_api(self,data,context, admin=False):
         try:
-            agent_obj = self.browse(context['co_agent_id'])
+            agent_obj = self.env['tt.agent'].browse(context['co_agent_id'])
             try:
                 agent_obj.create_date
             except:
@@ -260,7 +260,7 @@ class TtTopUp(models.Model):
     def get_top_up_api(self,data,context):
         try:
             print(json.dumps(data))
-            agent_obj = self.browse(context['co_agent_id'])
+            agent_obj = self.env['tt.agent'].browse(context['co_agent_id'])
             try:
                 agent_obj.create_date
             except:
@@ -296,7 +296,7 @@ class TtTopUp(models.Model):
 
     def request_top_up_api(self,data,context):
         try:
-            agent_obj = self.browse(context['co_agent_id'])
+            agent_obj = self.env['tt.agent'].browse(context['co_agent_id'])
             try:
                 agent_obj.create_date
             except:
@@ -332,7 +332,7 @@ class TtTopUp(models.Model):
 
     def cancel_top_up_api(self,data,context):
         try:
-            agent_obj = self.browse(context['co_agent_id'])
+            agent_obj = self.env['tt.agent'].browse(context['co_agent_id'])
             try:
                 agent_obj.create_date
             except:
