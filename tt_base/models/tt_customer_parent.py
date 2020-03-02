@@ -141,6 +141,11 @@ class TtCustomerParent(models.Model):
             'validate_date': datetime.now()
         })
 
+    def set_to_validate(self):
+        self.write({
+            'state': 'validate',
+        })
+
     def action_done(self):
         if self.state != 'validate':
             raise UserError("Cannot Approve because state is not 'validate'.")
