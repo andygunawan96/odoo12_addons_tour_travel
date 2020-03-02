@@ -57,6 +57,7 @@ class TtSplitReservationWizard(models.TransientModel):
         is_provider_full = True
         is_pax_full = True
         provider_len = 0
+        passenger_len = 0
 
         for rec in self.provider_ids:
             provider_list.append(rec.id)
@@ -69,6 +70,7 @@ class TtSplitReservationWizard(models.TransientModel):
         for rec in book_obj.passenger_ids:
             if rec.id not in pax_list:
                 is_pax_full = False
+            passenger_len += 1
 
         new_pnr_list = self.new_pnr and self.new_pnr.strip().split(',') or []
         new_pnr_dict = {}
@@ -93,6 +95,10 @@ class TtSplitReservationWizard(models.TransientModel):
             raise UserError(_('You cannot split all Passenger(s) in this reservation without any Provider(s).'))
         if len(provider_list) <= 0 and len(pax_list) <= 0:
             raise UserError(_('You need to input at least 1 Provider or 1 Passenger to split this reservation.'))
+        if len(provider_list) > 0 and provider_len <= 1:
+            raise UserError(_('You cannot split Provider as there is only 1 Provider in this reservation.'))
+        if len(pax_list) > 0 and passenger_len <= 1:
+            raise UserError(_('You cannot split Passenger as there is only 1 Passenger in this reservation.'))
         if len(pax_list) > 0 and len(provider_list) <= 0 and len(new_pnr_list) < provider_len:
             raise UserError(_('You need to input New PNR for the split Passenger(s) in the new reservation, need {} more.'.format(provider_len - len(new_pnr_list))))
         if len(pax_list) > 0 and len(provider_list) > 0 and len(new_pnr_list) < len(provider_list):

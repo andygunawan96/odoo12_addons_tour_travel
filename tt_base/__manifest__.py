@@ -32,6 +32,7 @@ Key Features
         'security/ir_rule_data.xml',
         'data/payment_acquirer_ho_data.xml',
         'data/tt_pnr_quota_price_list.xml',
+        'data/tt_ssr_category_data.xml',
         'views/menu_item_base.xml',
 
         'wizard/tt_upload_center_wizard_view.xml',
