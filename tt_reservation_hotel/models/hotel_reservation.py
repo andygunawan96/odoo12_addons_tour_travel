@@ -471,6 +471,20 @@ class HotelReservation(models.Model):
                     # 'identity_number': pax.customer_id.identity_number,
                 })
 
+    def action_calc_pnr(self):
+        for rec in self.search([]):
+            pnr = []
+            vendor = []
+            for rec1 in rec.room_detail_ids:
+                if rec1.issued_name not in pnr:
+                    if rec1.issued_name:
+                        pnr.append(rec1.issued_name)
+                if rec1.provider_id.code not in vendor:
+                    if rec1.provider_id.code:
+                        vendor.append(rec1.provider_id.code)
+            rec.pnr = ','.join(pnr)
+            rec.provider_name = ','.join(vendor)
+
     def _prepare_invoice(self):
         a = {
             'payment_term_id': 2,
