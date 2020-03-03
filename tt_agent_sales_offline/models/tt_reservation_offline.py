@@ -84,7 +84,7 @@ class ReservationOffline(models.Model):
                     'invoice_line_detail_ids': [(0, 0, {
                         'desc': desc_text,
                         'price_unit': self.total / qty,
-                        'quantity': 1,
+                        'quantity': qty,
                         'invoice_line_id': invoice_line_id,
                     })]
                 })
