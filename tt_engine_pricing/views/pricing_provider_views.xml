@@ -384,7 +384,7 @@
     </record>
 
     <record id="pricing_class_of_service_action" model="ir.actions.act_window">
-        <field name="name">Pricing Charge Code</field>
+        <field name="name">Pricing Class of Service</field>
         <field name="res_model">tt.pricing.class.of.service</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
@@ -394,5 +394,5 @@
     </record>
 
     <menuitem id="pricing_class_of_service_menu" parent="tt_base.menu_tour_travel_pricing"
-              name="Pricing Charge Code" action="pricing_class_of_service_action" sequence="20"/>
+              name="Pricing Class of Service" action="pricing_class_of_service_action" sequence="20"/>
 </odoo>
